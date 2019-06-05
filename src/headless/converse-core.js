@@ -8,17 +8,17 @@ import * as bosh from 'strophe.js/src/bosh';
 import * as strophe from 'strophe.js/src/core';
 import * as websocket from 'strophe.js/src/websocket';
 
-import Backbone from "backbone";
-import BrowserStorage from "backbone.browserStorage";
-import Promise from "es6-promise/dist/es6-promise.auto";
-import _ from "./lodash.noconflict";
+import Backbone from 'backbone';
+import BrowserStorage from 'backbone.browserStorage';
+import Promise from 'es6-promise/dist/es6-promise.auto';
+import _ from './lodash.noconflict';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import dayjs from "dayjs";
-import i18n from "./i18n";
-import pluggable from "pluggable.js/src/pluggable";
-import polyfill from "./polyfill";
-import sizzle from "sizzle";
-import u from "@converse/headless/utils/core";
+import dayjs from 'dayjs';
+import i18n from './i18n';
+import pluggable from 'pluggable.js/src/pluggable';
+import polyfill from './polyfill';
+import sizzle from 'sizzle';
+import u from '@converse/headless/utils/core';
 
 const Strophe = strophe.default.Strophe;
 const $build = strophe.default.$build;
@@ -41,7 +41,7 @@ Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
 Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
 Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
 Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
-Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
+Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');
 Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -100,7 +100,7 @@ const _converse = {
     'promises': {}
 }
 
-_converse.VERSION_NAME = "v4.2.0";
+_converse.VERSION_NAME = 'v4.2.0';
 
 Object.assign(_converse, Backbone.Events);
 
@@ -141,13 +141,13 @@ _converse.PRETTY_CHAT_STATUS = {
     'chat':         'Chattty',
     'online':       'Online'
 };
-_converse.ANONYMOUS  = "anonymous";
+_converse.ANONYMOUS = 'anonymous';
 _converse.CLOSED = 'closed';
-_converse.EXTERNAL = "external";
-_converse.LOGIN = "login";
-_converse.LOGOUT = "logout";
+_converse.EXTERNAL = 'external';
+_converse.LOGIN = 'login';
+_converse.LOGOUT = 'logout';
 _converse.OPENED = 'opened';
-_converse.PREBIND = "prebind";
+_converse.PREBIND = 'prebind';
 
 _converse.IQ_TIMEOUT = 20000;
 
@@ -162,7 +162,7 @@ _converse.CONNECTION_STATUS = {
     7: 'DISCONNECTING',
     8: 'ATTACHED',
     9: 'REDIRECT',
-    10: 'RECONNECTING',
+    10: 'RECONNECTING'
 };
 
 _converse.SUCCESS = 'success';
@@ -172,9 +172,10 @@ _converse.FAILURE = 'failure';
 _converse.DEFAULT_IMAGE_TYPE = 'image/svg+xml';
 _converse.DEFAULT_IMAGE = "PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+CiA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzU1NSIvPgogPGNpcmNsZSBjeD0iNjQiIGN5PSI0MSIgcj0iMjQiIGZpbGw9IiNmZmYiLz4KIDxwYXRoIGQ9Im0yOC41IDExMiB2LTEyIGMwLTEyIDEwLTI0IDI0LTI0IGgyMyBjMTQgMCAyNCAxMiAyNCAyNCB2MTIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==";
 
-_converse.TIMEOUTS = { // Set as module attr so that we can override in tests.
-    'PAUSED':     10000,
-    'INACTIVE':   90000
+_converse.TIMEOUTS = {
+    // Set as module attr so that we can override in tests.
+    PAUSED: 10000,
+    INACTIVE: 90000
 };
 
 // XEP-0085 Chat states
@@ -301,7 +302,7 @@ _converse.__ = function (str) {
         return str;
     }
     return i18n.translate.apply(i18n, arguments);
-}
+};
 
 const __ = _converse.__;
 
@@ -332,12 +333,11 @@ _converse.isUniView = function () {
      * MultiView means that multiple chats may be visible simultaneously.
      */
     return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
-}
+};
 
 _converse.router = new Backbone.Router();
 
-
-function initPlugins() {
+function initPlugins () {
     // If initialize gets called a second time (e.g. during tests), then we
     // need to re-apply all plugins (for a new converse instance), and we
     // therefore need to clear this array that prevents plugins from being
@@ -348,19 +348,18 @@ function initPlugins() {
     const whitelist = CORE_PLUGINS.concat(_converse.whitelisted_plugins);
 
     if (_converse.singleton) {
-        _.forEach([ // eslint-disable-line lodash/prefer-map
-            "converse-bookmarks",
-            "converse-controlbox",
-            "converse-headline",
-            "converse-register"
-        ], (name) => {
-            _converse.blacklisted_plugins.push(name)
-        });
+        [
+            'converse-bookmarks',
+            'converse-controlbox',
+            'converse-headline',
+            'converse-register'
+        ].forEach(name => _converse.blacklisted_plugins.push(name));
     }
 
     _converse.pluggable.initializePlugins(
-        {'_converse': _converse},
-        whitelist, _converse.blacklisted_plugins
+        { '_converse': _converse },
+        whitelist,
+        _converse.blacklisted_plugins
     );
 
     /**
@@ -409,15 +408,15 @@ function initClientConfig () {
 
 
 function tearDown () {
-   _converse.api.trigger('beforeTearDown');
-   window.removeEventListener('click', _converse.onUserActivity);
-   window.removeEventListener('focus', _converse.onUserActivity);
-   window.removeEventListener('keypress', _converse.onUserActivity);
-   window.removeEventListener('mousemove', _converse.onUserActivity);
-   window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
-   window.clearInterval(_converse.everySecondTrigger);
-   _converse.api.trigger('afterTearDown');
-   return _converse;
+    _converse.api.trigger('beforeTearDown');
+    window.removeEventListener('click', _converse.onUserActivity);
+    window.removeEventListener('focus', _converse.onUserActivity);
+    window.removeEventListener('keypress', _converse.onUserActivity);
+    window.removeEventListener('mousemove', _converse.onUserActivity);
+    window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
+    window.clearInterval(_converse.everySecondTrigger);
+    _converse.api.trigger('afterTearDown');
+    return _converse;
 }
 
 
@@ -445,12 +444,12 @@ const debouncedReconnect = _.debounce(reconnect, 2000);
 
 function clearSession  () {
     if (!_.isUndefined(_converse.bosh_session)) {
-       _converse.bosh_session.destroy();
-       delete _converse.bosh_session;
+        _converse.bosh_session.destroy();
+        delete _converse.bosh_session;
     }
     if (!_.isUndefined(_converse.session)) {
-       _converse.session.destroy();
-       delete _converse.session;
+        _converse.session.destroy();
+        delete _converse.session;
     }
 
     // TODO: Refactor so that we don't clear
@@ -458,16 +457,18 @@ function clearSession  () {
         window.localStorage.clear();
         window.sessionStorage.clear();
     } else {
-         if (!_.isUndefined(_converse.bosh_session)) {
+        if (!_.isUndefined(_converse.bosh_session)) {
             _converse.bosh_session.destroy();
             delete _converse.bosh_session;
-         }
-         if (!_.isUndefined(_converse.session)) {
+        }
+        if (!_.isUndefined(_converse.session)) {
             _converse.session.destroy();
             delete _converse.session;
-         }
-        _.get(_converse, 'bosh_session.browserStorage', {'_clear': _.noop})._clear();
-        _.get(_converse, 'session.browserStorage', {'_clear': _.noop})._clear();
+        }
+        _.get(_converse, 'bosh_session.browserStorage', {
+            _clear: _.noop
+        })._clear();
+        _.get(_converse, 'session.browserStorage', { _clear: _.noop })._clear();
     }
     /**
      * Triggered once the session information has been cleared,
@@ -507,83 +508,82 @@ _converse.initConnection = function () {
      * @event _converse#connectionInitialized
      */
     _converse.api.trigger('connectionInitialized');
-}
-
+};
 
 async function initBOSHSession () {
-   const id = 'converse.bosh-session';
-   _converse.bosh_session = new Backbone.Model({id});
-   _converse.bosh_session.browserStorage = new BrowserStorage.session(id);
-   try {
-      await new Promise((success, error) => _converse.bosh_session.fetch({success, error}));
-      if (_converse.jid && !u.isSameBareJID(_converse.bosh_session.get('jid'), _converse.jid)) {
-         _converse.bosh_session.clear({'silent': true});
-         _converse.bosh_session.save({'jid': _converse.jid, id});
-      }
-   } catch (e) {
-      if (_converse.jid) {
-         _converse.bosh_session.save({'jid': _converse.jid});
-      }
-   }
-   /**
-    * Triggered once the session has been initialized. The session is a
-    * persistent object which stores session information in the browser storage.
-    * @event _converse#BOSHSessionInitialized
-    * @memberOf _converse
-    */
-   _converse.api.trigger('BOSHSessionInitialized');
+    const id = 'converse.bosh-session';
+    _converse.bosh_session = new Backbone.Model({id});
+    _converse.bosh_session.browserStorage = new BrowserStorage.session(id);
+    try {
+        await new Promise((success, error) => _converse.bosh_session.fetch({ success, error }));
+        if (_converse.jid && !u.isSameBareJID(_converse.bosh_session.get('jid'), _converse.jid)) {
+            _converse.bosh_session.clear({ silent: true });
+            _converse.bosh_session.save({ jid: _converse.jid, id });
+        }
+    } catch (e) {
+        if (_converse.jid) {
+            _converse.bosh_session.save({ jid: _converse.jid });
+        }
+    }
+    /**
+     * Triggered once the session has been initialized. The session is a
+     * persistent object which stores session information in the browser storage.
+     * @event _converse#BOSHSessionInitialized
+     * @memberOf _converse
+     */
+    _converse.api.trigger('BOSHSessionInitialized');
 }
 
 async function initUserSession (jid) {
-   const bare_jid = Strophe.getBareJidFromJid(jid);
-   const id = `converse.session-${bare_jid}`;
-   if (!_converse.session || _converse.session.get('id') !== id) {
-      _converse.session = new Backbone.Model({id});
-      _converse.session.browserStorage = new BrowserStorage.session(id);
-      await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
-      /**
-       * Triggered once the user's session has been initialized. The session is a
-       * cache which stores information about the user's current session.
-       * @event _converse#userSessionInitialized
-       * @memberOf _converse
-       */
-      _converse.api.trigger('userSessionInitialized');
-   }
+    const bare_jid = Strophe.getBareJidFromJid(jid);
+    const id = `converse.session-${bare_jid}`;
+    if (!_converse.session || _converse.session.get('id') !== id) {
+        _converse.session = new Backbone.Model({id});
+        _converse.session.browserStorage = new BrowserStorage.session(id);
+        await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
+        /**
+         * Triggered once the user's session has been initialized. The session is a
+         * cache which stores information about the user's current session.
+         * @event _converse#userSessionInitialized
+         * @memberOf _converse
+         */
+        _converse.api.trigger('userSessionInitialized');
+    }
 }
 
 function setUserJID (jid) {
-   if (!Strophe.getResourceFromJid(jid)) {
-      jid = jid.toLowerCase() + _converse.generateResource();
-   }
-   jid = jid.toLowerCase();
-   initUserSession(jid);
-   _converse.jid = jid;
-   _converse.bare_jid = Strophe.getBareJidFromJid(jid);
-   _converse.resource = Strophe.getResourceFromJid(jid);
-   _converse.domain = Strophe.getDomainFromJid(jid);
-   _converse.session.save({
-      'jid': jid,
-      'bare_jid': _converse.bare_jid,
-      'resource': _converse.resource,
-      'domain': _converse.domain
-   });
+    if (!Strophe.getResourceFromJid(jid)) {
+        jid = jid.toLowerCase() + _converse.generateResource();
+    }
+    jid = jid.toLowerCase();
+    initUserSession(jid);
+    _converse.jid = jid;
+    _converse.bare_jid = Strophe.getBareJidFromJid(jid);
+    _converse.resource = Strophe.getResourceFromJid(jid);
+    _converse.domain = Strophe.getDomainFromJid(jid);
+    _converse.session.save({
+       'jid': jid,
+       'bare_jid': _converse.bare_jid,
+       'resource': _converse.resource,
+       'domain': _converse.domain
+    });
 }
 
 
 async function onConnected (reconnecting) {
-   /* Called as soon as a new connection has been established, either
-   * by logging in or by attaching to an existing BOSH session.
-   */
-   _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
-   setUserJID(_converse.connection.jid);
-   /**
-    * Synchronous event triggered after we've sent an IQ to bind the
-    * user's JID resource for this session.
-    * @event _converse#afterResourceBinding
-    */
-   await _converse.api.trigger('afterResourceBinding', {'synchronous': true});
-   _converse.enableCarbons();
-   _converse.initStatus(reconnecting)
+    /* Called as soon as a new connection has been established, either
+     * by logging in or by attaching to an existing BOSH session.
+     */
+    _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
+    setUserJID(_converse.connection.jid);
+    /**
+     * Synchronous event triggered after we've sent an IQ to bind the
+     * user's JID resource for this session.
+     * @event _converse#afterResourceBinding
+     */
+    await _converse.api.trigger('afterResourceBinding', {'synchronous': true});
+    _converse.enableCarbons();
+    _converse.initStatus(reconnecting)
 }
 
 
@@ -622,41 +622,43 @@ async function finishInitialization () {
 }
 
 function fetchLoginCredentials (wait=0) {
-   return new Promise(_.debounce((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', _converse.credentials_url, true);
-      xhr.setRequestHeader('Accept', "application/json, text/javascript");
-      xhr.onload = () => {
-         if (xhr.status >= 200 && xhr.status < 400) {
-            const data = JSON.parse(xhr.responseText);
-            resolve({
-               'jid': data.jid,
-               'password': data.password
-            });
-         } else {
-            reject(new Error(`${xhr.status}: ${xhr.responseText}`));
-         }
-      };
-      xhr.onerror = reject;
-      xhr.send();
-   }, wait));
+    return new Promise(
+        _.debounce((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', _converse.credentials_url, true);
+            xhr.setRequestHeader('Accept', 'application/json, text/javascript');
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    const data = JSON.parse(xhr.responseText);
+                    resolve({
+                        jid: data.jid,
+                        password: data.password
+                    });
+                } else {
+                    reject(new Error(`${xhr.status}: ${xhr.responseText}`));
+                }
+            };
+            xhr.onerror = reject;
+            xhr.send();
+        }, wait)
+    );
 }
 
 async function getLoginCredentials () {
-   let credentials;
-   let wait = 0;
-   while (!credentials) {
-      try {
-         credentials = await fetchLoginCredentials(wait); // eslint-disable-line no-await-in-loop
-      } catch (e) {
-         _converse.log("Could not fetch login credentials", Strophe.LogLevel.ERROR);
-         _converse.log(e, Strophe.LogLevel.ERROR);
-      }
-      // If unsuccessful, we wait 2 seconds between subsequent attempts to
-      // fetch the credentials.
-      wait = 2000;
-   }
-   return credentials;
+    let credentials;
+    let wait = 0;
+    while (!credentials) {
+        try {
+            credentials = await fetchLoginCredentials(wait); // eslint-disable-line no-await-in-loop
+        } catch (e) {
+            _converse.log('Could not fetch login credentials', Strophe.LogLevel.ERROR);
+            _converse.log(e, Strophe.LogLevel.ERROR);
+        }
+        // If unsuccessful, we wait 2 seconds between subsequent attempts to
+        // fetch the credentials.
+        wait = 2000;
+    }
+    return credentials;
 }
 
 
@@ -666,17 +668,17 @@ function unregisterGlobalEventHandlers () {
 }
 
 function cleanup () {
-   // Looks like _converse.initialized was called again without logging
-   // out or disconnecting in the previous session.
-   // This happens in tests. We therefore first clean up.
-   Backbone.history.stop();
-   unregisterGlobalEventHandlers();
-   delete _converse.controlboxtoggle;
-   if (_converse.chatboxviews) {
-      delete _converse.chatboxviews;
-   }
-   _converse.stopListening();
-   _converse.off();
+    // Looks like _converse.initialized was called again without logging
+    // out or disconnecting in the previous session.
+    // This happens in tests. We therefore first clean up.
+    Backbone.history.stop();
+    unregisterGlobalEventHandlers();
+    delete _converse.controlboxtoggle;
+    if (_converse.chatboxviews) {
+        delete _converse.chatboxviews;
+    }
+    _converse.stopListening();
+    _converse.off();
 }
 
 
@@ -713,7 +715,7 @@ _converse.initialize = async function (settings, callback) {
     }
 
     _converse.router.route(/^converse\?debug=(true|false)$/, 'debug', debug => {
-        if (debug === "true") {
+        if (debug === 'true') {
             _converse.debug = true;
         } else {
             _converse.debug = false;
@@ -823,11 +825,16 @@ _converse.initialize = async function (settings, callback) {
         /* Set an interval of one second and register a handler for it.
          * Required for the auto_away, auto_xa and csi_waiting_time features.
          */
-        if (_converse.auto_away < 1 && _converse.auto_xa < 1 && _converse.csi_waiting_time < 1 && _converse.idle_presence_timeout < 1) {
+        if (
+            _converse.auto_away < 1 &&
+            _converse.auto_xa < 1 &&
+            _converse.csi_waiting_time < 1 &&
+            _converse.idle_presence_timeout < 1
+        ) {
             // Waiting time of less then one second means features aren't used.
             return;
         }
-        _converse.idle_seconds = 0
+        _converse.idle_seconds = 0;
         _converse.auto_changed_status = false; // Was the user's status changed by Converse?
         window.addEventListener('click', _converse.onUserActivity);
         window.addEventListener('focus', _converse.onUserActivity);
@@ -1108,12 +1115,12 @@ _converse.initialize = async function (settings, callback) {
     };
 
     this.onStatusInitialized = function (reconnecting) {
-       /**
-        * Triggered when the user's own chat status has been initialized.
-        * @event _converse#statusInitialized
-        * @example _converse.api.listen.on('statusInitialized', status => { ... });
-        * @example _converse.api.waitUntil('statusInitialized').then(() => { ... });
-        */
+        /**
+         * Triggered when the user's own chat status has been initialized.
+         * @event _converse#statusInitialized
+         * @example _converse.api.listen.on('statusInitialized', status => { ... });
+         * @example _converse.api.waitUntil('statusInitialized').then(() => { ... });
+         */
         _converse.api.trigger('statusInitialized', reconnecting);
         if (reconnecting) {
             /**
@@ -1239,13 +1246,16 @@ _converse.initialize = async function (settings, callback) {
     this.startNewBOSHSession = function () {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', _converse.prebind_url, true);
-        xhr.setRequestHeader('Accept', "application/json, text/javascript");
-        xhr.onload = function() {
+        xhr.setRequestHeader('Accept', 'application/json, text/javascript');
+        xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 400) {
                 const data = JSON.parse(xhr.responseText);
                 _converse.connection.attach(
-                        data.jid, data.sid, data.rid,
-                        _converse.onConnectStatusChanged);
+                    data.jid,
+                    data.sid,
+                    data.rid,
+                    _converse.onConnectStatusChanged
+                );
             } else {
                 xhr.onerror();
             }
@@ -1264,7 +1274,7 @@ _converse.initialize = async function (settings, callback) {
     };
 
     this.restoreBOSHSession = function (jid_is_required) {
-        if (!(_converse.connection._proto instanceof Strophe.Bosh)) {
+        if (!_converse.api.connection.isType('bosh')) {
             return false;
         }
         /* Tries to restore a cached BOSH session. */
@@ -1278,8 +1288,7 @@ _converse.initialize = async function (settings, callback) {
                 _converse.log(msg);
                 return false;
             }
-        }
-        else {
+        } else {
             try {
                 this.connection.restore(jid, this.onConnectStatusChanged);
                 return true;
@@ -1304,7 +1313,9 @@ _converse.initialize = async function (settings, callback) {
             // No keepalive, or session resumption has failed.
             if (this.jid && this.sid && this.rid) {
                 return this.connection.attach(
-                    this.jid, this.sid, this.rid,
+                    this.jid,
+                    this.sid,
+                    this.rid,
                     this.onConnectStatusChanged
                 );
             }
@@ -1360,7 +1371,10 @@ _converse.initialize = async function (settings, callback) {
     };
 
     this.autoLogin = function (credentials) {
-        if (this.authentication === _converse.ANONYMOUS || this.authentication === _converse.EXTERNAL) {
+        if (
+            this.authentication === _converse.ANONYMOUS ||
+            this.authentication === _converse.EXTERNAL
+        ) {
             if (!this.jid) {
                 throw new Error("Config Error: when using anonymous login " +
                     "you need to provide the server's domain via the 'jid' option. " +
@@ -1370,9 +1384,16 @@ _converse.initialize = async function (settings, callback) {
             if (!this.connection.reconnecting) {
                 this.connection.reset();
             }
-            this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged, BOSH_WAIT);
+            this.connection.connect(
+                this.jid.toLowerCase(),
+                null,
+                this.onConnectStatusChanged,
+                BOSH_WAIT
+            );
         } else if (this.authentication === _converse.LOGIN) {
-            const password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
+            const password = _.isNil(credentials)
+                ? _converse.connection.pass || this.password
+                : credentials.password;
             if (!password) {
                 if (this.auto_login) {
                     throw new Error("autoLogin: If you use auto_login and "+
@@ -1438,7 +1459,7 @@ _converse.api = {
          * @returns {boolean} Whether there is an established connection or not.
          */
         connected () {
-            return _converse.connection && _converse.connection.connected || false;
+            return (_converse.connection && _converse.connection.connected) || false;
         },
 
         /**
@@ -1449,10 +1470,10 @@ _converse.api = {
          */
         disconnect () {
             if (_converse.connection) {
-               _converse.connection.disconnect();
+                _converse.connection.disconnect();
             } else {
-               tearDown();
-               clearSession();
+                tearDown();
+                clearSession();
             }
         },
 
@@ -1468,18 +1489,18 @@ _converse.api = {
         reconnect () {
             const conn_status = _converse.connfeedback.get('connection_status');
             if (conn_status === Strophe.Status.CONNFAIL) {
-               if (_converse.api.connection.isType('websocket') && _converse.bosh_service_url) {
-                  _converse.connection._proto = new Strophe.Bosh(_converse.connection);
-                  _converse.connection.service = _converse.bosh_service_url;
-               } else if (_converse.api.connection.isType('bosh') && _converse.websocket_url) {
-                  _converse.connection._proto = new Strophe.Websocket(_converse.connection);
-                  _converse.connection.service = _converse.websocket_url;
-               }
+                if (_converse.api.connection.isType('websocket') && _converse.bosh_service_url) {
+                    _converse.connection._proto = new Strophe.Bosh(_converse.connection);
+                    _converse.connection.service = _converse.bosh_service_url;
+                } else if (_converse.api.connection.isType('bosh') && _converse.websocket_url) {
+                    _converse.connection._proto = new Strophe.Websocket(_converse.connection);
+                    _converse.connection.service = _converse.websocket_url;
+                }
             }
             if ([Strophe.Status.RECONNECTING, Strophe.Status.CONNFAIL].includes(conn_status)) {
-               debouncedReconnect();
+                debouncedReconnect();
             } else {
-               reconnect();
+                reconnect();
             }
         },
 
@@ -1490,11 +1511,11 @@ _converse.api = {
          * @returns {boolean}
          */
         isType (type) {
-           if (type.toLowerCase() === 'websocket') {
-               return _converse.connection._proto instanceof Strophe.Websocket;
-           } else if (type.toLowerCase() === 'bosh') {
-               return _converse.connection._proto instanceof Strophe.Bosh;
-           }
+            if (type.toLowerCase() === 'websocket') {
+                return _converse.connection._proto instanceof Strophe.Websocket;
+            } else if (type.toLowerCase() === 'bosh') {
+                return _converse.connection._proto instanceof Strophe.Bosh;
+            }
         }
     },
 
@@ -1512,19 +1533,19 @@ _converse.api = {
      *    promises returned by the event's handlers to finish before continuing.
      */
     async trigger (name) {
-         /* Event emitter and promise resolver */
-         const args = Array.from(arguments);
-         const options = args.pop();
-         if (options && options.synchronous) {
+        /* Event emitter and promise resolver */
+        const args = Array.from(arguments);
+        const options = args.pop();
+        if (options && options.synchronous) {
             const events = _converse._events[name] || [];
             await Promise.all(events.map(e => e.callback.call(e.ctx, args)));
-         } else {
+        } else {
             _converse.trigger.apply(_converse, arguments);
-         }
-         const promise = _converse.promises[name];
-         if (!_.isUndefined(promise)) {
+        }
+        const promise = _converse.promises[name];
+        if (!_.isUndefined(promise)) {
             promise.resolve();
-         }
+        }
     },
 
     /**
@@ -1533,7 +1554,7 @@ _converse.api = {
      * @namespace _converse.api.user
      * @memberOf _converse.api
      */
-    'user': {
+    user: {
         /**
          * @method _converse.api.user.jid
          * @returns {string} The current user's full JID (Jabber ID)
@@ -1565,18 +1586,18 @@ _converse.api = {
          */
         login (jid, password, reconnecting) {
             if (_converse.authentication === _converse.PREBIND) {
-               _converse.attemptPreboundSession(reconnecting);
+                _converse.attemptPreboundSession(reconnecting);
             } else {
-               let credentials;
-               if (jid && password) {
-                  credentials = {'jid': jid, 'password': password};
-               } else if (u.isValidJID(_converse.jid) && _converse.password) {
-                  credentials = {'jid': _converse.jid, 'password': _converse.password};
-               }
-               if (credentials && credentials.jid) {
-                  setUserJID(credentials.jid);
-               }
-               _converse.attemptNonPreboundSession(credentials, reconnecting);
+                let credentials;
+                if (jid && password) {
+                    credentials = { jid: jid, password: password };
+                } else if (u.isValidJID(_converse.jid) && _converse.password) {
+                    credentials = { jid: _converse.jid, password: _converse.password };
+                }
+                if (credentials && credentials.jid) {
+                    setUserJID(credentials.jid);
+                }
+                _converse.attemptNonPreboundSession(credentials, reconnecting);
             }
         },
 
@@ -1590,9 +1611,9 @@ _converse.api = {
             clearSession();
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (!_.isUndefined(_converse.connection)) {
-                  _converse.connection.disconnect();
+                _converse.connection.disconnect();
             } else {
-                  tearDown();
+                tearDown();
             }
             // Recreate all the promises
             Object.keys(_converse.promises).forEach(addPromise);
@@ -1631,7 +1652,9 @@ _converse.api = {
             set (value, message) {
                 const data = {'status': value};
                 if (!_.includes(Object.keys(_converse.STATUS_WEIGHTS), value)) {
-                    throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
+                    throw new Error(
+                        'Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1'
+                    );
                 }
                 if (_.isString(message)) {
                     data.status_message = message;
@@ -1646,7 +1669,7 @@ _converse.api = {
              * @namespace _converse.api.user.status.message
              * @memberOf _converse.api.user.status
              */
-            'message': {
+            message: {
                 /**
                  * @method _converse.api.user.status.message.get
                  * @returns {string} The status message
@@ -1661,10 +1684,10 @@ _converse.api = {
                  * @example _converse.api.user.status.message.set('In a meeting');
                  */
                 set (status) {
-                    _converse.xmppstatus.save({'status_message': status});
+                    _converse.xmppstatus.save({ status_message: status });
                 }
             }
-        },
+        }
     },
 
     /**
@@ -1675,7 +1698,7 @@ _converse.api = {
      * @namespace _converse.api.settings
      * @memberOf _converse.api
      */
-    'settings': {
+    settings: {
         /**
          * Allows new configuration settings to be specified, or new default values for
          * existing configuration settings to be specified.
@@ -1693,7 +1716,7 @@ _converse.api = {
          *     'enable_foo': false
          * });
          */
-        'update' (settings) {
+        update (settings) {
             u.merge(_converse.default_settings, settings);
             u.merge(_converse, settings);
             u.applyUserSettings(_converse, settings, _converse.user_settings);
@@ -1703,7 +1726,7 @@ _converse.api = {
          * @returns {*} Value of the particular configuration setting.
          * @example _converse.api.settings.get("play_sounds");
          */
-        'get' (key) {
+        get (key) {
             if (_.includes(Object.keys(_converse.default_settings), key)) {
                 return _converse[key];
             }
@@ -1726,11 +1749,11 @@ _converse.api = {
          *     "hide_offline_users" true
          * });
          */
-        'set' (key, val) {
+        set (key, val) {
             const o = {};
             if (_.isObject(key)) {
                 _.assignIn(_converse, _.pick(key, Object.keys(_converse.default_settings)));
-            } else if (_.isString("string")) {
+            } else if (_.isString('string')) {
                 o[key] = val;
                 _.assignIn(_converse, _.pick(o, Object.keys(_converse.default_settings)));
             }
@@ -1764,7 +1787,7 @@ _converse.api = {
      * @namespace _converse.api.promises
      * @memberOf _converse.api
      */
-    'promises': {
+    promises: {
         /**
          * By calling `promises.add`, a new [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
          * is made available for other code or plugins to depend on via the
@@ -1781,8 +1804,8 @@ _converse.api = {
          * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
          * @example _converse.api.promises.add('foo-completed');
          */
-        'add' (promises) {
-            promises = Array.isArray(promises) ? promises : [promises]
+        add (promises) {
+            promises = Array.isArray(promises) ? promises : [promises];
             promises.forEach(addPromise);
         }
     },
@@ -1793,14 +1816,14 @@ _converse.api = {
      * @namespace _converse.api.tokens
      * @memberOf _converse.api
      */
-    'tokens': {
+    tokens: {
         /**
          * @method _converse.api.tokens.get
          * @param {string} [id] The type of token to return ('rid' or 'sid').
          * @returns 'string' A token, either the RID or SID token depending on what's asked for.
          * @example _converse.api.tokens.get('rid');
          */
-        'get' (id) {
+        get (id) {
             if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
                 return null;
             }
@@ -1821,7 +1844,7 @@ _converse.api = {
      * @namespace _converse.api.listen
      * @memberOf _converse
      */
-    'listen': {
+    listen: {
         /**
          * Lets you listen to an event exactly once.
          *
@@ -1831,7 +1854,7 @@ _converse.api = {
          * @param {object} [context] The value of the `this` parameter for the callback.
          * @example _converse.api.listen.once('message', function (messageXML) { ... });
          */
-        'once': _converse.once.bind(_converse),
+        once: _converse.once.bind(_converse),
 
         /**
          * Lets you subscribe to an event.
@@ -1844,7 +1867,7 @@ _converse.api = {
          * @param {object} [context] The value of the `this` parameter for the callback.
          * @example _converse.api.listen.on('message', function (messageXML) { ... });
          */
-        'on': _converse.on.bind(_converse),
+        on: _converse.on.bind(_converse),
 
         /**
          * To stop listening to an event, you can use the `not` method.
@@ -1856,7 +1879,7 @@ _converse.api = {
          * @param {function} callback The callback method that is to no longer be called when the event fires
          * @example _converse.api.listen.not('message', function (messageXML);
          */
-        'not': _converse.off.bind(_converse),
+        not: _converse.off.bind(_converse),
 
         /**
          * Subscribe to an incoming stanza
@@ -1867,7 +1890,7 @@ _converse.api = {
          * @param {object} options Matching options (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
          * @param {function} handler The callback method to be called when the stanza appears
          */
-        'stanza' (name, options, handler) {
+        stanza (name, options, handler) {
             if (_.isFunction(options)) {
                 handler = options;
                 options = {};
@@ -1883,7 +1906,7 @@ _converse.api = {
                 options.from,
                 options
             );
-        },
+        }
     },
 
     /**
@@ -1892,7 +1915,7 @@ _converse.api = {
      * @param {string} name The name of the promise
      * @returns {Promise}
      */
-    'waitUntil' (name) {
+    waitUntil (name) {
         const promise = _converse.promises[name];
         if (_.isUndefined(promise)) {
             return null;
@@ -1916,10 +1939,10 @@ _converse.api = {
             stanza = u.toStanza(stanza);
         }
         if (stanza.tagName === 'iq') {
-           return _converse.api.sendIQ(stanza);
+            return _converse.api.sendIQ(stanza);
         } else {
-           _converse.connection.send(stanza);
-           _converse.api.trigger('send', stanza);
+            _converse.connection.send(stanza);
+            _converse.api.trigger('send', stanza);
         }
     },
 
@@ -1971,7 +1994,7 @@ const converse = {
      *     roster_groups: true
      * });
      */
-    'initialize' (settings, callback) {
+    initialize (settings, callback) {
         return _converse.initialize(settings, callback);
     },
     /**
@@ -1982,7 +2005,7 @@ const converse = {
      * @namespace plugins
      * @memberOf converse
      */
-    'plugins': {
+    plugins: {
         /** Registers a new plugin.
          *
          * @method converse.plugins.add
@@ -2002,12 +2025,12 @@ const converse = {
          *  }
          *  converse.plugins.add('myplugin', plugin);
          */
-        'add' (name, plugin) {
+        add (name, plugin) {
             plugin.__name__ = name;
             if (!_.isUndefined(_converse.pluggable.plugins[name])) {
                 throw new TypeError(
-                    `Error: plugin with name "${name}" has already been `+
-                    'registered!');
+                    `Error: plugin with name "${name}" has already been ` + 'registered!'
+                );
             } else {
                 _converse.pluggable.plugins[name] = plugin;
             }

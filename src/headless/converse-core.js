@@ -323,6 +323,16 @@ function isTestEnv () {
 }
 
 
+_converse.haveResumed = function () {
+    if (_converse.api.connection.isType('bosh')) {
+        return _converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
+    } else {
+        // XXX: Not binding means that the session was resumed.
+        // This seems very fragile. Perhaps a better way is possible.
+        return !_converse.connection.do_bind;
+    }
+}
+
 _converse.isUniView = function () {
     /* We distinguish between UniView and MultiView instances.
      *

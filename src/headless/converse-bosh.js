@@ -87,7 +87,6 @@ converse.plugins.add('converse-bosh', {
                     _converse.log(
                         "Could not restore session for jid: "+
                         jid+" Error message: "+e.message, Strophe.LogLevel.WARN);
-                    _converse.clearSession(); // We want to clear presences (see #555)
                     return false;
                 }
             }

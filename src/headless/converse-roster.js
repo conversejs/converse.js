@@ -965,7 +965,12 @@ converse.plugins.add('converse-roster', {
             }
             _converse.presences.browserStorage =
                 new BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
-            _converse.presences.fetch();
+
+            if (_converse.haveResumed()) {
+                _converse.presences.fetch();
+            } else {
+                _converse.presences.browserStorage._clear();
+            }
             /**
              * Triggered once the _converse.Presences collection has been
              * initialized and its cached data fetched.

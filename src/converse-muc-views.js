@@ -2152,6 +2152,7 @@ converse.plugins.add('converse-muc-views', {
             }
         }
 
+
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
 
@@ -2161,12 +2162,16 @@ converse.plugins.add('converse-muc-views', {
             }
             _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
 
-            const that = _converse.chatboxviews;
-            _converse.chatboxes.on('add', item => {
-                if (!that.get(item.get('id')) && item.get('type') === _converse.CHATROOMS_TYPE) {
-                    return that.add(item.get('id'), new _converse.ChatRoomView({'model': item}));
+            function addView (model) {
+                const views = _converse.chatboxviews;
+                if (!views.get(model.get('id')) &&
+                        model.get('type') === _converse.CHATROOMS_TYPE &&
+                        model.isValid()
+                ) {
+                    return views.add(model.get('id'), new _converse.ChatRoomView({'model': model}));
                 }
-            });
+            }
+            _converse.chatboxes.on('add', addView);
         });
 
         _converse.api.listen.on('clearSession', () => {

@@ -372,9 +372,12 @@ converse.plugins.add('converse-chatboxes', {
                 if (!attrs.jid) {
                     return 'Ignored ChatBox without JID';
                 }
-                const auto_join = _converse.auto_join_private_chats.concat(_converse.auto_join_rooms);
+                const room_jids = _converse.auto_join_rooms.map(s => _.isObject(s) ? s.jid : s);
+                const auto_join = _converse.auto_join_private_chats.concat(room_jids);
                 if (_converse.singleton && !_.includes(auto_join, attrs.jid)) {
-                    return "Ignored ChatBox that's not being auto joined in singleton mode";
+                    const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
+                    _converse.log(msg, Strophe.LogLevel.WARN);
+                    return msg;
                 }
             },
 
@@ -1119,6 +1122,10 @@ converse.plugins.add('converse-chatboxes', {
                             _converse.log(response.responseText);
                         }
                     });
+                    if (!chatbox.isValid()) {
+                        chatbox.destroy();
+                        return null;
+                    }
                 }
                 return chatbox;
             }
@@ -1269,9 +1276,15 @@ converse.plugins.add('converse-chatboxes', {
 
                     if (_.isString(jids)) {
                         const chat = await _converse.api.chats.create(jids, attrs);
-                        return chat.maybeShow(force);
+                        if (chat) {
+                            return chat.maybeShow(force);
+                        }
+                        return chat;
                     } else if (Array.isArray(jids)) {
-                        return Promise.all(jids.map(j => _converse.api.chats.create(j, attrs).then(c => c.maybeShow(force))));
+                        return Promise.all(
+                            jids.map(j => _converse.api.chats.create(j, attrs).then(c => c ? c.maybeShow(force) : null))
+                                .filter(c => c)
+                        );
                     }
                     const err_msg = "chats.open: You need to provide at least one JID";
                     _converse.log(err_msg, Strophe.LogLevel.ERROR);

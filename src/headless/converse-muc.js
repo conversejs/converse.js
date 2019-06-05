@@ -1837,14 +1837,18 @@ converse.plugins.add('converse-muc', {
                  *     }
                  * );
                  */
-                'open': async function (jids, attrs, force=false) {
+                async open (jids, attrs, force=false) {
                     await _converse.api.waitUntil('chatBoxesFetched');
                     if (_.isUndefined(jids)) {
                         const err_msg = 'rooms.open: You need to provide at least one JID';
                         _converse.log(err_msg, Strophe.LogLevel.ERROR);
                         throw(new TypeError(err_msg));
                     } else if (_.isString(jids)) {
-                        return _converse.api.rooms.create(jids, attrs).maybeShow(force);
+                        const room = _converse.api.rooms.create(jids, attrs);
+                        if (room) {
+                            room.maybeShow(force);
+                        }
+                        return room;
                     } else {
                         return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
                     }
@@ -1873,7 +1877,7 @@ converse.plugins.add('converse-muc', {
                  *     )
                  * });
                  */
-                'get' (jids, attrs, create) {
+                get (jids, attrs, create) {
                     if (_.isString(attrs)) {
                         attrs = {'nick': attrs};
                     } else if (_.isUndefined(attrs)) {

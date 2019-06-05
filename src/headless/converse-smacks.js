@@ -192,7 +192,7 @@ converse.plugins.add('converse-smacks', {
             _converse.connection.addHandler(sendAck, Strophe.NS.SM, 'r');
             _converse.connection.addHandler(handleAck, Strophe.NS.SM, 'a');
 
-            if (_converse.connection._proto instanceof Strophe.Bosh &&
+            if (_converse.api.connection.isType('bosh') &&
                     _converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED) {
                 // No need to continue further when we have an existing BOSH session,
                 // since our existing session still exists server-side.

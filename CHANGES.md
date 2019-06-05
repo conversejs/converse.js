@@ -1,6 +1,7 @@
 # Changelog
 
 ## 5.0.0 (Unreleased)
+- BOSH support has been moved to a plugin.
 - Support for XEP-0410 to check whether we're still present in a room
 - Initial support for the [CredentialsContainer](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer) web API
 - Allow for synchronous events. When a synchronous event is fired, Converse will
@@ -46,6 +47,10 @@
 - `_converse.api.disco.supports` now returns a Promise which resolves to a Boolean instead of an Array.
 - The `forward_messages` config option (which was set to `false` by default) has been removed.
   Use [message_carbons](https://conversejs.org/docs/html/configuration.html#message-carbons) instead.
+- Remove the `keepalive` configuration setting. It is now always implicitly `true`.
+- Remove the `expose_rid_and_sid` configuration setting.
+- A `prebind_url` is now mandatory when setting `authentication` to `prebind`.
+  It's no longer possible to pass in `rid` and `sid` values to `converse.initialize.
 
 ### API changes
 

@@ -87,6 +87,9 @@ u.isValidMUCJID = function (jid) {
 };
 
 u.isSameBareJID = function (jid1, jid2) {
+    if (!_.isString(jid1) || !_.isString(jid2)) {
+        return false;
+    }
     return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
             Strophe.getBareJidFromJid(jid2).toLowerCase();
 };

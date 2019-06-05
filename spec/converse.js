@@ -23,37 +23,6 @@
                 _converse.connection = connection;
                 done();
             }));
-
-            describe("with prebind", function () {
-
-                it("needs a jid when also using keepalive", mock.initConverse([], null, {'auto_login': false}, (done, _converse) => {
-                    const authentication = _converse.authentication;
-                    const jid = _converse.jid;
-                    delete _converse.jid;
-                    _converse.keepalive = true;
-                    _converse.authentication = "prebind";
-                    expect(_converse.api.user.login.bind(_converse)).toThrow(
-                        new Error(
-                            "restoreBOSHSession: tried to restore a \"keepalive\" session "+
-                            "but we don't have the JID for the user!"));
-                    _converse.authentication= authentication;
-                    _converse.jid = jid;
-                    _converse.keepalive = false;
-                    done();
-                }));
-
-                it("needs jid, rid and sid values when not using keepalive", mock.initConverse((done, _converse) => {
-                    const jid = _converse.jid;
-                    delete _converse.jid;
-                    _converse.keepalive = false;
-                    _converse.authentication = "prebind";
-                    expect(_converse.api.user.login.bind(_converse)).toThrow(
-                        new Error("attemptPreboundSession: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values or a prebind_url."));
-                    _converse.bosh_service_url = undefined;
-                    _converse.jid = jid;
-                    done();
-                }));
-            });
         });
 
         describe("A chat state indication", function () {
@@ -219,9 +188,6 @@
                 test_utils.createContacts(_converse, 'current');
                 const old_connection = _converse.connection;
                 _converse.connection._proto.rid = '1234';
-                _converse.expose_rid_and_sid = false;
-                expect(_converse.api.tokens.get('rid')).toBe(null);
-                _converse.expose_rid_and_sid = true;
                 expect(_converse.api.tokens.get('rid')).toBe('1234');
                 _converse.connection = undefined;
                 expect(_converse.api.tokens.get('rid')).toBe(null);
@@ -234,9 +200,6 @@
                 test_utils.createContacts(_converse, 'current');
                 const old_connection = _converse.connection;
                 _converse.connection._proto.sid = '1234';
-                _converse.expose_rid_and_sid = false;
-                expect(_converse.api.tokens.get('sid')).toBe(null);
-                _converse.expose_rid_and_sid = true;
                 expect(_converse.api.tokens.get('sid')).toBe('1234');
                 _converse.connection = undefined;
                 expect(_converse.api.tokens.get('sid')).toBe(null);

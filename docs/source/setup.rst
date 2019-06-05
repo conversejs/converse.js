@@ -29,8 +29,7 @@ The diagram below shows a fairly common setup for a website or intranet:
 
 * It communicates with the XMPP server via BOSH or websocket which is usually
   reverse-proxied by a web-server in order to overcome cross-site scripting
-  restrictions in the browser. For more info on that, read the section:
-  `Overcoming cross-domain request restrictions`_
+  restrictions in the browser.
 
 * Optionally the XMPP server is configured to use a SQL database for storing
   archived chat messages.
@@ -293,8 +292,7 @@ Single Session Support
 It's possible to enable shared sessions whereby users already
 logged in to your website will also automatically be logged in on the XMPP server,
 
-Once a user is logged in, the session will be kept alive across page loads by
-way of the :ref:`keepalive` setting.
+Once a user is logged in, the session will be kept alive across page loads.
 
 There are a few ways to let your users be automatically authenticated to an
 XMPP server once they've logged in to your site.
@@ -364,8 +362,7 @@ page load). Each page load is a new request which requires a new unique RID.
 The best way to achieve this is to simply increment the RID with each page
 load.
 
-You'll need to configure Converse with the ``prebind``, :ref:`keepalive` and
-:ref:`prebind_url` settings.
+You'll need to configure Converse with the :ref:`prebind` :ref:`prebind_url` settings.
 
 Please read the documentation on those settings for a fuller picture of what
 needs to be done.

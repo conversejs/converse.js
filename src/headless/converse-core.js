@@ -75,6 +75,7 @@ const BOSH_WAIT = 59;
 // the other plugins are whitelisted in src/converse.js
 const CORE_PLUGINS = [
     'converse-bookmarks',
+    'converse-bosh',
     'converse-caps',
     'converse-chatboxes',
     'converse-disco',
@@ -205,18 +206,15 @@ _converse.default_settings = {
     auto_reconnect: true,
     auto_xa: 0, // Seconds after which user status is set to 'xa'
     blacklisted_plugins: [],
-    bosh_service_url: undefined,
     connection_options: {},
     credentials_url: null, // URL from where login credentials can be fetched
     csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
     debug: false,
     default_state: 'online',
-    expose_rid_and_sid: false,
     geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
-    keepalive: true,
     locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
@@ -226,7 +224,6 @@ _converse.default_settings = {
     message_carbons: true,
     nickname: undefined,
     password: undefined,
-    prebind_url: null,
     priority: 0,
     rid: undefined,
     root: window.document,
@@ -443,32 +440,14 @@ const debouncedReconnect = _.debounce(reconnect, 2000);
 
 
 function clearSession  () {
-    if (!_.isUndefined(_converse.bosh_session)) {
-        _converse.bosh_session.destroy();
-        delete _converse.bosh_session;
-    }
     if (!_.isUndefined(_converse.session)) {
         _converse.session.destroy();
         delete _converse.session;
     }
-
     // TODO: Refactor so that we don't clear
     if (!_converse.config.get('trusted') || isTestEnv()) {
         window.localStorage.clear();
         window.sessionStorage.clear();
-    } else {
-        if (!_.isUndefined(_converse.bosh_session)) {
-            _converse.bosh_session.destroy();
-            delete _converse.bosh_session;
-        }
-        if (!_.isUndefined(_converse.session)) {
-            _converse.session.destroy();
-            delete _converse.session;
-        }
-        _.get(_converse, 'bosh_session.browserStorage', {
-            _clear: _.noop
-        })._clear();
-        _.get(_converse, 'session.browserStorage', { _clear: _.noop })._clear();
     }
     /**
      * Triggered once the session information has been cleared,
@@ -478,6 +457,7 @@ function clearSession  () {
      */
     _converse.api.trigger('clearSession');
 }
+
 
 _converse.initConnection = function () {
     /* Creates a new Strophe.Connection instance if we don't already have one.
@@ -494,7 +474,11 @@ _converse.initConnection = function () {
         } else if (_converse.bosh_service_url) {
             _converse.connection = new Strophe.Connection(
                 _converse.bosh_service_url,
-                Object.assign(_converse.default_connection_options, _converse.connection_options, {'keepalive': _converse.keepalive})
+                Object.assign(
+                    _converse.default_connection_options,
+                    _converse.connection_options,
+                    {'keepalive': true}
+                )
             );
         } else {
             throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
@@ -510,29 +494,6 @@ _converse.initConnection = function () {
     _converse.api.trigger('connectionInitialized');
 };
 
-async function initBOSHSession () {
-    const id = 'converse.bosh-session';
-    _converse.bosh_session = new Backbone.Model({id});
-    _converse.bosh_session.browserStorage = new BrowserStorage.session(id);
-    try {
-        await new Promise((success, error) => _converse.bosh_session.fetch({ success, error }));
-        if (_converse.jid && !u.isSameBareJID(_converse.bosh_session.get('jid'), _converse.jid)) {
-            _converse.bosh_session.clear({ silent: true });
-            _converse.bosh_session.save({ jid: _converse.jid, id });
-        }
-    } catch (e) {
-        if (_converse.jid) {
-            _converse.bosh_session.save({ jid: _converse.jid });
-        }
-    }
-    /**
-     * Triggered once the session has been initialized. The session is a
-     * persistent object which stores session information in the browser storage.
-     * @event _converse#BOSHSessionInitialized
-     * @memberOf _converse
-     */
-    _converse.api.trigger('BOSHSessionInitialized');
-}
 
 async function initUserSession (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid);
@@ -567,6 +528,11 @@ function setUserJID (jid) {
        'resource': _converse.resource,
        'domain': _converse.domain
     });
+    /**
+     * Triggered whenever the user's JID has been updated
+     * @event _converse#setUserJID
+     */
+    _converse.api.trigger('setUserJID');
 }
 
 
@@ -604,11 +570,10 @@ function setUpXMLLogging () {
 }
 
 
-async function finishInitialization () {
+function finishInitialization () {
     initClientConfig();
     initPlugins();
     _converse.initConnection();
-    await initBOSHSession();
     _converse.api.user.login();
     _converse.registerGlobalEventHandlers();
     if (!Backbone.history.started) {
@@ -735,9 +700,8 @@ _converse.initialize = async function (settings, callback) {
     /* When reloading the page:
      * For new sessions, we need to send out a presence stanza to notify
      * the server/network that we're online.
-     * When re-attaching to an existing session (e.g. via the keepalive
-     * option), we don't need to again send out a presence stanza, because
-     * it's as if "we never left" (see onConnectStatusChanged).
+     * When re-attaching to an existing session we don't need to again send out a presence stanza,
+     * because it's as if "we never left" (see onConnectStatusChanged).
      * https://github.com/jcbrand/converse.js/issues/521
      */
     this.send_initial_presence = true;
@@ -1243,106 +1207,8 @@ _converse.initialize = async function (settings, callback) {
     });
 
 
-    this.startNewBOSHSession = function () {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', _converse.prebind_url, true);
-        xhr.setRequestHeader('Accept', 'application/json, text/javascript');
-        xhr.onload = function () {
-            if (xhr.status >= 200 && xhr.status < 400) {
-                const data = JSON.parse(xhr.responseText);
-                _converse.connection.attach(
-                    data.jid,
-                    data.sid,
-                    data.rid,
-                    _converse.onConnectStatusChanged
-                );
-            } else {
-                xhr.onerror();
-            }
-        };
-        xhr.onerror = function () {
-            delete _converse.connection;
-            /**
-             * Triggered when keepalive=true but there aren't any stored prebind tokens.
-             * @event _converse#noResumeableSession
-             * @type { _converse }
-             * @example _converse.api.listen.on('noResumeableSession', _converse => { ... });
-             */
-            _converse.api.trigger('noResumeableSession', this);
-        };
-        xhr.send();
-    };
-
-    this.restoreBOSHSession = function (jid_is_required) {
-        if (!_converse.api.connection.isType('bosh')) {
-            return false;
-        }
-        /* Tries to restore a cached BOSH session. */
-        const jid = _converse.bosh_session.get('jid');
-        if (!jid) {
-            const msg = "restoreBOSHSession: tried to restore a \"keepalive\" session "+
-                "but we don't have the JID for the user!";
-            if (jid_is_required) {
-                throw new Error(msg);
-            } else {
-                _converse.log(msg);
-                return false;
-            }
-        } else {
-            try {
-                this.connection.restore(jid, this.onConnectStatusChanged);
-                return true;
-            } catch (e) {
-                _converse.log(
-                    "Could not restore session for jid: "+
-                    jid+" Error message: "+e.message, Strophe.LogLevel.WARN);
-                clearSession(); // We want to clear presences (see #555)
-                return false;
-            }
-        }
-    };
-
-    this.attemptPreboundSession = function (reconnecting) {
-        /* Handle session resumption or initialization when prebind is
-         * being used.
-         */
-        if (!reconnecting) {
-            if (this.keepalive && this.restoreBOSHSession(true)) {
-                return;
-            }
-            // No keepalive, or session resumption has failed.
-            if (this.jid && this.sid && this.rid) {
-                return this.connection.attach(
-                    this.jid,
-                    this.sid,
-                    this.rid,
-                    this.onConnectStatusChanged
-                );
-            }
-        }
-        if (this.prebind_url) {
-            return this.startNewBOSHSession();
-        } else {
-            throw new Error(
-                "attemptPreboundSession: If you use prebind and not keepalive, "+
-                "then you MUST supply JID, RID and SID values or a prebind_url.");
-        }
-    };
-
     this.attemptNonPreboundSession = async function (credentials, reconnecting) {
-        /* Handle session resumption or initialization when prebind is not being used.
-         *
-         * Two potential options exist and are handled in this method:
-         *  1. keepalive
-         *  2. auto_login
-         */
-        if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
-            return;
-        }
-
         if (credentials) {
-            // When credentials are passed in, they override prebinding
-            // or credentials fetching via HTTP
             this.autoLogin(credentials);
         } else if (this.auto_login) {
             if (this.credentials_url) {
@@ -1577,28 +1443,25 @@ _converse.api = {
          * @param {string} [jid]
          * @param {string} [password]
          * @param {boolean} [reconnecting]
-         * @example
-         * converse.plugins.add('myplugin', {
-         *     initialize: function () {
-         *         this._converse.api.user.login('romeo@montague.lit', 'secret');
-         *     }
-         * });
          */
-        login (jid, password, reconnecting) {
-            if (_converse.authentication === _converse.PREBIND) {
-                _converse.attemptPreboundSession(reconnecting);
-            } else {
-                let credentials;
-                if (jid && password) {
-                    credentials = { jid: jid, password: password };
-                } else if (u.isValidJID(_converse.jid) && _converse.password) {
-                    credentials = { jid: _converse.jid, password: _converse.password };
+        async login (jid, password, reconnecting) {
+            if (_converse.api.connection.isType('bosh')) {
+                if (reconnecting && _converse.prebind_url) {
+                    return _converse.startNewBOSHSession();
+                } else if (await _converse.restoreBOSHSession()) {
+                    return;
                 }
-                if (credentials && credentials.jid) {
-                    setUserJID(credentials.jid);
-                }
-                _converse.attemptNonPreboundSession(credentials, reconnecting);
             }
+            let credentials;
+            if (jid && password) {
+                credentials = { jid: jid, password: password };
+            } else if (u.isValidJID(_converse.jid) && _converse.password) {
+                credentials = { jid: _converse.jid, password: _converse.password };
+            }
+            if (credentials && credentials.jid) {
+                setUserJID(credentials.jid);
+            }
+            _converse.attemptNonPreboundSession(credentials, reconnecting);
         },
 
         /**
@@ -1811,31 +1674,6 @@ _converse.api = {
     },
 
     /**
-     * This namespace lets you access the BOSH tokens
-     *
-     * @namespace _converse.api.tokens
-     * @memberOf _converse.api
-     */
-    tokens: {
-        /**
-         * @method _converse.api.tokens.get
-         * @param {string} [id] The type of token to return ('rid' or 'sid').
-         * @returns 'string' A token, either the RID or SID token depending on what's asked for.
-         * @example _converse.api.tokens.get('rid');
-         */
-        get (id) {
-            if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
-                return null;
-            }
-            if (id.toLowerCase() === 'rid') {
-                return _converse.connection.rid || _converse.connection._proto.rid;
-            } else if (id.toLowerCase() === 'sid') {
-                return _converse.connection.sid || _converse.connection._proto.sid;
-            }
-        }
-    },
-
-    /**
      * Converse emits events to which you can subscribe to.
      *
      * The `listen` namespace exposes methods for creating event listeners
@@ -1986,9 +1824,7 @@ const converse = {
      *     bosh_service_url: 'https://bind.example.com',
      *     hide_muc_server: false,
      *     i18n: locales['en'],
-     *     keepalive: true,
      *     play_sounds: true,
-     *     prebind: false,
      *     show_controlbox_by_default: true,
      *     debug: false,
      *     roster_groups: true

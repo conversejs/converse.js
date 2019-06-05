@@ -3,6 +3,7 @@
  * Any of the following components may be removed if they're not needed.
  */
 import "./converse-bookmarks";   // XEP-0199 XMPP Ping
+import "./converse-bosh";        // XEP-0115 Entity Capabilities
 import "./converse-caps";        // XEP-0115 Entity Capabilities
 import "./converse-chatboxes";   // Backbone Collection and Models for chat boxes
 import "./converse-disco";       // XEP-0030 Service discovery

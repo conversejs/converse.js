@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-01-15 12:02+0000\n"
+"PO-Revision-Date: 2019-06-18 19:04+0000\n"
 "Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.7\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -463,9 +463,8 @@ msgid "name@conference.example.org"
 msgstr "izena@conference.example.org"
 
 #: dist/converse-no-dependencies.js:36387
-#, fuzzy
 msgid "Groupchat name"
-msgstr "Gelaren helbidea"
+msgstr "Talde elkarrizketaren izena"
 
 #: dist/converse-no-dependencies.js:36387
 msgid "Groupchat address"
@@ -592,9 +591,8 @@ msgid "Change user role to participant"
 msgstr "Ezarri erabiltzailearen rola parte-hartzaile gisa"
 
 #: dist/converse-no-dependencies.js:37010
-#, fuzzy
 msgid "Remove this groupchat"
-msgstr "Atera gela honetatik"
+msgstr "Ezabatu chat talde hau"
 
 #: dist/converse-no-dependencies.js:37010
 msgid "Kick user from groupchat"
@@ -961,6 +959,8 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"Badirudi %1$s -(e)k ez daukala OMEMO erabiltzeko gai den bezerorik. Ezingo "
+"da enkriptaturiko elkarrizketarik izan talde honetan."
 
 #: dist/converse-no-dependencies.js:40222
 msgid "Your avatar image"
@@ -1054,7 +1054,7 @@ msgstr "Egoera mezu pertsonala"
 
 #: dist/converse-no-dependencies.js:40355
 msgid "About"
-msgstr ""
+msgstr "Honi buruz"
 
 #: dist/converse-no-dependencies.js:40357
 #, javascript-format

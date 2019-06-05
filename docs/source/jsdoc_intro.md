@@ -3,9 +3,6 @@
 Welcome to the new Converse API documentation, generated with
 [JSDoc](http://usejsdoc.org/).
 
-This documentation replaces the (increasingly out of date and incomplete) [old API documentation](/docs/html/developer_api.html)
-and [old "Events and Promises" documentation](/docs/html/events.html).
-
 ## The public and private API
 
 Converse has a public API and a private API only available to plugins.

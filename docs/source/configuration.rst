@@ -18,10 +18,6 @@ an example of how this is done, please see the bottom of the *./index.html* page
 Please refer to the `Configuration settings`_ section below for info on
 all the available configuration settings.
 
-After you have configured Converse, you'll have to regenerate the minified
-JavaScript file so that it will include the new settings. Please refer to the
-:ref:`minification` section for more info on how to do this.
-
 .. _`configuration-settings`:
 
 Configuration settings

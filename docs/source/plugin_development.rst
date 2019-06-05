@@ -332,24 +332,26 @@ Converse comes with various :ref:`configuration-settings` that can be used to
 modify its functionality and behavior.
 
 All configuration settings have default values which can be overridden when
-`converse.initialize` (see :ref:`initialize`) gets called.
+`converse.initialize` (see `converse.initialize </docs/html/api/converse.html#.initialize>`_)
+gets called.
 
 Plugins often need their own additional configuration settings and you can add
-these settings with the `_converse.api.settings.update` method (see
-:ref:`settings-update`).
+these settings with the `_converse.api.settings.update </docs/html/api/-_converse.api.settings.html#.update>`_
+method.
 
 Exposing promises
 -----------------
 
-Converse has a ``waitUntil`` API method (see :ref:`waituntil-grouping`)
+Converse has a `waitUntil </docs/html/api/-_converse.api.html#.waitUntil>`_ API method
 which allows you to wait for various promises to resolve before executing a
 piece of code.
 
 You can add new promises for your plugin by calling
-``_converse.api.promises.add`` (see :ref:`promises-grouping`).
+`_converse.api.promises.add </docs/html/api/-_converse.api.promises.html#.add>`_.
 
 Generally, your plugin will then also be responsible for making sure these
-promises are resolved. You do this by calling ``_converse.api.emit``, which not
+promises are resolved. You do this by calling
+`_converse.api.trigger </docs/html/api/-_converse.api.html#.trigger>`_, which not
 only resolves the plugin but will also emit an event with the same name.
 
 Dealing with asynchronicity
@@ -429,8 +431,8 @@ Finding the right promises and/or events to listen to, can be a bit
 challenging, and sometimes it might be necessary to create new events or
 promises.
 
-Please refer to the :ref:`events-API` section of the documentation for an
-overview of what's available to you. If you need new events or promises, then
+Please refer to the `API documentation </docs/html/api/http://localhost:8008/docs/html/api/>`_
+for an overview of what's available to you. If you need new events or promises, then
 `please open an issue or make a pull request on Github <https://github.com/jcbrand/converse.js>`_
 
 A full example plugin

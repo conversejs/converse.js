@@ -605,6 +605,7 @@ function fetchLoginCredentials (wait=0) {
             xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 400) {
                     const data = JSON.parse(xhr.responseText);
+                    setUserJID(data.jid);
                     resolve({
                         jid: data.jid,
                         password: data.password

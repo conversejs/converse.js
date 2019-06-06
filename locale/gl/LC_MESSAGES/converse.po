@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-04-06 17:03+0000\n"
+"PO-Revision-Date: 2019-06-18 19:04+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.6-dev\n"
+"X-Generator: Weblate 3.7\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -1080,7 +1080,7 @@ msgstr "%1$sTradúzao%2$s para o seu idioma"
 #: dist/converse-no-dependencies.js:40382
 #, javascript-format
 msgid "I am %1$s"
-msgstr "Eu son %1$s"
+msgstr "Estou %1$s"
 
 #: dist/converse-no-dependencies.js:40385
 msgid "Change settings"

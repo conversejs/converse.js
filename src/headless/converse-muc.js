@@ -169,7 +169,6 @@ converse.plugins.add('converse-muc', {
 
         /**
          * Represents an open/ongoing groupchat conversation.
-         *
          * @class
          * @namespace _converse.ChatRoom
          * @memberOf _converse
@@ -1200,17 +1199,36 @@ converse.plugins.add('converse-muc', {
              * @param { Object } attrs - The message attributes
              */
             ignorableCSN (attrs) {
-                const is_csn = u.isOnlyChatStateNotification(attrs),
-                        own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
-                return is_csn && (attrs.is_delayed || own_message);
+                const is_csn = u.isOnlyChatStateNotification(attrs);
+                return is_csn && (attrs.is_delayed || this.isOwnMessage(attrs));
             },
+
+
+            /**
+             * Determines whether the message is from ourselves by checking
+             * the `from` attribute. Doesn't check the `type` attribute.
+             * @private
+             * @method _converse.ChatRoom#isOwnMessage
+             * @param { Object|XMLElement|_converse.Message } msg
+             * @returns { boolean }
+             */
+            isOwnMessage (msg) {
+                let from;
+                if (_.isElement(msg)) {
+                    from = msg.getAttribute('from');
+                } else if (msg instanceof _converse.Message) {
+                    from = msg.get('from');
+                } else {
+                    from = msg.from;
+                }
+                return Strophe.getResourceFromJid(from) == this.get('nick');
+            },
+
 
             getUpdatedMessageAttributes (message, stanza) {
                 // Overridden in converse-muc and converse-mam
                 const attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, stanza);
-                const from = stanza.getAttribute('from');
-                const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
-                if (own_message) {
+                if (this.isOwnMessage(message)) {
                     const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
                     const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
                     if (by_jid) {
@@ -1322,7 +1340,6 @@ converse.plugins.add('converse-muc', {
                         this.isChatMarker(stanza)) {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
-
                 let attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                 if (attrs.nick &&
                         !this.subjectChangeHandled(attrs) &&
@@ -1332,9 +1349,6 @@ converse.plugins.add('converse-muc', {
                     attrs = this.addOccupantData(attrs);
                     const msg = this.correctMessage(attrs) || this.messages.create(attrs);
                     this.incrementUnreadMsgCounter(msg);
-                    if (forwarded && msg && msg.get('sender')  === 'me') {
-                        msg.save({'received': (new Date()).toISOString()});
-                    }
                 }
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});
             },

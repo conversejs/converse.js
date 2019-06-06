@@ -70,6 +70,13 @@ converse.plugins.add('converse-chatboxes', {
         });
 
 
+        /**
+         * Represents a chat message
+         * @class
+         * @namespace _converse.Message
+         * @memberOf _converse
+         * @example const msg = new _converse.Message({'message': 'hello world!'});
+         */
         _converse.Message = ModelWithContact.extend({
 
             defaults () {
@@ -851,6 +858,7 @@ converse.plugins.add('converse-chatboxes', {
                     attrs.from = stanza.getAttribute('from');
                     attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
                     attrs.sender = attrs.nick === this.get('nick') ? 'me': 'them';
+                    attrs.received = (new Date()).toISOString();
                 } else {
                     attrs.from = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
                     if (attrs.from === _converse.bare_jid) {

@@ -8,8 +8,8 @@
     const Strophe = converse.env.Strophe;
     const $iq = converse.env.$iq;
     const _ = converse.env._;
+    const sizzle = converse.env.sizzle;
     const u = converse.env.utils;
-    const f = converse.env.f;
 
     describe("XEP-0363: HTTP File Upload", function () {
 
@@ -21,7 +21,7 @@
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
                 await test_utils.waitUntil(() => _.filter(
                     IQ_stanzas,
-                    iq => iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
+                    iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
                 );
 
                 /* <iq type='result'
@@ -38,14 +38,14 @@
                  *  </iq>
                  */
                 let stanza = _.find(IQ_stanzas, function (iq) {
-                    return iq.nodeTree.querySelector(
-                        'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                    return iq.querySelector(
+                        'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                 });
                 const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                 stanza = $iq({
                     'type': 'result',
-                    'from': 'localhost',
-                    'to': 'dummy@localhost/resource',
+                    'from': 'montague.lit',
+                    'to': 'romeo@montague.lit/orchard',
                     'id': info_IQ_id
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                     .c('identity', {
@@ -59,8 +59,8 @@
 
                 let entities = await _converse.api.disco.entities.get();
                 expect(entities.length).toBe(2);
-                expect(_.includes(entities.pluck('jid'), 'localhost')).toBe(true);
-                expect(_.includes(entities.pluck('jid'), 'dummy@localhost')).toBe(true);
+                expect(_.includes(entities.pluck('jid'), 'montague.lit')).toBe(true);
+                expect(_.includes(entities.pluck('jid'), 'romeo@montague.lit')).toBe(true);
 
                 expect(entities.get(_converse.domain).features.length).toBe(2);
                 expect(entities.get(_converse.domain).identities.length).toBe(1);
@@ -69,7 +69,7 @@
                 // so it will make a query for it.
                 await test_utils.waitUntil(() => _.filter(
                         IQ_stanzas,
-                        iq => iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]')
+                        iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]')
                     ).length
                 );
                 /* <iq from='montague.tld'
@@ -83,29 +83,29 @@
                  *  </iq>
                  */
                 stanza = _.find(IQ_stanzas, function (iq) {
-                    return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                    return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                 });
                 const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                 stanza = $iq({
                     'type': 'result',
-                    'from': 'localhost',
-                    'to': 'dummy@localhost/resource',
+                    'from': 'montague.lit',
+                    'to': 'romeo@montague.lit/orchard',
                     'id': items_IQ_id
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
                     .c('item', {
-                        'jid': 'upload.localhost',
+                        'jid': 'upload.montague.lit',
                         'name': 'HTTP File Upload'});
 
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 _converse.api.disco.entities.get().then(function (entities) {
                     expect(entities.length).toBe(2);
-                    expect(entities.get('localhost').items.length).toBe(1);
+                    expect(entities.get('montague.lit').items.length).toBe(1);
                     return test_utils.waitUntil(function () {
                         // Converse.js sees that the entity has a disco#info feature,
                         // so it will make a query for it.
                         return _.filter(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                            return iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                         }).length > 0;
                     }, 300);
                 });
@@ -113,13 +113,13 @@
                 stanza = await test_utils.waitUntil(() =>
                     _.filter(
                         IQ_stanzas,
-                        iq => iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]')
+                        iq => iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')
                     ).pop()
                 );
                 const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
-                expect(stanza.toLocaleString()).toBe(
-                    `<iq from="dummy@localhost/resource" id="`+IQ_id+`" to="upload.localhost" type="get" xmlns="jabber:client">`+
+                expect(Strophe.serialize(stanza)).toBe(
+                    `<iq from="romeo@montague.lit/orchard" id="`+IQ_id+`" to="upload.montague.lit" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                     `</iq>`);
 
@@ -144,7 +144,7 @@
                  * </query>
                  * </iq>
                  */
-                stanza = $iq({'type': 'result', 'to': 'dummy@localhost/resource', 'id': IQ_id, 'from': 'upload.localhost'})
+                stanza = $iq({'type': 'result', 'to': 'romeo@montague.lit/orchard', 'id': IQ_id, 'from': 'upload.montague.lit'})
                     .c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                         .c('identity', {'category':'store', 'type':'file', 'name':'HTTP File Upload'}).up()
                         .c('feature', {'var':'urn:xmpp:http:upload:0'}).up()
@@ -156,12 +156,12 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 entities = await _converse.api.disco.entities.get();
-                expect(entities.get('localhost').items.get('upload.localhost').identities.where({'category': 'store'}).length).toBe(1);
+                expect(entities.get('montague.lit').items.get('upload.montague.lit').identities.where({'category': 'store'}).length).toBe(1);
                 const supported = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
                 expect(supported).toBe(true);
                 const features = await _converse.api.disco.features.get(Strophe.NS.HTTPUPLOAD, _converse.domain);
                 expect(features.length).toBe(1);
-                expect(features[0].get('jid')).toBe('upload.localhost');
+                expect(features[0].get('jid')).toBe('upload.montague.lit');
                 expect(features[0].dataforms.where({'FORM_TYPE': {value: "urn:xmpp:http:upload:0", type: "hidden"}}).length).toBe(1);
                 done();
             }));
@@ -171,7 +171,7 @@
             describe("A file upload toolbar button", function () {
 
                 it("does not appear in private chats", mock.initConverse(async (done, _converse) => {
-                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openChatBoxFor(_converse, contact_jid);
 
@@ -190,15 +190,15 @@
                         null, ['rosterGroupsFetched'], {},
                         async (done, _converse) => {
 
-                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
                     test_utils.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
                         [{'category': 'server', 'type':'IM'}],
                         ['http://jabber.org/protocol/disco#items'], [], 'info');
 
-                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items');
-                    await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []);
-                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.lit'], 'items');
+                    await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.lit', [], [Strophe.NS.HTTPUPLOAD], []);
+                    const view = _converse.chatboxviews.get('lounge@montague.lit');
                     expect(view.el.querySelector('.chat-toolbar .upload-file')).toBe(null);
                     done();
                 }));
@@ -216,11 +216,11 @@
                         [{'category': 'server', 'type':'IM'}],
                         ['http://jabber.org/protocol/disco#items'], [], 'info');
 
-                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items')
-                    await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []);
+                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.lit'], 'items')
+                    await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.lit', [], [Strophe.NS.HTTPUPLOAD], []);
                     test_utils.createContacts(_converse, 'current', 3);
                     _converse.api.trigger('rosterContactsFetched');
-                    const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
                     test_utils.waitUntil(() => view.el.querySelector('.upload-file'));
@@ -237,11 +237,11 @@
                         [{'category': 'server', 'type':'IM'}],
                         ['http://jabber.org/protocol/disco#items'], [], 'info');
 
-                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items');
-                    await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []);
-                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                    await test_utils.waitUntil(() => _converse.chatboxviews.get('lounge@localhost').el.querySelector('.upload-file'));
-                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.lit'], 'items');
+                    await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.lit', [], [Strophe.NS.HTTPUPLOAD], []);
+                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+                    await test_utils.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').el.querySelector('.upload-file'));
+                    const view = _converse.chatboxviews.get('lounge@montague.lit');
                     expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
                     done();
                 }));
@@ -262,7 +262,7 @@
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
                         test_utils.createContacts(_converse, 'current');
                         _converse.api.trigger('rosterContactsFetched');
-                        const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         await test_utils.openChatBoxFor(_converse, contact_jid);
                         const view = _converse.chatboxviews.get(contact_jid);
                         const file = {
@@ -274,11 +274,11 @@
                         view.model.sendFiles([file]);
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request')).length);
+                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                         const iq = IQ_stanzas.pop();
-                        expect(iq.toLocaleString()).toBe(
-                            `<iq from="dummy@localhost/resource" `+
-                                `id="${iq.nodeTree.getAttribute("id")}" `+
+                        expect(Strophe.serialize(iq)).toBe(
+                            `<iq from="romeo@montague.lit/orchard" `+
+                                `id="${iq.getAttribute("id")}" `+
                                 `to="upload.montague.tld" `+
                                 `type="get" `+
                                 `xmlns="jabber:client">`+
@@ -293,8 +293,8 @@
 
                         const stanza = u.toStanza(`
                             <iq from="upload.montague.tld"
-                                id="${iq.nodeTree.getAttribute("id")}"
-                                to="dummy@localhost/resource"
+                                id="${iq.getAttribute("id")}"
+                                to="romeo@montague.lit/orchard"
                                 type="result">
                             <slot xmlns="urn:xmpp:http:upload:0">
                                 <put url="https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg">
@@ -328,9 +328,9 @@
 
                         await test_utils.waitUntil(() => sent_stanza, 1000);
                         expect(sent_stanza.toLocaleString()).toBe(
-                            `<message from="dummy@localhost/resource" `+
+                            `<message from="romeo@montague.lit/orchard" `+
                                 `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
-                                `to="irini.vlastuin@localhost" `+
+                                `to="lady.montague@montague.lit" `+
                                 `type="chat" `+
                                 `xmlns="jabber:client">`+
                                     `<body>${message}</body>`+
@@ -365,8 +365,13 @@
 
                         await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
-                        await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                        const view = _converse.chatboxviews.get('lounge@localhost');
+                        await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+
+                        // Wait until MAM query has been sent out
+                        const sent_stanzas = _converse.connection.sent_stanzas;
+                        await test_utils.waitUntil(() => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
+
+                        const view = _converse.chatboxviews.get('lounge@montague.lit');
                         const file = {
                             'type': 'image/jpeg',
                             'size': '23456' ,
@@ -376,11 +381,11 @@
                         view.model.sendFiles([file]);
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request')).length);
+                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                         const iq = IQ_stanzas.pop();
-                        expect(iq.toLocaleString()).toBe(
-                            `<iq from="dummy@localhost/resource" `+
-                                `id="${iq.nodeTree.getAttribute("id")}" `+
+                        expect(Strophe.serialize(iq)).toBe(
+                            `<iq from="romeo@montague.lit/orchard" `+
+                                `id="${iq.getAttribute("id")}" `+
                                 `to="upload.montague.tld" `+
                                 `type="get" `+
                                 `xmlns="jabber:client">`+
@@ -394,8 +399,8 @@
                         const message = base_url+"/logo/conversejs-filled.svg";
                         const stanza = u.toStanza(`
                             <iq from='upload.montague.tld'
-                                id="${iq.nodeTree.getAttribute('id')}"
-                                to='dummy@localhost/resource'
+                                id="${iq.getAttribute('id')}"
+                                to='romeo@montague.lit/orchard'
                                 type='result'>
                             <slot xmlns='urn:xmpp:http:upload:0'>
                                 <put url='https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg'>
@@ -430,9 +435,9 @@
                         await test_utils.waitUntil(() => sent_stanza, 1000);
                         expect(sent_stanza.toLocaleString()).toBe(
                             `<message `+
-                                `from="dummy@localhost/resource" `+
+                                `from="romeo@montague.lit/orchard" `+
                                 `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
-                                `to="lounge@localhost" `+
+                                `to="lounge@montague.lit" `+
                                 `type="groupchat" `+
                                 `xmlns="jabber:client">`+
                                     `<body>${message}</body>`+
@@ -461,19 +466,18 @@
                         await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
                         await test_utils.waitUntil(() => _.filter(
                             IQ_stanzas,
-                            iq => iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
+                            iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
                         );
 
-                        var stanza = _.find(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector(
-                                'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                        let stanza = _.find(IQ_stanzas, function (iq) {
+                            return iq.querySelector(
+                                'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                         });
-                        var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-
+                        const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                         stanza = $iq({
                             'type': 'result',
-                            'from': 'localhost',
-                            'to': 'dummy@localhost/resource',
+                            'from': 'montague.lit',
+                            'to': 'romeo@montague.lit/orchard',
                             'id': info_IQ_id
                         }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                             .c('identity', {
@@ -487,8 +491,8 @@
                         let entities = await _converse.api.disco.entities.get();
 
                         expect(entities.length).toBe(2);
-                        expect(_.includes(entities.pluck('jid'), 'localhost')).toBe(true);
-                        expect(_.includes(entities.pluck('jid'), 'dummy@localhost')).toBe(true);
+                        expect(_.includes(entities.pluck('jid'), 'montague.lit')).toBe(true);
+                        expect(_.includes(entities.pluck('jid'), 'romeo@montague.lit')).toBe(true);
 
                         expect(entities.get(_converse.domain).features.length).toBe(2);
                         expect(entities.get(_converse.domain).identities.length).toBe(1);
@@ -497,22 +501,22 @@
                             // Converse.js sees that the entity has a disco#items feature,
                             // so it will make a query for it.
                             return _.filter(IQ_stanzas, function (iq) {
-                                return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                                return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                             }).length > 0;
                         }, 300);
 
                         stanza = _.find(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                            return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                         });
                         var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                         stanza = $iq({
                             'type': 'result',
-                            'from': 'localhost',
-                            'to': 'dummy@localhost/resource',
+                            'from': 'montague.lit',
+                            'to': 'romeo@montague.lit/orchard',
                             'id': items_IQ_id
                         }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
                             .c('item', {
-                                'jid': 'upload.localhost',
+                                'jid': 'upload.montague.lit',
                                 'name': 'HTTP File Upload'});
 
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -520,26 +524,24 @@
                         entities = await _converse.api.disco.entities.get()
 
                         expect(entities.length).toBe(2);
-                        expect(entities.get('localhost').items.length).toBe(1);
+                        expect(entities.get('montague.lit').items.length).toBe(1);
                         await test_utils.waitUntil(function () {
                             // Converse.js sees that the entity has a disco#info feature,
                             // so it will make a query for it.
                             return _.filter(IQ_stanzas, function (iq) {
-                                return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                                return iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                             }).length > 0;
                         }, 300);
 
-                        stanza = _.find(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                        });
-                        var IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-                        expect(stanza.toLocaleString()).toBe(
-                            `<iq from="dummy@localhost/resource" id="${IQ_id}" to="upload.localhost" type="get" xmlns="jabber:client">`+
+                        stanza = _.find(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]'));
+                        const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
+                        expect(Strophe.serialize(stanza)).toBe(
+                            `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" to="upload.montague.lit" type="get" xmlns="jabber:client">`+
                                 `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                             `</iq>`);
 
                         // Upload service responds and reports a maximum file size of 5MiB
-                        stanza = $iq({'type': 'result', 'to': 'dummy@localhost/resource', 'id': IQ_id, 'from': 'upload.localhost'})
+                        stanza = $iq({'type': 'result', 'to': 'romeo@montague.lit/orchard', 'id': IQ_id, 'from': 'upload.montague.lit'})
                             .c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                                 .c('identity', {'category':'store', 'type':'file', 'name':'HTTP File Upload'}).up()
                                 .c('feature', {'var':'urn:xmpp:http:upload:0'}).up()
@@ -550,12 +552,12 @@
                                         .c('value').t('5242880');
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
                         entities = await _converse.api.disco.entities.get();
-                        expect(entities.get('localhost').items.get('upload.localhost').identities.where({'category': 'store'}).length).toBe(1);
+                        expect(entities.get('montague.lit').items.get('upload.montague.lit').identities.where({'category': 'store'}).length).toBe(1);
                         await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
                         test_utils.createContacts(_converse, 'current');
                         _converse.api.trigger('rosterContactsFetched');
 
-                        const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         await test_utils.openChatBoxFor(_converse, contact_jid);
                         const view = _converse.chatboxviews.get(contact_jid);
                         var file = {
@@ -593,7 +595,7 @@
                     await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
                     test_utils.createContacts(_converse, 'current');
                     _converse.api.trigger('rosterContactsFetched');
-                    const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
                     const file = {
@@ -604,11 +606,11 @@
                     };
                     view.model.sendFiles([file]);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                    await test_utils.waitUntil(() => _.filter(IQ_stanzas, (iq) => iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request')).length)
+                    await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length)
                     const iq = IQ_stanzas.pop();
-                    expect(iq.toLocaleString()).toBe(
-                        `<iq from="dummy@localhost/resource" `+
-                            `id="${iq.nodeTree.getAttribute("id")}" `+
+                    expect(Strophe.serialize(iq)).toBe(
+                        `<iq from="romeo@montague.lit/orchard" `+
+                            `id="${iq.getAttribute("id")}" `+
                             `to="upload.montague.tld" `+
                             `type="get" `+
                             `xmlns="jabber:client">`+
@@ -623,8 +625,8 @@
                     const message = base_url+"/logo/conversejs-filled.svg";
                     const stanza = u.toStanza(`
                         <iq from="upload.montague.tld"
-                            id="${iq.nodeTree.getAttribute("id")}"
-                            to="dummy@localhost/resource"
+                            id="${iq.getAttribute("id")}"
+                            to="romeo@montague.lit/orchard"
                             type="result">
                         <slot xmlns="urn:xmpp:http:upload:0">
                             <put url="https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg">

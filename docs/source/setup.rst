@@ -29,8 +29,7 @@ The diagram below shows a fairly common setup for a website or intranet:
 
 * It communicates with the XMPP server via BOSH or websocket which is usually
   reverse-proxied by a web-server in order to overcome cross-site scripting
-  restrictions in the browser. For more info on that, read the section:
-  `Overcoming cross-domain request restrictions`_
+  restrictions in the browser.
 
 * Optionally the XMPP server is configured to use a SQL database for storing
   archived chat messages.
@@ -71,8 +70,8 @@ and a list of servers that you can set up yourself on `xmpp.org <https://xmpp.or
 
 .. _`BOSH-section`:
 
-BOSH
-====
+BOSH (XMPP-over-HTTP)
+=====================
 
 Web-browsers do not allow the persistent, direct TCP socket connections used by
 desktop XMPP clients to communicate with XMPP servers.
@@ -113,26 +112,8 @@ use it in production.
 Refer to the :ref:`bosh-service-url` configuration setting for information on
 how to configure Converse to connect to a BOSH URL.
 
-
-.. _`websocket-section`:
-
-Websocket
-=========
-
-Websockets provide an alternative means of connection to an XMPP server from
-your browser.
-
-Websockets provide long-lived, bidirectional connections which do not rely on
-HTTP. Therefore BOSH, which operates over HTTP, doesn't apply to websockets.
-
-`Prosody <http://prosody.im>`_ (from version 0.10) and `Ejabberd <http://www.ejabberd.im>`_ support websocket connections, as
-does the node-xmpp-bosh connection manager.
-
-Refer to the :ref:`websocket-url` configuration setting for information on how to
-configure Converse to connect to a websocket URL.
-
-The Webserver
-=============
+Configuring your webserver for BOSH
+-----------------------------------
 
 Lets say the domain under which you host Converse is *example.org:80*,
 but the domain of your connection manager or the domain of
@@ -149,7 +130,7 @@ There are two ways in which you can solve this problem.
 .. _CORS:
 
 1. Cross-Origin Resource Sharing (CORS)
----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 CORS is a technique for overcoming browser restrictions related to the
 `same-origin security policy <https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy>`_.
@@ -158,8 +139,8 @@ CORS is enabled by adding an ``Access-Control-Allow-Origin`` header. Where this
 is configured depends on what webserver is used for your file upload server.
 
 
-2. Reverse-proxy 
-----------------
+2. Reverse-proxy
+~~~~~~~~~~~~~~~~
 
 Another possible solution is to add a reverse proxy to a webserver such as Nginx or Apache to ensure that
 all services you use are hosted under the same domain name and port.
@@ -177,7 +158,7 @@ the cross-domain restriction is ``mysite.com/http-bind`` and not
 Your ``nginx`` or ``apache`` configuration will look as follows:
 
 Nginx
-~~~~~
+^^^^^
 
 .. code-block:: nginx
 
@@ -202,7 +183,7 @@ Nginx
     }
 
 Apache
-~~~~~~
+^^^^^^
 
 .. code-block:: apache
 
@@ -227,7 +208,7 @@ Apache
     the above example).
 
     This might be because your webserver and BOSH proxy have the same timeout
-    for BOSH requests. Because the webserver receives the request slightly earlier, 
+    for BOSH requests. Because the webserver receives the request slightly earlier,
     it gives up a few microseconds before the XMPP server’s empty result and thus returns a
     504 error page containing HTML to browser, which then gets parsed as if its
     XML.
@@ -239,6 +220,70 @@ Apache
     this problem.
 
 
+
+.. _`websocket-section`:
+
+Websocket
+=========
+
+Websockets provide an alternative means of connection to an XMPP server from
+your browser.
+
+Websockets provide long-lived, bidirectional connections which do not rely on
+HTTP. Therefore BOSH, which operates over HTTP, doesn't apply to websockets.
+
+`Prosody <http://prosody.im>`_ (from version 0.10) and `Ejabberd <http://www.ejabberd.im>`_ support websocket connections, as
+does the node-xmpp-bosh connection manager.
+
+Refer to the :ref:`websocket-url` configuration setting for information on how to
+configure Converse to connect to a websocket URL.
+
+
+Reverse-proxy for a websocket connection
+----------------------------------------
+
+Assuming your website is accessible on port ``443`` on the domain ``mysite.com``
+and your XMPP server's websocket server is running at ``localhost:5280/xmpp-websocket``.
+
+You can then set up your webserver as an SSL enabled reverse proxy  in front of
+your websocket endpoint.
+
+The :ref:`websocket-url` value you'll want to pass in to ``converse.initialize`` is ``wss://mysite.com/xmpp-websocket``.
+
+Your ``nginx`` will look as follows:
+
+.. code-block:: nginx
+
+    http {
+        server {
+            listen       443
+            server_name  mysite.com;
+            ssl on;
+            ssl_certificate /path/to/fullchain.pem;    # Properly set the path here
+            ssl_certificate_key /path/to/privkey.pem;    # Properly set the path here
+
+            location = / {
+                root    /path/to/converse.js/;  # Properly set the path here
+                index   index.html;
+            }
+            location /xmpp-websocket {
+                proxy_http_version 1.1;
+                proxy_pass http://127.0.0.1:5280;
+                proxy_buffering off;
+                proxy_set_header Host $host;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+                proxy_read_timeout 86400;
+            }
+            # CORS
+            location ~ .(ttf|ttc|otf|eot|woff|woff2|font.css|css|js)$ {
+                add_header Access-Control-Allow-Origin "*"; # Decide here whether you want to allow all or only a particular domain
+                root   /path/to/converse.js/;  # Properly set the path here
+            }
+        }
+    }
+
+
 .. _`session-support`:
 
 Single Session Support
@@ -247,8 +292,7 @@ Single Session Support
 It's possible to enable shared sessions whereby users already
 logged in to your website will also automatically be logged in on the XMPP server,
 
-Once a user is logged in, the session will be kept alive across page loads by
-way of the :ref:`keepalive` setting.
+Once a user is logged in, the session will be kept alive across page loads.
 
 There are a few ways to let your users be automatically authenticated to an
 XMPP server once they've logged in to your site.
@@ -318,8 +362,7 @@ page load). Each page load is a new request which requires a new unique RID.
 The best way to achieve this is to simply increment the RID with each page
 load.
 
-You'll need to configure Converse with the ``prebind``, :ref:`keepalive` and
-:ref:`prebind_url` settings.
+You'll need to configure Converse with the :ref:`prebind` :ref:`prebind_url` settings.
 
 Please read the documentation on those settings for a fuller picture of what
 needs to be done.
@@ -353,7 +396,7 @@ If your web-application has access to the same credentials, it can send those
 credentials to Converse so that user's are automatically logged in when the
 page loads.
 
-This is can be done by setting :ref:`auto_login` to true and configuring the 
+This is can be done by setting :ref:`auto_login` to true and configuring the
 the :ref:`credentials_url` setting.
 
 Option 3). Temporary authentication tokens

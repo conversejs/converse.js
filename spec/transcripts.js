@@ -55,7 +55,7 @@
 
             _converse.allow_non_roster_messaging = true;
 
-            test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'dummy').then(function () {
+            test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'romeo').then(function () {
                 spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                 _.each(transcripts, function (transcript) {
                     var text = transcript();

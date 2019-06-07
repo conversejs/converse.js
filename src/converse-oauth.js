@@ -38,12 +38,12 @@ converse.plugins.add("converse-oauth", {
         /* For example, the private *_converse* object has a
          * method "onConnected". You can override that method as follows:
          */
-        'LoginPanel': {
+        LoginPanel: {
 
             insertOAuthProviders () {
                 const { _converse } = this.__super__;
                 if (_.isUndefined(this.oauth_providers_view)) {
-                    this.oauth_providers_view = 
+                    this.oauth_providers_view =
                         new _converse.OAuthProvidersView({'model': _converse.oauth_providers});
 
                     this.oauth_providers_view.render();

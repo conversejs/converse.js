@@ -4,6 +4,7 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
+import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 
 const { Backbone, Promise, Strophe, $iq, $pres, dayjs, sizzle, _ } = converse.env;
@@ -35,6 +36,17 @@ converse.plugins.add('converse-roster', {
             'rosterInitialized',
         ]);
 
+        _converse.HEADER_CURRENT_CONTACTS =  __('My contacts');
+        _converse.HEADER_PENDING_CONTACTS = __('Pending contacts');
+        _converse.HEADER_REQUESTING_CONTACTS = __('Contact requests');
+        _converse.HEADER_UNGROUPED = __('Ungrouped');
+
+        const HEADER_WEIGHTS = {};
+        HEADER_WEIGHTS[_converse.HEADER_REQUESTING_CONTACTS] = 0;
+        HEADER_WEIGHTS[_converse.HEADER_CURRENT_CONTACTS]    = 1;
+        HEADER_WEIGHTS[_converse.HEADER_UNGROUPED]           = 2;
+        HEADER_WEIGHTS[_converse.HEADER_PENDING_CONTACTS]    = 3;
+
 
         _converse.registerPresenceHandler = function () {
             _converse.unregisterPresenceHandler();
@@ -54,17 +66,17 @@ converse.plugins.add('converse-roster', {
         _converse.initRoster = function () {
             const storage = _converse.config.get('storage');
             _converse.roster = new _converse.RosterContacts();
-            _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](
+            _converse.roster.browserStorage = new BrowserStorage[storage](
                 `converse.contacts-${_converse.bare_jid}`);
 
             _converse.roster.data = new Backbone.Model();
             const id = `converse-roster-model-${_converse.bare_jid}`;
             _converse.roster.data.id = id;
-            _converse.roster.data.browserStorage = new Backbone.BrowserStorage[storage](id);
+            _converse.roster.data.browserStorage = new BrowserStorage[storage](id);
             _converse.roster.data.fetch();
 
             _converse.rostergroups = new _converse.RosterGroups();
-            _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](
+            _converse.rostergroups.browserStorage = new BrowserStorage[storage](
                 `converse.roster.groups${_converse.bare_jid}`);
             /**
              * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
@@ -138,7 +150,7 @@ converse.plugins.add('converse-roster', {
             initialize () {
                 this.resources = new Resources();
                 const id = `converse.identities-${this.get('jid')}`;
-                this.resources.browserStorage = new Backbone.BrowserStorage.session(id);
+                this.resources.browserStorage = new BrowserStorage.session(id);
                 this.resources.on('update', this.onResourcesChanged, this);
                 this.resources.on('change', this.onResourcesChanged, this);
             },
@@ -380,6 +392,10 @@ converse.plugins.add('converse-roster', {
             model: _converse.RosterContact,
 
             comparator (contact1, contact2) {
+                /* Groups are sorted alphabetically, ignoring case.
+                 * However, Ungrouped, Requesting Contacts and Pending Contacts
+                 * appear last and in that order.
+                 */
                 const status1 = contact1.presence.get('show') || 'offline';
                 const status2 = contact2.presence.get('show') || 'offline';
                 if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
@@ -853,6 +869,23 @@ converse.plugins.add('converse-roster', {
         _converse.RosterGroups = Backbone.Collection.extend({
             model: _converse.RosterGroup,
 
+            comparator (a, b) {
+                a = a.get('name');
+                b = b.get('name');
+                const special_groups = Object.keys(HEADER_WEIGHTS);
+                const a_is_special = _.includes(special_groups, a);
+                const b_is_special = _.includes(special_groups, b);
+                if (!a_is_special && !b_is_special ) {
+                    return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
+                } else if (a_is_special && b_is_special) {
+                    return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
+                } else if (!a_is_special && b_is_special) {
+                    return (b === _converse.HEADER_REQUESTING_CONTACTS) ? 1 : -1;
+                } else if (a_is_special && !b_is_special) {
+                    return (a === _converse.HEADER_REQUESTING_CONTACTS) ? -1 : 1;
+                }
+            },
+
             fetchRosterGroups () {
                 /* Fetches all the roster groups from sessionStorage.
                 *
@@ -931,8 +964,13 @@ converse.plugins.add('converse-roster', {
                 _converse.presences = new _converse.Presences();
             }
             _converse.presences.browserStorage =
-                new Backbone.BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
-            _converse.presences.fetch();
+                new BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
+
+            if (_converse.haveResumed()) {
+                _converse.presences.fetch();
+            } else {
+                _converse.presences.browserStorage._clear();
+            }
             /**
              * Triggered once the _converse.Presences collection has been
              * initialized and its cached data fetched.

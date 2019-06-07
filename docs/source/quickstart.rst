@@ -9,8 +9,40 @@ Quickstart
 Getting a demo up and running
 =============================
 
+You can try out the latest version of Converse on `conversejs.org <https://conversejs.org>`_
+for the overlayed version and `conversejs.org/fullscreen.html <https://conversejs.org/fullscreen.html>`_
+for the full page version.
+
+If you want to host Converse yourself, there are a few options available to
+you.
+
+Let your XMPP server serve Converse for you
+-------------------------------------------
+
+If you run your own XMPP server, you might first want to check whether it has
+a plugin or module for hosting Converse for you.
+
+* OpenFire has the `inverse <https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=inverse>`_ plugin.
+* Prosody has `mod_conversejs <https://modules.prosody.im/mod_conversejs.html>`_.
+
+
+Serving Converse yourself
+-------------------------
+
+Alternative you can serve only Converse without requiring any particular
+XMPP server.
+
+To do so, you'll need to get the right files to host, for which you have four
+options.
+
+.. note::
+
+    Pro-tip, if you just want to quickly test things locally, you can quickly start
+    up an HTTP server with Python by running ``python -m SimpleHTTPServer``
+
+
 Option 1: Use the content delivery network
-------------------------------------------
+******************************************
 
 Converse has a `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_, provided by `KeyCDN <http://keycdn.com/>`_,
 which hosts its JavaScript and CSS files.
@@ -18,7 +50,7 @@ which hosts its JavaScript and CSS files.
 The latest versions of these files are available at these URLs:
 
 * https://cdn.conversejs.org/dist/converse.min.js
-* https://cdn.conversejs.org/css/converse.min.css
+* https://cdn.conversejs.org/dist/converse.min.css
 
 If you are integrating Converse into an existing website or app, then we recommend
 that you load a specific version of Converse. Otherwise your website or app
@@ -26,20 +58,31 @@ might break when a new backwards-incompatible version of Converse is released.
 
 To load a specific version of Converse you can put the version in the URL:
 
-* https://cdn.conversejs.org/4.2.0/dist/converse.min.js
-* https://cdn.conversejs.org/4.2.0/css/converse.min.css
+* https://cdn.conversejs.org/5.0.0/dist/converse.min.js
+* https://cdn.conversejs.org/5.0.0/dist/converse.min.css
 
 You can include these two URLs inside the *<head>* element of your website
 via the *script* and *link* tags:
 
 .. code-block:: html
 
-    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/4.2.0/css/converse.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/4.2.0/dist/converse.min.css">
     <script src="https://cdn.conversejs.org/4.2.0/dist/converse.min.js" charset="utf-8"></script>
 
 
-Option 2: Building the files yourself
--------------------------------------
+Option 2: Download the builds from Github
+*****************************************
+
+The `Converse releases page on Github <https://github.com/conversejs/converse.js/releases>`_
+has the release notes for every release as well as links to downloadable zip files
+containing all the files you need to host Converse yourself.
+
+Extract the zip file and include converse.min.js and converse.min.css files in
+the *<head>* element of your page, similar as shown in option 1 above.
+
+
+Option 3: Building the files yourself
+*************************************
 
 Instead of using the CDN, you can also create your own builds and host them yourself.
 
@@ -48,13 +91,17 @@ Have a look at the :ref:`creating_builds` section on how to create your own buil
 In short, you should be able to do it by running ``make dist`` inside a
 checkout of the `Converse repo <http://github.com/conversejs/converse.js/>`_.
 
-Besides including the ``converse.min.js`` and ``converse.min.css`` files,
-you'll also need to make sure that the ``webfonts`` directory is available in
-the same location as ``converse.min.css``.
+.. note::
+
+    When hosting Converse yourself without using the CDN (options 2 and 4),
+    you'll need to need to make sure that the ``webfonts`` directory is available in
+    the same location as ``converse.min.css``.
+
+
 
 
 Initializing Converse
----------------------
+=====================
 
 You'll need to initialize Converse with configuration settings relevant to your requirements.
 Take a look at the :ref:`configuration-settings` section for info on all the available settings.

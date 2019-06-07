@@ -474,12 +474,6 @@
 
 /* ******************* Overlay and embedded styles *************************** */
 
-#conversejs.converse-embedded {
-    .chat-textarea {
-        max-height: var(--fullpage-max-chat-textarea-height);
-    }
-}
-
 #conversejs.converse-embedded,
 #conversejs.converse-overlayed {
     .chat-head {
@@ -580,8 +574,31 @@
 	}
 }
 
-/* ******************* Fullpage styles *************************** */
 
+#conversejs.converse-embedded.converse-singleton {
+    .flyout {
+        border: none !important;
+    }
+    .chat-head {
+        height: var(--fullpage-chat-head-height);
+        padding: 0.5em;
+    }
+    .chatbox {
+        margin: 0;
+        @include make-col-ready();
+        @include media-breakpoint-up(md) {
+            @include make-col(12);
+        }
+        @include media-breakpoint-up(lg) {
+            @include make-col(12);
+        }
+        @include media-breakpoint-up(xl) {
+            @include make-col(12);
+        }
+    }
+}
+
+#conversejs.converse-embedded,
 #conversejs.converse-fullscreen  {
     .flyout {
         border-radius: 0;
@@ -589,13 +606,9 @@
         border: var(--flyout-padding) solid var(--chat-head-color);
         bottom: 0;
     }
-    .chatbox-btn {
-        font-size: var(--fullpage-chatbox-button-size);
-        margin: 0 0.3em;
-    }
+
     .chat-head {
         height: var(--fullpage-chat-head-height);
-        font-size: var(--font-size-huge);
         padding: 0;
         .user-custom-message {
             font-size: 70%;
@@ -609,18 +622,9 @@
             @include make-col(2);
         }
     }
-    .chat-textarea {
-        max-height: var(--fullpage-max-chat-textarea-height);
-    }
-    .emoji-picker {
-        height: var(--fullpage-emoji-picker-height);
-    }
 
     .chatbox {
-        width: 100%;
-        height: 100%;
         margin: 0;
-
         @include make-col-ready();
         @include media-breakpoint-up(md) {
             @include make-col(8);
@@ -632,6 +636,60 @@
             @include make-col(10);
         }
 
+        .box-flyout {
+            box-shadow: none;
+            overflow: hidden;
+        }
+    }
+}
+
+#conversejs.converse-embedded {
+    .converse-chatboxes {
+        z-index: 1031; // One more than bootstrap navbar
+        position: inherit;
+        flex-wrap: nowrap;
+        bottom: auto;
+        height: 100%;
+        width: 100%;
+        margin-left: -15px;
+    }
+
+    .chatbox {
+        .box-flyout {
+            bottom: 0;
+            height: 100%;
+            min-width: auto;
+            width: 100%;
+        }
+
+        .chat-title {
+            padding: 0.3em;
+            font-size: 120%;
+        }
+    }
+
+    .chat-textarea {
+        max-height: var(--fullpage-max-chat-textarea-height);
+    }
+}
+
+/* ******************* Fullpage styles *************************** */
+
+#conversejs.converse-fullscreen  {
+    .chatbox-btn {
+        font-size: var(--fullpage-chatbox-button-size);
+        margin: 0 0.3em;
+    }
+    .chat-head {
+        font-size: var(--font-size-huge);
+    }
+    .chat-textarea {
+        max-height: var(--fullpage-max-chat-textarea-height);
+    }
+    .emoji-picker {
+        height: var(--fullpage-emoji-picker-height);
+    }
+    .chatbox {
         .box-flyout {
             background-color: var(--chat-head-color);
             box-shadow: none;

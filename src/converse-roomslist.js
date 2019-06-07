@@ -7,7 +7,8 @@
 /* This is a non-core Converse.js plugin which shows a list of currently open
  * rooms in the "Rooms Panel" of the ControlBox.
  */
-
+import BrowserStorage from "backbone.browserStorage";
+import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import muc from "@converse/headless/converse-muc";
 import tpl_rooms_list from "templates/rooms_list.html";
@@ -47,8 +48,8 @@ converse.plugins.add('converse-roomslist', {
         _converse.OpenRooms = Backbone.Collection.extend({
 
             comparator (room) {
-                if (room.get('bookmarked')) {
-                    const bookmark = _.head(_converse.bookmarksview.model.where({'jid': room.get('jid')}));
+                if (_converse.bookmarks && room.get('bookmarked')) {
+                    const bookmark = _.head(_converse.bookmarks.where({'jid': room.get('jid')}));
                     return bookmark.get('name');
                 } else {
                     return room.get('name');
@@ -139,8 +140,8 @@ converse.plugins.add('converse-roomslist', {
             },
 
             getRoomsListElementName () {
-                if (this.model.get('bookmarked') && _converse.bookmarksview) {
-                    const bookmark = _.head(_converse.bookmarksview.model.where({'jid': this.model.get('jid')}));
+                if (this.model.get('bookmarked') && _converse.bookmarks) {
+                    const bookmark = _.head(_converse.bookmarks.where({'jid': this.model.get('jid')}));
                     return bookmark.get('name');
                 } else {
                     return this.model.get('name');
@@ -149,7 +150,7 @@ converse.plugins.add('converse-roomslist', {
         });
 
 
-        _converse.RoomsListView = Backbone.OrderedListView.extend({
+        _converse.RoomsListView = OrderedListView.extend({
             tagName: 'div',
             className: 'open-rooms-list list-container rooms-list-container',
             events: {
@@ -164,7 +165,7 @@ converse.plugins.add('converse-roomslist', {
             subviewIndex: 'jid',
 
             initialize () {
-                Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+                OrderedListView.prototype.initialize.apply(this, arguments);
 
                 this.model.on('add', this.showOrHide, this);
                 this.model.on('remove', this.showOrHide, this);
@@ -173,7 +174,7 @@ converse.plugins.add('converse-roomslist', {
                       id = `converse.roomslist${_converse.bare_jid}`;
 
                 this.list_model = new _converse.RoomsList({'id': id});
-                this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
+                this.list_model.browserStorage = new BrowserStorage[storage](id);
                 this.list_model.fetch();
                 this.render();
                 this.sortAndPositionAllItems();
@@ -268,7 +269,7 @@ converse.plugins.add('converse-roomslist', {
                   id = `converse.open-rooms-{_converse.bare_jid}`,
                   model = new _converse.OpenRooms();
 
-            model.browserStorage = new Backbone.BrowserStorage[storage](id);
+            model.browserStorage = new BrowserStorage[storage](id);
             _converse.rooms_list_view = new _converse.RoomsListView({'model': model});
             /**
              * Triggered once the _converse.RoomsListView has been created and initialized.

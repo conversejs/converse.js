@@ -25,19 +25,18 @@
                     view = _converse.chatboxviews.get(room_jid);
                     const textarea = view.el.querySelector('.chat-textarea')
                     textarea.value = '/register';
-                    view.keyPressed({
+                    view.onKeyDown({
                         target: textarea,
                         preventDefault: _.noop,
                         keyCode: 13
                     });
                     return test_utils.waitUntil(() => _.filter(
                         _converse.connection.IQ_stanzas,
-                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="get"] query[xmlns="jabber:iq:register"]`, iq.nodeTree).length
+                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length
                     ).pop());
-                }).then(node => {
-                    const stanza = node.nodeTree;
-                    expect(node.toLocaleString())
-                    .toBe(`<iq from="dummy@localhost/resource" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
+                }).then(stanza => {
+                    expect(Strophe.serialize(stanza))
+                    .toBe(`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
                                 `type="get" xmlns="jabber:client">`+
                             `<query xmlns="jabber:iq:register"/></iq>`);
                     view = _converse.chatboxviews.get(room_jid);
@@ -56,12 +55,11 @@
                     _converse.connection._dataRecv(test_utils.createRequest(result));
                     return test_utils.waitUntil(() => _.filter(
                         _converse.connection.IQ_stanzas,
-                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="set"] query[xmlns="jabber:iq:register"]`, iq.nodeTree).length
+                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
                     ).pop());
-                }).then(node => {
-                    const stanza = node.nodeTree;
-                    expect(node.toLocaleString()).toBe(
-                        `<iq from="dummy@localhost/resource" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                }).then(stanza => {
+                    expect(Strophe.serialize(stanza)).toBe(
+                        `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
                             `<query xmlns="jabber:iq:register">`+
                                 `<x type="submit" xmlns="jabber:x:data">`+
                                     `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#register</value></field>`+
@@ -83,20 +81,20 @@
                     function (done, _converse) {
 
                 let view;
-                const IQ_stanzas = _converse.connection.IQ_stanzas; 
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const room_jid = 'coven@chat.shakespeare.lit';
                 _converse.api.rooms.open(room_jid, {'nick': 'romeo'})
                 .then(() => {
-                    return test_utils.waitUntil(() => _.get(_.filter(
+                    return test_utils.waitUntil(() => _.filter(
                         IQ_stanzas,
-                        iq => iq.nodeTree.querySelector(
+                        iq => iq.querySelector(
                             `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                        )).pop(), 'nodeTree'));
+                        )).pop());
                 }).then(stanza => {
                     const features_stanza = $iq({
                         'from': room_jid,
                         'id': stanza.getAttribute('id'),
-                        'to': 'dummy@localhost/desktop',
+                        'to': 'romeo@montague.lit/desktop',
                         'type': 'result'
                     }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
                         .c('identity', {
@@ -127,12 +125,11 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     return test_utils.waitUntil(() => _.filter(
                         _converse.connection.IQ_stanzas,
-                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="get"] query[xmlns="jabber:iq:register"]`, iq.nodeTree).length
+                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length
                     ).pop());
-                }).then(node => {
-                    const stanza = node.nodeTree;
-                    expect(node.toLocaleString())
-                    .toBe(`<iq from="dummy@localhost/resource" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
+                }).then(stanza => {
+                    expect(Strophe.serialize(stanza))
+                    .toBe(`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
                                 `type="get" xmlns="jabber:client">`+
                             `<query xmlns="jabber:iq:register"/></iq>`);
                     view = _converse.chatboxviews.get(room_jid);
@@ -151,12 +148,11 @@
                     _converse.connection._dataRecv(test_utils.createRequest(result));
                     return test_utils.waitUntil(() => _.filter(
                         _converse.connection.IQ_stanzas,
-                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="set"] query[xmlns="jabber:iq:register"]`, iq.nodeTree).length
+                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
                     ).pop());
-                }).then(node => {
-                    const stanza = node.nodeTree;
-                    expect(node.toLocaleString()).toBe(
-                        `<iq from="dummy@localhost/resource" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                }).then(stanza => {
+                    expect(Strophe.serialize(stanza)).toBe(
+                        `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
                             `<query xmlns="jabber:iq:register">`+
                                 `<x type="submit" xmlns="jabber:x:data">`+
                                     `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#register</value></field>`+

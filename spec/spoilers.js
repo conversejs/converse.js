@@ -15,7 +15,7 @@
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current');
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
             /* <message to='romeo@montague.net/orchard' from='juliet@capulet.net/balcony' id='spoiler2'>
              *      <body>And at the end of the story, both of them die! It is so tragic!</body>
@@ -38,8 +38,8 @@
 
             await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
             const view = _converse.chatboxviews.get(sender_jid);
-            await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Max Frankfurter')
-            expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Max Frankfurter');
+            await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
+            expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Mercutio');
             const message_content = view.el.querySelector('.chat-msg__text');
             expect(message_content.textContent).toBe(spoiler);
             const spoiler_hint_el = view.el.querySelector('.spoiler-hint');
@@ -53,7 +53,7 @@
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current');
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             /* <message to='romeo@montague.net/orchard' from='juliet@capulet.net/balcony' id='spoiler2'>
              *      <body>And at the end of the story, both of them die! It is so tragic!</body>
              *      <spoiler xmlns='urn:xmpp:spoiler:0'>Love story end</spoiler>
@@ -72,8 +72,8 @@
             await _converse.chatboxes.onMessage(msg);
             await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
             const view = _converse.chatboxviews.get(sender_jid);
-            await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Max Frankfurter')
-            expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Max Frankfurter')).toBeTruthy();
+            await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
+            expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Mercutio')).toBeTruthy();
             const message_content = view.el.querySelector('.chat-msg__text');
             expect(message_content.textContent).toBe(spoiler);
             const spoiler_hint_el = view.el.querySelector('.spoiler-hint');
@@ -88,7 +88,7 @@
 
             await test_utils.waitForRoster(_converse, 'current', 1);
             test_utils.openControlBox();
-            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
             // XXX: We need to send a presence from the contact, so that we
             // have a resource, that resource is then queried to see
@@ -96,7 +96,7 @@
             // the spoiler button will appear.
             const presence = $pres({
                 'from': contact_jid+'/phone',
-                'to': 'dummy@localhost'
+                'to': 'romeo@montague.lit'
             });
             _converse.connection._dataRecv(test_utils.createRequest(presence));
             await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -110,17 +110,17 @@
 
             const textarea = view.el.querySelector('.chat-textarea');
             textarea.value = 'This is the spoiler';
-            view.keyPressed({
+            view.onKeyDown({
                 target: textarea,
                 preventDefault: _.noop,
                 keyCode: 13
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            /* Test the XML stanza 
+            /* Test the XML stanza
              *
-             * <message from="dummy@localhost/resource"
-             *          to="max.frankfurter@localhost"
+             * <message from="romeo@montague.lit/orchard"
+             *          to="max.frankfurter@montague.lit"
              *          type="chat"
              *          id="4547c38b-d98b-45a5-8f44-b4004dbc335e"
              *          xmlns="jabber:client">
@@ -138,7 +138,7 @@
             expect(body_el.textContent).toBe('This is the spoiler');
 
             /* Test the HTML spoiler message */
-            expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Max Mustermann');
+            expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
 
             const spoiler_msg_el = view.el.querySelector('.chat-msg__text.spoiler');
             expect(spoiler_msg_el.textContent).toBe('This is the spoiler');
@@ -161,7 +161,7 @@
 
             await test_utils.waitForRoster(_converse, 'current', 1);
             test_utils.openControlBox();
-            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
             // XXX: We need to send a presence from the contact, so that we
             // have a resource, that resource is then queried to see
@@ -169,7 +169,7 @@
             // the spoiler button will appear.
             const presence = $pres({
                 'from': contact_jid+'/phone',
-                'to': 'dummy@localhost'
+                'to': 'romeo@montague.lit'
             });
             _converse.connection._dataRecv(test_utils.createRequest(presence));
             await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -187,17 +187,17 @@
             const hint_input = view.el.querySelector('.spoiler-hint');
             hint_input.value = 'This is the hint';
 
-            view.keyPressed({
+            view.onKeyDown({
                 target: textarea,
                 preventDefault: _.noop,
                 keyCode: 13
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            /* Test the XML stanza 
+            /* Test the XML stanza
              *
-             * <message from="dummy@localhost/resource"
-             *          to="max.frankfurter@localhost"
+             * <message from="romeo@montague.lit/orchard"
+             *          to="max.frankfurter@montague.lit"
              *          type="chat"
              *          id="4547c38b-d98b-45a5-8f44-b4004dbc335e"
              *          xmlns="jabber:client">
@@ -216,7 +216,7 @@
             expect(body_el.textContent).toBe('This is the spoiler');
 
             /* Test the HTML spoiler message */
-            expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Max Mustermann');
+            expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
 
             const spoiler_msg_el = view.el.querySelector('.chat-msg__text.spoiler');
             expect(spoiler_msg_el.textContent).toBe('This is the spoiler');

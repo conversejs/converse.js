@@ -69,7 +69,8 @@ converse.plugins.add('converse-message-view', {
             toHTML () {
                 return tpl_message_versions_modal(Object.assign(
                     this.model.toJSON(), {
-                    '__': __
+                    '__': __,
+                    'dayjs': dayjs
                 }));
             }
         });
@@ -81,7 +82,13 @@ converse.plugins.add('converse-message-view', {
             },
 
             initialize () {
-                this.debouncedRender = _.debounce(this.render, 50);
+                this.debouncedRender = _.debounce(() => {
+                    // If the model gets destroyed in the meantime,
+                    // it no longer has a collection
+                    if (this.model.collection) {
+                        this.render();
+                    }
+                }, 50);
                 if (this.model.vcard) {
                     this.model.vcard.on('change', this.debouncedRender, this);
                 }
@@ -157,6 +164,7 @@ converse.plugins.add('converse-message-view', {
                     Object.assign(
                         this.model.toJSON(), {
                         '__': __,
+                        'is_groupchat_message': this.model.get('type') === 'groupchat',
                         'is_me_message': is_me_message,
                         'roles': roles,
                         'pretty_time': time.format(_converse.time_format),
@@ -197,7 +205,11 @@ converse.plugins.add('converse-message-view', {
                 }
                 await promise;
                 this.replaceElement(msg);
-                this.model.collection.trigger('rendered', this);
+                if (this.model.collection) {
+                    // If the model gets destroyed in the meantime, it no
+                    // longer has a collection.
+                    this.model.collection.trigger('rendered', this);
+                }
             },
 
             renderErrorMessage () {

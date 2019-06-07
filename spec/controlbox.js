@@ -6,7 +6,8 @@
           $msg = converse.env.$msg,
           $iq = converse.env.$iq,
           u = converse.env.utils,
-          Strophe = converse.env.Strophe;
+          Strophe = converse.env.Strophe,
+          sizzle = converse.env.sizzle;
 
 
     describe("The Controlbox", function () {
@@ -47,13 +48,13 @@
                 test_utils.openControlBox();
                 // Adding two contacts one with Capital initials and one with small initials of same JID (Case sensitive check)
                 _converse.roster.create({
-                    jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                    jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     subscription: 'none',
                     ask: 'subscribe',
                     fullname: mock.pend_names[0]
                 });
                 _converse.roster.create({
-                    jid: mock.pend_names[0].replace(/ /g,'.') + '@localhost',
+                    jid: mock.pend_names[0].replace(/ /g,'.') + '@montague.lit',
                     subscription: 'none',
                     ask: 'subscribe',
                     fullname: mock.pend_names[0]
@@ -73,7 +74,7 @@
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 _converse.api.trigger('rosterContactsFetched');
 
-                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 await test_utils.waitUntil(() => _converse.chatboxes.length);
                 const chatview = _converse.chatboxviews.get(sender_jid);
@@ -207,13 +208,13 @@
             input_jid.value = 'someone@';
             const evt = new Event('input');
             input_jid.dispatchEvent(evt);
-            expect(modal.el.querySelector('.suggestion-box li').textContent).toBe('someone@localhost');
-            input_jid.value = 'someone@localhost';
+            expect(modal.el.querySelector('.suggestion-box li').textContent).toBe('someone@montague.lit');
+            input_jid.value = 'someone@montague.lit';
             input_name.value = 'Someone';
             modal.el.querySelector('button[type="submit"]').click();
             expect(sent_stanza.toLocaleString()).toEqual(
             `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"><item jid="someone@localhost" name="Someone"/></query>`+
+                `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit" name="Someone"/></query>`+
             `</iq>`);
             done();
         }));
@@ -232,27 +233,26 @@
             expect(modal.name_auto_complete).toBe(undefined);
 
             await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
-            const sendIQ = _converse.connection.sendIQ;
-            let sent_stanza;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                sendIQ.bind(this)(iq, callback, errback);
-            });
             expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
             const input_jid = modal.el.querySelector('input[name="jid"]');
             const input_name = modal.el.querySelector('input[name="name"]');
-            input_jid.value = 'someone@localhost';
+            input_jid.value = 'someone@montague.lit';
             modal.el.querySelector('button[type="submit"]').click();
-            await test_utils.waitUntil(() => sent_stanza.nodeTree.matches('iq'));
-            expect(sent_stanza.toLocaleString()).toEqual(
-            `<iq id="${sent_stanza.nodeTree.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"><item jid="someone@localhost"/></query>`+
-            `</iq>`);
+
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const sent_stanza = await test_utils.waitUntil(
+                () => IQ_stanzas.filter(s => sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, s).length).pop()
+            );
+            expect(Strophe.serialize(sent_stanza)).toEqual(
+                `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                    `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit"/></query>`+
+                `</iq>`
+            );
             done();
         }));
 
 
-        it("integrates with xhr_user_search_url to search for contacts", 
+        it("integrates with xhr_user_search_url to search for contacts",
             mock.initConverse(
                 null, ['rosterGroupsFetched'],
                 { 'xhr_user_search_url': 'http://example.org/?' },
@@ -324,10 +324,10 @@
                 'send': function () {
                     const value = modal.el.querySelector('input[name="name"]').value;
                     if (value === 'existing') {
-                        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         xhr.responseText = JSON.stringify([{"jid": contact_jid, "fullname": mock.cur_names[0]}]);
-                    } else if (value === 'dummy') {
-                        xhr.responseText = JSON.stringify([{"jid": "dummy@localhost", "fullname": "Max Mustermann"}]);
+                    } else if (value === 'romeo') {
+                        xhr.responseText = JSON.stringify([{"jid": "romeo@montague.lit", "fullname": "Romeo Montague"}]);
                     } else if (value === 'ambiguous') {
                         xhr.responseText = JSON.stringify([
                             {"jid": "marty@mcfly.net", "fullname": "Marty McFly"},
@@ -374,7 +374,7 @@
             expect(feedback_el.textContent).toBe('Sorry, could not find a contact with that name');
             feedback_el.textContent = '';
 
-            input_el.value = 'dummy';
+            input_el.value = 'romeo';
             modal.el.querySelector('button[type="submit"]').click();
             feedback_el = modal.el.querySelector('.invalid-feedback');
             expect(feedback_el.textContent).toBe('You cannot add yourself as a contact');

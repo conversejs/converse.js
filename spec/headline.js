@@ -16,7 +16,7 @@
             /* XMPP spam message:
              *
              *  <message xmlns="jabber:client"
-             *          to="dummy@localhost"
+             *          to="romeo@montague.lit"
              *          type="chat"
              *          from="gapowa20102106@rds-rostov.ru/Adium">
              *      <nick xmlns="http://jabber.org/protocol/nick">-wwdmz</nick>
@@ -24,9 +24,9 @@
              *  </message
              */
             sinon.spy(utils, 'isHeadlineMessage');
-            var stanza = $msg({
+            const stanza = $msg({
                     'xmlns': 'jabber:client',
-                    'to': 'dummy@localhost',
+                    'to': 'romeo@montague.lit',
                     'type': 'chat',
                     'from': 'gapowa20102106@rds-rostov.ru/Adium',
                 })
@@ -56,10 +56,10 @@
              *  </message>
              */
             sinon.spy(utils, 'isHeadlineMessage');
-            var stanza = $msg({
+            const stanza = $msg({
                     'type': 'headline',
                     'from': 'notify.example.com',
-                    'to': 'dummy@localhost',
+                    'to': 'romeo@montague.lit',
                     'xml:lang': 'en'
                 })
                 .c('subject').t('SIEVE').up()
@@ -77,7 +77,7 @@
             expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
             utils.isHeadlineMessage.restore(); // unwraps
             // Headlines boxes don't show an avatar
-            var view = _converse.chatboxviews.get('notify.example.com');
+            const view = _converse.chatboxviews.get('notify.example.com');
             expect(view.model.get('show_avatar')).toBeFalsy();
             expect(view.el.querySelector('img.avatar')).toBe(null);
             done();
@@ -91,7 +91,7 @@
             var stanza = $msg({
                     'type': 'headline',
                     'from': 'andre5114@jabber.snc.ru/Spark',
-                    'to': 'dummy@localhost',
+                    'to': 'romeo@montague.lit',
                     'xml:lang': 'en'
                 })
                 .c('nick').t('gpocy').up()

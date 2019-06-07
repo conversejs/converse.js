@@ -23,37 +23,6 @@
                 _converse.connection = connection;
                 done();
             }));
-
-            describe("with prebind", function () {
-
-                it("needs a jid when also using keepalive", mock.initConverse([], null, {'auto_login': false}, (done, _converse) => {
-                    const authentication = _converse.authentication;
-                    const jid = _converse.jid;
-                    delete _converse.jid;
-                    _converse.keepalive = true;
-                    _converse.authentication = "prebind";
-                    expect(_converse.logIn.bind(_converse)).toThrow(
-                        new Error(
-                            "restoreBOSHSession: tried to restore a \"keepalive\" session "+
-                            "but we don't have the JID for the user!"));
-                    _converse.authentication= authentication;
-                    _converse.jid = jid;
-                    _converse.keepalive = false;
-                    done();
-                }));
-
-                it("needs jid, rid and sid values when not using keepalive", mock.initConverse((done, _converse) => {
-                    const jid = _converse.jid;
-                    delete _converse.jid;
-                    _converse.keepalive = false;
-                    _converse.authentication = "prebind";
-                    expect(_converse.logIn.bind(_converse)).toThrow(
-                        new Error("attemptPreboundSession: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values or a prebind_url."));
-                    _converse.bosh_service_url = undefined;
-                    _converse.jid = jid;
-                    done();
-                }));
-            });
         });
 
         describe("A chat state indication", function () {
@@ -219,9 +188,6 @@
                 test_utils.createContacts(_converse, 'current');
                 const old_connection = _converse.connection;
                 _converse.connection._proto.rid = '1234';
-                _converse.expose_rid_and_sid = false;
-                expect(_converse.api.tokens.get('rid')).toBe(null);
-                _converse.expose_rid_and_sid = true;
                 expect(_converse.api.tokens.get('rid')).toBe('1234');
                 _converse.connection = undefined;
                 expect(_converse.api.tokens.get('rid')).toBe(null);
@@ -234,9 +200,6 @@
                 test_utils.createContacts(_converse, 'current');
                 const old_connection = _converse.connection;
                 _converse.connection._proto.sid = '1234';
-                _converse.expose_rid_and_sid = false;
-                expect(_converse.api.tokens.get('sid')).toBe(null);
-                _converse.expose_rid_and_sid = true;
                 expect(_converse.api.tokens.get('sid')).toBe('1234');
                 _converse.connection = undefined;
                 expect(_converse.api.tokens.get('sid')).toBe(null);
@@ -254,16 +217,16 @@
                 let contact = await _converse.api.contacts.get('non-existing@jabber.org');
                 expect(contact).toBeFalsy();
                 // Check when a single jid is given
-                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 contact = await _converse.api.contacts.get(jid);
-                expect(contact.get('fullname')).toBe(mock.cur_names[0]);
+                expect(contact.getDisplayName()).toBe(mock.cur_names[0]);
                 expect(contact.get('jid')).toBe(jid);
                 // You can retrieve multiple contacts by passing in an array
-                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 let list = await _converse.api.contacts.get([jid, jid2]);
                 expect(Array.isArray(list)).toBeTruthy();
-                expect(list[0].get('fullname')).toBe(mock.cur_names[0]);
-                expect(list[1].get('fullname')).toBe(mock.cur_names[1]);
+                expect(list[0].getDisplayName()).toBe(mock.cur_names[0]);
+                expect(list[1].getDisplayName()).toBe(mock.cur_names[1]);
                 // Check that all JIDs are returned if you call without any parameters
                 list = await _converse.api.contacts.get();
                 expect(list.length).toBe(mock.cur_names.length);
@@ -294,8 +257,8 @@
 
                 // Test on chat that doesn't exist.
                 expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
-                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
                 // Test on chat that's not open
                 let box = _converse.api.chats.get(jid);
@@ -327,8 +290,8 @@
                 test_utils.createContacts(_converse, 'current', 2);
                 _converse.api.trigger('rosterContactsFetched');
 
-                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 // Test on chat that doesn't exist.
                 expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
 

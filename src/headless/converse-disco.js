@@ -6,6 +6,7 @@
 
 /* This is a Converse plugin which add support for XEP-0030: Service Discovery */
 
+import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import sizzle from "sizzle";
 
@@ -21,6 +22,7 @@ converse.plugins.add('converse-disco', {
 
         // Promises exposed by this plugin
         _converse.api.promises.add('discoInitialized');
+        _converse.api.promises.add('streamFeaturesAdded');
 
 
         /**
@@ -40,30 +42,30 @@ converse.plugins.add('converse-disco', {
                 this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
 
                 this.dataforms = new Backbone.Collection();
-                this.dataforms.browserStorage = new Backbone.BrowserStorage.session(
+                this.dataforms.browserStorage = new BrowserStorage.session(
                     `converse.dataforms-${this.get('jid')}`
                 );
 
                 this.features = new Backbone.Collection();
-                this.features.browserStorage = new Backbone.BrowserStorage.session(
+                this.features.browserStorage = new BrowserStorage.session(
                     `converse.features-${this.get('jid')}`
                 );
                 this.features.on('add', this.onFeatureAdded, this);
 
                 this.fields = new Backbone.Collection();
-                this.fields.browserStorage = new Backbone.BrowserStorage.session(
+                this.fields.browserStorage = new BrowserStorage.session(
                     `converse.fields-${this.get('jid')}`
                 );
                 this.fields.on('add', this.onFieldAdded, this);
 
                 this.identities = new Backbone.Collection();
-                this.identities.browserStorage = new Backbone.BrowserStorage.session(
+                this.identities.browserStorage = new BrowserStorage.session(
                     `converse.identities-${this.get('jid')}`
                 );
                 this.fetchFeatures();
 
                 this.items = new _converse.DiscoEntities();
-                this.items.browserStorage = new Backbone.BrowserStorage.session(
+                this.items.browserStorage = new BrowserStorage.session(
                     `converse.disco-items-${this.get('jid')}`
                 );
                 this.items.fetch();
@@ -138,13 +140,14 @@ converse.plugins.add('converse-disco', {
             },
 
             async queryInfo () {
+                let stanza;
                 try {
-                    const stanza = await _converse.api.disco.info(this.get('jid'), null);
-                    this.onInfo(stanza);
+                    stanza = await _converse.api.disco.info(this.get('jid'), null);
                 } catch (iq) {
                     _converse.log(iq, Strophe.LogLevel.ERROR);
                     this.waitUntilFeaturesDiscovered.resolve(this);
                 }
+                this.onInfo(stanza);
             },
 
             onDiscoItems (stanza) {
@@ -177,7 +180,7 @@ converse.plugins.add('converse-disco', {
             },
 
             onInfo (stanza) {
-                _.forEach(stanza.querySelectorAll('identity'), (identity) => {
+                Array.from(stanza.querySelectorAll('identity')).forEach(identity => {
                     this.identities.create({
                         'category': identity.getAttribute('category'),
                         'type': identity.getAttribute('type'),
@@ -258,32 +261,33 @@ converse.plugins.add('converse-disco', {
         }
 
         function initStreamFeatures () {
-            _converse.stream_features = new Backbone.Collection();
-            _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(
-                `converse.stream-features-${_converse.bare_jid}`
-            );
-            _converse.stream_features.fetch({
-                success (collection) {
-                    if (collection.length === 0 && _converse.connection.features) {
-                        _.forEach(
-                            _converse.connection.features.childNodes,
-                            (feature) => {
-                                _converse.stream_features.create({
-                                    'name': feature.nodeName,
-                                    'xmlns': feature.getAttribute('xmlns')
+            const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
+            const id = `converse.stream-features-${bare_jid}`;
+            if (!_converse.stream_features || _converse.stream_features.browserStorage.id !== id) {
+                _converse.stream_features = new Backbone.Collection();
+                _converse.stream_features.browserStorage = new BrowserStorage.session(id);
+                _converse.stream_features.fetch({
+                    success (collection) {
+                        if (collection.length === 0 && _converse.connection.features) {
+                            Array.from(_converse.connection.features.childNodes)
+                                .forEach(feature => {
+                                    _converse.stream_features.create({
+                                        'name': feature.nodeName,
+                                        'xmlns': feature.getAttribute('xmlns')
+                                    });
                                 });
-                            });
+                        }
+                        /**
+                         * Triggered as soon as Converse has processed the stream features as advertised by
+                         * the server. If you want to check whether a stream feature is supported before
+                         * proceeding, then you'll first want to wait for this event.
+                         * @event _converse#streamFeaturesAdded
+                         * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
+                         */
+                        _converse.api.trigger('streamFeaturesAdded');
                     }
-                }
-            });
-            /**
-             * Triggered as soon as Converse has processed the stream features as advertised by
-             * the server. If you want to check whether a stream feature is supported before
-             * proceeding, then you'll first want to wait for this event.
-             * @event _converse#streamFeaturesAdded
-             * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
-             */
-            _converse.api.trigger('streamFeaturesAdded');
+                });
+            }
         }
 
         async function initializeDisco () {
@@ -291,7 +295,7 @@ converse.plugins.add('converse-disco', {
             _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
             _converse.disco_entities = new _converse.DiscoEntities();
-            _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(
+            _converse.disco_entities.browserStorage = new BrowserStorage.session(
                 `converse.disco-entities-${_converse.bare_jid}`
             );
 
@@ -311,7 +315,9 @@ converse.plugins.add('converse-disco', {
             _converse.api.trigger('discoInitialized');
         }
 
-        _converse.api.listen.on('setUserJID', initStreamFeatures);
+        _converse.api.listen.on('userSessionInitialized', initStreamFeatures);
+        _converse.api.listen.on('beforeResourceBinding', initStreamFeatures);
+
         _converse.api.listen.on('reconnected', initializeDisco);
         _converse.api.listen.on('connected', initializeDisco);
 
@@ -323,6 +329,10 @@ converse.plugins.add('converse-disco', {
                 });
                 _converse.disco_entities.reset();
                 _converse.disco_entities.browserStorage._clear();
+            }
+            if (_converse.stream_features) {
+                _converse.stream_features.reset();
+                _converse.stream_features.browserStorage._clear();
             }
         });
 
@@ -384,7 +394,8 @@ converse.plugins.add('converse-disco', {
                      * @param {String} xmlns The XML namespace
                      * @example _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver')
                      */
-                    'getFeature': function (name, xmlns) {
+                    'getFeature': async function (name, xmlns) {
+                        await _converse.api.waitUntil('streamFeaturesAdded');
                         if (_.isNil(name) || _.isNil(xmlns)) {
                             throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
                         }

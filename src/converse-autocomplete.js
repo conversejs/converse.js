@@ -279,7 +279,7 @@ converse.plugins.add("converse-autocomplete", {
                 }
             }
 
-            keyPressed (ev) {
+            onKeyDown (ev) {
                 if (this.opened) {
                     if (_.includes([_converse.keycodes.ENTER, _converse.keycodes.TAB], ev.keyCode) && this.selected) {
                         ev.preventDefault();

@@ -1,0 +1,8 @@
+{
+  "arrowParens": "avoid",
+  "printWidth": 100,
+  "quoteProps": "preserve",
+  "singleQuote": true,
+  "spaceBeforeFunctionParen": true,
+  "tabWidth": 4
+}

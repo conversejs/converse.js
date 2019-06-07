@@ -1,4 +1,9 @@
 #conversejs {
+    .older-msg {
+        time {
+            font-weight: bold;
+        }
+    }
     .message {
         .mention {
             font-weight: bold;
@@ -125,7 +130,21 @@
                 margin-left: 0.5rem;
                 width: calc(100% - var(--message-avatar-width));
             }
+
+            .chat-msg__content--me {
+                .chat-msg__body--groupchat {
+                    .chat-msg__text {
+                        color: var(--subdued-color);
+                    }
+                    &.chat-msg__body--delayed .chat-msg__text,
+                    &.chat-msg__body--received .chat-msg__text {
+                        color: var(--message-text-color);
+                    }
+                }
+            }
+
             .chat-msg__content--action {
+                width: 100%;
                 margin-left: 0;
             }
 
@@ -159,8 +178,8 @@
             }
 
             .chat-msg__text {
-                padding: 0;
                 color: var(--message-text-color);
+                padding: 0;
                 width: 100%;
                 white-space: pre-wrap;
                 a {
@@ -250,7 +269,7 @@
             }
             &.chat-msg--action {
                 .chat-msg__content {
-                    flex-wrap: wrap;
+                    flex-wrap: nowrap;
                     flex-direction: row;
                     justify-content: flex-start;
                 }
@@ -281,6 +300,7 @@
                 }
                 .chat-msg__content {
                     margin-left: 2.75rem;
+                    width: 100%;
                 }
             }
 

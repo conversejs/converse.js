@@ -4,10 +4,13 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
+import "backbone.nativeview";
 import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
 import * as twemoji from "twemoji";
+import BrowserStorage from "backbone.browserStorage";
+import { Overview } from "backbone.overview";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import tpl_alert from "templates/alert.html";
@@ -28,7 +31,7 @@ import tpl_user_details_modal from "templates/user_details_modal.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss/dist/xss";
 
-const { $msg, Backbone, Promise, Strophe, _, b64_sha1, sizzle, dayjs } = converse.env;
+const { $msg, Backbone, Promise, Strophe, _, sizzle, dayjs } = converse.env;
 
 
 converse.plugins.add('converse-chatview', {
@@ -69,7 +72,7 @@ converse.plugins.add('converse-chatview', {
 
         function onWindowStateChanged (data) {
             if (_converse.chatboxviews) {
-                _converse.chatboxviews.each(view => {
+                _converse.chatboxviews.forEach(view => {
                     if (view.model.get('id') !== 'controlbox') {
                         view.onWindowStateChanged(data.state);
                     }
@@ -309,7 +312,7 @@ converse.plugins.add('converse-chatview', {
          * @namespace _converse.ChatBoxView
          * @memberOf _converse
          */
-        _converse.ChatBoxView = Backbone.Overview.extend({
+        _converse.ChatBoxView = Overview.extend({
             length: 200,
             className: 'chatbox hidden',
             is_chatroom: false,  // Leaky abstraction from MUC
@@ -330,7 +333,7 @@ converse.plugins.add('converse-chatview', {
                 'click .toggle-smiley': 'toggleEmojiMenu',
                 'click .upload-file': 'toggleFileUpload',
                 'input .chat-textarea': 'inputChanged',
-                'keydown .chat-textarea': 'keyPressed',
+                'keydown .chat-textarea': 'onKeyDown',
                 'dragover .chat-textarea': 'onDragOver',
                 'drop .chat-textarea': 'onDrop',
             },
@@ -339,6 +342,10 @@ converse.plugins.add('converse-chatview', {
                 this.initDebounced();
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.messages.on('rendered', this.scrollDown, this);
+                this.model.messages.on('reset', () => {
+                    this.content.innerHTML = '';
+                    this.removeAll();
+                });
 
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.remove, this);
@@ -822,7 +829,8 @@ converse.plugins.add('converse-chatview', {
              * @param { object } message - The message Backbone object that was added.
              */
             async onMessageAdded (message) {
-                if (this.get(message.get('id'))) {
+                const id = message.get('id');
+                if (id && this.get(id)) {
                     // We already have a view for this message
                     return;
                 }
@@ -909,7 +917,7 @@ converse.plugins.add('converse-chatview', {
                         ['Sorry, the connection has been lost, and your message could not be sent'],
                         'error'
                     );
-                    _converse.reconnect();
+                    _converse.api.connection.reconnect();
                     return;
                 }
                 let spoiler_hint, hint_el = {};
@@ -942,7 +950,7 @@ converse.plugins.add('converse-chatview', {
                 this.setChatState(_converse.ACTIVE, {'silent': true});
             },
 
-            keyPressed (ev) {
+            onKeyDown (ev) {
                 /* Event handler for when a key is pressed in a chat box textarea.
                  */
                 if (ev.ctrlKey) {
@@ -1071,9 +1079,7 @@ converse.plugins.add('converse-chatview', {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 const result = confirm(__("Are you sure you want to clear the messages from this conversation?"));
                 if (result === true) {
-                    this.content.innerHTML = '';
-                    this.model.messages.reset();
-                    this.model.messages.browserStorage._clear();
+                    this.model.clearMessages();
                 }
                 return this;
             },
@@ -1096,7 +1102,7 @@ converse.plugins.add('converse-chatview', {
                     textarea.value = '';
                     textarea.value = existing+value+' ';
                 }
-                u.putCurserAtEnd(textarea);
+                u.placeCaretAtEnd(textarea);
             },
 
             createEmojiPicker () {
@@ -1104,7 +1110,7 @@ converse.plugins.add('converse-chatview', {
                     const storage = _converse.config.get('storage'),
                           id = `converse.emoji-${_converse.bare_jid}`;
                     _converse.emojipicker = new _converse.EmojiPicker({'id': id});
-                    _converse.emojipicker.browserStorage = new Backbone.BrowserStorage[storage](id);
+                    _converse.emojipicker.browserStorage = new BrowserStorage[storage](id);
                     _converse.emojipicker.fetch();
                 }
                 this.emoji_picker_view = new _converse.EmojiPickerView({

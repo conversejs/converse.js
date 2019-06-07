@@ -1,54 +1,32 @@
 // Converse.js (A browser based XMPP chat client)
 // https://conversejs.org
 //
-// Copyright (c) 2012-2019, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 // XEP-0313 Message Archive Management
 
 import "./converse-disco";
-import "strophejs-plugin-rsm";
 import converse from "./converse-core";
 import sizzle from "sizzle";
 
 
-const CHATROOMS_TYPE = 'chatroom';
-const { Promise, Strophe, $iq, _, dayjs } = converse.env;
+const { Strophe, $iq, $build, _, dayjs } = converse.env;
 const u = converse.env.utils;
 
-const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
 // XEP-0313 Message Archive Management
 const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
 
 converse.plugins.add('converse-mam', {
 
-    dependencies: ['converse-muc'],
+    dependencies: ['converse-rsm', 'converse-disco', 'converse-muc'],
 
     overrides: {
         // Overrides mentioned here will be picked up by converse.js's
         // plugin architecture they will replace existing methods on the
         // relevant objects or classes.
-        //
-        // New functions which don't exist yet can also be added.
         ChatBox: {
-
-            async findDuplicateFromArchiveID (stanza) {
-                const { _converse } = this.__super__;
-                const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
-                if (!result) {
-                    return null;
-                }
-                const by_jid = stanza.getAttribute('from') || this.get('jid');
-                const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
-                if (!supported) {
-                    return null;
-                }
-                const query = {};
-                query[`stanza_id ${by_jid}`] = result.getAttribute('id');
-                return this.messages.findWhere(query);
-            },
-
             async getDuplicateMessage (stanza) {
                 const message = await this.__super__.getDuplicateMessage.apply(this, arguments);
                 if (!message) {
@@ -80,6 +58,96 @@ converse.plugins.add('converse-mam', {
             message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
             message_archiving_timeout: 20000, // Time (in milliseconds) to wait before aborting MAM request
         });
+
+        const MAMEnabledChat = {
+
+            fetchNewestMessages () {
+                /* Fetches messages that might have been archived *after*
+                 * the last archived message in our local cache.
+                 */
+                if (this.disable_mam) {
+                    return;
+                }
+                const most_recent_msg = u.getMostRecentMessage(this);
+
+                if (_.isNil(most_recent_msg)) {
+                    this.fetchArchivedMessages();
+                } else {
+                    const stanza_id = most_recent_msg.get(`stanza_id ${this.get('jid')}`);
+                    if (stanza_id) {
+                        this.fetchArchivedMessages({'after': stanza_id});
+                    } else {
+                        this.fetchArchivedMessages({'start': most_recent_msg.get('time')});
+                    }
+                }
+            },
+
+            async fetchArchivedMessages (options) {
+                if (this.disable_mam) {
+                    return;
+                }
+                const is_groupchat = this.get('type') === _converse.CHATROOMS_TYPE;
+                const mam_jid = is_groupchat ? this.get('jid') : _converse.bare_jid;
+                if (!(await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid))) {
+                    return;
+                }
+                let message_handler;
+                if (is_groupchat) {
+                    message_handler = this.onMessage.bind(this);
+                } else {
+                    message_handler = _converse.chatboxes.onMessage.bind(_converse.chatboxes)
+                }
+                let result = {};
+                try {
+                    result = await _converse.api.archive.query(
+                        Object.assign({
+                            'groupchat': is_groupchat,
+                            'before': '', // Page backwards from the most recent message
+                            'max': _converse.archived_messages_page_size,
+                            'with': this.get('jid'),
+                        }, options));
+                } catch (e) {
+                    _converse.log(
+                        "Error or timeout while trying to fetch "+
+                        "archived messages", Strophe.LogLevel.ERROR);
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                }
+                if (result.messages) {
+                    result.messages.forEach(message_handler);
+                }
+            },
+
+            async findDuplicateFromArchiveID (stanza) {
+                const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+                if (!result) {
+                    return null;
+                }
+                const by_jid = stanza.getAttribute('from') || this.get('jid');
+                const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
+                if (!supported) {
+                    return null;
+                }
+                const query = {};
+                query[`stanza_id ${by_jid}`] = result.getAttribute('id');
+                return this.messages.findWhere(query);
+            },
+
+        }
+        Object.assign(_converse.ChatBox.prototype, MAMEnabledChat);
+
+
+        Object.assign(_converse.ChatRoom.prototype, {
+            fetchArchivedMessagesIfNecessary () {
+                if (this.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
+                        !this.get('mam_enabled') ||
+                        this.get('mam_initialized')) {
+                    return;
+                }
+                this.fetchArchivedMessages();
+                this.save({'mam_initialized': true});
+            }
+        });
+
 
         _converse.onMAMError = function (iq) {
             if (iq.querySelectorAll('feature-not-implemented').length) {
@@ -127,20 +195,28 @@ converse.plugins.add('converse-mam', {
         };
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('serviceDiscovered', (feature) => {
+        function getMAMPrefsFromFeature (feature) {
             const prefs = feature.get('preferences') || {};
-            if (feature.get('var') === Strophe.NS.MAM &&
-                    prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
-                    !_.isUndefined(_converse.message_archiving) ) {
-                // Ask the server for archiving preferences
+            if (feature.get('var') !== Strophe.NS.MAM || _.isUndefined(_converse.message_archiving)) {
+                return;
+            }
+            if (prefs['default'] !== _converse.message_archiving) {
                 _converse.api.sendIQ($iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}))
                     .then(_.partial(_converse.onMAMPreferences, feature))
                     .catch(_converse.onMAMError);
             }
-        });
+        }
 
+        _converse.api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
+        _converse.api.listen.on('afterMessagesFetched', chat => chat.fetchNewestMessages());
+        _converse.api.listen.on('chatReconnected', chat => chat.fetchNewestMessages());
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
-        /************************ END Event Handlers ************************/
+
+        _converse.api.listen.on('chatRoomOpened', (room) => {
+            room.on('change:mam_enabled', room.fetchArchivedMessagesIfNecessary, room);
+            room.on('change:connection_status', room.fetchArchivedMessagesIfNecessary, room);
+        });
+        /************************ END Event Handlers **************************/
 
 
         /************************ BEGIN API ************************/
@@ -162,12 +238,12 @@ converse.plugins.add('converse-mam', {
                   * Query for archived messages.
                   *
                   * The options parameter can also be an instance of
-                  * Strophe.RSM to enable easy querying between results pages.
+                  * _converse.RSM to enable easy querying between results pages.
                   *
                   * @method _converse.api.archive.query
-                  * @param {(Object|Strophe.RSM)} options Query parameters, either
+                  * @param {(Object|_converse.RSM)} options Query parameters, either
                   *      MAM-specific or also for Result Set Management.
-                  *      Can be either an object or an instance of Strophe.RSM.
+                  *      Can be either an object or an instance of _converse.RSM.
                   *      Valid query parameters are:
                   * * `with`
                   * * `start`
@@ -180,7 +256,7 @@ converse.plugins.add('converse-mam', {
                   * * `count`
                   * @throws {Error} An error is thrown if the XMPP server responds with an error.
                   * @returns {Promise<Object>} A promise which resolves to an object which
-                  * will have keys `messages` and `rsm` which contains a Strophe.RSM object
+                  * will have keys `messages` and `rsm` which contains a _converse.RSM object
                   * on which "next" or "previous" can be called before passing it in again
                   * to this method, to get the next or previous page in the result set.
                   *
@@ -269,7 +345,7 @@ converse.plugins.add('converse-mam', {
                   * // repeatedly make a further query to fetch the next batch of messages.
                   * //
                   * // To simplify this usecase for you, the callback method receives not only an array
-                  * // with the returned archived messages, but also a special Strophe.RSM (*Result Set Management*)
+                  * // with the returned archived messages, but also a special _converse.RSM (*Result Set Management*)
                   * // object which contains the query parameters you passed in, as well
                   * // as two utility methods `next`, and `previous`.
                   * //
@@ -331,12 +407,12 @@ converse.plugins.add('converse-mam', {
                     }
                     const attrs = {'type':'set'};
                     if (options && options.groupchat) {
-                        if (!options['with']) { // eslint-disable-line dot-notation
+                        if (!options['with']) {
                             throw new Error(
                                 'You need to specify a "with" value containing '+
                                 'the chat room JID, when querying groupchat messages.');
                         }
-                        attrs.to = options['with']; // eslint-disable-line dot-notation
+                        attrs.to = options['with'];
                     }
 
                     const jid = attrs.to || _converse.bare_jid;
@@ -353,9 +429,9 @@ converse.plugins.add('converse-mam', {
                                 .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
                                 .c('value').t(Strophe.NS.MAM).up().up();
 
-                        if (options['with'] && !options.groupchat) {  // eslint-disable-line dot-notation
+                        if (options['with'] && !options.groupchat) {
                             stanza.c('field', {'var':'with'}).c('value')
-                                .t(options['with']).up().up(); // eslint-disable-line dot-notation
+                                .t(options['with']).up().up();
                         }
                         ['start', 'end'].forEach(t => {
                             if (options[t]) {
@@ -368,16 +444,16 @@ converse.plugins.add('converse-mam', {
                             }
                         });
                         stanza.up();
-                        if (options instanceof Strophe.RSM) {
+                        if (options instanceof _converse.RSM) {
                             stanza.cnode(options.toXML());
-                        } else if (_.intersection(RSM_ATTRIBUTES, Object.keys(options)).length) {
-                            stanza.cnode(new Strophe.RSM(options).toXML());
+                        } else if (_.intersection(_converse.RSM_ATTRIBUTES, Object.keys(options)).length) {
+                            stanza.cnode(new _converse.RSM(options).toXML());
                         }
                     }
 
                     const messages = [];
                     const message_handler = _converse.connection.addHandler(message => {
-                        if (options.groupchat && message.getAttribute('from') !== options['with']) { // eslint-disable-line dot-notation
+                        if (options.groupchat && message.getAttribute('from') !== options['with']) {
                             return true;
                         }
                         const result = message.querySelector('result');
@@ -398,7 +474,7 @@ converse.plugins.add('converse-mam', {
                     const set = iq.querySelector('set');
                     let rsm;
                     if (!_.isNull(set)) {
-                        rsm = new Strophe.RSM({'xml': set});
+                        rsm = new _converse.RSM({'xml': set});
                         Object.assign(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
                     }
                     return {

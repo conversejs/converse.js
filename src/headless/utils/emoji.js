@@ -161,11 +161,13 @@ function convert (unicode) {
 }
 
 u.isSingleEmoji = function (str) {
+    str = str.trim();
     if (!str || (str.length > 2 && !str.startsWith(':'))) {
         return;
     }
     const result = _.flow(u.shortnameToUnicode, twemoji.default.parse)(str)
-    return result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
+    const match = result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
+    return match && match.length === 1;
 }
 
 u.shortnameToUnicode = function (str) {

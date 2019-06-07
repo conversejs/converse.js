@@ -71,15 +71,15 @@
 
     // Names from http://www.fakenamegenerator.com/
     mock.req_names = [
-        'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer'
+        'Escalus, Prince of Verona', 'The Nurse', 'Paris'
     ];
     mock.pend_names = [
-        'Suleyman van Beusichem', 'Nanja van Yperen', 'Nicole Diederich'
+        'Lord Capulet', 'Lady Capulet', 'Servant'
     ];
     mock.cur_names = [
-        'Max Frankfurter', 'Candice van der Knijff', 'Irini Vlastuin', 'Rinse Sommer', 'Annegreet Gomez',
-        'Robin Schook', 'Marcel Eberhardt', 'Simone Brauer', 'Asmaa Haakman', 'Felix Amsel',
-        'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers'
+        'Mercutio', 'Juliet Capulet', 'Lady Montague', 'Lord Montague', 'Friar Laurence',
+        'Tybalt', 'Lady Capulet', 'Benviolo', 'Balthasar',
+        'Peter', 'Abram', 'Sampson', 'Gregory', 'Potpan', 'Friar John'
     ];
     mock.num_contacts = mock.req_names.length + mock.pend_names.length + mock.cur_names.length;
 
@@ -117,6 +117,9 @@
             c.IQ_stanzas = [];
             c.IQ_ids = [];
             c.sendIQ = function (iq, callback, errback) {
+                if (!_.isElement(iq)) {
+                    iq = iq.nodeTree;
+                }
                 this.IQ_stanzas.push(iq);
                 const id = sendIQ.bind(this)(iq, callback, errback);
                 this.IQ_ids.push(id);
@@ -142,16 +145,22 @@
                     '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">'+
                         '<required/>'+
                     '</bind>'+
+                    `<sm xmlns='urn:xmpp:sm:3'/>`+
                     '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">'+
                         '<optional/>'+
                     '</session>'+
                 '</stream:features>').firstChild;
 
             c._proto._connect = function () {
-                c.authenticated = true;
                 c.connected = true;
                 c.mock = true;
-                c.jid = 'dummy@localhost/resource';
+                c.jid = 'romeo@montague.lit/orchard';
+                c._changeConnectStatus(Strophe.Status.BINDREQUIRED);
+            };
+
+            c.bind = function () {
+                c.authenticated = true;
+                this.authenticated = true;
                 c._changeConnectStatus(Strophe.Status.CONNECTED);
             };
 
@@ -177,11 +186,11 @@
             _.forEach(spies.connection, method => spyOn(connection, method));
         }
 
-        const _converse = await converse.initialize(_.extend({
+        const _converse = await converse.initialize(Object.assign({
             'i18n': 'en',
             'auto_subscribe': false,
             'play_sounds': false,
-            'bosh_service_url': 'localhost',
+            'bosh_service_url': 'montague.lit/http-bind',
             'connection': connection,
             'animate': false,
             'use_emojione': false,
@@ -205,9 +214,9 @@
                     jid = model.get('jid') || model.get('muc_jid');
                 }
                 let fullname;
-                if (!jid || jid == 'dummy@localhost') {
-                    jid = 'dummy@localhost';
-                    fullname = 'Max Mustermann' ;
+                if (!jid || jid == 'romeo@montague.lit') {
+                    jid = 'romeo@montague.lit';
+                    fullname = 'Romeo Montague' ;
                 } else {
                     const name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
                     const last = name.length-1;
@@ -229,10 +238,8 @@
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         };
         if (_.get(settings, 'auto_login') !== false) {
-            _converse.api.user.login({
-                'jid': 'dummy@localhost',
-                'password': 'secret'
-            });
+            _converse.api.user.login('romeo@montague.lit', 'secret');
+            await _converse.api.waitUntil('afterResourceBinding');
         }
         window.converse_disable_effects = true;
         return _converse;

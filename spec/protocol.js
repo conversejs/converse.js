@@ -55,7 +55,7 @@
                     async function (done, _converse) {
 
                 var contact, sent_stanza, IQ_id, stanza, modal;
-                await test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']);
+                await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                 await test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'), 300);
                 /* The process by which a user subscribes to a contact, including
                  * the interaction between roster items and subscription states.
@@ -177,7 +177,7 @@
                 expect(contact.subscribe).toHaveBeenCalled();
                 expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
                     `<presence to="contact@example.org" type="subscribe" xmlns="jabber:client">`+
-                        `<nick xmlns="http://jabber.org/protocol/nick">Max Mustermann</nick>`+
+                        `<nick xmlns="http://jabber.org/protocol/nick">Romeo Montague</nick>`+
                     `</presence>`
                 );
                 /* As a result, the user's server MUST initiate a second roster
@@ -273,8 +273,8 @@
                         'name': 'Nicky'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 // Check that the IQ set was acknowledged.
-                expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
-                    `<iq from="dummy@localhost/resource" id="${IQ_id}" type="result" xmlns="jabber:client"/>`
+                expect(Strophe.serialize(sent_stanza)).toBe( // Strophe adds the xmlns attr (although not in spec)
+                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="result" xmlns="jabber:client"/>`
                 );
                 expect(_converse.roster.updateContact).toHaveBeenCalled();
 
@@ -362,7 +362,7 @@
                 expect(u.hasClass('to', contacts[0])).toBe(false);
                 expect(u.hasClass('both', contacts[0])).toBe(true);
                 done();
-                
+
             }));
 
             it("Alternate Flow: Contact Declines Subscription Request",
@@ -458,7 +458,7 @@
                     { roster_groups: false },
                     async function (done, _converse) {
 
-                var sent_IQ, IQ_id, jid = 'annegreet.gomez@localhost';
+                var sent_IQ, IQ_id, jid = 'abram@montague.lit';
                 test_utils.openControlBox(_converse);
                 test_utils.createContacts(_converse, 'current');
                 spyOn(window, 'confirm').and.returnValue(true);
@@ -472,7 +472,7 @@
                 });
                 const header = sizzle('a:contains("My contacts")', _converse.rosterview.el).pop();
                 await test_utils.waitUntil(() => header.parentElement.querySelectorAll('li').length);
-                        
+
                 // remove the first user
                 header.parentElement.querySelector('li .remove-xmpp-contact').click();
                 expect(window.confirm).toHaveBeenCalled();
@@ -499,7 +499,7 @@
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:roster">`+
-                            `<item jid="annegreet.gomez@localhost" subscription="remove"/>`+
+                            `<item jid="abram@montague.lit" subscription="remove"/>`+
                         `</query>`+
                     `</iq>`);
 

@@ -120,6 +120,17 @@ body.converse-fullscreen {
     &.converse-overlayed {
         height: 3em;
     }
+    &.converse-embedded {
+        @include box-sizing(border-box);
+        *, *:before, *:after {
+            @include box-sizing(border-box);
+        }
+        bottom: auto;
+        height: 100%; // When embedded, it fills the containing element
+        position: relative;
+        right: auto;
+        width: 100%;
+    }
 
     .brand-heading-container {
         text-align: center;

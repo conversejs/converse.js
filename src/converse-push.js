@@ -106,9 +106,9 @@ converse.plugins.add('converse-push', {
             }
             const enabled_services = _.reject(_converse.push_app_servers, 'disable');
             const disabled_services = _.filter(_converse.push_app_servers, 'disable');
+            const enabled = _.map(enabled_services, _.partial(enablePushAppServer, domain));
+            const disabled = _.map(disabled_services, _.partial(disablePushAppServer, domain));
             try {
-                const enabled = _.map(enabled_services, _.partial(enablePushAppServer, domain));
-                const disabled = _.map(disabled_services, _.partial(disablePushAppServer, domain));
                 await Promise.all(enabled.concat(disabled));
             } catch (e) {
                 _converse.log('Could not enable or disable push App Server', Strophe.LogLevel.ERROR);
@@ -118,7 +118,6 @@ converse.plugins.add('converse-push', {
             }
             _converse.session.save('push_enabled', push_enabled);
         }
-
         _converse.api.listen.on('statusInitialized', () => enablePush());
 
         function onChatBoxAdded (model) {

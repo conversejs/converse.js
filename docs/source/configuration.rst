@@ -18,10 +18,6 @@ an example of how this is done, please see the bottom of the *./index.html* page
 Please refer to the `Configuration settings`_ section below for info on
 all the available configuration settings.
 
-After you have configured Converse, you'll have to regenerate the minified
-JavaScript file so that it will include the new settings. Please refer to the
-:ref:`minification` section for more info on how to do this.
-
 .. _`configuration-settings`:
 
 Configuration settings
@@ -66,6 +62,8 @@ as soon as the page loads.
 
 The server's domain is passed in via the `jid`_ setting.
 
+.. _`prebind`:
+
 prebind
 ~~~~~~~
 
@@ -85,25 +83,15 @@ A JID (jabber ID), SID (session ID) and RID (Request ID).
 
 Converse needs these tokens in order to attach to that same session.
 
-There are two complementary configuration settings to ``prebind``.
-They are :ref:`keepalive` and `prebind_url`_.
+In addition to setting ``authentication`` to ``prebind``, you'll also need to
+set the `prebind_url`_ and `bosh-service-url`_.
 
-``keepalive`` can be used keep the session alive without having to pass in
-new RID and SID tokens to ``converse.initialize`` every time you reload the page.
-This removes the need to set up a new BOSH session every time a page loads.
-You do however still need to supply the user's JID so that Converse can be
-sure that the session it's resuming is for the right user.
-
-`prebind_url`_ lets you specify a URL which Converse will call whenever a
-new BOSH session needs to be set up.
-
-Here's an example of Converse being initialized with these three options:
+Here's an example of Converse being initialized with these options:
 
 .. code-block:: javascript
 
     converse.initialize({
         bosh_service_url: 'https://bind.example.com',
-        keepalive: true,
         jid: 'me@example.com',
         authentication: 'prebind',
         prebind_url: 'http://example.com/api/prebind',
@@ -187,8 +175,8 @@ allow_non_roster_messaging
 
 Determines whether you'll receive messages from users that are not in your
 roster. The XMPP specification allows for this (similar to email).
-Setting this to `true` increases your chances of receiving spam (when using a
-federated server), while setting it to `false` means that people not on your
+Setting this to ``true`` increases your chances of receiving spam (when using a
+federated server), while setting it to ``false`` means that people not on your
 roster can't contact you unless one (or both) of you subscribe to one another's
 presence (i.e. adding as a roster contact).
 
@@ -218,13 +206,6 @@ allow_registration
 Support for `XEP-0077: In band registration <https://xmpp.org/extensions/xep-0077.html>`_
 
 Allow XMPP account registration showing the corresponding UI register form interface.
-
-animate
--------
-
-* Default:  ``true``
-
-Show animations, for example when opening and closing chatboxes.
 
 archived_messages_page_size
 ---------------------------
@@ -328,13 +309,13 @@ auto_reconnect
 Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.
 
-This option works best when you have `authentication` set to `prebind` and have
-also specified a `prebind_url` URL, from where Converse can fetch the BOSH
+This option works best when you have ``authentication`` set to ``prebind`` and have
+also specified a ``prebind_url`` URL, from where Converse can fetch the BOSH
 tokens. In this case, Converse will automaticallly reconnect when the
 connection drops but also reestablish earlier lost connections (due to
 network outages, closing your laptop etc.).
 
-When `authentication` is set to `login`, then this option will only work when
+When ``authentication`` is set to `login`, then this option will only work when
 the page hasn't been reloaded yet, because then the user's password has been
 wiped from memory. This configuration can however still be useful when using
 Converse in desktop apps, for example those based on `CEF <https://bitbucket.org/chromiumembedded/cef>`_
@@ -414,6 +395,7 @@ plugins from registering themselves under those names.
 
 The core, and by default whitelisted, plugins are::
 
+    converse-bosh
     converse-bookmarks
     converse-chatboxes
     converse-chatview
@@ -434,8 +416,9 @@ The core, and by default whitelisted, plugins are::
     converse-roomslist
     converse-rosterview
     converse-singleton
+    converse-smacks
     converse-spoilers
-    converse-vcard'
+    converse-vcard
 
 Example:
 
@@ -526,7 +509,7 @@ credentials_url
 * Default:  ``null``
 * Type:  URL
 
-This setting should be used in conjunction with ``authentication`` set to ``login`` and :ref:`keepalive` set to ``true``.
+This setting should be used in conjunction with ``authentication`` set to ``login``.
 
 It allows you to specify a URL which Converse will call when it needs to get
 the username and password (or authentication token) which Converse will use
@@ -642,17 +625,14 @@ The app servers are specified with the `push_app_servers`_ option.
     Registering a push app server against a MUC domain is not (yet) standardized
     and this feature should be considered experimental.
 
-expose_rid_and_sid
-------------------
+enable_smacks
+-------------
 
-* Default:  ``false``
+* Default: ``false``
 
-Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
-globally via the API. This allows other scripts served on the same page to use
-these values.
+Determines whether `XEP-0198 Stream Management <https://xmpp.org/extensions/xep-0198.html>`_
+support is turned on or not.
 
-*Beware*: a malicious script could use these tokens to assume your identity
-and inject fake chat messages.
 
 filter_by_resource
 ------------------
@@ -662,24 +642,6 @@ filter_by_resource
 Before version 1.0.3 Converse would ignore received messages if they were
 intended for a different resource then the current user had. It was decided to
 drop this restriction but leave it configurable.
-
-forward_messages
-----------------
-
-* Default:  ``false``
-
-If set to ``true``, sent messages will also be forwarded to the sending user's
-bare JID (their Jabber ID independent of any chat clients aka resources).
-
-This means that sent messages are visible from all the user's chat clients,
-and not just the one from which it was actually sent.
-
-This is especially important for web chat, such as Converse, where each
-browser tab functions as a separate chat client, with its own resource.
-
-This feature uses Stanza forwarding, see also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
-
-For an alternative approach, see also `message_carbons`_.
 
 fullname
 --------
@@ -760,36 +722,9 @@ The Jabber ID or "JID" of the current user. The JID uniquely identifies a user
 on the XMPP network. It looks like an email address, but it's used for instant
 messaging instead.
 
-This value needs to be provided when using the :ref:`keepalive` option together
-with `prebind`_.
+This value may be provided together with a ``password`` instead of supplying a
+`credentials_url`_ when setting ``auto_login`` to ``true``.
 
-
-.. _`keepalive`:
-
-keepalive
----------
-
-* Default:    ``true``
-
-Determines whether Converse will maintain the chat session across page
-loads.
-
-This setting should also be used in conjunction with ``authentication`` set to `prebind`_.
-
-When using ``keepalive`` and ``prebind``, you will have to provide the `jid`_
-of the current user to ensure that a cached session is only resumed if it
-belongs to the current user.
-
-See also:
-
-* :ref:`session-support`
-
-.. note::
-    Currently the "keepalive" setting only works with BOSH and not with
-    websockets. This is because XMPP over websocket does not use the same
-    session token as with BOSH. A possible solution for this is to implement
-    `XEP-0198 <https://xmpp.org/extensions/xep-0198.html>`_, specifically
-    with regards to "stream resumption".
 
 .. _`locales`:
 
@@ -834,7 +769,7 @@ injection attack could be attempted.
 
 The variable being interpolated via the curly braces is ``locale``, which is
 the value passed in to the `i18n`_ setting, or the browser's locale or the
-default local or `en` (resolved in that order).
+default local or ``en`` (resolved in that order).
 
 From version 3.3.0, Converse no longer bundles all translations into its
 final build file. Instead, only the relevant translations are fetched at
@@ -915,7 +850,7 @@ message_archiving_timeout
 The amount of time (in milliseconds) to wait when requesting archived messages
 from the XMPP server.
 
-Used in conjunction with `message_archiving` and in context of `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_.
+Used in conjunction with ``message_archiving`` and in context of `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_.
 
 message_carbons
 ---------------
@@ -927,16 +862,12 @@ Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.htm
 In order to keep all IM clients for a user engaged in a conversation,
 outbound messages are carbon-copied to all interested resources.
 
-This is especially important in webchat, like Converse, where each browser
+This is especially important with Converse, where each browser
 tab serves as a separate IM client.
 
-Both message_carbons and `forward_messages`_ try to solve the same problem
-(showing sent messages in all connected chat clients aka resources), but go about it
-in two different ways.
+XEP-0280 requires server support, so make sure that message carbons are enabled
+on your server.
 
-Message carbons is the XEP (Jabber protocol extension) specifically drafted to
-solve this problem, while `forward_messages`_ uses
-`stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
 muc_disable_slash_commands
 --------------------------
@@ -1057,7 +988,7 @@ The nickname will be included in presence requests to other users and will also
 be used as the default nickname when entering MUC chatrooms.
 
 This value will have first preference ahead of other nickname sources, such as
-the VCard `nickname` value.
+the VCard ``nickname`` value.
 
 
 notify_all_room_messages
@@ -1161,7 +1092,7 @@ prebind_url
 
 See also: :ref:`session-support`
 
-This setting should be used in conjunction with ``authentication`` set to `prebind` and :ref:`keepalive` set to ``true``.
+This setting should be used in conjunction with ``authentication`` set to `prebind`.
 
 It allows you to specify a URL which Converse will call when it needs to get
 the RID and SID (Request ID and Session ID) tokens of a BOSH connection, which
@@ -1342,7 +1273,7 @@ If set to ``true``, notifications will be shown in the following cases:
 
 * the browser is not visible nor focused and a private message is received.
 * the browser is not visible nor focused and a groupchat message is received which mentions you.
-* `auto_subscribe` is set to `false` and a new contact request is received.
+* ``auto_subscribe`` is set to ``false`` and a new contact request is received.
 
 If set to ``all``, notifications will be shown even if the above conditions are
 not fulfilled.
@@ -1389,6 +1320,31 @@ show_send_button
 * Default:  ``false``
 
 If set to ``true``, a button will be visible which can be clicked to send a message.
+
+singleton
+---------
+
+* Default:  ``false``
+
+If set to ``true``, then only one chat (one-on-one or groupchat) will be allowed.
+
+The chat must be specified with the `auto_join_rooms`_ or `auto_join_private_chats`_ options.
+
+This setting is useful together with `view_mode`_ set to ``embedded``, when you
+want to embed a chat into the page.
+
+Alternatively you could use it with `view_mode`_ set to ``overlayed`` to create
+a single helpdesk-type chat.
+
+
+smacks_max_unacked_stanzas
+--------------------------
+
+* Default: ``5``
+
+This setting relates to `XEP-0198 <https://xmpp.org/extensions/xep-0198.html>`_
+and determines the number of stanzas to be sent before Converse will ask the
+server for acknowledgement of those stanzas.
 
 sounds_path
 -----------
@@ -1452,7 +1408,7 @@ synchronize_availability
 Valid options: ``true``, ``false``, ``a resource name``.
 
 This option lets you synchronize your chat status (`online`, `busy`, `away`) with other chat clients. In other words,
-if you change your status to `busy` in a different chat client, your status will change to `busy` in Converse as well.
+if you change your status to ``busy`` in a different chat client, your status will change to ``busy`` in Converse as well.
 
 If set to ``true``, Converse will synchronize with all other clients you are logged in with.
 
@@ -1514,8 +1470,8 @@ time_format
 Examples: ``HH:mm``, ``hh:mm``, ``hh:mm a``.
 
 This option makes the time format for the time shown, for each message, configurable. Converse uses `DayJS <https://github.com/iamkun/dayjs>`_
-for showing time. This option allows the configuration of the format in which `DayJS` will display the time for the messages. For detailed
-description of time-format options available for `DayJS` you can check the
+for showing time. This option allows the configuration of the format in which ``DayJS`` will display the time for the messages. For detailed
+description of time-format options available for ``DayJS`` you can check the
 `default formatting options <https://github.com/iamkun/dayjs/blob/dev/docs/en/API-reference.md#displaying>`_ and the
 `advanced options <https://github.com/iamkun/dayjs/blob/master/docs/en/Plugin.md#advancedformat>`_.
 
@@ -1572,13 +1528,6 @@ techniques for bidirectional HTTP (such as `BOSH <https://en.wikipedia.org/wiki/
 Please refer to your XMPP server's documentation on how to enable websocket
 support.
 
-.. note::
-    Please note that not older browsers do not support websockets. For older
-    browsers you'll want to specify a BOSH URL. See the :ref:`bosh-service-url`
-    configuration setting).
-
-.. note::
-    Converse does not yet support "keepalive" with websockets.
 
 .. _`view_mode`:
 

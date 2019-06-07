@@ -116,7 +116,6 @@ your components, for example:
                 'auto_reconnect': true,
                 'bosh_service_url': bosh_url,
                 'jid': bare_jid,
-                'keepalive': true,
                 'credentials_url': credentials_url,
                 'whitelisted_plugins': ['conversejs-angular-service']
             });

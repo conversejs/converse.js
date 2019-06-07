@@ -22,7 +22,7 @@
             test_utils.createContacts(_converse, 'current');
             _converse.api.trigger('rosterContactsFetched');
 
-            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             test_utils.openChatBoxFor(_converse, contact_jid);
             await test_utils.waitUntil(() => _converse.chatboxes.length > 1);
             const view = _converse.chatboxviews.get(contact_jid);
@@ -55,7 +55,7 @@
             test_utils.createContacts(_converse, 'current');
             _converse.api.trigger('rosterContactsFetched');
 
-            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid)
             const view = _converse.chatboxviews.get(contact_jid);
             let show_modal_button = view.el.querySelector('.show-user-details-modal');
@@ -75,7 +75,7 @@
             const header = document.querySelector('.alert-danger .modal-title');
             expect(header.textContent).toBe("Error");
             expect(u.ancestor(header, '.modal-content').querySelector('.modal-body p').textContent.trim())
-                .toBe("Sorry, there was an error while trying to remove Max Frankfurter as a contact.");
+                .toBe("Sorry, there was an error while trying to remove Mercutio as a contact.");
             document.querySelector('.alert-danger  button.close').click();
             show_modal_button = view.el.querySelector('.show-user-details-modal');
             show_modal_button.click();

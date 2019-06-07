@@ -6,6 +6,7 @@
 
 /* global libsignal, ArrayBuffer, parseInt, crypto */
 
+import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
 
@@ -171,6 +172,90 @@ converse.plugins.add('converse-omemo', {
         },
 
         ChatBox: {
+            async getMessageAttributesFromStanza (stanza, original_stanza) {
+                const { _converse } = this.__super__;
+                const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
+                      attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+
+                if (!encrypted || !_converse.config.get('trusted')) {
+                    return attrs;
+                } else {
+                    return this.getEncryptionAttributesfromStanza(stanza, original_stanza, attrs);
+                }
+            },
+
+            async sendMessage (text, spoiler_hint) {
+                if (this.get('omemo_active') && text) {
+                    const { _converse } = this.__super__;
+                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
+                    attrs['is_encrypted'] = true;
+                    attrs['plaintext'] = attrs.message;
+                    try {
+                        const devices = await _converse.getBundlesAndBuildSessions(this);
+                        const stanza = await _converse.createOMEMOMessageStanza(this, this.messages.create(attrs), devices);
+                        _converse.api.send(stanza);
+                    } catch (e) {
+                        this.handleMessageSendError(e);
+                        return false;
+                    }
+                    return true;
+                } else {
+                    return this.__super__.sendMessage.apply(this, arguments);
+                }
+            }
+        },
+
+        ChatBoxView:  {
+            events: {
+                'click .toggle-omemo': 'toggleOMEMO'
+            },
+
+            initialize () {
+                this.__super__.initialize.apply(this, arguments);
+                this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
+                this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
+            },
+
+            showMessage (message) {
+                // We don't show a message if it's only keying material
+                if (!message.get('is_only_key')) {
+                    return this.__super__.showMessage.apply(this, arguments);
+                }
+            }
+        },
+
+        ChatRoomView: {
+            events: {
+                'click .toggle-omemo': 'toggleOMEMO'
+            },
+
+            initialize () {
+                this.__super__.initialize.apply(this, arguments);
+                this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
+                this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
+            }
+        }
+    },
+
+    initialize () {
+        /* The initialize function gets called as soon as the plugin is
+         * loaded by Converse.js's plugin machinery.
+         */
+        const { _converse } = this,
+              { __ } = _converse;
+
+        _converse.api.promises.add(['OMEMOInitialized']);
+
+        _converse.NUM_PREKEYS = 100; // Set here so that tests can override
+
+
+        /**
+         * Mixin object that contains OMEMO-related methods for
+         * {@link _converse.ChatBox} or {@link _converse.ChatRoom} objects.
+         *
+         * @typedef {Object} OMEMOEnabledChatBox
+         */
+        const OMEMOEnabledChatBox = {
 
             async encryptMessage (plaintext) {
                 // The client MUST use fresh, randomly generated key/IV pairs
@@ -218,7 +303,6 @@ converse.plugins.add('converse-omemo', {
             },
 
             reportDecryptionError (e) {
-                const { _converse } = this.__super__;
                 if (_converse.debug) {
                     const { __ } = _converse;
                     this.messages.create({
@@ -230,8 +314,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             async handleDecryptedWhisperMessage (attrs, key_and_tag) {
-                const { _converse } = this.__super__,
-                      encrypted = attrs.encrypted,
+                const encrypted = attrs.encrypted,
                       devicelist = _converse.devicelists.getDeviceList(this.get('jid'));
 
                 this.save('omemo_supported', true);
@@ -249,8 +332,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             decrypt (attrs) {
-                const { _converse } = this.__super__,
-                      session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
+                const session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
 
                 // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
                 if (attrs.encrypted.prekey === true) {
@@ -283,8 +365,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             getEncryptionAttributesfromStanza (stanza, original_stanza, attrs) {
-                const { _converse } = this.__super__,
-                      encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
+                const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
                       header = encrypted.querySelector('header'),
                       key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
                 if (key) {
@@ -302,22 +383,8 @@ converse.plugins.add('converse-omemo', {
                 }
             },
 
-            async getMessageAttributesFromStanza (stanza, original_stanza) {
-                const { _converse } = this.__super__,
-                      encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
-                      attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
-
-                if (!encrypted || !_converse.config.get('trusted')) {
-                    return attrs;
-                } else {
-                    return this.getEncryptionAttributesfromStanza(stanza, original_stanza, attrs);
-                }
-            },
-
-
             getSessionCipher (jid, id) {
-                const { _converse } = this.__super__,
-                        address = new libsignal.SignalProtocolAddress(jid, id);
+                const address = new libsignal.SignalProtocolAddress(jid, id);
                 this.session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
                 return this.session_cipher;
             },
@@ -329,8 +396,6 @@ converse.plugins.add('converse-omemo', {
             },
 
             handleMessageSendError (e) {
-                const { _converse } = this.__super__,
-                      { __ } = _converse;
                 if (e.name === 'IQError') {
                     this.save('omemo_supported', false);
 
@@ -354,46 +419,12 @@ converse.plugins.add('converse-omemo', {
                 } else {
                     throw e;
                 }
-            },
-
-            async sendMessage (text, spoiler_hint) {
-                if (this.get('omemo_active') && text) {
-                    const { _converse } = this.__super__;
-                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
-                    attrs['is_encrypted'] = true;
-                    attrs['plaintext'] = attrs.message;
-                    try {
-                        const devices = await _converse.getBundlesAndBuildSessions(this);
-                        const stanza = await _converse.createOMEMOMessageStanza(this, this.messages.create(attrs), devices);
-                        _converse.api.send(stanza);
-                    } catch (e) {
-                        this.handleMessageSendError(e);
-                        return false;
-                    }
-                    return true;
-                } else {
-                    return this.__super__.sendMessage.apply(this, arguments);
-                }
             }
-        },
+        }
+        Object.assign(_converse.ChatBox.prototype, OMEMOEnabledChatBox);
 
-        ChatBoxView:  {
-            events: {
-                'click .toggle-omemo': 'toggleOMEMO'
-            },
 
-            initialize () {
-                this.__super__.initialize.apply(this, arguments);
-                this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
-                this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
-            },
-
-            showMessage (message) {
-                // We don't show a message if it's only keying material
-                if (!message.get('is_only_key')) {
-                    return this.__super__.showMessage.apply(this, arguments);
-                }
-            },
+        const OMEMOEnabledChatView = {
 
             onOMEMOSupportedDetermined () {
                 if (!this.model.get('omemo_supported') && this.model.get('omemo_active')) {
@@ -404,82 +435,47 @@ converse.plugins.add('converse-omemo', {
             },
 
             renderOMEMOToolbarButton () {
-                const { _converse } = this.__super__,
-                      { __ } = _converse,
-                      icon = this.el.querySelector('.toggle-omemo'),
-                      html = tpl_toolbar_omemo(Object.assign(this.model.toJSON(), {'__': __}));
+                if (this.model.get('type') !== _converse.CHATROOMS_TYPE ||
+                        this.model.features.get('membersonly') &&
+                        this.model.features.get('nonanonymous')) {
 
-                if (icon) {
-                    icon.outerHTML = html;
-                } else {
-                    this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
-                }
-            },
-
-            toggleOMEMO (ev) {
-                const { _converse } = this.__super__, { __ } = _converse;
-                if (!this.model.get('omemo_supported')) {
-                    return _converse.api.alert.show(
-                        Strophe.LogLevel.ERROR,
-                        __('Error'),
-                        [__("Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.",
-                            this.model.contact.getDisplayName()
-                           )]
-                    )
-                }
-                ev.preventDefault();
-                this.model.save({'omemo_active': !this.model.get('omemo_active')});
-            }
-        },
-
-        ChatRoomView: {
-            events: {
-                'click .toggle-omemo': 'toggleOMEMO'
-            },
-
-            initialize () {
-                this.__super__.initialize.apply(this, arguments);
-                this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
-                this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
-            },
-
-            toggleOMEMO (ev) {
-                const { _converse } = this.__super__, { __ } = _converse;
-                if (!this.model.get('omemo_supported')) {
-                    return _converse.api.alert.show(
-                        Strophe.LogLevel.ERROR,
-                        __('Error'),
-                        [__('Cannot use end-to-end encryption in this groupchat, '+
-                            'either the groupchat has some anonymity or not all participants support OMEMO.')]
-                    );
-                }
-                ev.preventDefault();
-                this.model.save({'omemo_active': !this.model.get('omemo_active')});
-            },
-
-            renderOMEMOToolbarButton () {
-                if (this.model.features.get('membersonly') && this.model.features.get('nonanonymous')) {
-                    this.__super__.renderOMEMOToolbarButton.apply(arguments);
+                    const icon = this.el.querySelector('.toggle-omemo');
+                    const html = tpl_toolbar_omemo(Object.assign(this.model.toJSON(), {'__': __}));
+                    if (icon) {
+                        icon.outerHTML = html;
+                    } else {
+                        this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
+                    }
                 } else {
                     const icon = this.el.querySelector('.toggle-omemo');
                     if (icon) {
                         icon.parentElement.removeChild(icon);
                     }
                 }
+            },
+
+            toggleOMEMO (ev) {
+                if (!this.model.get('omemo_supported')) {
+                    let messages;
+                    if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
+                        messages = [__(
+                            'Cannot use end-to-end encryption in this groupchat, '+
+                            'either the groupchat has some anonymity or not all participants support OMEMO.'
+                        )];
+                    } else {
+                        messages = [__(
+                            "Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.",
+                            this.model.contact.getDisplayName()
+                        )];
+                    }
+                    return _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), messages);
+                }
+                ev.preventDefault();
+                this.model.save({'omemo_active': !this.model.get('omemo_active')});
             }
         }
-    },
+        Object.assign(_converse.ChatBoxView.prototype, OMEMOEnabledChatView);
 
-    initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by Converse.js's plugin machinery.
-         */
-        const { _converse } = this,
-              { __ } = _converse;
-
-        _converse.api.promises.add(['OMEMOInitialized']);
-
-        _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
         async function generateFingerprint (device) {
             if (_.get(device.get('bundle'), 'fingerprint')) {
@@ -966,7 +962,7 @@ converse.plugins.add('converse-omemo', {
                 this.devices = new _converse.Devices();
                 const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
                 const storage = _converse.config.get('storage');
-                this.devices.browserStorage = new Backbone.BrowserStorage[storage](id);
+                this.devices.browserStorage = new BrowserStorage[storage](id);
                 this.fetchDevices();
             },
 
@@ -1151,7 +1147,7 @@ converse.plugins.add('converse-omemo', {
                 const storage = _converse.config.get('storage'),
                       id = `converse.omemosession-${_converse.bare_jid}`;
                 _converse.omemo_store = new _converse.OMEMOStore({'id': id});
-                _converse.omemo_store.browserStorage = new Backbone.BrowserStorage[storage](id);
+                _converse.omemo_store.browserStorage = new BrowserStorage[storage](id);
             }
             return _converse.omemo_store.fetchSession();
         }
@@ -1163,7 +1159,7 @@ converse.plugins.add('converse-omemo', {
             _converse.devicelists = new _converse.DeviceLists();
             const storage = _converse.config.get('storage'),
                   id = `converse.devicelists-${_converse.bare_jid}`;
-            _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
+            _converse.devicelists.browserStorage = new BrowserStorage[storage](id);
 
             try {
                 await fetchOwnDevices();

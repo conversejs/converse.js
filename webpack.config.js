@@ -19,14 +19,6 @@ const config = {
     module: {
         rules: [
         {
-            test: path.resolve(__dirname, "node_modules/backbone.overview/backbone.orderedlistview"),
-            use: 'imports-loader?backbone.nativeview'
-        },
-        {
-            test: path.resolve(__dirname, "node_modules/backbone.overview/backbone.overview"),
-            use: 'imports-loader?backbone.nativeview'
-        },
-        {
             test: path.resolve(__dirname, "node_modules/backbone.vdomview/backbone.vdomview"),
             use: 'imports-loader?backbone.nativeview'
         },
@@ -172,8 +164,6 @@ function parameterize () {
                 "lodash.converter": "lodash.converter",
                 "lodash.noconflict": "lodash.noconflict",
                 "strophe": "strophe",
-                "strophe.ping": "strophe.ping",
-                "strophe.rsm": "strophe.rsm",
                 "window": "window"
             }],
             output: {

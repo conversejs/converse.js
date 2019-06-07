@@ -1,6 +1,13 @@
 # Changelog
 
 ## 5.0.0 (Unreleased)
+- BOSH support has been moved to a plugin.
+- Support for XEP-0410 to check whether we're still present in a room
+- Initial support for the [CredentialsContainer](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer) web API
+- Allow for synchronous events. When a synchronous event is fired, Converse will
+  wait for all promises returned by the event's handlers to finish before continuing.
+- Properly handle message correction being received before the corrected message
+- Properly handle message correction being received before the corrected message
 - Groupchat default configuration now supports `list-multi` fields
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 - Bugfix: Modal auto-closes when you open it for a second time.
@@ -11,22 +18,39 @@
 - Message deduplication bugfixes and improvements
 - Continuously retry (in 2s intervals) to fetch login credentials (via [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url)) in case of failure
 - Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
-- New API method [\_converse.api.disco.features.get](https://conversejs.org/docs/html/api/-_converse.api.disco.features.html#.get)
-- New config setting [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
-- New event: `chatBoxBlurred`.
+- New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks).
+- New config option [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
+- New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton).
+  By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
+  "embed" the full app and not just a single chat. To embed just a single chat, it's now
+  necessary to explicitly set `singleton` to `true`.
+- New event: [chatBoxBlurred](https://conversejs.org/docs/html/api/-_converse.html#event:chatBoxBlurred)
+- New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)
+- #316: Add support for XEP-0198 Stream Management
+- #1196: Use alternative connection method upon connfail
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
+- #1330: Missing room name in MUC invitation popup
+- #1445: Participants list uses big font in embedded mode
 - #1465: When highlighting a roster contact, they're incorrectly shown as online
 - #1532: Converse reloads on enter pressed in the filter box
 - #1550: Legitimate carbons being blocked due to erroneous forgery check
 - #1554: Room auto-configuration broke if the config form contained fields with type `fixed`
 - #1558: `this.get` is not a function error when `forward_messages` is set to `true`.
 - #1572: In `fullscreen` view mode the top is cut off on iOS
+- #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`
+- #1586: Not possible to kick someone with a space in their nickname
 
-- **Breaking changes**:
+### Breaking changes
+
 - Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).
 - `_converse.api.archive.query` now returns a Promise instead of accepting a callback functions.
 - `_converse.api.disco.supports` now returns a Promise which resolves to a Boolean instead of an Array.
-
+- The `forward_messages` config option (which was set to `false` by default) has been removed.
+  Use [message_carbons](https://conversejs.org/docs/html/configuration.html#message-carbons) instead.
+- Remove the `keepalive` configuration setting. It is now always implicitly `true`.
+- Remove the `expose_rid_and_sid` configuration setting.
+- A `prebind_url` is now mandatory when setting `authentication` to `prebind`.
+  It's no longer possible to pass in `rid` and `sid` values to `converse.initialize.
 
 ### API changes
 
@@ -37,6 +61,8 @@
 - `_converse.api.emit` has been removed in favor of [\_converse.api.trigger](https://conversejs.org/docs/html/api/-_converse.api.html#.trigger)
 - `_converse.updateSettings` has been removed in favor of [\_converse.api.settings.update](https://conversejs.org/docs/html/api/-_converse.api.settings.html#.update)
 - `_converse.api.roster.get` now returns a promise.
+- New API method [\_converse.api.disco.features.get](https://conversejs.org/docs/html/api/-_converse.api.disco.features.html#.get)
+- New API method [\_converse.api.connection.reconnect](https://conversejs.org/docs/html/api/-_converse.api.connection.html#.reconnect)
 
 ## 4.2.0 (2019-04-04)
 

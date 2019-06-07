@@ -21,7 +21,7 @@
         it("can be bookmarked", mock.initConverse(
             null, ['rosterGroupsFetched'], {},
             async function (done, _converse) {
-                
+
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
                 [{'category': 'pubsub', 'type': 'pep'}],
@@ -96,7 +96,7 @@
 
             await test_utils.waitUntil(() => sent_stanza);
             expect(sent_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost/resource" id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="set" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<publish node="storage:bookmarks">`+
                             `<item id="current">`+
@@ -134,7 +134,7 @@
             });
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => view.model.get('bookmarked'));
-            toggle = view.el.querySelector('.toggle-bookmark');
+            toggle = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
             expect(view.model.get('bookmarked')).toBeTruthy();
             expect(toggle.title).toBe('Unbookmark this groupchat');
             expect(u.hasClass('on-button', toggle), true);
@@ -154,7 +154,7 @@
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
             await test_utils.waitUntil(() => _converse.bookmarks);
-            let jid = 'lounge@localhost';
+            let jid = 'lounge@montague.lit';
             _converse.bookmarks.create({
                 'jid': jid,
                 'autojoin': false,
@@ -188,6 +188,31 @@
 
         describe("when bookmarked", function () {
 
+            it("will use the nickname from the bookmark", mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+                await test_utils.waitUntilDiscoConfirmed(
+                    _converse, _converse.bare_jid,
+                    [{'category': 'pubsub', 'type': 'pep'}],
+                    ['http://jabber.org/protocol/pubsub#publish-options']
+                );
+                const room_jid = 'coven@chat.shakespeare.lit';
+                await test_utils.waitUntil(() => _converse.bookmarks);
+                _converse.bookmarks.create({
+                    'jid': room_jid,
+                    'autojoin': false,
+                    'name':  'The Play',
+                    'nick': 'Othello'
+                });
+                const model = await _converse.api.rooms.open(room_jid);
+                spyOn(model, 'join').and.callThrough();
+                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
+                await test_utils.waitUntil(() => model.join.calls.count());
+                expect(model.get('nick')).toBe('Othello');
+                done();
+            }));
+
             it("displays that it's bookmarked through its bookmark icon", mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
@@ -197,14 +222,21 @@
                     [{'category': 'pubsub', 'type': 'pep'}],
                     ['http://jabber.org/protocol/pubsub#publish-options']
                 );
-                await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                const view = _converse.chatboxviews.get('lounge@localhost');
-                await test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.toggle-bookmark')));
-                var bookmark_icon = view.el.querySelector('.toggle-bookmark');
+                await _converse.api.rooms.open(`lounge@montague.lit`);
+                const view = _converse.chatboxviews.get('lounge@montague.lit');
+                let bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
+                _converse.bookmarks.create({
+                    'jid': view.model.get('jid'),
+                    'autojoin': false,
+                    'name':  'The lounge',
+                    'nick': ' some1'
+                });
                 view.model.set('bookmarked', true);
+                bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(_.includes(bookmark_icon.classList, 'button-on')).toBeTruthy();
                 view.model.set('bookmarked', false);
+                bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
                 done();
             }));
@@ -239,7 +271,7 @@
                 });
                 expect(_converse.bookmarks.length).toBe(1);
                 expect(view.model.get('bookmarked')).toBeTruthy();
-                var bookmark_icon = view.el.querySelector('.toggle-bookmark');
+                let bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(u.hasClass('button-on', bookmark_icon)).toBeTruthy();
 
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -248,6 +280,7 @@
                 });
                 spyOn(_converse.connection, 'getUniqueId').and.callThrough();
                 bookmark_icon.click();
+                bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(view.toggleBookmark).toHaveBeenCalled();
                 expect(u.hasClass('button-on', bookmark_icon)).toBeFalsy();
                 expect(_converse.bookmarks.length).toBe(0);
@@ -256,7 +289,7 @@
                 // conferences to bookmark (since we removed the one and
                 // only bookmark).
                 expect(sent_stanza.toLocaleString()).toBe(
-                    `<iq from="dummy@localhost/resource" id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="set" xmlns="jabber:client">`+
                         `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                             `<publish node="storage:bookmarks">`+
                                 `<item id="current">`+
@@ -356,8 +389,8 @@
              * </message>
              */
             var stanza = $msg({
-                'from': 'dummy@localhost',
-                'to': 'dummy@localhost/resource',
+                'from': 'romeo@montague.lit',
+                'to': 'romeo@montague.lit/orchard',
                 'type': 'headline',
                 'id': 'rnfoo1'
             }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
@@ -412,7 +445,7 @@
             );
 
             expect(Strophe.serialize(call.args[0])).toBe(
-                `<iq from="dummy@localhost/resource" id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="get" xmlns="jabber:client">`+
                 '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                     '<items node="storage:bookmarks"/>'+
                 '</pubsub>'+
@@ -495,7 +528,7 @@
                     ).pop()
                 );
                 expect(Strophe.serialize(call.args[0])).toBe(
-                    `<iq from="dummy@localhost/resource" id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="get" xmlns="jabber:client">`+
                     '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                         '<items node="storage:bookmarks"/>'+
                     '</pubsub>'+
@@ -583,7 +616,7 @@
                     ).pop()
                 );
                 expect(Strophe.serialize(call.args[0])).toBe(
-                    `<iq from="dummy@localhost/resource" id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="get" xmlns="jabber:client">`+
                     '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                         '<items node="storage:bookmarks"/>'+
                     '</pubsub>'+

@@ -4,9 +4,12 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-import "@converse/headless/converse-roster";
 import "@converse/headless/converse-chatboxes";
+import "@converse/headless/converse-roster";
 import "converse-modal";
+import BrowserStorage from "backbone.browserStorage";
+import { OrderedListView } from "backbone.overview";
+import SHA1 from 'strophe.js/src/sha1';
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
 import tpl_add_contact_modal from "templates/add_contact_modal.html";
@@ -18,34 +21,13 @@ import tpl_roster_filter from "templates/roster_filter.html";
 import tpl_roster_item from "templates/roster_item.html";
 import tpl_search_contact from "templates/search_contact.html";
 
-const { Backbone, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
+const { Backbone, Strophe, $iq, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 
 converse.plugins.add('converse-rosterview', {
 
     dependencies: ["converse-roster", "converse-modal"],
-
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        //
-        // New functions which don't exist yet can also be added.
-        afterReconnected () {
-            this.__super__.afterReconnected.apply(this, arguments);
-        },
-
-        RosterGroups: {
-            comparator () {
-                // RosterGroupsComparator only gets set later (once i18n is
-                // set up), so we need to wrap it in this nameless function.
-                const { _converse } = this.__super__;
-                return _converse.RosterGroupsComparator.apply(this, arguments);
-            }
-        }
-    },
-
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -75,36 +57,6 @@ converse.plugins.add('converse-rosterview', {
             'away': __('This contact is away')
         };
         const LABEL_GROUPS = __('Groups');
-        const HEADER_CURRENT_CONTACTS =  __('My contacts');
-        const HEADER_PENDING_CONTACTS = __('Pending contacts');
-        const HEADER_REQUESTING_CONTACTS = __('Contact requests');
-        const HEADER_UNGROUPED = __('Ungrouped');
-        const HEADER_WEIGHTS = {};
-        HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 0;
-        HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 1;
-        HEADER_WEIGHTS[HEADER_UNGROUPED]           = 2;
-        HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
-
-        _converse.RosterGroupsComparator = function (a, b) {
-            /* Groups are sorted alphabetically, ignoring case.
-             * However, Ungrouped, Requesting Contacts and Pending Contacts
-             * appear last and in that order.
-             */
-            a = a.get('name');
-            b = b.get('name');
-            const special_groups = Object.keys(HEADER_WEIGHTS);
-            const a_is_special = _.includes(special_groups, a);
-            const b_is_special = _.includes(special_groups, b);
-            if (!a_is_special && !b_is_special ) {
-                return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
-            } else if (a_is_special && b_is_special) {
-                return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
-            } else if (!a_is_special && b_is_special) {
-                return (b === HEADER_REQUESTING_CONTACTS) ? 1 : -1;
-            } else if (a_is_special && !b_is_special) {
-                return (a === HEADER_REQUESTING_CONTACTS) ? -1 : 1;
-            }
-        };
 
 
         _converse.AddContactModal = _converse.BootstrapModal.extend({
@@ -585,7 +537,7 @@ converse.plugins.add('converse-rosterview', {
             }
         });
 
-        _converse.RosterGroupView = Backbone.OrderedListView.extend({
+        _converse.RosterGroupView = OrderedListView.extend({
             tagName: 'div',
             className: 'roster-group hidden',
             events: {
@@ -598,7 +550,7 @@ converse.plugins.add('converse-rosterview', {
             sortEvent: 'presenceChanged',
 
             initialize () {
-                Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+                OrderedListView.prototype.initialize.apply(this, arguments);
                 this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
                 this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
                 this.model.contacts.on("remove", this.onRemove, this);
@@ -675,7 +627,7 @@ converse.plugins.add('converse-rosterview', {
                 let matches;
                 q = q.toLowerCase();
                 if (type === 'state') {
-                    if (this.model.get('name') === HEADER_REQUESTING_CONTACTS) {
+                    if (this.model.get('name') === _converse.HEADER_REQUESTING_CONTACTS) {
                         // When filtering by chat state, we still want to
                         // show requesting contacts, even though they don't
                         // have the state in question.
@@ -744,13 +696,13 @@ converse.plugins.add('converse-rosterview', {
             },
 
             onContactSubscriptionChange (contact) {
-                if ((this.model.get('name') === HEADER_PENDING_CONTACTS) && contact.get('subscription') !== 'from') {
+                if ((this.model.get('name') === _converse.HEADER_PENDING_CONTACTS) && contact.get('subscription') !== 'from') {
                     this.removeContact(contact);
                 }
             },
 
             onContactRequestChange (contact) {
-                if ((this.model.get('name') === HEADER_REQUESTING_CONTACTS) && !contact.get('requesting')) {
+                if ((this.model.get('name') === _converse.HEADER_REQUESTING_CONTACTS) && !contact.get('requesting')) {
                     this.removeContact(contact);
                 }
             },
@@ -772,7 +724,7 @@ converse.plugins.add('converse-rosterview', {
         });
 
 
-        _converse.RosterView = Backbone.OrderedListView.extend({
+        _converse.RosterView = OrderedListView.extend({
             tagName: 'div',
             id: 'converse-roster',
             className: 'controlbox-section',
@@ -789,7 +741,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initialize () {
-                Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+                OrderedListView.prototype.initialize.apply(this, arguments);
 
                 _converse.roster.on("add", this.onContactAdded, this);
                 _converse.roster.on('change:groups', this.onContactAdded, this);
@@ -842,7 +794,7 @@ converse.plugins.add('converse-rosterview', {
                 // Create a model on which we can store filter properties
                 const model = new _converse.RosterFilter();
                 model.id = `_converse.rosterfilter${_converse.bare_jid}`;
-                model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
+                model.browserStorage = new BrowserStorage.local(this.filter.id);
                 this.filter_view = new _converse.RosterFilterView({'model': model});
                 this.filter_view.model.on('change', this.updateFilter, this);
                 this.filter_view.model.fetch();
@@ -864,13 +816,13 @@ converse.plugins.add('converse-rosterview', {
                 }
             }, 100),
 
-            update: _.debounce(function () {
+            update () {
                 if (!u.isVisible(this.roster_el)) {
                     u.showElement(this.roster_el);
                 }
                 this.filter_view.showOrHide();
                 return this;
-            }, _converse.animate ? 100 : 0),
+            },
 
             filter (query, type) {
                 // First we make sure the filter is restored to its
@@ -923,16 +875,16 @@ converse.plugins.add('converse-rosterview', {
                 this.update();
                 if (_.has(contact.changed, 'subscription')) {
                     if (contact.changed.subscription === 'from') {
-                        this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+                        this.addContactToGroup(contact, _converse.HEADER_PENDING_CONTACTS);
                     } else if (_.includes(['both', 'to'], contact.get('subscription'))) {
                         this.addExistingContact(contact);
                     }
                 }
                 if (_.has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
-                    this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+                    this.addContactToGroup(contact, _converse.HEADER_PENDING_CONTACTS);
                 }
                 if (_.has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
-                    this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
+                    this.addContactToGroup(contact, _converse.HEADER_REQUESTING_CONTACTS);
                 }
                 this.updateFilter();
             },
@@ -945,7 +897,7 @@ converse.plugins.add('converse-rosterview', {
                 if (view) {
                     return view.model;
                 }
-                return this.model.create({name, 'id': b64_sha1(name)});
+                return this.model.create({name, 'id': SHA1.b64_sha1(name)});
             },
 
             addContactToGroup (contact, name, options) {
@@ -958,10 +910,10 @@ converse.plugins.add('converse-rosterview', {
                 if (_converse.roster_groups) {
                     groups = contact.get('groups');
                     if (groups.length === 0) {
-                        groups = [HEADER_UNGROUPED];
+                        groups = [_converse.HEADER_UNGROUPED];
                     }
                 } else {
-                    groups = [HEADER_CURRENT_CONTACTS];
+                    groups = [_converse.HEADER_CURRENT_CONTACTS];
                 }
                 _.each(groups, _.bind(this.addContactToGroup, this, contact, _, options));
             },
@@ -979,9 +931,9 @@ converse.plugins.add('converse-rosterview', {
                         return;
                     }
                     if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
-                        this.addContactToGroup(contact, HEADER_PENDING_CONTACTS, options);
+                        this.addContactToGroup(contact, _converse.HEADER_PENDING_CONTACTS, options);
                     } else if (contact.get('requesting') === true) {
-                        this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS, options);
+                        this.addContactToGroup(contact, _converse.HEADER_REQUESTING_CONTACTS, options);
                     }
                 }
                 return this;

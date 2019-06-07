@@ -14,10 +14,11 @@ import tpl_brand_heading from "templates/inverse_brand_heading.html";
 
 const { Strophe, _ } = converse.env;
 
+
 converse.plugins.add('converse-fullscreen', {
 
     enabled (_converse) {
-        return _.includes(['fullscreen', 'embedded'], _converse.view_mode);
+        return _converse.isUniView();
     },
 
     overrides: {

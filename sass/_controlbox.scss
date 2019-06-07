@@ -61,6 +61,7 @@
     }
 
     #controlbox {
+        order: -1;
 
         .open-rooms-toggle, .open-rooms-toggle .fa {
             color: var(--chatroom-head-color) !important;
@@ -356,8 +357,12 @@
             }
         }
     }
+}
 
+
+#conversejs.converse-overlayed {
     .toggle-controlbox {
+        order: -1;
         text-align: center;
         background-color: var(--link-color);
         border-top-left-radius: var(--button-border-radius);
@@ -371,12 +376,8 @@
             color: var(--inverse-link-color);
         }
     }
-}
 
-
-#conversejs.converse-overlayed {
     #controlbox {
-        order: -1;
         min-width: var(--controlbox-width) !important;
         width: var(--controlbox-width);
         .box-flyout {
@@ -435,6 +436,14 @@
     }
 }
 
+#conversejs.converse-embedded,
+#conversejs.converse-fullscreen{
+    .toggle-controlbox {
+        display: none;
+    }
+}
+
+#conversejs.converse-embedded,
 #conversejs.converse-fullscreen,
 #conversejs.converse-mobile {
     #controlbox {
@@ -545,7 +554,7 @@
 
 @include media-breakpoint-down(sm) {
 
-    #conversejs:not(.converse-embedded)  {
+    #conversejs {
         left: 0;
         right: 0;
         padding-left: env(safe-area-inset-left);
@@ -560,7 +569,7 @@
                 font-size: 14px;
             }
 
-            .chatbox { 
+            .chatbox {
                 .box-flyout {
                     margin-left: 15px; // Counteracts Bootstrap margins, but
                                        // not clear why needed...

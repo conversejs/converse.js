@@ -8,15 +8,39 @@ import st from "@converse/headless/utils/stanza";
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 
-const { Strophe, sizzle } = converse.env;
+const { $iq, Strophe, sizzle } = converse.env;
 const u = converse.env.utils;
 
 const supports_html5_notification = "Notification" in window;
 
 
+function buf2hex(buffer) { // buffer is an ArrayBuffer
+    return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+}
+
+
+function urlBase64ToUint8Array(base64String) {
+    var padding = '='.repeat((4 - base64String.length % 4) % 4);
+    var base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+    var rawData = window.atob(base64);
+    var outputArray = new Uint8Array(rawData.length);
+
+    for (var i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+
+Strophe.addNamespace('WEBPUSH', 'urn:xmpp:webpush:0');
+
+
 converse.plugins.add('converse-notification', {
 
-    dependencies: ["converse-chatboxes"],
+    dependencies: ["converse-chatboxes", "converse-disco"],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -285,7 +309,23 @@ converse.plugins.add('converse-notification', {
             }
         };
 
-        api.listen.on('pluginsInitialized', function () {
+        _converse.sendWebPushCredentials = function (subscription) {
+            const iq = $iq({type: 'set'})
+                .c('enable', {xmlns: Strophe.NS.WEBPUSH})
+            ;
+
+            subscription.getKey('auth');
+            subscription.getKey('p256dh');
+
+            iq.c('endpoint').t(subscription.endpoint).up();
+            iq.c('auth').t(buf2hex(subscription.getKey('auth'))).up();
+            iq.c('p256dh').t(buf2hex(subscription.getKey('p256dh'))).up();
+
+            return _converse.api.sendIQ(iq);
+        };
+
+        _converse.api.listen.on('pluginsInitialized', function () {
+
             // We only register event handlers after all plugins are
             // registered, because other plugins might override some of our
             // handlers.
@@ -295,5 +335,50 @@ converse.plugins.add('converse-notification', {
             api.listen.on('feedback', _converse.handleFeedback);
             api.listen.on('connected', _converse.requestPermission);
         });
+
+        _converse.api.listen.on('connected', async function () {
+            // only bother continuing if the server supports webpush
+            if (!(await _converse.api.disco.supports(Strophe.NS.WEBPUSH, _converse.bare_jid))) {
+                return;
+            }
+
+            // get the server's VAPID public key from disco
+            const fields = await _converse.api.disco.getFields(_converse.bare_jid);
+            let vapid_key = fields.findWhere({'var': "webpush#public-key"})?.attributes.value;
+
+            // XXX: reattaching an existing BOSH session makes disco.getFields() empty?!
+            if (!vapid_key) {
+                vapid_key = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEhxZpb8yIVc/2hNesGLGAxEakyYy0MqEetjgL7BIOm8ybhVKxapKqNXjXJ+NOO5/b0Z0UuBg/HynGnf0xKKNhBQ==';
+            }
+
+            const converted_vapid_key = urlBase64ToUint8Array(vapid_key);
+
+            navigator.serviceWorker.register('./worker.js').then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            });
+
+            navigator.serviceWorker.ready
+                .then(function(registration) {
+                    return registration.pushManager.getSubscription()
+                        .then(subscription => {
+                            if (subscription) {
+                                console.log("existing", subscription);
+                                _converse.sendWebPushCredentials(subscription);
+                                return;
+                            }
+                            return registration.pushManager.subscribe({
+                                applicationServerKey: converted_vapid_key,
+                                userVisibleOnly: true,
+                            });
+                        });
+                }).then(function(subscription) {
+                    if (subscription) {
+                        console.log("new", subscription);
+                        _converse.sendWebPushCredentials(subscription);
+                    }
+            });
+        });
+
+        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.WEBPUSH));
     }
 });

@@ -112,6 +112,8 @@ converse.plugins.add('converse-message-view', {
                     this.renderFileUploadProgresBar();
                 } else if (this.model.get('type') === 'error') {
                     this.renderErrorMessage();
+                } else if (this.model.get('type') === 'info') {
+                    this.renderInfoMessage();
                 } else {
                     await this.renderChatMessage();
                 }
@@ -210,6 +212,16 @@ converse.plugins.add('converse-message-view', {
                     // longer has a collection.
                     this.model.collection.trigger('rendered', this);
                 }
+            },
+
+            renderInfoMessage () {
+                const msg = u.stringToElement(
+                    tpl_info(Object.assign(this.model.toJSON(), {
+                        'extra_classes': 'chat-info',
+                        'isodate': dayjs(this.model.get('time')).toISOString()
+                    }))
+                );
+                return this.replaceElement(msg);
             },
 
             renderErrorMessage () {

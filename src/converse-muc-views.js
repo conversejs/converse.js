@@ -139,87 +139,6 @@ converse.plugins.add('converse-muc-views', {
             Object.assign(_converse.ControlBoxView.prototype, { renderRoomsPanel });
         }
 
-
-        function ___ (str) {
-            /* This is part of a hack to get gettext to scan strings to be
-            * translated. Strings we cannot send to the function above because
-            * they require variable interpolation and we don't yet have the
-            * variables at scan time.
-            *
-            * See actionInfoMessages further below.
-            */
-            return str;
-        }
-
-        /* https://xmpp.org/extensions/xep-0045.html
-         * ----------------------------------------
-         * 100 message      Entering a groupchat         Inform user that any occupant is allowed to see the user's full JID
-         * 101 message (out of band)                     Affiliation change  Inform user that his or her affiliation changed while not in the groupchat
-         * 102 message      Configuration change         Inform occupants that groupchat now shows unavailable members
-         * 103 message      Configuration change         Inform occupants that groupchat now does not show unavailable members
-         * 104 message      Configuration change         Inform occupants that a non-privacy-related groupchat configuration change has occurred
-         * 110 presence     Any groupchat presence       Inform user that presence refers to one of its own groupchat occupants
-         * 170 message or initial presence               Configuration change    Inform occupants that groupchat logging is now enabled
-         * 171 message      Configuration change         Inform occupants that groupchat logging is now disabled
-         * 172 message      Configuration change         Inform occupants that the groupchat is now non-anonymous
-         * 173 message      Configuration change         Inform occupants that the groupchat is now semi-anonymous
-         * 174 message      Configuration change         Inform occupants that the groupchat is now fully-anonymous
-         * 201 presence     Entering a groupchat         Inform user that a new groupchat has been created
-         * 210 presence     Entering a groupchat         Inform user that the service has assigned or modified the occupant's roomnick
-         * 301 presence     Removal from groupchat       Inform user that he or she has been banned from the groupchat
-         * 303 presence     Exiting a groupchat          Inform all occupants of new groupchat nickname
-         * 307 presence     Removal from groupchat       Inform user that he or she has been kicked from the groupchat
-         * 321 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of an affiliation change
-         * 322 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because the groupchat has been changed to members-only and the user is not a member
-         * 332 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of a system shutdown
-         */
-        _converse.muc = {
-            info_messages: {
-                100: __('This groupchat is not anonymous'),
-                102: __('This groupchat now shows unavailable members'),
-                103: __('This groupchat does not show unavailable members'),
-                104: __('The groupchat configuration has changed'),
-                170: __('groupchat logging is now enabled'),
-                171: __('groupchat logging is now disabled'),
-                172: __('This groupchat is now no longer anonymous'),
-                173: __('This groupchat is now semi-anonymous'),
-                174: __('This groupchat is now fully-anonymous'),
-                201: __('A new groupchat has been created')
-            },
-
-            disconnect_messages: {
-                301: __('You have been banned from this groupchat'),
-                307: __('You have been kicked from this groupchat'),
-                321: __("You have been removed from this groupchat because of an affiliation change"),
-                322: __("You have been removed from this groupchat because the groupchat has changed to members-only and you're not a member"),
-                332: __("You have been removed from this groupchat because the service hosting it is being shut down")
-            },
-
-            action_info_messages: {
-                /* XXX: Note the triple underscore function and not double
-                * underscore.
-                *
-                * This is a hack. We can't pass the strings to __ because we
-                * don't yet know what the variable to interpolate is.
-                *
-                * Triple underscore will just return the string again, but we
-                * can then at least tell gettext to scan for it so that these
-                * strings are picked up by the translation machinery.
-                */
-                301: ___("%1$s has been banned"),
-                303: ___("%1$s's nickname has changed"),
-                307: ___("%1$s has been kicked out"),
-                321: ___("%1$s has been removed because of an affiliation change"),
-                322: ___("%1$s has been removed for not being a member")
-            },
-
-            new_nickname_messages: {
-                210: ___('Your nickname has been automatically set to %1$s'),
-                303: ___('Your nickname has been changed to %1$s')
-            }
-        };
-
-
         /* Insert groupchat info (based on returned #disco IQ stanza)
          * @function insertRoomInfo
          * @param { HTMLElement } el - The HTML DOM element that contains the info.
@@ -581,7 +500,6 @@ converse.plugins.add('converse-muc-views', {
                 this.render();
                 this.updateAfterMessagesFetched();
                 this.createOccupantsView();
-                this.registerHandlers();
                 this.onConnectionStatusChanged();
                 /**
                  * Triggered once a groupchat has been opened
@@ -779,6 +697,8 @@ converse.plugins.add('converse-muc-views', {
                 const conn_status = this.model.get('connection_status');
                 if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {
                     this.renderNicknameForm();
+                } else if (conn_status === converse.ROOMSTATUS.PASSWORD_REQUIRED) {
+                    this.renderPasswordForm();
                 } else if (conn_status === converse.ROOMSTATUS.CONNECTING) {
                     this.showSpinner();
                 } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
@@ -786,6 +706,10 @@ converse.plugins.add('converse-muc-views', {
                     this.setChatState(_converse.ACTIVE);
                     this.scrollDown();
                     this.focus();
+                } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
+                    this.showDisconnectMessage();
+                } else if (conn_status === converse.ROOMSTATUS.DESTROYED) {
+                    this.showDestroyedMessage();
                 }
             },
 
@@ -1106,7 +1030,8 @@ converse.plugins.add('converse-muc-views', {
                         if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
                             break;
                         } else if (args.length === 0) {
-                            this.showErrorMessage(__('You need to provide a nickname'))
+                            // e.g. Your nickname is "coolguy69"
+                            this.showErrorMessage(__('Your nickname is "%1$s"', this.model.get('nick')))
                         } else {
                             const jid = Strophe.getBareJidFromJid(this.model.get('jid'));
                             _converse.api.send($pres({
@@ -1150,42 +1075,6 @@ converse.plugins.add('converse-muc-views', {
                         return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }
                 return true;
-            },
-
-            registerHandlers () {
-                /* Register presence and message handlers for this chat
-                 * groupchat
-                 */
-                // XXX: Ideally this can be refactored out so that we don't
-                // need to do stanza processing inside the views in this
-                // module. See the comment in "onPresence" for more info.
-                this.model.addHandler('presence', 'ChatRoomView.onPresence', this.onPresence.bind(this));
-                // XXX instead of having a method showStatusMessages, we could instead
-                // create message models in converse-muc.js and then give them views in this module.
-                this.model.addHandler('message', 'ChatRoomView.showStatusMessages', this.showStatusMessages.bind(this));
-            },
-
-            /**
-             * Handles all MUC presence stanzas.
-             * @private
-             * @method _converse.ChatRoomView#onPresence
-             * @param { XMLElement } pres - The stanza
-             */
-            onPresence (pres) {
-                // XXX: Current thinking is that excessive stanza
-                // processing inside a view is a "code smell".
-                // Instead stanza processing should happen inside the
-                // models/collections.
-                if (pres.getAttribute('type') === 'error') {
-                    this.showErrorMessageFromPresence(pres);
-                } else {
-                    // Instead of doing it this way, we could perhaps rather
-                    // create StatusMessage objects inside the messages
-                    // Collection and then simply render those. Then stanza
-                    // processing is done on the model and rendering in the
-                    // view(s).
-                    this.showStatusMessages(pres);
-                }
             },
 
             /**
@@ -1246,32 +1135,6 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            onNicknameClash (presence) {
-                /* When the nickname is already taken, we either render a
-                 * form for the user to choose a new nickname, or we
-                 * try to make the nickname unique by adding an integer to
-                 * it. So john will become john-2, and then john-3 and so on.
-                 *
-                 * Which option is take depends on the value of
-                 * muc_nickname_from_jid.
-                 */
-                if (_converse.muc_nickname_from_jid) {
-                    const nick = presence.getAttribute('from').split('/')[1];
-                    if (nick === _converse.getDefaultMUCNickname()) {
-                        this.model.join(nick + '-2');
-                    } else {
-                        const del= nick.lastIndexOf("-");
-                        const num = nick.substring(del+1, nick.length);
-                        this.model.join(nick.substring(0, del+1) + String(Number(num)+1));
-                    }
-                } else {
-                    this.renderNicknameForm(
-                        __("The nickname you chose is reserved or "+
-                           "currently in use, please choose a different one.")
-                    );
-                }
-            },
-
             hideChatRoomContents () {
                 const container_el = this.el.querySelector('.chatroom-body');
                 if (!_.isNull(container_el)) {
@@ -1279,9 +1142,11 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            renderNicknameForm (message='') {
+            renderNicknameForm () {
                 /* Render a form which allows the user to choose theirnickname.
                  */
+                const message = this.model.get('nickname_validation_message');
+                this.model.save('nickname_validation_message', undefined);
                 this.hideChatRoomContents();
                 if (!this.nickname_form) {
                     this.nickname_form = new _converse.MUCNicknameForm({
@@ -1297,8 +1162,11 @@ converse.plugins.add('converse-muc-views', {
                 u.safeSave(this.model, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
             },
 
-            renderPasswordForm (message='') {
+            renderPasswordForm () {
                 this.hideChatRoomContents();
+                const message = this.model.get('password_validation_message');
+                this.model.save('password_validation_message', undefined);
+
                 if (!this.password_form) {
                     this.password_form = new _converse.MUCPasswordForm({
                         'model': new Backbone.Model(),
@@ -1308,33 +1176,32 @@ converse.plugins.add('converse-muc-views', {
                     const container_el = this.el.querySelector('.chatroom-body');
                     container_el.insertAdjacentElement('beforeend', this.password_form.el);
                 } else {
-                    this.model.set('validation_message', message);
+                    this.password_form.model.set('validation_message', message);
                 }
                 u.showElement(this.password_form.el);
                 this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
             },
 
-            showDestroyedMessage (error) {
+            showDestroyedMessage () {
                 u.hideElement(this.el.querySelector('.chat-area'));
                 u.hideElement(this.el.querySelector('.occupants'));
                 sizzle('.spinner', this.el).forEach(u.removeElement);
 
+                const message = this.model.get('destroyed_message');
+                const reason = this.model.get('destroyed_reason');
+                const moved_jid = this.model.get('moved_jid');
+                this.model.save({
+                    'destroyed_message': undefined,
+                    'destroyed_reason': undefined,
+                    'moved_jid': undefined
+                });
                 const container = this.el.querySelector('.disconnect-container');
-                const moved_jid = _.get(
-                        sizzle('gone[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).pop(),
-                        'textContent'
-                    ).replace(/^xmpp:/, '').replace(/\?join$/, '');
-                const reason = _.get(
-                        sizzle('text[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).pop(),
-                        'textContent'
-                    );
                 container.innerHTML = tpl_chatroom_destroyed({
                     '_': _,
                     '__':__,
                     'jid': moved_jid,
                     'reason': reason ? `"${reason}"` : null
                 });
-
                 const switch_el = container.querySelector('a.switch-chat');
                 if (switch_el) {
                     switch_el.addEventListener('click', ev => {
@@ -1348,49 +1215,35 @@ converse.plugins.add('converse-muc-views', {
                 u.showElement(container);
             },
 
-            showDisconnectMessages (msgs) {
-                if (_.isString(msgs)) {
-                    msgs = [msgs];
+            showDisconnectMessage () {
+                const message = this.model.get('disconnection_message');
+                if (!message) {
+                    return;
                 }
                 u.hideElement(this.el.querySelector('.chat-area'));
                 u.hideElement(this.el.querySelector('.occupants'));
                 sizzle('.spinner', this.el).forEach(u.removeElement);
+
+                const messages = [message];
+                const actor = this.model.get('disconnection_actor');
+                if (actor) {
+                    messages.push(__('This action was done by %1$s.', actor));
+                }
+                const reason = this.model.get('disconnection_reason');
+                if (reason) {
+                    messages.push(__('The reason given is: "%1$s".', reason));
+                }
+                this.model.save({
+                    'disconnection_message': undefined,
+                    'disconnection_reason': undefined,
+                    'disconnection_actor': undefined
+                });
                 const container = this.el.querySelector('.disconnect-container');
                 container.innerHTML = tpl_chatroom_disconnect({
                     '_': _,
-                    'disconnect_messages': msgs
+                    'disconnect_messages': messages
                 })
                 u.showElement(container);
-            },
-
-            /**
-             * @private
-             * @method _converse.ChatRoomView#getMessageFromStatus
-             * @param { XMLElement } stat: A <status> element
-             * @param { Boolean } is_self: Whether the element refers to the current user
-             * @param { XMLElement } stanza: The original stanza received
-             */
-            getMessageFromStatus (stat, stanza, is_self) {
-                const code = stat.getAttribute('code');
-                if (code === '110' || (code === '100' && !is_self)) { return; }
-                if (code in _converse.muc.info_messages) {
-                    return _converse.muc.info_messages[code];
-                }
-                let nick;
-                if (!is_self) {
-                    if (code in _converse.muc.action_info_messages) {
-                        nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-                        return __(_converse.muc.action_info_messages[code], nick);
-                    }
-                } else if (code in _converse.muc.new_nickname_messages) {
-                    if (is_self && code === "210") {
-                        nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-                    } else if (is_self && code === "303") {
-                        nick = stanza.querySelector('x item').getAttribute('nick');
-                    }
-                    return __(_converse.muc.new_nickname_messages[code], nick);
-                }
-                return;
             },
 
             getNotificationWithMessage (message) {
@@ -1407,49 +1260,6 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            parseXUserElement (x, stanza, is_self) {
-                /* Parse the passed-in <x xmlns='http://jabber.org/protocol/muc#user'>
-                 * element and construct a map containing relevant
-                 * information.
-                 */
-                // 1. Get notification messages based on the <status> elements.
-                const statuses = x.querySelectorAll('status');
-                const mapper = _.partial(this.getMessageFromStatus, _, stanza, is_self);
-                const notification = {};
-                const messages = _.reject(
-                    _.reject(_.map(statuses, mapper), _.isUndefined),
-                    message => this.getNotificationWithMessage(message)
-                );
-                if (messages.length) {
-                    notification.messages = messages;
-                }
-                // 2. Get disconnection messages based on the <status> elements
-                const codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
-                const disconnection_codes = _.intersection(codes, Object.keys(_converse.muc.disconnect_messages));
-                const disconnected = is_self && disconnection_codes.length > 0;
-                if (disconnected) {
-                    notification.disconnected = true;
-                    notification.disconnection_message = _converse.muc.disconnect_messages[disconnection_codes[0]];
-                }
-                // 3. Find the reason and actor from the <item> element
-                const item = x.querySelector('item');
-                // By using querySelector above, we assume here there is
-                // one <item> per <x xmlns='http://jabber.org/protocol/muc#user'>
-                // element. This appears to be a safe assumption, since
-                // each <x/> element pertains to a single user.
-                if (!_.isNull(item)) {
-                    const reason = item.querySelector('reason');
-                    if (reason) {
-                        notification.reason = reason ? reason.textContent : undefined;
-                    }
-                    const actor = item.querySelector('actor');
-                    if (actor) {
-                        notification.actor = actor ? actor.getAttribute('nick') : undefined;
-                    }
-                }
-                return notification;
-            },
-
             insertNotification (message) {
                 this.content.insertAdjacentHTML(
                     'beforeend',
@@ -1459,33 +1269,6 @@ converse.plugins.add('converse-muc-views', {
                         'message': message
                     })
                 );
-            },
-
-            showNotificationsforUser (notification) {
-                /* Given the notification object generated by
-                 * parseXUserElement, display any relevant messages and
-                 * information to the user.
-                 */
-                if (notification.disconnected) {
-                    const messages = [];
-                    messages.push(notification.disconnection_message);
-                    if (notification.actor) {
-                        messages.push(__('This action was done by %1$s.', notification.actor));
-                    }
-                    if (notification.reason) {
-                        messages.push(__('The reason given is: "%1$s".', notification.reason));
-                    }
-                    this.showDisconnectMessages(messages);
-                    this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                    return;
-                }
-                if (_.get(notification.messages, 'length')) {
-                    notification.messages.forEach(message => this.insertNotification(message));
-                    this.scrollDown();
-                }
-                if (notification.reason) {
-                    this.showChatEvent(__('The reason given is: "%1$s".', notification.reason));
-                }
             },
 
             onOccupantAdded (occupant) {
@@ -1642,56 +1425,6 @@ converse.plugins.add('converse-muc-views', {
                     }
                 }
                 this.scrollDown();
-            },
-
-            /**
-             * Check for status codes and communicate their purpose to the user.
-             * See: https://xmpp.org/registrar/mucstatus.html
-             * @private
-             * @method _converse.ChatRoomView#showStatusMessages
-             * @param { XMLElement } stanza - The message or presence stanza containing the status codes
-             */
-            showStatusMessages (stanza) {
-                const elements = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza);
-                const is_self = stanza.querySelectorAll("status[code='110']").length;
-                const iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
-                const notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
-                notifications.forEach(n => this.showNotificationsforUser(n));
-            },
-
-            showErrorMessageFromPresence (presence) {
-                // We didn't enter the groupchat, so we must remove it from the MUC add-on
-                const error = presence.querySelector('error');
-                if (error.getAttribute('type') === 'auth') {
-                    if (!_.isNull(error.querySelector('not-authorized'))) {
-                        this.renderPasswordForm(__("Password incorrect"));
-                    } else if (!_.isNull(error.querySelector('registration-required'))) {
-                        this.showDisconnectMessages(__('You are not on the member list of this groupchat.'));
-                    } else if (!_.isNull(error.querySelector('forbidden'))) {
-                        this.showDisconnectMessages(__('You have been banned from this groupchat.'));
-                    }
-                } else if (error.getAttribute('type') === 'cancel') {
-                    if (!_.isNull(error.querySelector('not-allowed'))) {
-                        this.showDisconnectMessages(__('You are not allowed to create new groupchats.'));
-                    } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-                        this.showDisconnectMessages(__("Your nickname doesn't conform to this groupchat's policies."));
-                    } else if (sizzle('gone[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).length) {
-                        this.showDestroyedMessage(error);
-                    } else if (!_.isNull(error.querySelector('conflict'))) {
-                        this.onNicknameClash(presence);
-                    } else if (!_.isNull(error.querySelector('item-not-found'))) {
-                        this.showDisconnectMessages(__("This groupchat does not (yet) exist."));
-                    } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-                        this.showDisconnectMessages(__("This groupchat has reached its maximum number of participants."));
-                    } else if (!_.isNull(error.querySelector('remote-server-not-found'))) {
-                        const messages = [__("Remote server not found")];
-                        const reason = _.get(error.querySelector('text'), 'textContent');
-                        if (reason) {
-                            messages.push(__('The explanation given is: "%1$s".', reason));
-                        }
-                        this.showDisconnectMessages(messages);
-                    }
-                }
             },
 
             renderAfterTransition () {

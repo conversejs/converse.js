@@ -2344,7 +2344,8 @@
                 .c('status').attrs({code:'210'}).nodeTree;
             _converse.connection._dataRecv(test_utils.createRequest(presence));
             view.model.sendMessage('hello world');
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 3);
+
             expect(view.model.messages.last().get('affiliation')).toBe('owner');
             expect(view.model.messages.last().get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);

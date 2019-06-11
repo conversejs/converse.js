@@ -197,6 +197,12 @@ converse.plugins.add('converse-minimize', {
 
 
         const minimizableChatBoxView = {
+
+            /**
+             * Maximizes a minimized chat box.
+             * Will trigger {@link _converse#chatBoxMaximized}
+             * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
+             */
             maximize () {
                 // Restores a minimized chat box
                 const { _converse } = this.__super__;
@@ -216,6 +222,11 @@ converse.plugins.add('converse-minimize', {
                 return this;
             },
 
+            /**
+             * Minimizes a chat box.
+             * Will trigger {@link _converse#chatBoxMinimized}
+             * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
+             */
             minimize (ev) {
                 const { _converse } = this.__super__;
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
@@ -234,6 +245,7 @@ converse.plugins.add('converse-minimize', {
                  * @example _converse.api.listen.on('chatBoxMinimized', view => { ... });
                  */
                 _converse.api.trigger('chatBoxMinimized', this);
+                return this;
             },
 
             onMinimizedChanged (item) {

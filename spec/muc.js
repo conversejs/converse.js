@@ -359,7 +359,7 @@
                  */
                 const presence = $pres({
                         to:'romeo@montague.lit/orchard',
-                        from:'lounge@montague.lit/thirdwitch',
+                        from:'lounge@montague.lit/nicky',
                         id:'5025e055-036c-4bc5-a227-706e7e352053'
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                 .c('item').attrs({
@@ -371,9 +371,12 @@
                 .c('status').attrs({code:'201'}).nodeTree;
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                const info_text = view.el.querySelector('.chat-content .chat-info').textContent;
-                expect(info_text).toBe('A new groupchat has been created');
 
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 2);
+
+                const info_texts = Array.from(view.el.querySelectorAll('.chat-content .chat-info')).map(e => e.textContent);
+                expect(info_texts[0]).toBe('A new groupchat has been created');
+                expect(info_texts[1]).toBe('nicky has entered the groupchat');
 
                 // An instant room is created by saving the default configuratoin.
                 //
@@ -448,7 +451,7 @@
                 done()
             }));
 
-            it("shows a notification if its not anonymous",
+            it("shows a notification if it's not anonymous",
                 mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
@@ -465,27 +468,7 @@
                  *      </x>
                  *  </presence></body>
                  */
-                let presence = $pres({
-                        to: 'romeo@montague.lit/orchard',
-                        from: 'coven@chat.shakespeare.lit/some1'
-                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
-                    .c('item', {
-                        'affiliation': 'owner',
-                        'jid': 'romeo@montague.lit/_converse.js-29092160',
-                        'role': 'moderator'
-                    }).up()
-                    .c('status', {code: '110'}).up()
-                    .c('status', {code: '100'});
-
-                _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(chat_content.querySelectorAll('.chat-info').length).toBe(2);
-                expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
-                    .toBe("This groupchat is not anonymous");
-                expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
-                    .toBe("some1 has entered the groupchat");
-
-                // Check that we don't show the notification twice
-                presence = $pres({
+                const presence = $pres({
                         to: 'romeo@montague.lit/orchard',
                         from: 'coven@chat.shakespeare.lit/some1'
                     }).c('x', {xmlns: Strophe.NS.MUC_USER})
@@ -497,7 +480,8 @@
                     .c('status', {code: '110'}).up()
                     .c('status', {code: '100'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(chat_content.querySelectorAll('.chat-info').length).toBe(2);
+
+                await test_utils.waitUntil(() => chat_content.querySelectorAll('.chat-info').length === 2);
                 expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
                     .toBe("This groupchat is not anonymous");
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
@@ -1814,6 +1798,7 @@
                     .c('status').attrs({code:'210'}).nodeTree;
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 2);
                 const info_text = sizzle('.chat-content .chat-info:first', view.el).pop().textContent;
                 expect(info_text).toBe('Your nickname has been automatically set to thirdwitch');
                 done();
@@ -2096,7 +2081,7 @@
                 done();
             }));
 
-            it("informs users if their nicknames has been changed.",
+            it("informs users if their nicknames have been changed.",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -2167,11 +2152,12 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 2);
+
                 expect(sizzle('div.chat-info:last').pop().textContent).toBe(
                     __(_converse.muc.new_nickname_messages["303"], "newnick")
                 );
-                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.DISCONNECTED);
+                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
                 occupants = view.el.querySelector('.occupant-list');
                 expect(occupants.childNodes.length).toBe(1);
@@ -2509,6 +2495,7 @@
                     .c('status', {code: '104'}).up()
                     .c('status', {code: '172'});
                 _converse.connection._dataRecv(test_utils.createRequest(message));
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 3);
                 const chat_body = view.el.querySelector('.chatroom-body');
                 expect(sizzle('.message:last', chat_body).pop().textContent)
                     .toBe('This groupchat is now no longer anonymous');
@@ -2551,6 +2538,7 @@
                     .up()
                     .c('status').attrs({code:'110'}).up()
                     .c('status').attrs({code:'307'}).nodeTree;
+
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -3232,6 +3220,8 @@
                         }).up()
                         .c('status', {'code': '307'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 4);
                 expect(view.el.querySelectorAll('.chat-info')[3].textContent).toBe("annoying guy has been kicked out");
                 expect(view.el.querySelectorAll('.chat-info').length).toBe(4);
                 done();
@@ -3628,6 +3618,33 @@
 
                 const groupchat_jid = 'members-only@muc.montague.lit'
                 await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'romeo');
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                const iq = await test_utils.waitUntil(() => _.filter(
+                    _converse.connection.IQ_stanzas,
+                    iq => iq.querySelector(
+                        `iq[to="${groupchat_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                    )).pop());
+
+                // State that the chat is members-only via the features IQ
+                const features_stanza = $iq({
+                        'from': groupchat_jid,
+                        'id': iq.getAttribute('id'),
+                        'to': 'romeo@montague.lit/desktop',
+                        'type': 'result'
+                    })
+                    .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                        .c('identity', {
+                            'category': 'conference',
+                            'name': 'A Dark Cave',
+                            'type': 'text'
+                        }).up()
+                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                        .c('feature', {'var': 'muc_hidden'}).up()
+                        .c('feature', {'var': 'muc_temporary'}).up()
+                        .c('feature', {'var': 'muc_membersonly'}).up();
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+                await test_utils.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+
                 const presence = $pres().attrs({
                         from: `${groupchat_jid}/romeo`,
                         id: u.getUniqueId(),
@@ -3637,8 +3654,6 @@
                       .c('error').attrs({by:'lounge@montague.lit', type:'auth'})
                           .c('registration-required').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                const view = _converse.chatboxviews.get(groupchat_jid);
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
                     .toBe('You are not on the member list of this groupchat.');
@@ -3652,6 +3667,29 @@
 
                 const groupchat_jid = 'off-limits@muc.montague.lit'
                 await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'romeo');
+
+                const iq = await test_utils.waitUntil(() => _.filter(
+                    _converse.connection.IQ_stanzas,
+                    iq => iq.querySelector(
+                        `iq[to="${groupchat_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                    )).pop());
+
+                const features_stanza = $iq({
+                        'from': groupchat_jid,
+                        'id': iq.getAttribute('id'),
+                        'to': 'romeo@montague.lit/desktop',
+                        'type': 'result'
+                    })
+                    .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                        .c('identity', {'category': 'conference', 'name': 'A Dark Cave', 'type': 'text'}).up()
+                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                        .c('feature', {'var': 'muc_hidden'}).up()
+                        .c('feature', {'var': 'muc_temporary'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                await test_utils.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+
                 const presence = $pres().attrs({
                         from: `${groupchat_jid}/romeo`,
                         id: u.getUniqueId(),
@@ -3661,7 +3699,6 @@
                       .c('error').attrs({by:'lounge@montague.lit', type:'auth'})
                           .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                const view = _converse.chatboxviews.get(groupchat_jid);
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
@@ -3696,6 +3733,7 @@
                 view.el.querySelector('input[type=submit]').click();
                 done();
             }));
+
 
             it("will automatically choose a new nickname if a nickname conflict happens and muc_nickname_from_jid=true",
                 mock.initConverse(
@@ -3765,7 +3803,26 @@
 
                 const groupchat_jid = 'impermissable@muc.montague.lit'
                 await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'romeo')
-                var presence = $pres().attrs({
+
+                // We pretend this is a new room, so no disco info is returned.
+                const iq = await test_utils.waitUntil(() => _.filter(
+                    _converse.connection.IQ_stanzas,
+                    iq => iq.querySelector(
+                        `iq[to="${groupchat_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                    )).pop());
+                const features_stanza = $iq({
+                        'from': 'room@conference.example.org',
+                        'id': iq.getAttribute('id'),
+                        'to': 'romeo@montague.lit/desktop',
+                        'type': 'error'
+                    }).c('error', {'type': 'cancel'})
+                        .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+
+                const presence = $pres().attrs({
                         from: `${groupchat_jid}/romeo`,
                         id: u.getUniqueId(),
                         to:'romeo@montague.lit/pda',
@@ -3773,7 +3830,6 @@
                     }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                       .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                           .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                const view = _converse.chatboxviews.get(groupchat_jid);
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
@@ -3788,6 +3844,25 @@
 
                 const groupchat_jid = 'conformist@muc.montague.lit'
                 await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'romeo');
+
+                const iq = await test_utils.waitUntil(() => _.filter(
+                    _converse.connection.IQ_stanzas,
+                    iq => iq.querySelector(
+                        `iq[to="${groupchat_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                    )).pop());
+                const features_stanza = $iq({
+                        'from': groupchat_jid,
+                        'id': iq.getAttribute('id'),
+                        'to': 'romeo@montague.lit/desktop',
+                        'type': 'result'
+                    }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                        .c('identity', {'category': 'conference', 'name': 'A Dark Cave', 'type': 'text'}).up()
+                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+
                 const presence = $pres().attrs({
                         from: `${groupchat_jid}/romeo`,
                         id: u.getUniqueId(),
@@ -3797,7 +3872,6 @@
                       .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                           .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                const view = _converse.chatboxviews.get(groupchat_jid);
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
@@ -3812,6 +3886,25 @@
 
                 const groupchat_jid = 'nonexistent@muc.montague.lit'
                 await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'romeo');
+
+                const iq = await test_utils.waitUntil(() => _.filter(
+                    _converse.connection.IQ_stanzas,
+                    iq => iq.querySelector(
+                        `iq[to="${groupchat_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                    )).pop());
+                const features_stanza = $iq({
+                        'from': groupchat_jid,
+                        'id': iq.getAttribute('id'),
+                        'to': 'romeo@montague.lit/desktop',
+                        'type': 'result'
+                    }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                        .c('identity', {'category': 'conference', 'name': 'A Dark Cave', 'type': 'text'}).up()
+                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+
                 const presence = $pres().attrs({
                         from: `${groupchat_jid}/romeo`,
                         id: u.getUniqueId(),
@@ -3821,7 +3914,6 @@
                       .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                           .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                const view = _converse.chatboxviews.get(groupchat_jid);
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
@@ -3836,6 +3928,25 @@
 
                 const groupchat_jid = 'maxed-out@muc.montague.lit'
                 await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'romeo')
+
+                const iq = await test_utils.waitUntil(() => _.filter(
+                    _converse.connection.IQ_stanzas,
+                    iq => iq.querySelector(
+                        `iq[to="${groupchat_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                    )).pop());
+                const features_stanza = $iq({
+                        'from': groupchat_jid,
+                        'id': iq.getAttribute('id'),
+                        'to': 'romeo@montague.lit/desktop',
+                        'type': 'result'
+                    }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                        .c('identity', {'category': 'conference', 'name': 'A Dark Cave', 'type': 'text'}).up()
+                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+
                 const presence = $pres().attrs({
                         from: `${groupchat_jid}/romeo`,
                         id: u.getUniqueId(),
@@ -3845,7 +3956,6 @@
                       .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                           .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                const view = _converse.chatboxviews.get(groupchat_jid);
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
@@ -4878,3 +4988,5 @@
         });
     });
 }));
+
+

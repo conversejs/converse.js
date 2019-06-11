@@ -377,7 +377,7 @@ converse.plugins.add('converse-muc', {
                 }
                 const stanza = $pres({
                     'from': _converse.connection.jid,
-                    'to': this.getRoomJIDAndNick(nick)
+                    'to': this.getRoomJIDAndNick()
                 }).c("x", {'xmlns': Strophe.NS.MUC})
                   .c("history", {'maxstanzas': this.features.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas}).up();
 
@@ -532,30 +532,25 @@ converse.plugins.add('converse-muc', {
                 });
             },
 
-            getRoomJIDAndNick (nick) {
-                /* Utility method to construct the JID for the current user
-                 * as occupant of the groupchat.
-                 *
-                 * This is the groupchat JID, with the user's nick added at the
-                 * end.
-                 *
-                 * For example: groupchat@conference.example.org/nickname
-                 */
-                if (nick) {
-                    this.save({'nick': nick});
-                } else {
-                    nick = this.get('nick');
-                }
-                const groupchat = this.get('jid');
-                const jid = Strophe.getBareJidFromJid(groupchat);
+            /**
+             * Utility method to construct the JID for the current user
+             * as occupant of the groupchat.
+             *
+             * @returns {string} - The groupchat JID with the user's nickname added at the end.
+             * @example groupchat@conference.example.org/nickname
+             */
+            getRoomJIDAndNick () {
+                const nick = this.get('nick');
+                const jid = Strophe.getBareJidFromJid(this.get('jid'));
                 return jid + (nick !== null ? `/${nick}` : "");
             },
 
+            /**
+             * Sends a message with the status of the user in this chat session
+             * as taken from the 'chat_state' attribute of the chat box.
+             * See XEP-0085 Chat State Notifications.
+             */
             sendChatState () {
-                /* Sends a message with the status of the user in this chat session
-                 * as taken from the 'chat_state' attribute of the chat box.
-                 * See XEP-0085 Chat State Notifications.
-                 */
                 if (!_converse.send_chat_state_notifications || this.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     return;
                 }

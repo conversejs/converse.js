@@ -1105,12 +1105,16 @@ converse.plugins.add('converse-muc-views', {
                     case 'nick': {
                         if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
                             break;
+                        } else if (args.length === 0) {
+                            this.showErrorMessage(__('You need to provide a nickname'))
+                        } else {
+                            const jid = Strophe.getBareJidFromJid(this.model.get('jid'));
+                            _converse.api.send($pres({
+                                from: _converse.connection.jid,
+                                to: `${jid}/${args}`,
+                                id: _converse.connection.getUniqueId()
+                            }).tree());
                         }
-                        _converse.api.send($pres({
-                            from: _converse.connection.jid,
-                            to: this.model.getRoomJIDAndNick(args),
-                            id: _converse.connection.getUniqueId()
-                        }).tree());
                         break;
                     }
                     case 'owner':

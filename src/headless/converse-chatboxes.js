@@ -94,14 +94,14 @@ converse.plugins.add('converse-chatboxes', {
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
                 }
-                if (this.isOnlyChatStateNotification()) {
+                if (this.isEphemeral()) {
                     window.setTimeout(() => {
                         try {
                             this.destroy()
                         } catch (e) {
                             _converse.log(e, Strophe.LogLevel.ERROR);
                         }
-                    }, 20000);
+                    }, 10000);
                 }
             },
 
@@ -148,6 +148,10 @@ converse.plugins.add('converse-chatboxes', {
 
             isOnlyChatStateNotification () {
                 return u.isOnlyChatStateNotification(this);
+            },
+
+            isEphemeral () {
+                return this.isOnlyChatStateNotification() || this.get('type') === 'error';
             },
 
             getDisplayName () {

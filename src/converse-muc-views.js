@@ -1666,10 +1666,6 @@ converse.plugins.add('converse-muc-views', {
                     } else if (!_.isNull(error.querySelector('forbidden'))) {
                         this.showDisconnectMessages(__('You have been banned from this groupchat.'));
                     }
-                } else if (error.getAttribute('type') === 'modify') {
-                    if (!_.isNull(error.querySelector('jid-malformed'))) {
-                        this.showDisconnectMessages(__('No nickname was specified.'));
-                    }
                 } else if (error.getAttribute('type') === 'cancel') {
                     if (!_.isNull(error.querySelector('not-allowed'))) {
                         this.showDisconnectMessages(__('You are not allowed to create new groupchats.'));

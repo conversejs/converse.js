@@ -1353,6 +1353,19 @@ converse.plugins.add('converse-muc', {
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});
             },
 
+
+            handleModifyError(pres) {
+                const text = _.get(pres.querySelector('error text'), 'textContent');
+                if (text) {
+                    const attrs = {
+                        'type': 'error',
+                        'message': text
+                    }
+                    this.messages.create(attrs);
+                }
+            },
+
+
             onErrorPresence (pres) {
                 // TODO: currently showErrorMessageFromPresence handles
                 // 'error" presences in converse-muc-views.
@@ -1360,6 +1373,8 @@ converse.plugins.add('converse-muc', {
                 // handler removed from there.
                 if (sizzle(`error not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, pres).length) {
                     this.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
+                } else if (sizzle(`error[type="modify"]`, pres).length) {
+                    this.handleModifyError(pres);
                 } else {
                     this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                 }

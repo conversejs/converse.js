@@ -351,7 +351,6 @@ converse.plugins.add('converse-chatview', {
                 this.model.on('destroy', this.remove, this);
 
                 this.model.presence.on('change:show', this.onPresenceChanged, this);
-                this.model.on('showHelpMessages', this.showHelpMessages, this);
                 this.render();
                 this.updateAfterMessagesFetched();
                 /**

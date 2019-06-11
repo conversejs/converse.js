@@ -87,7 +87,9 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             initialize () {
-                this.setVCard();
+                if (['chat', 'groupchat'].includes(this.get('type'))) {
+                    this.setVCard();
+                }
                 if (this.get('type') === 'chat') {
                     this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
                 }

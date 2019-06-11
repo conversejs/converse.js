@@ -195,7 +195,7 @@ converse.plugins.add('converse-muc', {
                     'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
                     'message_type': 'groupchat',
                     'name': '',
-                    'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
+                    'nick': _converse.getDefaultMUCNickname(),
                     'num_unread': 0,
                     'roomconfig': {},
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),

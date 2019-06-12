@@ -146,6 +146,7 @@ converse.plugins.add('converse-disco', {
                 } catch (iq) {
                     _converse.log(iq, Strophe.LogLevel.ERROR);
                     this.waitUntilFeaturesDiscovered.resolve(this);
+                    return;
                 }
                 this.onInfo(stanza);
             },
@@ -382,19 +383,19 @@ converse.plugins.add('converse-disco', {
              * @namespace _converse.api.disco
              * @memberOf _converse.api
              */
-            'disco': {
+            disco: {
                 /**
                  * @namespace _converse.api.disco.stream
                  * @memberOf _converse.api.disco
                  */
-                'stream': {
+                stream: {
                     /**
                      * @method _converse.api.disco.stream.getFeature
                      * @param {String} name The feature name
                      * @param {String} xmlns The XML namespace
                      * @example _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver')
                      */
-                    'getFeature': async function (name, xmlns) {
+                    async getFeature (name, xmlns) {
                         await _converse.api.waitUntil('streamFeaturesAdded');
                         if (_.isNil(name) || _.isNil(xmlns)) {
                             throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
@@ -407,12 +408,12 @@ converse.plugins.add('converse-disco', {
                  * @namespace _converse.api.disco.own
                  * @memberOf _converse.api.disco
                  */
-                'own': {
+                own: {
                     /**
                      * @namespace _converse.api.disco.own.identities
                      * @memberOf _converse.api.disco.own
                      */
-                    'identities': {
+                    identities: {
                         /**
                          * Lets you add new identities for this client (i.e. instance of Converse)
                          * @method _converse.api.disco.own.identities.add
@@ -458,7 +459,7 @@ converse.plugins.add('converse-disco', {
                      * @namespace _converse.api.disco.own.features
                      * @memberOf _converse.api.disco.own
                      */
-                    'features': {
+                    features: {
                         /**
                          * Lets you register new disco features for this client (i.e. instance of Converse)
                          * @method _converse.api.disco.own.features.add
@@ -498,7 +499,7 @@ converse.plugins.add('converse-disco', {
                  * @param {string} [node] A specific node identifier associated with the JID
                  * @returns {promise} Promise which resolves once we have a result from the server.
                  */
-                'info' (jid, node) {
+                info (jid, node) {
                     const attrs = {xmlns: Strophe.NS.DISCO_INFO};
                     if (node) {
                         attrs.node = node;
@@ -519,7 +520,7 @@ converse.plugins.add('converse-disco', {
                  * @param {string} [node] A specific node identifier associated with the JID
                  * @returns {promise} Promise which resolves once we have a result from the server.
                  */
-                'items' (jid, node) {
+                items (jid, node) {
                     const attrs = {'xmlns': Strophe.NS.DISCO_ITEMS};
                     if (node) {
                         attrs.node = node;
@@ -539,7 +540,7 @@ converse.plugins.add('converse-disco', {
                  * @namespace _converse.api.disco.entities
                  * @memberOf _converse.api.disco
                  */
-                'entities': {
+                entities: {
                     /**
                      * Get the the corresponding `DiscoEntity` instance.
                      *
@@ -548,7 +549,7 @@ converse.plugins.add('converse-disco', {
                      * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
                      * @example _converse.api.disco.entities.get(jid);
                      */
-                    async 'get' (jid, create=false) {
+                    async get (jid, create=false) {
                         await _converse.api.waitUntil('discoInitialized');
                         if (_.isNil(jid)) {
                             return _converse.disco_entities;
@@ -583,7 +584,7 @@ converse.plugins.add('converse-disco', {
                      * @example
                      * _converse.api.disco.features.get(Strophe.NS.MAM, _converse.bare_jid);
                      */
-                    async 'get' (feature, jid) {
+                    async get (feature, jid) {
                         if (_.isNil(jid)) {
                             throw new TypeError('You need to provide an entity JID');
                         }
@@ -617,7 +618,7 @@ converse.plugins.add('converse-disco', {
                  *     // The feature is not supported
                  * }
                  */
-                async 'supports' (feature, jid) {
+                async supports (feature, jid) {
                     const features = await _converse.api.disco.features.get(feature, jid);
                     return features.length > 0;
                 },
@@ -632,7 +633,7 @@ converse.plugins.add('converse-disco', {
                  * @example
                  * await _converse.api.disco.refreshFeatures('room@conference.example.org');
                  */
-                async 'refreshFeatures' (jid) {
+                async refreshFeatures (jid) {
                     if (_.isNil(jid)) {
                         throw new TypeError('api.disco.refreshFeatures: You need to provide an entity JID');
                     }
@@ -655,7 +656,7 @@ converse.plugins.add('converse-disco', {
                  * @example
                  * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
                  */
-                async 'getFeatures' (jid) {
+                async getFeatures (jid) {
                     if (_.isNil(jid)) {
                         throw new TypeError('api.disco.getFeatures: You need to provide an entity JID');
                     }
@@ -676,7 +677,7 @@ converse.plugins.add('converse-disco', {
                  * @example
                  * const fields = await _converse.api.disco.getFields('room@conference.example.org');
                  */
-                async 'getFields' (jid) {
+                async getFields (jid) {
                     if (_.isNil(jid)) {
                         throw new TypeError('api.disco.getFields: You need to provide an entity JID');
                     }
@@ -717,7 +718,7 @@ converse.plugins.add('converse-disco', {
                  *     }
                  * ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                  */
-                async 'getIdentity' (category, type, jid) {
+                async getIdentity (category, type, jid) {
                     const e = await _converse.api.disco.entities.get(jid, true);
                     return e.getIdentity(category, type);
                 }

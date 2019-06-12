@@ -97,7 +97,7 @@ converse.plugins.add('converse-message-view', {
                     this.debouncedRender();
                 });
                 this.model.on('change', this.onChanged, this);
-                this.model.on('destroy', this.remove, this);
+                this.model.on('destroy', this.fadeOut, this);
             },
 
             async render () {
@@ -140,11 +140,24 @@ converse.plugins.add('converse-message-view', {
                 }
             },
 
+            fadeOut () {
+                if (_converse.animate) {
+                    this.el.addEventListener('animationend', () => this.remove(), {'once': true});
+                    u.addClass('fade-out', this.el);
+                } else {
+                    this.remove();
+                }
+            },
+
             onMessageEdited () {
                 if (this.model.get('is_archived')) {
                     return;
                 }
-                this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
+                this.el.addEventListener(
+                    'animationend',
+                    () => u.removeClass('onload', this.el),
+                    {'once': true}
+                );
                 u.addClass('onload', this.el);
             },
 

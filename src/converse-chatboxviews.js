@@ -72,7 +72,8 @@ converse.plugins.add('converse-chatboxviews', {
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
         _converse.api.settings.update({
-            'theme': 'default',
+            'animate': true,
+            'theme': 'default'
         });
 
         _converse.ViewWithAvatar = Backbone.NativeView.extend(AvatarMixin);

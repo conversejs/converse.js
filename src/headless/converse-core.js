@@ -1060,7 +1060,7 @@ _converse.initialize = async function (settings, callback) {
         /* Ask the XMPP server to enable Message Carbons
          * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
          */
-        if (!this.message_carbons || !this.session || !this.session.get('carbons_enabled')) {
+        if (!this.message_carbons || !this.session || this.session.get('carbons_enabled')) {
             return;
         }
         const carbons_iq = new Strophe.Builder('iq', {

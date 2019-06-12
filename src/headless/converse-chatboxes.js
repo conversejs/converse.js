@@ -989,7 +989,7 @@ converse.plugins.add('converse-chatboxes', {
 
             async onErrorMessage (message) {
                 /* Handler method for all incoming error message stanzas
-                */
+                 */
                 const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
                 if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                     return true;

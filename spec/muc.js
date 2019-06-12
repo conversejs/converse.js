@@ -2081,6 +2081,86 @@
                 done();
             }));
 
+
+            it("reconnects when no-acceptable error is returned when sending a message",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                const groupchat_jid = 'coven@chat.shakespeare.lit';
+                await test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'romeo');
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+                await test_utils.sendMessage(view, 'hello world');
+
+                const stanza = u.toStanza(`
+                    <message xmlns='jabber:client'
+                             from='${groupchat_jid}'
+                             type='error'
+                             to='${_converse.bare_jid}'>
+                        <error type='cancel'>
+                            <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                        </error>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                let sent_stanzas = _converse.connection.sent_stanzas;
+                const iq = await test_utils.waitUntil(() => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.PING}"]`, s).length).pop());
+                expect(Strophe.serialize(iq)).toBe(
+                    `<iq id="${iq.getAttribute('id')}" to="coven@chat.shakespeare.lit/romeo" type="get" xmlns="jabber:client">`+
+                        `<ping xmlns="urn:xmpp:ping"/>`+
+                    `</iq>`);
+
+                const result = u.toStanza(`
+                    <iq from='${groupchat_jid}'
+                        id='${iq.getAttribute('id')}'
+                        to='${_converse.bare_jid}'
+                        type='error'>
+                    <error type='cancel'>
+                        <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                    </error>
+                    </iq>`);
+                _converse.connection.sent_stanzas = [];
+                sent_stanzas = _converse.connection.sent_stanzas;
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+                const pres = await test_utils.waitUntil(
+                    () => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
+                expect(Strophe.serialize(pres)).toBe(
+                    `<presence from="${_converse.jid}" to="coven@chat.shakespeare.lit/romeo" xmlns="jabber:client">`+
+                        `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
+                    `</presence>`);
+                done();
+            }));
+
+
+            it("informs users if the room configuration has changed",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                const groupchat_jid = 'coven@chat.shakespeare.lit';
+                await test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'romeo');
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+
+                const stanza = u.toStanza(`
+                    <message from='${groupchat_jid}'
+                            id='80349046-F26A-44F3-A7A6-54825064DD9E'
+                            to='${_converse.jid}'
+                            type='groupchat'>
+                    <x xmlns='http://jabber.org/protocol/muc#user'>
+                        <status code='170'/>
+                    </x>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 2);
+                const info_messages = view.el.querySelectorAll('.chat-content .chat-info');
+                expect(info_messages[0].textContent).toBe('romeo has entered the groupchat');
+                expect(info_messages[1].textContent).toBe('groupchat logging is now enabled');
+                done();
+            }));
+
+
             it("informs users if their nicknames have been changed.",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},

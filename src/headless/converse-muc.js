@@ -1407,11 +1407,15 @@ converse.plugins.add('converse-muc', {
             handleModifyError(pres) {
                 const text = _.get(pres.querySelector('error text'), 'textContent');
                 if (text) {
-                    const attrs = {
-                        'type': 'error',
-                        'message': text
+                    if (this.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
+                        this.setDisconnectionMessage(text);
+                    } else {
+                        const attrs = {
+                            'type': 'error',
+                            'message': text
+                        }
+                        this.messages.create(attrs);
                     }
-                    this.messages.create(attrs);
                 }
             },
 

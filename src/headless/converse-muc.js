@@ -292,7 +292,12 @@ converse.plugins.add('converse-muc', {
             },
 
             async enterRoom () {
-                if (this.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                const conn_status = this.get('connection_status');
+                _converse.log(
+                    `${this.get('jid')} initialized with connection_status ${conn_status}`,
+                    Strophe.LogLevel.DEBUG
+                );
+                if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
                     // We're not restoring a room from cache, so let's clear
                     // the cache (which might be stale).
                     this.clearMessages();

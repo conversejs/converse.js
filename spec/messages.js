@@ -2958,7 +2958,7 @@
                                 `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                                 `<replace id="${msg.nodeTree.getAttribute("id")}" xmlns="urn:xmpp:message-correct:0"/>`+
-                                `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                                `<origin-id id="${correction.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
                 done();
             }));

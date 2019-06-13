@@ -159,7 +159,7 @@ converse.plugins.add('converse-smacks', {
             _converse.connection._addSysHandler(_.flow(onFailedStanza, promise.resolve), Strophe.NS.SM, 'failed');
 
             const previous_id = _converse.session.get('smacks_stream_id');
-            const h = _converse.session.get('num_stanzas_handled_by_server');
+            const h = _converse.session.get('num_stanzas_handled');
             const stanza = u.toStanza(`<resume xmlns="${Strophe.NS.SM}" h="${h}" previd="${previous_id}"/>`);
             _converse.api.send(stanza);
             _converse.connection.flush();

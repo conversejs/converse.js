@@ -688,7 +688,8 @@ converse.plugins.add('converse-chatboxes', {
                         'edited': (new Date()).toISOString(),
                         'message': attrs.message,
                         'older_versions': older_versions,
-                        'references': attrs.references
+                        'references': attrs.references,
+                        'origin_id': _converse.connection.getUniqueId()
                     });
                 } else {
                     message = this.messages.create(attrs);

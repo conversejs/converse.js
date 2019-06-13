@@ -1003,7 +1003,8 @@ _converse.initialize = async function (settings, callback) {
             _converse.xmppstatus.browserStorage = new BrowserStorage.session(id);
             _converse.xmppstatus.fetch({
                 'success': _.partial(_converse.onStatusInitialized, reconnecting),
-                'error': _.partial(_converse.onStatusInitialized, reconnecting)
+                'error': _.partial(_converse.onStatusInitialized, reconnecting),
+                'silent': true
             });
         }
     }
@@ -1152,28 +1153,13 @@ _converse.initialize = async function (settings, callback) {
         },
 
         initialize () {
-            this.on('change:status', (item) => {
-                const status = this.get('status');
-                this.sendPresence(status);
-                /**
-                 * Triggered when the current user's status has changed
-                 * @event _converse#statusChanged
-                 * @type { string }
-                 * @example _converse.api.listen.on('statusChanged', status => { ... });
-                 */
-                _converse.api.trigger('statusChanged', status);
-            });
-
-            this.on('change:status_message', () => {
-                const status_message = this.get('status_message');
-                this.sendPresence(this.get('status'), status_message);
-                /**
-                 * Triggered when the current user's custom status message has changed.
-                 * @event _converse#statusMessageChanged
-                 * @type { string }
-                 * @example _converse.api.listen.on('statusMessageChanged', message => { ... });
-                 */
-                _converse.api.trigger('statusMessageChanged', status_message);
+            this.on('change', item => {
+                if (!_.isObject(item.changed)) {
+                    return;
+                }
+                if ('status' in item.changed || 'status_message' in item.changed) {
+                    this.sendPresence(this.get('status'), this.get('status_message'));
+                }
             });
         },
 

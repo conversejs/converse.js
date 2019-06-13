@@ -51,6 +51,9 @@
 - Remove the `expose_rid_and_sid` configuration setting.
 - A `prebind_url` is now mandatory when setting `authentication` to `prebind`.
   It's no longer possible to pass in `rid` and `sid` values to `converse.initialize.
+- Removed events `statusChanged` and `statusMessageChanged`. Instead, you can
+  listen on the `change:status` or `change:status\_message` events on
+  `_converse.xmppstatus`.
 
 ### API changes
 

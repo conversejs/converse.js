@@ -149,6 +149,7 @@ converse.plugins.add('converse-smacks', {
             resendUnackedStanzas();
             _converse.connection.do_bind = false; // No need to bind our resource anymore
             _converse.connection.authenticated = true;
+            _converse.connection.restored = true;
             _converse.connection._changeConnectStatus(Strophe.Status.CONNECTED, null);
         }
 

@@ -1349,13 +1349,23 @@ _converse.api = {
          * @method reconnect
          * @memberOf _converse.api.connection
          */
-        reconnect () {
+        async reconnect () {
             const conn_status = _converse.connfeedback.get('connection_status');
             if (conn_status === Strophe.Status.CONNFAIL) {
+                // When reconnecting with a new transport, we call setUserJID
+                // so that a new resource is generated, to avoid multiple
+                // server-side sessions with the same resource.
+                //
+                // We also call `_proto._doDisconnect` so that connection event handlers
+                // for the old transport are removed.
                 if (_converse.api.connection.isType('websocket') && _converse.bosh_service_url) {
+                    await setUserJID(_converse.bare_jid);
+                    _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Bosh(_converse.connection);
                     _converse.connection.service = _converse.bosh_service_url;
                 } else if (_converse.api.connection.isType('bosh') && _converse.websocket_url) {
+                    await setUserJID(_converse.bare_jid);
+                    _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Websocket(_converse.connection);
                     _converse.connection.service = _converse.websocket_url;
                 }

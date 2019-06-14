@@ -175,7 +175,8 @@ converse.plugins.add('converse-smacks', {
                 _converse.connection._addSysHandler(_.flow(saveSessionData, promise.resolve), Strophe.NS.SM, 'enabled');
                 _converse.connection._addSysHandler(_.flow(onFailedStanza, promise.resolve), Strophe.NS.SM, 'failed');
 
-                const stanza = u.toStanza(`<enable xmlns="${Strophe.NS.SM}" resume="true"/>`);
+                const resume = (_converse.api.connection.isType('websocket') || _converse.isTestEnv());
+                const stanza = u.toStanza(`<enable xmlns="${Strophe.NS.SM}" resume="${resume}"/>`);
                 _converse.api.send(stanza);
                 _converse.connection.flush();
                 await promise;
@@ -193,14 +194,8 @@ converse.plugins.add('converse-smacks', {
             _converse.connection.addHandler(sendAck, Strophe.NS.SM, 'r');
             _converse.connection.addHandler(handleAck, Strophe.NS.SM, 'a');
 
-            if (_converse.api.connection.isType('bosh') &&
-                    _converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED) {
-                // No need to continue further when we have an existing BOSH session,
-                // since our existing session still exists server-side.
-                return;
-            }
-
-            if (_converse.session.get('smacks_stream_id')) {
+            if ((_converse.api.connection.isType('websocket') || _converse.isTestEnv()) &&
+                    _converse.session.get('smacks_stream_id')) {
                 await sendResumeStanza();
             } else {
                 clearSessionData();

@@ -318,7 +318,7 @@ function addPromise (promise) {
     _converse.promises[promise] = u.getResolveablePromise();
 }
 
-function isTestEnv () {
+_converse.isTestEnv = function () {
     return _.get(_converse.connection, 'service') === 'jasmine tests';
 }
 
@@ -455,7 +455,7 @@ function clearSession  () {
         delete _converse.session;
     }
     // TODO: Refactor so that we don't clear
-    if (!_converse.config.get('trusted') || isTestEnv()) {
+    if (!_converse.config.get('trusted') || _converse.isTestEnv()) {
         window.localStorage.clear();
         window.sessionStorage.clear();
     }
@@ -1224,7 +1224,7 @@ _converse.initialize = async function (settings, callback) {
             }
         } else if (reconnecting) {
             this.autoLogin();
-        } else if (!isTestEnv() && window.PasswordCredential) {
+        } else if (!_converse.isTestEnv() && window.PasswordCredential) {
             const creds = await navigator.credentials.get({'password': true});
             if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
                 await setUserJID(creds.id);
@@ -1280,7 +1280,7 @@ _converse.initialize = async function (settings, callback) {
         this.connection = settings.connection;
     }
 
-    if (isTestEnv()) {
+    if (_converse.isTestEnv()) {
         await finishInitialization();
         return _converse;
     } else if (!_.isUndefined(i18n)) {

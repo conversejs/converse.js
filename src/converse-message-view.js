@@ -142,7 +142,7 @@ converse.plugins.add('converse-message-view', {
 
             fadeOut () {
                 if (_converse.animate) {
-                    this.el.addEventListener('animationend', () => this.remove(), {'once': true});
+                    setTimeout(() => this.remove(), 600);
                     u.addClass('fade-out', this.el);
                 } else {
                     this.remove();

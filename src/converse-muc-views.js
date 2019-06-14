@@ -475,14 +475,10 @@ converse.plugins.add('converse-muc-views', {
                     this.removeAll();
                 });
 
-                this.model.on('change:affiliation', this.renderHeading, this);
+                this.model.on('change', this.renderHeading, this);
                 this.model.on('change:connection_status', this.onConnectionStatusChanged, this);
                 this.model.on('change:hidden_occupants', this.updateOccupantsToggle, this);
-                this.model.on('change:bookmarked', this.renderHeading, this);
-                this.model.on('change:jid', this.renderHeading, this);
-                this.model.on('change:name', this.renderHeading, this);
                 this.model.on('change:role', this.renderBottomPanel, this);
-                this.model.on('change:subject', this.renderHeading, this);
                 this.model.on('change:subject', this.setChatRoomSubject, this);
                 this.model.on('configurationNeeded', this.getAndRenderConfigurationForm, this);
                 this.model.on('destroy', this.hide, this);
@@ -523,9 +519,13 @@ converse.plugins.add('converse-muc-views', {
                 return this;
             },
 
-            renderHeading () {
+            renderHeading (item=null) {
                 /* Render the heading UI of the groupchat. */
-                this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
+                const changed = _.get(item, 'changed', {});
+                const keys = ['affiliation', 'bookmarked', 'jid', 'name', 'description', 'subject'];
+                if (item === null || _.intersection(Object.keys(changed), keys).length) {
+                    this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
+                }
             },
 
             renderBottomPanel () {

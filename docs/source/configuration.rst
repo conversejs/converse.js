@@ -193,7 +193,7 @@ Even though Converse asks for the bookmarks to be kept private (via the
 and publishes the node contents under the default privacy setting, which makes
 the information available to all roster contacts.
 
-If your your XMPP server does not support `XEP-0223`'s ``#publish-options``
+If your XMPP server does not support `XEP-0223`'s ``#publish-options``
 feature and you don't mind that your room bookmarks are visible to all
 contacts, then you can set this setting to ``true``. Otherwise you won't be
 able to have any room bookmarks at all for an account on that XMPP server.

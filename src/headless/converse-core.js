@@ -318,7 +318,7 @@ function addPromise (promise) {
     _converse.promises[promise] = u.getResolveablePromise();
 }
 
-function isTestEnv () {
+_converse.isTestEnv = function () {
     return _.get(_converse.connection, 'service') === 'jasmine tests';
 }
 
@@ -455,7 +455,7 @@ function clearSession  () {
         delete _converse.session;
     }
     // TODO: Refactor so that we don't clear
-    if (!_converse.config.get('trusted') || isTestEnv()) {
+    if (!_converse.config.get('trusted') || _converse.isTestEnv()) {
         window.localStorage.clear();
         window.sessionStorage.clear();
     }
@@ -1003,7 +1003,8 @@ _converse.initialize = async function (settings, callback) {
             _converse.xmppstatus.browserStorage = new BrowserStorage.session(id);
             _converse.xmppstatus.fetch({
                 'success': _.partial(_converse.onStatusInitialized, reconnecting),
-                'error': _.partial(_converse.onStatusInitialized, reconnecting)
+                'error': _.partial(_converse.onStatusInitialized, reconnecting),
+                'silent': true
             });
         }
     }
@@ -1060,7 +1061,7 @@ _converse.initialize = async function (settings, callback) {
         /* Ask the XMPP server to enable Message Carbons
          * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
          */
-        if (!this.message_carbons || !this.session || !this.session.get('carbons_enabled')) {
+        if (!this.message_carbons || !this.session || this.session.get('carbons_enabled')) {
             return;
         }
         const carbons_iq = new Strophe.Builder('iq', {
@@ -1152,28 +1153,13 @@ _converse.initialize = async function (settings, callback) {
         },
 
         initialize () {
-            this.on('change:status', (item) => {
-                const status = this.get('status');
-                this.sendPresence(status);
-                /**
-                 * Triggered when the current user's status has changed
-                 * @event _converse#statusChanged
-                 * @type { string }
-                 * @example _converse.api.listen.on('statusChanged', status => { ... });
-                 */
-                _converse.api.trigger('statusChanged', status);
-            });
-
-            this.on('change:status_message', () => {
-                const status_message = this.get('status_message');
-                this.sendPresence(this.get('status'), status_message);
-                /**
-                 * Triggered when the current user's custom status message has changed.
-                 * @event _converse#statusMessageChanged
-                 * @type { string }
-                 * @example _converse.api.listen.on('statusMessageChanged', message => { ... });
-                 */
-                _converse.api.trigger('statusMessageChanged', status_message);
+            this.on('change', item => {
+                if (!_.isObject(item.changed)) {
+                    return;
+                }
+                if ('status' in item.changed || 'status_message' in item.changed) {
+                    this.sendPresence(this.get('status'), this.get('status_message'));
+                }
             });
         },
 
@@ -1238,7 +1224,7 @@ _converse.initialize = async function (settings, callback) {
             }
         } else if (reconnecting) {
             this.autoLogin();
-        } else if (!isTestEnv() && window.PasswordCredential) {
+        } else if (!_converse.isTestEnv() && window.PasswordCredential) {
             const creds = await navigator.credentials.get({'password': true});
             if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
                 await setUserJID(creds.id);
@@ -1294,7 +1280,7 @@ _converse.initialize = async function (settings, callback) {
         this.connection = settings.connection;
     }
 
-    if (isTestEnv()) {
+    if (_converse.isTestEnv()) {
         await finishInitialization();
         return _converse;
     } else if (!_.isUndefined(i18n)) {
@@ -1363,13 +1349,23 @@ _converse.api = {
          * @method reconnect
          * @memberOf _converse.api.connection
          */
-        reconnect () {
+        async reconnect () {
             const conn_status = _converse.connfeedback.get('connection_status');
             if (conn_status === Strophe.Status.CONNFAIL) {
+                // When reconnecting with a new transport, we call setUserJID
+                // so that a new resource is generated, to avoid multiple
+                // server-side sessions with the same resource.
+                //
+                // We also call `_proto._doDisconnect` so that connection event handlers
+                // for the old transport are removed.
                 if (_converse.api.connection.isType('websocket') && _converse.bosh_service_url) {
+                    await setUserJID(_converse.bare_jid);
+                    _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Bosh(_converse.connection);
                     _converse.connection.service = _converse.bosh_service_url;
                 } else if (_converse.api.connection.isType('bosh') && _converse.websocket_url) {
+                    await setUserJID(_converse.bare_jid);
+                    _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Websocket(_converse.connection);
                     _converse.connection.service = _converse.websocket_url;
                 }

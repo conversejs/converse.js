@@ -385,8 +385,6 @@ body.converse-fullscreen {
         75%  {background-color: rgba(255, 181, 162, 0.25);}
         100% {background-color: transparent;}
     }
-
-
     @keyframes fadein {
         0% { opacity: 0 }
         100% { opacity: 1 }
@@ -395,15 +393,14 @@ body.converse-fullscreen {
         0% { opacity: 0 }
         100% { opacity: 1 }
     }
-
     @-webkit-keyframes fadeOut {
-		 0% { opacity: 1; visibility: visible; }
-		 100% { opacity: 0; visibility: hidden;  }
-	} 
+        0% { opacity: 1; visibility: visible; }
+        100% { opacity: 0; visibility: hidden;  }
+    }
     @keyframes fadeOut {
-		 0% { opacity: 1; visibility: visible; }
-		 100% { opacity: 0; visibility: hidden;  }
-	} 
+        0% { opacity: 1; visibility: visible; }
+        100% { opacity: 0; visibility: hidden;  }
+    }
 
     .fade-in {
         @include fade-in;
@@ -423,10 +420,10 @@ body.converse-fullscreen {
     }
 
     .fade-out {
-		animation-duration: 1s;
-		animation-fill-mode: forwards;  
-		animation-name: fadeOut;
-		animation-timing-function: ease-in-out;
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+        animation-name: fadeOut;
+        animation-timing-function: ease-in-out;
     }
 
     .collapsed {

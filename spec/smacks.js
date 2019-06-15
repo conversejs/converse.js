@@ -101,7 +101,7 @@
             _converse.api.connection.reconnect();
             stanza = await test_utils.waitUntil(() =>
                 sent_stanzas.filter(s => (s.tagName === 'resume')).pop());
-            expect(Strophe.serialize(stanza)).toEqual('<resume h="2" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
+            expect(Strophe.serialize(stanza)).toEqual('<resume h="1" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
 
             result = u.toStanza(`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`);
             _converse.connection._dataRecv(test_utils.createRequest(result));

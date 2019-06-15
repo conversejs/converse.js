@@ -114,8 +114,10 @@
         return _converse.chatboxviews.get(jid);
     };
 
-    utils.openChatRoom = function (_converse, room, server) {
-        return _converse.api.rooms.open(`${room}@${server}`);
+    utils.openChatRoom = async function (_converse, room, server) {
+        const model = await _converse.api.rooms.open(`${room}@${server}`);
+        await model.messages.fetched;
+        return model;
     };
 
     utils.getRoomFeatures = async function (_converse, room, server, features=[]) {

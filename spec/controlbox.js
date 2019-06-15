@@ -141,11 +141,15 @@
 
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 const view = _converse.xmppstatusview;
-                spyOn(_converse.api, "trigger");
                 modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
                 modal.el.querySelector('[type="submit"]').click();
-
-                expect(_converse.api.trigger).toHaveBeenCalledWith('statusChanged', 'dnd');
+                const last_stanza = _converse.connection.sent_stanzas.pop();
+                expect(Strophe.serialize(last_stanza)).toBe(
+                    `<presence xmlns="jabber:client">`+
+                        `<show>dnd</show>`+
+                        `<priority>0</priority>`+
+                        `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `</presence>`);
                 const first_child = view.el.querySelector('.xmpp-status span:first-child');
                 expect(u.hasClass('online', first_child)).toBe(false);
                 expect(u.hasClass('dnd', first_child)).toBe(true);
@@ -166,13 +170,17 @@
 
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 const view = _converse.xmppstatusview;
-                spyOn(_converse.api, "trigger");
-
                 const msg = 'I am happy';
                 modal.el.querySelector('input[name="status_message"]').value = msg;
                 modal.el.querySelector('[type="submit"]').click();
+                const last_stanza = _converse.connection.sent_stanzas.pop();
+                expect(Strophe.serialize(last_stanza)).toBe(
+                    `<presence xmlns="jabber:client">`+
+                        `<status>I am happy</status>`+
+                        `<priority>0</priority>`+
+                        `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `</presence>`);
 
-                expect(_converse.api.trigger).toHaveBeenCalledWith('statusMessageChanged', msg);
                 const first_child = view.el.querySelector('.xmpp-status span:first-child');
                 expect(u.hasClass('online', first_child)).toBe(true);
                 expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe(msg);

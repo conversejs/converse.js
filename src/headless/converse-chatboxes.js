@@ -87,21 +87,23 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             initialize () {
-                this.setVCard();
+                if (['chat', 'groupchat'].includes(this.get('type'))) {
+                    this.setVCard();
+                }
                 if (this.get('type') === 'chat') {
                     this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
                 }
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
                 }
-                if (this.isOnlyChatStateNotification()) {
+                if (this.isEphemeral()) {
                     window.setTimeout(() => {
                         try {
                             this.destroy()
                         } catch (e) {
                             _converse.log(e, Strophe.LogLevel.ERROR);
                         }
-                    }, 20000);
+                    }, 10000);
                 }
             },
 
@@ -148,6 +150,10 @@ converse.plugins.add('converse-chatboxes', {
 
             isOnlyChatStateNotification () {
                 return u.isOnlyChatStateNotification(this);
+            },
+
+            isEphemeral () {
+                return this.isOnlyChatStateNotification() || this.get('type') === 'error';
             },
 
             getDisplayName () {
@@ -682,7 +688,8 @@ converse.plugins.add('converse-chatboxes', {
                         'edited': (new Date()).toISOString(),
                         'message': attrs.message,
                         'older_versions': older_versions,
-                        'references': attrs.references
+                        'references': attrs.references,
+                        'origin_id': _converse.connection.getUniqueId()
                     });
                 } else {
                     message = this.messages.create(attrs);
@@ -983,7 +990,7 @@ converse.plugins.add('converse-chatboxes', {
 
             async onErrorMessage (message) {
                 /* Handler method for all incoming error message stanzas
-                */
+                 */
                 const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
                 if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                     return true;

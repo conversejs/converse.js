@@ -672,8 +672,8 @@ converse.plugins.add('converse-roster', {
                     const items = sizzle(`item`, query);
                     _.each(items, (item) => this.updateContact(item));
                     this.data.save('version', query.getAttribute('ver'));
-                    _converse.session.save('roster_fetched', true);
                 }
+                _converse.session.save('roster_fetched', true);
                 /**
                  * When the roster has been received from the XMPP server.
                  * See also the `cachedRoster` event further up, which gets called instead of

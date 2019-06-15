@@ -130,7 +130,7 @@ dist/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
 
 dist/website.min.css:: stamp-npm dist/website.css
-	$(CLEANCSS) $< > $@
+	$(CLEANCSS) dist/website.css > $@
 
 dist/font-awesome.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@

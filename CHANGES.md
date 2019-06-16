@@ -20,6 +20,7 @@
 - Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
 - New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks).
 - New config option [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
+- New config option [message_limit](https://conversejs.org/docs/html/configuration.html#message-limit)
 - New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton).
   By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
   "embed" the full app and not just a single chat. To embed just a single chat, it's now

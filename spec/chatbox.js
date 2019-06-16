@@ -475,6 +475,63 @@
                     done();
                 }));
 
+                it("shows the remaining character count if a message_limit is configured",
+                    mock.initConverse(
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 200},
+                        async function (done, _converse) {
+
+                    await test_utils.waitForRoster(_converse, 'current', 3);
+                    test_utils.openControlBox();
+                    const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                    await test_utils.openChatBoxFor(_converse, contact_jid);
+                    const view = _converse.chatboxviews.get(contact_jid);
+                    const toolbar = view.el.querySelector('.chat-toolbar');
+                    const counter = toolbar.querySelector('.message-limit');
+                    expect(counter.textContent).toBe('200');
+                    view.insertIntoTextArea('hello world');
+                    expect(counter.textContent).toBe('188');
+
+                    toolbar.querySelector('li.toggle-smiley').click();
+                    await test_utils.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container')));
+                    var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
+                    var items = picker.querySelectorAll('.emoji-picker li');
+                    items[0].click()
+                    expect(counter.textContent).toBe('177');
+
+                    const textarea = view.el.querySelector('.chat-textarea');
+                    const ev = {
+                        target: textarea,
+                        preventDefault: _.noop,
+                        keyCode: 13 // Enter
+                    };
+                    view.onKeyDown(ev);
+                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                    view.onKeyUp(ev);
+                    expect(counter.textContent).toBe('200');
+
+                    textarea.value = 'hello world';
+                    view.onKeyUp(ev);
+                    expect(counter.textContent).toBe('189');
+                    done();
+                }));
+
+
+                it("does not show a remaining character count if message_limit is zero",
+                    mock.initConverse(
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 0},
+                        async function (done, _converse) {
+
+                    await test_utils.waitForRoster(_converse, 'current', 3);
+                    test_utils.openControlBox();
+                    const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                    await test_utils.openChatBoxFor(_converse, contact_jid);
+                    const view = _converse.chatboxviews.get(contact_jid);
+                    const counter = view.el.querySelector('.chat-toolbar .message-limit');
+                    expect(counter).toBe(null);
+                    done();
+                }));
+
+
                 it("can contain a button for starting a call",
                     mock.initConverse(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},

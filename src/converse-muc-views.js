@@ -460,6 +460,7 @@ converse.plugins.add('converse-muc-views', {
                 'click .upload-file': 'toggleFileUpload',
                 'keydown .chat-textarea': 'onKeyDown',
                 'keyup .chat-textarea': 'onKeyUp',
+                'paste .chat-textarea': 'onPaste',
                 'input .chat-textarea': 'inputChanged',
                 'dragover .chat-textarea': 'onDragOver',
                 'drop .chat-textarea': 'onDrop',
@@ -583,11 +584,12 @@ converse.plugins.add('converse-muc-views', {
                 if (this.mention_auto_complete.onKeyDown(ev)) {
                     return;
                 }
-                return _converse.ChatBoxView.prototype.onKeyDown.apply(this, arguments);
+                return _converse.ChatBoxView.prototype.onKeyDown.call(this, ev);
             },
 
             onKeyUp (ev) {
                 this.mention_auto_complete.evaluate(ev);
+                return _converse.ChatBoxView.prototype.onKeyUp.call(this, ev);
             },
 
             showRoomDetailsModal (ev) {

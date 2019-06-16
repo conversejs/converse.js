@@ -869,6 +869,18 @@ XEP-0280 requires server support, so make sure that message carbons are enabled
 on your server.
 
 
+message_limit
+-------------
+
+* Default:  ``0``
+
+Determines the allowed amount of characters in a chat message. A value of zero means there is no limit.
+Note, this limitation only applies to the Converse UX code running in the browser
+and it's trivial for an attacker to bypass this restriction.
+
+You should therefore also configure your XMPP server to limit message sizes.
+
+
 muc_disable_slash_commands
 --------------------------
 

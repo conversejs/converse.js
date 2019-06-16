@@ -1169,9 +1169,10 @@ converse.plugins.add('converse-muc-views', {
 
                 if (!this.password_form) {
                     this.password_form = new _converse.MUCPasswordForm({
-                        'model': new Backbone.Model(),
+                        'model': new Backbone.Model({
+                            'validation_message': message
+                        }),
                         'chatroomview': this,
-                        'validation_message': message
                     });
                     const container_el = this.el.querySelector('.chatroom-body');
                     container_el.insertAdjacentElement('beforeend', this.password_form.el);

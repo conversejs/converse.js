@@ -1538,33 +1538,37 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza - The presence stanza
              */
             onErrorPresence (stanza) {
-                if (sizzle(`error not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
-                    this.save({
-                        'password_validation_message': __("Password incorrect"),
-                        'connection_status': converse.ROOMSTATUS.PASSWORD_REQUIRED
-                    });
-                }
                 const error = stanza.querySelector('error');
                 const error_type = error.getAttribute('type');
+                const reason = _.get(sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent');
 
                 if (error_type === 'modify') {
                     this.handleModifyError(stanza);
                 } else if (error_type === 'auth') {
+                    if (sizzle(`not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
+                        this.save({
+                            'password_validation_message': reason || __("Password incorrect"),
+                            'connection_status': converse.ROOMSTATUS.PASSWORD_REQUIRED
+                        });
+                    }
                     if (error.querySelector('registration-required')) {
-                        this.setDisconnectionMessage(__('You are not on the member list of this groupchat.'));
+                        const message = __('You are not on the member list of this groupchat.');
+                        this.setDisconnectionMessage(message, reason);
                     } else if (error.querySelector('forbidden')) {
-                        this.setDisconnectionMessage(__('You have been banned from this groupchat.'));
+                        const message = __('You have been banned from this groupchat.');
+                        this.setDisconnectionMessage(message, reason);
                     }
                 } else if (error_type === 'cancel') {
                     if (error.querySelector('not-allowed')) {
-                        this.setDisconnectionMessage(__('You are not allowed to create new groupchats.'));
+                        const message = __('You are not allowed to create new groupchats.');
+                        this.setDisconnectionMessage(message, reason);
                     } else if (error.querySelector('not-acceptable')) {
-                        this.setDisconnectionMessage(__("Your nickname doesn't conform to this groupchat's policies."));
+                        const message = __("Your nickname doesn't conform to this groupchat's policies.");
+                        this.setDisconnectionMessage(message, reason);
                     } else if (sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
                         const moved_jid = _.get(sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent')
                             .replace(/^xmpp:/, '')
                             .replace(/\?join$/, '');
-                        const reason = _.get(sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent');
                         this.save({
                             'connection_status': converse.ROOMSTATUS.DESTROYED,
                             'destroyed_reason': reason,
@@ -1573,14 +1577,15 @@ converse.plugins.add('converse-muc', {
                     } else if (error.querySelector('conflict')) {
                         this.onNicknameClash(stanza);
                     } else if (error.querySelector('item-not-found')) {
-                        this.setDisconnectionMessage(__("This groupchat does not (yet) exist."));
+                        const message = __("This groupchat does not (yet) exist.");
+                        this.setDisconnectionMessage(message, reason);
                     } else if (error.querySelector('service-unavailable')) {
-                        this.setDisconnectionMessage(__("This groupchat has reached its maximum number of participants."));
+                        const message = __("This groupchat has reached its maximum number of participants.");
+                        this.setDisconnectionMessage(message, reason);
                     } else if (error.querySelector('remote-server-not-found')) {
                         const message = __("Remote server not found");
-                        const text = _.get(error.querySelector('text'), 'textContent');
-                        const reason = text ? __('The explanation given is: "%1$s".', text) : undefined;
-                        this.setDisconnectionMessage(message, reason);
+                        const feedback = reason ? __('The explanation given is: "%1$s".', reason) : undefined;
+                        this.setDisconnectionMessage(message, feedback);
                     }
                 }
             },

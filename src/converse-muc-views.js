@@ -618,9 +618,9 @@ converse.plugins.add('converse-muc-views', {
                 }
 
                 if (current_affiliation === 'none' && previous_affiliation === 'member') {
-                    this.showChatEvent(__("%1$s is no longer a permanent member of this groupchat", occupant.get('nick')))
+                    this.showChatEvent(__("%1$s is no longer a member of this groupchat", occupant.get('nick')))
                 } if (current_affiliation === 'member') {
-                    this.showChatEvent(__("%1$s is now a permanent member of this groupchat", occupant.get('nick')))
+                    this.showChatEvent(__("%1$s is now a member of this groupchat", occupant.get('nick')))
                 } else if (current_affiliation === 'outcast') {
                     this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')))
                 } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {

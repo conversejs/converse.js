@@ -710,7 +710,8 @@ converse.plugins.add('converse-chatboxes', {
                         'message': attrs.message,
                         'older_versions': older_versions,
                         'references': attrs.references,
-                        'origin_id': _converse.connection.getUniqueId()
+                        'origin_id': _converse.connection.getUniqueId(),
+                        'received': undefined
                     });
                 } else {
                     message = this.messages.create(attrs);

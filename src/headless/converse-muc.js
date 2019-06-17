@@ -1337,7 +1337,6 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * @async
              * @private
              * @method _converse.ChatRoom#shouldShowErrorMessage
              * @returns {Promise<boolean>}
@@ -1348,7 +1347,7 @@ converse.plugins.add('converse-muc', {
                         return false;
                     }
                 }
-                return true;
+                return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, stanza);
             },
 
             getErrorMessage (stanza) {
@@ -1357,7 +1356,7 @@ converse.plugins.add('converse-muc', {
                 } else if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
                     return __("Your message was not delivered because you're not present in the groupchat.");
                 } else {
-                    return _converse.ChatBox.prototype.getErrorMessage.apply(this, arguments);
+                    return _converse.ChatBox.prototype.getErrorMessage.call(this, stanza);
                 }
             },
 

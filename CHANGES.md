@@ -56,6 +56,8 @@
 - Removed events `statusChanged` and `statusMessageChanged`. Instead, you can
   listen on the `change:status` or `change:status\_message` events on
   `_converse.xmppstatus`.
+- Use flexbox instead of JavaScript to keep chat scrolled down. Due to this
+  change, messages are now inserted into the DOM in reverse order than before.
 
 ### API changes
 

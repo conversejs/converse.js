@@ -344,7 +344,6 @@ converse.plugins.add('converse-chatview', {
             initialize () {
                 this.initDebounced();
                 this.model.messages.on('add', this.onMessageAdded, this);
-                this.model.messages.on('rendered', this.scrollDown, this);
                 this.model.messages.on('reset', () => {
                     this.content.innerHTML = '';
                     this.removeAll();
@@ -366,9 +365,8 @@ converse.plugins.add('converse-chatview', {
             },
 
             initDebounced () {
-                this.scrollDown = _.debounce(this._scrollDown, 100);
                 this.markScrolled = _.debounce(this._markScrolled, 100);
-                this.show = _.debounce(this._show, 250, {'leading': true});
+                this.show = _.debounce(this._show, 500, {'leading': true});
             },
 
             render () {
@@ -545,8 +543,7 @@ converse.plugins.add('converse-chatview', {
                 await this.model.messages.fetched;
                 await Promise.all(this.model.messages.map(m => this.onMessageAdded(m)));
                 this.insertIntoDOM();
-                this.scrollDown();
-                this.content.addEventListener('scroll', this.markScrolled.bind(this));
+                this.content.addEventListener('scroll', () => this.markScrolled());
             },
 
             insertIntoDOM () {
@@ -567,8 +564,7 @@ converse.plugins.add('converse-chatview', {
                         'message': message,
                         'isodate': isodate,
                     }));
-                this.insertDayIndicator(this.content.lastElementChild);
-                this.scrollDown();
+                this.insertDayIndicator(this.content.firstElementChild);
                 return isodate;
             },
 
@@ -577,14 +573,12 @@ converse.plugins.add('converse-chatview', {
                     'beforeend',
                     tpl_error_message({'message': message, 'isodate': (new Date()).toISOString() })
                 );
-                this.scrollDown();
             },
 
             addSpinner (append=false) {
                 if (_.isNull(this.el.querySelector('.spinner'))) {
                     if (append) {
                         this.content.insertAdjacentHTML('beforeend', tpl_spinner());
-                        this.scrollDown();
                     } else {
                         this.content.insertAdjacentHTML('afterbegin', tpl_spinner());
                     }
@@ -607,16 +601,16 @@ converse.plugins.add('converse-chatview', {
              *      which specifies its creation date.
              */
             insertDayIndicator (next_msg_el) {
-                const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)"),
-                      prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
+                const earlier_msg_el = u.getNextElement(next_msg_el, ".message:not(.chat-state-notification)"),
+                      earlier_msg_date = _.isNull(earlier_msg_el) ? null : earlier_msg_el.getAttribute('data-isodate'),
                       next_msg_date = next_msg_el.getAttribute('data-isodate');
 
-                if (_.isNull(prev_msg_date) && _.isNull(next_msg_date)) {
+                if (_.isNull(earlier_msg_date) && _.isNull(next_msg_date)) {
                     return;
                 }
-                if (_.isNull(prev_msg_date) || dayjs(next_msg_date).isAfter(prev_msg_date, 'day')) {
+                if (_.isNull(earlier_msg_date) || dayjs(next_msg_date).isAfter(earlier_msg_date, 'day')) {
                     const day_date = dayjs(next_msg_date).startOf('day');
-                    next_msg_el.insertAdjacentHTML('beforeBegin',
+                    next_msg_el.insertAdjacentHTML('afterEnd',
                         tpl_new_day({
                             'isodate': day_date.toISOString(),
                             'datestring': day_date.format("dddd MMM Do YYYY")
@@ -634,14 +628,15 @@ converse.plugins.add('converse-chatview', {
              * @returns { Date }
              */
             getLastMessageDate (cutoff) {
-                const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)');
-                const oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
-                if (!_.isNull(oldest_date) && dayjs(oldest_date).isAfter(cutoff)) {
+                const most_recent_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)');
+                const most_recent_date = most_recent_msg ? most_recent_msg.getAttribute('data-isodate') : null;
+                if (_.isNull(most_recent_date)) {
                     return null;
                 }
-                const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-state-notification)');
-                const most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
-                if (_.isNull(most_recent_date)) {
+
+                const oldest_message = u.getLastChildElement(this.content, '.message:not(.chat-state-notification)');
+                const oldest_date = oldest_message ? oldest_message.getAttribute('data-isodate') : null;
+                if (!_.isNull(oldest_date) && dayjs(oldest_date).isAfter(cutoff)) {
                     return null;
                 }
                 if (dayjs(most_recent_date).isBefore(cutoff)) {
@@ -668,29 +663,6 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            setScrollPosition (message_el) {
-                /* Given a newly inserted message, determine whether we
-                 * should keep the scrollbar in place (so as to not scroll
-                 * up when using infinite scroll).
-                 */
-                if (this.model.get('scrolled')) {
-                    const next_msg_el = u.getNextElement(message_el, ".chat-msg");
-                    if (next_msg_el) {
-                        // The currently received message is not new, there
-                        // are newer messages after it. So let's see if we
-                        // should maintain our current scroll position.
-                        if (this.content.scrollTop === 0 || this.model.get('top_visible_message')) {
-                            const top_visible_message = this.model.get('top_visible_message') || next_msg_el;
-
-                            this.model.set('top_visible_message', top_visible_message);
-                            this.content.scrollTop = top_visible_message.offsetTop - 30;
-                        }
-                    }
-                } else {
-                    this.scrollDown();
-                }
-            },
-
             showHelpMessages (msgs, type, spinner) {
                 msgs.forEach(msg => {
                     this.content.insertAdjacentHTML(
@@ -707,7 +679,6 @@ converse.plugins.add('converse-chatview', {
                 } else if (spinner === false) {
                     this.clearSpinner();
                 }
-                return this.scrollDown();
             },
 
             shouldShowOnTextMessage () {
@@ -725,24 +696,24 @@ converse.plugins.add('converse-chatview', {
                 if (view.model.get('type') === 'error') {
                     const previous_msg_el = this.content.querySelector(`[data-msgid="${view.model.get('msgid')}"]`);
                     if (previous_msg_el) {
-                        previous_msg_el.insertAdjacentElement('afterend', view.el);
+                        previous_msg_el.insertAdjacentElement('beforeBegin', view.el);
                         return this.trigger('messageInserted', view.el);
                     }
                 }
-                const current_msg_date = dayjs(view.model.get('time')).toDate() || new Date(),
-                      previous_msg_date = this.getLastMessageDate(current_msg_date);
+                const current_msg_date = dayjs(view.model.get('time')).toDate() || new Date();
+                const previous_msg_date = this.getLastMessageDate(current_msg_date);
 
                 if (_.isNull(previous_msg_date)) {
-                    this.content.insertAdjacentElement('afterbegin', view.el);
+                    this.content.insertAdjacentElement('beforeEnd', view.el);
                 } else {
-                    const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date.toISOString()}"]:last`, this.content).pop();
+                    const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date.toISOString()}"]:first`, this.content).pop();
                     if (view.model.get('type') === 'error' &&
                             u.hasClass('chat-error', previous_msg_el) &&
                             previous_msg_el.textContent === view.model.get('message')) {
                         // We don't show a duplicate error message
                         return;
                     }
-                    previous_msg_el.insertAdjacentElement('afterend', view.el);
+                    previous_msg_el.insertAdjacentElement('beforeBegin', view.el);
                     this.markFollowups(view.el);
                 }
                 return this.trigger('messageInserted', view.el);
@@ -764,26 +735,27 @@ converse.plugins.add('converse-chatview', {
              * @param { HTMLElement } el - The message element
              */
             markFollowups (el) {
-                const from = el.getAttribute('data-from'),
-                      previous_el = el.previousElementSibling,
-                      date = dayjs(el.getAttribute('data-isodate')),
-                      next_el = el.nextElementSibling;
+                const from = el.getAttribute('data-from');
+                const earlier_msg_el = el.nextElementSibling;
+                const date = dayjs(el.getAttribute('data-isodate'));
 
-                if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) &&
-                        previous_el.getAttribute('data-from') === from &&
-                        date.isBefore(dayjs(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
-                        el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
+                if (earlier_msg_el &&
+                        !u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', earlier_msg_el) &&
+                        earlier_msg_el.getAttribute('data-from') === from &&
+                        date.isBefore(dayjs(earlier_msg_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
+                        el.getAttribute('data-encrypted') === earlier_msg_el.getAttribute('data-encrypted')) {
                     u.addClass('chat-msg--followup', el);
                 }
-                if (!next_el) { return; }
 
-                if (!u.hasClass('chat-msg--action', 'el') &&
-                        next_el.getAttribute('data-from') === from &&
-                        dayjs(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
-                        el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
-                    u.addClass('chat-msg--followup', next_el);
+                const later_msg_el = el.previousElementSibling;
+                if (!later_msg_el) { return; }
+                if (!u.hasClass('chat-msg--action', el) &&
+                        later_msg_el.getAttribute('data-from') === from &&
+                        dayjs(later_msg_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
+                        el.getAttribute('data-encrypted') === later_msg_el.getAttribute('data-encrypted')) {
+                    u.addClass('chat-msg--followup', later_msg_el);
                 } else {
-                    u.removeClass('chat-msg--followup', next_el);
+                    u.removeClass('chat-msg--followup', later_msg_el);
                 }
             },
 
@@ -808,7 +780,6 @@ converse.plugins.add('converse-chatview', {
 
                 this.insertMessage(view);
                 this.insertDayIndicator(view.el);
-                this.setScrollPosition(view.el);
 
                 if (u.isNewMessage(message)) {
                     if (message.get('sender') === 'me') {
@@ -816,8 +787,8 @@ converse.plugins.add('converse-chatview', {
                         // gets scrolled down. We always want to scroll down
                         // when the user writes a message as opposed to when a
                         // message is received.
-                        this.model.set('scrolled', false);
-                    } else if (this.model.get('scrolled', true) && !u.isOnlyChatStateNotification(message)) {
+                        this.scrolled = false;
+                    } else if (this.scrolled && !u.isOnlyChatStateNotification(message)) {
                         this.showNewMessagesIndicator();
                     }
                 }
@@ -1252,7 +1223,6 @@ converse.plugins.add('converse-chatview', {
                                 'message': text,
                                 'isodate': (new Date()).toISOString(),
                             }));
-                        this.scrollDown();
                     }
                 }
             },
@@ -1319,7 +1289,6 @@ converse.plugins.add('converse-chatview', {
             afterShown () {
                 this.model.clearUnreadMsgCounter();
                 this.setChatState(_converse.ACTIVE);
-                this.scrollDown();
                 this.focus();
             },
 
@@ -1360,26 +1329,16 @@ converse.plugins.add('converse-chatview', {
                     scrolled = false;
                     this.onScrolledDown();
                 }
-                u.safeSave(this.model, {
-                    'scrolled': scrolled,
-                    'top_visible_message': null
-                });
+                this.scrolled = scrolled;
             },
 
             viewUnreadMessages () {
-                this.model.save({
-                    'scrolled': false,
-                    'top_visible_message': null
-                });
+                this.scrolled = false;
                 this.scrollDown();
             },
 
-            _scrollDown () {
-                /* Inner method that gets debounced */
-                if (_.isUndefined(this.content)) {
-                    return;
-                }
-                if (u.isVisible(this.content) && !this.model.get('scrolled')) {
+            scrollDown () {
+                if (this.content && u.isVisible(this.content) && !this.scrolled) {
                     this.content.scrollTop = this.content.scrollHeight;
                 }
             },

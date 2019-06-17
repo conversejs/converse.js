@@ -19,6 +19,7 @@
         "window": true
     },
     "rules": {
+        "lodash/prefer-lodash-chain": "off",
         "lodash/prefer-lodash-method": [2, {
             "ignoreMethods": [
                 "assign", "every", "keys", "find", "endsWith", "startsWith", "filter",

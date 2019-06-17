@@ -1007,8 +1007,13 @@ converse.plugins.add('converse-chatview', {
                         }
                         return this.onFormSubmitted(ev);
                     } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
-                        return this.editEarlierMessage();
-                    } else if (ev.keyCode === _converse.keycodes.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
+                        const textarea = this.el.querySelector('.chat-textarea');
+                        if (!textarea.value || u.hasClass('correcting', textarea)) {
+                            return this.editEarlierMessage();
+                        }
+                    } else if (ev.keyCode === _converse.keycodes.DOWN_ARROW &&
+                            ev.target.selectionEnd === ev.target.value.length &&
+                            u.hasClass('correcting', this.el.querySelector('.chat-textarea'))) {
                         return this.editLaterMessage();
                     }
                 }

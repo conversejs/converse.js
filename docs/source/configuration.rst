@@ -231,6 +231,20 @@ autocomplete_add_contact
 
 Determines whether search suggestions are shown in the "Add Contact" modal.
 
+
+auto_focus
+----------
+
+* Default:  ``true``
+
+If set to ``true``, the textarea for composing chat messages will automatically
+become focused as soon as a chat is opened. This means you don't need to click
+the textarea first before starting to type a message.
+
+For applications where chat is not the main feature, automatic focus of the
+chat box might be undesired.
+
+
 auto_list_rooms
 ---------------
 

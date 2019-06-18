@@ -56,6 +56,7 @@ converse.plugins.add('converse-chatview', {
             { __ } = _converse;
 
         _converse.api.settings.update({
+            'auto_focus': true,
             'emoji_image_path': twemoji.default.base,
             'message_limit': 0,
             'show_send_button': false,
@@ -1290,13 +1291,17 @@ converse.plugins.add('converse-chatview', {
                 this.model.clearUnreadMsgCounter();
                 this.setChatState(_converse.ACTIVE);
                 this.scrollDown();
-                this.focus();
+                if (_converse.auto_focus) {
+                    this.focus();
+                }
             },
 
             _show () {
                 /* Inner show method that gets debounced */
                 if (u.isVisible(this.el)) {
-                    this.focus();
+                    if (_converse.auto_focus) {
+                        this.focus();
+                    }
                     return;
                 }
                 u.fadeIn(this.el, _.bind(this.afterShown, this));

@@ -684,7 +684,9 @@ converse.plugins.add('converse-muc-views', {
 
             show () {
                 if (u.isVisible(this.el)) {
-                    this.focus();
+                    if (_converse.auto_focus) {
+                        this.focus();
+                    }
                     return;
                 }
                 // Override from converse-chatview in order to not use
@@ -704,7 +706,9 @@ converse.plugins.add('converse-muc-views', {
                 } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
                     this.hideSpinner();
                     this.setChatState(_converse.ACTIVE);
-                    this.focus();
+                    if (_converse.auto_focus) {
+                        this.focus();
+                    }
                 } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
                     this.showDisconnectMessage();
                 } else if (conn_status === converse.ROOMSTATUS.DESTROYED) {

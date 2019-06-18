@@ -18,6 +18,7 @@
 - Message deduplication bugfixes and improvements
 - Continuously retry (in 2s intervals) to fetch login credentials (via [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url)) in case of failure
 - Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
+- New config option [auto_focus](https://conversejs.org/docs/html/configuration.html#auto-focus).
 - New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks).
 - New config option [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
 - New config option [message_limit](https://conversejs.org/docs/html/configuration.html#message-limit)

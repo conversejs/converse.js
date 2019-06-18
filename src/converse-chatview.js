@@ -570,7 +570,7 @@ converse.plugins.add('converse-chatview', {
 
             showErrorMessage (message) {
                 this.content.insertAdjacentHTML(
-                    'beforeend',
+                    'afterBegin',
                     tpl_error_message({'message': message, 'isodate': (new Date()).toISOString() })
                 );
             },
@@ -578,9 +578,9 @@ converse.plugins.add('converse-chatview', {
             addSpinner (append=false) {
                 if (_.isNull(this.el.querySelector('.spinner'))) {
                     if (append) {
-                        this.content.insertAdjacentHTML('beforeend', tpl_spinner());
+                        this.content.insertAdjacentHTML('afterBegin', tpl_spinner());
                     } else {
-                        this.content.insertAdjacentHTML('afterbegin', tpl_spinner());
+                        this.content.insertAdjacentHTML('beforeEnd', tpl_spinner());
                     }
                 }
             },

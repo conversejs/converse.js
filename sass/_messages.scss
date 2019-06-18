@@ -33,6 +33,7 @@
                 color: var(--separator-text-color);
                 display: inline-block;
                 line-height: 2em;
+                padding: 0 1em;
                 position: relative;
                 z-index: 5;
             }
@@ -43,7 +44,7 @@
             font-size: var(--message-font-size);
             line-height: var(--line-height-small);
             font-size: 90%;
-            padding: 0.17rem 0;
+            padding: 0.17rem 1rem;
 
             &.badge {
                 color: var(--chat-head-text-color);
@@ -79,7 +80,7 @@
             display: flex;
             width: 100%;
             flex-direction: row;
-            padding: 0.125rem 0;
+            padding: 0.125rem 1rem;
 
             &.onload {
                 animation: colorchange-chatmessage 1s;

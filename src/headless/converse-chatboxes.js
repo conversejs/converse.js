@@ -311,7 +311,6 @@ converse.plugins.add('converse-chatboxes', {
 
             initMessages () {
                 this.messages = new _converse.Messages();
-                const storage = _converse.config.get('storage');
                 this.messages.browserStorage = new BrowserStorage.session(
                     `converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
                 this.messages.chatbox = this;
@@ -1001,7 +1000,8 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             onConnected () {
-                this.browserStorage = new BrowserStorage.session(
+                const storage = _converse.config.get('storage');
+                this.browserStorage = new BrowserStorage[storage](
                     `converse.chatboxes-${_converse.bare_jid}`);
                 this.registerMessageHandler();
                 this.fetch({

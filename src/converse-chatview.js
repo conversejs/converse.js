@@ -1289,6 +1289,7 @@ converse.plugins.add('converse-chatview', {
             afterShown () {
                 this.model.clearUnreadMsgCounter();
                 this.setChatState(_converse.ACTIVE);
+                this.scrollDown();
                 this.focus();
             },
 

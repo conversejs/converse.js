@@ -3,11 +3,11 @@
     <div class="chatbox-title">
         <div class="row no-gutters">
             {[ if (o.type !== o._converse.HEADLINES_TYPE) { ]}
-                <canvas class="avatar" height="36" width="36"></canvas>
+               <div style="cursor:pointer;"></a> <canvas class="avatar show-user-details-modal" height="40" width="40"></canvas></div>
             {[ } ]}
-            <div class="col chat-title" title="{{{o.jid}}}">
+            <div class="col chat-title show-user-details-modal" title="{{{o.jid}}}" style="cursor:pointer;">
                 {[ if (o.url) { ]}
-                    <a href="{{{o.url}}}" target="_blank" rel="noopener" class="user">
+                    <a href="{{{o.url}}}" target="_blank" rel="noopener" class="user show-user-details-modal">
                 {[ } ]}
                         {{{ o.display_name }}}
                 {[ if (o.url) { ]}
@@ -17,8 +17,7 @@
             </div>
         </div>
     </div>
-    <div class="chatbox-buttons row no-gutters">
-        <a class="chatbox-btn close-chatbox-button fa fa-times" title="{{{o.info_close}}}"></a>
-        <a class="chatbox-btn show-user-details-modal fa fa-id-card" title="{{{o.info_details}}}"></a>
+    <div class="chatbox-bsuuttons row no-gutters">
+        <!----a class="chatbox-btn show-user-details-modal fa fa-id-card" title="{{{o.info_details}}}"--><!----/a-->
     </div>
 </div>

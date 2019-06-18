@@ -854,9 +854,18 @@ converse.plugins.add('converse-muc-views', {
                 const [text, references] = this.model.parseTextForReferences(args);
                 if (!references.length) {
                     this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
-                    return false;
+                    return;
                 }
-                return references.pop();
+                if (references.length > 1) {
+                    this.showErrorMessage(__("Error: found multiple groupchat participant based on your arguments"));
+                    return;
+                }
+                const nick_or_jid = references.pop().value;
+                if (!args.split(nick_or_jid, 2)[1].startsWith(' ')) {
+                    this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
+                    return;
+                }
+                return nick_or_jid;
             },
 
             setAffiliation (command, args, required_affiliations) {
@@ -870,7 +879,7 @@ converse.plugins.add('converse-muc-views', {
                 if (!this.validateRoleOrAffiliationChangeArgs(command, args)) {
                     return false;
                 }
-                const nick_or_jid = _.get(this.getNickOrJIDFromCommandArgs(args), 'value', null);
+                const nick_or_jid = this.getNickOrJIDFromCommandArgs(args);
                 if (!nick_or_jid) {
                     return false;
                 }
@@ -907,7 +916,7 @@ converse.plugins.add('converse-muc-views', {
                 if (!this.validateRoleOrAffiliationChangeArgs(command, args)) {
                     return false;
                 }
-                const nick_or_jid = _.get(this.getNickOrJIDFromCommandArgs(args), 'value', null);
+                const nick_or_jid = this.getNickOrJIDFromCommandArgs(args);
                 if (!nick_or_jid) {
                     return false;
                 }

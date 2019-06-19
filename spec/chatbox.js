@@ -44,7 +44,7 @@
                     }).c('body').t('hello world').tree();
                 await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
-                expect(view.content.firstElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
+                expect(view.content.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
                 done();
             }));
 
@@ -78,22 +78,22 @@
                 message = '/me is as well';
                 await test_utils.sendMessage(view, message);
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
-                await test_utils.waitUntil(() => sizzle('.chat-msg__author:first', view.el).pop().textContent.trim() === '**Romeo Montague');
-                const last_el = sizzle('.chat-msg__text:first', view.el).pop();
+                await test_utils.waitUntil(() => sizzle('.chat-msg__author:last', view.el).pop().textContent.trim() === '**Romeo Montague');
+                const last_el = sizzle('.chat-msg__text:last', view.el).pop();
                 expect(last_el.textContent).toBe('is as well');
                 expect(u.hasClass('chat-msg--followup', last_el)).toBe(false);
                 // Check that /me messages after a normal message don't
                 // get the 'chat-msg--followup' class.
                 message = 'This a normal message';
                 await test_utils.sendMessage(view, message);
-                let message_el = view.el.querySelector('.message:first-child');
+                let message_el = view.el.querySelector('.message:last-child');
                 expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
                 message = '/me wrote a 3rd person message';
                 await test_utils.sendMessage(view, message);
-                message_el = view.el.querySelector('.message:first-child');
+                message_el = view.el.querySelector('.message:last-child');
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
-                expect(sizzle('.chat-msg__text:first', view.el).pop().textContent).toBe('wrote a 3rd person message');
-                expect(u.isVisible(sizzle('.chat-msg__author:first', view.el).pop())).toBeTruthy();
+                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('wrote a 3rd person message');
+                expect(u.isVisible(sizzle('.chat-msg__author:last', view.el).pop())).toBeTruthy();
                 expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
                 done();
             }));
@@ -267,7 +267,7 @@
                 const jid = el.textContent.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 spyOn(_converse.api, "trigger");
                 el.click();
-                await test_utils.waitUntil(() => _converse.api.trigger.calls.count(), 1000);
+                await test_utils.waitUntil(() => _converse.api.trigger.calls.count(), 500);
                 expect(_converse.chatboxes.length).toEqual(2);
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
                 done();

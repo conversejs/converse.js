@@ -470,6 +470,7 @@ converse.plugins.add('converse-muc-views', {
                 this.initDebounced();
 
                 this.model.messages.on('add', this.onMessageAdded, this);
+                this.model.messages.on('rendered', this.scrollDown, this);
                 this.model.messages.on('reset', () => {
                     this.content.innerHTML = '';
                     this.removeAll();
@@ -679,6 +680,7 @@ converse.plugins.add('converse-muc-views', {
                     this.model.clearUnreadMsgCounter();
                     this.model.save();
                 }
+                this.scrollDown();
                 this.renderEmojiPicker();
             },
 
@@ -706,6 +708,7 @@ converse.plugins.add('converse-muc-views', {
                 } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
                     this.hideSpinner();
                     this.setChatState(_converse.ACTIVE);
+                    this.scrollDown();
                     if (_converse.auto_focus) {
                         this.focus();
                     }
@@ -763,6 +766,7 @@ converse.plugins.add('converse-muc-views', {
                     ev.stopPropagation();
                 }
                 this.model.save({'hidden_occupants': true});
+                this.scrollDown();
             },
 
             toggleOccupants (ev) {
@@ -774,6 +778,7 @@ converse.plugins.add('converse-muc-views', {
                     ev.stopPropagation();
                 }
                 this.model.save({'hidden_occupants': !this.model.get('hidden_occupants')});
+                this.scrollDown();
             },
 
             onOccupantClicked (ev) {
@@ -1321,7 +1326,7 @@ converse.plugins.add('converse-muc-views', {
                         return;
                     }
                     if (!dayjs(el.getAttribute('data-isodate')).isSame(new Date(), "day")) {
-                        el = el.nextElementSibling;
+                        el = el.previousElementSibling;
                         continue;
                     }
                     if (data.join === nick ||
@@ -1330,7 +1335,7 @@ converse.plugins.add('converse-muc-views', {
                             data.joinleave === nick) {
                         return el;
                     }
-                    el = el.nextElementSibling;
+                    el = el.previousElementSibling;
                 }
             },
 
@@ -1341,7 +1346,7 @@ converse.plugins.add('converse-muc-views', {
                 }
                 const nick = occupant.get('nick'),
                       stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
-                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.firstElementChild, nick),
+                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
                       data = _.get(prev_info_el, 'dataset', {});
 
                 if (data.leave === nick) {
@@ -1359,8 +1364,8 @@ converse.plugins.add('converse-muc-views', {
                         'message': message
                     };
                     this.content.removeChild(prev_info_el);
-                    this.content.insertAdjacentHTML('afterBegin', tpl_info(data));
-                    const el = this.content.firstElementChild;
+                    this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                    const el = this.content.lastElementChild;
                     setTimeout(() => u.addClass('fade-out', el), 5000);
                     setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
                 } else {
@@ -1379,12 +1384,13 @@ converse.plugins.add('converse-muc-views', {
                     };
                     if (prev_info_el) {
                         this.content.removeChild(prev_info_el);
-                        this.content.insertAdjacentHTML('afterBegin', tpl_info(data));
+                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
                     } else {
-                        this.content.insertAdjacentHTML('afterBegin', tpl_info(data));
-                        this.insertDayIndicator(this.content.firstElementChild);
+                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                        this.insertDayIndicator(this.content.lastElementChild);
                     }
                 }
+                this.scrollDown();
             },
 
             showLeaveNotification (occupant) {
@@ -1395,7 +1401,7 @@ converse.plugins.add('converse-muc-views', {
                 }
                 const nick = occupant.get('nick'),
                       stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
-                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.firstElementChild, nick),
+                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
                       dataset = _.get(prev_info_el, 'dataset', {});
 
                 if (dataset.join === nick) {
@@ -1413,8 +1419,8 @@ converse.plugins.add('converse-muc-views', {
                         'message': message
                     };
                     this.content.removeChild(prev_info_el);
-                    this.content.insertAdjacentHTML('afterBegin', tpl_info(data));
-                    const el = this.content.firstElementChild;
+                    this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                    const el = this.content.lastElementChild;
                     setTimeout(() => u.addClass('fade-out', el), 5000);
                     setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
                 } else {
@@ -1433,12 +1439,13 @@ converse.plugins.add('converse-muc-views', {
                     }
                     if (prev_info_el) {
                         this.content.removeChild(prev_info_el);
-                        this.content.insertAdjacentHTML('afterBegin', tpl_info(data));
+                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
                     } else {
-                        this.content.insertAdjacentHTML('afterBegin', tpl_info(data));
-                        this.insertDayIndicator(this.content.firstElementChild);
+                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                        this.insertDayIndicator(this.content.lastElementChild);
                     }
                 }
+                this.scrollDown();
             },
 
             renderAfterTransition () {
@@ -1453,6 +1460,7 @@ converse.plugins.add('converse-muc-views', {
                 } else {
                     u.showElement(this.el.querySelector('.chat-area'));
                     u.showElement(this.el.querySelector('.occupants'));
+                    this.scrollDown();
                 }
             },
 
@@ -1502,6 +1510,7 @@ converse.plugins.add('converse-muc-views', {
                             'render_message': true
                         }));
                 }
+                this.scrollDown();
             }
         });
 

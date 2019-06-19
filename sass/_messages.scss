@@ -77,9 +77,10 @@
         }
 
         &.chat-msg {
-            display: flex;
+            display: inline-flex;
             width: 100%;
             flex-direction: row;
+            overflow: auto; // Ensures that content stays inside
             padding: 0.125rem 1rem;
 
             &.onload {
@@ -151,6 +152,7 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
+                width: 100%;
             }
 
             .chat-msg__message {
@@ -267,7 +269,7 @@
             }
             &.chat-msg--action {
                 .chat-msg__content {
-                    flex-wrap: wrap;
+                    flex-wrap: nowrap;
                     flex-direction: row;
                     justify-content: flex-start;
                 }

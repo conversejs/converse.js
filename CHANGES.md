@@ -30,6 +30,7 @@
 - New event: [chatBoxBlurred](https://conversejs.org/docs/html/api/-_converse.html#event:chatBoxBlurred)
 - New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)
 - #316: Add support for XEP-0198 Stream Management
+- #1071: x clear cross of same size as text
 - #1142: Up/down arrow shouldn't erase current message
 - #1196: Use alternative connection method upon connfail
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header

@@ -35,6 +35,7 @@
 - #1330: Missing room name in MUC invitation popup
 - #1445: Participants list uses big font in embedded mode
 - #1465: When highlighting a roster contact, they're incorrectly shown as online
+- #1495: Mentions should always include a URI attribute
 - #1502: Fatal error when using prebind
 - #1532: Converse reloads on enter pressed in the filter box
 - #1538: Allow adding self as contact

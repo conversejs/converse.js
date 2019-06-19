@@ -1022,10 +1022,19 @@ converse.plugins.add('converse-chatview', {
 
             onMessageEditButtonClicked (ev) {
                 ev.preventDefault();
+
                 const idx = this.model.messages.findLastIndex('correcting'),
                       currently_correcting = idx >=0 ? this.model.messages.at(idx) : null,
                       message_el = u.ancestor(ev.target, '.chat-msg'),
                       message = this.model.messages.findWhere({'msgid': message_el.getAttribute('data-msgid')});
+
+                const textarea = this.el.querySelector('.chat-textarea');
+                if (textarea.value &&
+                        (currently_correcting === null || currently_correcting.get('message') !== textarea.value)) {
+                    if (! confirm(__("You have an unsent message which will be lost if you continue. Are you sure?"))) {
+                        return;
+                    }
+                }
 
                 if (currently_correcting !== message) {
                     if (!_.isNil(currently_correcting)) {

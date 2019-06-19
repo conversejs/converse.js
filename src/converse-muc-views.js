@@ -105,6 +105,7 @@ converse.plugins.add('converse-muc-views', {
             'muc_disable_slash_commands': false,
             'muc_show_join_leave': true,
             'muc_show_join_leave_status': true,
+            'muc_mention_autocomplete_min_chars': 0,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
@@ -570,7 +571,7 @@ converse.plugins.add('converse-muc-views', {
                 this.mention_auto_complete = new _converse.AutoComplete(this.el, {
                     'auto_first': true,
                     'auto_evaluate': false,
-                    'min_chars': 1,
+                    'min_chars': _converse.muc_mention_autocomplete_min_chars,
                     'match_current_word': true,
                     'list': () => this.getAutoCompleteList(),
                     'filter': _converse.FILTER_STARTSWITH,
@@ -1859,10 +1860,9 @@ converse.plugins.add('converse-muc-views', {
                     'list': list
                 });
                 this.invite_auto_complete.on('suggestion-box-selectcomplete', ev => this.promptForInvite(ev));
-                this.invite_auto_complete.ul.setAttribute(
-                    'style',
-                    `max-height: calc(${this.el.offsetHeight}px - 80px);`
-                );
+                this.invite_auto_complete.on('suggestion-box-open', ev => {
+                    this.invite_auto_complete.ul.setAttribute('style', `max-height: calc(${this.el.offsetHeight}px - 80px);`);
+                });
             }
         });
 

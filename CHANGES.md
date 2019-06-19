@@ -18,11 +18,12 @@
 - Message deduplication bugfixes and improvements
 - Continuously retry (in 2s intervals) to fetch login credentials (via [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url)) in case of failure
 - Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
-- New config option [auto_focus](https://conversejs.org/docs/html/configuration.html#auto-focus).
-- New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks).
+- New config option [auto_focus](https://conversejs.org/docs/html/configuration.html#auto-focus)
+- New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks)
 - New config option [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
 - New config option [message_limit](https://conversejs.org/docs/html/configuration.html#message-limit)
-- New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton).
+- New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton)
+- New config option [muc_mention_autocomplete_min_chars](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-min-chars)
   By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
   "embed" the full app and not just a single chat. To embed just a single chat, it's now
   necessary to explicitly set `singleton` to `true`.
@@ -43,6 +44,7 @@
 - #1554: Room auto-configuration broke if the config form contained fields with type `fixed`
 - #1558: `this.get` is not a function error when `forward_messages` is set to `true`.
 - #1572: In `fullscreen` view mode the top is cut off on iOS
+- #1575: MUC invitation autocomplete list doesn't appear
 - #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`
 - #1579: Trim spaces at the beginning and end of a JID (when adding contact)
 - #1586: Not possible to kick someone with a space in their nickname

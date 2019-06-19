@@ -325,6 +325,7 @@ converse.plugins.add("converse-autocomplete", {
                     ev.keyCode === _converse.keycodes.UP_ARROW ||
                     ev.keyCode === _converse.keycodes.DOWN_ARROW
                 );
+
                 if (!this.auto_evaluate && !this.auto_completing || selecting) {
                     return;
                 }
@@ -335,14 +336,15 @@ converse.plugins.add("converse-autocomplete", {
                 }
 
                 let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
-
-                let ignore_min_chars = false;
-                if (this.ac_triggers.includes(value[0]) && !this.include_triggers.includes(ev.key)) {
-                    ignore_min_chars = true;
-                    value = value.slice('1');
+                const contains_trigger = this.ac_triggers.includes(value[0]);
+                if (contains_trigger) {
+                    this.auto_completing = true;
+                    if (!this.include_triggers.includes(ev.key)) {
+                        value = value.slice('1');
+                    }
                 }
 
-                if ((value.length >= this.min_chars) || ignore_min_chars) {
+                if ((contains_trigger || value.length) && value.length >= this.min_chars) {
                     this.index = -1;
                     // Populate list with options that match
                     this.ul.innerHTML = "";
@@ -364,7 +366,9 @@ converse.plugins.add("converse-autocomplete", {
                     }
                 } else {
                     this.close({'reason': 'nomatches'});
-                    this.auto_completing = false;
+                    if (!contains_trigger) {
+                        this.auto_completing = false;
+                    }
                 }
             }
         }

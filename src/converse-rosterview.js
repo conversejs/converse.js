@@ -163,10 +163,6 @@ converse.plugins.add('converse-rosterview', {
                     u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
                     u.addClass('d-block', el);
                     return false;
-                } else if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
-                    el.textContent = __('You cannot add yourself as a contact')
-                    u.addClass('d-block', el);
-                    return false;
                 } else if (_converse.roster.get(Strophe.getBareJidFromJid(jid))) {
                     el.textContent = __('This contact has already been added')
                     u.addClass('d-block', el);
@@ -185,7 +181,7 @@ converse.plugins.add('converse-rosterview', {
             addContactFromForm (ev) {
                 ev.preventDefault();
                 const data = new FormData(ev.target),
-                      jid = data.get('jid');
+                      jid = (data.get('jid') || '').trim();
 
                 if (!jid && _converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
                     const input_el = this.el.querySelector('input[name="name"]');

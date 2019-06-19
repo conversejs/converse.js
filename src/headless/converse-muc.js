@@ -534,7 +534,9 @@ converse.plugins.add('converse-muc', {
                     'type': 'mention'
                 };
                 if (occupant.get('jid')) {
-                    obj.uri = `xmpp:${occupant.get('jid')}`
+                    obj.uri = `xmpp:${occupant.get('jid')}`;
+                } else {
+                    obj.uri = `xmpp:${this.get('jid')}/${occupant.get('nick')}`;
                 }
                 return obj;
             },
@@ -1998,7 +2000,7 @@ converse.plugins.add('converse-muc', {
                  *     JIDs of the chatroom(s) to create
                  * @param {object} [attrs] attrs The room attributes
                  */
-                'create' (jids, attrs) {
+                create (jids, attrs) {
                     if (_.isString(attrs)) {
                         attrs = {'nick': attrs};
                     } else if (_.isUndefined(attrs)) {

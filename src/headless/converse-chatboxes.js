@@ -984,7 +984,7 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             onChatBoxesFetched (collection) {
-                /* Show chat boxes upon receiving them from sessionStorage */
+                /* Show chat boxes upon receiving them from storage */
                 collection.filter(c => !c.isValid()).forEach(c => c.destroy());
                 collection.forEach(c => c.maybeShow());
                 /**

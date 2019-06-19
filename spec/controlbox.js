@@ -382,11 +382,6 @@
             expect(feedback_el.textContent).toBe('Sorry, could not find a contact with that name');
             feedback_el.textContent = '';
 
-            input_el.value = 'romeo';
-            modal.el.querySelector('button[type="submit"]').click();
-            feedback_el = modal.el.querySelector('.invalid-feedback');
-            expect(feedback_el.textContent).toBe('You cannot add yourself as a contact');
-
             input_el.value = 'existing';
             modal.el.querySelector('button[type="submit"]').click();
             feedback_el = modal.el.querySelector('.invalid-feedback');

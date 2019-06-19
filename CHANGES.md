@@ -35,12 +35,15 @@
 - #1330: Missing room name in MUC invitation popup
 - #1445: Participants list uses big font in embedded mode
 - #1465: When highlighting a roster contact, they're incorrectly shown as online
+- #1502: Fatal error when using prebind
 - #1532: Converse reloads on enter pressed in the filter box
+- #1538: Allow adding self as contact
 - #1550: Legitimate carbons being blocked due to erroneous forgery check
 - #1554: Room auto-configuration broke if the config form contained fields with type `fixed`
 - #1558: `this.get` is not a function error when `forward_messages` is set to `true`.
 - #1572: In `fullscreen` view mode the top is cut off on iOS
 - #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`
+- #1579: Trim spaces at the beginning and end of a JID (when adding contact)
 - #1586: Not possible to kick someone with a space in their nickname
 
 ### Breaking changes

@@ -312,6 +312,7 @@ converse.plugins.add('converse-muc', {
                     this.join();
                 } else {
                     this.features.fetch();
+                    this.fetchMessages();
                 }
             },
 

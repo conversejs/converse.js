@@ -307,6 +307,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 this.on('change:chat_state', this.sendChatState, this);
                 this.initMessages();
+                this.fetchMessages();
             },
 
             initMessages () {
@@ -320,7 +321,6 @@ converse.plugins.add('converse-chatboxes', {
                         _converse.api.send(this.createMessageStanza(message));
                     }
                 });
-                this.fetchMessages();
             },
 
             afterMessagesFetched () {

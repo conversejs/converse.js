@@ -211,7 +211,7 @@ converse.plugins.add('converse-disco', {
                 });
 
                 // XEP-0128 Service Discovery Extensions
-                _.forEach(sizzle('x[type="result"][xmlns="jabber:x:data"] field', stanza), field => {
+                sizzle('x[type="result"][xmlns="jabber:x:data"] field', stanza).forEach(field => {
                     this.fields.create({
                         'var': field.getAttribute('var'),
                         'value': _.get(field.querySelector('value'), 'textContent'),

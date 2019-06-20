@@ -2120,11 +2120,14 @@
                         <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                     </error>
                     </iq>`);
-                _converse.connection.sent_stanzas = [];
                 sent_stanzas = _converse.connection.sent_stanzas;
+                const index = sent_stanzas.length -1;
+
                 _converse.connection._dataRecv(test_utils.createRequest(result));
+                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
+
                 const pres = await test_utils.waitUntil(
-                    () => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
+                    () => sent_stanzas.slice(index).filter(s => s.nodeName === 'presence').pop());
                 expect(Strophe.serialize(pres)).toBe(
                     `<presence from="${_converse.jid}" to="coven@chat.shakespeare.lit/romeo" xmlns="jabber:client">`+
                         `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+

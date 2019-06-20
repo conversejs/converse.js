@@ -3,9 +3,9 @@
     <div class="chatbox-title">
         <div class="row no-gutters">
             {[ if (o.type !== o._converse.HEADLINES_TYPE) { ]}
-               <div class="avatar-click-info"><canvas class="avatar show-user-details-modal" height="36" width="36"></canvas></div>
+               <canvas class="avatar show-user-details-modal avatar-click-info" height="36" width="36"></canvas>
             {[ } ]}
-            <div class="col chat-title show-user-details-modal" title="{{{o.jid}}}" style="cursor:pointer;">
+            <div class="col chat-title show-user-details-modal" title="{{{o.jid}}}">
                 {[ if (o.url) { ]}
                     <a href="{{{o.url}}}" target="_blank" rel="noopener" class="user show-user-details-modal">
                 {[ } ]}

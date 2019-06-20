@@ -7,7 +7,6 @@
 - Allow for synchronous events. When a synchronous event is fired, Converse will
   wait for all promises returned by the event's handlers to finish before continuing.
 - Properly handle message correction being received before the corrected message
-- Properly handle message correction being received before the corrected message
 - Groupchat default configuration now supports `list-multi` fields
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 - Bugfix: Modal auto-closes when you open it for a second time.

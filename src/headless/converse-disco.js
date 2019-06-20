@@ -566,7 +566,7 @@ converse.plugins.add('converse-disco', {
                  * @namespace _converse.api.disco.features
                  * @memberOf _converse.api.disco
                  */
-                'features': {
+                features: {
                     /**
                      * Return a given feature of a disco entity
                      *
@@ -642,7 +642,9 @@ converse.plugins.add('converse-disco', {
                     entity.features.reset();
                     entity.fields.reset();
                     entity.identities.reset();
-                    entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise()
+                    if (!entity.waitUntilFeaturesDiscovered.isPending) {
+                        entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise()
+                    }
                     entity.queryInfo();
                     return entity.waitUntilFeaturesDiscovered;
                 },

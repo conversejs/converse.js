@@ -76,6 +76,10 @@
             padding-top: 0.2em;
         }
 
+        .avatar-click-info{
+            cursor: pointer;
+        }
+        
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {
             &.chatbox-btn {
                 &.fa,

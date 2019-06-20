@@ -58,6 +58,9 @@
             .chatroom-description {
                 font-size: 80%;
             }
+            &.show-user-details-modal{
+                cursor: pointer;
+            }
         }
         .chatbox-buttons {
             flex-direction: row-reverse;
@@ -74,10 +77,6 @@
             white-space: nowrap;
             margin: 0;
             padding-top: 0.2em;
-        }
-
-        .avatar-click-info{
-            cursor: pointer;
         }
         
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {

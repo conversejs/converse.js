@@ -1,11 +1,11 @@
 <div class="chat-head chat-head-chatbox row no-gutters">
     <div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>
-    <div class="chatbox-title">
+    <div class="chatbox-title show-user-details-modal">
         <div class="row no-gutters">
             {[ if (o.type !== o._converse.HEADLINES_TYPE) { ]}
-               <canvas class="avatar show-user-details-modal avatar-click-info" height="36" width="36"></canvas>
+               <canvas class="avatar" height="36" width="36"></canvas>
             {[ } ]}
-            <div class="col chat-title show-user-details-modal" title="{{{o.jid}}}">
+            <div class="col chat-title" title="{{{o.jid}}}">
                 {[ if (o.url) { ]}
                     <a href="{{{o.url}}}" target="_blank" rel="noopener" class="user show-user-details-modal">
                 {[ } ]}

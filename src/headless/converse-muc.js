@@ -300,16 +300,19 @@ converse.plugins.add('converse-muc', {
                 if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
                     // We're not restoring a room from cache, so let's clear
                     // the cache (which might be stale).
-                    this.clearMessages();
                     this.clearOccupants();
-
-                    await this.getRoomFeatures();
+                    await this.refreshRoomFeatures();
+                    this.clearMessages(); // XXX: This should be conditional
+                    this.fetchMessages();
                     if (!u.isPersistableModel(this)) {
                         // XXX: Happens during tests, nothing to do if this
                         // is a hanging chatbox (i.e. not in the collection anymore).
                         return;
                     }
                     this.join();
+                } else {
+                    this.features.fetch();
+                    this.fetchMessages();
                 }
             },
 
@@ -350,7 +353,6 @@ converse.plugins.add('converse-muc', {
                     _.assign({id}, _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)))
                 );
                 this.features.browserStorage = new BrowserStorage.session(id);
-                this.features.fetch();
             },
 
             initOccupants () {
@@ -534,7 +536,9 @@ converse.plugins.add('converse-muc', {
                     'type': 'mention'
                 };
                 if (occupant.get('jid')) {
-                    obj.uri = `xmpp:${occupant.get('jid')}`
+                    obj.uri = `xmpp:${occupant.get('jid')}`;
+                } else {
+                    obj.uri = `xmpp:${this.get('jid')}/${occupant.get('nick')}`;
                 }
                 return obj;
             },
@@ -1186,15 +1190,14 @@ converse.plugins.add('converse-muc', {
             },
 
             fetchFeaturesIfConfigurationChanged (stanza) {
-                const configuration_changed = stanza.querySelector("status[code='104']"),
-                      logging_enabled = stanza.querySelector("status[code='170']"),
-                      logging_disabled = stanza.querySelector("status[code='171']"),
-                      room_no_longer_anon = stanza.querySelector("status[code='172']"),
-                      room_now_semi_anon = stanza.querySelector("status[code='173']"),
-                      room_now_fully_anon = stanza.querySelector("status[code='173']");
-
-                if (configuration_changed || logging_enabled || logging_disabled ||
-                        room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
+                // 104: configuration change
+                // 170: logging enabled
+                // 171: logging disabled
+                // 172: room no longer anonymous
+                // 173: room now semi-anonymous
+                // 174: room now fully anonymous
+                const codes = ['104', '170', '171', '172', '173', '174'];
+                if (sizzle('status', stanza).filter(e => codes.includes(e.getAttribute('status'))).length) {
                     this.refreshRoomFeatures();
                 }
             },
@@ -1998,7 +2001,7 @@ converse.plugins.add('converse-muc', {
                  *     JIDs of the chatroom(s) to create
                  * @param {object} [attrs] attrs The room attributes
                  */
-                'create' (jids, attrs) {
+                create (jids, attrs) {
                     if (_.isString(attrs)) {
                         attrs = {'nick': attrs};
                     } else if (_.isUndefined(attrs)) {

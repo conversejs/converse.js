@@ -7,7 +7,6 @@
 - Allow for synchronous events. When a synchronous event is fired, Converse will
   wait for all promises returned by the event's handlers to finish before continuing.
 - Properly handle message correction being received before the corrected message
-- Properly handle message correction being received before the corrected message
 - Groupchat default configuration now supports `list-multi` fields
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 - Bugfix: Modal auto-closes when you open it for a second time.
@@ -18,11 +17,12 @@
 - Message deduplication bugfixes and improvements
 - Continuously retry (in 2s intervals) to fetch login credentials (via [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url)) in case of failure
 - Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
-- New config option [auto_focus](https://conversejs.org/docs/html/configuration.html#auto-focus).
-- New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks).
+- New config option [auto_focus](https://conversejs.org/docs/html/configuration.html#auto-focus)
+- New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks)
 - New config option [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
 - New config option [message_limit](https://conversejs.org/docs/html/configuration.html#message-limit)
-- New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton).
+- New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton)
+- New config option [muc_mention_autocomplete_min_chars](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-min-chars)
   By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
   "embed" the full app and not just a single chat. To embed just a single chat, it's now
   necessary to explicitly set `singleton` to `true`.
@@ -30,18 +30,24 @@
 - New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)
 - #1611: no info icon in group/one-to-one chat panels
 - #316: Add support for XEP-0198 Stream Management
+- #1071: x clear cross of same size as text
 - #1142: Up/down arrow shouldn't erase current message
 - #1196: Use alternative connection method upon connfail
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1330: Missing room name in MUC invitation popup
 - #1445: Participants list uses big font in embedded mode
 - #1465: When highlighting a roster contact, they're incorrectly shown as online
+- #1495: Mentions should always include a URI attribute
+- #1502: Fatal error when using prebind
 - #1532: Converse reloads on enter pressed in the filter box
+- #1538: Allow adding self as contact
 - #1550: Legitimate carbons being blocked due to erroneous forgery check
 - #1554: Room auto-configuration broke if the config form contained fields with type `fixed`
 - #1558: `this.get` is not a function error when `forward_messages` is set to `true`.
 - #1572: In `fullscreen` view mode the top is cut off on iOS
+- #1575: MUC invitation autocomplete list doesn't appear
 - #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`
+- #1579: Trim spaces at the beginning and end of a JID (when adding contact)
 - #1586: Not possible to kick someone with a space in their nickname
 
 ### Breaking changes
@@ -58,8 +64,6 @@
 - Removed events `statusChanged` and `statusMessageChanged`. Instead, you can
   listen on the `change:status` or `change:status\_message` events on
   `_converse.xmppstatus`.
-- Use flexbox instead of JavaScript to keep chat scrolled down. Due to this
-  change, messages are now inserted into the DOM in reverse order than before.
 
 ### API changes
 

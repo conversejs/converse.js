@@ -208,7 +208,7 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             expect(view.model.messages.length).toBe(2);
-            expect(view.el.querySelectorAll('.chat-msg__body')[0].textContent.trim())
+            expect(view.el.querySelectorAll('.chat-msg__body')[1].textContent.trim())
                 .toBe('This is an encrypted message from the contact');
 
             // #1193 Check for a received message without <body> tag
@@ -228,7 +228,7 @@
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             await test_utils.waitUntil(() => view.model.messages.length > 1);
             expect(view.model.messages.length).toBe(3);
-            expect(view.el.querySelectorAll('.chat-msg__body')[0].textContent.trim())
+            expect(view.el.querySelectorAll('.chat-msg__body')[2].textContent.trim())
                 .toBe('Another received encrypted message without fallback');
             done();
         }));

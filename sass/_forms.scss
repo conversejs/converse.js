@@ -36,10 +36,12 @@
         }
 
         .clear-input {
+            margin-top: 0.5em;
+            margin-bottom : 0.5em;
             position: absolute;
             right: 0.2em;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: var(--font-size);
         }
 
         &#converse-register, 

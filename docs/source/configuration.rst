@@ -837,6 +837,14 @@ VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
 
 If no nickame value is found, then an error will be raised.
 
+muc_mention_autocomplete_min_chars
+-----------------------------------
+
+* Default:  ``0``
+
+The number of characters that need to be entered before the auto-complete list
+of matching nicknames is shown.
+
 message_archiving
 -----------------
 

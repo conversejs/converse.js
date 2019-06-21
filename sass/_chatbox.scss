@@ -211,8 +211,6 @@
             margin-bottom: 0.25em;
         }
         .chat-content {
-            display: flex;
-            flex-direction: column-reverse;
             padding: 1em 0;
             height: 100%;
             font-size: var(--message-font-size);

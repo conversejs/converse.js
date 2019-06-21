@@ -28,7 +28,6 @@
   necessary to explicitly set `singleton` to `true`.
 - New event: [chatBoxBlurred](https://conversejs.org/docs/html/api/-_converse.html#event:chatBoxBlurred)
 - New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)
-- #1611: no info icon in group/one-to-one chat panels
 - #316: Add support for XEP-0198 Stream Management
 - #1071: x clear cross of same size as text
 - #1142: Up/down arrow shouldn't erase current message
@@ -49,6 +48,7 @@
 - #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`
 - #1579: Trim spaces at the beginning and end of a JID (when adding contact)
 - #1586: Not possible to kick someone with a space in their nickname
+- #1611: no info icon in group/one-to-one chat panels
 
 ### Breaking changes
 

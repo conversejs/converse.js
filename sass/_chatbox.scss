@@ -207,6 +207,7 @@
             margin-bottom: 0.25em;
         }
         .chat-content {
+            padding: 1em 0;
             height: 100%;
             font-size: var(--message-font-size);
             color: var(--text-color);
@@ -329,9 +330,6 @@
                 .private a,
                 .private {
                     color: #4b7003;
-                }
-                .toggle-occupants {
-                    float: right;
                 }
                 li {
                     cursor: pointer;

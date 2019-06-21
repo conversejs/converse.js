@@ -54,7 +54,7 @@
                     { roster_groups: false },
                     async function (done, _converse) {
 
-                var contact, sent_stanza, IQ_id, stanza, modal;
+                let contact, sent_stanza, IQ_id, stanza;
                 await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                 await test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'), 300);
                 /* The process by which a user subscribes to a contact, including
@@ -75,7 +75,7 @@
                 });
 
                 cbview.el.querySelector('.add-contact').click()
-                modal = _converse.rosterview.add_contact_modal;
+                const modal = _converse.rosterview.add_contact_modal;
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 spyOn(modal, "addContactFromForm").and.callThrough();
                 modal.delegateEvents();
@@ -173,9 +173,9 @@
                  *
                  *  <presence to='contact@example.org' type='subscribe'/>
                  */
-                await test_utils.waitUntil(() => sent_stanzas.filter(s => s.match('presence')));
+                const sent_presence = await test_utils.waitUntil(() => sent_stanzas.filter(s => s.match('presence')).pop());
                 expect(contact.subscribe).toHaveBeenCalled();
-                expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+                expect(sent_presence).toBe( // Strophe adds the xmlns attr (although not in spec)
                     `<presence to="contact@example.org" type="subscribe" xmlns="jabber:client">`+
                         `<nick xmlns="http://jabber.org/protocol/nick">Romeo Montague</nick>`+
                     `</presence>`

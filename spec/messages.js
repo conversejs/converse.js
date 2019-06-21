@@ -114,7 +114,28 @@
                 }).c('body').t('Hello').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
             );
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(1);
+
+            // Test confirmation dialog
+            spyOn(window, 'confirm').and.returnValue(true);
+            textarea.value = 'But soft, what light through yonder airlock breaks?';
+            action = view.el.querySelector('.chat-msg .chat-msg__action');
+            action.style.opacity = 1;
+            action.click();
+            expect(window.confirm).toHaveBeenCalledWith(
+                'You have an unsent message which will be lost if you continue. Are you sure?');
+            expect(view.model.messages.at(0).get('correcting')).toBe(true);
+            expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
+
+            textarea.value = 'But soft, what light through yonder airlock breaks?'
+            action.click();
+            expect(view.model.messages.at(0).get('correcting')).toBe(false);
+            expect(window.confirm.calls.count()).toBe(2);
+            expect(window.confirm.calls.argsFor(0)).toEqual(
+                ['You have an unsent message which will be lost if you continue. Are you sure?']);
+            expect(window.confirm.calls.argsFor(1)).toEqual(
+                ['You have an unsent message which will be lost if you continue. Are you sure?']);
             done();
         }));
 

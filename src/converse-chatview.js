@@ -56,7 +56,9 @@ converse.plugins.add('converse-chatview', {
             { __ } = _converse;
 
         _converse.api.settings.update({
+            'auto_focus': true,
             'emoji_image_path': twemoji.default.base,
+            'message_limit': 0,
             'show_send_button': false,
             'show_toolbar': true,
             'time_format': 'HH:mm',
@@ -334,6 +336,8 @@ converse.plugins.add('converse-chatview', {
                 'click .upload-file': 'toggleFileUpload',
                 'input .chat-textarea': 'inputChanged',
                 'keydown .chat-textarea': 'onKeyDown',
+                'keyup .chat-textarea': 'onKeyUp',
+                'paste .chat-textarea': 'onPaste',
                 'dragover .chat-textarea': 'onDragOver',
                 'drop .chat-textarea': 'onDrop',
             },
@@ -365,7 +369,7 @@ converse.plugins.add('converse-chatview', {
             initDebounced () {
                 this.scrollDown = _.debounce(this._scrollDown, 100);
                 this.markScrolled = _.debounce(this._markScrolled, 100);
-                this.show = _.debounce(this._show, 250, {'leading': true});
+                this.show = _.debounce(this._show, 500, {'leading': true});
             },
 
             render () {
@@ -381,16 +385,15 @@ converse.plugins.add('converse-chatview', {
                 return this;
             },
 
-            renderToolbar (toolbar, options) {
+            renderToolbar () {
                 if (!_converse.show_toolbar) {
                     return this;
                 }
-                toolbar = toolbar || tpl_toolbar;
-                options = _.assign(
+                const options = _.assign(
                     this.model.toJSON(),
-                    this.getToolbarOptions(options || {})
+                    this.getToolbarOptions()
                 );
-                this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
+                this.el.querySelector('.chat-toolbar').innerHTML = tpl_toolbar(options);
                 this.addSpoilerButton(options);
                 this.addFileUploadButton();
                 /**
@@ -407,6 +410,7 @@ converse.plugins.add('converse-chatview', {
                 const form_container = this.el.querySelector('.bottom-panel');
                 form_container.innerHTML = tpl_chatbox_message_form(
                     Object.assign(this.model.toJSON(), {
+                        'message_limit': _converse.message_limit,
                         'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
                         'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
                         'label_send': __('Send'),
@@ -467,7 +471,7 @@ converse.plugins.add('converse-chatview', {
                 this.model.sendFiles(evt.dataTransfer.files);
             },
 
-            async addFileUploadButton (options) {
+            async addFileUploadButton () {
                 if (await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain)) {
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
                         'beforeend',
@@ -475,11 +479,13 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            /**
+             * Asynchronously adds a button for writing spoiler
+             * messages, based on whether the contact's clients support it.
+             * @private
+             * @method _converse.ChatBoxView#addSpoilerButton
+             */
             async addSpoilerButton (options) {
-                /* Asynchronously adds a button for writing spoiler
-                 * messages, based on whether the contact's client supports
-                 * it.
-                 */
                 if (!options.show_spoiler_button || this.model.get('type') === _converse.CHATROOMS_TYPE) {
                     return;
                 }
@@ -516,22 +522,24 @@ converse.plugins.add('converse-chatview', {
                 return this;
             },
 
-            getToolbarOptions (options) {
+            getToolbarOptions () {
                 let label_toggle_spoiler;
                 if (this.model.get('composing_spoiler')) {
                     label_toggle_spoiler = __('Click to write as a normal (non-spoiler) message');
                 } else {
                     label_toggle_spoiler = __('Click to write your message as a spoiler');
                 }
-                return Object.assign(options || {}, {
+                return {
                     'label_clear': __('Clear all messages'),
-                    'tooltip_insert_smiley': __('Insert emojis'),
-                    'tooltip_start_call': __('Start a call'),
+                    'label_message_limit': __('Message characters remaining'),
                     'label_toggle_spoiler': label_toggle_spoiler,
+                    'message_limit': _converse.message_limit,
                     'show_call_button': _converse.visible_toolbar_buttons.call,
                     'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
+                    'tooltip_insert_smiley': __('Insert emojis'),
+                    'tooltip_start_call': __('Start a call'),
                     'use_emoji': _converse.visible_toolbar_buttons.emoji,
-                });
+                }
             },
 
             async updateAfterMessagesFetched () {
@@ -770,7 +778,7 @@ converse.plugins.add('converse-chatview', {
                 }
                 if (!next_el) { return; }
 
-                if (!u.hasClass('chat-msg--action', 'el') &&
+                if (!u.hasClass('chat-msg--action', el) &&
                         next_el.getAttribute('data-from') === from &&
                         dayjs(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
                         el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
@@ -905,9 +913,11 @@ converse.plugins.add('converse-chatview', {
 
             async onFormSubmitted (ev) {
                 ev.preventDefault();
-                const textarea = this.el.querySelector('.chat-textarea'),
-                      message = textarea.value;
-
+                const textarea = this.el.querySelector('.chat-textarea');
+                const message = textarea.value;
+                if (_converse.message_limit && message.length > _converse.message_limit) {
+                    return;
+                }
                 if (!message.replace(/\s/g, '').length) {
                     return;
                 }
@@ -949,9 +959,39 @@ converse.plugins.add('converse-chatview', {
                 this.setChatState(_converse.ACTIVE, {'silent': true});
             },
 
+            updateCharCounter (chars) {
+                if (_converse.message_limit) {
+                    const message_limit = this.el.querySelector('.message-limit');
+                    const counter = _converse.message_limit - chars.length;
+                    message_limit.textContent = counter;
+                    if (counter < 1) {
+                        u.addClass('error', message_limit);
+                    } else {
+                        u.removeClass('error', message_limit);
+                    }
+                }
+            },
+
+            onPaste (ev) {
+                this.updateCharCounter(ev.clipboardData.getData('text/plain'));
+            },
+
+            /**
+             * Event handler for when a depressed key goes up
+             * @private
+             * @method _converse.ChatBoxView#onKeyUp
+             */
+            onKeyUp (ev) {
+                this.updateCharCounter(ev.target.value);
+            },
+
+            /**
+             * Event handler for when a key is pressed down in a chat box textarea.
+             * @private
+             * @method _converse.ChatBoxView#onKeyDown
+             * @param { Event } ev
+             */
             onKeyDown (ev) {
-                /* Event handler for when a key is pressed in a chat box textarea.
-                 */
                 if (ev.ctrlKey) {
                     // When ctrl is pressed, no chars are entered into the textarea.
                     return;
@@ -968,8 +1008,13 @@ converse.plugins.add('converse-chatview', {
                         }
                         return this.onFormSubmitted(ev);
                     } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
-                        return this.editEarlierMessage();
-                    } else if (ev.keyCode === _converse.keycodes.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
+                        const textarea = this.el.querySelector('.chat-textarea');
+                        if (!textarea.value || u.hasClass('correcting', textarea)) {
+                            return this.editEarlierMessage();
+                        }
+                    } else if (ev.keyCode === _converse.keycodes.DOWN_ARROW &&
+                            ev.target.selectionEnd === ev.target.value.length &&
+                            u.hasClass('correcting', this.el.querySelector('.chat-textarea'))) {
                         return this.editLaterMessage();
                     }
                 }
@@ -1006,10 +1051,19 @@ converse.plugins.add('converse-chatview', {
 
             onMessageEditButtonClicked (ev) {
                 ev.preventDefault();
+
                 const idx = this.model.messages.findLastIndex('correcting'),
                       currently_correcting = idx >=0 ? this.model.messages.at(idx) : null,
                       message_el = u.ancestor(ev.target, '.chat-msg'),
                       message = this.model.messages.findWhere({'msgid': message_el.getAttribute('data-msgid')});
+
+                const textarea = this.el.querySelector('.chat-textarea');
+                if (textarea.value &&
+                        (currently_correcting === null || currently_correcting.get('message') !== textarea.value)) {
+                    if (! confirm(__("You have an unsent message which will be lost if you continue. Are you sure?"))) {
+                        return;
+                    }
+                }
 
                 if (currently_correcting !== message) {
                     if (!_.isNil(currently_correcting)) {
@@ -1067,11 +1121,8 @@ converse.plugins.add('converse-chatview', {
             },
 
             inputChanged (ev) {
-                const new_height = ev.target.scrollHeight + 'px';
-                if (ev.target.style.height !== new_height) {
-                    ev.target.style.height = 'auto'; // Fixes weirdness
-                    ev.target.style.height = new_height;
-                }
+                ev.target.style.height = 'auto';
+                ev.target.style.height = ev.target.scrollHeight + 'px';
             },
 
             clearMessages (ev) {
@@ -1101,6 +1152,7 @@ converse.plugins.add('converse-chatview', {
                     textarea.value = '';
                     textarea.value = existing+value+' ';
                 }
+                this.updateCharCounter(textarea.value);
                 u.placeCaretAtEnd(textarea);
             },
 
@@ -1275,13 +1327,18 @@ converse.plugins.add('converse-chatview', {
                 this.model.clearUnreadMsgCounter();
                 this.setChatState(_converse.ACTIVE);
                 this.scrollDown();
+                if (_converse.auto_focus) {
+                    this.focus();
+                }
                 this.focus();
             },
 
             _show () {
                 /* Inner show method that gets debounced */
                 if (u.isVisible(this.el)) {
-                    this.focus();
+                    if (_converse.auto_focus) {
+                        this.focus();
+                    }
                     return;
                 }
                 u.fadeIn(this.el, _.bind(this.afterShown, this));

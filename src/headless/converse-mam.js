@@ -7,6 +7,7 @@
 // XEP-0313 Message Archive Management
 
 import "./converse-disco";
+import "./converse-rsm";
 import converse from "./converse-core";
 import sizzle from "sizzle";
 

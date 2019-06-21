@@ -300,16 +300,19 @@ converse.plugins.add('converse-muc', {
                 if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
                     // We're not restoring a room from cache, so let's clear
                     // the cache (which might be stale).
-                    this.clearMessages();
                     this.clearOccupants();
-
-                    await this.getRoomFeatures();
+                    await this.refreshRoomFeatures();
+                    this.clearMessages(); // XXX: This should be conditional
+                    this.fetchMessages();
                     if (!u.isPersistableModel(this)) {
                         // XXX: Happens during tests, nothing to do if this
                         // is a hanging chatbox (i.e. not in the collection anymore).
                         return;
                     }
                     this.join();
+                } else {
+                    this.features.fetch();
+                    this.fetchMessages();
                 }
             },
 
@@ -350,7 +353,6 @@ converse.plugins.add('converse-muc', {
                     _.assign({id}, _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)))
                 );
                 this.features.browserStorage = new BrowserStorage.session(id);
-                this.features.fetch();
             },
 
             initOccupants () {
@@ -534,7 +536,9 @@ converse.plugins.add('converse-muc', {
                     'type': 'mention'
                 };
                 if (occupant.get('jid')) {
-                    obj.uri = `xmpp:${occupant.get('jid')}`
+                    obj.uri = `xmpp:${occupant.get('jid')}`;
+                } else {
+                    obj.uri = `xmpp:${this.get('jid')}/${occupant.get('nick')}`;
                 }
                 return obj;
             },
@@ -1186,15 +1190,14 @@ converse.plugins.add('converse-muc', {
             },
 
             fetchFeaturesIfConfigurationChanged (stanza) {
-                const configuration_changed = stanza.querySelector("status[code='104']"),
-                      logging_enabled = stanza.querySelector("status[code='170']"),
-                      logging_disabled = stanza.querySelector("status[code='171']"),
-                      room_no_longer_anon = stanza.querySelector("status[code='172']"),
-                      room_now_semi_anon = stanza.querySelector("status[code='173']"),
-                      room_now_fully_anon = stanza.querySelector("status[code='173']");
-
-                if (configuration_changed || logging_enabled || logging_disabled ||
-                        room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
+                // 104: configuration change
+                // 170: logging enabled
+                // 171: logging disabled
+                // 172: room no longer anonymous
+                // 173: room now semi-anonymous
+                // 174: room now fully anonymous
+                const codes = ['104', '170', '171', '172', '173', '174'];
+                if (sizzle('status', stanza).filter(e => codes.includes(e.getAttribute('status'))).length) {
                     this.refreshRoomFeatures();
                 }
             },
@@ -1337,7 +1340,6 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * @async
              * @private
              * @method _converse.ChatRoom#shouldShowErrorMessage
              * @returns {Promise<boolean>}
@@ -1348,7 +1350,7 @@ converse.plugins.add('converse-muc', {
                         return false;
                     }
                 }
-                return true;
+                return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, stanza);
             },
 
             getErrorMessage (stanza) {
@@ -1357,7 +1359,7 @@ converse.plugins.add('converse-muc', {
                 } else if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
                     return __("Your message was not delivered because you're not present in the groupchat.");
                 } else {
-                    return _converse.ChatBox.prototype.getErrorMessage.apply(this, arguments);
+                    return _converse.ChatBox.prototype.getErrorMessage.call(this, stanza);
                 }
             },
 
@@ -1538,33 +1540,37 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza - The presence stanza
              */
             onErrorPresence (stanza) {
-                if (sizzle(`error not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
-                    this.save({
-                        'password_validation_message': __("Password incorrect"),
-                        'connection_status': converse.ROOMSTATUS.PASSWORD_REQUIRED
-                    });
-                }
                 const error = stanza.querySelector('error');
                 const error_type = error.getAttribute('type');
+                const reason = _.get(sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent');
 
                 if (error_type === 'modify') {
                     this.handleModifyError(stanza);
                 } else if (error_type === 'auth') {
+                    if (sizzle(`not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
+                        this.save({
+                            'password_validation_message': reason || __("Password incorrect"),
+                            'connection_status': converse.ROOMSTATUS.PASSWORD_REQUIRED
+                        });
+                    }
                     if (error.querySelector('registration-required')) {
-                        this.setDisconnectionMessage(__('You are not on the member list of this groupchat.'));
+                        const message = __('You are not on the member list of this groupchat.');
+                        this.setDisconnectionMessage(message, reason);
                     } else if (error.querySelector('forbidden')) {
-                        this.setDisconnectionMessage(__('You have been banned from this groupchat.'));
+                        const message = __('You have been banned from this groupchat.');
+                        this.setDisconnectionMessage(message, reason);
                     }
                 } else if (error_type === 'cancel') {
                     if (error.querySelector('not-allowed')) {
-                        this.setDisconnectionMessage(__('You are not allowed to create new groupchats.'));
+                        const message = __('You are not allowed to create new groupchats.');
+                        this.setDisconnectionMessage(message, reason);
                     } else if (error.querySelector('not-acceptable')) {
-                        this.setDisconnectionMessage(__("Your nickname doesn't conform to this groupchat's policies."));
+                        const message = __("Your nickname doesn't conform to this groupchat's policies.");
+                        this.setDisconnectionMessage(message, reason);
                     } else if (sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
                         const moved_jid = _.get(sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent')
                             .replace(/^xmpp:/, '')
                             .replace(/\?join$/, '');
-                        const reason = _.get(sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent');
                         this.save({
                             'connection_status': converse.ROOMSTATUS.DESTROYED,
                             'destroyed_reason': reason,
@@ -1573,14 +1579,15 @@ converse.plugins.add('converse-muc', {
                     } else if (error.querySelector('conflict')) {
                         this.onNicknameClash(stanza);
                     } else if (error.querySelector('item-not-found')) {
-                        this.setDisconnectionMessage(__("This groupchat does not (yet) exist."));
+                        const message = __("This groupchat does not (yet) exist.");
+                        this.setDisconnectionMessage(message, reason);
                     } else if (error.querySelector('service-unavailable')) {
-                        this.setDisconnectionMessage(__("This groupchat has reached its maximum number of participants."));
+                        const message = __("This groupchat has reached its maximum number of participants.");
+                        this.setDisconnectionMessage(message, reason);
                     } else if (error.querySelector('remote-server-not-found')) {
                         const message = __("Remote server not found");
-                        const text = _.get(error.querySelector('text'), 'textContent');
-                        const reason = text ? __('The explanation given is: "%1$s".', text) : undefined;
-                        this.setDisconnectionMessage(message, reason);
+                        const feedback = reason ? __('The explanation given is: "%1$s".', reason) : undefined;
+                        this.setDisconnectionMessage(message, feedback);
                     }
                 }
             },
@@ -1994,7 +2001,7 @@ converse.plugins.add('converse-muc', {
                  *     JIDs of the chatroom(s) to create
                  * @param {object} [attrs] attrs The room attributes
                  */
-                'create' (jids, attrs) {
+                create (jids, attrs) {
                     if (_.isString(attrs)) {
                         attrs = {'nick': attrs};
                     } else if (_.isUndefined(attrs)) {

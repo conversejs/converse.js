@@ -105,6 +105,7 @@ converse.plugins.add('converse-muc-views', {
             'muc_disable_slash_commands': false,
             'muc_show_join_leave': true,
             'muc_show_join_leave_status': true,
+            'muc_mention_autocomplete_min_chars': 0,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
@@ -460,6 +461,7 @@ converse.plugins.add('converse-muc-views', {
                 'click .upload-file': 'toggleFileUpload',
                 'keydown .chat-textarea': 'onKeyDown',
                 'keyup .chat-textarea': 'onKeyUp',
+                'paste .chat-textarea': 'onPaste',
                 'input .chat-textarea': 'inputChanged',
                 'dragover .chat-textarea': 'onDragOver',
                 'drop .chat-textarea': 'onDrop',
@@ -569,7 +571,7 @@ converse.plugins.add('converse-muc-views', {
                 this.mention_auto_complete = new _converse.AutoComplete(this.el, {
                     'auto_first': true,
                     'auto_evaluate': false,
-                    'min_chars': 1,
+                    'min_chars': _converse.muc_mention_autocomplete_min_chars,
                     'match_current_word': true,
                     'list': () => this.getAutoCompleteList(),
                     'filter': _converse.FILTER_STARTSWITH,
@@ -583,11 +585,12 @@ converse.plugins.add('converse-muc-views', {
                 if (this.mention_auto_complete.onKeyDown(ev)) {
                     return;
                 }
-                return _converse.ChatBoxView.prototype.onKeyDown.apply(this, arguments);
+                return _converse.ChatBoxView.prototype.onKeyDown.call(this, ev);
             },
 
             onKeyUp (ev) {
                 this.mention_auto_complete.evaluate(ev);
+                return _converse.ChatBoxView.prototype.onKeyUp.call(this, ev);
             },
 
             showRoomDetailsModal (ev) {
@@ -618,9 +621,9 @@ converse.plugins.add('converse-muc-views', {
                 }
 
                 if (current_affiliation === 'none' && previous_affiliation === 'member') {
-                    this.showChatEvent(__("%1$s is no longer a permanent member of this groupchat", occupant.get('nick')))
+                    this.showChatEvent(__("%1$s is no longer a member of this groupchat", occupant.get('nick')))
                 } if (current_affiliation === 'member') {
-                    this.showChatEvent(__("%1$s is now a permanent member of this groupchat", occupant.get('nick')))
+                    this.showChatEvent(__("%1$s is now a member of this groupchat", occupant.get('nick')))
                 } else if (current_affiliation === 'outcast') {
                     this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')))
                 } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
@@ -684,7 +687,9 @@ converse.plugins.add('converse-muc-views', {
 
             show () {
                 if (u.isVisible(this.el)) {
-                    this.focus();
+                    if (_converse.auto_focus) {
+                        this.focus();
+                    }
                     return;
                 }
                 // Override from converse-chatview in order to not use
@@ -705,7 +710,9 @@ converse.plugins.add('converse-muc-views', {
                     this.hideSpinner();
                     this.setChatState(_converse.ACTIVE);
                     this.scrollDown();
-                    this.focus();
+                    if (_converse.auto_focus) {
+                        this.focus();
+                    }
                 } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
                     this.showDisconnectMessage();
                 } else if (conn_status === converse.ROOMSTATUS.DESTROYED) {
@@ -857,9 +864,18 @@ converse.plugins.add('converse-muc-views', {
                 const [text, references] = this.model.parseTextForReferences(args);
                 if (!references.length) {
                     this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
-                    return false;
+                    return;
                 }
-                return references.pop();
+                if (references.length > 1) {
+                    this.showErrorMessage(__("Error: found multiple groupchat participant based on your arguments"));
+                    return;
+                }
+                const nick_or_jid = references.pop().value;
+                if (!args.split(nick_or_jid, 2)[1].startsWith(' ')) {
+                    this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
+                    return;
+                }
+                return nick_or_jid;
             },
 
             setAffiliation (command, args, required_affiliations) {
@@ -873,7 +889,7 @@ converse.plugins.add('converse-muc-views', {
                 if (!this.validateRoleOrAffiliationChangeArgs(command, args)) {
                     return false;
                 }
-                const nick_or_jid = _.get(this.getNickOrJIDFromCommandArgs(args), 'value', null);
+                const nick_or_jid = this.getNickOrJIDFromCommandArgs(args);
                 if (!nick_or_jid) {
                     return false;
                 }
@@ -910,7 +926,7 @@ converse.plugins.add('converse-muc-views', {
                 if (!this.validateRoleOrAffiliationChangeArgs(command, args)) {
                     return false;
                 }
-                const nick_or_jid = _.get(this.getNickOrJIDFromCommandArgs(args), 'value', null);
+                const nick_or_jid = this.getNickOrJIDFromCommandArgs(args);
                 if (!nick_or_jid) {
                     return false;
                 }
@@ -1169,9 +1185,10 @@ converse.plugins.add('converse-muc-views', {
 
                 if (!this.password_form) {
                     this.password_form = new _converse.MUCPasswordForm({
-                        'model': new Backbone.Model(),
+                        'model': new Backbone.Model({
+                            'validation_message': message
+                        }),
                         'chatroomview': this,
-                        'validation_message': message
                     });
                     const container_el = this.el.querySelector('.chatroom-body');
                     container_el.insertAdjacentElement('beforeend', this.password_form.el);
@@ -1294,11 +1311,16 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            /**
+             * Working backwards, get the first join/leave notification
+             * from the same user, on the same day and BEFORE any chat
+             * messages were received.
+             * @private
+             * @method _converse.ChatRoomView#getPreviousJoinOrLeaveNotification
+             * @param {HTMLElement} el
+             * @param {string} nick
+             */
             getPreviousJoinOrLeaveNotification (el, nick) {
-                /* Working backwards, get the first join/leave notification
-                 * from the same user, on the same day and BEFORE any chat
-                 * messages were received.
-                 */
                 while (!_.isNil(el)) {
                     const data = _.get(el, 'dataset', {});
                     if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
@@ -1838,10 +1860,9 @@ converse.plugins.add('converse-muc-views', {
                     'list': list
                 });
                 this.invite_auto_complete.on('suggestion-box-selectcomplete', ev => this.promptForInvite(ev));
-                this.invite_auto_complete.ul.setAttribute(
-                    'style',
-                    `max-height: calc(${this.el.offsetHeight}px - 80px);`
-                );
+                this.invite_auto_complete.on('suggestion-box-open', ev => {
+                    this.invite_auto_complete.ul.setAttribute('style', `max-height: calc(${this.el.offsetHeight}px - 80px);`);
+                });
             }
         });
 

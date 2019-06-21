@@ -2120,11 +2120,14 @@
                         <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                     </error>
                     </iq>`);
-                _converse.connection.sent_stanzas = [];
                 sent_stanzas = _converse.connection.sent_stanzas;
+                const index = sent_stanzas.length -1;
+
                 _converse.connection._dataRecv(test_utils.createRequest(result));
+                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
+
                 const pres = await test_utils.waitUntil(
-                    () => sent_stanzas.filter(s => s.nodeName === 'presence').pop());
+                    () => sent_stanzas.slice(index).filter(s => s.nodeName === 'presence').pop());
                 expect(Strophe.serialize(pres)).toBe(
                     `<presence from="${_converse.jid}" to="coven@chat.shakespeare.lit/romeo" xmlns="jabber:client">`+
                         `<x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="0"/></x>`+
@@ -3176,8 +3179,10 @@
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
-                expect(view.showErrorMessage).toHaveBeenCalledWith(
+                expect(view.showErrorMessage).toHaveBeenCalled();
+                expect(view.el.querySelector('.message:last-child').textContent).toBe(
                     "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
+
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
                 // XXX: Calling onFormSubmitted directly, trying
@@ -3211,11 +3216,29 @@
                             'role': 'participant'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(
-                    view.el.querySelectorAll('.chat-info')[3].textContent).toBe(
+                expect(view.el.querySelectorAll('.chat-info')[3].textContent).toBe(
                     "annoyingGuy has been banned from this groupchat");
+
+                presence = $pres({
+                        'from': 'lounge@montague.lit/joe2',
+                        'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
+                        'to': 'romeo@montague.lit/desktop'
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'joe2@montague.lit',
+                            'affiliation': 'member',
+                            'role': 'participant'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                textarea.value = '/ban joe22';
+                view.onFormSubmitted(new Event('submit'));
+                expect(view.el.querySelector('.message:last-child').textContent).toBe(
+                    "Error: couldn't find a groupchat participant based on your arguments");
                 done();
             }));
+
 
             it("takes a /kick command to kick a user",
                 mock.initConverse(

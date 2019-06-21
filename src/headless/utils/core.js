@@ -314,12 +314,30 @@ u.getResolveablePromise = function () {
     /* Returns a promise object on which `resolve` or `reject` can be
      * called.
      */
-    const wrapper = {};
+    const wrapper = {
+        isResolved: false,
+        isPending: true,
+        isRejected: false
+    };
     const promise = new Promise((resolve, reject) => {
         wrapper.resolve = resolve;
         wrapper.reject = reject;
     })
     _.assign(promise, wrapper);
+    promise.then(
+        function (v) {
+            promise.isResolved = true;
+            promise.isPending = false;
+            promise.isRejected = false;
+            return v;
+        },
+        function (e) {
+            promise.isResolved = false;
+            promise.isPending = false;
+            promise.isRejected = true;
+            throw (e);
+        }
+    );
     return promise;
 };
 

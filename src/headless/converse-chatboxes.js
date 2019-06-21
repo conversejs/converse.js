@@ -307,11 +307,11 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 this.on('change:chat_state', this.sendChatState, this);
                 this.initMessages();
+                this.fetchMessages();
             },
 
             initMessages () {
                 this.messages = new _converse.Messages();
-                const storage = _converse.config.get('storage');
                 this.messages.browserStorage = new BrowserStorage.session(
                     `converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
                 this.messages.chatbox = this;
@@ -321,7 +321,6 @@ converse.plugins.add('converse-chatboxes', {
                         _converse.api.send(this.createMessageStanza(message));
                     }
                 });
-                this.fetchMessages();
             },
 
             afterMessagesFetched () {
@@ -417,7 +416,28 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
-            shouldShowErrorMessage () {
+            /**
+             * @private
+             * @method _converse.ChatBox#shouldShowErrorMessage
+             * @returns {boolean}
+             */
+            shouldShowErrorMessage (stanza) {
+                const id = stanza.getAttribute('id');
+                if (id) {
+                    const msgs = this.messages.where({'msgid': id});
+                    const referenced_msgs = msgs.filter(m => m.get('type') !== 'error');
+                    if (!referenced_msgs.length && stanza.querySelector('body') === null) {
+                        // If the error refers to a message not included in our store,
+                        // and it doesn't have a <body> tag, we assume that this was a
+                        // CSI message (which we don't store).
+                        // See https://github.com/conversejs/converse.js/issues/1317
+                        return;
+                    }
+                    const dupes = msgs.filter(m => m.get('type') === 'error');
+                    if (dupes.length) {
+                        return;
+                    }
+                }
                 // Gets overridden in ChatRoom
                 return true;
             },
@@ -689,7 +709,8 @@ converse.plugins.add('converse-chatboxes', {
                         'message': attrs.message,
                         'older_versions': older_versions,
                         'references': attrs.references,
-                        'origin_id': _converse.connection.getUniqueId()
+                        'origin_id': _converse.connection.getUniqueId(),
+                        'received': undefined
                     });
                 } else {
                     message = this.messages.create(attrs);
@@ -963,7 +984,7 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             onChatBoxesFetched (collection) {
-                /* Show chat boxes upon receiving them from sessionStorage */
+                /* Show chat boxes upon receiving them from storage */
                 collection.filter(c => !c.isValid()).forEach(c => c.destroy());
                 collection.forEach(c => c.maybeShow());
                 /**
@@ -979,7 +1000,8 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             onConnected () {
-                this.browserStorage = new BrowserStorage.session(
+                const storage = _converse.config.get('storage');
+                this.browserStorage = new BrowserStorage[storage](
                     `converse.chatboxes-${_converse.bare_jid}`);
                 this.registerMessageHandler();
                 this.fetch({
@@ -988,34 +1010,26 @@ converse.plugins.add('converse-chatboxes', {
                 });
             },
 
-            async onErrorMessage (message) {
-                /* Handler method for all incoming error message stanzas
-                 */
-                const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
+            /**
+             * Handler method for all incoming error stanza stanzas.
+             * @private
+             * @method _converse.ChatBox#onErrorMessage
+             * @param { XMLElement } stanza - The error message stanza
+             */
+            async onErrorMessage (stanza) {
+                const from_jid =  Strophe.getBareJidFromJid(stanza.getAttribute('from'));
                 if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
-                    return true;
+                    return;
                 }
                 const chatbox = this.getChatBox(from_jid);
                 if (!chatbox) {
-                    return true;
+                    return;
                 }
-                const id = message.getAttribute('id');
-                if (id) {
-                    const msgs = chatbox.messages.where({'msgid': id});
-                    if (!msgs.length || msgs.filter(m => m.get('type') === 'error').length) {
-                        // If the error refers to a message not included in our store.
-                        // We assume that this was a CSI message (which we don't store).
-                        // See https://github.com/conversejs/converse.js/issues/1317
-                        //
-                        // We also ignore duplicate error messages.
-                        return;
-                    }
-                }
-                const should_show = await chatbox.shouldShowErrorMessage(message);
+                const should_show = await chatbox.shouldShowErrorMessage(stanza);
                 if (!should_show) {
                     return;
                 }
-                const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
+                const attrs = await chatbox.getMessageAttributesFromStanza(stanza, stanza);
                 chatbox.messages.create(attrs);
             },
 

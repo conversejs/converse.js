@@ -231,6 +231,20 @@ autocomplete_add_contact
 
 Determines whether search suggestions are shown in the "Add Contact" modal.
 
+
+auto_focus
+----------
+
+* Default:  ``true``
+
+If set to ``true``, the textarea for composing chat messages will automatically
+become focused as soon as a chat is opened. This means you don't need to click
+the textarea first before starting to type a message.
+
+For applications where chat is not the main feature, automatic focus of the
+chat box might be undesired.
+
+
 auto_list_rooms
 ---------------
 
@@ -823,6 +837,14 @@ VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
 
 If no nickame value is found, then an error will be raised.
 
+muc_mention_autocomplete_min_chars
+-----------------------------------
+
+* Default:  ``0``
+
+The number of characters that need to be entered before the auto-complete list
+of matching nicknames is shown.
+
 message_archiving
 -----------------
 
@@ -867,6 +889,18 @@ tab serves as a separate IM client.
 
 XEP-0280 requires server support, so make sure that message carbons are enabled
 on your server.
+
+
+message_limit
+-------------
+
+* Default:  ``0``
+
+Determines the allowed amount of characters in a chat message. A value of zero means there is no limit.
+Note, this limitation only applies to the Converse UX code running in the browser
+and it's trivial for an attacker to bypass this restriction.
+
+You should therefore also configure your XMPP server to limit message sizes.
 
 
 muc_disable_slash_commands

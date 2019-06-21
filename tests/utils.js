@@ -123,8 +123,9 @@
     utils.getRoomFeatures = async function (_converse, room, server, features=[]) {
         const room_jid = `${room}@${server}`.toLowerCase();
         const stanzas = _converse.connection.IQ_stanzas;
+        const index = stanzas.length-1;
         const stanza = await utils.waitUntil(() => _.filter(
-            stanzas,
+            stanzas.slice(index),
             iq => iq.querySelector(
                 `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
             )).pop());

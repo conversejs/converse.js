@@ -62,6 +62,7 @@
                 cursor: pointer;
             }
         }
+
         .chatbox-buttons {
             flex-direction: row-reverse;
             @include make-col-ready();
@@ -668,7 +669,6 @@
         .chat-title {
             padding: 0.3em;
             font-size: 120%;
-            cursor: pointer;
         }
     }
 

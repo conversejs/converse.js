@@ -1121,8 +1121,11 @@ converse.plugins.add('converse-chatview', {
             },
 
             inputChanged (ev) {
-                ev.target.style.height = 'auto';
-                ev.target.style.height = ev.target.scrollHeight + 'px';
+                const height = ev.target.scrollHeight + 'px';
+                if (ev.target.style.height != height) {
+                    ev.target.style.height = 'auto';
+                    ev.target.style.height = height;
+                }
             },
 
             clearMessages (ev) {

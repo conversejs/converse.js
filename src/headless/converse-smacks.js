@@ -81,7 +81,17 @@ converse.plugins.add('converse-smacks', {
             return true;
         }
 
-        function clearSessionData () {
+        function initSessionData () {
+            _converse.session.save({
+                'smacks_enabled': _converse.session.get('smacks_enabled') || false,
+                'num_stanzas_handled': _converse.session.get('num_stanzas_handled') || 0,
+                'num_stanzas_handled_by_server': _converse.session.get('num_stanzas_handled_by_server') || 0,
+                'num_stanzas_since_last_ack': _converse.session.get('num_stanzas_since_last_ack') || 0,
+                'unacked_stanzas': _converse.session.get('unacked_stanzas') || []
+            });
+        }
+
+        function resetSessionData () {
             _converse.session.save({
                 'smacks_enabled': false,
                 'num_stanzas_handled': 0,
@@ -114,7 +124,7 @@ converse.plugins.add('converse-smacks', {
                 _converse.log('Failed to enable stream management', Strophe.LogLevel.ERROR);
                 _converse.log(el.outerHTML, Strophe.LogLevel.ERROR);
             }
-            clearSessionData();
+            resetSessionData();
             return true;
         }
 
@@ -198,7 +208,7 @@ converse.plugins.add('converse-smacks', {
                     _converse.session.get('smacks_stream_id')) {
                 await sendResumeStanza();
             } else {
-                clearSessionData();
+                resetSessionData();
             }
         }
 
@@ -231,6 +241,7 @@ converse.plugins.add('converse-smacks', {
             }
         }
 
+        _converse.api.listen.on('userSessionInitialized', initSessionData);
         _converse.api.listen.on('beforeResourceBinding', enableStreamManagement);
         _converse.api.listen.on('afterResourceBinding', sendEnableStanza);
         _converse.api.listen.on('send', onStanzaSent);

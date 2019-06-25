@@ -485,6 +485,7 @@ converse.plugins.add('converse-chatboxes', {
                     // This is a correction of an earlier message we already received
                     older_versions[message.get('time')] = message.get('message');
                     attrs = Object.assign(attrs, {'older_versions': older_versions});
+                    delete attrs['id']; // Delete id, otherwise a new cache entry gets created
                     message.save(attrs);
                 }
                 return message;

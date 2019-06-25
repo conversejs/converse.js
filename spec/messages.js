@@ -1480,6 +1480,8 @@
                     .toBe('But soft, what light through yonder chimney breaks?');
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
+                expect(view.model.messages.models.length).toBe(1);
+                expect(view.model.messages.browserStorage.records.length).toBe(1);
 
                 _converse.chatboxes.onMessage($msg({
                         'from': sender_jid,
@@ -1501,6 +1503,8 @@
                 expect(older_msgs.length).toBe(2);
                 expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
                 expect(older_msgs[0].childNodes[1].textContent).toBe(': But soft, what light through yonder airlock breaks?');
+                expect(view.model.messages.models.length).toBe(1);
+                expect(view.model.messages.browserStorage.records.length).toBe(1);
                 done();
             }));
 

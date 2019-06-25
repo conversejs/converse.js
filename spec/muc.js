@@ -2745,7 +2745,7 @@
                 expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
-                expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');
+                expect(info_messages.pop().textContent).toBe('/revoke: Revoke the user\'s current affiliation');
                 expect(info_messages.pop().textContent).toBe('/register: Register your nickname');
                 expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
@@ -2758,7 +2758,7 @@
                 expect(info_messages.pop().textContent).toBe('/destroy: Remove this groupchat');
                 expect(info_messages.pop().textContent).toBe('/deop: Change user role to participant');
                 expect(info_messages.pop().textContent).toBe('/clear: Clear the chat area');
-                expect(info_messages.pop().textContent).toBe('/ban: Ban user from groupchat');
+                expect(info_messages.pop().textContent).toBe('/ban: Ban user by changing their affiliation to outcast');
                 expect(info_messages.pop().textContent).toBe('/admin: Change user\'s affiliation to admin');
                 expect(info_messages.pop().textContent).toBe('You can run the following commands');
 
@@ -2817,7 +2817,7 @@
                 expect(info_messages.length).toBe(17);
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
-                expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');
+                expect(info_messages.pop().textContent).toBe('/revoke: Revoke the user\'s current affiliation');
                 expect(info_messages.pop().textContent).toBe('/register: Register your nickname');
                 expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
@@ -2829,7 +2829,7 @@
                 expect(info_messages.pop().textContent).toBe('/destroy: Remove this groupchat');
                 expect(info_messages.pop().textContent).toBe('/deop: Change user role to participant');
                 expect(info_messages.pop().textContent).toBe('/clear: Clear the chat area');
-                expect(info_messages.pop().textContent).toBe('/ban: Ban user from groupchat');
+                expect(info_messages.pop().textContent).toBe('/ban: Ban user by changing their affiliation to outcast');
                 expect(info_messages.pop().textContent).toBe('/admin: Change user\'s affiliation to admin');
                 expect(info_messages.pop().textContent).toBe('You can run the following commands');
                 done();

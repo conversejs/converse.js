@@ -1009,7 +1009,7 @@ converse.plugins.add('converse-muc-views', {
                         this.showHelpMessages([`<strong>${__("You can run the following commands")}</strong>`]);
                         this.showHelpMessages([
                             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
-                            `<strong>/ban</strong>: ${__('Ban user from groupchat')}`,
+                            `<strong>/ban</strong>: ${__('Ban user by changing their affiliation to outcast')}`,
                             `<strong>/clear</strong>: ${__('Clear the chat area')}`,
                             `<strong>/deop</strong>: ${__('Change user role to participant')}`,
                             `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
@@ -1022,7 +1022,7 @@ converse.plugins.add('converse-muc-views', {
                             `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
                             `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
                             `<strong>/register</strong>: ${__("Register your nickname")}`,
-                            `<strong>/revoke</strong>: ${__("Revoke user's membership")}`,
+                            `<strong>/revoke</strong>: ${__("Revoke the user's current affiliation")}`,
                             `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
                             `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
                             `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`

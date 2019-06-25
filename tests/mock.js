@@ -238,7 +238,7 @@
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         };
         if (_.get(settings, 'auto_login') !== false) {
-            _converse.api.user.login('romeo@montague.lit', 'secret');
+            _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
             await _converse.api.waitUntil('afterResourceBinding');
         }
         window.converse_disable_effects = true;

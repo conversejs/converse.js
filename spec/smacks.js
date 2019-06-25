@@ -22,7 +22,7 @@
             const view = _converse.chatboxviews.get('controlbox');
             spyOn(view, 'renderControlBoxPane').and.callThrough();
 
-            _converse.api.user.login('romeo@montague.lit', 'secret');
+            _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
             const sent_stanzas = _converse.connection.sent_stanzas;
             let stanza = await test_utils.waitUntil(() =>
                 sent_stanzas.filter(s => (s.tagName === 'enable')).pop());

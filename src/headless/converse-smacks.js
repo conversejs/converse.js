@@ -217,7 +217,7 @@ converse.plugins.add('converse-smacks', {
                 const stanza_string = Strophe.serialize(stanza);
                 _converse.session.save(
                     'unacked_stanzas',
-                    _converse.session.get('unacked_stanzas').concat([stanza_string])
+                    (_converse.session.get('unacked_stanzas') || []).concat([stanza_string])
                 );
                 const max_unacked = _converse.smacks_max_unacked_stanzas;
                 if (max_unacked > 0) {

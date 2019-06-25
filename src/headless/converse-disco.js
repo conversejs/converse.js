@@ -38,7 +38,7 @@ converse.plugins.add('converse-disco', {
              */
             idAttribute: 'jid',
 
-            initialize () {
+            initialize (attrs, options) {
                 this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
 
                 this.dataforms = new Backbone.Collection();
@@ -62,7 +62,7 @@ converse.plugins.add('converse-disco', {
                 this.identities.browserStorage = new BrowserStorage.session(
                     `converse.identities-${this.get('jid')}`
                 );
-                this.fetchFeatures();
+                this.fetchFeatures(options);
 
                 this.items = new _converse.DiscoEntities();
                 this.items.browserStorage = new BrowserStorage.session(
@@ -124,8 +124,8 @@ converse.plugins.add('converse-disco', {
                 _converse.api.trigger('discoExtensionFieldDiscovered', field);
             },
 
-            fetchFeatures () {
-                if (this.features.browserStorage.records.length === 0) {
+            fetchFeatures (options) {
+                if (options.ignore_cache || this.features.browserStorage.records.length === 0) {
                     this.queryInfo();
                 } else {
                     this.features.fetch({
@@ -542,7 +542,7 @@ converse.plugins.add('converse-disco', {
                  */
                 entities: {
                     /**
-                     * Get the the corresponding `DiscoEntity` instance.
+                     * Get the corresponding `DiscoEntity` instance.
                      *
                      * @method _converse.api.disco.entities.get
                      * @param {string} jid The Jabber ID of the entity
@@ -558,7 +558,26 @@ converse.plugins.add('converse-disco', {
                         if (entity || !create) {
                             return entity;
                         }
-                        return _converse.disco_entities.create({'jid': jid});
+                        return _converse.api.disco.entities.create(jid);
+                    },
+
+                    /**
+                     * Create a new disco entity. It's identity and features
+                     * will automatically be fetched from cache or from the
+                     * XMPP server.
+                     *
+                     * Fetching from cache can be disabled by passing in
+                     * `ignore_cache: true` in the options parameter.
+                     *
+                     * @method _converse.api.disco.entities.create
+                     * @param {string} jid The Jabber ID of the entity
+                     * @param {object} [options] Additional options
+                     * @param {boolean} [options.ignore_cache]
+                     *     If true, fetch all features from the XMPP server instead of restoring them from cache
+                     * @example _converse.api.disco.entities.create(jid, {'ignore_cache': true});
+                     */
+                    create (jid, options) {
+                        return _converse.disco_entities.create({'jid': jid}, options);
                     }
                 },
 
@@ -638,14 +657,19 @@ converse.plugins.add('converse-disco', {
                         throw new TypeError('api.disco.refreshFeatures: You need to provide an entity JID');
                     }
                     await _converse.api.waitUntil('discoInitialized');
-                    const entity = await _converse.api.disco.entities.get(jid, true);
-                    entity.features.reset();
-                    entity.fields.reset();
-                    entity.identities.reset();
-                    if (!entity.waitUntilFeaturesDiscovered.isPending) {
-                        entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise()
+                    let entity = await _converse.api.disco.entities.get(jid);
+                    if (entity) {
+                        entity.features.reset();
+                        entity.fields.reset();
+                        entity.identities.reset();
+                        if (!entity.waitUntilFeaturesDiscovered.isPending) {
+                            entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise()
+                        }
+                        entity.queryInfo();
+                    } else {
+                        // Create it if it doesn't exist
+                        entity = await _converse.api.disco.entities.create(jid, {'ignore_cache': true});
                     }
-                    entity.queryInfo();
                     return entity.waitUntilFeaturesDiscovered;
                 },
 

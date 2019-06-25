@@ -506,8 +506,10 @@ _converse.initConnection = function () {
 
 
 async function initUserSession (jid) {
-    const bare_jid = Strophe.getBareJidFromJid(jid);
-    const id = `converse.session-${bare_jid}`;
+    // XXX: Important to use full JID, otherwise we run into a bug where two
+    // tabs with share the same XEP-0198 SM-ID, causing them to go into a
+    // reconnection-loop.
+    const id = `converse.session-${jid}`;
     if (!_converse.session || _converse.session.get('id') !== id) {
         _converse.session = new Backbone.Model({id});
         _converse.session.browserStorage = new BrowserStorage.session(id);

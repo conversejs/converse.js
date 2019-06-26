@@ -1498,8 +1498,7 @@
                         affiliation: mock.chatroom_roles[name].affiliation,
                         jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                         role: role
-                    }).up()
-                    .c('status').attrs({code:'110'}).nodeTree;
+                    });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(occupants.querySelectorAll('li').length).toBe(2+i);
                     model = view.model.occupants.where({'nick': name})[0];
@@ -2680,21 +2679,21 @@
                 const view = _converse.chatboxviews.get('lounge@montague.lit'),
                       trimmed_chatboxes = _converse.minimized_chats;
 
-                spyOn(view, 'minimize').and.callThrough();
-                spyOn(view, 'maximize').and.callThrough();
+                spyOn(view, 'onMinimized').and.callThrough();
+                spyOn(view, 'onMaximized').and.callThrough();
                 spyOn(_converse.api, "trigger");
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.el.querySelector('.toggle-chatbox-button').click();
 
-                expect(view.minimize).toHaveBeenCalled();
+                expect(view.onMinimized).toHaveBeenCalled();
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
                 expect(u.isVisible(view.el)).toBeFalsy();
                 expect(view.model.get('minimized')).toBeTruthy();
-                expect(view.minimize).toHaveBeenCalled();
+                expect(view.onMinimized).toHaveBeenCalled();
                 await test_utils.waitUntil(() => trimmed_chatboxes.get(view.model.get('id')));
                 const trimmedview = trimmed_chatboxes.get(view.model.get('id'));
                 trimmedview.el.querySelector("a.restore-chat").click();
-                expect(view.maximize).toHaveBeenCalled();
+                expect(view.onMaximized).toHaveBeenCalled();
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                 expect(view.model.get('minimized')).toBeFalsy();
                 expect(_converse.api.trigger.calls.count(), 3);

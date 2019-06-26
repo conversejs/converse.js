@@ -525,10 +525,14 @@ async function initUserSession (jid) {
 }
 
 async function setUserJID (jid) {
+    jid = jid.toLowerCase();
     if (!Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + _converse.generateResource();
+        // Set JID on the connection object so that when we call
+        // `connection.bind` the new resource is found by Strophe.js
+        // and sent to the XMPP server.
+        _converse.connection.jid = jid;
     }
-    jid = jid.toLowerCase();
     await initUserSession(jid);
     _converse.jid = jid;
     _converse.bare_jid = Strophe.getBareJidFromJid(jid);
@@ -545,6 +549,7 @@ async function setUserJID (jid) {
      * @event _converse#setUserJID
      */
     _converse.api.trigger('setUserJID');
+    return jid;
 }
 
 
@@ -1461,18 +1466,12 @@ _converse.api = {
                     return;
                 }
             }
-            let credentials;
-            if (jid && password) {
-                credentials = { jid, password };
-            } else if (u.isValidJID(_converse.jid) && _converse.password) {
-                credentials = {
-                    jid: _converse.jid,
-                    password: _converse.password
-                };
+            if (jid || _converse.jid) {
+                // Reassign because we might have gained a resource
+                jid = await setUserJID(jid || _converse.jid);
             }
-            if (credentials && credentials.jid) {
-                await setUserJID(jid || _converse.jid);
-            }
+            password = password || _converse.password;
+            const credentials = (jid && password) ? { jid, password } : null;
             _converse.attemptNonPreboundSession(credentials, reconnecting);
         },
 

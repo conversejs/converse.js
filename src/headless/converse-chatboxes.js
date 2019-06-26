@@ -841,7 +841,10 @@ converse.plugins.add('converse-chatboxes', {
                 if (type === 'error') {
                     return this.getErrorMessage(stanza);
                 } else {
-                    return _.propertyOf(stanza.querySelector('body'))('textContent');
+                    const body = stanza.querySelector('body');
+                    if (body) {
+                        return body.textContent.trim();
+                    }
                 }
             },
 

@@ -914,7 +914,7 @@ converse.plugins.add('converse-chatview', {
             async onFormSubmitted (ev) {
                 ev.preventDefault();
                 const textarea = this.el.querySelector('.chat-textarea');
-                const message = textarea.value;
+                const message = textarea.value.trim();
                 if (_converse.message_limit && message.length > _converse.message_limit) {
                     return;
                 }

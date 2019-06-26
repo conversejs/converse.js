@@ -1396,6 +1396,26 @@
             done();
         }));
 
+        describe("when sent", function () {
+
+            it("will be trimmed of leading and trailing whitespace",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                await test_utils.openChatBoxFor(_converse, contact_jid)
+                const view = _converse.chatboxviews.get(contact_jid);
+                const message = '   \nThis message is sent from this chatbox \n     \n';
+                await test_utils.sendMessage(view, message);
+                expect(view.model.messages.at(0).get('message')).toEqual(message.trim());
+                const message_el = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+                expect(message_el.textContent).toEqual(message.trim());
+                done();
+            }));
+        });
+
 
         describe("when received from someone else", function () {
 
@@ -1444,6 +1464,35 @@
                 expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Mercutio');
                 done();
             }));
+
+            it("will be trimmed of leading and trailing whitespace",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.waitForRoster(_converse, 'current', 1, false);
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
+                const message = '\n\n        This is a received message         \n\n';
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                _converse.chatboxes.onMessage(
+                    $msg({
+                        'from': sender_jid,
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': (new Date()).getTime()
+                    }).c('body').t(message).up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+                );
+                await test_utils.waitUntil(() => (_converse.api.chats.get().length === 2));
+                const view = _converse.api.chatviews.get(sender_jid);
+                expect(view.model.messages.length).toEqual(1);
+                const msg_obj = view.model.messages.at(0);
+                expect(msg_obj.get('message')).toEqual(message.trim());
+                const chat_content = view.el.querySelector('.chat-content');
+                expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message.trim());
+                done();
+            }));
+
 
             it("can be replaced with a correction",
                 mock.initConverse(

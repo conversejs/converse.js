@@ -1312,24 +1312,26 @@ converse.plugins.add('converse-muc-views', {
             },
 
             /**
-             * Working backwards, get the first join/leave notification
-             * from the same user, on the same day and BEFORE any chat
-             * messages were received.
+             * Working backwards, get today's most recent join/leave notification
+             * from the same user (if any exists) after the most recent chat message.
              * @private
              * @method _converse.ChatRoomView#getPreviousJoinOrLeaveNotification
              * @param {HTMLElement} el
              * @param {string} nick
              */
             getPreviousJoinOrLeaveNotification (el, nick) {
-                while (!_.isNil(el)) {
-                    const data = _.get(el, 'dataset', {});
-                    if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
+                const today = (new Date()).toISOString().split('T')[0];
+                while (el !== null) {
+                    if (!el.classList.contains('chat-info')) {
                         return;
                     }
-                    if (!dayjs(el.getAttribute('data-isodate')).isSame(new Date(), "day")) {
-                        el = el.previousElementSibling;
-                        continue;
+                    // Check whether el is still from today.
+                    // We don't use `Dayjs.same` here, since it's about 4 times slower.
+                    const date = el.getAttribute('data-isodate');
+                    if (date && date.split('T')[0] !== today) {
+                        return;
                     }
+                    const data = _.get(el, 'dataset', {});
                     if (data.join === nick ||
                             data.leave === nick ||
                             data.leavejoin === nick ||

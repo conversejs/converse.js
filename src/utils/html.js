@@ -258,7 +258,7 @@ u.getLastChildElement = function (el, selector='*') {
 }
 
 u.hasClass = function (className, el) {
-    return Array.from(el.classList).includes(className);
+    return el.classList.contains(className);
 };
 
 u.addClass = function (className, el) {

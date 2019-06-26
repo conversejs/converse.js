@@ -211,10 +211,10 @@
                     const el = online_contacts[i];
                     jid = _.trim(el.textContent.trim()).replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     chatboxview = _converse.chatboxviews.get(jid);
-                    spyOn(chatboxview, 'minimize').and.callThrough();
+                    spyOn(chatboxview, 'onMinimized').and.callThrough();
                     chatboxview.model.set({'minimized': true});
                     expect(trimmed_chatboxes.addChat).toHaveBeenCalled();
-                    expect(chatboxview.minimize).toHaveBeenCalled();
+                    expect(chatboxview.onMinimized).toHaveBeenCalled();
                 }
                 await test_utils.waitUntil(() => _converse.chatboxviews.keys().length);
                 var key = _converse.chatboxviews.keys()[1];

@@ -84,7 +84,7 @@ converse.plugins.add('converse-minimize', {
                     this.__super__._show.apply(this, arguments);
                     _converse.chatboxviews.trimChats(this);
                 } else {
-                    this.minimize();
+                    this.model.minimize();
                 }
             },
 
@@ -135,13 +135,7 @@ converse.plugins.add('converse-minimize', {
             },
 
             initialize () {
-                this.model.on('change:minimized', function (item) {
-                    if (item.get('minimized')) {
-                        this.hide();
-                    } else {
-                        this.maximize();
-                    }
-                }, this);
+                this.model.on('change:minimized', this.onMinimizedChanged, this);
                 const result = this.__super__.initialize.apply(this, arguments);
                 if (this.model.get('minimized')) {
                     this.hide();
@@ -197,20 +191,22 @@ converse.plugins.add('converse-minimize', {
 
 
         const minimizableChatBoxView = {
-
             /**
-             * Maximizes a minimized chat box.
+             * Handler which gets called when a {@link _converse#ChatBox} has it's
+             * `minimized` property set to false.
+             *
              * Will trigger {@link _converse#chatBoxMaximized}
+             * @private
              * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
              */
-            maximize () {
-                // Restores a minimized chat box
+            onMaximized () {
                 const { _converse } = this.__super__;
                 this.insertIntoDOM();
 
                 if (!this.model.isScrolledUp()) {
                     this.model.clearUnreadMsgCounter();
                 }
+                this.setChatState(_converse.INACTIVE);
                 this.show();
                 /**
                  * Triggered when a previously minimized chat gets maximized
@@ -223,11 +219,14 @@ converse.plugins.add('converse-minimize', {
             },
 
             /**
-             * Minimizes a chat box.
+             * Handler which gets called when a {@link _converse#ChatBox} has it's
+             * `minimized` property set to true.
+             *
              * Will trigger {@link _converse#chatBoxMinimized}
+             * @private
              * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
              */
-            minimize (ev) {
+            onMinimized (ev) {
                 const { _converse } = this.__super__;
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 // save the scroll position to restore it on maximize
@@ -236,7 +235,7 @@ converse.plugins.add('converse-minimize', {
                 } else {
                     this.model.set({'scroll': this.content.scrollTop});
                 }
-                this.setChatState(_converse.INACTIVE).model.minimize();
+                this.setChatState(_converse.INACTIVE);
                 this.hide();
                 /**
                  * Triggered when a previously maximized chat gets Minimized
@@ -248,11 +247,20 @@ converse.plugins.add('converse-minimize', {
                 return this;
             },
 
+            /**
+             * Minimizes a chat box.
+             * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
+             */
+            minimize (ev) {
+                this.model.minimize();
+                return this;
+            },
+
             onMinimizedChanged (item) {
                 if (item.get('minimized')) {
-                    this.minimize();
+                    this.onMinimized();
                 } else {
-                    this.maximize();
+                    this.onMaximized();
                 }
             }
         }

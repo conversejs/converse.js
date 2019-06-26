@@ -19,20 +19,20 @@ const AvatarMixin = {
 
     renderAvatar (el) {
         el = el || this.el;
-        const canvas_el = el.querySelector('canvas');
-        if (_.isNull(canvas_el)) {
+        const avatar_el = el.querySelector('canvas.avatar, svg.avatar');
+        if (_.isNull(avatar_el)) {
             return;
         }
         if (this.model.vcard) {
             const data = {
-                'classes': canvas_el.getAttribute('class'),
-                'width': canvas_el.width,
-                'height': canvas_el.height,
+                'classes': avatar_el.getAttribute('class'),
+                'width': avatar_el.getAttribute('width'),
+                'height': avatar_el.getAttribute('height'),
             }
             const image_type = this.model.vcard.get('image_type'),
                   image = this.model.vcard.get('image');
             data['image'] = "data:" + image_type + ";base64," + image;
-            canvas_el.outerHTML = tpl_avatar(data);
+            avatar_el.outerHTML = tpl_avatar(data);
         }
     },
 };

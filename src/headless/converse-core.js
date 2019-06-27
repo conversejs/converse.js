@@ -528,14 +528,14 @@ async function initUserSession (jid) {
 async function setUserJID (jid) {
     await initUserSession(jid);
     jid = _converse.session.get('jid') || jid;
-
     if (!Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + _converse.generateResource();
-        // Set JID on the connection object so that when we call
-        // `connection.bind` the new resource is found by Strophe.js
-        // and sent to the XMPP server.
-        _converse.connection.jid = jid;
     }
+    // Set JID on the connection object so that when we call
+    // `connection.bind` the new resource is found by Strophe.js
+    // and sent to the XMPP server.
+    _converse.connection.jid = jid;
+
     _converse.jid = jid;
     _converse.bare_jid = Strophe.getBareJidFromJid(jid);
     _converse.resource = Strophe.getResourceFromJid(jid);

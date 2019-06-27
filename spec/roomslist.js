@@ -290,7 +290,7 @@
             test_utils.openControlBox();
             const room_jid = 'kitchen@conference.shakespeare.lit';
             await test_utils.waitUntil(() => !_.isUndefined(_converse.rooms_list_view), 500);
-            await  test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
+            await test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
             const view = _converse.chatboxviews.get(room_jid);
             view.model.set({'minimized': true});
             const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -303,8 +303,11 @@
                     type: 'groupchat'
                 }).c('body').t('foo').tree());
 
+            const lview = _converse.rooms_list_view
+            await test_utils.waitUntil(() => lview.el.querySelectorAll(".available-chatroom").length);
+
             // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
-            let room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
+            let room_el = lview.el.querySelector(".available-chatroom");
             expect(_.includes(room_el.classList, 'unread-msgs')).toBeTruthy();
 
             // If the user is mentioned, the counter also gets updated

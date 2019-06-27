@@ -310,7 +310,7 @@ converse.plugins.add('converse-muc', {
                         return;
                     }
                     this.join();
-                } else {
+                } else if (!(await this.rejoinIfNecessary())) {
                     this.features.fetch();
                     this.fetchMessages();
                 }

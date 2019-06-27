@@ -996,7 +996,7 @@ converse.plugins.add('converse-chatview', {
                     // When ctrl is pressed, no chars are entered into the textarea.
                     return;
                 }
-                if (!ev.shiftKey && !ev.altKey) {
+                if (!ev.shiftKey && !ev.altKey && !ev.metaKey) {
                     if (ev.keyCode === _converse.keycodes.FORWARD_SLASH) {
                         // Forward slash is used to run commands. Nothing to do here.
                         return;

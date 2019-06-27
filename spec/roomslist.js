@@ -304,7 +304,7 @@
                 }).c('body').t('foo').tree());
 
             const lview = _converse.rooms_list_view
-            await test_utils.waitUntil(() => lview.el.querySelectorAll(".available-chatroom").length);
+            await test_utils.waitUntil(() => lview.el.querySelectorAll(".available-chatroom").length, 500);
 
             // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
             let room_el = lview.el.querySelector(".available-chatroom");

@@ -1227,7 +1227,7 @@ converse.plugins.add('converse-chatboxes', {
              * @namespace _converse.api.chats
              * @memberOf _converse.api
              */
-            'chats': {
+            chats: {
                 /**
                  * @method _converse.api.chats.create
                  * @param {string|string[]} jid|jids An jid or array of jids

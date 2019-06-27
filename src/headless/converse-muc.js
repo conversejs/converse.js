@@ -1968,9 +1968,10 @@ converse.plugins.add('converse-muc', {
         _converse.api.listen.on('statusInitialized', () => {
             window.addEventListener(_converse.unloadevent, () => {
                 const using_websocket = _converse.api.connection.isType('websocket');
-                if (using_websocket && !_converse.enable_smacks) {
-                    // For non-SMACKS websocket connections, we disconnect all
-                    // chatrooms when the page unloads.
+                if (using_websocket &&
+                        (!_converse.enable_smacks || !_converse.session.get('smacks_stream_id'))) {
+                    // For non-SMACKS websocket connections, or non-resumeable
+                    // connections, we disconnect all chatrooms when the page unloads.
                     // See issue #1111
                     disconnectChatRooms();
                 }

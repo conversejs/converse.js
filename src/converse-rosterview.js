@@ -540,6 +540,7 @@ converse.plugins.add('converse-rosterview', {
                 "click a.group-toggle": "toggle"
             },
 
+            sortImmediatelyOnAdd: true,
             ItemView: _converse.RosterContactView,
             listItems: 'model.contacts',
             listSelector: '.roster-group-contacts',
@@ -558,7 +559,7 @@ converse.plugins.add('converse-rosterview', {
                 // assigned to their various groups.
                 _converse.rosterview.on(
                     'rosterContactsFetchedAndProcessed',
-                    this.sortAndPositionAllItems.bind(this)
+                    () => this.sortAndPositionAllItems()
                 );
             },
 
@@ -597,7 +598,7 @@ converse.plugins.add('converse-rosterview', {
                  */
                 let shown = 0;
                 const all_contact_views = this.getAll();
-                _.each(this.model.contacts.models, (contact) => {
+                this.model.contacts.forEach(contact => {
                     const contact_view = this.get(contact.get('id'));
                     if (_.includes(contacts, contact)) {
                         u.hideElement(contact_view.el);
@@ -730,6 +731,7 @@ converse.plugins.add('converse-rosterview', {
             listSelector: '.roster-contacts',
             sortEvent: null, // Groups are immutable, so they don't get re-sorted
             subviewIndex: 'name',
+            sortImmediatelyOnAdd: true,
 
             events: {
                 'click a.controlbox-heading__btn.add-contact': 'showAddContactModal',
@@ -758,7 +760,7 @@ converse.plugins.add('converse-rosterview', {
                 _converse.api.listen.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
 
                 _converse.api.listen.on('rosterContactsFetched', () => {
-                    _converse.roster.each((contact) => this.addRosterContact(contact, {'silent': true}));
+                    _converse.roster.each(contact => this.addRosterContact(contact, {'silent': true}));
                     this.update();
                     this.updateFilter();
                     this.trigger('rosterContactsFetchedAndProcessed');

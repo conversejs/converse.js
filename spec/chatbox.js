@@ -1467,7 +1467,7 @@
                 _converse.chatboxes.onMessage(msgFactory());
                 await test_utils.waitUntil(() => chatbox.messages.length > 1);
                 expect(select_msgs_indicator().textContent).toBe('2');
-                view.maximize();
+                view.model.maximize();
                 expect(select_msgs_indicator()).toBeUndefined();
                 done();
             }));

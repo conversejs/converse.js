@@ -1484,8 +1484,8 @@
                 var name;
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 const occupants = view.el.querySelector('.occupant-list');
-                var presence, role, jid, model;
-                for (var i=0; i<mock.chatroom_names.length; i++) {
+                var presence, role, jid;
+                for (let i=0; i<mock.chatroom_names.length; i++) {
                     name = mock.chatroom_names[i];
                     role = mock.chatroom_roles[name].role;
                     // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
@@ -1500,15 +1500,20 @@
                         role: role
                     });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(occupants.querySelectorAll('li').length).toBe(2+i);
-                    model = view.model.occupants.where({'nick': name})[0];
-                    const index = view.model.occupants.indexOf(model);
-                    expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(mock.chatroom_names[i]);
                 }
+
+                await test_utils.waitUntil(() => occupants.querySelectorAll('li').length > 2, 500);
+                expect(occupants.querySelectorAll('li').length).toBe(1+mock.chatroom_names.length);
+
+                mock.chatroom_names.forEach(name => {
+                    const model = view.model.occupants.findWhere({'nick': name});
+                    const index = view.model.occupants.indexOf(model);
+                    expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(name);
+                });
 
                 // Test users leaving the groupchat
                 // https://xmpp.org/extensions/xep-0045.html#exit
-                for (i=mock.chatroom_names.length-1; i>-1; i--) {
+                for (let i=mock.chatroom_names.length-1; i>-1; i--) {
                     name = mock.chatroom_names[i];
                     role = mock.chatroom_roles[name].role;
                     // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
@@ -1554,11 +1559,16 @@
                     }).up()
                     .c('status').attrs({code:'110'}).nodeTree;
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(occupants.querySelectorAll('li').length).toBe(2+i);
-                    model = view.model.occupants.where({'nick': name})[0];
-                    const index = view.model.occupants.indexOf(model);
-                    expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(mock.chatroom_names[i]);
                 }
+
+                await test_utils.waitUntil(() => occupants.querySelectorAll('li').length > 1, 500);
+                expect(occupants.querySelectorAll('li').length).toBe(1+mock.chatroom_names.length);
+
+                mock.chatroom_names.forEach(name => {
+                    const model = view.model.occupants.findWhere({'nick': name});
+                    const index = view.model.occupants.indexOf(model);
+                    expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(name);
+                });
 
                 // Test users leaving the groupchat
                 // https://xmpp.org/extensions/xep-0045.html#exit
@@ -1607,6 +1617,7 @@
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
+                await test_utils.waitUntil(() => view.el.querySelectorAll('li .occupant-nick').length, 500);
                 const occupants = view.el.querySelector('.occupant-list').querySelectorAll('li .occupant-nick');
                 expect(occupants.length).toBe(2);
                 expect(occupants[0].textContent.trim()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
@@ -1622,7 +1633,8 @@
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 let contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-                let occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.occupant-list li').length, 500);
+                let occupants = view.el.querySelectorAll('.occupant-list li');
                 expect(occupants.length).toBe(1);
                 expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe("romeo");
                 expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
@@ -1641,6 +1653,7 @@
                 .c('status').attrs({code:'110'}).nodeTree;
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.occupant-list li').length > 1, 500);
                 occupants = view.el.querySelectorAll('.occupant-list li');
                 expect(occupants.length).toBe(2);
                 expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe("moderatorman");
@@ -1665,6 +1678,7 @@
                 .c('status').attrs({code:'110'}).nodeTree;
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.occupant-list li').length > 2, 500);
                 occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
                 expect(occupants.length).toBe(3);
                 expect(occupants[2].querySelector('.occupant-nick').textContent.trim()).toBe("visitorwoman");
@@ -2209,6 +2223,7 @@
                 expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
                 const chat_content = view.el.querySelector('.chat-content');
 
+                await test_utils.waitUntil(() => view.el.querySelectorAll('li .occupant-nick').length, 500);
                 let occupants = view.el.querySelector('.occupant-list');
                 expect(occupants.childNodes.length).toBe(1);
                 expect(occupants.firstElementChild.querySelector('.occupant-nick').textContent.trim()).toBe("oldnick");
@@ -2840,7 +2855,6 @@
                     async function (done, _converse) {
 
                 let iq_stanza;
-
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'muc.montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@muc.montague.lit');
                 /* We don't show join/leave messages for existing occupants. We
@@ -2973,7 +2987,7 @@
                     "id": iq_stanza.getAttribute("id")
                 }).c("query", {"xmlns": "http://jabber.org/protocol/muc#admin"})
                 _converse.connection._dataRecv(test_utils.createRequest(result));
-
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.occupant').length, 500);
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.badge').length > 1);
                 expect(view.model.occupants.length).toBe(2);
                 expect(view.el.querySelectorAll('.occupant').length).toBe(2);

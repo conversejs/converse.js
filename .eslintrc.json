@@ -24,7 +24,7 @@
             "ignoreMethods": [
                 "assign", "every", "keys", "find", "endsWith", "startsWith", "filter",
                 "reduce", "isArray", "create", "map", "replace", "some", "toLower",
-                "split", "trim", "forEach", "toUpperCase", "includes", "values"
+                "split", "trim", "forEach", "toUpperCase", "includes", "values", "padStart"
             ]
         }],
         "lodash/import-scope": "off",

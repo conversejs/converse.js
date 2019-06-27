@@ -20,10 +20,15 @@
 
             await test_utils.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
             expect(_.isUndefined(_converse.rooms_list_view)).toBeFalsy();
-            let room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+
+            const lview = _converse.rooms_list_view
+            await test_utils.waitUntil(() => lview.el.querySelectorAll(".open-room").length);
+            let room_els = lview.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(1);
             expect(room_els[0].innerText).toBe('room@conference.shakespeare.lit');
+
             await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            await test_utils.waitUntil(() => lview.el.querySelectorAll(".open-room").length > 1);
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(2);
 
@@ -119,19 +124,23 @@
               allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             }, async function (done, _converse) {
 
-            let room_els, item;
+            let item;
             await _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
-            room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom");
+
+            const lview = _converse.rooms_list_view
+            await test_utils.waitUntil(() => lview.el.querySelectorAll(".open-room").length);
+            let room_els = lview.el.querySelectorAll(".available-chatroom");
             expect(room_els.length).toBe(1);
 
             item = room_els[0];
             expect(u.hasClass('open', item)).toBe(true);
             expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
             await _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'});
-            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            await test_utils.waitUntil(() => lview.el.querySelectorAll(".open-room").length > 1);
+            room_els = lview.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(2);
 
-            room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom.open");
+            room_els = lview.el.querySelectorAll(".available-chatroom.open");
             expect(room_els.length).toBe(1);
             item = room_els[0];
             expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
@@ -258,9 +267,11 @@
             expect(_converse.chatboxes.length).toBe(1);
             await test_utils.openChatRoom(_converse, 'lounge', 'conference.shakespeare.lit', 'JC');
             expect(_converse.chatboxes.length).toBe(2);
-            var room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            const lview = _converse.rooms_list_view
+            await test_utils.waitUntil(() => lview.el.querySelectorAll(".open-room").length);
+            let room_els = lview.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(1);
-            var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
+            const close_el = _converse.rooms_list_view.el.querySelector(".close-room");
             close_el.click();
             expect(window.confirm).toHaveBeenCalledWith(
                 'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');

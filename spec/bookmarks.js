@@ -661,12 +661,14 @@
             { hide_open_bookmarks: true },
             async function (done, _converse) {
 
+            test_utils.openControlBox();
             const jid = 'room@conference.example.org';
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
                 [{'category': 'pubsub', 'type': 'pep'}],
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
+            await test_utils.waitUntil(() => _converse.bookmarks);
             // XXX Create bookmarks view here, otherwise we need to mock stanza
             // traffic for it to get created.
             _converse.bookmarksview = new _converse.BookmarksView(
@@ -682,13 +684,16 @@
                 'nick': ' Othello'
             });
             expect(_converse.bookmarks.length).toBe(1);
-            const room_els = _converse.bookmarksview.el.querySelectorAll(".open-room");
+
+            const bmarks_view = _converse.bookmarksview;
+            await test_utils.waitUntil(() => bmarks_view.el.querySelectorAll(".open-room").length, 500);
+            const room_els = bmarks_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(1);
 
-            // Check that it disappears once the room is opened
             const bookmark = _converse.bookmarksview.el.querySelector(".open-room");
             bookmark.click();
             await test_utils.waitUntil(() => _converse.chatboxviews.get(jid));
+
             expect(u.hasClass('hidden', _converse.bookmarksview.el.querySelector(".available-chatroom"))).toBeTruthy();
             // Check that it reappears once the room is closed
             const view = _converse.chatboxviews.get(jid);

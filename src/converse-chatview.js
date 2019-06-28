@@ -796,11 +796,6 @@ converse.plugins.add('converse-chatview', {
              * @param { _converse.Message } message - The message object
              */
             async showMessage (message) {
-                if (!u.isNewMessage(message) && u.isEmptyMessage(message)) {
-                    // Handle archived or delayed messages without any message
-                    // text to show.
-                    return message.destroy();
-                }
                 const view = this.add(message.get('id'), new _converse.MessageView({'model': message}));
                 await view.render();
 
@@ -843,6 +838,10 @@ converse.plugins.add('converse-chatview', {
                 if (id && this.get(id)) {
                     // We already have a view for this message
                     return;
+                }
+                if (!u.isNewMessage(message) && u.isEmptyMessage(message)) {
+                    // Ignore archived or delayed messages without any text to show.
+                    return message.destroy();
                 }
                 await this.showMessage(message);
                 /**

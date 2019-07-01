@@ -300,7 +300,7 @@ converse.plugins.add('converse-muc', {
                 if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
                     // We're not restoring a room from cache, so let's clear
                     // the cache (which might be stale).
-                    this.clearOccupants();
+                    this.removeNonMembers();
                     await this.refreshRoomFeatures();
                     this.clearMessages(); // XXX: This should be conditional
                     this.fetchMessages();
@@ -328,14 +328,10 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            clearOccupants () {
-                try {
-                    this.occupants.reset();
-                } catch (e) {
-                    this.occupants.trigger('reset');
-                    _converse.log(e, Strophe.LogLevel.ERROR);
-                } finally {
-                    this.occupants.browserStorage._clear();
+            removeNonMembers () {
+                const non_members = this.occupants.filter(o => !o.isMember());
+                if (non_members.length) {
+                    this.occupants.remove(non_members);
                 }
             },
 

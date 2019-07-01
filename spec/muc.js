@@ -1480,17 +1480,15 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
+                const groupchat_jid = 'lounge@montague.lit'
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-                var name;
-                const view = _converse.chatboxviews.get('lounge@montague.lit');
+                const view = _converse.chatboxviews.get(groupchat_jid);
                 const occupants = view.el.querySelector('.occupant-list');
-                var presence, role, jid;
                 for (let i=0; i<mock.chatroom_names.length; i++) {
-                    name = mock.chatroom_names[i];
-                    role = mock.chatroom_roles[name].role;
+                    const name = mock.chatroom_names[i];
+                    const role = mock.chatroom_roles[name].role;
                     // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                    jid =
-                    presence = $pres({
+                    const presence = $pres({
                             to:'romeo@montague.lit/pda',
                             from:'lounge@montague.lit/'+name
                     }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
@@ -1514,10 +1512,10 @@
                 // Test users leaving the groupchat
                 // https://xmpp.org/extensions/xep-0045.html#exit
                 for (let i=mock.chatroom_names.length-1; i>-1; i--) {
-                    name = mock.chatroom_names[i];
-                    role = mock.chatroom_roles[name].role;
+                    const name = mock.chatroom_names[i];
+                    const role = mock.chatroom_roles[name].role;
                     // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                    presence = $pres({
+                    const presence = $pres({
                         to:'romeo@montague.lit/pda',
                         from:'lounge@montague.lit/'+name,
                         type: 'unavailable'
@@ -1530,6 +1528,29 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(occupants.querySelectorAll('li').length).toBe(7);
                 }
+
+                // Test that members aren't removed when we reconnect
+                // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
+                const presence = $pres({
+                        to: 'romeo@montague.lit/pda',
+                        from: 'lounge@montague.lit/nonmember'
+                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    affiliation: null,
+                    jid: 'servant@montague.lit',
+                    role: 'visitor'
+                });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(occupants.querySelectorAll('li').length).toBe(7);
+                expect(view.model.occupants.length).toBe(8);
+                expect(view.model.occupants.filter(o => o.isMember()).length).toBe(7);
+
+                spyOn(view.model, 'removeNonMembers').and.callThrough();
+                view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                view.model.enterRoom();
+                expect(view.model.removeNonMembers).toHaveBeenCalled();
+                expect(view.model.occupants.length).toBe(7);
+                expect(occupants.querySelectorAll('li').length).toBe(7);
                 done();
             }));
 

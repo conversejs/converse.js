@@ -238,6 +238,67 @@ converse.plugins.add('converse-muc', {
             return chatbox;
         }
 
+
+        /**
+         * Represents a MUC message
+         * @class
+         * @namespace _converse.ChatRoomMessage
+         * @memberOf _converse
+         */
+        _converse.ChatRoomMessage = _converse.Message.extend({
+
+            getVCardForChatroomOccupant () {
+                const chatbox = this.collection.chatbox,
+                      nick = Strophe.getResourceFromJid(this.get('from'));
+
+                if (chatbox.get('nick') === nick) {
+                    return _converse.xmppstatus.vcard;
+                } else {
+                    let vcard;
+                    if (this.get('vcard_jid')) {
+                        vcard = _converse.vcards.findWhere({'jid': this.get('vcard_jid')});
+                    }
+                    if (!vcard) {
+                        let jid;
+                        const occupant = chatbox.occupants.findWhere({'nick': nick});
+                        if (occupant && occupant.get('jid')) {
+                            jid = occupant.get('jid');
+                            this.save({'vcard_jid': jid}, {'silent': true});
+                        } else {
+                            jid = this.get('from');
+                        }
+                        vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                    }
+                    return vcard;
+                }
+            },
+
+            setVCard () {
+                if (!_converse.vcards) {
+                    // VCards aren't supported
+                    return;
+                }
+                if (this.get('type') === 'error') {
+                    return;
+                } else {
+                    this.vcard = this.getVCardForChatroomOccupant();
+                }
+            },
+        });
+
+
+        /**
+         * Collection which stores MUC messages
+         * @class
+         * @namespace _converse.ChatRoomMessages
+         * @memberOf _converse
+         */
+        _converse.ChatRoomMessages = Backbone.Collection.extend({
+            model: _converse.ChatRoomMessage,
+            comparator: 'time'
+        });
+
+
         /**
          * Represents an open/ongoing groupchat conversation.
          * @class
@@ -245,6 +306,7 @@ converse.plugins.add('converse-muc', {
          * @memberOf _converse
          */
         _converse.ChatRoom = _converse.ChatBox.extend({
+            messagesCollection: _converse.ChatRoomMessages,
 
             defaults () {
                 return {
@@ -319,6 +381,12 @@ converse.plugins.add('converse-muc', {
             async onConnectionStatusChanged () {
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                     this.occupants.fetchMembers();
+                    // It's possible to fetch messages before entering a MUC,
+                    // but we don't support this use-case currently. By
+                    // fetching messages after members we can immediately
+                    // assign an occupant to the message before rendering it,
+                    // thereby avoiding re-renders (and therefore DOM reflows).
+                    this.fetchMessages();
 
                     if (_converse.auto_register_muc_nickname &&
                             await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {

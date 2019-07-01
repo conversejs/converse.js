@@ -1312,7 +1312,7 @@ converse.plugins.add('converse-muc', {
                 try {
                     result = await _converse.api.sendIQ(ping);
                 } catch (e) {
-                    const sel = `error[type="cancel"] not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`;
+                    const sel = `error not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`;
                     if (_.isElement(e) && sizzle(sel, e).length) {
                         return false;
                     }

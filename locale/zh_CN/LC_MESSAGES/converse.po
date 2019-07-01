@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-05-06 13:48+0000\n"
-"Last-Translator: urain39 <hexiedeshijie@gmail.com>\n"
+"PO-Revision-Date: 2019-07-02 14:01+0000\n"
+"Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -485,7 +485,6 @@ msgid "Groupchats found:"
 msgstr "发现的群聊:"
 
 #: dist/converse-no-dependencies.js:36381
-#, fuzzy
 msgid "name@conference.example.org"
 msgstr "name@conference.example.org"
 
@@ -888,7 +887,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38500
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s说"
 
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
@@ -1154,7 +1153,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:40855
 msgid "here"
-msgstr ""
+msgstr "这里"
 
 #: dist/converse-no-dependencies.js:40904
 msgid "Sorry, we're unable to connect to your chosen provider."
@@ -1480,7 +1479,6 @@ msgid "The conversation has moved. Click below to enter."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75824
-#, fuzzy
 msgid "Name"
 msgstr "名称"
 
@@ -1651,9 +1649,8 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:77004
-#, fuzzy
 msgid "Log in"
-msgstr "登出"
+msgstr "登录"
 
 #: dist/converse-no-dependencies.js:77010
 msgid "Click here to log in anonymously"
@@ -1733,7 +1730,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:77566
 #: dist/converse-no-dependencies.js:77605
 msgid "Log in here"
-msgstr ""
+msgstr "这里登录吧"
 
 #: dist/converse-no-dependencies.js:77587
 msgid "Account Registration:"
@@ -1814,11 +1811,11 @@ msgstr "下载音频文件"
 #: dist/converse-no-dependencies.js:78768
 #, javascript-format
 msgid "Download image \"%1$s\""
-msgstr ""
+msgstr "下载图片"
 
 #: dist/converse-no-dependencies.js:78798
 msgid "Download"
-msgstr ""
+msgstr "下载"
 
 #: dist/converse-no-dependencies.js:78815
 #, fuzzy, javascript-format

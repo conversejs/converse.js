@@ -209,6 +209,7 @@
                 .c('status').attrs({code:'110'});
             _converse.connection._dataRecv(test_utils.createRequest(presence));
 
+            await test_utils.waitUntil(() => _converse.rooms_list_view.el.querySelectorAll(".open-room").length, 500);
             const room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(1);
             const info_el = _converse.rooms_list_view.el.querySelector(".room-info");

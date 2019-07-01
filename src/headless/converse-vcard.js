@@ -130,8 +130,10 @@ converse.plugins.add('converse-vcard', {
 
         _converse.api.listen.on('statusInitialized', () => {
             const vcards = _converse.vcards;
-            const jid = _converse.session.get('bare_jid');
-            _converse.xmppstatus.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
+            if (_converse.session) {
+                const jid = _converse.session.get('bare_jid');
+                _converse.xmppstatus.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
+            }
         });
 
 
@@ -165,7 +167,7 @@ converse.plugins.add('converse-vcard', {
                  *     // Failure
                  * }).
                  */
-                'set' (jid, data) {
+                set (jid, data) {
                     return setVCard(jid, data);
                 },
 

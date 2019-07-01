@@ -1443,25 +1443,25 @@
                 await test_utils.waitUntil(() => view.el.querySelectorAll('form.chatroom-form').length)
                 expect(view.el.querySelectorAll('form.chatroom-form').length).toBe(1);
                 expect(view.el.querySelectorAll('form.chatroom-form fieldset').length).toBe(2);
-                var membersonly = view.el.querySelectorAll('input[name="muc#roomconfig_membersonly"]');
+                const membersonly = view.el.querySelectorAll('input[name="muc#roomconfig_membersonly"]');
                 expect(membersonly.length).toBe(1);
                 expect(membersonly[0].getAttribute('type')).toBe('checkbox');
                 membersonly[0].checked = true;
 
-                var moderated = view.el.querySelectorAll('input[name="muc#roomconfig_moderatedroom"]');
+                const moderated = view.el.querySelectorAll('input[name="muc#roomconfig_moderatedroom"]');
                 expect(moderated.length).toBe(1);
                 expect(moderated[0].getAttribute('type')).toBe('checkbox');
                 moderated[0].checked = true;
 
-                var password = view.el.querySelectorAll('input[name="muc#roomconfig_roomsecret"]');
+                const password = view.el.querySelectorAll('input[name="muc#roomconfig_roomsecret"]');
                 expect(password.length).toBe(1);
                 expect(password[0].getAttribute('type')).toBe('password');
 
-                var allowpm = view.el.querySelectorAll('select[name="muc#roomconfig_allowpm"]');
+                const allowpm = view.el.querySelectorAll('select[name="muc#roomconfig_allowpm"]');
                 expect(allowpm.length).toBe(1);
                 allowpm[0].value = 'moderators';
 
-                var presencebroadcast = view.el.querySelectorAll('select[name="muc#roomconfig_presencebroadcast"]');
+                const presencebroadcast = view.el.querySelectorAll('select[name="muc#roomconfig_presencebroadcast"]');
                 expect(presencebroadcast.length).toBe(1);
                 presencebroadcast[0].value = ['moderator'];
 
@@ -4167,9 +4167,9 @@
 
                 // Check in reverse order that we requested all three lists
                 // (member, owner and admin).
-                var admin_iq_id = IQ_ids.pop();
-                var owner_iq_id = IQ_ids.pop();
-                var member_iq_id = IQ_ids.pop();
+                const admin_iq_id = IQ_ids.pop();
+                const owner_iq_id = IQ_ids.pop();
+                const member_iq_id = IQ_ids.pop();
 
                 expect(sent_IQs.pop().toLocaleString()).toBe(
                     `<iq id="${admin_iq_id}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+

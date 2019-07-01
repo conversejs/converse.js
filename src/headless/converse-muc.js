@@ -247,11 +247,38 @@ converse.plugins.add('converse-muc', {
          */
         _converse.ChatRoomMessage = _converse.Message.extend({
 
-            getVCardForChatroomOccupant () {
-                const chatbox = this.collection.chatbox,
-                      nick = Strophe.getResourceFromJid(this.get('from'));
+            initialize () {
+                if (this.get('file')) {
+                    this.on('change:put', this.uploadFile, this);
+                }
+                if (this.isEphemeral()) {
+                    window.setTimeout(() => {
+                        try {
+                            this.destroy()
+                        } catch (e) {
+                            _converse.log(e, Strophe.LogLevel.ERROR);
+                        }
+                    }, 10000);
+                } else {
+                    this.occupantAdded = u.getResolveablePromise();
+                    this.setOccupant();
+                    this.setVCard();
+                }
+            },
 
-                if (chatbox.get('nick') === nick) {
+            setOccupant () {
+                const chatbox = _.get(this, 'collection.chatbox');
+                if (!chatbox) { return; }
+                const nick = Strophe.getResourceFromJid(this.get('from'));
+                this.occupant = chatbox.occupants.findWhere({'nick': nick});
+                this.occupantAdded.resolve();
+            },
+
+            getVCardForChatroomOccupant () {
+                const chatbox = _.get(this, 'collection.chatbox');
+                const nick = Strophe.getResourceFromJid(this.get('from'));
+
+                if (chatbox && chatbox.get('nick') === nick) {
                     return _converse.xmppstatus.vcard;
                 } else {
                     let vcard;
@@ -260,14 +287,21 @@ converse.plugins.add('converse-muc', {
                     }
                     if (!vcard) {
                         let jid;
-                        const occupant = chatbox.occupants.findWhere({'nick': nick});
-                        if (occupant && occupant.get('jid')) {
-                            jid = occupant.get('jid');
+                        if (this.occupant && this.occupant.get('jid')) {
+                            jid = this.occupant.get('jid');
                             this.save({'vcard_jid': jid}, {'silent': true});
                         } else {
                             jid = this.get('from');
                         }
-                        vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                        if (jid) {
+                            vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                        } else {
+                            _converse.log(
+                                `Could not assign VCard for message because no JID found! msgid: ${this.get('msgid')}`,
+                                Strophe.LogLevel.ERROR
+                            );
+                            return;
+                        }
                     }
                     return vcard;
                 }
@@ -278,7 +312,7 @@ converse.plugins.add('converse-muc', {
                     // VCards aren't supported
                     return;
                 }
-                if (this.get('type') === 'error') {
+                if (['error', 'info'].includes(this.get('type'))) {
                     return;
                 } else {
                     this.vcard = this.getVCardForChatroomOccupant();
@@ -389,7 +423,6 @@ converse.plugins.add('converse-muc', {
 
                     if (_converse.auto_register_muc_nickname &&
                             await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
-
                         this.registerNickname()
                     }
                 }
@@ -641,7 +674,7 @@ converse.plugins.add('converse-muc', {
                 [text, references] = this.parseTextForReferences(text);
                 const origin_id = _converse.connection.getUniqueId();
 
-                return this.addOccupantData({
+                return {
                     'id': origin_id,
                     'msgid': origin_id,
                     'origin_id': origin_id,
@@ -655,7 +688,7 @@ converse.plugins.add('converse-muc', {
                     'sender': 'me',
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
                     'type': 'groupchat'
-                });
+                };
             },
 
             /**
@@ -1426,17 +1459,6 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            addOccupantData (attrs) {
-                if (attrs.nick) {
-                    const occupant = this.occupants.findOccupant({'nick': attrs.nick});
-                    if (occupant) {
-                        attrs['affiliation'] = occupant.get('affiliation');
-                        attrs['role'] = occupant.get('role');
-                    }
-                }
-                return attrs;
-            },
-
             /**
              * Handler for all MUC messages sent to this groupchat.
              * @private
@@ -1460,13 +1482,12 @@ converse.plugins.add('converse-muc', {
                         this.isChatMarker(stanza)) {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
-                let attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                 if (attrs.nick &&
                         !this.subjectChangeHandled(attrs) &&
                         !this.ignorableCSN(attrs) &&
                         (attrs['chat_state'] || !u.isEmptyMessage(attrs))) {
 
-                    attrs = this.addOccupantData(attrs);
                     const msg = this.correctMessage(attrs) || this.messages.create(attrs);
                     this.incrementUnreadMsgCounter(msg);
                 }

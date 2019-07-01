@@ -35,9 +35,8 @@
                     }).t(spoiler_hint)
                 .tree();
             await _converse.chatboxes.onMessage(msg);
-
-            await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
             const view = _converse.chatboxviews.get(sender_jid);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Mercutio');
             const message_content = view.el.querySelector('.chat-msg__text');
@@ -70,8 +69,8 @@
                       'xmlns': 'urn:xmpp:spoiler:0',
                     }).tree();
             await _converse.chatboxes.onMessage(msg);
-            await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
             const view = _converse.chatboxviews.get(sender_jid);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Mercutio')).toBeTruthy();
             const message_content = view.el.querySelector('.chat-msg__text');

@@ -194,7 +194,7 @@
         // The user has just entered the room (because join was called)
         // and receives their own presence from the server.
         // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
-        var presence = $pres({
+        const presence = $pres({
                 to: _converse.connection.jid,
                 from: `${room_jid}/${nick}`,
                 id: u.getUniqueId()
@@ -207,6 +207,43 @@
             .c('status').attrs({code:'110'});
         _converse.connection._dataRecv(utils.createRequest(presence));
         await utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+
+        // Now we return the (empty) member lists
+        const member_IQ = await utils.waitUntil(() => _.filter(
+            stanzas,
+            s => sizzle(`iq[to="${room_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
+        ).pop());
+        const member_list_stanza = $iq({
+                'from': 'coven@chat.shakespeare.lit',
+                'id': member_IQ.getAttribute('id'),
+                'to': 'romeo@montague.lit/orchard',
+                'type': 'result'
+            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+        _converse.connection._dataRecv(utils.createRequest(member_list_stanza));
+
+        const admin_IQ = await utils.waitUntil(() => _.filter(
+            stanzas,
+            s => sizzle(`iq[to="${room_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
+        ).pop());
+        const admin_list_stanza = $iq({
+                'from': 'coven@chat.shakespeare.lit',
+                'id': admin_IQ.getAttribute('id'),
+                'to': 'romeo@montague.lit/orchard',
+                'type': 'result'
+            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+        _converse.connection._dataRecv(utils.createRequest(admin_list_stanza));
+
+        const owner_IQ = await utils.waitUntil(() => _.filter(
+            stanzas,
+            s => sizzle(`iq[to="${room_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
+        ).pop());
+        const owner_list_stanza = $iq({
+                'from': 'coven@chat.shakespeare.lit',
+                'id': owner_IQ.getAttribute('id'),
+                'to': 'romeo@montague.lit/orchard',
+                'type': 'result'
+            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+        _converse.connection._dataRecv(utils.createRequest(owner_list_stanza));
     };
 
     utils.clearBrowserStorage = function () {

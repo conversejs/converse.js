@@ -59,12 +59,16 @@ converse.plugins.add('converse-chatboxes', {
 
         const ModelWithContact = Backbone.Model.extend({
 
+            initialize () {
+                this.rosterContactAdded = u.getResolveablePromise();
+            },
+
             async setRosterContact (jid) {
                 const contact = await _converse.api.contacts.get(jid);
                 if (contact) {
                     this.contact = contact;
                     this.set('nickname', contact.get('nickname'));
-                    this.trigger('rosterContactAdded');
+                    this.rosterContactAdded.resolve();
                 }
             }
         });
@@ -88,10 +92,13 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             initialize () {
+                ModelWithContact.prototype.initialize.apply(this, arguments);
+
                 if (this.get('type') === 'chat') {
                     this.setVCard();
                     this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
                 }
+
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
                 }
@@ -259,6 +266,8 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             initialize () {
+                ModelWithContact.prototype.initialize.apply(this, arguments);
+
                 const jid = this.get('jid');
                 if (!jid) {
                     // XXX: The `validate` method will prevent this model

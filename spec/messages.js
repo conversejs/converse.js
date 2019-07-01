@@ -2374,8 +2374,8 @@
             }).c('body').t('I wrote this message!').tree();
             await view.model.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-            expect(view.model.messages.last().get('affiliation')).toBe('owner');
-            expect(view.model.messages.last().get('role')).toBe('moderator');
+            expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
+            expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author moderator');
 
@@ -2401,8 +2401,8 @@
             }).c('body').t('Another message!').tree();
             await view.model.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-            expect(view.model.messages.last().get('affiliation')).toBe('member');
-            expect(view.model.messages.last().get('role')).toBe('participant');
+            expect(view.model.messages.last().occupant.get('affiliation')).toBe('member');
+            expect(view.model.messages.last().occupant.get('role')).toBe('participant');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author participant');
 
@@ -2422,8 +2422,8 @@
             view.model.sendMessage('hello world');
             await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 3);
 
-            expect(view.model.messages.last().get('affiliation')).toBe('owner');
-            expect(view.model.messages.last().get('role')).toBe('moderator');
+            expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
+            expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
             expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author moderator');
             done();
@@ -2969,6 +2969,7 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'tom');
+
                 const view = _converse.api.chatviews.get('lounge@montague.lit');
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.connection._dataRecv(test_utils.createRequest(
@@ -3023,7 +3024,7 @@
                 await test_utils.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
                     'hello z3r0 gibson sw0rdf1sh, how are you?', 500);
 
-                const correction = _converse.connection.send.calls.all()[1].args[0];
+                const correction = _converse.connection.send.calls.all()[2].args[0];
                 expect(correction.toLocaleString())
                     .toBe(`<message from="romeo@montague.lit/orchard" id="${correction.nodeTree.getAttribute("id")}" `+
                             `to="lounge@montague.lit" type="groupchat" `+

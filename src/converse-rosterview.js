@@ -126,7 +126,7 @@ converse.plugins.add('converse-rosterview', {
                 };
                 const input_el = this.el.querySelector('input[name="name"]');
                 input_el.addEventListener('input', _.debounce(() => {
-                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
+                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
                     xhr.send()
                 } , 300));
                 this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
@@ -185,7 +185,7 @@ converse.plugins.add('converse-rosterview', {
 
                 if (!jid && _converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
                     const input_el = this.el.querySelector('input[name="name"]');
-                    this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
+                    this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
                     this.xhr.send()
                     return;
                 }

@@ -1811,9 +1811,9 @@ converse.plugins.add('converse-muc', {
                  */
                 const jid = Strophe.getBareJidFromJid(data.jid);
                 if (jid !== null) {
-                    return this.where({'jid': jid}).pop();
+                    return this.findWhere({'jid': jid});
                 } else {
-                    return this.where({'nick': data.nick}).pop();
+                    return this.findWhere({'nick': data.nick});
                 }
             }
         });

@@ -14,7 +14,7 @@
                 async function (done, _converse) {
 
             test_utils.openControlBox();
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit'),
                   occupants = view.el.querySelector('.occupant-list');
             _.rangeRight(3000, 0).forEach(i => {

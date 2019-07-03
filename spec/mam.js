@@ -24,7 +24,7 @@
                         null, ['discoInitialized'], {},
                         async function (done, _converse) {
 
-                    await test_utils.openAndEnterChatRoom(_converse, 'trek-radio', 'conference.lightwitch.org', 'romeo');
+                    await test_utils.openAndEnterChatRoom(_converse, 'trek-radio@conference.lightwitch.org', 'romeo');
 
                     const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
                     let stanza = u.toStanza(
@@ -72,7 +72,7 @@
                         null, ['discoInitialized'], {},
                         async function (done, _converse) {
 
-                    await test_utils.openAndEnterChatRoom(_converse, 'trek-radio', 'conference.lightwitch.org', 'jcbrand');
+                    await test_utils.openAndEnterChatRoom(_converse, 'trek-radio@conference.lightwitch.org', 'jcbrand');
                     const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
                     let stanza = u.toStanza(
                         `<message xmlns="jabber:client" to="jcbrand@lightwitch.org/converse.js-73057452" type="groupchat" from="trek-radio@conference.lightwitch.org/comndrdukath#0805 (STO)">
@@ -111,7 +111,7 @@
                         null, ['discoInitialized'], {},
                         async function (done, _converse) {
 
-                    await test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'romeo');
+                    await test_utils.openAndEnterChatRoom(_converse, 'discuss@conference.conversejs.org', 'romeo');
                     const view = _converse.chatboxviews.get('discuss@conference.conversejs.org');
                     let stanza = u.toStanza(
                         `<message xmlns="jabber:client" to="romeo@montague.lit/orchard" from="discuss@conference.conversejs.org">

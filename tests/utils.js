@@ -164,7 +164,9 @@
         _converse.connection._dataRecv(utils.createRequest(features_stanza));
     };
 
-    utils.openAndEnterChatRoom = async function (_converse, room, server, nick, features=[]) {
+    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[]) {
+        const room = Strophe.getNodeFromJid(muc_jid);
+        const server = Strophe.getDomainFromJid(muc_jid);
         const room_jid = `${room}@${server}`.toLowerCase();
         const stanzas = _converse.connection.IQ_stanzas;
         await _converse.api.rooms.open(room_jid);

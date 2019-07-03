@@ -85,7 +85,7 @@
             expect(_converse.session.get('push_enabled').length).toBe(1);
             expect(_.includes(_converse.session.get('push_enabled'), 'romeo@montague.lit')).toBe(true);
 
-            test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'oldhag');
+            test_utils.openAndEnterChatRoom(_converse, 'coven@chat.shakespeare.lit', 'oldhag');
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, 'chat.shakespeare.lit',
                 [{'category': 'account', 'type':'registered'}],

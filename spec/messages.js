@@ -2244,14 +2244,14 @@
                             <message xmlns="jabber:client" to="${contact_jid}" type="chat" from="${_converse.bare_jid}/other-resource">
                                 <received xmlns="urn:xmpp:chat-markers:0" id="2e972ea0-0050-44b7-a830-f6638a2595b3"/>
                                 <store xmlns="urn:xmpp:hints"/>
-                                <stanza-id xmlns="urn:xmpp:sid:0" id="F4TC6CvHwzqRbeHb" by="jc@opkode.com"/>
+                                <stanza-id xmlns="urn:xmpp:sid:0" id="F4TC6CvHwzqRbeHb" by="${_converse.bare_jid}"/>
                             </message>
                         </forwarded>
                     </sent>
                 </message>`);
             spyOn(_converse.api, "trigger").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 1);
+            await test_utils.waitUntil(() => _converse.api.trigger.calls.count(), 500);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.model.messages.length).toBe(1);
             done();
@@ -2266,8 +2266,9 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.api.chatviews.get('lounge@montague.lit');
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             if (!view.el.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
             const message = 'romeo: Your attention is required';
             const nick = mock.chatroom_names[0],
@@ -2288,8 +2289,9 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             if (!view.el.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
             const id = u.getUniqueId();
             let msg = $msg({
@@ -2319,8 +2321,9 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'romeo');
-            const view = _converse.chatboxviews.get('room@muc.example.com');
+            const muc_jid = 'room@muc.example.com';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             spyOn(view.model, 'findDuplicateFromStanzaID').and.callThrough();
             let stanza = u.toStanza(`
                 <message xmlns="jabber:client"
@@ -2364,8 +2367,9 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.api.chatviews.get('lounge@montague.lit');
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             let msg = $msg({
                 from: 'lounge@montague.lit/romeo',
                 id: (new Date()).getTime(),
@@ -2435,8 +2439,9 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.api.chatviews.get('lounge@montague.lit');
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             const msg = $msg({
                     from: 'lounge@montague.lit/romeo',
                     id: (new Date()).getTime(),
@@ -2454,10 +2459,9 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const jid = 'lounge@montague.lit';
-            const room = _converse.api.rooms.get(jid);
-            const view = _converse.api.chatviews.get(jid);
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             const stanza = $pres({
                     to: 'romeo@montague.lit/_converse.js-29092160',
                     from: 'coven@chat.shakespeare.lit/newguy'
@@ -2522,10 +2526,9 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const room_jid = 'lounge@montague.lit';
-            const room = _converse.api.rooms.get(room_jid);
-            const view = _converse.api.chatviews.get(room_jid);
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             const textarea = view.el.querySelector('textarea.chat-textarea');
             expect(textarea.value).toBe('');
             view.onKeyDown({
@@ -2593,7 +2596,7 @@
 
             // Check that messages from other users are skipped
             await view.model.onMessage($msg({
-                'from': room_jid+'/someone-else',
+                'from': muc_jid+'/someone-else',
                 'id': (new Date()).getTime(),
                 'to': 'romeo@montague.lit',
                 'type': 'groupchat'
@@ -2629,8 +2632,9 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             const textarea = view.el.querySelector('textarea.chat-textarea');
             textarea.value = 'But soft, what light through yonder airlock breaks?';
             view.onKeyDown({
@@ -2670,8 +2674,9 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'romeo');
-            const view = _converse.chatboxviews.get('room@muc.example.com');
+            const muc_jid = 'room@muc.example.com';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
 
             view.model.sendMessage('hello world');
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
@@ -2706,8 +2711,9 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             const textarea = view.el.querySelector('textarea.chat-textarea');
             textarea.value = 'But soft, what light through yonder airlock breaks?';
             view.onKeyDown({
@@ -2741,8 +2747,9 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
             const textarea = view.el.querySelector('textarea.chat-textarea');
             textarea.value = 'But soft, what light through yonder airlock breaks?';
             view.onKeyDown({
@@ -2808,8 +2815,9 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'tom');
-                const view = _converse.api.chatviews.get('lounge@montague.lit');
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+                const view = _converse.api.chatviews.get(muc_jid);
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.connection._dataRecv(test_utils.createRequest(
                         $pres({
@@ -2853,8 +2861,9 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'tom');
-                const view = _converse.api.chatviews.get('lounge@montague.lit');
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+                const view = _converse.api.chatviews.get(muc_jid);
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve'].forEach((nick) => {
                     _converse.connection._dataRecv(test_utils.createRequest(
                         $pres({
@@ -2934,8 +2943,9 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'tom');
-                const view = _converse.api.chatviews.get('lounge@montague.lit');
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+                const view = _converse.api.chatviews.get(muc_jid);
                 ['NotAnAdress', 'darnuria'].forEach((nick) => {
                     _converse.connection._dataRecv(test_utils.createRequest(
                         $pres({
@@ -2968,9 +2978,9 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'tom');
-
-                const view = _converse.api.chatviews.get('lounge@montague.lit');
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+                const view = _converse.api.chatviews.get(muc_jid);
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.connection._dataRecv(test_utils.createRequest(
                         $pres({
@@ -3045,8 +3055,9 @@
                     null, ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'tom');
-                const view = _converse.api.chatviews.get('lounge@montague.lit');
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const view = _converse.api.chatviews.get(muc_jid);
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.connection._dataRecv(test_utils.createRequest(
                         $pres({

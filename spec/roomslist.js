@@ -56,7 +56,7 @@
                 {'connection': ['send']}, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
 
             const contact_jid = 'newguy@montague.lit';
@@ -291,7 +291,7 @@
             test_utils.openControlBox();
             const room_jid = 'kitchen@conference.shakespeare.lit';
             await test_utils.waitUntil(() => !_.isUndefined(_converse.rooms_list_view), 500);
-            await test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
+            await test_utils.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'romeo');
             const view = _converse.chatboxviews.get(room_jid);
             view.model.set({'minimized': true});
             const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';

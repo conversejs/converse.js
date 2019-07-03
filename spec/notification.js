@@ -47,7 +47,7 @@
                             async (done, _converse) => {
 
                         await test_utils.createContacts(_converse, 'current');
-                        await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+                        await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                         const view = _converse.api.chatviews.get('lounge@montague.lit');
                         if (!view.el.querySelectorAll('.chat-area').length) {
                             view.renderChatArea();
@@ -173,7 +173,7 @@
                         async (done, _converse) => {
 
                     test_utils.createContacts(_converse, 'current');
-                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+                    await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                     _converse.play_sounds = true;
                     spyOn(_converse, 'playSoundNotification');
                     const view = _converse.chatboxviews.get('lounge@montague.lit');

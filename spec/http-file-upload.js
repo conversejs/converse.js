@@ -190,7 +190,7 @@
                         null, ['rosterGroupsFetched'], {},
                         async (done, _converse) => {
 
-                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+                    await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                     test_utils.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
                         [{'category': 'server', 'type':'IM'}],
@@ -239,7 +239,7 @@
 
                     await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.lit'], 'items');
                     await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.lit', [], [Strophe.NS.HTTPUPLOAD], []);
-                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+                    await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                     await test_utils.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').el.querySelector('.upload-file'));
                     const view = _converse.chatboxviews.get('lounge@montague.lit');
                     expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
@@ -365,7 +365,7 @@
 
                         await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
-                        await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+                        await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
 
                         // Wait until MAM query has been sent out
                         const sent_stanzas = _converse.connection.sent_stanzas;

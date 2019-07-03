@@ -250,7 +250,7 @@
                 'muc_unmoderated',
                 'muc_nonanonymous'
             ];
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo', features);
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', features);
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             await test_utils.waitUntil(() => initializedOMEMO(_converse));
 
@@ -490,7 +490,7 @@
                 'muc_unmoderated',
                 'muc_nonanonymous'
             ];
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo', features);
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', features);
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             await test_utils.waitUntil(() => initializedOMEMO(_converse));
 
@@ -1282,7 +1282,7 @@
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
 
-            // MEMO encryption works only in members-only conferences that are non-anonymous. 
+            // MEMO encryption works only in members-only conferences that are non-anonymous.
             const features = [
                 'http://jabber.org/protocol/muc',
                 'jabber:iq:register',
@@ -1293,7 +1293,7 @@
                 'muc_unmoderated',
                 'muc_nonanonymous'
             ];
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo', features);
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', features);
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             await test_utils.waitUntil(() => initializedOMEMO(_converse));
 

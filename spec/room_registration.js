@@ -16,59 +16,54 @@
             it("allows you to register your nickname in a room",
                 mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                let view;
-                const room_jid = 'coven@chat.shakespeare.lit';
-                test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'romeo')
-                .then(() => {
-                    view = _converse.chatboxviews.get(room_jid);
-                    const textarea = view.el.querySelector('.chat-textarea')
-                    textarea.value = '/register';
-                    view.onKeyDown({
-                        target: textarea,
-                        preventDefault: _.noop,
-                        keyCode: 13
-                    });
-                    return test_utils.waitUntil(() => _.filter(
-                        _converse.connection.IQ_stanzas,
-                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length
-                    ).pop());
-                }).then(stanza => {
-                    expect(Strophe.serialize(stanza))
+                const muc_jid = 'coven@chat.shakespeare.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo')
+                const view = _converse.chatboxviews.get(muc_jid);
+                const textarea = view.el.querySelector('.chat-textarea')
+                textarea.value = '/register';
+                view.onKeyDown({
+                    target: textarea,
+                    preventDefault: _.noop,
+                    keyCode: 13
+                });
+                let stanza = await test_utils.waitUntil(() => _.filter(
+                    _converse.connection.IQ_stanzas,
+                    iq => sizzle(`iq[to="${muc_jid}"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length
+                ).pop());
+                expect(Strophe.serialize(stanza))
                     .toBe(`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
                                 `type="get" xmlns="jabber:client">`+
                             `<query xmlns="jabber:iq:register"/></iq>`);
-                    view = _converse.chatboxviews.get(room_jid);
-                    const result = $iq({
-                        'from': view.model.get('jid'),
-                        'id': stanza.getAttribute('id'),
-                        'to': _converse.bare_jid,
-                        'type': 'result',
-                    }).c('query', {'type': 'jabber:iq:register'})
-                        .c('x', {'xmlns': 'jabber:x:data', 'type': 'form'})
-                            .c('field', {
-                                'label': 'Desired Nickname',
-                                'type': 'text-single',
-                                'var': 'muc#register_roomnick'
-                            }).c('required');
-                    _converse.connection._dataRecv(test_utils.createRequest(result));
-                    return test_utils.waitUntil(() => _.filter(
-                        _converse.connection.IQ_stanzas,
-                        iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
-                    ).pop());
-                }).then(stanza => {
-                    expect(Strophe.serialize(stanza)).toBe(
-                        `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
-                            `<query xmlns="jabber:iq:register">`+
-                                `<x type="submit" xmlns="jabber:x:data">`+
-                                    `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#register</value></field>`+
-                                    `<field var="muc#register_roomnick"><value>romeo</value></field>`+
-                                `</x>`+
-                            `</query>`+
-                        `</iq>`);
-                    done();
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                const result = $iq({
+                    'from': view.model.get('jid'),
+                    'id': stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('query', {'type': 'jabber:iq:register'})
+                    .c('x', {'xmlns': 'jabber:x:data', 'type': 'form'})
+                        .c('field', {
+                            'label': 'Desired Nickname',
+                            'type': 'text-single',
+                            'var': 'muc#register_roomnick'
+                        }).c('required');
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+                stanza = await test_utils.waitUntil(() => _.filter(
+                    _converse.connection.IQ_stanzas,
+                    iq => sizzle(`iq[to="${muc_jid}"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
+                ).pop());
+
+                expect(Strophe.serialize(stanza)).toBe(
+                    `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                        `<query xmlns="jabber:iq:register">`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#register</value></field>`+
+                                `<field var="muc#register_roomnick"><value>romeo</value></field>`+
+                            `</x>`+
+                        `</query>`+
+                    `</iq>`);
+                done();
             }));
 
         });
@@ -81,9 +76,9 @@
                     async function (done, _converse) {
 
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
-                const room_jid = 'coven@chat.shakespeare.lit';
-                await test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'romeo');
-                const view = _converse.chatboxviews.get(room_jid);
+                const muc_jid = 'coven@chat.shakespeare.lit';
+                await test_utils.openAndEnterChatRoom(_converse, 'coven@chat.shakespeare.lit', 'romeo');
+                const view = _converse.chatboxviews.get(muc_jid);
 
                 let stanza = await test_utils.waitUntil(() => _.filter(
                     _converse.connection.IQ_stanzas,

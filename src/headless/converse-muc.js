@@ -433,7 +433,7 @@ converse.plugins.add('converse-muc', {
             removeNonMembers () {
                 const non_members = this.occupants.filter(o => !o.isMember());
                 if (non_members.length) {
-                    this.occupants.remove(non_members);
+                    non_members.forEach(o => o.destroy());
                 }
             },
 

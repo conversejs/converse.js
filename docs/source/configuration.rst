@@ -468,6 +468,24 @@ For more information, read this blog post: `Which BOSH server do you need? <http
 A more modern alternative to BOSH is to use `websockets <https://developer.mozilla.org/en/docs/WebSockets>`_.
 Please see the :ref:`websocket-url` configuration setting.
 
+
+clear_messages_on_reconnection
+------------------------------
+
+* Default: ``false``
+
+In some cases, it might be desirable to clear cached chat messages once you've
+reconnected to the XMPP server.
+
+For example, if you want to prevent the chat history from getting too long or
+if you want to avoid gaps in the chat history (for example due to MAM not
+returning all messages since the last cached message).
+
+Beware, if you're using OMEMO, then you probably don't want to set this setting to
+``true``. OMEMO messages can be decrypted only once, so if they then
+subsequently get cleared, you won't get the plaintext back.
+
+
 chatstate_notification_blacklist
 --------------------------------
 

@@ -398,7 +398,9 @@ converse.plugins.add('converse-muc', {
                     // the cache (which might be stale).
                     this.removeNonMembers();
                     await this.refreshRoomFeatures();
-                    this.clearMessages(); // XXX: This should be conditional
+                    if (_converse.clear_messages_on_reconnection) {
+                        this.clearMessages();
+                    }
                     if (!u.isPersistableModel(this)) {
                         // XXX: Happens during tests, nothing to do if this
                         // is a hanging chatbox (i.e. not in the collection anymore).

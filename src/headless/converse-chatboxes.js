@@ -36,6 +36,7 @@ converse.plugins.add('converse-chatboxes', {
         // configuration settings.
         _converse.api.settings.update({
             'auto_join_private_chats': [],
+            'clear_messages_on_reconnection': false,
             'filter_by_resource': false,
             'send_chat_state_notifications': true
         });
@@ -358,7 +359,9 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             onReconnection () {
-                this.clearMessages();
+                if (_converse.clear_messages_on_reconnection) {
+                    this.clearMessages();
+                }
                 this.announceReconnection();
             },
 

@@ -972,6 +972,15 @@ converse.plugins.add('converse-chatview', {
             },
 
             onPaste (ev) {
+                if (ev.clipboardData.files.length !== 0) {
+                    ev.preventDefault();
+                    // Workaround for quirk in at least Firefox 60.7 ESR:
+                    // It seems that pasted files disappear from the event payload after
+                    // the event has finished, which apparently happens during async
+                    // processing in sendFiles(). So we copy the array here.
+                    this.model.sendFiles(Array.from(ev.clipboardData.files));
+                    return;
+                }
                 this.updateCharCounter(ev.clipboardData.getData('text/plain'));
             },
 

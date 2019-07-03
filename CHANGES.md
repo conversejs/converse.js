@@ -50,6 +50,7 @@
 - #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`
 - #1579: Trim spaces at the beginning and end of a JID (when adding contact)
 - #1586: Not possible to kick someone with a space in their nickname
+- #1585: Upload files by pasting from clipboard
 
 ### Breaking changes
 

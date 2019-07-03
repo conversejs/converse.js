@@ -92,7 +92,12 @@
     };
 
     mock.chatroom_names = [
-        'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'
+        'Dyon van de Wege',
+        'Thomas Kalb',
+        'Dirk Theissen',
+        'Felix Hofmann',
+        'Ka Lek',
+        'Anne Ebersbacher'
     ];
     // TODO: need to also test other roles and affiliations
     mock.chatroom_roles = {

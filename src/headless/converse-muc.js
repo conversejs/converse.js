@@ -1874,6 +1874,8 @@ converse.plugins.add('converse-muc', {
                     if (occupant.get('jid') === _converse.bare_jid) { return; }
                     if (occupant.get('show') === 'offline') {
                         occupant.destroy();
+                    } else {
+                        occupant.save('affiliation', null);
                     }
                 });
                 new_members.forEach(attrs => {

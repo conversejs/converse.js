@@ -164,7 +164,7 @@
         _converse.connection._dataRecv(utils.createRequest(features_stanza));
     };
 
-    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[]) {
+    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
         const room = Strophe.getNodeFromJid(muc_jid);
         const server = Strophe.getDomainFromJid(muc_jid);
         const room_jid = `${room}@${server}`.toLowerCase();
@@ -221,6 +221,14 @@
                 'to': 'romeo@montague.lit/orchard',
                 'type': 'result'
             }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+        members.forEach(member => {
+            member_list_stanza.c('item', {
+                'affiliation': 'member',
+                'jid': 'hag66@shakespeare.lit',
+                'nick': member,
+                'role': 'participant'
+            });
+        });
         _converse.connection._dataRecv(utils.createRequest(member_list_stanza));
 
         const admin_IQ = await utils.waitUntil(() => _.filter(

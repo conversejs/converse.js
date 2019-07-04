@@ -158,6 +158,10 @@ u.isHeadlineMessage = function (_converse, message) {
     return false;
 };
 
+u.isErrorObject = function (o) {
+    return o instanceof Error;
+}
+
 
 u.isForbiddenError = function (stanza) {
     if (!_.isElement(stanza)) {

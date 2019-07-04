@@ -213,51 +213,71 @@
     };
 
 
-    utils.returnMemberLists = async function (_converse, muc_jid, members=[]) {
+    utils.returnMemberLists = async function (_converse, muc_jid, members=[], affiliations=['member', 'owner', 'admin']) {
         const stanzas = _converse.connection.IQ_stanzas;
-        const member_IQ = await u.waitUntil(() => _.filter(
-            stanzas,
-            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
-        ).pop());
-        const member_list_stanza = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': member_IQ.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
-        members.forEach(member => {
-            member_list_stanza.c('item', {
-                'affiliation': 'member',
-                'jid': 'hag66@shakespeare.lit',
-                'nick': member,
-                'role': 'participant'
+
+        if (affiliations.includes('member')) {
+            const member_IQ = await u.waitUntil(() => _.filter(
+                stanzas,
+                s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
+            ).pop());
+            const member_list_stanza = $iq({
+                    'from': 'coven@chat.shakespeare.lit',
+                    'id': member_IQ.getAttribute('id'),
+                    'to': 'romeo@montague.lit/orchard',
+                    'type': 'result'
+                }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+            members.filter(m => m.affiliation === 'member').forEach(m => {
+                member_list_stanza.c('item', {
+                    'affiliation': m.affiliation,
+                    'jid': m.jid,
+                    'nick': m.nick
+                });
             });
-        });
-        _converse.connection._dataRecv(utils.createRequest(member_list_stanza));
+            _converse.connection._dataRecv(utils.createRequest(member_list_stanza));
+        }
 
-        const admin_IQ = await u.waitUntil(() => _.filter(
-            stanzas,
-            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
-        ).pop());
-        const admin_list_stanza = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': admin_IQ.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
-        _converse.connection._dataRecv(utils.createRequest(admin_list_stanza));
+        if (affiliations.includes('admin')) {
+            const admin_IQ = await u.waitUntil(() => _.filter(
+                stanzas,
+                s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
+            ).pop());
+            const admin_list_stanza = $iq({
+                    'from': 'coven@chat.shakespeare.lit',
+                    'id': admin_IQ.getAttribute('id'),
+                    'to': 'romeo@montague.lit/orchard',
+                    'type': 'result'
+                }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+            members.filter(m => m.affiliation === 'admin').forEach(m => {
+                admin_list_stanza.c('item', {
+                    'affiliation': m.affiliation,
+                    'jid': m.jid,
+                    'nick': m.nick
+                });
+            });
+            _converse.connection._dataRecv(utils.createRequest(admin_list_stanza));
+        }
 
-        const owner_IQ = await u.waitUntil(() => _.filter(
-            stanzas,
-            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
-        ).pop());
-        const owner_list_stanza = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': owner_IQ.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
-        _converse.connection._dataRecv(utils.createRequest(owner_list_stanza));
+        if (affiliations.includes('owner')) {
+            const owner_IQ = await u.waitUntil(() => _.filter(
+                stanzas,
+                s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
+            ).pop());
+            const owner_list_stanza = $iq({
+                    'from': 'coven@chat.shakespeare.lit',
+                    'id': owner_IQ.getAttribute('id'),
+                    'to': 'romeo@montague.lit/orchard',
+                    'type': 'result'
+                }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+            members.filter(m => m.affiliation === 'owner').forEach(m => {
+                owner_list_stanza.c('item', {
+                    'affiliation': m.affiliation,
+                    'jid': m.jid,
+                    'nick': m.nick
+                });
+            });
+            _converse.connection._dataRecv(utils.createRequest(owner_list_stanza));
+        }
     };
 
     utils.receiveOwnMUCPresence = function (_converse, muc_jid, nick) {

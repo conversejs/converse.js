@@ -1112,10 +1112,11 @@ converse.plugins.add('converse-muc', {
                         .c("item", {'affiliation': affiliation});
                 const result = await _converse.api.sendIQ(iq, null, false);
                 if (result.getAttribute('type') === 'error') {
-                    const err_msg = `Not allowed to fetch ${affiliation} list for MUC ${this.get('jid')}`;
+                    const err_msg = `Error: not allowed to fetch ${affiliation} list for MUC ${this.get('jid')}`;
+                    const err = new Error(err_msg);
                     _converse.log(err_msg, Strophe.LogLevel.WARN);
                     _converse.log(result, Strophe.LogLevel.WARN);
-                    return null;
+                    return err;
                 }
                 return u.parseMemberListIQ(result).filter(p => p);
             },
@@ -1136,8 +1137,8 @@ converse.plugins.add('converse-muc', {
             async updateMemberLists (members) {
                 const all_affiliations = ['member', 'admin', 'owner'];
                 const aff_lists = await Promise.all(all_affiliations.map(a => this.getAffiliationList(a)));
-                const known_affiliations = all_affiliations.filter(a => aff_lists[all_affiliations.indexOf(a)] !== null);
-                const old_members = aff_lists.reduce((acc, val) => (val !== null ? [...val, ...acc] : acc), []);
+                const known_affiliations = all_affiliations.filter(a => !u.isErrorObject(aff_lists[all_affiliations.indexOf(a)]));
+                const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc: [...val, ...acc]), []);
                 await this.setAffiliations(u.computeAffiliationsDelta(true, false, members, old_members));
                 if (_converse.muc_fetch_members) {
                     return this.occupants.fetchMembers();
@@ -1911,8 +1912,8 @@ converse.plugins.add('converse-muc', {
             async fetchMembers () {
                 const all_affiliations = ['member', 'admin', 'owner'];
                 const aff_lists = await Promise.all(all_affiliations.map(a => this.chatroom.getAffiliationList(a)));
-                const new_members = aff_lists.reduce((acc, val) => (val !== null ? [...val, ...acc] : acc), []);
-                const known_affiliations = all_affiliations.filter(a => aff_lists[all_affiliations.indexOf(a)] !== null);
+                const new_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc : [...val, ...acc]), []);
+                const known_affiliations = all_affiliations.filter(a => !u.isErrorObject(aff_lists[all_affiliations.indexOf(a)]));
                 const new_jids = new_members.map(m => m.jid).filter(m => m !== undefined);
                 const new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => m !== undefined);
                 const removed_members = this.filter(m => {

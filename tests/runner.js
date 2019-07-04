@@ -55,6 +55,7 @@ var specs = [
     "spec/user-details-modal",
     "spec/messages",
     "spec/muc",
+    "spec/modtools",
     "spec/room_registration",
     "spec/autocomplete",
     "spec/minchats",

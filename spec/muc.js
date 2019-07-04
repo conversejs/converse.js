@@ -1613,7 +1613,13 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit'
-                await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', [], ['juliet']);
+
+                const members = [{
+                    'nick': 'juliet',
+                    'jid': 'juliet@capulet.lit',
+                    'affiliation': 'member'
+                }];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
                 const view = _converse.chatboxviews.get(muc_jid);
                 await u.waitUntil(() => view.model.occupants.length === 2);
 
@@ -2975,7 +2981,7 @@
                 view.onKeyDown(enter);
 
                 let info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_messages.length).toBe(19);
+                expect(info_messages.length).toBe(20);
                 expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
@@ -2985,6 +2991,7 @@
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
                 expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
                 expect(info_messages.pop().textContent).toBe('/mute: Remove user\'s ability to post messages');
+                expect(info_messages.pop().textContent).toBe('/modtools: Opens up the moderator tools GUI');
                 expect(info_messages.pop().textContent).toBe('/member: Grant membership to a user');
                 expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
                 expect(info_messages.pop().textContent).toBe('/kick: Kick user from groupchat');
@@ -3003,11 +3010,11 @@
                 textarea.value = '/help';
                 view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);
-                expect(info_messages.length).toBe(17);
+                expect(info_messages.length).toBe(18);
                 let commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
                 expect(commands).toEqual([
                     "/admin", "/ban", "/clear", "/deop", "/destroy",
-                    "/help", "/kick", "/me", "/member", "/mute", "/nick",
+                    "/help", "/kick", "/me", "/member", "/modtools", "/mute", "/nick",
                     "/op", "/register", "/revoke", "/subject", "/topic", "/voice"
                 ]);
                 occupant.set('affiliation', 'member');
@@ -3048,7 +3055,7 @@
                 view.onKeyDown(enter);
 
                 const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_messages.length).toBe(17);
+                expect(info_messages.length).toBe(18);
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
                 expect(info_messages.pop().textContent).toBe('/revoke: Revoke the user\'s current affiliation');
@@ -3056,6 +3063,7 @@
                 expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
                 expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
+                expect(info_messages.pop().textContent).toBe('/modtools: Opens up the moderator tools GUI');
                 expect(info_messages.pop().textContent).toBe('/member: Grant membership to a user');
                 expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
                 expect(info_messages.pop().textContent).toBe('/kick: Kick user from groupchat');
@@ -5366,5 +5374,3 @@
         });
     });
 }));
-
-

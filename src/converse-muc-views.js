@@ -871,7 +871,8 @@ converse.plugins.add('converse-muc-views', {
                     return;
                 }
                 const nick_or_jid = references.pop().value;
-                if (!args.split(nick_or_jid, 2)[1].startsWith(' ')) {
+                const reason = args.split(nick_or_jid, 2)[1];
+                if (reason && !reason.startsWith(' ')) {
                     this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
                     return;
                 }

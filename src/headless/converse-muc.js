@@ -616,7 +616,7 @@ converse.plugins.add('converse-muc', {
                 if (!longest_match) {
                     return null;
                 }
-                if ((mention[longest_match.length] || '').match(/[A-Za-zäëïöüâêîôûáéíóúàèìòùÄËÏÖÜÂÊÎÔÛÁÉÍÓÚÀÈÌÒÙ]/i)) {
+                if ((mention[longest_match.length] || '').match(/[A-Za-zäëïöüâêîôûáéíóúàèìòùÄËÏÖÜÂÊÎÔÛÁÉÍÓÚÀÈÌÒÙ0-9]/i)) {
                     // avoid false positives, i.e. mentions that have
                     // further alphabetical characters than our longest
                     // match.

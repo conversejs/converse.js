@@ -179,7 +179,6 @@
                     `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
                         `<header sid="123456789">`+
                             `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
-                            `<key rid="123456789">YzFwaDNSNzNYNw==</key>`+
                             `<key rid="555">YzFwaDNSNzNYNw==</key>`+
                             `<iv>${sent_stanza.nodeTree.querySelector("iv").textContent}</iv>`+
                         `</header>`+
@@ -370,7 +369,6 @@
                     `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
                         `<header sid="123456789">`+
                             `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
-                            `<key rid="123456789">YzFwaDNSNzNYNw==</key>`+
                             `<key rid="4e30f35051b7b8b42abe083742187228">YzFwaDNSNzNYNw==</key>`+
                             `<iv>${sent_stanza.nodeTree.querySelector("iv").textContent}</iv>`+
                         `</header>`+

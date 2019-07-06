@@ -1105,6 +1105,13 @@ with.
         });
 
 
+omemo_default
+-------------
+
+* Default:  ``false``
+
+Use OMEMO encryption by default when the chat supports it.
+
 ping_interval
 -------------
 

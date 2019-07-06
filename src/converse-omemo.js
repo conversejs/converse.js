@@ -84,6 +84,9 @@ converse.plugins.add('converse-omemo', {
 
             initialize () {
                 const { _converse } = this.__super__;
+                _converse.api.settings.update({
+                    'omemo_default': false,
+                });
                 this.debouncedRender = _.debounce(this.render, 50);
                 this.devicelist = _converse.devicelists.get(_converse.bare_jid);
                 this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
@@ -1227,6 +1230,9 @@ converse.plugins.add('converse-omemo', {
                 supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
             }
             chatbox.set('omemo_supported', supported);
+            if (supported && _converse.omemo_default) {
+                chatbox.set('omemo_active', true);
+            }
         }
 
         _converse.api.waitUntil('chatBoxesInitialized').then(() =>

@@ -550,6 +550,12 @@ converse.plugins.add('converse-roster', {
              * @param { Object } attributes - Any additional attributes to be stored on the user's model.
              */
             async addContactToRoster (jid, name, groups, attributes) {
+
+                // set status-display of self-contact. Does not change xmpp-status
+                if (this.isSelf(jid)) {
+                    attributes = { chat_status: 'online' };
+                }
+
                 groups = groups || [];
                 try {
                     await this.sendContactAddIQ(jid, name, groups);
@@ -559,12 +565,12 @@ converse.plugins.add('converse-roster', {
                     return e;
                 }
                 return this.create(_.assignIn({
-                    'ask': undefined,
+                    'ask': (this.isSelf(jid) ? 'none' : undefined),
                     'nickname': name,
                     groups,
                     jid,
                     'requesting': false,
-                    'subscription': 'none'
+                    'subscription': (this.isSelf(jid) ? 'both' : 'none')
                 }, attributes), {'sort': false});
             },
 
@@ -691,10 +697,12 @@ converse.plugins.add('converse-roster', {
                  * received in the IQ from the server.
                  */
                 const jid = item.getAttribute('jid');
-                if (this.isSelf(jid)) { return; }
+                let subscription = item.getAttribute("subscription");
+                if (this.isSelf(jid) && subscription !== 'remove') { 
+                    subscription = 'both'; 
+                } 
 
                 const contact = this.get(jid),
-                    subscription = item.getAttribute("subscription"),
                     ask = item.getAttribute("ask"),
                     groups = _.map(item.getElementsByTagName('group'), Strophe.getText);
 

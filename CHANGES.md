@@ -1,6 +1,8 @@
 # Changelog
 
 ## 5.0.0 (Unreleased)
+- automatically subscribe self-contact and show correct xmpp-status
+- prevent duplicate messages in chat-history (mainly for self-contact)
 - BOSH support has been moved to a plugin.
 - Support for XEP-0410 to check whether we're still present in a room
 - Initial support for the [CredentialsContainer](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer) web API

@@ -354,10 +354,20 @@ converse.plugins.add('converse-rosterview', {
                     u.hideElement(this.el);
                     return this;
                 }
-                const ask = this.model.get('ask'),
-                    show = this.model.presence.get('show'),
-                    requesting  = this.model.get('requesting'),
-                    subscription = this.model.get('subscription');
+
+                const contact_jid = this.model.get('jid'),
+                    requesting = this.model.get('requesting'),
+                    subscription = u.isSameBareJID(contact_jid, _converse.connection.jid) ? 'both' : this.model.get('subscription'),
+                    ask = u.isSameBareJID(contact_jid, _converse.connection.jid) ? 'none' : this.model.get('ask');
+                let show = this.model.presence.get('show');
+                
+                // set status of self-contact to current xmpp-status
+                // without this the self-contact will always be offline after login
+                if (u.isSameBareJID(contact_jid, _converse.connection.jid) && show === 'offline') {
+                    const status_self = _converse.xmppstatus.get('status');
+                    this.model.presence.set('show', status_self);
+                    show = status_self;
+                }
 
                 const classes_to_remove = [
                     'current-xmpp-contact',

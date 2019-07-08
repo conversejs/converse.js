@@ -257,7 +257,21 @@ converse.plugins.add('converse-profile', {
             },
 
             afterRender () {
+                this.updateStatusDisplayForSelfContact();
                 this.renderAvatar();
+            },
+
+            updateStatusDisplayForSelfContact () {
+                const self = this;
+                // changing the status-display of the self-contact after the user changed the xmpp-status
+                const contacts = _converse.roster.models;
+                _.each(contacts, function(contact) {
+                    const contact_jid = contact.get('id');
+                    if (u.isSameBareJID(contact_jid, _converse.connection.jid)) {
+                        const chat_status = self.model.get('status') || 'offline';
+                        contact.presence.set('show', chat_status);
+                    }
+                });
             },
 
             showProfileModal (ev) {

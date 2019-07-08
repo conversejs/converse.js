@@ -415,7 +415,7 @@ converse.plugins.add('converse-muc', {
 
             async onConnectionStatusChanged () {
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-                    this.occupants.fetchMembers();
+                    await this.occupants.fetchMembers();
                     // It's possible to fetch messages before entering a MUC,
                     // but we don't support this use-case currently. By
                     // fetching messages after members we can immediately

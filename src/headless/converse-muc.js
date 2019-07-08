@@ -1836,7 +1836,11 @@ converse.plugins.add('converse-muc', {
             },
 
             isMember () {
-                return _.includes(['admin', 'owner', 'member'], this.get('affiliation'));
+                return ['admin', 'owner', 'member'].includes(this.get('affiliation'));
+            },
+
+            isModerator () {
+                return ['admin', 'owner'].includes(this.get('affiliation')) || this.get('role') === 'moderator';
             },
 
             isSelf () {

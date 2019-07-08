@@ -1296,7 +1296,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onOccupantRemoved (occupant) {
-                if (occupant.get('show') === 'online') {
+                if (this.model.get('connection_status') ===  converse.ROOMSTATUS.ENTERED &&
+                        occupant.get('show') === 'online') {
                     this.showLeaveNotification(occupant);
                 }
             },

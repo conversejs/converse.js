@@ -2381,7 +2381,7 @@
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
             expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author moderator');
+            expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat moderator owner');
 
             let presence = $pres({
                     to:'romeo@montague.lit/orchard',
@@ -2408,7 +2408,7 @@
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('member');
             expect(view.model.messages.last().occupant.get('role')).toBe('participant');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author participant');
+            expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat participant member');
 
             presence = $pres({
                     to:'romeo@montague.lit/orchard',
@@ -2429,7 +2429,7 @@
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
             expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
-            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author moderator');
+            expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat moderator owner');
             done();
         }));
 

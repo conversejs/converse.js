@@ -335,8 +335,12 @@ converse.plugins.add('converse-message-view', {
 
             getExtraMessageClasses () {
                 let extra_classes = this.model.get('is_delayed') && 'delayed' || '';
-                if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
-                    if (this.model.collection.chatbox.isUserMentioned(this.model)) {
+
+                if (this.model.get('type') === 'groupchat') {
+                    if (this.model.occupant) {
+                        extra_classes += ` ${this.model.occupant.get('role') || ''} ${this.model.occupant.get('affiliation') || ''}`;
+                    }
+                    if (this.model.get('sender') === 'them' && this.model.collection.chatbox.isUserMentioned(this.model)) {
                         // Add special class to mark groupchat messages
                         // in which we are mentioned.
                         extra_classes += ' mentioned';

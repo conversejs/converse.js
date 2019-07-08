@@ -1866,13 +1866,13 @@ converse.plugins.add('converse-muc', {
 
             async fetchMembers () {
                 const new_members = await this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']);
-                const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
-                      new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
-                      removed_members = this.filter(m => {
-                          return ['admin', 'member', 'owner'].includes(m.get('affiliation')) &&
-                                !new_nicks.includes(m.get('nick')) &&
-                                !new_jids.includes(m.get('jid'));
-                      });
+                const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m));
+                const new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m));
+                const removed_members = this.filter(m => {
+                        return ['admin', 'member', 'owner'].includes(m.get('affiliation')) &&
+                            !new_nicks.includes(m.get('nick')) &&
+                            !new_jids.includes(m.get('jid'));
+                    });
 
                 removed_members.forEach(occupant => {
                     if (occupant.get('jid') === _converse.bare_jid) { return; }

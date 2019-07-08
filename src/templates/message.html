@@ -1,4 +1,4 @@
-<div class="message chat-msg {{{o.type}}} {[ if (o.is_me_message) { ]} chat-msg--action {[ } ]} {{{o.extra_classes}}}"
+<div class="message chat-msg {{{o.type}}}{[ if (o.is_me_message) { ]} chat-msg--action {[ } ]}{{{o.extra_classes}}}"
         data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}" data-from="{{{o.from}}}" data-encrypted="{{{o.is_encrypted}}}">
     {[ if (o.type !== 'headline' && !o.is_me_message) { ]}
     <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>
@@ -6,7 +6,7 @@
     <div class="chat-msg__content chat-msg__content--{{{o.sender}}} {{{o.is_me_message ? 'chat-msg__content--action' : ''}}}">
         <span class="chat-msg__heading">
             {[ if (o.is_me_message) { ]}<time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>{[ } ]}
-            <span class="chat-msg__author {{{o.is_groupchat_message && o.occupant && o.occupant.get('role') ? o.occupant.get('role') : ''}}}">{[ if (o.is_me_message) { ]}**{[ }; ]}{{{o.username}}}</span>
+            <span class="chat-msg__author">{[ if (o.is_me_message) { ]}**{[ }; ]}{{{o.username}}}</span>
             {[ if (!o.is_me_message) { ]}
                 {[o.roles.forEach(function (role) { ]} <span class="badge badge-secondary">{{{role}}}</span> {[ }); ]}
                 <time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>
@@ -14,7 +14,6 @@
             {[ if (o.is_encrypted) { ]}<span class="fa fa-lock"></span>{[ } ]}
         </span>
         <div class="chat-msg__body chat-msg__body--{{{o.type}}} {{{o.received ? 'chat-msg__body--received' : '' }}} {{{o.is_delayed ? 'chat-msg__body--delayed' : '' }}}">
-
             <div class="chat-msg__message">
                 {[ if (o.is_spoiler) { ]}
                     <div class="chat-msg__spoiler-hint">

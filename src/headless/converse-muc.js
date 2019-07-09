@@ -2094,12 +2094,8 @@ converse.plugins.add('converse-muc', {
                  *     JIDs of the chatroom(s) to create
                  * @param {object} [attrs] attrs The room attributes
                  */
-                create (jids, attrs) {
-                    if (_.isString(attrs)) {
-                        attrs = {'nick': attrs};
-                    } else if (_.isUndefined(attrs)) {
-                        attrs = {};
-                    }
+                create (jids, attrs={}) {
+                    attrs = _.isString(attrs) ? {'nick': attrs} : (attrs || {});
                     if (_.isUndefined(attrs.maximize)) {
                         attrs.maximize = false;
                     }

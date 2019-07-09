@@ -1223,7 +1223,7 @@ _converse.initialize = async function (settings, callback) {
         if (credentials) {
             this.autoLogin(credentials);
         } else if (this.auto_login) {
-            if (this.credentials_url) {
+            if (this.credentials_url && _converse.authentication === 'login') {
                 const data = await getLoginCredentials();
                 this.autoLogin(data);
             } else if (!this.jid) {
@@ -1235,7 +1235,8 @@ _converse.initialize = async function (settings, callback) {
                     "(via credentials_url)."
                 );
             } else {
-                this.autoLogin(); // Could be ANONYMOUS or EXTERNAL
+                // Could be ANONYMOUS or EXTERNAL or manual passing in of JID and password
+                this.autoLogin();
             }
         } else if (reconnecting) {
             this.autoLogin();

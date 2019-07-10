@@ -54,41 +54,41 @@
 
                 test_utils.createContacts(_converse, 'current');
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group .group-toggle').length, 300);
-                await test_utils.openAndEnterChatRoom(_converse, 'chillout@montague.lit', 'romeo');
-                let jid = 'chillout@montague.lit';
-                let room = _converse.api.rooms.get(jid);
+                let muc_jid = 'chillout@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                let room = _converse.api.rooms.get(muc_jid);
                 expect(room instanceof Object).toBeTruthy();
 
-                let chatroomview = _converse.chatboxviews.get(jid);
+                let chatroomview = _converse.chatboxviews.get(muc_jid);
                 expect(chatroomview.is_chatroom).toBeTruthy();
 
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
                 chatroomview.close();
 
                 // Test with mixed case
-                await test_utils.openAndEnterChatRoom(_converse, 'Leisure@montague.lit', 'romeo');
-                jid = 'Leisure@montague.lit';
-                room = _converse.api.rooms.get(jid);
+                muc_jid = 'Leisure@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                room = _converse.api.rooms.get(muc_jid);
                 expect(room instanceof Object).toBeTruthy();
-                chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
+                chatroomview = _converse.chatboxviews.get(muc_jid.toLowerCase());
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
 
-                jid = 'leisure@montague.lit';
-                room = _converse.api.rooms.get(jid);
+                muc_jid = 'leisure@montague.lit';
+                room = _converse.api.rooms.get(muc_jid);
                 expect(room instanceof Object).toBeTruthy();
-                chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
+                chatroomview = _converse.chatboxviews.get(muc_jid.toLowerCase());
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
 
-                jid = 'leiSure@montague.lit';
-                room = _converse.api.rooms.get(jid);
+                muc_jid = 'leiSure@montague.lit';
+                room = _converse.api.rooms.get(muc_jid);
                 expect(room instanceof Object).toBeTruthy();
-                chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
+                chatroomview = _converse.chatboxviews.get(muc_jid.toLowerCase());
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
                 chatroomview.close();
 
                 // Non-existing room
-                jid = 'chillout2@montague.lit';
-                room = _converse.api.rooms.get(jid);
+                muc_jid = 'chillout2@montague.lit';
+                room = _converse.api.rooms.get(muc_jid);
                 expect(typeof room === 'undefined').toBeTruthy();
                 done();
             }));
@@ -331,7 +331,7 @@
                  *      </error>
                  *  </iq>
                  */
-                var result_stanza = $iq({
+                const result_stanza = $iq({
                     'type': 'error',
                     'id': stanza.getAttribute('id'),
                     'from': view.model.get('jid'),
@@ -339,10 +339,13 @@
                 }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
                 _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
+
                 const input = await test_utils.waitUntil(() => view.el.querySelector('input[name="nick"]'));
+                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.NICKNAME_REQUIRED);
                 input.value = 'nicky';
                 view.el.querySelector('input[type=submit]').click();
                 expect(view.model.join).toHaveBeenCalled();
+                await test_utils.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
 
                 // The user has just entered the room (because join was called)
                 // and receives their own presence from the server.
@@ -369,10 +372,11 @@
                 }).up()
                 .c('status').attrs({code:'110'}).up()
                 .c('status').attrs({code:'201'}).nodeTree;
-
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 2);
+                await test_utils.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED);
+                await test_utils.returnMemberLists(_converse, muc_jid);
+                // await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 2);
 
                 const info_texts = Array.from(view.el.querySelectorAll('.chat-content .chat-info')).map(e => e.textContent);
                 expect(info_texts[0]).toBe('A new groupchat has been created');
@@ -389,6 +393,7 @@
                     `<iq id="${iq.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#owner"><x type="submit" xmlns="jabber:x:data"/>`+
                     `</query></iq>`);
+
                 done();
             }));
         });
@@ -1302,6 +1307,7 @@
                     .c('status', {code: '110'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.model.saveAffiliationAndRole).toHaveBeenCalled();
+                debugger;
                 expect(u.isVisible(view.el.querySelector('.toggle-chatbox-button'))).toBeTruthy();
                 await test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.configure-chatroom-button')))
                 expect(u.isVisible(view.el.querySelector('.configure-chatroom-button'))).toBeTruthy();
@@ -4719,7 +4725,59 @@
             }));
         });
 
-        describe("A Chat Status Notification", function () {
+        describe("A XEP-0085 Chat Status Notification", function () {
+
+            it("is is not sent out to a MUC if the user is a visitor in a moderated room",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                spyOn(_converse.ChatRoom.prototype, 'sendChatState').and.callThrough();
+
+                const muc_jid = 'lounge@montague.lit';
+                const features = [
+                    'http://jabber.org/protocol/muc',
+                    'jabber:iq:register',
+                    'muc_passwordprotected',
+                    'muc_hidden',
+                    'muc_temporary',
+                    'muc_membersonly',
+                    'muc_moderated',
+                    'muc_anonymous'
+                ]
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+
+                const view = _converse.api.chatviews.get(muc_jid);
+                view.model.setChatState(_converse.ACTIVE);
+
+                expect(view.model.sendChatState).toHaveBeenCalled();
+                const last_stanza = _converse.connection.sent_stanzas.pop();
+                expect(Strophe.serialize(last_stanza)).toBe(
+                    `<message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">`+
+                        `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<no-store xmlns="urn:xmpp:hints"/>`+
+                        `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                    `</message>`);
+
+                // Romeo loses his voice
+                const presence = $pres({
+                        to: 'romeo@montague.lit/orchard',
+                        from: `${muc_jid}/some1`
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {'affiliation': 'none', 'role': 'visitor'}).up()
+                    .c('status', {code: '110'});
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
+                expect(occupant.get('role')).toBe('visitor');
+
+                spyOn(_converse.connection, 'send');
+                view.model.setChatState(_converse.INACTIVE);
+                expect(view.model.sendChatState.calls.count()).toBe(2);
+                expect(_converse.connection.send).not.toHaveBeenCalled();
+                done();
+            }));
+
 
             describe("A composing notification", function () {
 

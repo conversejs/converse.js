@@ -821,7 +821,7 @@
                         await test_utils.openChatBoxFor(_converse, contact_jid);
                         const view = _converse.chatboxviews.get(contact_jid);
                         spyOn(_converse.connection, 'send');
-                        spyOn(view, 'setChatState').and.callThrough();
+                        spyOn(view.model, 'setChatState').and.callThrough();
                         expect(view.model.get('chat_state')).toBe('active');
                         view.onKeyDown({
                             target: view.el.querySelector('textarea.chat-textarea'),
@@ -851,7 +851,7 @@
                             target: view.el.querySelector('textarea.chat-textarea'),
                             keyCode: 1
                         });
-                        expect(view.setChatState).toHaveBeenCalled();
+                        expect(view.model.setChatState).toHaveBeenCalled();
                         expect(view.model.get('chat_state')).toBe('composing');
 
                         view.onKeyDown({

@@ -354,7 +354,6 @@ converse.plugins.add('converse-muc', {
                     // generally unread messages (which *includes* mentions!).
                     'num_unread_general': 0,
 
-                    'affiliation': null,
                     'bookmarked': false,
                     'chat_state': undefined,
                     'connection_status': converse.ROOMSTATUS.DISCONNECTED,
@@ -377,10 +376,10 @@ converse.plugins.add('converse-muc', {
                 }
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
 
+                this.initFeatures(); // sendChatState depends on this.features
                 this.on('change:chat_state', this.sendChatState, this);
                 this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
-                this.initFeatures();
                 this.initOccupants();
                 this.registerHandlers();
                 this.initMessages();
@@ -707,12 +706,16 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Sends a message with the status of the user in this chat session
-             * as taken from the 'chat_state' attribute of the chat box.
-             * See XEP-0085 Chat State Notifications.
+             * Sends a message with the current XEP-0085 chat state of the user
+             * as taken from the `chat_state` attribute of the {@link _converse.ChatRoom}.
+             * @private
+             * @method _converse.ChatRoom#sendChatState
              */
             sendChatState () {
-                if (!_converse.send_chat_state_notifications || this.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
+                if (!_converse.send_chat_state_notifications ||
+                        !this.get('chat_state') ||
+                        this.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
+                        this.features.get('moderated') && this.getOwnOccupant().get('role') === 'visitor') {
                     return;
                 }
                 const chat_state = this.get('chat_state');
@@ -970,8 +973,30 @@ converse.plugins.add('converse-muc', {
                 return _converse.api.sendIQ(iq).then(callback).catch(errback);
             },
 
+
             /**
-             * Parse the presence stanza for the current user's affiliation.
+             * Get the {@link _converse.ChatRoomOccupant} instance which
+             * represents the current user.
+             * @private
+             * @method _converse.ChatRoom#getOwnOccupant
+             * @returns { _converse.ChatRoomOccupant }
+             */
+            getOwnOccupant () {
+                const occupant = this.occupants.findWhere({'jid': _converse.bare_jid});
+                if (occupant) {
+                    return occupant;
+                }
+                const attributes = {
+                    'jid': _converse.bare_jid,
+                    'resource': Strophe.getResourceFromJid(_converse.resource)
+                };
+                return this.occupants.create(attributes);
+            },
+
+            /**
+             * Parse the presence stanza for the current user's affiliation and
+             * role and save them on the relevant {@link _converse.ChatRoomOccupant}
+             * instance.
              * @private
              * @method _converse.ChatRoom#saveAffiliationAndRole
              * @param { XMLElement } pres - A <presence> stanza.
@@ -982,11 +1007,15 @@ converse.plugins.add('converse-muc', {
                 if (is_self && !_.isNil(item)) {
                     const affiliation = item.getAttribute('affiliation');
                     const role = item.getAttribute('role');
+                    const changes = {};
                     if (affiliation) {
-                        this.save({'affiliation': affiliation});
+                        changes['affiliation'] = affiliation;
                     }
                     if (role) {
-                        this.save({'role': role});
+                        changes['role'] = role;
+                    }
+                    if (!_.isEmpty(changes)) {
+                        this.getOwnOccupant().save(changes);
                     }
                 }
             },
@@ -1549,7 +1578,6 @@ converse.plugins.add('converse-muc', {
                     return;
                 }
                 const codes = sizzle('status', x).map(s => s.getAttribute('code'));
-
                 codes.forEach(code => {
                     let message;
                     if (code === '110' || (code === '100' && !is_self)) {
@@ -1579,7 +1607,6 @@ converse.plugins.add('converse-muc', {
                         this.save('nick', nick);
                         message = __(_converse.muc.new_nickname_messages[code], nick);
                     }
-
                     if (message) {
                         this.messages.create({'type': 'info', message});
                     }
@@ -1689,14 +1716,15 @@ converse.plugins.add('converse-muc', {
                 if (stanza.getAttribute('type') === 'error') {
                     return this.onErrorPresence(stanza);
                 }
+                this.createInfoMessages(stanza);
                 if (stanza.querySelector("status[code='110']")) {
                     this.onOwnPresence(stanza);
-                }
-                this.createInfoMessages(stanza);
-                this.updateOccupantsOnPresence(stanza);
-
-                if (this.get('role') !== 'none' && this.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
-                    this.save('connection_status', converse.ROOMSTATUS.CONNECTED);
+                    if (this.getOwnOccupant().get('role') !== 'none' &&
+                            this.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
+                        this.save('connection_status', converse.ROOMSTATUS.CONNECTED);
+                    }
+                } else {
+                    this.updateOccupantsOnPresence(stanza);
                 }
             },
 
@@ -1716,6 +1744,10 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } pres - The stanza
              */
             onOwnPresence (stanza) {
+                if (stanza.getAttribute('type') !== 'unavailable') {
+                    this.save('connection_status', converse.ROOMSTATUS.ENTERED);
+                }
+                this.updateOccupantsOnPresence(stanza);
                 this.saveAffiliationAndRole(stanza);
 
                 if (stanza.getAttribute('type') === 'unavailable') {
@@ -1746,13 +1778,12 @@ converse.plugins.add('converse-muc', {
                         // (in which case Prosody doesn't send a 201 status),
                         // otherwise the features would have been fetched in
                         // the "initialize" method already.
-                        if (this.get('affiliation') === 'owner' && this.get('auto_configure')) {
+                        if (this.getOwnOccupant().get('affiliation') === 'owner' && this.get('auto_configure')) {
                             this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
                         } else {
                             this.getRoomFeatures();
                         }
                     }
-                    this.save('connection_status', converse.ROOMSTATUS.ENTERED);
                 }
             },
 

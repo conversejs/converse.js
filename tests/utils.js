@@ -121,17 +121,17 @@
     };
 
     utils.getRoomFeatures = async function (_converse, room, server, features=[]) {
-        const room_jid = `${room}@${server}`.toLowerCase();
+        const muc_jid = `${room}@${server}`.toLowerCase();
         const stanzas = _converse.connection.IQ_stanzas;
         const index = stanzas.length-1;
         const stanza = await utils.waitUntil(() => _.filter(
             stanzas.slice(index),
             iq => iq.querySelector(
-                `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
             )).pop());
 
         const features_stanza = $iq({
-            'from': room_jid,
+            'from': muc_jid,
             'id': stanza.getAttribute('id'),
             'to': 'romeo@montague.lit/desktop',
             'type': 'result'
@@ -164,24 +164,18 @@
         _converse.connection._dataRecv(utils.createRequest(features_stanza));
     };
 
-    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
-        const room = Strophe.getNodeFromJid(muc_jid);
-        const server = Strophe.getDomainFromJid(muc_jid);
-        const room_jid = `${room}@${server}`.toLowerCase();
-        const stanzas = _converse.connection.IQ_stanzas;
-        await _converse.api.rooms.open(room_jid);
-        await utils.getRoomFeatures(_converse, room, server, features);
 
+    utils.waitForReservedNick = async function (_converse, muc_jid, nick) {
+        const view = _converse.chatboxviews.get(muc_jid);
+        const stanzas = _converse.connection.IQ_stanzas;
         const iq = await utils.waitUntil(() => _.filter(
             stanzas,
-            s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s).length
+            s => sizzle(`iq[to="${muc_jid.toLowerCase()}"] query[node="x-roomuser-item"]`, s).length
         ).pop());
-
         // We remove the stanza, otherwise we might get stale stanzas returned in our filter above.
         stanzas.splice(stanzas.indexOf(iq), 1)
 
         // The XMPP server returns the reserved nick for this user.
-        const view = _converse.chatboxviews.get(room_jid);
         const IQ_id = iq.getAttribute('id');
         const stanza = $iq({
             'type': 'result',
@@ -191,29 +185,15 @@
         }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
             .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
         _converse.connection._dataRecv(utils.createRequest(stanza));
-        await utils.waitUntil(() => view.model.get('nick'));
+        return utils.waitUntil(() => view.model.get('nick'));
+    };
 
-        // The user has just entered the room (because join was called)
-        // and receives their own presence from the server.
-        // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
-        const presence = $pres({
-                to: _converse.connection.jid,
-                from: `${room_jid}/${nick}`,
-                id: u.getUniqueId()
-        }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-            .c('item').attrs({
-                affiliation: 'owner',
-                jid: _converse.bare_jid,
-                role: 'moderator'
-            }).up()
-            .c('status').attrs({code:'110'});
-        _converse.connection._dataRecv(utils.createRequest(presence));
-        await utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
 
-        // Now we return the (empty) member lists
+    utils.returnMemberLists = async function (_converse, muc_jid, members=[]) {
+        const stanzas = _converse.connection.IQ_stanzas;
         const member_IQ = await utils.waitUntil(() => _.filter(
             stanzas,
-            s => sizzle(`iq[to="${room_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
+            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
         ).pop());
         const member_list_stanza = $iq({
                 'from': 'coven@chat.shakespeare.lit',
@@ -233,7 +213,7 @@
 
         const admin_IQ = await utils.waitUntil(() => _.filter(
             stanzas,
-            s => sizzle(`iq[to="${room_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
+            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
         ).pop());
         const admin_list_stanza = $iq({
                 'from': 'coven@chat.shakespeare.lit',
@@ -245,7 +225,7 @@
 
         const owner_IQ = await utils.waitUntil(() => _.filter(
             stanzas,
-            s => sizzle(`iq[to="${room_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
+            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
         ).pop());
         const owner_list_stanza = $iq({
                 'from': 'coven@chat.shakespeare.lit',
@@ -254,6 +234,36 @@
                 'type': 'result'
             }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
         _converse.connection._dataRecv(utils.createRequest(owner_list_stanza));
+    };
+
+
+    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
+        muc_jid = muc_jid.toLowerCase();
+        const room = Strophe.getNodeFromJid(muc_jid);
+        const server = Strophe.getDomainFromJid(muc_jid);
+        await _converse.api.rooms.open(muc_jid);
+        await utils.getRoomFeatures(_converse, room, server, features);
+        await utils.waitForReservedNick(_converse, muc_jid, nick);
+
+        // The user has just entered the room (because join was called)
+        // and receives their own presence from the server.
+        // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
+        const presence = $pres({
+                to: _converse.connection.jid,
+                from: `${muc_jid}/${nick}`,
+                id: u.getUniqueId()
+        }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+            .c('item').attrs({
+                affiliation: 'owner',
+                jid: _converse.bare_jid,
+                role: 'moderator'
+            }).up()
+            .c('status').attrs({code:'110'});
+        _converse.connection._dataRecv(utils.createRequest(presence));
+
+        const view = _converse.chatboxviews.get(muc_jid);
+        await utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        await utils.returnMemberLists(_converse, muc_jid, members);
     };
 
     utils.clearBrowserStorage = function () {

@@ -532,7 +532,7 @@ converse.plugins.add('converse-muc-views', {
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
-                if (this.model.features.get('moderated') && this.model.get('role') === 'visitor') {
+                if (this.model.features.get('moderated') && this.model.getOwnOccupant().get('role') === 'visitor') {
                     container.innerHTML = tpl_chatroom_bottom_panel({'__': __});
                 } else {
                     if (!container.firstElementChild || !container.querySelector('.sendXMPPMessage')) {
@@ -708,8 +708,6 @@ converse.plugins.add('converse-muc-views', {
                     this.showSpinner();
                 } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
                     this.hideSpinner();
-                    this.setChatState(_converse.ACTIVE);
-                    this.scrollDown();
                     if (_converse.auto_focus) {
                         this.focus();
                     }
@@ -725,7 +723,7 @@ converse.plugins.add('converse-muc-views', {
                     _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
                     {
                       'label_hide_occupants': __('Hide the list of participants'),
-                      'show_occupants_toggle': this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
+                      'show_occupants_toggle': _converse.visible_toolbar_buttons.toggle_occupants
                     }
                 );
             },
@@ -787,24 +785,6 @@ converse.plugins.add('converse-muc-views', {
                  * the chat textarea input.
                  */
                 this.insertIntoTextArea(ev.target.textContent);
-            },
-
-            handleChatStateNotification (message) {
-                /* Override the method on the ChatBoxView base class to
-                 * ignore <gone/> notifications in groupchats.
-                 *
-                 * As laid out in the business rules in XEP-0085
-                 * https://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
-                 */
-                if (message.get('fullname') === this.model.get('nick')) {
-                    // Don't know about other servers, but OpenFire sends
-                    // back to you your own chat state notifications.
-                    // We ignore them here...
-                    return;
-                }
-                if (message.get('chat_state') !== _converse.GONE) {
-                    _converse.ChatBoxView.prototype.handleChatStateNotification.apply(this, arguments);
-                }
             },
 
             verifyRoles (roles, occupant, show_error=true) {
@@ -1462,7 +1442,8 @@ converse.plugins.add('converse-muc-views', {
                     this.renderNicknameForm();
                 } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                     this.renderPasswordForm();
-                } else {
+                } else if (this.model.get('connection_status') == converse.ROOMSTATUS.ENTERED) {
+                    this.hideChatRoomContents();
                     u.showElement(this.el.querySelector('.chat-area'));
                     u.showElement(this.el.querySelector('.occupants'));
                     this.scrollDown();
@@ -1726,10 +1707,13 @@ converse.plugins.add('converse-muc-views', {
             async initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
+                this.model.on(
+                    'change:affiliation',
+                    o => (o.get('jid') === _converse.bare_jid) && this.renderInviteWidget()
+                );
                 this.chatroomview = this.model.chatroomview;
                 this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
                 this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
-                this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
                 this.chatroomview.model.on('change:hidden_occupants', this.setVisibility, this);
                 this.render();
                 await this.model.fetched;
@@ -1843,7 +1827,7 @@ converse.plugins.add('converse-muc-views', {
             shouldInviteWidgetBeShown () {
                 return _converse.allow_muc_invitations &&
                     (this.chatroomview.model.features.get('open') ||
-                        this.chatroomview.model.get('affiliation') === "owner"
+                        this.chatroomview.model.getOwnOccupant().get('affiliation') === "owner"
                     );
             },
 

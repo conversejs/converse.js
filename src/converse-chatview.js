@@ -877,39 +877,6 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            /**
-             * Mutator for setting the chat state of this chat session.
-             * Handles clearing of any chat state notification timeouts and
-             * setting new ones if necessary.
-             * Timeouts are set when the  state being set is COMPOSING or PAUSED.
-             * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
-             * See XEP-0085 Chat State Notifications.
-             * @private
-             * @method _converse.ChatBoxView#setChatState
-             * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-             */
-            setChatState (state, options) {
-                if (!_.isUndefined(this.chat_state_timeout)) {
-                    window.clearTimeout(this.chat_state_timeout);
-                    delete this.chat_state_timeout;
-                }
-                if (state === _converse.COMPOSING) {
-                    this.chat_state_timeout = window.setTimeout(
-                        this.setChatState.bind(this),
-                        _converse.TIMEOUTS.PAUSED,
-                        _converse.PAUSED
-                    );
-                } else if (state === _converse.PAUSED) {
-                    this.chat_state_timeout = window.setTimeout(
-                        this.setChatState.bind(this),
-                        _converse.TIMEOUTS.INACTIVE,
-                        _converse.INACTIVE
-                    );
-                }
-                this.model.set('chat_state', state, options);
-                return this;
-            },
-
             async onFormSubmitted (ev) {
                 ev.preventDefault();
                 const textarea = this.el.querySelector('.chat-textarea');
@@ -955,7 +922,7 @@ converse.plugins.add('converse-chatview', {
                 textarea.focus();
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.
-                this.setChatState(_converse.ACTIVE, {'silent': true});
+                this.model.setChatState(_converse.ACTIVE, {'silent': true});
             },
 
             updateCharCounter (chars) {
@@ -1038,7 +1005,7 @@ converse.plugins.add('converse-chatview', {
                 if (this.model.get('chat_state') !== _converse.COMPOSING) {
                     // Set chat state to composing if keyCode is not a forward-slash
                     // (which would imply an internal command and not a message).
-                    this.setChatState(_converse.COMPOSING);
+                    this.model.setChatState(_converse.COMPOSING);
                 }
             },
 
@@ -1283,7 +1250,7 @@ converse.plugins.add('converse-chatview', {
                 if (_converse.connection.connected) {
                     // Immediately sending the chat state, because the
                     // model is going to be destroyed afterwards.
-                    this.setChatState(_converse.INACTIVE);
+                    this.model.setChatState(_converse.INACTIVE);
                     this.model.sendChatState();
                 }
                 this.model.close();
@@ -1336,7 +1303,7 @@ converse.plugins.add('converse-chatview', {
 
             afterShown () {
                 this.model.clearUnreadMsgCounter();
-                this.setChatState(_converse.ACTIVE);
+                this.model.setChatState(_converse.ACTIVE);
                 this.scrollDown();
                 if (_converse.auto_focus) {
                     this.focus();
@@ -1425,13 +1392,13 @@ converse.plugins.add('converse-chatview', {
             onWindowStateChanged (state) {
                 if (state === 'visible') {
                     if (!this.model.isHidden()) {
-                        this.setChatState(_converse.ACTIVE);
+                        this.model.setChatState(_converse.ACTIVE);
                         if (this.model.get('num_unread', 0)) {
                             this.model.clearUnreadMsgCounter();
                         }
                     }
                 } else if (state === 'hidden') {
-                    this.setChatState(_converse.INACTIVE, {'silent': true});
+                    this.model.setChatState(_converse.INACTIVE, {'silent': true});
                     this.model.sendChatState();
                 }
             }

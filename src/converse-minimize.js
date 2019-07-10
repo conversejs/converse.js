@@ -206,7 +206,7 @@ converse.plugins.add('converse-minimize', {
                 if (!this.model.isScrolledUp()) {
                     this.model.clearUnreadMsgCounter();
                 }
-                this.setChatState(_converse.INACTIVE);
+                this.model.setChatState(_converse.INACTIVE);
                 this.show();
                 /**
                  * Triggered when a previously minimized chat gets maximized
@@ -235,7 +235,7 @@ converse.plugins.add('converse-minimize', {
                 } else {
                     this.model.set({'scroll': this.content.scrollTop});
                 }
-                this.setChatState(_converse.INACTIVE);
+                this.model.setChatState(_converse.INACTIVE);
                 this.hide();
                 /**
                  * Triggered when a previously maximized chat gets Minimized

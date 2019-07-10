@@ -735,7 +735,7 @@ _converse.initialize = async function (settings, callback) {
     this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
 
     /**
-     * Send out a Chat Status Notification (XEP-0352)
+     * Send out a Client State Indication (XEP-0352)
      * @private
      * @method sendCSI
      * @memberOf _converse
@@ -1223,7 +1223,7 @@ _converse.initialize = async function (settings, callback) {
         if (credentials) {
             this.autoLogin(credentials);
         } else if (this.auto_login) {
-            if (this.credentials_url && _converse.authentication === 'login') {
+            if (this.credentials_url && _converse.authentication === _converse.LOGIN) {
                 const data = await getLoginCredentials();
                 this.autoLogin(data);
             } else if (!this.jid) {

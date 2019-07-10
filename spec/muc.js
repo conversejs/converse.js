@@ -1307,7 +1307,6 @@
                     .c('status', {code: '110'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.model.saveAffiliationAndRole).toHaveBeenCalled();
-                debugger;
                 expect(u.isVisible(view.el.querySelector('.toggle-chatbox-button'))).toBeTruthy();
                 await test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.configure-chatroom-button')))
                 expect(u.isVisible(view.el.querySelector('.configure-chatroom-button'))).toBeTruthy();
@@ -1874,11 +1873,11 @@
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 const chat_area = view.el.querySelector('.chat-area');
 
-                expect(view.model.get('affiliation')).toBe('owner');
+                expect(view.model.getOwnAffiliation()).toBe('owner');
                 expect(view.model.features.get('open')).toBe(false);
                 expect(view.el.querySelectorAll('input.invited-contact').length).toBe(1);
 
-                view.model.set('affiliation', 'member');
+                view.model.getOwnOccupant().set('affiliation', 'member');
                 await test_utils.waitUntil(() => view.el.querySelectorAll('input.invited-contact').length === 0);
 
                 view.model.features.set('open', 'true');

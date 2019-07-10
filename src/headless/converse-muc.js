@@ -715,7 +715,7 @@ converse.plugins.add('converse-muc', {
                 if (!_converse.send_chat_state_notifications ||
                         !this.get('chat_state') ||
                         this.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
-                        this.features.get('moderated') && this.getOwnOccupant().get('role') === 'visitor') {
+                        this.features.get('moderated') && this.getOwnRole() === 'visitor') {
                     return;
                 }
                 const chat_state = this.get('chat_state');
@@ -973,6 +973,25 @@ converse.plugins.add('converse-muc', {
                 return _converse.api.sendIQ(iq).then(callback).catch(errback);
             },
 
+            /**
+             * Returns the `role` which the current user has in this MUC
+             * @private
+             * @method _converse.ChatRoom#getOwnRole
+             * @returns { ('none'|'visitor'|'participant'|'moderator') }
+             */
+            getOwnRole () {
+                return _.get(this.getOwnOccupant(), 'attributes.role');
+            },
+
+            /**
+             * Returns the `affiliation` which the current user has in this MUC
+             * @private
+             * @method _converse.ChatRoom#getOwnAffiliation
+             * @returns { ('none'|'outcast'|'member'|'admin'|'owner') }
+             */
+            getOwnAffiliation () {
+                return _.get(this.getOwnOccupant(), 'attributes.affiliation');
+            },
 
             /**
              * Get the {@link _converse.ChatRoomOccupant} instance which
@@ -982,15 +1001,7 @@ converse.plugins.add('converse-muc', {
              * @returns { _converse.ChatRoomOccupant }
              */
             getOwnOccupant () {
-                const occupant = this.occupants.findWhere({'jid': _converse.bare_jid});
-                if (occupant) {
-                    return occupant;
-                }
-                const attributes = {
-                    'jid': _converse.bare_jid,
-                    'resource': Strophe.getResourceFromJid(_converse.resource)
-                };
-                return this.occupants.create(attributes);
+                return this.occupants.findWhere({'jid': _converse.bare_jid});
             },
 
             /**
@@ -1719,7 +1730,7 @@ converse.plugins.add('converse-muc', {
                 this.createInfoMessages(stanza);
                 if (stanza.querySelector("status[code='110']")) {
                     this.onOwnPresence(stanza);
-                    if (this.getOwnOccupant().get('role') !== 'none' &&
+                    if (this.getOwnRole() !== 'none' &&
                             this.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
                         this.save('connection_status', converse.ROOMSTATUS.CONNECTED);
                     }
@@ -1778,7 +1789,7 @@ converse.plugins.add('converse-muc', {
                         // (in which case Prosody doesn't send a 201 status),
                         // otherwise the features would have been fetched in
                         // the "initialize" method already.
-                        if (this.getOwnOccupant().get('affiliation') === 'owner' && this.get('auto_configure')) {
+                        if (this.getOwnAffiliation() === 'owner' && this.get('auto_configure')) {
                             this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
                         } else {
                             this.getRoomFeatures();
@@ -1832,6 +1843,12 @@ converse.plugins.add('converse-muc', {
         });
 
 
+        /**
+         * Represents an participant in a MUC
+         * @class
+         * @namespace _converse.ChatRoomOccupant
+         * @memberOf _converse
+         */
         _converse.ChatRoomOccupant = Backbone.Model.extend({
 
             defaults: {

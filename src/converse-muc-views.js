@@ -480,7 +480,6 @@ converse.plugins.add('converse-muc-views', {
                 this.model.on('change', this.renderHeading, this);
                 this.model.on('change:connection_status', this.onConnectionStatusChanged, this);
                 this.model.on('change:hidden_occupants', this.updateOccupantsToggle, this);
-                this.model.on('change:role', this.renderBottomPanel, this);
                 this.model.on('change:subject', this.setChatRoomSubject, this);
                 this.model.on('configurationNeeded', this.getAndRenderConfigurationForm, this);
                 this.model.on('destroy', this.hide, this);
@@ -491,8 +490,8 @@ converse.plugins.add('converse-muc-views', {
                 this.model.occupants.on('add', this.onOccupantAdded, this);
                 this.model.occupants.on('remove', this.onOccupantRemoved, this);
                 this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
-                this.model.occupants.on('change:role', this.informOfOccupantsRoleChange, this);
-                this.model.occupants.on('change:affiliation', this.informOfOccupantsAffiliationChange, this);
+                this.model.occupants.on('change:role', this.onOccupantRoleChanged, this);
+                this.model.occupants.on('change:affiliation', this.onOccupantAffiliationChanged, this);
 
                 this.createEmojiPicker();
                 this.render();
@@ -532,7 +531,7 @@ converse.plugins.add('converse-muc-views', {
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
-                if (this.model.features.get('moderated') && this.model.getOwnOccupant().get('role') === 'visitor') {
+                if (this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor') {
                     container.innerHTML = tpl_chatroom_bottom_panel({'__': __});
                 } else {
                     if (!container.firstElementChild || !container.querySelector('.sendXMPPMessage')) {
@@ -608,7 +607,14 @@ converse.plugins.add('converse-muc-views', {
                 return _converse.ChatBoxView.prototype.showChatStateNotification.apply(this, arguments);
             },
 
-            informOfOccupantsAffiliationChange(occupant, changed) {
+            onOccupantAffiliationChanged (occupant) {
+                if (occupant.get('jid') === _converse.bare_jid) {
+                    this.renderHeading();
+                }
+                this.informOfOccupantsAffiliationChange(occupant);
+            },
+
+            informOfOccupantsAffiliationChange (occupant) {
                 const previous_affiliation = occupant._previousAttributes.affiliation,
                       current_affiliation = occupant.get('affiliation');
 
@@ -630,6 +636,13 @@ converse.plugins.add('converse-muc-views', {
                     // For example: AppleJack is now an (admin|owner) of this groupchat
                     this.showChatEvent(__('%1$s is now an %2$s of this groupchat', occupant.get('nick'), current_affiliation))
                 }
+            },
+
+            onOccupantRoleChanged (occupant, changed) {
+                if (occupant.get('jid') === _converse.bare_jid) {
+                    this.renderBottomPanel();
+                }
+                this.informOfOccupantsRoleChange(occupant, changed);
             },
 
             informOfOccupantsRoleChange (occupant, changed) {
@@ -661,6 +674,7 @@ converse.plugins.add('converse-muc-views', {
                  */
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
+                        'isOwner': this.model.getOwnAffiliation() === 'owner',
                         'title': this.model.getDisplayName(),
                         'Strophe': Strophe,
                         '_converse': _converse,
@@ -1270,6 +1284,9 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onOccupantAdded (occupant) {
+                if (occupant.get('jid') === _converse.bare_jid) {
+                    this.renderHeading();
+                }
                 if (occupant.get('show') === 'online') {
                     this.showJoinNotification(occupant);
                 }
@@ -1707,10 +1724,9 @@ converse.plugins.add('converse-muc-views', {
             async initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
-                this.model.on(
-                    'change:affiliation',
-                    o => (o.get('jid') === _converse.bare_jid) && this.renderInviteWidget()
-                );
+                this.model.on('add', this.maybeRenderInviteWidget, this);
+                this.model.on('change:affiliation', this.maybeRenderInviteWidget, this);
+
                 this.chatroomview = this.model.chatroomview;
                 this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
                 this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
@@ -1740,6 +1756,12 @@ converse.plugins.add('converse-muc-views', {
                 } else {
                     u.showElement(this.el);
                     this.setOccupantsHeight();
+                }
+            },
+
+            maybeRenderInviteWidget (occupant) {
+                if (occupant.get('jid') === _converse.bare_jid) {
+                    this.renderInviteWidget();
                 }
             },
 
@@ -1827,7 +1849,7 @@ converse.plugins.add('converse-muc-views', {
             shouldInviteWidgetBeShown () {
                 return _converse.allow_muc_invitations &&
                     (this.chatroomview.model.features.get('open') ||
-                        this.chatroomview.model.getOwnOccupant().get('affiliation') === "owner"
+                        this.chatroomview.model.getOwnAffiliation() === "owner"
                     );
             },
 

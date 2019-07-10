@@ -1273,7 +1273,7 @@ _converse.initialize = async function (settings, callback) {
                 ? _converse.connection.pass || this.password
                 : credentials.password;
             const jid = _.isNil(credentials)
-                ? _converse.connection.authcid || this.jid
+                ? this.jid
                 : credentials.jid;
             if (!password) {
                 if (this.auto_login) {

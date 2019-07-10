@@ -84,9 +84,6 @@ converse.plugins.add('converse-omemo', {
 
             initialize () {
                 const { _converse } = this.__super__;
-                _converse.api.settings.update({
-                    'omemo_default': false,
-                });
                 this.debouncedRender = _.debounce(this.render, 50);
                 this.devicelist = _converse.devicelists.get(_converse.bare_jid);
                 this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
@@ -246,6 +243,10 @@ converse.plugins.add('converse-omemo', {
          */
         const { _converse } = this,
               { __ } = _converse;
+
+        _converse.api.settings.update({
+            'omemo_default': false,
+        });
 
         _converse.api.promises.add(['OMEMOInitialized']);
 

@@ -878,16 +878,14 @@ converse.plugins.add('converse-muc', {
              * @param { HTMLElement } form - The configuration form DOM element.
              *      If no form is provided, the default configuration
              *      values will be used.
-             * @returns { promise }
+             * @returns { Promise<XMLElement> }
              * Returns a promise which resolves once the XMPP server
              * has return a response IQ.
              */
             saveConfiguration (form) {
-                return new Promise((resolve, reject) => {
-                    const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
-                          configArray = _.map(inputs, u.webForm2xForm);
-                    this.sendConfiguration(configArray, resolve, reject);
-                });
+                const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
+                        configArray = _.map(inputs, u.webForm2xForm);
+                return this.sendConfiguration(configArray);
             },
 
             /**
@@ -926,26 +924,28 @@ converse.plugins.add('converse-muc', {
              * 'roomconfig' data.
              * @private
              * @method _converse.ChatRoom#autoConfigureChatRoom
-             * @returns { promise }
+             * @returns { Promise<XMLElement> }
              * Returns a promise which resolves once a response IQ has
              * been received.
              */
-            autoConfigureChatRoom () {
-                return new Promise(async (resolve, reject) => { /* eslint-disable-line no-async-promise-executor */
-                    const stanza = await this.fetchRoomConfiguration();
-                    const fields = sizzle('field', stanza);
-                    const configArray = fields.map(f => this.addFieldValue(f))
-                    if (configArray.length) {
-                        this.sendConfiguration(configArray, resolve, reject);
-                    }
-                });
+            async autoConfigureChatRoom () {
+                const stanza = await this.fetchRoomConfiguration();
+                const fields = sizzle('field', stanza);
+                const configArray = fields.map(f => this.addFieldValue(f))
+                if (configArray.length) {
+                    return this.sendConfiguration(configArray);
+                }
             },
 
+            /**
+             * Send an IQ stanza to fetch the groupchat configuration data.
+             * Returns a promise which resolves once the response IQ
+             * has been received.
+             * @private
+             * @method _converse.ChatRoom#fetchRoomConfiguration
+             * @returns { Promise<XMLElement> }
+             */
             fetchRoomConfiguration () {
-                /* Send an IQ stanza to fetch the groupchat configuration data.
-                 * Returns a promise which resolves once the response IQ
-                 * has been received.
-                 */
                 return _converse.api.sendIQ(
                     $iq({'to': this.get('jid'), 'type': "get"})
                      .c("query", {xmlns: Strophe.NS.MUC_OWNER})
@@ -953,27 +953,19 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Send an IQ stanza with the groupchat configuration.
+             * Sends an IQ stanza with the groupchat configuration.
              * @private
              * @method _converse.ChatRoom#sendConfiguration
              * @param { Array } config - The groupchat configuration
-             * @param { Function } callback - Callback upon succesful IQ response
-             *      The first parameter passed in is IQ containing the
-             *      groupchat configuration.
-             *      The second is the response IQ from the server.
-             * @param { Function } errback - Callback upon error IQ response
-             *      The first parameter passed in is IQ containing the
-             *      groupchat configuration.
-             *      The second is the response IQ from the server.
+             * @returns { Promise<XMLElement> } - A promise which resolves with
+             * the `result` stanza received from the XMPP server.
              */
-            sendConfiguration (config=[], callback, errback) {
+            sendConfiguration (config=[]) {
                 const iq = $iq({to: this.get('jid'), type: "set"})
                     .c("query", {xmlns: Strophe.NS.MUC_OWNER})
                     .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
                 config.forEach(node => iq.cnode(node).up());
-                callback = _.isUndefined(callback) ? _.noop : _.partial(callback, iq.nodeTree);
-                errback = _.isUndefined(errback) ? _.noop : _.partial(errback, iq.nodeTree);
-                return _converse.api.sendIQ(iq).then(callback).catch(errback);
+                return _converse.api.sendIQ(iq);
             },
 
             /**
@@ -1138,7 +1130,7 @@ converse.plugins.add('converse-muc', {
              *      a string if only one affiliation.
              * @param { function } deltaFunc - The function to compute the delta
              *      between old and new member lists.
-             * @returns { promise }
+             * @returns { Promise }
              *  A promise which is resolved once the list has been
              *  updated or once it's been established there's no need
              *  to update the list.
@@ -1156,7 +1148,7 @@ converse.plugins.add('converse-muc', {
              * nickname and if found, persist that to the model state.
              * @private
              * @method _converse.ChatRoom#getAndPersistNickname
-             * @returns { promise } A promise which resolves with the nickname
+             * @returns { Promise<string> } A promise which resolves with the nickname
              */
             async getAndPersistNickname (nick) {
                 nick = nick ||
@@ -1176,7 +1168,7 @@ converse.plugins.add('converse-muc', {
              * If so, we'll use that, otherwise we render the nickname form.
              * @private
              * @method _converse.ChatRoom#getReservedNick
-             * @returns { promise } A promise which resolves with the reserved nick or null
+             * @returns { Promise<string> } A promise which resolves with the reserved nick or null
              */
             async getReservedNick () {
                 let iq;

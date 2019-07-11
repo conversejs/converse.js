@@ -94,7 +94,7 @@
 
         it("enables encrypted messages to be sent and received",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
             let sent_stanza;

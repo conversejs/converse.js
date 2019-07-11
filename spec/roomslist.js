@@ -8,7 +8,7 @@
     describe("A list of open groupchats", function () {
 
         it("is shown in controlbox", mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'],
+                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
                 { allow_bookmarks: false // Makes testing easier, otherwise we
                                          // have to mock stanza traffic.
                 }, async function (done, _converse) {
@@ -53,7 +53,9 @@
 
         it("uses bookmarks to determine groupchat names",
             mock.initConverse(
-                {'connection': ['send']}, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
+                {'connection': ['send']},
+                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
+                {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -148,7 +150,7 @@
         }));
 
         it("has an info icon which opens a details modal when clicked", mock.initConverse(
-            null, ['rosterGroupsFetched', 'chatBoxesFetched'],
+            null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
                                      // have to mock stanza traffic.
@@ -256,7 +258,7 @@
         }));
 
         it("can be closed", mock.initConverse(
-            null, ['rosterGroupsFetched'],
+            null, ['rosterGroupsFetched', 'emojisInitialized'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             },

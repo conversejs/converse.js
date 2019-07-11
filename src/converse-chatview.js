@@ -7,6 +7,7 @@
 /**
  * @module converse-chatview
  */
+import "@converse/headless/converse-emoji";
 import "backbone.nativeview";
 import "converse-chatboxviews";
 import "converse-message-view";
@@ -30,10 +31,10 @@ import tpl_status_message from "templates/status_message.html";
 import tpl_toolbar from "templates/toolbar.html";
 import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.html";
-import u from "@converse/headless/utils/emoji";
 import xss from "xss/dist/xss";
 
 const { $msg, Backbone, Promise, Strophe, _, sizzle, dayjs } = converse.env;
+const u = converse.env.utils;
 
 
 converse.plugins.add('converse-chatview', {
@@ -47,15 +48,20 @@ converse.plugins.add('converse-chatview', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatboxviews", "converse-disco", "converse-message-view", "converse-modal"],
-
+    dependencies: [
+        "converse-emoji",
+        "converse-chatboxviews",
+        "converse-disco",
+        "converse-message-view",
+        "converse-modal"
+    ],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-            { __ } = _converse;
+        const { _converse } = this;
+        const { __ } = _converse;
 
         _converse.api.settings.update({
             'auto_focus': true,
@@ -105,20 +111,24 @@ converse.plugins.add('converse-chatview', {
             initialize () {
                 this.model.on('change:current_skintone', this.render, this);
                 this.model.on('change:current_category', this.render, this);
+                _converse.api.trigger('emojiPickerViewInitialized');
             },
 
             toHTML () {
-                return tpl_emojis(
+                const html = tpl_emojis(
                     Object.assign(
                         this.model.toJSON(), {
                             '_': _,
-                            'transform': u.getEmojiRenderer(_converse),
-                            'emojis_by_category': u.getEmojisByCategory(_converse),
-                            'toned_emojis': u.getTonedEmojis(_converse),
+                            'emoji_categories': _converse.emojis.categories,
+                            'emojis_by_category': _converse.emojis.by_category,
+                            'shouldBeHidden': this.shouldBeHidden,
                             'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
-                            'shouldBeHidden': this.shouldBeHidden
+                            'toned_emojis': _converse.emojis.toned,
+                            'transform': u.getEmojiRenderer()
                         }
-                    ));
+                    )
+                );
+                return html;
             },
 
             shouldBeHidden (shortname, current_skintone, toned_emojis) {
@@ -339,7 +349,7 @@ converse.plugins.add('converse-chatview', {
                 'drop .chat-textarea': 'onDrop',
             },
 
-            initialize () {
+            async initialize () {
                 this.initDebounced();
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.messages.on('rendered', this.scrollDown, this);
@@ -353,7 +363,11 @@ converse.plugins.add('converse-chatview', {
 
                 this.model.presence.on('change:show', this.onPresenceChanged, this);
                 this.render();
-                this.updateAfterMessagesFetched();
+                this.createEmojiPicker();
+                this.insertEmojiPicker();
+                await this.renderEmojiPicker();
+                await this.updateAfterMessagesFetched();
+
                 /**
                  * Triggered once the {@link _converse.ChatBoxView} has been initialized
                  * @event _converse#chatBoxInitialized
@@ -1139,9 +1153,7 @@ converse.plugins.add('converse-chatview', {
                     _converse.emojipicker.browserStorage = new BrowserStorage[storage](id);
                     _converse.emojipicker.fetch();
                 }
-                this.emoji_picker_view = new _converse.EmojiPickerView({
-                    'model': _converse.emojipicker
-                });
+                this.emoji_picker_view = new _converse.EmojiPickerView({'model': _converse.emojipicker});
             },
 
             insertEmoji (ev) {
@@ -1154,9 +1166,6 @@ converse.plugins.add('converse-chatview', {
             toggleEmojiMenu (ev) {
                 if (this.emoji_dropdown === undefined) {
                     ev.stopPropagation();
-                    this.createEmojiPicker();
-                    this.insertEmojiPicker();
-                    this.renderEmojiPicker();
 
                     const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
                     this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
@@ -1262,12 +1271,13 @@ converse.plugins.add('converse-chatview', {
                 return this;
             },
 
-            renderEmojiPicker () {
+            async renderEmojiPicker () {
+                await _converse.api.waitUntil('emojisInitialized');
                 this.emoji_picker_view.render();
             },
 
             insertEmojiPicker () {
-                var picker_el = this.el.querySelector('.emoji-picker');
+                const picker_el = this.el.querySelector('.emoji-picker');
                 if (picker_el !== null) {
                     picker_el.innerHTML = '';
                     picker_el.appendChild(this.emoji_picker_view.el);

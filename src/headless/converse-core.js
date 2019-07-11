@@ -80,6 +80,7 @@ const CORE_PLUGINS = [
     'converse-caps',
     'converse-chatboxes',
     'converse-disco',
+    'converse-emoji',
     'converse-mam',
     'converse-muc',
     'converse-ping',

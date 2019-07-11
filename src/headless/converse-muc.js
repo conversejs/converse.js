@@ -10,7 +10,7 @@
  * Implements the non-view logic for XEP-0045 Multi-User Chat
  */
 import "./converse-disco";
-import "./utils/emoji";
+import "./converse-emoji";
 import "./utils/muc";
 import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";

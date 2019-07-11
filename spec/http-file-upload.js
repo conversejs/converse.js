@@ -461,7 +461,11 @@
                         done();
                     }));
 
-                    it("shows an error message if the file is too large", mock.initConverse(async (done, _converse) => {
+                    it("shows an error message if the file is too large",
+                        mock.initConverse(
+                            null, ['emojisInitialized'], {},
+                            async function (done, _converse) {
+
                         const IQ_stanzas = _converse.connection.IQ_stanzas;
                         const IQ_ids =  _converse.connection.IQ_ids;
                         const send_backup = XMLHttpRequest.prototype.send;

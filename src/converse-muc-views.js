@@ -635,7 +635,7 @@ converse.plugins.add('converse-muc-views', {
                 'drop .chat-textarea': 'onDrop',
             },
 
-            initialize () {
+            async initialize () {
                 this.initDebounced();
 
                 this.model.messages.on('add', this.onMessageAdded, this);
@@ -661,8 +661,10 @@ converse.plugins.add('converse-muc-views', {
                 this.model.occupants.on('change:role', this.onOccupantRoleChanged, this);
                 this.model.occupants.on('change:affiliation', this.onOccupantAffiliationChanged, this);
 
-                this.createEmojiPicker();
                 this.render();
+                this.createEmojiPicker();
+                this.insertEmojiPicker();
+                await this.renderEmojiPicker();
                 this.updateAfterMessagesFetched();
                 this.createOccupantsView();
                 this.onConnectionStatusChanged();
@@ -875,7 +877,6 @@ converse.plugins.add('converse-muc-views', {
                     this.model.save();
                 }
                 this.scrollDown();
-                this.renderEmojiPicker();
             },
 
             onConnectionStatusChanged () {

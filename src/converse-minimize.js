@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-minimize
+ */
 import "converse-chatview";
 import BrowserStorage from "backbone.browserStorage";
 import { Overview } from "backbone.overview";

@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-core
+ */
 import * as bosh from 'strophe.js/src/bosh';
 import * as strophe from 'strophe.js/src/core';
 import * as websocket from 'strophe.js/src/websocket';

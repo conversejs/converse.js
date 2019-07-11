@@ -4,8 +4,11 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 //
-// XEP-0045 Multi-User Chat
-
+/**
+ * @module converse-muc
+ * @description
+ * Implements the non-view logic for XEP-0045 Multi-User Chat
+ */
 import "./converse-disco";
 import "./utils/emoji";
 import "./utils/muc";
@@ -928,7 +931,7 @@ converse.plugins.add('converse-muc', {
              * been received.
              */
             autoConfigureChatRoom () {
-                return new Promise(async (resolve, reject) => {
+                return new Promise(async (resolve, reject) => { /* eslint-disable-line no-async-promise-executor */
                     const stanza = await this.fetchRoomConfiguration();
                     const fields = sizzle('field', stanza);
                     const configArray = fields.map(f => this.addFieldValue(f))

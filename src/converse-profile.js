@@ -4,8 +4,9 @@
 // Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
-
+/**
+ * @module converse-profile
+ */
 import "@converse/headless/converse-vcard";
 import "converse-modal";
 import _FormData from "formdata-polyfill";

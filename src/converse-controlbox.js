@@ -4,8 +4,9 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
-
+/**
+ * @module converse-controlbox
+ */
 import "converse-chatview";
 import "converse-profile";
 import "converse-rosterview";

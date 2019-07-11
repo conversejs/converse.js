@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-message-view
+ */
 import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
 import filesize from "filesize";

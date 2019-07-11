@@ -4,12 +4,11 @@
 // Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
-
-/* This is a Converse.js plugin which add support for bookmarks specified
- * in XEP-0048.
+/**
+ * @module converse-bookmark-views
+ * @description
+ * Converse.js plugin which adds views for XEP-0048 bookmarks
  */
-
 import "backbone.nativeview";
 import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";

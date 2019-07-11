@@ -6,8 +6,6 @@
 // Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global escape, Uint8Array */
-
 import * as strophe from 'strophe.js/src/core';
 import Backbone from "backbone";
 import Promise from "es6-promise/dist/es6-promise.auto";

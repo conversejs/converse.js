@@ -4,8 +4,11 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 //
-// XEP-0045 Multi-User Chat Views
-
+/**
+ * @module converse-muc-views
+ * @description
+ * XEP-0045 Multi-User Chat Views
+ */
 import "converse-modal";
 import "backbone.vdomview";
 import BrowserStorage from "backbone.browserStorage";

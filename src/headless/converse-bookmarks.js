@@ -4,12 +4,11 @@
 // Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
-
-/* This is a Converse.js plugin which adds views for bookmarks specified
- * in XEP-0048.
+/**
+ * @module converse-bookmarks
+ * @description
+ * Converse.js plugin which adds views for bookmarks specified in XEP-0048.
  */
-
 import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 import muc from "@converse/headless/converse-muc";

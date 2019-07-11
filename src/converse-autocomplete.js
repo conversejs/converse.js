@@ -4,10 +4,12 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-// This plugin started as a fork of Lea Verou's Awesomplete
-// https://leaverou.github.io/awesomplete/
-
-
+/**
+ * @module converse-autocomplete
+ * @description
+ * Converse.js plugin which started as a fork of Lea Verou's Awesomplete
+ * https://leaverou.github.io/awesomplete/
+ */
 import converse from "@converse/headless/converse-core";
 
 const { _, Backbone } = converse.env,

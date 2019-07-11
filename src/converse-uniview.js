@@ -3,10 +3,9 @@
 //
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-/* converse-uniview
- * ****************
- *
+/**
+ * @module converse-uniview
+ * @description
  * A plugin which ensures that only one chat (private or groupchat) is
  * visible at any one time. All other ongoing chats are hidden and kept in the
  * background.
@@ -14,7 +13,6 @@
  * This plugin makes sense in mobile, embedded or fullscreen chat environments
  * (as configured by the `view_mode` setting).
  */
-
 import "converse-chatview";
 import converse from "@converse/headless/converse-core";
 

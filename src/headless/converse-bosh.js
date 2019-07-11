@@ -12,7 +12,6 @@ import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 
 const { Backbone, Strophe, _ } = converse.env;
-const u = converse.env.utils;
 
 
 converse.plugins.add('converse-bosh', {

@@ -41,9 +41,8 @@ import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
 
-const { Backbone, Promise, Strophe, dayjs, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
+const { Backbone, Promise, Strophe, dayjs, sizzle, _, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
-const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice'];
@@ -1202,11 +1201,9 @@ converse.plugins.add('converse-muc-views', {
                 u.hideElement(this.el.querySelector('.occupants'));
                 sizzle('.spinner', this.el).forEach(u.removeElement);
 
-                const message = this.model.get('destroyed_message');
                 const reason = this.model.get('destroyed_reason');
                 const moved_jid = this.model.get('moved_jid');
                 this.model.save({
-                    'destroyed_message': undefined,
                     'destroyed_reason': undefined,
                     'moved_jid': undefined
                 });

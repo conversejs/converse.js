@@ -1712,7 +1712,7 @@
                     await _converse.api.chats.open(sender_jid)
                     let msg_text = 'This message will not be sent, due to an error';
                     const view = _converse.api.chatviews.get(sender_jid);
-                    let message = view.model.messages.create({
+                    view.model.messages.create({
                         'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
                         'fullname': fullname,
                         'sender': 'me',
@@ -1729,7 +1729,7 @@
                     // not be received, to test that errors appear
                     // after the relevant message.
                     msg_text = 'This message will be sent, and also receive an error';
-                    message = view.model.messages.create({
+                    view.model.messages.create({
                         'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
                         'fullname': fullname,
                         'sender': 'me',
@@ -1797,7 +1797,7 @@
                     // not be received, to test that errors appear
                     // after the relevant message.
                     msg_text = 'This message will be sent, and also receive an error';
-                    message = view.model.messages.create({
+                    view.model.messages.create({
                         'msgid': 'another-id',
                         'fullname': fullname,
                         'sender': 'me',

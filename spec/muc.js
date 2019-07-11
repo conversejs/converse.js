@@ -103,9 +103,8 @@
                 // (when it's a new room being created).
                 spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
 
-                const sent_IQ_els = [];
                 let jid = 'lounge@montague.lit';
-                let chatroomview, sent_IQ, IQ_id;
+                let chatroomview, IQ_id;
                 test_utils.openControlBox();
                 test_utils.createContacts(_converse, 'current');
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group .group-toggle').length);
@@ -163,6 +162,7 @@
                         'whois': 'anyone'
                     }
                 });
+                expect(room instanceof Backbone.Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get('room@conference.example.org');
 
                 // We pretend this is a new room, so no disco info is returned.
@@ -1436,8 +1436,9 @@
                             'var': 'muc#roomconfig_passwordprotectedroom'})
                             .c('value').t(1).up().up()
                         .c('field', {'type': 'fixed'})
-                            .c('value').t('If a password is required to enter this groupchat,'+
-                                        'you must specify the password below.').up().up()
+                            .c('value').t(
+                                'If a password is required to enter this groupchat, you must specify the password below.'
+                            ).up().up()
                         .c('field', {
                             'label': 'Password',
                             'type': 'text-private',
@@ -1521,7 +1522,6 @@
                 // https://xmpp.org/extensions/xep-0045.html#exit
                 for (let i=mock.chatroom_names.length-1; i>-1; i--) {
                     const name = mock.chatroom_names[i];
-                    const role = mock.chatroom_roles[name].role;
                     // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
                     const presence = $pres({
                         to:'romeo@montague.lit/pda',
@@ -1569,15 +1569,13 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                var name;
                 var view = _converse.chatboxviews.get('lounge@montague.lit'),
                     occupants = view.el.querySelector('.occupant-list');
-                var presence, role, jid, model;
+                var presence, jid;
                 for (var i=0; i<mock.chatroom_names.length; i++) {
-                    name = mock.chatroom_names[i];
-                    role = mock.chatroom_roles[name].role;
+                    const name = mock.chatroom_names[i];
+                    const role = mock.chatroom_roles[name].role;
                     // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                    jid =
                     presence = $pres({
                             to:'romeo@montague.lit/pda',
                             from:'lounge@montague.lit/'+name
@@ -1603,8 +1601,7 @@
                 // Test users leaving the groupchat
                 // https://xmpp.org/extensions/xep-0045.html#exit
                 for (i=mock.chatroom_names.length-1; i>-1; i--) {
-                    name = mock.chatroom_names[i];
-                    role = mock.chatroom_roles[name].role;
+                    const name = mock.chatroom_names[i];
                     // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
                     presence = $pres({
                         to:'romeo@montague.lit/pda',
@@ -2083,7 +2080,6 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                 await new Promise((resolve, reject) => view.model.once('change:subject', resolve));
-                let chat_content = view.el.querySelector('.chat-content');
                 expect(sizzle('.chat-event:last').pop().textContent).toBe('Topic set by ralphm');
                 expect(sizzle('.chat-topic:last').pop().textContent).toBe(text);
                 expect(view.el.querySelector('.chatroom-description').textContent).toBe(text);
@@ -2095,7 +2091,6 @@
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                chat_content = view.el.querySelector('.chat-content');
                 expect(sizzle('.chat-topic').length).toBe(1);
                 expect(sizzle('.chat-msg__subject').length).toBe(1);
                 expect(sizzle('.chat-msg__subject').pop().textContent).toBe('This is a message subject');

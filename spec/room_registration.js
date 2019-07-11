@@ -3,7 +3,6 @@
 } (this, function (jasmine, mock, test_utils) {
     const _ = converse.env._,
           $iq = converse.env.$iq,
-          $pres = converse.env.$pres,
           Strophe = converse.env.Strophe,
           sizzle = converse.env.sizzle,
           u = converse.env.utils;
@@ -77,7 +76,7 @@
 
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const muc_jid = 'coven@chat.shakespeare.lit';
-                await test_utils.openAndEnterChatRoom(_converse, 'coven@chat.shakespeare.lit', 'romeo');
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 let stanza = await test_utils.waitUntil(() => _.filter(

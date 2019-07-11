@@ -918,7 +918,7 @@ converse.plugins.add('converse-chatboxes', {
                         attrs.fullname = _converse.xmppstatus.get('fullname');
                     } else {
                         attrs.sender = 'them';
-                        attrs.fullname = this.get('fullname') || this.get('fullname')
+                        attrs.fullname = this.get('fullname');
                     }
                 }
                 sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza).forEach(xform => {

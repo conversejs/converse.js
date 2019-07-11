@@ -23,7 +23,7 @@ const MUC_ROLE_WEIGHTS = {
     'none':         2,
 };
 
-const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, dayjs, _ } = converse.env;
+const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, _ } = converse.env;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -1445,9 +1445,8 @@ converse.plugins.add('converse-muc', {
                     'to': `${this.get('jid')}/${this.get('nick')}`,
                     'type': "get"
                 }).c("ping", {'xmlns': Strophe.NS.PING});
-                let result;
                 try {
-                    result = await _converse.api.sendIQ(ping);
+                    await _converse.api.sendIQ(ping);
                 } catch (e) {
                     const sel = `error not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`;
                     if (_.isElement(e) && sizzle(sel, e).length) {

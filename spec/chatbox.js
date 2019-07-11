@@ -118,7 +118,6 @@
                 const jid = el.textContent.trim().replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 el.click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length == 2);
-                const chatboxview = _converse.chatboxviews.get(jid);
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 // Check that new chat boxes are created to the left of the
                 // controlbox (but to the right of all existing chat boxes)
@@ -127,7 +126,6 @@
                 await test_utils.waitUntil(() => _converse.chatboxes.length == 3);
                 el = online_contacts[1];
                 const new_jid = el.textContent.trim().replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                const new_chatboxview = _converse.chatboxviews.get(new_jid);
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 // Check that new chat boxes are created to the left of the
                 // controlbox (but to the right of all existing chat boxes)

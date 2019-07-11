@@ -6,10 +6,9 @@
 /**
  * @module converse-core
  */
-import * as bosh from 'strophe.js/src/bosh';
+import 'strophe.js/src/bosh';
+import 'strophe.js/src/websocket';
 import * as strophe from 'strophe.js/src/core';
-import * as websocket from 'strophe.js/src/websocket';
-
 import Backbone from 'backbone';
 import BrowserStorage from 'backbone.browserStorage';
 import Promise from 'es6-promise/dist/es6-promise.auto';
@@ -213,7 +212,7 @@ _converse.default_settings = {
     csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
     debug: false,
     default_state: 'online',
-    geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
+    geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,

@@ -738,7 +738,6 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                const view = _converse.chatboxviews.get(contact_jid);
                 await test_utils.waitUntil(() => sent_stanza);
                 const stanza_el = sent_stanza.root().nodeTree;
                 const queryid = stanza_el.querySelector('query').getAttribute('queryid');

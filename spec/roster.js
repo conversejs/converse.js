@@ -121,7 +121,6 @@
                     async function (done, _converse) {
 
                 const filter = _converse.rosterview.el.querySelector('.roster-filter');
-                const names = mock.cur_names;
                 test_utils.openControlBox();
                 expect(_.isNull(filter)).toBe(false);
                 test_utils.createContacts(_converse, 'current').openControlBox();

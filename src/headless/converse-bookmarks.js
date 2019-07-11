@@ -9,9 +9,9 @@
  * @description
  * Converse.js plugin which adds views for bookmarks specified in XEP-0048.
  */
+import "@converse/headless/converse-muc";
 import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
-import muc from "@converse/headless/converse-muc";
 
 const { Backbone, Promise, Strophe, $iq, sizzle, _ } = converse.env;
 const u = converse.env.utils;

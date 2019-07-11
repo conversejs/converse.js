@@ -939,9 +939,10 @@
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
+                        const sent_stanzas = _converse.connection.sent_stanzas;
                         // Make the timeouts shorter so that we can test
-                        _converse.TIMEOUTS.PAUSED = 200;
-                        _converse.TIMEOUTS.INACTIVE = 200;
+                        _converse.TIMEOUTS.PAUSED = 100;
+                        _converse.TIMEOUTS.INACTIVE = 100;
 
                         await test_utils.waitForRoster(_converse, 'current');
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -949,38 +950,50 @@
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 1000);
                         await test_utils.openChatBoxFor(_converse, contact_jid);
                         const view = _converse.chatboxviews.get(contact_jid);
-                        await u.waitUntil(() => view.model.get('chat_state') === 'active', 1000);
-                        console.log('chat_state set to active');
+                        await u.waitUntil(() => view.model.get('chat_state') === 'active');
+                        let messages = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('message')));
+                        expect(messages.length).toBe(1);
                         expect(view.model.get('chat_state')).toBe('active');
                         view.onKeyDown({
                             target: view.el.querySelector('textarea.chat-textarea'),
                             keyCode: 1
                         });
-                        await u.waitUntil(() => view.model.get('chat_state') === 'composing', 500);
-                        console.log('chat_state set to composing');
-                        expect(view.model.get('chat_state')).toBe('composing');
-                        spyOn(_converse.connection, 'send');
-                        await u.waitUntil(() => view.model.get('chat_state') === 'paused', 1000);
-                        await u.waitUntil(() => view.model.get('chat_state') === 'inactive', 1000);
-                        console.log('chat_state set to inactive');
-                        expect(_converse.connection.send).toHaveBeenCalled();
-                        var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
-                            return call.args[0] instanceof Strophe.Builder;
-                        });
-                        expect(calls.length).toBe(2);
-                        var stanza = calls[0].args[0].tree();
-                        expect(stanza.getAttribute('to')).toBe(contact_jid);
-                        expect(stanza.children.length).toBe(3);
-                        expect(stanza.children[0].tagName).toBe('paused');
-                        expect(stanza.children[1].tagName).toBe('no-store');
-                        expect(stanza.children[2].tagName).toBe('no-permanent-store');
+                        await u.waitUntil(() => view.model.get('chat_state') === 'composing', 600);
+                        messages = sent_stanzas.filter(s => s.matches('message'));
+                        expect(messages.length).toBe(2);
 
-                        stanza = _converse.connection.send.calls.mostRecent().args[0].tree();
-                        expect(stanza.getAttribute('to')).toBe(contact_jid);
-                        expect(stanza.children.length).toBe(3);
-                        expect(stanza.children[0].tagName).toBe('inactive');
-                        expect(stanza.children[1].tagName).toBe('no-store');
-                        expect(stanza.children[2].tagName).toBe('no-permanent-store');
+                        await u.waitUntil(() => view.model.get('chat_state') === 'paused', 600);
+                        messages = sent_stanzas.filter(s => s.matches('message'));
+                        expect(messages.length).toBe(3);
+
+                        await u.waitUntil(() => view.model.get('chat_state') === 'inactive', 600);
+                        messages = sent_stanzas.filter(s => s.matches('message'));
+                        expect(messages.length).toBe(4);
+
+                        expect(Strophe.serialize(messages[0])).toBe(
+                            `<message id="${messages[0].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
+                                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<no-store xmlns="urn:xmpp:hints"/>`+
+                                `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                            `</message>`);
+                        expect(Strophe.serialize(messages[1])).toBe(
+                            `<message id="${messages[1].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
+                                `<composing xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<no-store xmlns="urn:xmpp:hints"/>`+
+                                `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                            `</message>`);
+                        expect(Strophe.serialize(messages[2])).toBe(
+                            `<message id="${messages[2].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
+                                `<paused xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<no-store xmlns="urn:xmpp:hints"/>`+
+                                `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                            `</message>`);
+                        expect(Strophe.serialize(messages[3])).toBe(
+                            `<message id="${messages[3].getAttribute('id')}" to="mercutio@montague.lit" type="chat" xmlns="jabber:client">`+
+                                `<inactive xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<no-store xmlns="urn:xmpp:hints"/>`+
+                                `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                            `</message>`);
                         done();
                     }));
 

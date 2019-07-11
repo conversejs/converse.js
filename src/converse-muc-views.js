@@ -701,19 +701,6 @@ converse.plugins.add('converse-muc-views', {
                 this.renderEmojiPicker();
             },
 
-            show () {
-                if (u.isVisible(this.el)) {
-                    if (_converse.auto_focus) {
-                        this.focus();
-                    }
-                    return;
-                }
-                // Override from converse-chatview in order to not use
-                // "fadeIn", which causes flashing.
-                u.showElement(this.el);
-                this.afterShown();
-            },
-
             onConnectionStatusChanged () {
                 const conn_status = this.model.get('connection_status');
                 if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {

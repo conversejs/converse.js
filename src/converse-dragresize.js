@@ -72,11 +72,6 @@ converse.plugins.add('converse-dragresize', {
                 renderDragResizeHandles(this.__super__._converse, this);
                 this.setWidth();
                 return result;
-            },
-
-            _show () {
-                this.initDragResize().setDimensions();
-                this.__super__._show.apply(this, arguments);
             }
         },
 
@@ -155,12 +150,12 @@ converse.plugins.add('converse-dragresize', {
                 /* Determine and store the default box size.
                  * We need this information for the drag-resizing feature.
                  */
-                const flyout = this.el.querySelector('.box-flyout'),
-                      style = window.getComputedStyle(flyout);
+                const flyout = this.el.querySelector('.box-flyout');
+                const style = window.getComputedStyle(flyout);
 
                 if (_.isUndefined(this.model.get('height'))) {
-                    const height = parseInt(style.height.replace(/px$/, ''), 10),
-                          width = parseInt(style.width.replace(/px$/, ''), 10);
+                    const height = parseInt(style.height.replace(/px$/, ''), 10);
+                    const width = parseInt(style.width.replace(/px$/, ''), 10);
                     this.model.set('height', height);
                     this.model.set('default_height', height);
                     this.model.set('width', width);
@@ -341,6 +336,7 @@ converse.plugins.add('converse-dragresize', {
         }
         _converse.api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
 
+        _converse.api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
 
         _converse.api.listen.on('chatBoxInitialized', view => {
             window.addEventListener('resize', _.debounce(() => view.setDimensions(), 100));

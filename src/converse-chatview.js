@@ -374,7 +374,6 @@ converse.plugins.add('converse-chatview', {
             initDebounced () {
                 this.scrollDown = _.debounce(this._scrollDown, 100);
                 this.markScrolled = _.debounce(this._markScrolled, 100);
-                this.show = _.debounce(this._show, 500, {'leading': true});
             },
 
             render () {
@@ -1280,7 +1279,7 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            emitFocused: _.debounce(() => {
+            emitFocused () {
                 /**
                  * Triggered when the focus has been moved to a particular chat.
                  * @event _converse#chatBoxFocused
@@ -1288,11 +1287,11 @@ converse.plugins.add('converse-chatview', {
                  * @example _converse.api.listen.on('chatBoxFocused', view => { ... });
                  */
                 _converse.api.trigger('chatBoxFocused', this);
-            }, 25, {'leading': true}),
+            },
 
             focus () {
-                const textarea_el = this.el.querySelector('.chat-textarea');
-                if (!_.isNull(textarea_el)) {
+                const textarea_el = this.el.getElementsByClassName('chat-textarea')[0];
+                if (textarea_el && document.activeElement !== textarea_el) {
                     textarea_el.focus();
                     this.emitFocused();
                 }
@@ -1311,18 +1310,30 @@ converse.plugins.add('converse-chatview', {
                 if (_converse.auto_focus) {
                     this.focus();
                 }
-                this.focus();
             },
 
-            _show () {
-                /* Inner show method that gets debounced */
+            show () {
                 if (u.isVisible(this.el)) {
                     if (_converse.auto_focus) {
                         this.focus();
                     }
                     return;
                 }
-                u.fadeIn(this.el, _.bind(this.afterShown, this));
+                /**
+                 * Triggered just before a {@link _converse.ChatBoxView} or {@link _converse.ChatRoomView}
+                 * will be shown.
+                 * @event _converse#beforeShowingChatView
+                 * @type {object}
+                 * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
+                 */
+                _converse.api.trigger('beforeShowingChatView', this);
+
+                if (_converse.animate) {
+                    u.fadeIn(this.el, () => this.afterShown());
+                } else {
+                    u.showElement(this.el);
+                    this.afterShown();
+                }
             },
 
             showNewMessagesIndicator () {
@@ -1395,7 +1406,7 @@ converse.plugins.add('converse-chatview', {
             onWindowStateChanged (state) {
                 if (state === 'visible') {
                     if (!this.model.isHidden()) {
-                        this.model.setChatState(_converse.ACTIVE);
+                        // this.model.setChatState(_converse.ACTIVE);
                         if (this.model.get('num_unread', 0)) {
                             this.model.clearUnreadMsgCounter();
                         }

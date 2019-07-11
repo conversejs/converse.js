@@ -14,12 +14,18 @@ import sizzle from "sizzle";
 
 const Strophe = strophe.default.Strophe;
 
-
 /**
  * The utils object
  * @namespace u
  */
 const u = {};
+
+u.logger = Object.assign({
+    'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+    'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+    'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+    'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
+}, console);
 
 u.isTagEqual = function (stanza, name) {
     if (stanza.nodeTree) {
@@ -554,7 +560,9 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
     const interval = setInterval(checker, check_delay);
     const max_wait_timeout = setTimeout(() => {
         clearTimers(max_wait_timeout, interval);
-        promise.reject(new Error('Wait until promise timed out'));
+        const err_msg = 'Wait until promise timed out';
+        u.logger.error(err_msg);
+        promise.reject(new Error(err_msg));
     }, max_wait);
 
     return promise;

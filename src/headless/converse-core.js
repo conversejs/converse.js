@@ -260,25 +260,17 @@ _converse.log = function (message, level, style='') {
         message = message.outerHTML;
     }
     const prefix = style ? '%c' : '';
-    const logger = Object.assign({
-            'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-            'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-            'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-            'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
-        }, console);
     if (level === Strophe.LogLevel.ERROR) {
-        logger.error(`${prefix} ERROR: ${message}`, style);
+        u.logger.error(`${prefix} ERROR: ${message}`, style);
     } else if (level === Strophe.LogLevel.WARN) {
-        if (_converse.debug) {
-            logger.warn(`${prefix} ${(new Date()).toISOString()} WARNING: ${message}`, style);
-        }
+        u.logger.warn(`${prefix} ${(new Date()).toISOString()} WARNING: ${message}`, style);
     } else if (level === Strophe.LogLevel.FATAL) {
-        logger.error(`${prefix} FATAL: ${message}`, style);
+        u.logger.error(`${prefix} FATAL: ${message}`, style);
     } else if (_converse.debug) {
         if (level === Strophe.LogLevel.DEBUG) {
-            logger.debug(`${prefix} ${(new Date()).toISOString()} DEBUG: ${message}`, style);
+            u.logger.debug(`${prefix} ${(new Date()).toISOString()} DEBUG: ${message}`, style);
         } else {
-            logger.info(`${prefix} ${(new Date()).toISOString()} INFO: ${message}`, style);
+            u.logger.info(`${prefix} ${(new Date()).toISOString()} INFO: ${message}`, style);
         }
     }
 };

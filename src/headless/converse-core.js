@@ -1769,17 +1769,23 @@ _converse.api = {
     },
 
     /**
-     * Wait until a promise is resolved
+     * Wait until a promise is resolved or until the passed in function returns
+     * a truthy value.
      * @method _converse.api.waitUntil
-     * @param {string} name The name of the promise
+     * @param {string|function} condition - The name of the promise to wait for,
+     * or a function which should eventually return a truthy value.
      * @returns {Promise}
      */
-    waitUntil (name) {
-        const promise = _converse.promises[name];
-        if (_.isUndefined(promise)) {
-            return null;
+    waitUntil (condition) {
+        if (_.isFunction(condition)) {
+            return u.waitUntil(condition);
+        } else {
+            const promise = _converse.promises[condition];
+            if (_.isUndefined(promise)) {
+                return null;
+            }
+            return promise;
         }
-        return promise;
     },
 
     /**

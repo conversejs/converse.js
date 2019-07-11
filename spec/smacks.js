@@ -24,7 +24,7 @@
 
             _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
             const sent_stanzas = _converse.connection.sent_stanzas;
-            let stanza = await test_utils.waitUntil(() =>
+            let stanza = await u.waitUntil(() =>
                 sent_stanzas.filter(s => (s.tagName === 'enable')).pop());
 
             expect(_converse.session.get('smacks_enabled')).toBe(false);
@@ -34,10 +34,10 @@
             _converse.connection._dataRecv(test_utils.createRequest(result));
             expect(_converse.session.get('smacks_enabled')).toBe(true);
 
-            await test_utils.waitUntil(() => view.renderControlBoxPane.calls.count());
+            await u.waitUntil(() => view.renderControlBoxPane.calls.count());
 
             let IQ_stanzas = _converse.connection.IQ_stanzas;
-            await test_utils.waitUntil(() => IQ_stanzas.length === 4);
+            await u.waitUntil(() => IQ_stanzas.length === 4);
 
             let iq = IQ_stanzas.pop();
             expect(Strophe.serialize(iq)).toBe(
@@ -69,7 +69,7 @@
             // test handling of ack requests
             let r = u.toStanza(`<r xmlns="urn:xmpp:sm:3"/>`);
             _converse.connection._dataRecv(test_utils.createRequest(r));
-            ack = await test_utils.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'a')).pop());
+            ack = await u.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'a')).pop());
             expect(Strophe.serialize(ack)).toBe('<a h="0" xmlns="urn:xmpp:sm:3"/>');
 
             const disco_result = $iq({
@@ -92,14 +92,14 @@
 
             r = u.toStanza(`<r xmlns="urn:xmpp:sm:3"/>`);
             _converse.connection._dataRecv(test_utils.createRequest(r));
-            ack = await test_utils.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'a' && s.getAttribute('h') === '1')).pop());
+            ack = await u.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'a' && s.getAttribute('h') === '1')).pop());
             expect(Strophe.serialize(ack)).toBe('<a h="1" xmlns="urn:xmpp:sm:3"/>');
 
             // test session resumption
             _converse.connection.IQ_stanzas = [];
             IQ_stanzas = _converse.connection.IQ_stanzas;
             _converse.api.connection.reconnect();
-            stanza = await test_utils.waitUntil(() =>
+            stanza = await u.waitUntil(() =>
                 sent_stanzas.filter(s => (s.tagName === 'resume')).pop());
             expect(Strophe.serialize(stanza)).toEqual('<resume h="1" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
 
@@ -110,7 +110,7 @@
             expect(sizzle('enable', sent_stanzas).length).toBe(0);
             expect(_converse.session.get('smacks_enabled')).toBe(true);
 
-            await test_utils.waitUntil(() => IQ_stanzas.length === 2);
+            await u.waitUntil(() => IQ_stanzas.length === 2);
 
             // Test that unacked stanzas get resent out
             iq = IQ_stanzas.pop();

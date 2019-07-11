@@ -27,7 +27,7 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                let stanza = await test_utils.waitUntil(() => _.filter(
+                let stanza = await u.waitUntil(() => _.filter(
                     _converse.connection.IQ_stanzas,
                     iq => sizzle(`iq[to="${muc_jid}"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length
                 ).pop());
@@ -48,7 +48,7 @@
                             'var': 'muc#register_roomnick'
                         }).c('required');
                 _converse.connection._dataRecv(test_utils.createRequest(result));
-                stanza = await test_utils.waitUntil(() => _.filter(
+                stanza = await u.waitUntil(() => _.filter(
                     _converse.connection.IQ_stanzas,
                     iq => sizzle(`iq[to="${muc_jid}"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
                 ).pop());
@@ -79,7 +79,7 @@
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
 
-                let stanza = await test_utils.waitUntil(() => _.filter(
+                let stanza = await u.waitUntil(() => _.filter(
                     _converse.connection.IQ_stanzas,
                     iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="get"] query[xmlns="jabber:iq:register"]`, iq).length
                 ).pop());
@@ -101,7 +101,7 @@
                             'var': 'muc#register_roomnick'
                         }).c('required');
                 _converse.connection._dataRecv(test_utils.createRequest(result));
-                stanza = await test_utils.waitUntil(() => _.filter(
+                stanza = await u.waitUntil(() => _.filter(
                     _converse.connection.IQ_stanzas,
                     iq => sizzle(`iq[to="coven@chat.shakespeare.lit"][type="set"] query[xmlns="jabber:iq:register"]`, iq).length
                 ).pop());

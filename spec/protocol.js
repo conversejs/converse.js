@@ -56,7 +56,7 @@
 
                 let contact, sent_stanza, IQ_id, stanza;
                 await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
-                await test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'), 300);
+                await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'), 300);
                 /* The process by which a user subscribes to a contact, including
                  * the interaction between roster items and subscription states.
                  */
@@ -76,7 +76,7 @@
 
                 cbview.el.querySelector('.add-contact').click()
                 const modal = _converse.rosterview.add_contact_modal;
-                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                await u.waitUntil(() => u.isVisible(modal.el), 1000);
                 spyOn(modal, "addContactFromForm").and.callThrough();
                 modal.delegateEvents();
 
@@ -160,7 +160,7 @@
                 stanza = $iq({'type': 'result', 'id':IQ_id});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                await test_utils.waitUntil(() => _converse.roster.create.calls.count());
+                await u.waitUntil(() => _converse.roster.create.calls.count());
 
                 // A contact should now have been created
                 expect(_converse.roster.get('contact@example.org') instanceof _converse.RosterContact).toBeTruthy();
@@ -173,7 +173,7 @@
                  *
                  *  <presence to='contact@example.org' type='subscribe'/>
                  */
-                const sent_presence = await test_utils.waitUntil(() => sent_stanzas.filter(s => s.match('presence')).pop());
+                const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => s.match('presence')).pop());
                 expect(contact.subscribe).toHaveBeenCalled();
                 expect(sent_presence).toBe( // Strophe adds the xmlns attr (although not in spec)
                     `<presence to="contact@example.org" type="subscribe" xmlns="jabber:client">`+
@@ -211,7 +211,7 @@
                 expect(_converse.roster.updateContact).toHaveBeenCalled();
                 // Check that the user is now properly shown as a pending
                 // contact in the roster.
-                await test_utils.waitUntil(() => {
+                await u.waitUntil(() => {
                     const header = sizzle('a:contains("Pending contacts")', _converse.rosterview.el).pop();
                     const contacts = _.filter(header.parentElement.querySelectorAll('li'), u.isVisible);
                     return contacts.length;
@@ -280,7 +280,7 @@
 
                 // The contact should now be visible as an existing
                 // contact (but still offline).
-                await test_utils.waitUntil(() => {
+                await u.waitUntil(() => {
                     const header = sizzle('a:contains("My contacts")', _converse.rosterview.el);
                     return sizzle('li', header[0].parentNode).filter(l => u.isVisible(l)).length;
                 }, 600);
@@ -471,7 +471,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 const header = sizzle('a:contains("My contacts")', _converse.rosterview.el).pop();
-                await test_utils.waitUntil(() => header.parentElement.querySelectorAll('li').length);
+                await u.waitUntil(() => header.parentElement.querySelectorAll('li').length);
 
                 // remove the first user
                 header.parentElement.querySelector('li .remove-xmpp-contact').click();
@@ -508,7 +508,7 @@
                 const stanza = $iq({'type': 'result', 'id':IQ_id});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 // Our contact has now been removed
-                await test_utils.waitUntil(() => typeof _converse.roster.get(jid) === "undefined");
+                await u.waitUntil(() => typeof _converse.roster.get(jid) === "undefined");
                 done();
             }));
 
@@ -533,7 +533,7 @@
                     'xmlns': Strophe.NS.NICK,
                 }).t('Clint Contact');
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await test_utils.waitUntil(() => {
+                await u.waitUntil(() => {
                     const header = sizzle('a:contains("Contact requests")', _converse.rosterview.el).pop();
                     const contacts = _.filter(header.parentElement.querySelectorAll('li'), u.isVisible);
                     return contacts.length;

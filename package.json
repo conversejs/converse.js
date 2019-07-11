@@ -94,7 +94,6 @@
     "style-loader": "^0.23.1",
     "uglify-es": "^3.3.9",
     "urijs": "^1.19.1",
-    "wait-until-promise": "^1.0.0",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.5",
     "xss": "^1.0.6"

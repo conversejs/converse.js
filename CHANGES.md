@@ -57,6 +57,7 @@
 
 ### Breaking changes
 
+- The minimum required NodeJS version for making builds is now 8.9.0
 - Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).
 - `_converse.api.archive.query` now returns a Promise instead of accepting a callback functions.
 - `_converse.api.disco.supports` now returns a Promise which resolves to a Boolean instead of an Array.

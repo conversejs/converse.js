@@ -27,8 +27,8 @@ converse.plugins.add('converse-message-view', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-            { __ } = _converse;
+        const { _converse } = this;
+        const { __ } = _converse;
 
 
         function onTagFoundDuringXSSFilter (tag, html, options) {

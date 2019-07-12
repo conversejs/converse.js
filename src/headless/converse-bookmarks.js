@@ -262,8 +262,7 @@ converse.plugins.add('converse-bookmarks', {
             if (!_converse.allow_bookmarks) {
                 return;
             }
-            const supported = await _converse.checkBookmarksSupport();
-            if (supported) {
+            if (await _converse.checkBookmarksSupport()) {
                 _converse.bookmarks = new _converse.Bookmarks();
                 await _converse.bookmarks.fetchBookmarks();
                 /**

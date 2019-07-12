@@ -78,6 +78,35 @@
         return this;
     };
 
+    utils.waitUntilBookmarksReturned = async function (_converse, bookmarks=[]) {
+        await utils.waitUntilDiscoConfirmed(
+            _converse, _converse.bare_jid,
+            [{'category': 'pubsub', 'type': 'pep'}],
+            ['http://jabber.org/protocol/pubsub#publish-options']
+        );
+        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const sent_stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop()
+        );
+        const stanza = $iq({
+            'to': _converse.connection.jid,
+            'type':'result',
+            'id':sent_stanza.getAttribute('id')
+        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+            .c('items', {'node': 'storage:bookmarks'})
+                .c('item', {'id': 'current'})
+                    .c('storage', {'xmlns': 'storage:bookmarks'});
+        bookmarks.forEach(bookmark => {
+            stanza.c('conference', {
+                'name': bookmark.name,
+                'autojoin': bookmark.autojoin,
+                'jid': bookmark.jid
+            }).c('nick').t(bookmark.nick).up().up()
+        });
+        _converse.connection._dataRecv(utils.createRequest(stanza));
+        await _converse.api.waitUntil('bookmarksInitialized');
+    };
+
     utils.openChatBoxes = function (converse, amount) {
         var i = 0, jid, views = [];
         for (i; i<amount; i++) {
@@ -388,7 +417,7 @@
     }
 
     utils.sendMessage = function (view, message) {
-        const promise = new Promise((resolve, reject) => view.on('messageInserted', resolve));
+        const promise = new Promise(resolve => view.once('messageInserted', resolve));
         view.el.querySelector('.chat-textarea').value = message;
         view.onKeyDown({
             target: view.el.querySelector('textarea.chat-textarea'),

@@ -322,11 +322,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-                await test_utils.waitUntilDiscoConfirmed(
-                    _converse, _converse.bare_jid,
-                    [{'category': 'pubsub', 'type': 'pep'}],
-                    ['http://jabber.org/protocol/pubsub#publish-options']
-                );
+                await test_utils.waitUntilBookmarksReturned(_converse);
                 spyOn(_converse.api.rooms, 'create').and.callThrough();
                 const jid = 'theplay@conference.shakespeare.lit';
                 const model = _converse.bookmarks.create({
@@ -450,7 +446,7 @@
                     '<items node="storage:bookmarks"/>'+
                 '</pubsub>'+
                 '</iq>');
-                
+
             /*
              * Server returns all items
              * ------------------------

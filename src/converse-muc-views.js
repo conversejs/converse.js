@@ -1273,6 +1273,7 @@ converse.plugins.add('converse-muc-views', {
             onOccupantAdded (occupant) {
                 if (occupant.get('jid') === _converse.bare_jid) {
                     this.renderHeading();
+                    this.renderBottomPanel();
                 }
                 if (occupant.get('show') === 'online') {
                     this.showJoinNotification(occupant);

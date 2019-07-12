@@ -108,10 +108,10 @@
     };
 
     utils.openChatBoxes = function (converse, amount) {
-        var i = 0, jid, views = [];
-        for (i; i<amount; i++) {
-            jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            views[i] = converse.roster.get(jid).trigger("open");
+        const views = [];
+        for (let i=0; i<amount; i++) {
+            const jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            views.push(converse.roster.get(jid).trigger("open"));
         }
         return views;
     };

@@ -344,6 +344,11 @@ converse.plugins.add('converse-controlbox', {
             onControlBoxToggleHidden () {
                 this.model.set('closed', false);
                 this.el.classList.remove('hidden');
+                /**
+                 * Triggered once the controlbox has been opened
+                 * @event _converse#controlBoxOpened
+                 * @type {_converse.ControlBox}
+                 */
                 _converse.api.trigger('controlBoxOpened', this);
             },
 

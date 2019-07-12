@@ -199,12 +199,13 @@ u.stringToNode = function (s) {
 };
 
 u.getOuterWidth = function (el, include_margin=false) {
-    var width = el.offsetWidth;
+    let width = el.offsetWidth;
     if (!include_margin) {
         return width;
     }
-    var style = window.getComputedStyle(el);
-    width += parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+    const style = window.getComputedStyle(el);
+    width += parseInt(style.marginLeft ? style.marginLeft : 0, 10) +
+             parseInt(style.marginRight ? style.marginRight : 0, 10);
     return width;
 };
 

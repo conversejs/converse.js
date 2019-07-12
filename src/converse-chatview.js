@@ -555,11 +555,14 @@ converse.plugins.add('converse-chatview', {
             },
 
             insertIntoDOM () {
-                /* This method gets overridden in src/converse-controlbox.js
-                 * as well as src/converse-muc.js (if those plugins are
-                 * enabled).
-                 */
                 _converse.chatboxviews.insertRowColumn(this.el);
+                /**
+                 * Triggered once the _converse.ChatBoxView has been inserted into the DOM
+                 * @event _converse#chatBoxInsertedIntoDOM
+                 * @type { _converse.ChatBoxView | _converse.HeadlinesBoxView }
+                 * @example _converse.api.listen.on('chatBoxInsertedIntoDOM', view => { ... });
+                 */
+                _converse.api.trigger('chatBoxInsertedIntoDOM', this);
                 return this;
             },
 

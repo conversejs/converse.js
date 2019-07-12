@@ -273,14 +273,14 @@
 
             it("can be saved to, and retrieved from, browserStorage",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched',], {},
+                    null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
+                spyOn(_converse.ChatBoxViews.prototype, 'trimChats');
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 spyOn(_converse.api, "trigger");
-                spyOn(_converse.chatboxviews, 'trimChats');
                 test_utils.openControlBox();
 
                 test_utils.openChatBoxes(_converse, 6);
@@ -386,11 +386,11 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
+                spyOn(_converse.ChatBoxViews.prototype, 'trimChats');
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                 spyOn(_converse.api, "trigger");
-                spyOn(_converse.chatboxviews, 'trimChats');
                 _converse.chatboxes.browserStorage._clear();
 
                 test_utils.closeControlBox();

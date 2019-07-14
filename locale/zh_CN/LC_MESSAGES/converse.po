@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-07-02 14:01+0000\n"
-"Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
+"PO-Revision-Date: 2019-07-15 06:01+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -1809,9 +1809,9 @@ msgid "Download file \"%1$s\""
 msgstr "下载音频文件"
 
 #: dist/converse-no-dependencies.js:78768
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Download image \"%1$s\""
-msgstr "下载图片"
+msgstr "下载图片 \"%1$s\""
 
 #: dist/converse-no-dependencies.js:78798
 msgid "Download"

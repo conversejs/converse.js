@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-06-18 19:04+0000\n"
+"PO-Revision-Date: 2019-07-21 20:07+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/conversejs/"
 "translations/pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.7\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -729,12 +729,10 @@ msgid "%1$s has left the groupchat. \"%2$s\""
 msgstr "%1$s saiu da sala. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:37797
-#, fuzzy
 msgid "You are not on the member list of this groupchat."
 msgstr "Você não é membro dessa sala."
 
 #: dist/converse-no-dependencies.js:37799
-#, fuzzy
 msgid "You have been banned from this groupchat."
 msgstr "Você foi banido dessa sala."
 
@@ -743,22 +741,18 @@ msgid "No nickname was specified."
 msgstr "Você não escolheu um apelido ."
 
 #: dist/converse-no-dependencies.js:37807
-#, fuzzy
 msgid "You are not allowed to create new groupchats."
 msgstr "Você não tem permissão de criar novas salas."
 
 #: dist/converse-no-dependencies.js:37809
-#, fuzzy
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Seu apelido não está de acordo com as regras da sala."
 
 #: dist/converse-no-dependencies.js:37815
-#, fuzzy
 msgid "This groupchat does not (yet) exist."
-msgstr "A sala não existe (ainda)."
+msgstr "Esta sala (ainda) não existe."
 
 #: dist/converse-no-dependencies.js:37817
-#, fuzzy
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "A sala atingiu o número máximo de ocupantes."
 
@@ -767,29 +761,27 @@ msgid "Remote server not found"
 msgstr "Servidor remoto não encontrado"
 
 #: dist/converse-no-dependencies.js:37824
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The explanation given is: \"%1$s\"."
 msgstr "A razão dada é: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:37877
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "Topico definido por %1$s para: %2$s"
+msgstr "Topico definido por %1$s"
 
 #: dist/converse-no-dependencies.js:37877
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "Topico definido por %1$s para: %2$s"
+msgstr "Topico limpo por %1$s"
 
 #: dist/converse-no-dependencies.js:37913
-#, fuzzy
 msgid "Groupchats"
-msgstr "Grupos"
+msgstr "Salas"
 
 #: dist/converse-no-dependencies.js:37914
-#, fuzzy
 msgid "Add a new groupchat"
-msgstr "Entrar na sala"
+msgstr "Adicionar uma nova sala"
 
 #: dist/converse-no-dependencies.js:37915
 msgid "Query for groupchats"
@@ -805,19 +797,16 @@ msgid "This user is a moderator."
 msgstr "Esse usuário é o moderador."
 
 #: dist/converse-no-dependencies.js:37957
-#, fuzzy
 msgid "This user can send messages in this groupchat."
-msgstr "Esse usuário pode enviar mensagens nessa sala."
+msgstr "Este usuário pode enviar mensagens nessa sala."
 
 #: dist/converse-no-dependencies.js:37958
-#, fuzzy
 msgid "This user can NOT send messages in this groupchat."
-msgstr "Esse usuário NÃO pode enviar mensagens nessa sala."
+msgstr "Este usuário NÃO pode enviar mensagens nessa sala."
 
 #: dist/converse-no-dependencies.js:37959
-#, fuzzy
 msgid "Moderator"
-msgstr "Moderado"
+msgstr "Moderador"
 
 #: dist/converse-no-dependencies.js:37960
 msgid "Visitor"
@@ -828,9 +817,8 @@ msgid "Owner"
 msgstr "Proprietário"
 
 #: dist/converse-no-dependencies.js:37962
-#, fuzzy
 msgid "Member"
-msgstr "Apenas membros"
+msgstr "Membro"
 
 #: dist/converse-no-dependencies.js:37963
 msgid "Admin"
@@ -846,7 +834,7 @@ msgid "Invite"
 msgstr "convite"
 
 #: dist/converse-no-dependencies.js:38051
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
@@ -871,9 +859,8 @@ msgstr "%1$s diz"
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:38509
-#, fuzzy
 msgid "OMEMO Message received"
-msgstr "Arquivando mensagem"
+msgstr "Mensagem OMEMO recebida"
 
 #: dist/converse-no-dependencies.js:38540
 msgid "has gone offline"
@@ -896,9 +883,8 @@ msgid "wants to be your contact"
 msgstr "Quer ser seu contato"
 
 #: dist/converse-no-dependencies.js:38800
-#, fuzzy
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "Ocorreu um erro enquanto tentava salvar o formulário"
+msgstr "Desculpe, ocorreu um erro ao tentar remover os aparelhos."
 
 #: dist/converse-no-dependencies.js:38810
 msgid ""
@@ -1004,14 +990,12 @@ msgid "Email"
 msgstr "Email"
 
 #: dist/converse-no-dependencies.js:40226
-#, fuzzy
 msgid "Full Name"
-msgstr "Nome"
+msgstr "Nome completo"
 
 #: dist/converse-no-dependencies.js:40227
-#, fuzzy
 msgid "XMPP Address (JID)"
-msgstr "Endereço da sala (JID):"
+msgstr "Endereço XMPP (JID)"
 
 #: dist/converse-no-dependencies.js:40229
 msgid "Role"
@@ -1030,9 +1014,8 @@ msgid "URL"
 msgstr "URL"
 
 #: dist/converse-no-dependencies.js:40261
-#, fuzzy
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr "Desculpe, algo deu errado ao tentar salvar seu favorito."
+msgstr "Desculpe, ocorreu um erro ao tentar salvar seus dados de perfil."
 
 #: dist/converse-no-dependencies.js:40261
 msgid "You can check your browser's developer console for any error output."
@@ -1069,14 +1052,12 @@ msgid "Away for long"
 msgstr "Fora por muito tempo"
 
 #: dist/converse-no-dependencies.js:40319
-#, fuzzy
 msgid "Change chat status"
-msgstr "Clique para mudar seu status no chat"
+msgstr "Alterar o estado do chat"
 
 #: dist/converse-no-dependencies.js:40320
-#, fuzzy
 msgid "Personal status message"
-msgstr "Mensagem pessoal"
+msgstr "Mensagem de estado pessoal"
 
 #: dist/converse-no-dependencies.js:40355
 msgid "About"

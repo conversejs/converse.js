@@ -1831,6 +1831,7 @@ _converse.api = {
  * or closured data. To do that, you’ll need to create a plugin, which has
  * access to the private API method.
  *
+ * @global
  * @namespace converse
  */
 const converse = {

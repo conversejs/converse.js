@@ -227,10 +227,12 @@ check: eslint dist/converse.js
 ## Documentation
 
 ./bin/activate:
-	virtualenv .
+	python3 -m venv .
 
 .installed.cfg: requirements.txt buildout.cfg
 	./bin/pip install -r requirements.txt
+	./bin/pip install --upgrade pip==19.2.1
+	./bin/pip install --upgrade setuptools==41.0.1
 	./bin/buildout -v
 
 docsdev: ./bin/activate .installed.cfg

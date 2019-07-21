@@ -7,8 +7,11 @@
 // Some code taken from the Strophe RSM plugin, licensed under the MIT License
 // Copyright 2006-2017 Strophe (https://github.com/strophe/strophejs)
 //
-// XEP-0059 Result Set Management
-
+/**
+ * @module converse-rsm
+ * @description
+ * XEP-0059 Result Set Management
+ */
 import converse from "./converse-core";
 
 const { Strophe, $build } = converse.env;

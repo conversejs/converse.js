@@ -24,13 +24,13 @@
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             test_utils.openChatBoxFor(_converse, contact_jid);
-            await test_utils.waitUntil(() => _converse.chatboxes.length > 1);
+            await u.waitUntil(() => _converse.chatboxes.length > 1);
             const view = _converse.chatboxviews.get(contact_jid);
             let show_modal_button = view.el.querySelector('.show-user-details-modal');
             expect(u.isVisible(show_modal_button)).toBeTruthy();
             show_modal_button.click();
             const modal = view.user_details_modal;
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(window, 'confirm').and.returnValue(true);
             spyOn(view.model.contact, 'removeFromRoster').and.callFake(function (callback) {
                 callback();
@@ -38,7 +38,7 @@
             let remove_contact_button = modal.el.querySelector('button.remove-contact');
             expect(u.isVisible(remove_contact_button)).toBeTruthy();
             remove_contact_button.click();
-            await test_utils.waitUntil(() => modal.el.getAttribute('aria-hidden'), 1000);
+            await u.waitUntil(() => modal.el.getAttribute('aria-hidden'), 1000);
 
             show_modal_button = view.el.querySelector('.show-user-details-modal');
             show_modal_button.click();
@@ -62,7 +62,7 @@
             expect(u.isVisible(show_modal_button)).toBeTruthy();
             show_modal_button.click();
             const modal = view.user_details_modal;
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 2000);
+            await u.waitUntil(() => u.isVisible(modal.el), 2000);
             spyOn(window, 'confirm').and.returnValue(true);
             spyOn(view.model.contact, 'removeFromRoster').and.callFake(function (callback, errback) {
                 errback();
@@ -70,7 +70,7 @@
             let remove_contact_button = modal.el.querySelector('button.remove-contact');
             expect(u.isVisible(remove_contact_button)).toBeTruthy();
             remove_contact_button.click();
-            await test_utils.waitUntil(() => u.isVisible(document.querySelector('.alert-danger')), 2000);
+            await u.waitUntil(() => u.isVisible(document.querySelector('.alert-danger')), 2000);
 
             const header = document.querySelector('.alert-danger .modal-title');
             expect(header.textContent).toBe("Error");
@@ -79,11 +79,11 @@
             document.querySelector('.alert-danger  button.close').click();
             show_modal_button = view.el.querySelector('.show-user-details-modal');
             show_modal_button.click();
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 2000)
+            await u.waitUntil(() => u.isVisible(modal.el), 2000)
 
             show_modal_button = view.el.querySelector('.show-user-details-modal');
             show_modal_button.click();
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 2000)
+            await u.waitUntil(() => u.isVisible(modal.el), 2000)
 
             remove_contact_button = modal.el.querySelector('button.remove-contact');
             expect(u.isVisible(remove_contact_button)).toBeTruthy();

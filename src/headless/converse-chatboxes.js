@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2012-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-chatboxes
+ */
 import "./utils/emoji";
 import "./utils/form";
 import BrowserStorage from "backbone.browserStorage";
@@ -36,6 +38,7 @@ converse.plugins.add('converse-chatboxes', {
         // configuration settings.
         _converse.api.settings.update({
             'auto_join_private_chats': [],
+            'clear_messages_on_reconnection': false,
             'filter_by_resource': false,
             'send_chat_state_notifications': true
         });
@@ -59,19 +62,24 @@ converse.plugins.add('converse-chatboxes', {
 
         const ModelWithContact = Backbone.Model.extend({
 
+            initialize () {
+                this.rosterContactAdded = u.getResolveablePromise();
+            },
+
             async setRosterContact (jid) {
                 const contact = await _converse.api.contacts.get(jid);
                 if (contact) {
                     this.contact = contact;
                     this.set('nickname', contact.get('nickname'));
-                    this.trigger('rosterContactAdded');
+                    this.rosterContactAdded.resolve();
                 }
             }
         });
 
 
         /**
-         * Represents a chat message
+         * Represents a non-MUC message. These can be either `chat` messages or
+         * `headline` messages.
          * @class
          * @namespace _converse.Message
          * @memberOf _converse
@@ -87,12 +95,13 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             initialize () {
-                if (['chat', 'groupchat'].includes(this.get('type'))) {
-                    this.setVCard();
-                }
+                ModelWithContact.prototype.initialize.apply(this, arguments);
+
                 if (this.get('type') === 'chat') {
+                    this.setVCard();
                     this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
                 }
+
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
                 }
@@ -107,32 +116,6 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
-            getVCardForChatroomOccupant () {
-                const chatbox = this.collection.chatbox,
-                      nick = Strophe.getResourceFromJid(this.get('from'));
-
-                if (chatbox.get('nick') === nick) {
-                    return _converse.xmppstatus.vcard;
-                } else {
-                    let vcard;
-                    if (this.get('vcard_jid')) {
-                        vcard = _converse.vcards.findWhere({'jid': this.get('vcard_jid')});
-                    }
-                    if (!vcard) {
-                        let jid;
-                        const occupant = chatbox.occupants.findWhere({'nick': nick});
-                        if (occupant && occupant.get('jid')) {
-                            jid = occupant.get('jid');
-                            this.save({'vcard_jid': jid}, {'silent': true});
-                        } else {
-                            jid = this.get('from');
-                        }
-                        vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
-                    }
-                    return vcard;
-                }
-            },
-
             setVCard () {
                 if (!_converse.vcards) {
                     // VCards aren't supported
@@ -140,8 +123,6 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 if (this.get('type') === 'error') {
                     return;
-                } else if (this.get('type') === 'groupchat') {
-                    this.vcard = this.getVCardForChatroomOccupant();
                 } else {
                     const jid = Strophe.getBareJidFromJid(this.get('from'));
                     this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
@@ -271,6 +252,8 @@ converse.plugins.add('converse-chatboxes', {
          * @memberOf _converse
          */
         _converse.ChatBox = ModelWithContact.extend({
+            messagesCollection: _converse.Messages,
+
             defaults () {
                 return {
                     'bookmarked': false,
@@ -286,6 +269,8 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             initialize () {
+                ModelWithContact.prototype.initialize.apply(this, arguments);
+
                 const jid = this.get('jid');
                 if (!jid) {
                     // XXX: The `validate` method will prevent this model
@@ -311,7 +296,7 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             initMessages () {
-                this.messages = new _converse.Messages();
+                this.messages = new this.messagesCollection();
                 this.messages.browserStorage = new BrowserStorage.session(
                     `converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
                 this.messages.chatbox = this;
@@ -376,7 +361,9 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             onReconnection () {
-                this.clearMessages();
+                if (_converse.clear_messages_on_reconnection) {
+                    this.clearMessages();
+                }
                 this.announceReconnection();
             },
 
@@ -414,6 +401,39 @@ converse.plugins.add('converse-chatboxes', {
                 if (attrs) {
                     message.save(attrs);
                 }
+            },
+
+            /**
+             * Mutator for setting the chat state of this chat session.
+             * Handles clearing of any chat state notification timeouts and
+             * setting new ones if necessary.
+             * Timeouts are set when the  state being set is COMPOSING or PAUSED.
+             * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
+             * See XEP-0085 Chat State Notifications.
+             * @private
+             * @method _converse.ChatBox#setChatState
+             * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+             */
+            setChatState (state, options) {
+                if (!_.isUndefined(this.chat_state_timeout)) {
+                    window.clearTimeout(this.chat_state_timeout);
+                    delete this.chat_state_timeout;
+                }
+                if (state === _converse.COMPOSING) {
+                    this.chat_state_timeout = window.setTimeout(
+                        this.setChatState.bind(this),
+                        _converse.TIMEOUTS.PAUSED,
+                        _converse.PAUSED
+                    );
+                } else if (state === _converse.PAUSED) {
+                    this.chat_state_timeout = window.setTimeout(
+                        this.setChatState.bind(this),
+                        _converse.TIMEOUTS.INACTIVE,
+                        _converse.INACTIVE
+                    );
+                }
+                this.set('chat_state', state, options);
+                return this;
             },
 
             /**
@@ -485,6 +505,7 @@ converse.plugins.add('converse-chatboxes', {
                     // This is a correction of an earlier message we already received
                     older_versions[message.get('time')] = message.get('message');
                     attrs = Object.assign(attrs, {'older_versions': older_versions});
+                    delete attrs['id']; // Delete id, otherwise a new cache entry gets created
                     message.save(attrs);
                 }
                 return message;
@@ -689,10 +710,8 @@ converse.plugins.add('converse-chatboxes', {
              *
              * @method _converse.ChatBox#sendMessage
              * @memberOf _converse.ChatBox
-             *
              * @param {String} text - The chat message text
              * @param {String} spoiler_hint - An optional hint, if the message being sent is a spoiler
-             *
              * @example
              * const chat = _converse.api.chats.get('buddy1@example.com');
              * chat.sendMessage('hello world');
@@ -719,11 +738,13 @@ converse.plugins.add('converse-chatboxes', {
                 return true;
             },
 
+            /**
+             * Sends a message with the current XEP-0085 chat state of the user
+             * as taken from the `chat_state` attribute of the {@link _converse.ChatBox}.
+             * @private
+             * @method _converse.ChatBox#sendChatState
+             */
             sendChatState () {
-                /* Sends a message with the status of the user in this chat session
-                 * as taken from the 'chat_state' attribute of the chat box.
-                 * See XEP-0085 Chat State Notifications.
-                 */
                 if (_converse.send_chat_state_notifications && this.get('chat_state')) {
                     _converse.api.send(
                         $msg({
@@ -840,7 +861,10 @@ converse.plugins.add('converse-chatboxes', {
                 if (type === 'error') {
                     return this.getErrorMessage(stanza);
                 } else {
-                    return _.propertyOf(stanza.querySelector('body'))('textContent');
+                    const body = stanza.querySelector('body');
+                    if (body) {
+                        return body.textContent.trim();
+                    }
                 }
             },
 
@@ -894,7 +918,7 @@ converse.plugins.add('converse-chatboxes', {
                         attrs.fullname = _converse.xmppstatus.get('fullname');
                     } else {
                         attrs.sender = 'them';
-                        attrs.fullname = this.get('fullname') || this.get('fullname')
+                        attrs.fullname = this.get('fullname');
                     }
                 }
                 sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza).forEach(xform => {
@@ -1223,7 +1247,7 @@ converse.plugins.add('converse-chatboxes', {
              * @namespace _converse.api.chats
              * @memberOf _converse.api
              */
-            'chats': {
+            chats: {
                 /**
                  * @method _converse.api.chats.create
                  * @param {string|string[]} jid|jids An jid or array of jids

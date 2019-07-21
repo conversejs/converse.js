@@ -18,11 +18,12 @@
 - Continuously retry (in 2s intervals) to fetch login credentials (via [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url)) in case of failure
 - Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
 - New config option [auto_focus](https://conversejs.org/docs/html/configuration.html#auto-focus)
+- New config option [clear_messages_on_reconnection](https://conversejs.org/docs/html/configuration.html#clear-messages-on-reconnection)
 - New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks)
-- New config option [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
 - New config option [message_limit](https://conversejs.org/docs/html/configuration.html#message-limit)
-- New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton)
 - New config option [muc_mention_autocomplete_min_chars](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-min-chars)
+- New config option [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
+- New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton)
   By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
   "embed" the full app and not just a single chat. To embed just a single chat, it's now
   necessary to explicitly set `singleton` to `true`.
@@ -35,9 +36,13 @@
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1330: Missing room name in MUC invitation popup
 - #1445: Participants list uses big font in embedded mode
+- #1455: Avatar in controlbox status-view not updated
 - #1465: When highlighting a roster contact, they're incorrectly shown as online
+- #1476: Support OMEMO on by default for chats via a config variable
+- #1494: Trim whitespace around messages
 - #1495: Mentions should always include a URI attribute
 - #1502: Fatal error when using prebind
+- #1524: OMEMO libsignal-protocol.js Invalid signature
 - #1532: Converse reloads on enter pressed in the filter box
 - #1538: Allow adding self as contact
 - #1550: Legitimate carbons being blocked due to erroneous forgery check
@@ -47,10 +52,12 @@
 - #1575: MUC invitation autocomplete list doesn't appear
 - #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`
 - #1579: Trim spaces at the beginning and end of a JID (when adding contact)
+- #1585: Upload files by pasting from clipboard
 - #1586: Not possible to kick someone with a space in their nickname
 
 ### Breaking changes
 
+- The minimum required NodeJS version for making builds is now 8.9.0
 - Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).
 - `_converse.api.archive.query` now returns a Promise instead of accepting a callback functions.
 - `_converse.api.disco.supports` now returns a Promise which resolves to a Boolean instead of an Array.

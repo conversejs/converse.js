@@ -92,7 +92,12 @@
     };
 
     mock.chatroom_names = [
-        'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'
+        'Dyon van de Wege',
+        'Thomas Kalb',
+        'Dirk Theissen',
+        'Felix Hofmann',
+        'Ka Lek',
+        'Anne Ebersbacher'
     ];
     // TODO: need to also test other roles and affiliations
     mock.chatroom_roles = {
@@ -238,7 +243,7 @@
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         };
         if (_.get(settings, 'auto_login') !== false) {
-            _converse.api.user.login('romeo@montague.lit', 'secret');
+            _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
             await _converse.api.waitUntil('afterResourceBinding');
         }
         window.converse_disable_effects = true;

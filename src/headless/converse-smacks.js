@@ -3,9 +3,12 @@
 //
 // Copyright (c) The Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-/* This is a Converse.js plugin which add support for XEP-0198: Stream Management */
-
+//
+/**
+ * @module converse-smacks
+ * @description
+ * Converse.js plugin which adds support for XEP-0198: Stream Management
+ */
 import converse from "./converse-core";
 
 const { Strophe, $build, _ } = converse.env;
@@ -81,7 +84,17 @@ converse.plugins.add('converse-smacks', {
             return true;
         }
 
-        function clearSessionData () {
+        function initSessionData () {
+            _converse.session.save({
+                'smacks_enabled': _converse.session.get('smacks_enabled') || false,
+                'num_stanzas_handled': _converse.session.get('num_stanzas_handled') || 0,
+                'num_stanzas_handled_by_server': _converse.session.get('num_stanzas_handled_by_server') || 0,
+                'num_stanzas_since_last_ack': _converse.session.get('num_stanzas_since_last_ack') || 0,
+                'unacked_stanzas': _converse.session.get('unacked_stanzas') || []
+            });
+        }
+
+        function resetSessionData () {
             _converse.session.save({
                 'smacks_enabled': false,
                 'num_stanzas_handled': 0,
@@ -114,7 +127,7 @@ converse.plugins.add('converse-smacks', {
                 _converse.log('Failed to enable stream management', Strophe.LogLevel.ERROR);
                 _converse.log(el.outerHTML, Strophe.LogLevel.ERROR);
             }
-            clearSessionData();
+            resetSessionData();
             return true;
         }
 
@@ -198,7 +211,7 @@ converse.plugins.add('converse-smacks', {
                     _converse.session.get('smacks_stream_id')) {
                 await sendResumeStanza();
             } else {
-                clearSessionData();
+                resetSessionData();
             }
         }
 
@@ -217,7 +230,7 @@ converse.plugins.add('converse-smacks', {
                 const stanza_string = Strophe.serialize(stanza);
                 _converse.session.save(
                     'unacked_stanzas',
-                    _converse.session.get('unacked_stanzas').concat([stanza_string])
+                    (_converse.session.get('unacked_stanzas') || []).concat([stanza_string])
                 );
                 const max_unacked = _converse.smacks_max_unacked_stanzas;
                 if (max_unacked > 0) {
@@ -231,6 +244,7 @@ converse.plugins.add('converse-smacks', {
             }
         }
 
+        _converse.api.listen.on('userSessionInitialized', initSessionData);
         _converse.api.listen.on('beforeResourceBinding', enableStreamManagement);
         _converse.api.listen.on('afterResourceBinding', sendEnableStanza);
         _converse.api.listen.on('send', onStanzaSent);

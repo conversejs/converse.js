@@ -4,23 +4,22 @@
 // Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
-
-/* This is a Converse.js plugin which add support for bookmarks specified
- * in XEP-0048.
+/**
+ * @module converse-bookmark-views
+ * @description
+ * Converse.js plugin which adds views for XEP-0048 bookmarks
  */
-
 import "backbone.nativeview";
+import "@converse/headless/converse-muc";
 import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
-import muc from "@converse/headless/converse-muc";
 import tpl_bookmark from "templates/bookmark.html";
 import tpl_bookmarks_list from "templates/bookmarks_list.html"
 import tpl_chatroom_bookmark_form from "templates/chatroom_bookmark_form.html";
 import tpl_chatroom_bookmark_toggle from "templates/chatroom_bookmark_toggle.html";
 
-const { Backbone, Promise, Strophe, $iq, sizzle, _ } = converse.env;
+const { Backbone, Strophe, _ } = converse.env;
 const u = converse.env.utils;
 
 

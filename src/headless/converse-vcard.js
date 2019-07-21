@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-vcard
+ */
 import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import tpl_vcard from "./templates/vcard.html";
@@ -130,8 +132,10 @@ converse.plugins.add('converse-vcard', {
 
         _converse.api.listen.on('statusInitialized', () => {
             const vcards = _converse.vcards;
-            const jid = _converse.session.get('bare_jid');
-            _converse.xmppstatus.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
+            if (_converse.session) {
+                const jid = _converse.session.get('bare_jid');
+                _converse.xmppstatus.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
+            }
         });
 
 
@@ -165,7 +169,7 @@ converse.plugins.add('converse-vcard', {
                  *     // Failure
                  * }).
                  */
-                'set' (jid, data) {
+                set (jid, data) {
                     return setVCard(jid, data);
                 },
 

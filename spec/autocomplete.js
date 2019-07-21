@@ -20,7 +20,7 @@
                 null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'tom');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
 
             ['dick', 'harry'].forEach((nick) => {
@@ -62,7 +62,7 @@
                 null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(view.model.occupants.length).toBe(1);
             let presence = $pres({
@@ -173,7 +173,7 @@
                 null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(view.model.occupants.length).toBe(1);
             const presence = $pres({

@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-message-view
+ */
 import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
 import filesize from "filesize";
@@ -27,8 +29,8 @@ converse.plugins.add('converse-message-view', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-            { __ } = _converse;
+        const { _converse } = this;
+        const { __ } = _converse;
 
 
         function onTagFoundDuringXSSFilter (tag, html, options) {
@@ -89,13 +91,26 @@ converse.plugins.add('converse-message-view', {
                         this.render();
                     }
                 }, 50);
+
                 if (this.model.vcard) {
                     this.model.vcard.on('change', this.debouncedRender, this);
                 }
-                this.model.on('rosterContactAdded', () => {
-                    this.model.contact.on('change:nickname', this.debouncedRender, this);
-                    this.debouncedRender();
-                });
+
+                if (this.model.rosterContactAdded) {
+                    this.model.rosterContactAdded.then(() => {
+                        this.model.contact.on('change:nickname', this.debouncedRender, this);
+                        this.debouncedRender();
+                    });
+                }
+
+                if (this.model.occupantAdded) {
+                    this.model.occupantAdded.then(() => {
+                        this.model.occupant.on('change:role', this.debouncedRender, this);
+                        this.model.occupant.on('change:affiliation', this.debouncedRender, this);
+                        this.debouncedRender();
+                    });
+                }
+
                 this.model.on('change', this.onChanged, this);
                 this.model.on('destroy', this.fadeOut, this);
             },
@@ -170,16 +185,17 @@ converse.plugins.add('converse-message-view', {
             },
 
             async renderChatMessage () {
-                const is_me_message = this.isMeCommand(),
-                      time = dayjs(this.model.get('time')),
-                      role = this.model.vcard ? this.model.vcard.get('role') : null,
-                      roles = role ? role.split(',') : [];
+                const is_me_message = this.isMeCommand();
+                const time = dayjs(this.model.get('time'));
+                const role = this.model.vcard ? this.model.vcard.get('role') : null;
+                const roles = role ? role.split(',') : [];
 
                 const msg = u.stringToElement(tpl_message(
                     Object.assign(
                         this.model.toJSON(), {
                         '__': __,
                         'is_groupchat_message': this.model.get('type') === 'groupchat',
+                        'occupant': this.model.occupant,
                         'is_me_message': is_me_message,
                         'roles': roles,
                         'pretty_time': time.format(_converse.time_format),
@@ -321,8 +337,12 @@ converse.plugins.add('converse-message-view', {
 
             getExtraMessageClasses () {
                 let extra_classes = this.model.get('is_delayed') && 'delayed' || '';
-                if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
-                    if (this.model.collection.chatbox.isUserMentioned(this.model)) {
+
+                if (this.model.get('type') === 'groupchat') {
+                    if (this.model.occupant) {
+                        extra_classes += ` ${this.model.occupant.get('role') || ''} ${this.model.occupant.get('affiliation') || ''}`;
+                    }
+                    if (this.model.get('sender') === 'them' && this.model.collection.chatbox.isUserMentioned(this.model)) {
                         // Add special class to mark groupchat messages
                         // in which we are mentioned.
                         extra_classes += ' mentioned';

@@ -24,7 +24,7 @@ import tpl_select_option from "../templates/select_option.html";
 import tpl_video from "../templates/video.html";
 import u from "../headless/utils/core";
 
-const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
+const URL_REGEX = /\b(https?\:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 
 function getAutoCompleteProperty (name, options) {
     return {
@@ -258,7 +258,7 @@ u.getLastChildElement = function (el, selector='*') {
 }
 
 u.hasClass = function (className, el) {
-    return Array.from(el.classList).includes(className);
+    return el.classList.contains(className);
 };
 
 u.addClass = function (className, el) {

@@ -66,7 +66,7 @@
             expect(u.isVisible(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout'))).toBeTruthy();
             expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeFalsy();
             _converse.minimized_chats.el.querySelector('#toggle-minimized-chats').click();
-            await test_utils.waitUntil(() => u.isVisible(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout')));
+            await u.waitUntil(() => u.isVisible(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout')));
             expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeTruthy();
             done();
         }));
@@ -93,7 +93,7 @@
                 contact_jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 test_utils.openChatBoxFor(_converse, contact_jid);
             }
-            test_utils.waitUntil(() => _converse.chatboxes.length == 4).then(() => {
+            u.waitUntil(() => _converse.chatboxes.length == 4).then(() => {
                 for (i=0; i<3; i++) {
                     chatview = _converse.chatboxviews.get(contact_jid);
                     chatview.model.set({'minimized': true});
@@ -106,7 +106,7 @@
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     _converse.chatboxes.onMessage(msg);
                 }
-                return test_utils.waitUntil(() => chatview.model.messages.length);
+                return u.waitUntil(() => chatview.model.messages.length);
             }).then(() => {
                 expect(u.isVisible(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count'))).toBeTruthy();
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((3).toString());
@@ -153,30 +153,26 @@
         it("shows the number messages received to minimized groupchats",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
-                function (done, _converse) {
+                async function (done, _converse) {
 
-            const room_jid = 'kitchen@conference.shakespeare.lit';
-            test_utils.openAndEnterChatRoom(
-                _converse, 'kitchen', 'conference.shakespeare.lit', 'fires').then(function () {
-                var view = _converse.chatboxviews.get(room_jid);
-                view.model.set({'minimized': true});
-
-                var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                var message = 'fires: Your attention is required';
-                var nick = mock.chatroom_names[0],
-                    msg = $msg({
-                        from: room_jid+'/'+nick,
-                        id: (new Date()).getTime(),
-                        to: 'romeo@montague.lit',
-                        type: 'groupchat'
-                    }).c('body').t(message).tree();
-                view.model.onMessage(msg);
-                return test_utils.waitUntil(() => view.model.messages.length);
-            }).then(() => {
-                expect(u.isVisible(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count'))).toBeTruthy();
-                expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe('1');
-                done();
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            const muc_jid = 'kitchen@conference.shakespeare.lit';
+            await test_utils.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'fires');
+            const view = _converse.chatboxviews.get(muc_jid);
+            view.model.set({'minimized': true});
+            const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const message = 'fires: Your attention is required';
+            const nick = mock.chatroom_names[0];
+            const msg = $msg({
+                    from: muc_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'romeo@montague.lit',
+                    type: 'groupchat'
+                }).c('body').t(message).tree();
+            view.model.onMessage(msg);
+            await u.waitUntil(() => view.model.messages.length);
+            expect(u.isVisible(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count'))).toBeTruthy();
+            expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe('1');
+            done();
         }));
     });
 }));

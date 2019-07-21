@@ -49,32 +49,30 @@
     return describe("Transcripts of chat logs", function () {
 
         it("can be used to replay conversations",
-                mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
 
             _converse.allow_non_roster_messaging = true;
-
-            test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'romeo').then(function () {
-                spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                _.each(transcripts, function (transcript) {
-                    var text = transcript();
-                    var xml = Strophe.xmlHtmlNode(text);
-                    _.each(xml.firstElementChild.children, function (el) {
-                        _.each(el.children, function (el) {
-                            if (el.nodeType === 3) {
-                                return;  // Ignore text
-                            }
-                            if (_.includes(IGNORED_TAGS, el.nodeName.toLowerCase())) {
-                                return;
-                            }
-                            var _stanza = traverseElement(el);
-                            _converse.connection._dataRecv(test_utils.createRequest(_stanza));
-                        });
+            await test_utils.openAndEnterChatRoom(_converse, 'discuss@conference.conversejs.org', 'romeo');
+            spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+            _.each(transcripts, function (transcript) {
+                const text = transcript();
+                const xml = Strophe.xmlHtmlNode(text);
+                _.each(xml.firstElementChild.children, function (el) {
+                    _.each(el.children, function (el) {
+                        if (el.nodeType === 3) {
+                            return;  // Ignore text
+                        }
+                        if (_.includes(IGNORED_TAGS, el.nodeName.toLowerCase())) {
+                            return;
+                        }
+                        const _stanza = traverseElement(el);
+                        _converse.connection._dataRecv(test_utils.createRequest(_stanza));
                     });
                 });
-                done();
             });
+            done();
         }));
     });
 }));

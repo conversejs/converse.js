@@ -3,10 +3,9 @@
 //
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-/* converse-uniview
- * ****************
- *
+/**
+ * @module converse-uniview
+ * @description
  * A plugin which ensures that only one chat (private or groupchat) is
  * visible at any one time. All other ongoing chats are hidden and kept in the
  * background.
@@ -14,7 +13,6 @@
  * This plugin makes sense in mobile, embedded or fullscreen chat environments
  * (as configured by the `view_mode` setting).
  */
-
 import "converse-chatview";
 import converse from "@converse/headless/converse-core";
 
@@ -77,31 +75,32 @@ converse.plugins.add('converse-uniview', {
                 } else {
                     return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
                 }
-            },
-
-            _show (focus) {
-                /* We only have one chat visible at any one
-                 * time. So before opening a chat, we make sure all other
-                 * chats are hidden.
-                 */
-                const { _converse } = this.__super__;
-                if (_converse.isUniView()) {
-                    _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                    u.safeSave(this.model, {'hidden': false});
-                }
-                return this.__super__._show.apply(this, arguments);
-            }
-        },
-
-        ChatRoomView: {
-            show (focus) {
-                const { _converse } = this.__super__;
-                if (_converse.isUniView()) {
-                    _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                    u.safeSave(this.model, {'hidden': false});
-                }
-                return this.__super__.show.apply(this, arguments);
             }
         }
+    },
+
+    initialize () {
+        /* The initialize function gets called as soon as the plugin is
+         * loaded by converse.js's plugin machinery.
+         */
+        const { _converse } = this;
+
+        /************************ BEGIN Event Handlers ************************/
+        _converse.api.listen.on('beforeShowingChatView', (view) => {
+            /* We only have one chat visible at any one
+             * time. So before opening a chat, we make sure all other
+             * chats are hidden.
+             */
+            if (_converse.isUniView()) {
+                Object.values(_converse.chatboxviews.xget(view.model.get('id')))
+                    .filter(v => !v.model.get('hidden'))
+                    .forEach(hideChat);
+
+                if (view.model.get('hidden')) {
+                    u.safeSave(view.model, {'hidden': false});
+                }
+            }
+        });
+        /************************ END Event Handlers ************************/
     }
 });

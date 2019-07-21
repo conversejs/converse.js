@@ -2,9 +2,10 @@
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const Strophe = converse.env.Strophe,
-          _ = converse.env._,
-          $msg = converse.env.$msg;
+    const Strophe = converse.env.Strophe;
+    const _ = converse.env._;
+    const $msg = converse.env.$msg;
+    const u = converse.env.utils;
 
     describe("Notifications", function () {
         // Implement the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
@@ -35,7 +36,7 @@
                             }).c('body').t(message).up()
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                         await _converse.chatboxes.onMessage(msg); // This will emit 'message'
-                        await test_utils.waitUntil(() => _converse.api.chatviews.get(sender_jid));
+                        await u.waitUntil(() => _converse.api.chatviews.get(sender_jid));
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
                         done();
@@ -47,7 +48,7 @@
                             async (done, _converse) => {
 
                         await test_utils.createContacts(_converse, 'current');
-                        await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+                        await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                         const view = _converse.api.chatviews.get('lounge@montague.lit');
                         if (!view.el.querySelectorAll('.chat-area').length) {
                             view.renderChatArea();
@@ -102,7 +103,7 @@
                             .c('x', {'xmlns': 'jabber:x:oob'})
                             .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                        await test_utils.waitUntil(() => _converse.chatboxviews.keys().length);
+                        await u.waitUntil(() => _converse.chatboxviews.keys().length);
                         const view = _converse.chatboxviews.get('notify.example.com');
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                         expect(
@@ -173,7 +174,7 @@
                         async (done, _converse) => {
 
                     test_utils.createContacts(_converse, 'current');
-                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+                    await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                     _converse.play_sounds = true;
                     spyOn(_converse, 'playSoundNotification');
                     const view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -188,7 +189,7 @@
                         type: 'groupchat'
                     }).c('body').t(text);
                     await view.model.onMessage(message.nodeTree);
-                    await test_utils.waitUntil(() => _converse.playSoundNotification.calls.count());
+                    await u.waitUntil(() => _converse.playSoundNotification.calls.count());
                     expect(_converse.playSoundNotification).toHaveBeenCalled();
 
                     text = "This message won't play a sound";

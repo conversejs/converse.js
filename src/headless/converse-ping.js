@@ -3,11 +3,12 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-/* This is a Converse.js plugin which add support for application-level pings
+/**
+ * @module converse-ping
+ * @description
+ * Converse.js plugin which add support for application-level pings
  * as specified in XEP-0199 XMPP Ping.
  */
-
 import converse from "./converse-core";
 
 // Strophe methods for building stanzas

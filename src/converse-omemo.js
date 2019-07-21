@@ -4,8 +4,10 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-/* global libsignal, ArrayBuffer, parseInt, crypto */
-
+/* global libsignal, ArrayBuffer */
+/**
+ * @module converse-omemo
+ */
 import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
@@ -243,6 +245,10 @@ converse.plugins.add('converse-omemo', {
          */
         const { _converse } = this,
               { __ } = _converse;
+
+        _converse.api.settings.update({
+            'omemo_default': false,
+        });
 
         _converse.api.promises.add(['OMEMOInitialized']);
 
@@ -545,18 +551,28 @@ converse.plugins.add('converse-omemo', {
             });
         }
 
-        function getSession (device) {
+        async function getSession (device) {
             const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
-            return _converse.omemo_store.loadSession(address.toString()).then(session => {
-                if (session) {
-                    return Promise.resolve();
-                } else {
-                    return buildSession(device);
+            const session = await _converse.omemo_store.loadSession(address.toString());
+            if (session) {
+                return Promise.resolve(session);
+            } else {
+                try {
+                    const session = await buildSession(device);
+                    return session;
+                } catch (e) {
+                    _converse.log(
+                        `Could not build an OMEMO session for device ${device.get('id')}`,
+                        Strophe.LogLevel.ERROR
+                    );
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    return null;
                 }
-            });
+            }
         }
 
         _converse.getBundlesAndBuildSessions = async function (chatbox) {
+            const no_devices_err = __("Sorry, no devices found to which we can send an OMEMO encrypted message.");
             let devices;
             if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
                 const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
@@ -564,15 +580,28 @@ converse.plugins.add('converse-omemo', {
             } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                 const their_devices = await getDevicesForContact(chatbox.get('jid'));
                 if (their_devices.length === 0) {
-                    const err = new Error(__("Sorry, we aren't able to fetch any devices to send an OMEMO encrypted message to."));
+                    const err = new Error(no_devices_err);
                     err.user_facing = true;
                     throw err;
                 }
                 const own_devices = _converse.devicelists.get(_converse.bare_jid).devices;
-                devices = _.concat(own_devices.models, their_devices.models);
+                devices = [...own_devices.models, ...their_devices.models];
             }
+            // Filter out our own device
+            const id = _converse.omemo_store.get('device_id');
+            devices = devices.filter(d => d.get('id') !== id);
+
             await Promise.all(devices.map(d => d.getBundle()));
-            await Promise.all(devices.map(d => getSession(d)));
+            const sessions = await Promise.all(devices.map(d => getSession(d)));
+            if (sessions.includes(null)) {
+                // We couldn't build a session for certain devices.
+                devices = devices.filter(d => sessions[devices.indexOf(d)]);
+                if (devices.length === 0) {
+                    const err = new Error(no_devices_err);
+                    err.user_facing = true;
+                    throw err;
+                }
+            }
             return devices;
         }
 
@@ -1204,6 +1233,9 @@ converse.plugins.add('converse-omemo', {
                 supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
             }
             chatbox.set('omemo_supported', supported);
+            if (supported && _converse.omemo_default) {
+                chatbox.set('omemo_active', true);
+            }
         }
 
         _converse.api.waitUntil('chatBoxesInitialized').then(() =>

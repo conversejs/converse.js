@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-rosterview
+ */
 import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
@@ -126,7 +128,7 @@ converse.plugins.add('converse-rosterview', {
                 };
                 const input_el = this.el.querySelector('input[name="name"]');
                 input_el.addEventListener('input', _.debounce(() => {
-                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
+                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
                     xhr.send()
                 } , 300));
                 this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
@@ -185,7 +187,7 @@ converse.plugins.add('converse-rosterview', {
 
                 if (!jid && _converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
                     const input_el = this.el.querySelector('input[name="name"]');
-                    this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
+                    this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
                     this.xhr.send()
                     return;
                 }
@@ -540,6 +542,7 @@ converse.plugins.add('converse-rosterview', {
                 "click a.group-toggle": "toggle"
             },
 
+            sortImmediatelyOnAdd: true,
             ItemView: _converse.RosterContactView,
             listItems: 'model.contacts',
             listSelector: '.roster-group-contacts',
@@ -558,7 +561,7 @@ converse.plugins.add('converse-rosterview', {
                 // assigned to their various groups.
                 _converse.rosterview.on(
                     'rosterContactsFetchedAndProcessed',
-                    this.sortAndPositionAllItems.bind(this)
+                    () => this.sortAndPositionAllItems()
                 );
             },
 
@@ -597,7 +600,7 @@ converse.plugins.add('converse-rosterview', {
                  */
                 let shown = 0;
                 const all_contact_views = this.getAll();
-                _.each(this.model.contacts.models, (contact) => {
+                this.model.contacts.forEach(contact => {
                     const contact_view = this.get(contact.get('id'));
                     if (_.includes(contacts, contact)) {
                         u.hideElement(contact_view.el);
@@ -730,6 +733,7 @@ converse.plugins.add('converse-rosterview', {
             listSelector: '.roster-contacts',
             sortEvent: null, // Groups are immutable, so they don't get re-sorted
             subviewIndex: 'name',
+            sortImmediatelyOnAdd: true,
 
             events: {
                 'click a.controlbox-heading__btn.add-contact': 'showAddContactModal',
@@ -758,7 +762,7 @@ converse.plugins.add('converse-rosterview', {
                 _converse.api.listen.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
 
                 _converse.api.listen.on('rosterContactsFetched', () => {
-                    _converse.roster.each((contact) => this.addRosterContact(contact, {'silent': true}));
+                    _converse.roster.each(contact => this.addRosterContact(contact, {'silent': true}));
                     this.update();
                     this.updateFilter();
                     this.trigger('rosterContactsFetchedAndProcessed');

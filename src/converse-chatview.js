@@ -4,6 +4,9 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
+/**
+ * @module converse-chatview
+ */
 import "backbone.nativeview";
 import "converse-chatboxviews";
 import "converse-message-view";
@@ -171,10 +174,12 @@ converse.plugins.add('converse-chatview', {
                 if (this.model.vcard) {
                     this.model.vcard.on('change', this.debouncedRender, this);
                 }
-                this.model.on('rosterContactAdded', () => {
-                    this.model.contact.on('change:nickname', this.debouncedRender, this);
-                    this.debouncedRender();
-                });
+                if (this.model.rosterContactAdded) {
+                    this.model.rosterContactAdded.then(() => {
+                        this.model.contact.on('change:nickname', this.debouncedRender, this);
+                        this.debouncedRender();
+                    });
+                }
             },
 
             render () {
@@ -222,7 +227,7 @@ converse.plugins.add('converse-chatview', {
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.model.on('rosterContactAdded', this.registerContactEventHandlers, this);
+                this.model.rosterContactAdded.then(() => this.registerContactEventHandlers());
                 this.model.on('change', this.render, this);
                 this.registerContactEventHandlers();
                 /**
@@ -369,7 +374,6 @@ converse.plugins.add('converse-chatview', {
             initDebounced () {
                 this.scrollDown = _.debounce(this._scrollDown, 100);
                 this.markScrolled = _.debounce(this._markScrolled, 100);
-                this.show = _.debounce(this._show, 500, {'leading': true});
             },
 
             render () {
@@ -551,11 +555,14 @@ converse.plugins.add('converse-chatview', {
             },
 
             insertIntoDOM () {
-                /* This method gets overridden in src/converse-controlbox.js
-                 * as well as src/converse-muc.js (if those plugins are
-                 * enabled).
-                 */
                 _converse.chatboxviews.insertRowColumn(this.el);
+                /**
+                 * Triggered once the _converse.ChatBoxView has been inserted into the DOM
+                 * @event _converse#chatBoxInsertedIntoDOM
+                 * @type { _converse.ChatBoxView | _converse.HeadlinesBoxView }
+                 * @example _converse.api.listen.on('chatBoxInsertedIntoDOM', view => { ... });
+                 */
+                _converse.api.trigger('chatBoxInsertedIntoDOM', this);
                 return this;
             },
 
@@ -796,17 +803,10 @@ converse.plugins.add('converse-chatview', {
              * @param { _converse.Message } message - The message object
              */
             async showMessage (message) {
-                if (!u.isNewMessage(message) && u.isEmptyMessage(message)) {
-                    // Handle archived or delayed messages without any message
-                    // text to show.
-                    return message.destroy();
-                }
                 const view = this.add(message.get('id'), new _converse.MessageView({'model': message}));
                 await view.render();
-
                 // Clear chat state notifications
                 sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content).forEach(u.removeElement);
-
                 this.insertMessage(view);
                 this.insertDayIndicator(view.el);
                 this.setScrollPosition(view.el);
@@ -827,6 +827,9 @@ converse.plugins.add('converse-chatview', {
                 } else {
                     this.scrollDown();
                 }
+                if (message.get('correcting')) {
+                    this.insertIntoTextArea(message.get('message'), true, true);
+                }
             },
 
             /**
@@ -841,10 +844,11 @@ converse.plugins.add('converse-chatview', {
                     // We already have a view for this message
                     return;
                 }
-                await this.showMessage(message);
-                if (message.get('correcting')) {
-                    this.insertIntoTextArea(message.get('message'), true, true);
+                if (!u.isNewMessage(message) && u.isEmptyMessage(message)) {
+                    // Ignore archived or delayed messages without any text to show.
+                    return message.destroy();
                 }
+                await this.showMessage(message);
                 /**
                  * Triggered once a message has been added to a chatbox.
                  * @event _converse#messageAdded
@@ -878,43 +882,10 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            /**
-             * Mutator for setting the chat state of this chat session.
-             * Handles clearing of any chat state notification timeouts and
-             * setting new ones if necessary.
-             * Timeouts are set when the  state being set is COMPOSING or PAUSED.
-             * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
-             * See XEP-0085 Chat State Notifications.
-             * @private
-             * @method _converse.ChatBoxView#setChatState
-             * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-             */
-            setChatState (state, options) {
-                if (!_.isUndefined(this.chat_state_timeout)) {
-                    window.clearTimeout(this.chat_state_timeout);
-                    delete this.chat_state_timeout;
-                }
-                if (state === _converse.COMPOSING) {
-                    this.chat_state_timeout = window.setTimeout(
-                        this.setChatState.bind(this),
-                        _converse.TIMEOUTS.PAUSED,
-                        _converse.PAUSED
-                    );
-                } else if (state === _converse.PAUSED) {
-                    this.chat_state_timeout = window.setTimeout(
-                        this.setChatState.bind(this),
-                        _converse.TIMEOUTS.INACTIVE,
-                        _converse.INACTIVE
-                    );
-                }
-                this.model.set('chat_state', state, options);
-                return this;
-            },
-
             async onFormSubmitted (ev) {
                 ev.preventDefault();
                 const textarea = this.el.querySelector('.chat-textarea');
-                const message = textarea.value;
+                const message = textarea.value.trim();
                 if (_converse.message_limit && message.length > _converse.message_limit) {
                     return;
                 }
@@ -956,7 +927,7 @@ converse.plugins.add('converse-chatview', {
                 textarea.focus();
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.
-                this.setChatState(_converse.ACTIVE, {'silent': true});
+                this.model.setChatState(_converse.ACTIVE, {'silent': true});
             },
 
             updateCharCounter (chars) {
@@ -973,6 +944,15 @@ converse.plugins.add('converse-chatview', {
             },
 
             onPaste (ev) {
+                if (ev.clipboardData.files.length !== 0) {
+                    ev.preventDefault();
+                    // Workaround for quirk in at least Firefox 60.7 ESR:
+                    // It seems that pasted files disappear from the event payload after
+                    // the event has finished, which apparently happens during async
+                    // processing in sendFiles(). So we copy the array here.
+                    this.model.sendFiles(Array.from(ev.clipboardData.files));
+                    return;
+                }
                 this.updateCharCounter(ev.clipboardData.getData('text/plain'));
             },
 
@@ -996,7 +976,7 @@ converse.plugins.add('converse-chatview', {
                     // When ctrl is pressed, no chars are entered into the textarea.
                     return;
                 }
-                if (!ev.shiftKey && !ev.altKey) {
+                if (!ev.shiftKey && !ev.altKey && !ev.metaKey) {
                     if (ev.keyCode === _converse.keycodes.FORWARD_SLASH) {
                         // Forward slash is used to run commands. Nothing to do here.
                         return;
@@ -1030,7 +1010,7 @@ converse.plugins.add('converse-chatview', {
                 if (this.model.get('chat_state') !== _converse.COMPOSING) {
                     // Set chat state to composing if keyCode is not a forward-slash
                     // (which would imply an internal command and not a message).
-                    this.setChatState(_converse.COMPOSING);
+                    this.model.setChatState(_converse.COMPOSING);
                 }
             },
 
@@ -1121,8 +1101,11 @@ converse.plugins.add('converse-chatview', {
             },
 
             inputChanged (ev) {
-                ev.target.style.height = 'auto';
-                ev.target.style.height = ev.target.scrollHeight + 'px';
+                const height = ev.target.scrollHeight + 'px';
+                if (ev.target.style.height != height) {
+                    ev.target.style.height = 'auto';
+                    ev.target.style.height = height;
+                }
             },
 
             clearMessages (ev) {
@@ -1272,7 +1255,7 @@ converse.plugins.add('converse-chatview', {
                 if (_converse.connection.connected) {
                     // Immediately sending the chat state, because the
                     // model is going to be destroyed afterwards.
-                    this.setChatState(_converse.INACTIVE);
+                    this.model.setChatState(_converse.INACTIVE);
                     this.model.sendChatState();
                 }
                 this.model.close();
@@ -1299,7 +1282,7 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            emitFocused: _.debounce(() => {
+            emitFocused () {
                 /**
                  * Triggered when the focus has been moved to a particular chat.
                  * @event _converse#chatBoxFocused
@@ -1307,11 +1290,11 @@ converse.plugins.add('converse-chatview', {
                  * @example _converse.api.listen.on('chatBoxFocused', view => { ... });
                  */
                 _converse.api.trigger('chatBoxFocused', this);
-            }, 25, {'leading': true}),
+            },
 
             focus () {
-                const textarea_el = this.el.querySelector('.chat-textarea');
-                if (!_.isNull(textarea_el)) {
+                const textarea_el = this.el.getElementsByClassName('chat-textarea')[0];
+                if (textarea_el && document.activeElement !== textarea_el) {
                     textarea_el.focus();
                     this.emitFocused();
                 }
@@ -1325,23 +1308,35 @@ converse.plugins.add('converse-chatview', {
 
             afterShown () {
                 this.model.clearUnreadMsgCounter();
-                this.setChatState(_converse.ACTIVE);
+                this.model.setChatState(_converse.ACTIVE);
                 this.scrollDown();
                 if (_converse.auto_focus) {
                     this.focus();
                 }
-                this.focus();
             },
 
-            _show () {
-                /* Inner show method that gets debounced */
+            show () {
                 if (u.isVisible(this.el)) {
                     if (_converse.auto_focus) {
                         this.focus();
                     }
                     return;
                 }
-                u.fadeIn(this.el, _.bind(this.afterShown, this));
+                /**
+                 * Triggered just before a {@link _converse.ChatBoxView} or {@link _converse.ChatRoomView}
+                 * will be shown.
+                 * @event _converse#beforeShowingChatView
+                 * @type {object}
+                 * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
+                 */
+                _converse.api.trigger('beforeShowingChatView', this);
+
+                if (_converse.animate) {
+                    u.fadeIn(this.el, () => this.afterShown());
+                } else {
+                    u.showElement(this.el);
+                    this.afterShown();
+                }
             },
 
             showNewMessagesIndicator () {
@@ -1414,13 +1409,13 @@ converse.plugins.add('converse-chatview', {
             onWindowStateChanged (state) {
                 if (state === 'visible') {
                     if (!this.model.isHidden()) {
-                        this.setChatState(_converse.ACTIVE);
+                        // this.model.setChatState(_converse.ACTIVE);
                         if (this.model.get('num_unread', 0)) {
                             this.model.clearUnreadMsgCounter();
                         }
                     }
                 } else if (state === 'hidden') {
-                    this.setChatState(_converse.INACTIVE, {'silent': true});
+                    this.model.setChatState(_converse.INACTIVE, {'silent': true});
                     this.model.sendChatState();
                 }
             }

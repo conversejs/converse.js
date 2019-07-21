@@ -6,9 +6,7 @@
 // Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global escape, Jed */
-
-
+/*global Jed */
 import converse from "@converse/headless/converse-core";
 import u from "./core";
 

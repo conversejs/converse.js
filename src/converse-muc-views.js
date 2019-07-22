@@ -656,7 +656,7 @@ converse.plugins.add('converse-muc-views', {
                     this.showChatEvent(__("%1$s is no longer a moderator", occupant.get('nick')))
                 }
                 if (previous_role === 'visitor') {
-                    this.showChatEvent(__("%1$s has been given a voice again", occupant.get('nick')))
+                    this.showChatEvent(__("%1$s has been given a voice", occupant.get('nick')))
                 }
                 if (occupant.get('role') === 'visitor') {
                     this.showChatEvent(__("%1$s has been muted", occupant.get('nick')))

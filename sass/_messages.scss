@@ -182,6 +182,8 @@
                 padding: 0;
                 width: 100%;
                 white-space: pre-wrap;
+                word-wrap: break-word;
+                word-break: break-word;
                 a {
                     word-wrap: break-word;
                     word-break: break-all;

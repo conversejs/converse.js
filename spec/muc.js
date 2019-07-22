@@ -2758,6 +2758,75 @@
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 done();
             }));
+
+            it("informs users of role and affiliation changes",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const view = _converse.api.chatviews.get(muc_jid);
+                let presence = $pres({
+                        'from': 'lounge@montague.lit/annoyingGuy',
+                        'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
+                        'to': 'romeo@montague.lit/desktop'
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'annoyingguy@montague.lit',
+                            'affiliation': 'member',
+                            'role': 'participant'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                let info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy has entered the groupchat");
+
+                presence = $pres({
+                        'from': 'lounge@montague.lit/annoyingGuy',
+                        'to': 'romeo@montague.lit/desktop'
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'annoyingguy@montague.lit',
+                            'affiliation': 'member',
+                            'role': 'visitor'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy has been muted");
+
+                presence = $pres({
+                        'from': 'lounge@montague.lit/annoyingGuy',
+                        'to': 'romeo@montague.lit/desktop'
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'annoyingguy@montague.lit',
+                            'affiliation': 'member',
+                            'role': 'participant'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice");
+
+                // Check that we don't see an info message concerning the role,
+                // if the affiliation has changed.
+                presence = $pres({
+                        'from': 'lounge@montague.lit/annoyingGuy',
+                        'to': 'romeo@montague.lit/desktop'
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'annoyingguy@montague.lit',
+                            'affiliation': 'none',
+                            'role': 'visitor'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy is no longer a member of this groupchat");
+                done();
+            }));
         });
 
 
@@ -3653,7 +3722,7 @@
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice again");
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice");
                 done();
             }));
 
@@ -5129,7 +5198,7 @@
                         from='trollbox@montague.lit/troll'
                         to='romeo@montague.lit/orchard'>
                     <x xmlns='http://jabber.org/protocol/muc#user'>
-                        <item affiliation='moderator'
+                        <item affiliation='none'
                             nick='troll'
                             role='visitor'/>
                         <status code='110'/>
@@ -5156,16 +5225,16 @@
 
                 // Check now that things get restored when the user is given a voice
                 let info_msgs = sizzle('.chat-info', view.el);
-                expect(info_msgs.length).toBe(4);
-                expect(info_msgs[2].textContent).toBe("troll is no longer a moderator");
-                expect(info_msgs[3].textContent).toBe("troll has been muted");
+                expect(info_msgs.length).toBe(2);
+                expect(info_msgs[0].textContent).toBe("troll has entered the groupchat");
+                expect(info_msgs[1].textContent).toBe("troll is no longer an owner of this groupchat");
 
                 stanza = u.toStanza(`
                     <presence
                         from='trollbox@montague.lit/troll'
                         to='romeo@montague.lit/orchard'>
                     <x xmlns='http://jabber.org/protocol/muc#user'>
-                        <item affiliation='moderator'
+                        <item affiliation='none'
                             nick='troll'
                             role='participant'/>
                         <status code='110'/>
@@ -5180,8 +5249,8 @@
                 textarea = view.el.querySelector('.chat-textarea');
                 expect(_.isNull(textarea)).toBe(false);
 
-                expect(info_msgs.length).toBe(5);
-                expect(info_msgs[4].textContent).toBe("troll has been given a voice again");
+                expect(info_msgs.length).toBe(3);
+                expect(info_msgs[2].textContent).toBe("troll has been given a voice");
                 done();
             }));
         });

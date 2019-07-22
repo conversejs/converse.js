@@ -648,7 +648,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             informOfOccupantsRoleChange (occupant, changed) {
-                if (changed === "none") {
+                if (changed === "none" || occupant.changed.affiliation) {
+                    // We don't inform of role changes if they accompany affiliation changes.
                     return;
                 }
                 const previous_role = occupant._previousAttributes.role;

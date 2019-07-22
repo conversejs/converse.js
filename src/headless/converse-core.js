@@ -484,7 +484,8 @@ _converse.initConnection = function () {
                 )
             );
         } else {
-            throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
+            throw new Error("initConnection: this browser does not support "+
+                            "websockets and bosh_service_url wasn't specified.");
         }
     }
     setUpXMLLogging();
@@ -507,6 +508,7 @@ async function initUserSession (jid) {
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
         if (_converse.session.get('active')) {
             _converse.session.clear();
+            _converse.session.save({'id': id});
         }
         /**
          * Triggered once the user's session has been initialized. The session is a
@@ -521,7 +523,7 @@ async function initUserSession (jid) {
 async function setUserJID (jid) {
     await initUserSession(jid);
     jid = _converse.session.get('jid') || jid;
-    if (!Strophe.getResourceFromJid(jid)) {
+    if (_converse.authentication !== _converse.ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + _converse.generateResource();
     }
     // Set JID on the connection object so that when we call

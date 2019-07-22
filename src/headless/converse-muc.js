@@ -2052,7 +2052,7 @@ converse.plugins.add('converse-muc', {
                 if (_.isString(groupchat)) {
                     _converse.api.rooms.open(groupchat);
                 } else if (_.isObject(groupchat)) {
-                    _converse.api.rooms.open(groupchat.jid, groupchat.nick);
+                    _converse.api.rooms.open(groupchat.jid, groupchat);
                 } else {
                     _converse.log(
                         'Invalid groupchat criteria specified for "auto_join_rooms"',

@@ -433,15 +433,14 @@ async function attemptNonPreboundSession (credentials) {
         } else {
             throw new Error("attemptNonPreboundSession: Could not find any credentials to log you in with!");
         }
-    } else {
-        connect(); // Could be ANONYMOUS or EXTERNAL
+    } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication)) {
+        connect();
     }
 }
 
 
 function connect (credentials) {
-    if (_converse.authentication === _converse.ANONYMOUS ||
-        _converse.authentication === _converse.EXTERNAL) {
+    if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication)) {
         if (!_converse.jid) {
             throw new Error("Config Error: when using anonymous login " +
                 "you need to provide the server's domain via the 'jid' option. " +
@@ -647,7 +646,11 @@ function finishInitialization () {
     initClientConfig();
     initPlugins();
     _converse.initConnection();
-    _converse.api.user.login();
+    if (_converse.auto_login) {
+        _converse.api.user.login();
+    } else if (_converse.api.connection.isType('bosh')) {
+        _converse.restoreBOSHSession();
+    }
     _converse.registerGlobalEventHandlers();
     if (!Backbone.history.started) {
         Backbone.history.start();
@@ -1450,8 +1453,6 @@ _converse.api = {
          * to log the user in by calling the `prebind_url` or `credentials_url` depending
          * on whether prebinding is used or not.
          *
-         * Otherwise the user will be shown a login form.
-         *
          * @method _converse.api.user.login
          * @param {string} [jid]
          * @param {string} [password]
@@ -1459,14 +1460,16 @@ _converse.api = {
          */
         async login (jid, password, reconnecting) {
             if (_converse.api.connection.isType('bosh')) {
-                if (reconnecting &&
-                        _converse.authentication === _converse.PREBIND &&
-                        _converse.prebind_url) {
-                    return _converse.startNewBOSHSession();
-                } else if (await _converse.restoreBOSHSession()) {
+                const uses_prebind = (_converse.authentication === _converse.PREBIND && _converse.prebind_url);
+                if (!reconnecting && await _converse.restoreBOSHSession()) {
                     return;
+                } else if (reconnecting && uses_prebind) {
+                    return _converse.startNewBOSHSession();
                 }
+            } else if (_converse.authentication === _converse.PREBIND) {
+                throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
             }
+
             if (jid || _converse.jid) {
                 // Reassign because we might have gained a resource
                 jid = await setUserJID(jid || _converse.jid);
@@ -1478,7 +1481,6 @@ _converse.api = {
 
         /**
          * Logs the user out of the current XMPP session.
-         *
          * @method _converse.api.user.logout
          * @example _converse.api.user.logout();
          */

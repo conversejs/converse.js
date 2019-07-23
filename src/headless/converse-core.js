@@ -1272,9 +1272,6 @@ _converse.initialize = async function (settings, callback) {
             const password = _.isNil(credentials)
                 ? _converse.connection.pass || this.password
                 : credentials.password;
-            const jid = _.isNil(credentials)
-                ? this.jid
-                : credentials.jid;
             if (!password) {
                 if (this.auto_login) {
                     throw new Error("autoLogin: If you use auto_login and "+
@@ -1287,7 +1284,7 @@ _converse.initialize = async function (settings, callback) {
             if (!this.connection.reconnecting) {
                 this.connection.reset();
             }
-            this.connection.connect(jid, password, this.onConnectStatusChanged, BOSH_WAIT);
+            this.connection.connect(this.jid, password, this.onConnectStatusChanged, BOSH_WAIT);
         }
     };
 

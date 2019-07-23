@@ -420,6 +420,64 @@ function tearDown () {
 }
 
 
+async function attemptNonPreboundSession (credentials) {
+    if (_converse.authentication === _converse.LOGIN) {
+        if (credentials) {
+            connect(credentials);
+        } else if (_converse.jid && (_converse.password || _converse.connection.pass)) {
+            connect();
+        } else if (_converse.credentials_url) {
+            connect(await getLoginCredentials());
+        } else if (!_converse.isTestEnv() && window.PasswordCredential) {
+            connect(await getLoginCredentialsFromBrowser());
+        } else {
+            throw new Error("attemptNonPreboundSession: Could not find any credentials to log you in with!");
+        }
+    } else {
+        connect(); // Could be ANONYMOUS or EXTERNAL
+    }
+}
+
+
+function connect (credentials) {
+    if (_converse.authentication === _converse.ANONYMOUS ||
+        _converse.authentication === _converse.EXTERNAL) {
+        if (!_converse.jid) {
+            throw new Error("Config Error: when using anonymous login " +
+                "you need to provide the server's domain via the 'jid' option. " +
+                "Either when calling converse.initialize, or when calling " +
+                "_converse.api.user.login.");
+        }
+        if (!_converse.connection.reconnecting) {
+            _converse.connection.reset();
+        }
+        _converse.connection.connect(
+            _converse.jid.toLowerCase(),
+            null,
+            _converse.onConnectStatusChanged,
+            BOSH_WAIT
+        );
+    } else if (_converse.authentication === _converse.LOGIN) {
+        const password = _.isNil(credentials)
+            ? _converse.connection.pass || _converse.password
+            : credentials.password;
+        if (!password) {
+            if (_converse.auto_login) {
+                throw new Error("autoLogin: If you use auto_login and "+
+                    "authentication='login' then you also need to provide a password.");
+            }
+            _converse.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
+            _converse.api.connection.disconnect();
+            return;
+        }
+        if (!_converse.connection.reconnecting) {
+            _converse.connection.reset();
+        }
+        _converse.connection.connect(_converse.jid, password, _converse.onConnectStatusChanged, BOSH_WAIT);
+    }
+}
+
+
 function reconnect () {
     _converse.log('RECONNECTING: the connection has dropped, attempting to reconnect.');
     _converse.setConnectionStatus(
@@ -1221,64 +1279,6 @@ _converse.initialize = async function (settings, callback) {
         }
     });
 
-    this.attemptNonPreboundSession = async function (credentials) {
-        if (_converse.authentication === _converse.LOGIN) {
-            if (credentials) {
-                this.autoLogin(credentials);
-            } else if (_converse.jid && (_converse.password || _converse.connection.pass)) {
-                this.autoLogin();
-            } else if (_converse.credentials_url) {
-                this.autoLogin(await getLoginCredentials());
-            } else if (!_converse.isTestEnv() && window.PasswordCredential) {
-                _converse.autoLogin(await getLoginCredentialsFromBrowser());
-            } else {
-                throw new Error("attemptNonPreboundSession: Could not find any credentials to log you in with!");
-            }
-        } else {
-            this.autoLogin(); // Could be ANONYMOUS or EXTERNAL
-        }
-    };
-
-    this.autoLogin = function (credentials) {
-        if (
-            this.authentication === _converse.ANONYMOUS ||
-            this.authentication === _converse.EXTERNAL
-        ) {
-            if (!this.jid) {
-                throw new Error("Config Error: when using anonymous login " +
-                    "you need to provide the server's domain via the 'jid' option. " +
-                    "Either when calling converse.initialize, or when calling " +
-                    "_converse.api.user.login.");
-            }
-            if (!this.connection.reconnecting) {
-                this.connection.reset();
-            }
-            this.connection.connect(
-                this.jid.toLowerCase(),
-                null,
-                this.onConnectStatusChanged,
-                BOSH_WAIT
-            );
-        } else if (this.authentication === _converse.LOGIN) {
-            const password = _.isNil(credentials)
-                ? _converse.connection.pass || this.password
-                : credentials.password;
-            if (!password) {
-                if (this.auto_login) {
-                    throw new Error("autoLogin: If you use auto_login and "+
-                        "authentication='login' then you also need to provide a password.");
-                }
-                _converse.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
-                _converse.api.connection.disconnect();
-                return;
-            }
-            if (!this.connection.reconnecting) {
-                this.connection.reset();
-            }
-            this.connection.connect(this.jid, password, this.onConnectStatusChanged, BOSH_WAIT);
-        }
-    };
-
     // Initialization
     // --------------
     // This is the end of the initialize method.
@@ -1473,7 +1473,7 @@ _converse.api = {
             }
             password = password || _converse.password;
             const credentials = (jid && password) ? { jid, password } : null;
-            _converse.attemptNonPreboundSession(credentials);
+            attemptNonPreboundSession(credentials);
         },
 
         /**

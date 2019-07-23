@@ -642,6 +642,14 @@ async function getLoginCredentials () {
     return credentials;
 }
 
+async function getLoginCredentialsFromBrowser () {
+    const creds = await navigator.credentials.get({'password': true});
+    if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
+        await setUserJID(creds.id);
+        return {'jid': creds.id, 'password': creds.password};
+    }
+}
+
 
 function unregisterGlobalEventHandlers () {
     document.removeEventListener("visibilitychange", _converse.saveWindowState);
@@ -1213,34 +1221,21 @@ _converse.initialize = async function (settings, callback) {
         }
     });
 
-
-    this.attemptNonPreboundSession = async function (credentials, reconnecting) {
-        if (credentials) {
-            this.autoLogin(credentials);
-        } else if (this.auto_login) {
-            if (this.credentials_url && _converse.authentication === _converse.LOGIN) {
-                const data = await getLoginCredentials();
-                this.autoLogin(data);
-            } else if (!this.jid) {
-                throw new Error(
-                    "attemptNonPreboundSession: If you use auto_login, "+
-                    "you also need to give either a jid value (and if "+
-                    "applicable a password) or you need to pass in a URL "+
-                    "from where the username and password can be fetched "+
-                    "(via credentials_url)."
-                );
-            } else {
-                // Could be ANONYMOUS or EXTERNAL or manual passing in of JID and password
+    this.attemptNonPreboundSession = async function (credentials) {
+        if (_converse.authentication === _converse.LOGIN) {
+            if (credentials) {
+                this.autoLogin(credentials);
+            } else if (_converse.jid && (_converse.password || _converse.connection.pass)) {
                 this.autoLogin();
+            } else if (_converse.credentials_url) {
+                this.autoLogin(await getLoginCredentials());
+            } else if (!_converse.isTestEnv() && window.PasswordCredential) {
+                _converse.autoLogin(await getLoginCredentialsFromBrowser());
+            } else {
+                throw new Error("attemptNonPreboundSession: Could not find any credentials to log you in with!");
             }
-        } else if (reconnecting) {
-            this.autoLogin();
-        } else if (!_converse.isTestEnv() && window.PasswordCredential) {
-            const creds = await navigator.credentials.get({'password': true});
-            if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-                await setUserJID(creds.id);
-                this.autoLogin({'jid': creds.id, 'password': creds.password});
-            }
+        } else {
+            this.autoLogin(); // Could be ANONYMOUS or EXTERNAL
         }
     };
 
@@ -1464,7 +1459,9 @@ _converse.api = {
          */
         async login (jid, password, reconnecting) {
             if (_converse.api.connection.isType('bosh')) {
-                if (reconnecting && _converse.prebind_url) {
+                if (reconnecting &&
+                        _converse.authentication === _converse.PREBIND &&
+                        _converse.prebind_url) {
                     return _converse.startNewBOSHSession();
                 } else if (await _converse.restoreBOSHSession()) {
                     return;
@@ -1476,7 +1473,7 @@ _converse.api = {
             }
             password = password || _converse.password;
             const credentials = (jid && password) ? { jid, password } : null;
-            _converse.attemptNonPreboundSession(credentials, reconnecting);
+            _converse.attemptNonPreboundSession(credentials);
         },
 
         /**

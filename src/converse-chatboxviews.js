@@ -4,6 +4,9 @@
 // Copyright (c) 2012-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
+/**
+ * @module converse-chatboxviews
+ */
 import "@converse/headless/converse-chatboxes";
 import "backbone.nativeview";
 import { Overview } from "backbone.overview";

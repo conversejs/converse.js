@@ -94,7 +94,7 @@
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')) === true);
+            await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')) === true);
 
             action = view.el.querySelector('.chat-msg .chat-msg__action');
             action.style.opacity = 1;
@@ -102,7 +102,7 @@
             expect(textarea.value).toBe('');
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
+            await u.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
 
             // Test that messages from other users don't have the pencil icon
             _converse.chatboxes.onMessage(
@@ -178,7 +178,7 @@
             expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+            await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
 
             spyOn(_converse.connection, 'send');
             textarea.value = 'But soft, what light through yonder window breaks?';
@@ -212,7 +212,7 @@
             expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
 
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
+            await u.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
 
             // Test that pressing the down arrow cancels message correction
             expect(textarea.value).toBe('');
@@ -223,7 +223,7 @@
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+            await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             view.onKeyDown({
                 target: textarea,
@@ -232,7 +232,7 @@
             expect(textarea.value).toBe('');
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
+            await u.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
 
             textarea.value = 'It is the east, and Juliet is the one.';
             view.onKeyDown({
@@ -260,7 +260,7 @@
             expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
             expect(view.model.messages.at(1).get('correcting')).toBeFalsy();
             expect(view.model.messages.at(2).get('correcting')).toBe(true);
-            await test_utils.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg:last', view.el).pop()), 500);
+            await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg:last', view.el).pop()), 500);
 
             textarea.selectionEnd = 0; // Happens by pressing up,
                                     // but for some reason not in tests, so we set it manually.
@@ -272,7 +272,7 @@
             expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
             expect(view.model.messages.at(1).get('correcting')).toBe(true);
             expect(view.model.messages.at(2).get('correcting')).toBeFalsy();
-            await test_utils.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg', view.el)[1]), 500);
+            await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg', view.el)[1]), 500);
 
             textarea.value = 'It is the east, and Juliet is the sun.';
             view.onKeyDown({
@@ -309,7 +309,7 @@
 
             let message, msg;
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
+            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
             spyOn(_converse, 'log');
             spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
             _converse.filter_by_resource = true;
@@ -337,7 +337,7 @@
                     .c('body').t("message")
                     .tree();
             await _converse.chatboxes.onMessage(msg);
-            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            await u.waitUntil(() => _converse.api.chats.get().length);
             const view = _converse.api.chatviews.get(sender_jid);
 
             msg = $msg({'id': 'aeb214', 'to': _converse.bare_jid})
@@ -550,7 +550,7 @@
                 }).c('body').t(msgtext).tree();
 
             await _converse.chatboxes.onMessage(msg);
-            await test_utils.waitUntil(() => (_converse.api.chats.get().length > 1))
+            await u.waitUntil(() => (_converse.api.chats.get().length > 1))
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
 
@@ -561,15 +561,14 @@
             const msg_obj = chatbox.messages.models[0];
             expect(msg_obj.get('message')).toEqual(msgtext);
             expect(msg_obj.get('fullname')).toBeUndefined();
-            expect(msg_obj.get('nickname')).toBeUndefined();
+            expect(msg_obj.get('nickname')).toBe(null);
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(false);
             // Now check that the message appears inside the chatbox in the DOM
             const chat_content = view.el.querySelector('.chat-content');
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(msgtext);
             expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-            await test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet')
+            await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet')
             expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Juliet Capulet');
             done();
         }));
@@ -602,7 +601,6 @@
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
             await _converse.chatboxes.onMessage(msg);
-            await test_utils.waitUntil(() => _converse.api.chats.get().length);
             // Check that the chatbox and its view now exist
             const chatbox = _converse.chatboxes.get(recipient_jid);
             const view = _converse.chatboxviews.get(recipient_jid);
@@ -683,7 +681,7 @@
             test_utils.openControlBox();
             spyOn(_converse.api, "trigger").and.callThrough();
 
-            await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
             await test_utils.openChatBoxFor(_converse, contact_jid);
             const chatview = _converse.api.chatviews.get(contact_jid);
             expect(u.isVisible(chatview.el)).toBeTruthy();
@@ -701,7 +699,7 @@
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
             await _converse.chatboxes.onMessage(msg);
 
-            await test_utils.waitUntil(() => chatview.model.messages.length);
+            await u.waitUntil(() => chatview.model.messages.length);
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
             const trimmed_chatboxes = _converse.minimized_chats;
             const trimmedview = trimmed_chatboxes.get(contact_jid);
@@ -720,7 +718,7 @@
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
             );
 
-            await test_utils.waitUntil(() => (chatview.model.messages.length > 1));
+            await u.waitUntil(() => (chatview.model.messages.length > 1));
             expect(u.isVisible(chatview.el)).toBeFalsy();
             expect(trimmedview.model.get('minimized')).toBeTruthy();
             count = trimmedview.el.querySelector('.message-count');
@@ -743,7 +741,7 @@
             const contact_name = mock.cur_names[1];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-            await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
             await test_utils.openChatBoxFor(_converse, contact_jid);
             test_utils.clearChatBoxMessages(_converse, contact_jid);
             const one_day_ago = dayjs().subtract(1, 'day');
@@ -770,7 +768,7 @@
             expect(msg_obj.get('nickname')).toBe(null);
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(true);
-            await test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet')
+            await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet')
             const chat_content = view.el.querySelector('.chat-content');
             expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
             expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
@@ -1002,7 +1000,7 @@
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
             test_utils.sendMessage(view, message);
-            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
             expect(view.model.sendMessage).toHaveBeenCalled();
             let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.trim()).toEqual(
@@ -1011,7 +1009,7 @@
                 ' src="' + message + '"></a>');
             message += "?param1=val1&param2=val2";
             test_utils.sendMessage(view, message);
-            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.trim()).toEqual(
@@ -1022,7 +1020,7 @@
             // Test now with two images in one message
             message += ' hello world '+base_url+"/logo/conversejs-filled.svg";
             test_utils.sendMessage(view, message);
-            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.textContent.trim()).toEqual('hello world');
@@ -1075,7 +1073,7 @@
             const base_time = new Date();
             const ONE_MINUTE_LATER = 60000;
 
-            await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
+            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             _converse.filter_by_resource = true;
 
@@ -1283,7 +1281,7 @@
                 }).c('body').t('Message!').up()
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
             await _converse.chatboxes.onMessage(msg);
-            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            await u.waitUntil(() => _converse.api.chats.get().length);
             expect(view.model.sendReceiptStanza).not.toHaveBeenCalled();
             done();
         }));
@@ -1313,7 +1311,7 @@
                 }).c('body').t('Message!').up()
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
             await _converse.chatboxes.onMessage(msg);
-            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            await u.waitUntil(() => _converse.api.chats.get().length);
             expect(view.model.sendReceiptStanza).not.toHaveBeenCalled();
             done();
         }));
@@ -1336,7 +1334,7 @@
                     preventDefault: _.noop,
                     keyCode: 13 // Enter
                 });
-                await test_utils.waitUntil(() => _converse.api.chats.get().length);
+                await u.waitUntil(() => _converse.api.chats.get().length);
                 const chatbox = _converse.chatboxes.get(contact_jid);
                 expect(chatbox).toBeDefined();
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -1429,7 +1427,7 @@
                 const include_nick = false;
                 await test_utils.waitForRoster(_converse, 'current', 1, include_nick);
                 test_utils.openControlBox();
-                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
+                await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
                 spyOn(_converse.api, "trigger").and.callThrough();
                 const message = 'This is a received message';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1444,7 +1442,7 @@
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                 );
-                await test_utils.waitUntil(() => (_converse.api.chats.get().length === 2));
+                await u.waitUntil(() => (_converse.api.chats.get().length === 2));
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 expect(chatbox).toBeDefined();
                 const view = _converse.api.chatviews.get(sender_jid);
@@ -1462,7 +1460,7 @@
                 const chat_content = view.el.querySelector('.chat-content');
                 expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
                 expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                await test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0]);
+                await u.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0]);
                 expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Mercutio');
                 done();
             }));
@@ -1473,7 +1471,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1, false);
-                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
+                await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
                 const message = '\n\n        This is a received message         \n\n';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 _converse.chatboxes.onMessage(
@@ -1485,7 +1483,7 @@
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                 );
-                await test_utils.waitUntil(() => (_converse.api.chats.get().length === 2));
+                await u.waitUntil(() => (_converse.api.chats.get().length === 2));
                 const view = _converse.api.chatviews.get(sender_jid);
                 expect(view.model.messages.length).toEqual(1);
                 const msg_obj = view.model.messages.at(0);
@@ -1549,7 +1547,7 @@
                 expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
                 view.el.querySelector('.chat-msg__content .fa-edit').click();
                 const modal = view.model.messages.at(0).message_versions_modal;
-                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                await u.waitUntil(() => u.isVisible(modal.el), 1000);
                 const older_msgs = modal.el.querySelectorAll('.older-msg');
                 expect(older_msgs.length).toBe(2);
                 expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
@@ -1594,7 +1592,7 @@
                     expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
                     await _converse.chatboxes.onMessage(msg);
-                    await test_utils.waitUntil(() => _converse.api.chats.get().length);
+                    await u.waitUntil(() => _converse.api.chats.get().length);
                     expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
                     // Check that the chatbox and its view now exist
@@ -1604,14 +1602,13 @@
                     expect(chatbox).toBeDefined();
                     expect(view).toBeDefined();
                     expect(chatbox.get('fullname') === sender_jid);
-                    await new Promise(resolve => view.once('messageInserted', resolve));
 
-                    await test_utils.waitUntil(() => view.el.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
+                    await u.waitUntil(() => view.el.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
                     let author_el = view.el.querySelector('.chat-msg__author');
                     expect( _.includes(author_el.textContent.trim(), 'Mercutio')).toBeTruthy();
-                    await test_utils.waitUntil(() => vcard_fetched, 100);
+                    await u.waitUntil(() => vcard_fetched, 100);
                     expect(_converse.api.vcard.get).toHaveBeenCalled();
-                    await test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
+                    await u.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
                     author_el = view.el.querySelector('.chat-msg__author');
                     expect( _.includes(author_el.textContent.trim(), 'Mercutio')).toBeTruthy();
                     done();
@@ -1669,7 +1666,7 @@
                     expect(msg_obj.get('sender')).toEqual('them');
                     expect(msg_obj.get('is_delayed')).toEqual(false);
 
-                    await test_utils.waitUntil(() => view.el.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
+                    await u.waitUntil(() => view.el.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
                     // Now check that the message appears inside the chatbox in the DOM
                     const chat_content = view.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
@@ -1712,7 +1709,7 @@
                     await _converse.api.chats.open(sender_jid)
                     let msg_text = 'This message will not be sent, due to an error';
                     const view = _converse.api.chatviews.get(sender_jid);
-                    let message = view.model.messages.create({
+                    view.model.messages.create({
                         'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
                         'fullname': fullname,
                         'sender': 'me',
@@ -1729,7 +1726,7 @@
                     // not be received, to test that errors appear
                     // after the relevant message.
                     msg_text = 'This message will be sent, and also receive an error';
-                    message = view.model.messages.create({
+                    view.model.messages.create({
                         'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
                         'fullname': fullname,
                         'sender': 'me',
@@ -1797,7 +1794,7 @@
                     // not be received, to test that errors appear
                     // after the relevant message.
                     msg_text = 'This message will be sent, and also receive an error';
-                    message = view.model.messages.create({
+                    view.model.messages.create({
                         'msgid': 'another-id',
                         'fullname': fullname,
                         'sender': 'me',
@@ -1888,11 +1885,11 @@
                 }
                 await Promise.all(promises);
                 // XXX Fails on Travis
-                // await test_utils.waitUntil(() => view.content.scrollTop, 1000)
-                await test_utils.waitUntil(() => !view.model.get('auto_scrolled'), 500);
+                // await u.waitUntil(() => view.content.scrollTop, 1000)
+                await u.waitUntil(() => !view.model.get('auto_scrolled'), 500);
                 view.content.scrollTop = 0;
                 // XXX Fails on Travis
-                // await test_utils.waitUntil(() => view.model.get('scrolled'), 900);
+                // await u.waitUntil(() => view.model.get('scrolled'), 900);
                 view.model.set('scrolled', true);
 
                 const message = 'This message is received while the chat area is scrolled up';
@@ -1904,19 +1901,19 @@
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                await test_utils.waitUntil(() => view.model.messages.length > 20, 1000);
+                await u.waitUntil(() => view.model.messages.length > 20, 1000);
                 // Now check that the message appears inside the chatbox in the DOM
                 const chat_content = view.el.querySelector('.chat-content');
                 const  msg_txt = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop().textContent;
                 expect(msg_txt).toEqual(message);
-                await test_utils.waitUntil(() => u.isVisible(view.el.querySelector('.new-msgs-indicator')), 900);
+                await u.waitUntil(() => u.isVisible(view.el.querySelector('.new-msgs-indicator')), 900);
                 expect(view.model.get('scrolled')).toBe(true);
                 expect(view.content.scrollTop).toBe(0);
                 expect(u.isVisible(view.el.querySelector('.new-msgs-indicator'))).toBeTruthy();
                 // Scroll down again
                 view.content.scrollTop = view.content.scrollHeight;
                 // XXX Fails on Travis
-                // await test_utils.waitUntil(() => !u.isVisible(view.el.querySelector('.new-msgs-indicator')), 900);
+                // await u.waitUntil(() => !u.isVisible(view.el.querySelector('.new-msgs-indicator')), 900);
                 done();
             }));
 
@@ -1926,7 +1923,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
+                await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
                 // Send a message from a different resource
                 spyOn(_converse, 'log');
                 spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
@@ -1940,7 +1937,7 @@
                     }).c('body').t("This message will not be shown").up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 await _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => _converse.api.chats.get().length);
+                await u.waitUntil(() => _converse.api.chats.get().length);
                 expect(_converse.log).toHaveBeenCalledWith(
                         "onMessage: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
                         Strophe.LogLevel.INFO);
@@ -1956,9 +1953,9 @@
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 await _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => _converse.chatboxviews.keys().length > 1, 1000);
+                await u.waitUntil(() => _converse.chatboxviews.keys().length > 1, 1000);
                 const view = _converse.chatboxviews.get(sender_jid);
-                await test_utils.waitUntil(() => view.model.messages.length);
+                await u.waitUntil(() => view.model.messages.length);
                 expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
                 const chat_content = sizzle('.chat-content:last', view.el).pop();
                 const msg_txt = chat_content.querySelector('.chat-msg .chat-msg__text').textContent;
@@ -1990,7 +1987,7 @@
                     </message>`)
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
                 let msg = view.el.querySelector('.chat-msg .chat-msg__text');
                 expect(msg.classList.length).toEqual(1);
                 expect(u.hasClass('chat-msg__text', msg)).toBe(true);
@@ -2041,7 +2038,7 @@
                         <x xmlns="jabber:x:oob"><url>https://montague.lit/video.mp4</url></x>
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg video').length, 2000)
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg video').length, 2000)
                 let msg = view.el.querySelector('.chat-msg .chat-msg__text');
                 expect(msg.classList.length).toBe(1);
                 expect(msg.textContent).toEqual('Have you seen this funny video?');
@@ -2090,7 +2087,7 @@
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg a').length, 1000);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg a').length, 1000);
                 const msg = view.el.querySelector('.chat-msg .chat-msg__text');
                 expect(u.hasClass('chat-msg__text', msg)).toBe(true);
                 expect(msg.textContent).toEqual('Have you downloaded this funny file?');
@@ -2122,7 +2119,7 @@
                         <x xmlns="jabber:x:oob"><url>${url}</url></x>
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg img').length, 2000);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg img').length, 2000);
 
                 const msg = view.el.querySelector('.chat-msg .chat-msg__text');
                 expect(u.hasClass('chat-msg__text', msg)).toBe(true);
@@ -2163,7 +2160,7 @@
             spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             spyOn(view.model, 'sendMarker').and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.sendMarker.calls.count() === 1);
+            await u.waitUntil(() => view.model.sendMarker.calls.count() === 1);
             expect(Strophe.serialize(sent_stanzas[0])).toBe(
                 `<message from="romeo@montague.lit/orchard" `+
                         `id="${sent_stanzas[0].nodeTree.getAttribute('id')}" `+
@@ -2193,7 +2190,7 @@
             const sent_stanzas = [];
             spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.api.chats.get().length == 2);
+            await u.waitUntil(() => _converse.api.chats.get().length == 2);
             const sent_messages = sent_stanzas
                 .map(s => _.isElement(s) ? s : s.nodeTree)
                 .filter(e => e.nodeName === 'message');
@@ -2251,7 +2248,7 @@
                 </message>`);
             spyOn(_converse.api, "trigger").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.api.trigger.calls.count(), 500);
+            await u.waitUntil(() => _converse.api.trigger.calls.count(), 500);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.model.messages.length).toBe(1);
             done();
@@ -2336,9 +2333,9 @@
                                by="room@muc.example.com"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.api.chats.get().length);
-            await test_utils.waitUntil(() => view.model.messages.length === 1);
-            await test_utils.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 1);
+            await u.waitUntil(() => _converse.api.chats.get().length);
+            await u.waitUntil(() => view.model.messages.length === 1);
+            await u.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 1);
             let result = await view.model.findDuplicateFromStanzaID.calls.all()[0].returnValue;
             expect(result).toBe(undefined);
 
@@ -2354,11 +2351,11 @@
                 </message>`);
             spyOn(view.model, 'updateMessage');
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 2);
+            await u.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 2);
             result = await view.model.findDuplicateFromStanzaID.calls.all()[1].returnValue;
             expect(result instanceof _converse.Message).toBe(true);
             expect(view.model.messages.length).toBe(1);
-            await test_utils.waitUntil(() => view.model.updateMessage.calls.count());
+            await u.waitUntil(() => view.model.updateMessage.calls.count());
             done();
         }));
 
@@ -2424,7 +2421,7 @@
                 .c('status').attrs({code:'210'}).nodeTree;
             _converse.connection._dataRecv(test_utils.createRequest(presence));
             view.model.sendMessage('hello world');
-            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 3);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 3);
 
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
             expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
@@ -2492,7 +2489,7 @@
                     'id': u.getUniqueId(),
                 }).c('body').t('But soft, what light through yonder chimney breaks?').up()
                     .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
-            await test_utils.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
+            await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
                 'But soft, what light through yonder chimney breaks?', 500);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
@@ -2505,13 +2502,13 @@
                 }).c('body').t('But soft, what light through yonder window breaks?').up()
                     .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
 
-            await test_utils.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
+            await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
                 'But soft, what light through yonder window breaks?', 500);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
             view.el.querySelector('.chat-msg__content .fa-edit').click();
             const modal = view.model.messages.at(0).message_versions_modal;
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const older_msgs = modal.el.querySelectorAll('.older-msg');
             expect(older_msgs.length).toBe(2);
             expect(older_msgs[0].childNodes[1].textContent).toBe(': But soft, what light through yonder airlock breaks?');
@@ -2613,7 +2610,7 @@
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+            await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             view.onKeyDown({
                 target: textarea,
@@ -2622,7 +2619,7 @@
             expect(textarea.value).toBe('');
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-            await test_utils.waitUntil(() => !u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+            await u.waitUntil(() => !u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
             done();
         }));
 
@@ -2658,7 +2655,7 @@
                     <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
                 </message>`);
             await view.model.onMessage(stanza);
-            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             expect(view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(1);
             expect(view.model.messages.length).toBe(1);
@@ -2679,8 +2676,8 @@
             const view = _converse.api.chatviews.get(muc_jid);
 
             view.model.sendMessage('hello world');
-            await test_utils.waitUntil(() => _converse.api.chats.get().length);
-            await test_utils.waitUntil(() => view.model.messages.length === 1);
+            await u.waitUntil(() => _converse.api.chats.get().length);
+            await u.waitUntil(() => view.model.messages.length === 1);
             const msg = view.model.messages.at(0);
             expect(msg.get('stanza_id')).toBeUndefined();
             expect(msg.get('origin_id')).toBe(msg.get('origin_id'));
@@ -2698,7 +2695,7 @@
                 </message>`);
             spyOn(view.model, 'updateMessage').and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.updateMessage.calls.count() === 1);
+            await u.waitUntil(() => view.model.updateMessage.calls.count() === 1);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('stanza_id room@muc.example.com')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
             expect(view.model.messages.at(0).get('origin_id')).toBe(msg.get('origin_id'));
@@ -2734,7 +2731,7 @@
             spyOn(_converse.api, "trigger").and.callThrough();
             spyOn(view.model, "isReceipt").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.isReceipt.calls.count() === 1);
+            await u.waitUntil(() => view.model.isReceipt.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -2770,7 +2767,7 @@
                 </message>`);
             spyOn(view.model, "isChatMarker").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 1);
+            await u.waitUntil(() => view.model.isChatMarker.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -2780,7 +2777,7 @@
                     <displayed xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 2);
+            await u.waitUntil(() => view.model.isChatMarker.calls.count() === 2);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -2791,7 +2788,7 @@
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 3);
+            await u.waitUntil(() => view.model.isChatMarker.calls.count() === 3);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -2802,7 +2799,7 @@
                     <markable xmlns="urn:xmpp:chat-markers:0"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 4);
+            await u.waitUntil(() => view.model.isChatMarker.calls.count() === 4);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             done();
@@ -3027,11 +3024,11 @@
                 expect(textarea.value).toBe('hello @z3r0 @gibson @mr.robot, how are you?');
                 expect(view.model.messages.at(0).get('correcting')).toBe(true);
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-                await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+                await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
 
                 textarea.value = 'hello @z3r0 @gibson @sw0rdf1sh, how are you?';
                 view.onKeyDown(enter_event);
-                await test_utils.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
+                await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
                     'hello z3r0 gibson sw0rdf1sh, how are you?', 500);
 
                 const correction = _converse.connection.send.calls.all()[2].args[0];

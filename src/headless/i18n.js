@@ -6,8 +6,6 @@
 // Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
-
 import 'dayjs/locale/af';
 import 'dayjs/locale/ar';
 import 'dayjs/locale/bg';

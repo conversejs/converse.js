@@ -4,8 +4,11 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 //
-// XEP-0045 Multi-User Chat Views
-
+/**
+ * @module converse-muc-views
+ * @description
+ * XEP-0045 Multi-User Chat Views
+ */
 import "converse-modal";
 import "backbone.vdomview";
 import BrowserStorage from "backbone.browserStorage";
@@ -38,9 +41,8 @@ import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
 
-const { Backbone, Promise, Strophe, dayjs, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
+const { Backbone, Promise, Strophe, dayjs, sizzle, _, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
-const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice'];
@@ -480,7 +482,6 @@ converse.plugins.add('converse-muc-views', {
                 this.model.on('change', this.renderHeading, this);
                 this.model.on('change:connection_status', this.onConnectionStatusChanged, this);
                 this.model.on('change:hidden_occupants', this.updateOccupantsToggle, this);
-                this.model.on('change:role', this.renderBottomPanel, this);
                 this.model.on('change:subject', this.setChatRoomSubject, this);
                 this.model.on('configurationNeeded', this.getAndRenderConfigurationForm, this);
                 this.model.on('destroy', this.hide, this);
@@ -491,8 +492,8 @@ converse.plugins.add('converse-muc-views', {
                 this.model.occupants.on('add', this.onOccupantAdded, this);
                 this.model.occupants.on('remove', this.onOccupantRemoved, this);
                 this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
-                this.model.occupants.on('change:role', this.informOfOccupantsRoleChange, this);
-                this.model.occupants.on('change:affiliation', this.informOfOccupantsAffiliationChange, this);
+                this.model.occupants.on('change:role', this.onOccupantRoleChanged, this);
+                this.model.occupants.on('change:affiliation', this.onOccupantAffiliationChanged, this);
 
                 this.createEmojiPicker();
                 this.render();
@@ -532,7 +533,7 @@ converse.plugins.add('converse-muc-views', {
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
-                if (this.model.features.get('moderated') && this.model.get('role') === 'visitor') {
+                if (this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor') {
                     container.innerHTML = tpl_chatroom_bottom_panel({'__': __});
                 } else {
                     if (!container.firstElementChild || !container.querySelector('.sendXMPPMessage')) {
@@ -608,7 +609,14 @@ converse.plugins.add('converse-muc-views', {
                 return _converse.ChatBoxView.prototype.showChatStateNotification.apply(this, arguments);
             },
 
-            informOfOccupantsAffiliationChange(occupant, changed) {
+            onOccupantAffiliationChanged (occupant) {
+                if (occupant.get('jid') === _converse.bare_jid) {
+                    this.renderHeading();
+                }
+                this.informOfOccupantsAffiliationChange(occupant);
+            },
+
+            informOfOccupantsAffiliationChange (occupant) {
                 const previous_affiliation = occupant._previousAttributes.affiliation,
                       current_affiliation = occupant.get('affiliation');
 
@@ -632,8 +640,16 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            onOccupantRoleChanged (occupant, changed) {
+                if (occupant.get('jid') === _converse.bare_jid) {
+                    this.renderBottomPanel();
+                }
+                this.informOfOccupantsRoleChange(occupant, changed);
+            },
+
             informOfOccupantsRoleChange (occupant, changed) {
-                if (changed === "none") {
+                if (changed === "none" || occupant.changed.affiliation) {
+                    // We don't inform of role changes if they accompany affiliation changes.
                     return;
                 }
                 const previous_role = occupant._previousAttributes.role;
@@ -641,7 +657,7 @@ converse.plugins.add('converse-muc-views', {
                     this.showChatEvent(__("%1$s is no longer a moderator", occupant.get('nick')))
                 }
                 if (previous_role === 'visitor') {
-                    this.showChatEvent(__("%1$s has been given a voice again", occupant.get('nick')))
+                    this.showChatEvent(__("%1$s has been given a voice", occupant.get('nick')))
                 }
                 if (occupant.get('role') === 'visitor') {
                     this.showChatEvent(__("%1$s has been muted", occupant.get('nick')))
@@ -661,6 +677,7 @@ converse.plugins.add('converse-muc-views', {
                  */
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
+                        'isOwner': this.model.getOwnAffiliation() === 'owner',
                         'title': this.model.getDisplayName(),
                         'Strophe': Strophe,
                         '_converse': _converse,
@@ -685,19 +702,6 @@ converse.plugins.add('converse-muc-views', {
                 this.renderEmojiPicker();
             },
 
-            show () {
-                if (u.isVisible(this.el)) {
-                    if (_converse.auto_focus) {
-                        this.focus();
-                    }
-                    return;
-                }
-                // Override from converse-chatview in order to not use
-                // "fadeIn", which causes flashing.
-                u.showElement(this.el);
-                this.afterShown();
-            },
-
             onConnectionStatusChanged () {
                 const conn_status = this.model.get('connection_status');
                 if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {
@@ -708,8 +712,6 @@ converse.plugins.add('converse-muc-views', {
                     this.showSpinner();
                 } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
                     this.hideSpinner();
-                    this.setChatState(_converse.ACTIVE);
-                    this.scrollDown();
                     if (_converse.auto_focus) {
                         this.focus();
                     }
@@ -725,7 +727,7 @@ converse.plugins.add('converse-muc-views', {
                     _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
                     {
                       'label_hide_occupants': __('Hide the list of participants'),
-                      'show_occupants_toggle': this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
+                      'show_occupants_toggle': _converse.visible_toolbar_buttons.toggle_occupants
                     }
                 );
             },
@@ -787,24 +789,6 @@ converse.plugins.add('converse-muc-views', {
                  * the chat textarea input.
                  */
                 this.insertIntoTextArea(ev.target.textContent);
-            },
-
-            handleChatStateNotification (message) {
-                /* Override the method on the ChatBoxView base class to
-                 * ignore <gone/> notifications in groupchats.
-                 *
-                 * As laid out in the business rules in XEP-0085
-                 * https://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
-                 */
-                if (message.get('fullname') === this.model.get('nick')) {
-                    // Don't know about other servers, but OpenFire sends
-                    // back to you your own chat state notifications.
-                    // We ignore them here...
-                    return;
-                }
-                if (message.get('chat_state') !== _converse.GONE) {
-                    _converse.ChatBoxView.prototype.handleChatStateNotification.apply(this, arguments);
-                }
             },
 
             verifyRoles (roles, occupant, show_error=true) {
@@ -1205,11 +1189,9 @@ converse.plugins.add('converse-muc-views', {
                 u.hideElement(this.el.querySelector('.occupants'));
                 sizzle('.spinner', this.el).forEach(u.removeElement);
 
-                const message = this.model.get('destroyed_message');
                 const reason = this.model.get('destroyed_reason');
                 const moved_jid = this.model.get('moved_jid');
                 this.model.save({
-                    'destroyed_message': undefined,
                     'destroyed_reason': undefined,
                     'moved_jid': undefined
                 });
@@ -1290,6 +1272,10 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onOccupantAdded (occupant) {
+                if (occupant.get('jid') === _converse.bare_jid) {
+                    this.renderHeading();
+                    this.renderBottomPanel();
+                }
                 if (occupant.get('show') === 'online') {
                     this.showJoinNotification(occupant);
                 }
@@ -1462,7 +1448,8 @@ converse.plugins.add('converse-muc-views', {
                     this.renderNicknameForm();
                 } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                     this.renderPasswordForm();
-                } else {
+                } else if (this.model.get('connection_status') == converse.ROOMSTATUS.ENTERED) {
+                    this.hideChatRoomContents();
                     u.showElement(this.el.querySelector('.chat-area'));
                     u.showElement(this.el.querySelector('.occupants'));
                     this.scrollDown();
@@ -1726,10 +1713,12 @@ converse.plugins.add('converse-muc-views', {
             async initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
+                this.model.on('add', this.maybeRenderInviteWidget, this);
+                this.model.on('change:affiliation', this.maybeRenderInviteWidget, this);
+
                 this.chatroomview = this.model.chatroomview;
                 this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
                 this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
-                this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
                 this.chatroomview.model.on('change:hidden_occupants', this.setVisibility, this);
                 this.render();
                 await this.model.fetched;
@@ -1756,6 +1745,12 @@ converse.plugins.add('converse-muc-views', {
                 } else {
                     u.showElement(this.el);
                     this.setOccupantsHeight();
+                }
+            },
+
+            maybeRenderInviteWidget (occupant) {
+                if (occupant.get('jid') === _converse.bare_jid) {
+                    this.renderInviteWidget();
                 }
             },
 
@@ -1843,7 +1838,7 @@ converse.plugins.add('converse-muc-views', {
             shouldInviteWidgetBeShown () {
                 return _converse.allow_muc_invitations &&
                     (this.chatroomview.model.features.get('open') ||
-                        this.chatroomview.model.get('affiliation') === "owner"
+                        this.chatroomview.model.getOwnAffiliation() === "owner"
                     );
             },
 

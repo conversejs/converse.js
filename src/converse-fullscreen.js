@@ -4,7 +4,9 @@
 // Copyright (c) JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-
+/**
+ * @module converse-fullscreen
+ */
 import "@converse/headless/converse-muc";
 import "converse-chatview";
 import "converse-controlbox";

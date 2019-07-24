@@ -11,7 +11,7 @@
 
         it("can be received with a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -37,7 +37,7 @@
             await _converse.chatboxes.onMessage(msg);
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-            await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
+            await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Mercutio');
             const message_content = view.el.querySelector('.chat-msg__text');
             expect(message_content.textContent).toBe(spoiler);
@@ -48,7 +48,7 @@
 
         it("can be received without a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -71,7 +71,7 @@
             await _converse.chatboxes.onMessage(msg);
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-            await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
+            await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Mercutio')).toBeTruthy();
             const message_content = view.el.querySelector('.chat-msg__text');
             expect(message_content.textContent).toBe(spoiler);
@@ -103,7 +103,7 @@
             const view = _converse.api.chatviews.get(contact_jid);
             spyOn(_converse.connection, 'send');
 
-            await test_utils.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
+            await u.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
             let spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
             spoiler_toggle.click();
 
@@ -175,7 +175,7 @@
             await test_utils.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
             const view = _converse.chatboxviews.get(contact_jid);
 
-            await test_utils.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
+            await u.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
             let spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
             spoiler_toggle.click();
 

@@ -384,11 +384,11 @@ automatically joined once the user has logged in.
 
 You can either specify a simple list of room JIDs, in which case your nickname
 will be taken from your JID, or you can specify a list of maps, where each map
-specifies the room's JID and the nickname that should be used.
+specifies the room's JID and other options.
 
 For example::
 
-    `[{'jid': 'room@example.org', 'nick': 'WizardKing69' }]`
+    `[{'jid': 'room@example.org', 'nick': 'WizardKing69', 'minimized': true }]`
 
 
 blacklisted_plugins
@@ -1104,6 +1104,13 @@ with.
             },
         });
 
+
+omemo_default
+-------------
+
+* Default:  ``false``
+
+Use OMEMO encryption by default when the chat supports it.
 
 ping_interval
 -------------

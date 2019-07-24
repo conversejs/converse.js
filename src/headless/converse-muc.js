@@ -4,8 +4,11 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 //
-// XEP-0045 Multi-User Chat
-
+/**
+ * @module converse-muc
+ * @description
+ * Implements the non-view logic for XEP-0045 Multi-User Chat
+ */
 import "./converse-disco";
 import "./utils/emoji";
 import "./utils/muc";
@@ -20,7 +23,7 @@ const MUC_ROLE_WEIGHTS = {
     'none':         2,
 };
 
-const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, dayjs, _ } = converse.env;
+const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, _ } = converse.env;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -354,7 +357,6 @@ converse.plugins.add('converse-muc', {
                     // generally unread messages (which *includes* mentions!).
                     'num_unread_general': 0,
 
-                    'affiliation': null,
                     'bookmarked': false,
                     'chat_state': undefined,
                     'connection_status': converse.ROOMSTATUS.DISCONNECTED,
@@ -377,10 +379,10 @@ converse.plugins.add('converse-muc', {
                 }
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
 
+                this.initFeatures(); // sendChatState depends on this.features
                 this.on('change:chat_state', this.sendChatState, this);
                 this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
-                this.initFeatures();
                 this.initOccupants();
                 this.registerHandlers();
                 this.initMessages();
@@ -707,12 +709,16 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Sends a message with the status of the user in this chat session
-             * as taken from the 'chat_state' attribute of the chat box.
-             * See XEP-0085 Chat State Notifications.
+             * Sends a message with the current XEP-0085 chat state of the user
+             * as taken from the `chat_state` attribute of the {@link _converse.ChatRoom}.
+             * @private
+             * @method _converse.ChatRoom#sendChatState
              */
             sendChatState () {
-                if (!_converse.send_chat_state_notifications || this.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
+                if (!_converse.send_chat_state_notifications ||
+                        !this.get('chat_state') ||
+                        this.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
+                        this.features.get('moderated') && this.getOwnRole() === 'visitor') {
                     return;
                 }
                 const chat_state = this.get('chat_state');
@@ -872,16 +878,14 @@ converse.plugins.add('converse-muc', {
              * @param { HTMLElement } form - The configuration form DOM element.
              *      If no form is provided, the default configuration
              *      values will be used.
-             * @returns { promise }
+             * @returns { Promise<XMLElement> }
              * Returns a promise which resolves once the XMPP server
              * has return a response IQ.
              */
             saveConfiguration (form) {
-                return new Promise((resolve, reject) => {
-                    const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
-                          configArray = _.map(inputs, u.webForm2xForm);
-                    this.sendConfiguration(configArray, resolve, reject);
-                });
+                const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
+                        configArray = _.map(inputs, u.webForm2xForm);
+                return this.sendConfiguration(configArray);
             },
 
             /**
@@ -920,26 +924,28 @@ converse.plugins.add('converse-muc', {
              * 'roomconfig' data.
              * @private
              * @method _converse.ChatRoom#autoConfigureChatRoom
-             * @returns { promise }
+             * @returns { Promise<XMLElement> }
              * Returns a promise which resolves once a response IQ has
              * been received.
              */
-            autoConfigureChatRoom () {
-                return new Promise(async (resolve, reject) => {
-                    const stanza = await this.fetchRoomConfiguration();
-                    const fields = sizzle('field', stanza);
-                    const configArray = fields.map(f => this.addFieldValue(f))
-                    if (configArray.length) {
-                        this.sendConfiguration(configArray, resolve, reject);
-                    }
-                });
+            async autoConfigureChatRoom () {
+                const stanza = await this.fetchRoomConfiguration();
+                const fields = sizzle('field', stanza);
+                const configArray = fields.map(f => this.addFieldValue(f))
+                if (configArray.length) {
+                    return this.sendConfiguration(configArray);
+                }
             },
 
+            /**
+             * Send an IQ stanza to fetch the groupchat configuration data.
+             * Returns a promise which resolves once the response IQ
+             * has been received.
+             * @private
+             * @method _converse.ChatRoom#fetchRoomConfiguration
+             * @returns { Promise<XMLElement> }
+             */
             fetchRoomConfiguration () {
-                /* Send an IQ stanza to fetch the groupchat configuration data.
-                 * Returns a promise which resolves once the response IQ
-                 * has been received.
-                 */
                 return _converse.api.sendIQ(
                     $iq({'to': this.get('jid'), 'type': "get"})
                      .c("query", {xmlns: Strophe.NS.MUC_OWNER})
@@ -947,31 +953,56 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Send an IQ stanza with the groupchat configuration.
+             * Sends an IQ stanza with the groupchat configuration.
              * @private
              * @method _converse.ChatRoom#sendConfiguration
              * @param { Array } config - The groupchat configuration
-             * @param { Function } callback - Callback upon succesful IQ response
-             *      The first parameter passed in is IQ containing the
-             *      groupchat configuration.
-             *      The second is the response IQ from the server.
-             * @param { Function } errback - Callback upon error IQ response
-             *      The first parameter passed in is IQ containing the
-             *      groupchat configuration.
-             *      The second is the response IQ from the server.
+             * @returns { Promise<XMLElement> } - A promise which resolves with
+             * the `result` stanza received from the XMPP server.
              */
-            sendConfiguration (config=[], callback, errback) {
+            sendConfiguration (config=[]) {
                 const iq = $iq({to: this.get('jid'), type: "set"})
                     .c("query", {xmlns: Strophe.NS.MUC_OWNER})
                     .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
                 config.forEach(node => iq.cnode(node).up());
-                callback = _.isUndefined(callback) ? _.noop : _.partial(callback, iq.nodeTree);
-                errback = _.isUndefined(errback) ? _.noop : _.partial(errback, iq.nodeTree);
-                return _converse.api.sendIQ(iq).then(callback).catch(errback);
+                return _converse.api.sendIQ(iq);
             },
 
             /**
-             * Parse the presence stanza for the current user's affiliation.
+             * Returns the `role` which the current user has in this MUC
+             * @private
+             * @method _converse.ChatRoom#getOwnRole
+             * @returns { ('none'|'visitor'|'participant'|'moderator') }
+             */
+            getOwnRole () {
+                return _.get(this.getOwnOccupant(), 'attributes.role');
+            },
+
+            /**
+             * Returns the `affiliation` which the current user has in this MUC
+             * @private
+             * @method _converse.ChatRoom#getOwnAffiliation
+             * @returns { ('none'|'outcast'|'member'|'admin'|'owner') }
+             */
+            getOwnAffiliation () {
+                return _.get(this.getOwnOccupant(), 'attributes.affiliation');
+            },
+
+            /**
+             * Get the {@link _converse.ChatRoomOccupant} instance which
+             * represents the current user.
+             * @private
+             * @method _converse.ChatRoom#getOwnOccupant
+             * @returns { _converse.ChatRoomOccupant }
+             */
+            getOwnOccupant () {
+                return this.occupants.findWhere({'jid': _converse.bare_jid});
+            },
+
+            /**
+             * Parse the presence stanza for the current user's affiliation and
+             * role and save them on the relevant {@link _converse.ChatRoomOccupant}
+             * instance.
              * @private
              * @method _converse.ChatRoom#saveAffiliationAndRole
              * @param { XMLElement } pres - A <presence> stanza.
@@ -982,11 +1013,15 @@ converse.plugins.add('converse-muc', {
                 if (is_self && !_.isNil(item)) {
                     const affiliation = item.getAttribute('affiliation');
                     const role = item.getAttribute('role');
+                    const changes = {};
                     if (affiliation) {
-                        this.save({'affiliation': affiliation});
+                        changes['affiliation'] = affiliation;
                     }
                     if (role) {
-                        this.save({'role': role});
+                        changes['role'] = role;
+                    }
+                    if (!_.isEmpty(changes)) {
+                        this.getOwnOccupant().save(changes);
                     }
                 }
             },
@@ -1095,7 +1130,7 @@ converse.plugins.add('converse-muc', {
              *      a string if only one affiliation.
              * @param { function } deltaFunc - The function to compute the delta
              *      between old and new member lists.
-             * @returns { promise }
+             * @returns { Promise }
              *  A promise which is resolved once the list has been
              *  updated or once it's been established there's no need
              *  to update the list.
@@ -1113,7 +1148,7 @@ converse.plugins.add('converse-muc', {
              * nickname and if found, persist that to the model state.
              * @private
              * @method _converse.ChatRoom#getAndPersistNickname
-             * @returns { promise } A promise which resolves with the nickname
+             * @returns { Promise<string> } A promise which resolves with the nickname
              */
             async getAndPersistNickname (nick) {
                 nick = nick ||
@@ -1133,7 +1168,7 @@ converse.plugins.add('converse-muc', {
              * If so, we'll use that, otherwise we render the nickname form.
              * @private
              * @method _converse.ChatRoom#getReservedNick
-             * @returns { promise } A promise which resolves with the reserved nick or null
+             * @returns { Promise<string> } A promise which resolves with the reserved nick or null
              */
             async getReservedNick () {
                 let iq;
@@ -1410,9 +1445,8 @@ converse.plugins.add('converse-muc', {
                     'to': `${this.get('jid')}/${this.get('nick')}`,
                     'type': "get"
                 }).c("ping", {'xmlns': Strophe.NS.PING});
-                let result;
                 try {
-                    result = await _converse.api.sendIQ(ping);
+                    await _converse.api.sendIQ(ping);
                 } catch (e) {
                     const sel = `error not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`;
                     if (_.isElement(e) && sizzle(sel, e).length) {
@@ -1549,7 +1583,6 @@ converse.plugins.add('converse-muc', {
                     return;
                 }
                 const codes = sizzle('status', x).map(s => s.getAttribute('code'));
-
                 codes.forEach(code => {
                     let message;
                     if (code === '110' || (code === '100' && !is_self)) {
@@ -1579,7 +1612,6 @@ converse.plugins.add('converse-muc', {
                         this.save('nick', nick);
                         message = __(_converse.muc.new_nickname_messages[code], nick);
                     }
-
                     if (message) {
                         this.messages.create({'type': 'info', message});
                     }
@@ -1689,14 +1721,15 @@ converse.plugins.add('converse-muc', {
                 if (stanza.getAttribute('type') === 'error') {
                     return this.onErrorPresence(stanza);
                 }
+                this.createInfoMessages(stanza);
                 if (stanza.querySelector("status[code='110']")) {
                     this.onOwnPresence(stanza);
-                }
-                this.createInfoMessages(stanza);
-                this.updateOccupantsOnPresence(stanza);
-
-                if (this.get('role') !== 'none' && this.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
-                    this.save('connection_status', converse.ROOMSTATUS.CONNECTED);
+                    if (this.getOwnRole() !== 'none' &&
+                            this.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
+                        this.save('connection_status', converse.ROOMSTATUS.CONNECTED);
+                    }
+                } else {
+                    this.updateOccupantsOnPresence(stanza);
                 }
             },
 
@@ -1716,6 +1749,10 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } pres - The stanza
              */
             onOwnPresence (stanza) {
+                if (stanza.getAttribute('type') !== 'unavailable') {
+                    this.save('connection_status', converse.ROOMSTATUS.ENTERED);
+                }
+                this.updateOccupantsOnPresence(stanza);
                 this.saveAffiliationAndRole(stanza);
 
                 if (stanza.getAttribute('type') === 'unavailable') {
@@ -1746,13 +1783,12 @@ converse.plugins.add('converse-muc', {
                         // (in which case Prosody doesn't send a 201 status),
                         // otherwise the features would have been fetched in
                         // the "initialize" method already.
-                        if (this.get('affiliation') === 'owner' && this.get('auto_configure')) {
+                        if (this.getOwnAffiliation() === 'owner' && this.get('auto_configure')) {
                             this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
                         } else {
                             this.getRoomFeatures();
                         }
                     }
-                    this.save('connection_status', converse.ROOMSTATUS.ENTERED);
                 }
             },
 
@@ -1801,6 +1837,12 @@ converse.plugins.add('converse-muc', {
         });
 
 
+        /**
+         * Represents an participant in a MUC
+         * @class
+         * @namespace _converse.ChatRoomOccupant
+         * @memberOf _converse
+         */
         _converse.ChatRoomOccupant = Backbone.Model.extend({
 
             defaults: {
@@ -2010,7 +2052,7 @@ converse.plugins.add('converse-muc', {
                 if (_.isString(groupchat)) {
                     _converse.api.rooms.open(groupchat);
                 } else if (_.isObject(groupchat)) {
-                    _converse.api.rooms.open(groupchat.jid, groupchat.nick);
+                    _converse.api.rooms.open(groupchat.jid, groupchat);
                 } else {
                     _converse.log(
                         'Invalid groupchat criteria specified for "auto_join_rooms"',
@@ -2094,12 +2136,8 @@ converse.plugins.add('converse-muc', {
                  *     JIDs of the chatroom(s) to create
                  * @param {object} [attrs] attrs The room attributes
                  */
-                create (jids, attrs) {
-                    if (_.isString(attrs)) {
-                        attrs = {'nick': attrs};
-                    } else if (_.isUndefined(attrs)) {
-                        attrs = {};
-                    }
+                create (jids, attrs={}) {
+                    attrs = _.isString(attrs) ? {'nick': attrs} : (attrs || {});
                     if (_.isUndefined(attrs.maximize)) {
                         attrs.maximize = false;
                     }

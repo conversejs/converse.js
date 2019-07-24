@@ -3,12 +3,12 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-/* This is a Converse.js plugin which add support for registering
+/**
+ * @module converse-push
+ * @description
+ * Converse.js plugin which add support for registering
  * an "App Server" as defined in  XEP-0357
  */
-
-
 import converse from "@converse/headless/converse-core";
 
 const { Strophe, $iq, _ } = converse.env;

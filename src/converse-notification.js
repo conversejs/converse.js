@@ -4,8 +4,9 @@
 // Copyright (c) 2013-2019, JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
-
+/**
+ * @module converse-notification
+ */
 import converse from "@converse/headless/converse-core";
 
 const { Strophe, _, sizzle } = converse.env,

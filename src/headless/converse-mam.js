@@ -4,13 +4,15 @@
 // Copyright (c) Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-// XEP-0313 Message Archive Management
-
+/**
+ * @module converse-mam
+ * @description
+ * XEP-0313 Message Archive Management
+ */
 import "./converse-disco";
 import "./converse-rsm";
 import converse from "./converse-core";
 import sizzle from "sizzle";
-
 
 const { Strophe, $iq, $build, _, dayjs } = converse.env;
 const u = converse.env.utils;

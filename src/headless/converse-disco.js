@@ -3,9 +3,11 @@
 //
 // Copyright (c) 2013-2019, the Converse developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-/* This is a Converse plugin which add support for XEP-0030: Service Discovery */
-
+/**
+ * @module converse-disco
+ * @description
+ * Converse plugin which add support for XEP-0030: Service Discovery
+ */
 import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import sizzle from "sizzle";

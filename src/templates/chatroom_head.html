@@ -10,7 +10,7 @@
     {[ if (!o._converse.singleton) { ]}
         <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="{{{o.info_close}}}"></a>
     {[ } ]}
-    {[ if (o.affiliation == 'owner') { ]}
+    {[ if (o.isOwner) { ]}
         <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="{{{o.info_configure}}} "></a>
     {[ } ]}
     <a class="chatbox-btn show-room-details-modal fa fa-info-circle" title="{{{o.info_details}}}"></a>

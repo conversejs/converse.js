@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-vcard
+ */
 import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import tpl_vcard from "./templates/vcard.html";

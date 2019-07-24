@@ -38,6 +38,7 @@
 - #1445: Participants list uses big font in embedded mode
 - #1455: Avatar in controlbox status-view not updated
 - #1465: When highlighting a roster contact, they're incorrectly shown as online
+- #1476: Support OMEMO on by default for chats via a config variable
 - #1494: Trim whitespace around messages
 - #1495: Mentions should always include a URI attribute
 - #1502: Fatal error when using prebind
@@ -56,6 +57,7 @@
 
 ### Breaking changes
 
+- The minimum required NodeJS version for making builds is now 8.9.0
 - Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).
 - `_converse.api.archive.query` now returns a Promise instead of accepting a callback functions.
 - `_converse.api.disco.supports` now returns a Promise which resolves to a Boolean instead of an Array.

@@ -19,7 +19,7 @@
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const IQ_ids =  _converse.connection.IQ_ids;
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
-                await test_utils.waitUntil(() => _.filter(
+                await u.waitUntil(() => _.filter(
                     IQ_stanzas,
                     iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
                 );
@@ -67,7 +67,7 @@
 
                 // Converse.js sees that the entity has a disco#items feature,
                 // so it will make a query for it.
-                await test_utils.waitUntil(() => _.filter(
+                await u.waitUntil(() => _.filter(
                         IQ_stanzas,
                         iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]')
                     ).length
@@ -101,7 +101,7 @@
                 _converse.api.disco.entities.get().then(function (entities) {
                     expect(entities.length).toBe(2);
                     expect(entities.get('montague.lit').items.length).toBe(1);
-                    return test_utils.waitUntil(function () {
+                    return u.waitUntil(function () {
                         // Converse.js sees that the entity has a disco#info feature,
                         // so it will make a query for it.
                         return _.filter(IQ_stanzas, function (iq) {
@@ -110,7 +110,7 @@
                     }, 300);
                 });
 
-                stanza = await test_utils.waitUntil(() =>
+                stanza = await u.waitUntil(() =>
                     _.filter(
                         IQ_stanzas,
                         iq => iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')
@@ -223,7 +223,7 @@
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
-                    test_utils.waitUntil(() => view.el.querySelector('.upload-file'));
+                    u.waitUntil(() => view.el.querySelector('.upload-file'));
                     expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
                     done();
                 }));
@@ -240,7 +240,7 @@
                     await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.lit'], 'items');
                     await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.lit', [], [Strophe.NS.HTTPUPLOAD], []);
                     await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                    await test_utils.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').el.querySelector('.upload-file'));
+                    await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').el.querySelector('.upload-file'));
                     const view = _converse.chatboxviews.get('lounge@montague.lit');
                     expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
                     done();
@@ -274,7 +274,7 @@
                         view.model.sendFiles([file]);
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
+                        await u.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                         const iq = IQ_stanzas.pop();
                         expect(Strophe.serialize(iq)).toBe(
                             `<iq from="romeo@montague.lit/orchard" `+
@@ -309,10 +309,10 @@
                             const message = view.model.messages.at(0);
                             expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
                             message.set('progress', 0.5);
-                            test_utils.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
+                            u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
                             .then(() => {
                                 message.set('progress', 1);
-                                test_utils.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1')
+                                u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1')
                             }).then(() => {
                                 message.save({
                                     'upload': _converse.SUCCESS,
@@ -326,7 +326,7 @@
                         spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                        await test_utils.waitUntil(() => sent_stanza, 1000);
+                        await u.waitUntil(() => sent_stanza, 1000);
                         expect(sent_stanza.toLocaleString()).toBe(
                             `<message from="romeo@montague.lit/orchard" `+
                                 `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
@@ -341,7 +341,7 @@
                                     `</x>`+
                                     `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
-                        await test_utils.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
+                        await u.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                         // Check that the image renders
                         expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
                             `<!-- src/templates/image.html -->\n`+
@@ -369,7 +369,7 @@
 
                         // Wait until MAM query has been sent out
                         const sent_stanzas = _converse.connection.sent_stanzas;
-                        await test_utils.waitUntil(() => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
+                        await u.waitUntil(() => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
 
                         const view = _converse.chatboxviews.get('lounge@montague.lit');
                         const file = {
@@ -381,7 +381,7 @@
                         view.model.sendFiles([file]);
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
+                        await u.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                         const iq = IQ_stanzas.pop();
                         expect(Strophe.serialize(iq)).toBe(
                             `<iq from="romeo@montague.lit/orchard" `+
@@ -415,10 +415,10 @@
                             const message = view.model.messages.at(0);
                             expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
                             message.set('progress', 0.5);
-                            test_utils.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
+                            u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
                             .then(() => {
                                 message.set('progress', 1);
-                                test_utils.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1')
+                                u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1')
                             }).then(() => {
                                 message.save({
                                     'upload': _converse.SUCCESS,
@@ -432,7 +432,7 @@
                         spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                        await test_utils.waitUntil(() => sent_stanza, 1000);
+                        await u.waitUntil(() => sent_stanza, 1000);
                         expect(sent_stanza.toLocaleString()).toBe(
                             `<message `+
                                 `from="romeo@montague.lit/orchard" `+
@@ -447,7 +447,7 @@
                                     `</x>`+
                                     `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
-                        await test_utils.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
+                        await u.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                         // Check that the image renders
                         expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
                             `<!-- src/templates/image.html -->\n`+
@@ -464,7 +464,7 @@
                         const send_backup = XMLHttpRequest.prototype.send;
 
                         await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
-                        await test_utils.waitUntil(() => _.filter(
+                        await u.waitUntil(() => _.filter(
                             IQ_stanzas,
                             iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
                         );
@@ -497,7 +497,7 @@
                         expect(entities.get(_converse.domain).features.length).toBe(2);
                         expect(entities.get(_converse.domain).identities.length).toBe(1);
 
-                        await test_utils.waitUntil(function () {
+                        await u.waitUntil(function () {
                             // Converse.js sees that the entity has a disco#items feature,
                             // so it will make a query for it.
                             return _.filter(IQ_stanzas, function (iq) {
@@ -525,7 +525,7 @@
 
                         expect(entities.length).toBe(2);
                         expect(entities.get('montague.lit').items.length).toBe(1);
-                        await test_utils.waitUntil(function () {
+                        await u.waitUntil(function () {
                             // Converse.js sees that the entity has a disco#info feature,
                             // so it will make a query for it.
                             return _.filter(IQ_stanzas, function (iq) {
@@ -567,7 +567,7 @@
                             'name': "my-juliet.jpg"
                         };
                         view.model.sendFiles([file]);
-                        await test_utils.waitUntil(() => view.el.querySelectorAll('.message').length)
+                        await u.waitUntil(() => view.el.querySelectorAll('.message').length)
                         const messages = view.el.querySelectorAll('.message.chat-error');
                         expect(messages.length).toBe(1);
                         expect(messages[0].textContent).toBe(
@@ -606,7 +606,7 @@
                     };
                     view.model.sendFiles([file]);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                    await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length)
+                    await u.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length)
                     const iq = IQ_stanzas.pop();
                     expect(Strophe.serialize(iq)).toBe(
                         `<iq from="romeo@montague.lit/orchard" `+
@@ -640,10 +640,10 @@
                         const message = view.model.messages.at(0);
                         expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
                         message.set('progress', 0.5);
-                        test_utils.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
+                        u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
                         .then(() => {
                             message.set('progress', 1);
-                            test_utils.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1')
+                            u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1')
                         }).then(() => {
                             expect(view.el.querySelector('.chat-content .chat-msg__text').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
                             done();

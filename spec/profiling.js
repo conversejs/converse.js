@@ -64,7 +64,7 @@
             });
             _converse.roster.onReceivedFromServer(stanza.tree());
 
-            return test_utils.waitUntil(function () {
+            return u.waitUntil(function () {
                 var $group = _converse.rosterview.$el.find('.roster-group')
                 return $group.length && u.isVisible($group[0]);
             }).then(function () {
@@ -75,7 +75,7 @@
                         count += 1;
                     }
                 });
-                return test_utils.waitUntil(function () {
+                return u.waitUntil(function () {
                     return _converse.rosterview.$el.find('li.online').length
                 })
             }).then(done);
@@ -109,7 +109,7 @@
             });
             _converse.roster.onReceivedFromServer(stanza.tree());
 
-            return test_utils.waitUntil(function () {
+            return u.waitUntil(function () {
                 var $group = _converse.rosterview.$el.find('.roster-group')
                 return $group.length && u.isVisible($group[0]);
             }).then(function () {
@@ -124,7 +124,7 @@
                         }
                     });
                 });
-                return test_utils.waitUntil(function () {
+                return u.waitUntil(function () {
                     return _converse.rosterview.$el.find('li.online').length
                 })
             }).then(done);

@@ -3,13 +3,11 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-/* converse-singleton
- * ******************
- *
+/**
+ * @module converse-singleton
+ * @description
  * A plugin which restricts Converse to only one chat.
  */
-
 import converse from "@converse/headless/converse-core";
 
 const { _, Strophe } = converse.env;

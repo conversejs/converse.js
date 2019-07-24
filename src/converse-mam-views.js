@@ -4,8 +4,11 @@
 // Copyright (c) 2012-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-// Views for XEP-0313 Message Archive Management
-
+/**
+ * @module converse-mam-views
+ * @description
+ * Views for XEP-0313 Message Archive Management
+ */
 import converse from "@converse/headless/converse-core";
 import { debounce } from 'lodash'
 

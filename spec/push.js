@@ -31,7 +31,7 @@
                     _converse.bare_jid,
                     [{'category': 'account', 'type':'registered'}],
                     ['urn:xmpp:push:0'], [], 'info');
-            const stanza = await test_utils.waitUntil(() =>
+            const stanza = await u.waitUntil(() =>
                 _.filter(IQ_stanzas, iq => iq.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop()
             );
             expect(Strophe.serialize(stanza)).toEqual(
@@ -44,7 +44,7 @@
                 'type': 'result',
                 'id': stanza.getAttribute('id')
             })));
-            await test_utils.waitUntil(() => _converse.session.get('push_enabled'));
+            await u.waitUntil(() => _converse.session.get('push_enabled'));
             done();
         }));
 
@@ -68,7 +68,7 @@
                 _converse, _converse.bare_jid, [],
                 ['urn:xmpp:push:0']);
 
-            let iq = await test_utils.waitUntil(() => _.filter(
+            let iq = await u.waitUntil(() => _.filter(
                 IQ_stanzas,
                 iq => sizzle(`iq[type="set"] enable[xmlns="${Strophe.NS.PUSH}"]`, iq).length
             ).pop());
@@ -81,7 +81,7 @@
             const result = u.toStanza(`<iq type="result" id="${iq.getAttribute('id')}" to="romeo@montague.lit" />`);
             _converse.connection._dataRecv(test_utils.createRequest(result));
 
-            await test_utils.waitUntil(() => _converse.session.get('push_enabled'));
+            await u.waitUntil(() => _converse.session.get('push_enabled'));
             expect(_converse.session.get('push_enabled').length).toBe(1);
             expect(_.includes(_converse.session.get('push_enabled'), 'romeo@montague.lit')).toBe(true);
 
@@ -90,7 +90,7 @@
                 _converse, 'chat.shakespeare.lit',
                 [{'category': 'account', 'type':'registered'}],
                 ['urn:xmpp:push:0'], [], 'info');
-            iq = await test_utils.waitUntil(() => _.filter(
+            iq = await u.waitUntil(() => _.filter(
                 IQ_stanzas,
                 iq => sizzle(`iq[type="set"][to="chat.shakespeare.lit"] enable[xmlns="${Strophe.NS.PUSH}"]`, iq).length
             ).pop());
@@ -105,7 +105,7 @@
                 'type': 'result',
                 'id': iq.getAttribute('id')
             })));
-            await test_utils.waitUntil(() => _.includes(_converse.session.get('push_enabled'), 'chat.shakespeare.lit'));
+            await u.waitUntil(() => _.includes(_converse.session.get('push_enabled'), 'chat.shakespeare.lit'));
             done();
         }));
 
@@ -127,7 +127,7 @@
                 _converse.bare_jid,
                 [{'category': 'account', 'type':'registered'}],
                 ['urn:xmpp:push:0'], [], 'info');
-            const stanza = await test_utils.waitUntil(
+            const stanza = await u.waitUntil(
                 () => _.filter(IQ_stanzas, iq => iq.querySelector('iq[type="set"] disable[xmlns="urn:xmpp:push:0"]')).pop()
             );
             expect(Strophe.serialize(stanza)).toEqual(
@@ -140,7 +140,7 @@
                 'type': 'result',
                 'id': stanza.getAttribute('id')
             })));
-            await test_utils.waitUntil(() => _converse.session.get('push_enabled'))
+            await u.waitUntil(() => _converse.session.get('push_enabled'))
             done();
         }));
 
@@ -168,7 +168,7 @@
                     [{'category': 'account', 'type':'registered'}],
                     ['urn:xmpp:push:0'], [], 'info');
 
-            const stanza = await test_utils.waitUntil(
+            const stanza = await u.waitUntil(
                 () => _.filter(IQ_stanzas, iq => iq.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop()
             );
             expect(Strophe.serialize(stanza)).toEqual(
@@ -186,7 +186,7 @@
                 'type': 'result',
                 'id': stanza.getAttribute('id')
             })));
-            await test_utils.waitUntil(() => _converse.session.get('push_enabled'))
+            await u.waitUntil(() => _converse.session.get('push_enabled'))
             done();
         }));
     });

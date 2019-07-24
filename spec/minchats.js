@@ -66,7 +66,7 @@
             expect(u.isVisible(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout'))).toBeTruthy();
             expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeFalsy();
             _converse.minimized_chats.el.querySelector('#toggle-minimized-chats').click();
-            await test_utils.waitUntil(() => u.isVisible(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout')));
+            await u.waitUntil(() => u.isVisible(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout')));
             expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeTruthy();
             done();
         }));
@@ -93,7 +93,7 @@
                 contact_jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 test_utils.openChatBoxFor(_converse, contact_jid);
             }
-            test_utils.waitUntil(() => _converse.chatboxes.length == 4).then(() => {
+            u.waitUntil(() => _converse.chatboxes.length == 4).then(() => {
                 for (i=0; i<3; i++) {
                     chatview = _converse.chatboxviews.get(contact_jid);
                     chatview.model.set({'minimized': true});
@@ -106,7 +106,7 @@
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     _converse.chatboxes.onMessage(msg);
                 }
-                return test_utils.waitUntil(() => chatview.model.messages.length);
+                return u.waitUntil(() => chatview.model.messages.length);
             }).then(() => {
                 expect(u.isVisible(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count'))).toBeTruthy();
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((3).toString());
@@ -169,7 +169,7 @@
                     type: 'groupchat'
                 }).c('body').t(message).tree();
             view.model.onMessage(msg);
-            await test_utils.waitUntil(() => view.model.messages.length);
+            await u.waitUntil(() => view.model.messages.length);
             expect(u.isVisible(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count'))).toBeTruthy();
             expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe('1');
             done();

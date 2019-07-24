@@ -1,22 +1,17 @@
 (function (root, factory) {
-    define(['es6-promise',  'mock', 'wait-until-promise'], factory);
-}(this, function (Promise, mock, waitUntilPromise) {
-    var _ = converse.env._;
-    var $msg = converse.env.$msg;
-    var $pres = converse.env.$pres;
-    var $iq = converse.env.$iq;
-    var Strophe = converse.env.Strophe;
-    var sizzle = converse.env.sizzle;
-    var u = converse.env.utils;
-    var utils = {};
-
-    if (typeof window.Promise === 'undefined') {
-        waitUntilPromise.setPromiseImplementation(Promise);
-    }
-    utils.waitUntil = waitUntilPromise.default;
+    define(['es6-promise',  'mock'], factory);
+}(this, function (Promise, mock) {
+    const _ = converse.env._;
+    const $msg = converse.env.$msg;
+    const $pres = converse.env.$pres;
+    const $iq = converse.env.$iq;
+    const Strophe = converse.env.Strophe;
+    const sizzle = converse.env.sizzle;
+    const u = converse.env.utils;
+    const utils = {};
 
     utils.waitUntilDiscoConfirmed = async function (_converse, entity_jid, identities, features=[], items=[], type='info') {
-        const iq = await utils.waitUntil(() => {
+        const iq = await u.waitUntil(() => {
             return _.filter(
                 _converse.connection.IQ_stanzas,
                 (iq) => sizzle(`iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`, iq).length
@@ -83,18 +78,47 @@
         return this;
     };
 
+    utils.waitUntilBookmarksReturned = async function (_converse, bookmarks=[]) {
+        await utils.waitUntilDiscoConfirmed(
+            _converse, _converse.bare_jid,
+            [{'category': 'pubsub', 'type': 'pep'}],
+            ['http://jabber.org/protocol/pubsub#publish-options']
+        );
+        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        const sent_stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop()
+        );
+        const stanza = $iq({
+            'to': _converse.connection.jid,
+            'type':'result',
+            'id':sent_stanza.getAttribute('id')
+        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+            .c('items', {'node': 'storage:bookmarks'})
+                .c('item', {'id': 'current'})
+                    .c('storage', {'xmlns': 'storage:bookmarks'});
+        bookmarks.forEach(bookmark => {
+            stanza.c('conference', {
+                'name': bookmark.name,
+                'autojoin': bookmark.autojoin,
+                'jid': bookmark.jid
+            }).c('nick').t(bookmark.nick).up().up()
+        });
+        _converse.connection._dataRecv(utils.createRequest(stanza));
+        await _converse.api.waitUntil('bookmarksInitialized');
+    };
+
     utils.openChatBoxes = function (converse, amount) {
-        var i = 0, jid, views = [];
-        for (i; i<amount; i++) {
-            jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            views[i] = converse.roster.get(jid).trigger("open");
+        const views = [];
+        for (let i=0; i<amount; i++) {
+            const jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            views.push(converse.roster.get(jid).trigger("open"));
         }
         return views;
     };
 
     utils.openChatBoxFor = function (_converse, jid) {
         _converse.roster.get(jid).trigger("open");
-        return utils.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
+        return u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
     };
 
     utils.openChatRoomViaModal = async function (_converse, jid, nick='') {
@@ -104,13 +128,13 @@
         roomspanel.el.querySelector('.show-add-muc-modal').click();
         utils.closeControlBox(_converse);
         const modal = roomspanel.add_room_modal;
-        await utils.waitUntil(() => u.isVisible(modal.el), 1500)
+        await u.waitUntil(() => u.isVisible(modal.el), 1500)
         modal.el.querySelector('input[name="chatroom"]').value = jid;
         if (nick) {
             modal.el.querySelector('input[name="nickname"]').value = nick;
         }
         modal.el.querySelector('form input[type="submit"]').click();
-        await utils.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
+        await u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
         return _converse.chatboxviews.get(jid);
     };
 
@@ -121,17 +145,17 @@
     };
 
     utils.getRoomFeatures = async function (_converse, room, server, features=[]) {
-        const room_jid = `${room}@${server}`.toLowerCase();
+        const muc_jid = `${room}@${server}`.toLowerCase();
         const stanzas = _converse.connection.IQ_stanzas;
         const index = stanzas.length-1;
-        const stanza = await utils.waitUntil(() => _.filter(
+        const stanza = await u.waitUntil(() => _.filter(
             stanzas.slice(index),
             iq => iq.querySelector(
-                `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
             )).pop());
 
         const features_stanza = $iq({
-            'from': room_jid,
+            'from': muc_jid,
             'id': stanza.getAttribute('id'),
             'to': 'romeo@montague.lit/desktop',
             'type': 'result'
@@ -164,24 +188,18 @@
         _converse.connection._dataRecv(utils.createRequest(features_stanza));
     };
 
-    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
-        const room = Strophe.getNodeFromJid(muc_jid);
-        const server = Strophe.getDomainFromJid(muc_jid);
-        const room_jid = `${room}@${server}`.toLowerCase();
+
+    utils.waitForReservedNick = async function (_converse, muc_jid, nick) {
+        const view = _converse.chatboxviews.get(muc_jid);
         const stanzas = _converse.connection.IQ_stanzas;
-        await _converse.api.rooms.open(room_jid);
-        await utils.getRoomFeatures(_converse, room, server, features);
-
-        const iq = await utils.waitUntil(() => _.filter(
+        const iq = await u.waitUntil(() => _.filter(
             stanzas,
-            s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s).length
+            s => sizzle(`iq[to="${muc_jid.toLowerCase()}"] query[node="x-roomuser-item"]`, s).length
         ).pop());
-
         // We remove the stanza, otherwise we might get stale stanzas returned in our filter above.
         stanzas.splice(stanzas.indexOf(iq), 1)
 
         // The XMPP server returns the reserved nick for this user.
-        const view = _converse.chatboxviews.get(room_jid);
         const IQ_id = iq.getAttribute('id');
         const stanza = $iq({
             'type': 'result',
@@ -191,29 +209,15 @@
         }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
             .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
         _converse.connection._dataRecv(utils.createRequest(stanza));
-        await utils.waitUntil(() => view.model.get('nick'));
+        return u.waitUntil(() => view.model.get('nick'));
+    };
 
-        // The user has just entered the room (because join was called)
-        // and receives their own presence from the server.
-        // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
-        const presence = $pres({
-                to: _converse.connection.jid,
-                from: `${room_jid}/${nick}`,
-                id: u.getUniqueId()
-        }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-            .c('item').attrs({
-                affiliation: 'owner',
-                jid: _converse.bare_jid,
-                role: 'moderator'
-            }).up()
-            .c('status').attrs({code:'110'});
-        _converse.connection._dataRecv(utils.createRequest(presence));
-        await utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
 
-        // Now we return the (empty) member lists
-        const member_IQ = await utils.waitUntil(() => _.filter(
+    utils.returnMemberLists = async function (_converse, muc_jid, members=[]) {
+        const stanzas = _converse.connection.IQ_stanzas;
+        const member_IQ = await u.waitUntil(() => _.filter(
             stanzas,
-            s => sizzle(`iq[to="${room_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
+            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
         ).pop());
         const member_list_stanza = $iq({
                 'from': 'coven@chat.shakespeare.lit',
@@ -231,9 +235,9 @@
         });
         _converse.connection._dataRecv(utils.createRequest(member_list_stanza));
 
-        const admin_IQ = await utils.waitUntil(() => _.filter(
+        const admin_IQ = await u.waitUntil(() => _.filter(
             stanzas,
-            s => sizzle(`iq[to="${room_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
+            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
         ).pop());
         const admin_list_stanza = $iq({
                 'from': 'coven@chat.shakespeare.lit',
@@ -243,9 +247,9 @@
             }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
         _converse.connection._dataRecv(utils.createRequest(admin_list_stanza));
 
-        const owner_IQ = await utils.waitUntil(() => _.filter(
+        const owner_IQ = await u.waitUntil(() => _.filter(
             stanzas,
-            s => sizzle(`iq[to="${room_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
+            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
         ).pop());
         const owner_list_stanza = $iq({
                 'from': 'coven@chat.shakespeare.lit',
@@ -254,6 +258,36 @@
                 'type': 'result'
             }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
         _converse.connection._dataRecv(utils.createRequest(owner_list_stanza));
+    };
+
+
+    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
+        muc_jid = muc_jid.toLowerCase();
+        const room = Strophe.getNodeFromJid(muc_jid);
+        const server = Strophe.getDomainFromJid(muc_jid);
+        await _converse.api.rooms.open(muc_jid);
+        await utils.getRoomFeatures(_converse, room, server, features);
+        await utils.waitForReservedNick(_converse, muc_jid, nick);
+
+        // The user has just entered the room (because join was called)
+        // and receives their own presence from the server.
+        // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
+        const presence = $pres({
+                to: _converse.connection.jid,
+                from: `${muc_jid}/${nick}`,
+                id: u.getUniqueId()
+        }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+            .c('item').attrs({
+                affiliation: 'owner',
+                jid: _converse.bare_jid,
+                role: 'moderator'
+            }).up()
+            .c('status').attrs({code:'110'});
+        _converse.connection._dataRecv(utils.createRequest(presence));
+
+        const view = _converse.chatboxviews.get(muc_jid);
+        await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        await utils.returnMemberLists(_converse, muc_jid, members);
     };
 
     utils.clearBrowserStorage = function () {
@@ -319,7 +353,7 @@
     };
 
     utils.waitForRoster = async function (_converse, type='current', length, include_nick=true) {
-        const iq = await utils.waitUntil(() =>
+        const iq = await u.waitUntil(() =>
             _.filter(
                 _converse.connection.IQ_stanzas,
                 iq => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq).length
@@ -383,7 +417,7 @@
     }
 
     utils.sendMessage = function (view, message) {
-        const promise = new Promise((resolve, reject) => view.on('messageInserted', resolve));
+        const promise = new Promise(resolve => view.once('messageInserted', resolve));
         view.el.querySelector('.chat-textarea').value = message;
         view.onKeyDown({
             target: view.el.querySelector('textarea.chat-textarea'),

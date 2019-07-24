@@ -2,6 +2,8 @@
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
 
+    const u = converse.env.utils;
+
     describe("The Login Form", function () {
 
         it("contains a checkbox to indicate whether the computer is trusted or not",
@@ -12,7 +14,7 @@
                 async function (done, _converse) {
 
             test_utils.openControlBox();
-            const cbview = await test_utils.waitUntil(() => _converse.chatboxviews.get('controlbox'));
+            const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
             const checkboxes = cbview.el.querySelectorAll('input[type="checkbox"]');
             expect(checkboxes.length).toBe(1);
 
@@ -46,7 +48,7 @@
                   allow_registration: false },
                 function (done, _converse) {
 
-            test_utils.waitUntil(() => _converse.chatboxviews.get('controlbox'))
+            u.waitUntil(() => _converse.chatboxviews.get('controlbox'))
             .then(() => {
                 var cbview = _converse.chatboxviews.get('controlbox');
                 test_utils.openControlBox();

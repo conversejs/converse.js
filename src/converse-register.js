@@ -4,12 +4,12 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
-
-/* This is a Converse.js plugin which add support for in-band registration
+/**
+ * @module converse-register
+ * @description
+ * This is a Converse.js plugin which add support for in-band registration
  * as specified in XEP-0077.
  */
-
 import "converse-controlbox";
 import converse from "@converse/headless/converse-core";
 import tpl_form_input from "templates/form_input.html";

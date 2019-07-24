@@ -3,9 +3,12 @@
 //
 // Copyright (c) The Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-/* This is a Converse.js plugin which add support for XEP-0198: Stream Management */
-
+//
+/**
+ * @module converse-smacks
+ * @description
+ * Converse.js plugin which adds support for XEP-0198: Stream Management
+ */
 import converse from "./converse-core";
 
 const { Strophe, $build, _ } = converse.env;

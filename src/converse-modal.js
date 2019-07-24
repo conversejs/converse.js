@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-modal
+ */
 import "backbone.vdomview";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";

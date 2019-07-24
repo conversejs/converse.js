@@ -86,7 +86,7 @@
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.change-status').click()
             const modal = _converse.xmppstatusview.status_modal;
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const msg = 'My custom status';
             modal.el.querySelector('input[name="status_message"]').value = msg;
             modal.el.querySelector('[type="submit"]').click();
@@ -98,9 +98,9 @@
                         `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
                         `</presence>`)
 
-            await test_utils.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
+            await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
             cbview.el.querySelector('.change-status').click()
-            await test_utils.waitUntil(() => modal.el.getAttribute('aria-hidden') === "false", 1000);
+            await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "false", 1000);
             modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
             modal.el.querySelector('[type="submit"]').click();
             expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())

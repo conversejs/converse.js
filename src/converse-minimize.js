@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-minimize
+ */
 import "converse-chatview";
 import BrowserStorage from "backbone.browserStorage";
 import { Overview } from "backbone.overview";
@@ -76,15 +78,13 @@ converse.plugins.add('converse-minimize', {
                 return this.__super__.initialize.apply(this, arguments);
             },
 
-            _show () {
+            show () {
                 const { _converse } = this.__super__;
-                if (_converse.view_mode !== 'overlayed') {
-                    return this.__super__._show.apply(this, arguments);
-                } else if (!this.model.get('minimized')) {
-                    this.__super__._show.apply(this, arguments);
-                    _converse.chatboxviews.trimChats(this);
-                } else {
+                if (_converse.view_mode === 'overlayed' && this.model.get('minimized')) {
                     this.model.minimize();
+                    return this;
+                } else {
+                    return this.__super__.show.apply(this, arguments);
                 }
             },
 
@@ -206,7 +206,7 @@ converse.plugins.add('converse-minimize', {
                 if (!this.model.isScrolledUp()) {
                     this.model.clearUnreadMsgCounter();
                 }
-                this.setChatState(_converse.INACTIVE);
+                this.model.setChatState(_converse.INACTIVE);
                 this.show();
                 /**
                  * Triggered when a previously minimized chat gets maximized
@@ -235,7 +235,7 @@ converse.plugins.add('converse-minimize', {
                 } else {
                     this.model.set({'scroll': this.content.scrollTop});
                 }
-                this.setChatState(_converse.INACTIVE);
+                this.model.setChatState(_converse.INACTIVE);
                 this.hide();
                 /**
                  * Triggered when a previously maximized chat gets Minimized
@@ -295,23 +295,37 @@ converse.plugins.add('converse-minimize', {
                 );
             },
 
-            trimChats: _.debounce(async function (newchat) {
-                /* This method is called when a newly created chat box will
-                 * be shown.
-                 *
-                 * It checks whether there is enough space on the page to show
-                 * another chat box. Otherwise it minimizes the oldest chat box
-                 * to create space.
-                 */
-                if (!_converse.connection.connected || _converse.view_mode !== 'overlayed') {
+            getMinimizedWidth () {
+                const minimized_el = _.get(_converse.minimized_chats, 'el');
+                return _.includes(this.model.pluck('minimized'), true) ?
+                    u.getOuterWidth(minimized_el, true) : 0;
+            },
+
+            getBoxesWidth (newchat) {
+                const new_id = newchat ? newchat.model.get('id') : null;
+                const newchat_width = newchat ? u.getOuterWidth(newchat.el, true) : 0;
+                return Object.values(this.xget(new_id))
+                    .reduce((memo, view) => memo + this.getChatBoxWidth(view), newchat_width);
+            },
+
+            /**
+             * This method is called when a newly created chat box will be shown.
+             * It checks whether there is enough space on the page to show
+             * another chat box. Otherwise it minimizes the oldest chat box
+             * to create space.
+             * @private
+             * @method _converse.ChatBoxViews#trimChats
+             * @param { [ChatBoxView|ChatRoomView|ControlBoxView|HeadlinesBoxView] } newchat
+             */
+            async trimChats (newchat) {
+                if (_converse.no_trimming || !_converse.connection.connected || _converse.view_mode !== 'overlayed') {
                     return;
                 }
                 const shown_chats = this.getShownChats();
-                const body_width = u.getOuterWidth(document.querySelector('body'), true);
-
-                if (_converse.no_trimming || shown_chats.length <= 1) {
+                if (shown_chats.length <= 1) {
                     return;
                 }
+                const body_width = u.getOuterWidth(document.querySelector('body'), true);
                 if (this.getChatBoxWidth(shown_chats[0]) === body_width) {
                     // If the chats shown are the same width as the body,
                     // then we're in responsive mode and the chats are
@@ -319,19 +333,10 @@ converse.plugins.add('converse-minimize', {
                     return;
                 }
                 await _converse.api.waitUntil('minimizedChatsInitialized');
-                const minimized_el = _.get(_converse.minimized_chats, 'el'),
-                      new_id = newchat ? newchat.model.get('id') : null;
-
+                const minimized_el = _.get(_converse.minimized_chats, 'el');
                 if (minimized_el) {
-                    const minimized_width = _.includes(this.model.pluck('minimized'), true) ?
-                        u.getOuterWidth(minimized_el, true) : 0;
-
-                    const boxes_width = _.reduce(
-                        this.xget(new_id),
-                        (memo, view) => memo + this.getChatBoxWidth(view),
-                        newchat ? u.getOuterWidth(newchat.el, true) : 0
-                    );
-                    if ((minimized_width + boxes_width) > body_width) {
+                    while ((this.getMinimizedWidth() + this.getBoxesWidth(newchat)) > body_width) {
+                        const new_id = newchat ? newchat.model.get('id') : null;
                         const oldest_chat = this.getOldestMaximizedChat([new_id]);
                         if (oldest_chat) {
                             // We hide the chat immediately, because waiting
@@ -343,10 +348,12 @@ converse.plugins.add('converse-minimize', {
                                 view.hide();
                             }
                             oldest_chat.minimize();
+                        } else {
+                            break;
                         }
                     }
                 }
-            }, 100),
+            },
 
             getOldestMaximizedChat (exclude_ids) {
                 // Get oldest view (if its id is not excluded)
@@ -446,7 +453,6 @@ converse.plugins.add('converse-minimize', {
                     this.el.classList.add('hidden');
                 } else if (this.keys().length > 0 && !u.isVisible(this.el)) {
                     this.el.classList.remove('hidden');
-                    _converse.chatboxviews.trimChats();
                 }
                 return this.el;
             },
@@ -564,10 +570,11 @@ converse.plugins.add('converse-minimize', {
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
 
-        const trimChats = () => _converse.chatboxviews.trimChats();
-        _converse.api.listen.on('controlBoxOpened', trimChats);
-        _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", trimChats));
-        _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", trimChats));
+        const debouncedTrimChats = _.debounce(() => _converse.chatboxviews.trimChats(), 250);
+        _converse.api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
+        _converse.api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
+        _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));
+        _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrimChats));
         /************************ END Event Handlers ************************/
     }
 });

@@ -3,14 +3,15 @@
 //
 // Copyright (c) The Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-/* This is a Converse.js plugin which add support for XEP-0206: XMPP Over BOSH */
-
+/**
+ * @module converse-bosh
+ * @description
+ * Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
+ */
 import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 
 const { Backbone, Strophe, _ } = converse.env;
-const u = converse.env.utils;
 
 
 converse.plugins.add('converse-bosh', {

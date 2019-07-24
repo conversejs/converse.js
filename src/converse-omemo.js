@@ -4,8 +4,10 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-/* global libsignal, ArrayBuffer, parseInt, crypto */
-
+/* global libsignal, ArrayBuffer */
+/**
+ * @module converse-omemo
+ */
 import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
@@ -243,6 +245,10 @@ converse.plugins.add('converse-omemo', {
          */
         const { _converse } = this,
               { __ } = _converse;
+
+        _converse.api.settings.update({
+            'omemo_default': false,
+        });
 
         _converse.api.promises.add(['OMEMOInitialized']);
 
@@ -1227,6 +1233,9 @@ converse.plugins.add('converse-omemo', {
                 supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
             }
             chatbox.set('omemo_supported', supported);
+            if (supported && _converse.omemo_default) {
+                chatbox.set('omemo_active', true);
+            }
         }
 
         _converse.api.waitUntil('chatBoxesInitialized').then(() =>

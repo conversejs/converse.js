@@ -15,7 +15,7 @@
                   allow_registration: false },
                 async function (done, _converse) {
 
-            await test_utils.waitUntil(() => _converse.chatboxviews.get('controlbox'));
+            await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
             test_utils.openControlBox();
             const cbview = _converse.chatboxviews.get('controlbox');
             expect(cbview.el.querySelectorAll('a.register-account').length).toBe(0);
@@ -29,7 +29,7 @@
                   allow_registration: true },
                 async function (done, _converse) {
 
-            await test_utils.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'), 300);
+            await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'), 300);
             const cbview = _converse.chatboxviews.get('controlbox');
             test_utils.openControlBox();
             const panels = cbview.el.querySelector('.controlbox-panes');
@@ -38,7 +38,7 @@
             const register_link = cbview.el.querySelector('a.register-account');
             expect(register_link.textContent).toBe("Create an account");
             register_link.click();
-            await test_utils.waitUntil(() => u.isVisible(registration));
+            await u.waitUntil(() => u.isVisible(registration));
             expect(u.isVisible(login)).toBe(false);
             done();
         }));
@@ -50,7 +50,7 @@
                   allow_registration: true },
                 async function (done, _converse) {
 
-            await test_utils.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
+            await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
             test_utils.openControlBox();
             const cbview = _converse.chatboxviews.get('controlbox');
             const registerview = cbview.registerpanel;
@@ -86,7 +86,7 @@
                   allow_registration: true },
                 async function (done, _converse) {
 
-            await test_utils.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
+            await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
             test_utils.openControlBox();
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.toggle-register-login').click();
@@ -142,7 +142,7 @@
                   allow_registration: true },
                 async function (done, _converse) {
 
-            await test_utils.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
+            await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
             test_utils.openControlBox();
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.toggle-register-login').click();
@@ -199,7 +199,7 @@
                   allow_registration: true },
                 async function (done, _converse) {
 
-            await test_utils.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
+            await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
             test_utils.openControlBox();
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.toggle-register-login').click();
@@ -273,7 +273,7 @@
                   allow_registration: true },
                 async function (done, _converse) {
 
-            await test_utils.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
+            await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
             test_utils.openControlBox();
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.toggle-register-login').click();

@@ -25,7 +25,6 @@
         //     'prosody@conference.prosody.im',
         //     'jdev@conference.jabber.org'
         // ],
-        // bosh_service_url: 'http://chat.example.org:5280/http-bind/',
         websocket_url: 'wss://conversejs.org/xmpp-websocket',
         bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
         view_mode: 'fullscreen',
@@ -33,7 +32,7 @@
             'discuss@conference.conversejs.org'
         ],
         enable_smacks: true,
-        muc_respect_autojoin: false,
+        muc_respect_autojoin: true,
         message_archiving: 'always',
         debug: true
     });

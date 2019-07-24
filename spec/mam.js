@@ -33,7 +33,7 @@
                             <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
                         </message>`);
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+                    await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
                     expect(view.model.messages.length).toBe(1);
                     expect(view.model.messages.at(0).get('is_archived')).toBe(false);
                     expect(view.model.messages.at(0).get('stanza_id trek-radio@conference.lightwitch.org')).toBe('45fbbf2a-1059-479d-9283-c8effaf05621');
@@ -54,13 +54,13 @@
                     spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
                     spyOn(view.model, 'updateMessage').and.callThrough();
                     view.model.onMessage(stanza);
-                    await test_utils.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
+                    await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
                     expect(view.model.findDuplicateFromArchiveID.calls.count()).toBe(1);
                     const result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue
                     expect(result instanceof _converse.Message).toBe(true);
                     expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
-                    await test_utils.waitUntil(() => view.model.updateMessage.calls.count());
+                    await u.waitUntil(() => view.model.updateMessage.calls.count());
                     expect(view.model.messages.length).toBe(1);
                     expect(view.model.messages.at(0).get('is_archived')).toBe(true);
                     expect(view.model.messages.at(0).get('stanza_id trek-radio@conference.lightwitch.org')).toBe('45fbbf2a-1059-479d-9283-c8effaf05621');
@@ -80,7 +80,7 @@
                             <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
                         </message>`);
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+                    await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
                     // Not sure whether such a race-condition might pose a problem
                     // in "real-world" situations.
                     stanza = u.toStanza(
@@ -98,7 +98,7 @@
                         </message>`);
                     spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
                     view.model.onMessage(stanza);
-                    await test_utils.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
+                    await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
                     expect(view.model.findDuplicateFromArchiveID.calls.count()).toBe(1);
                     const result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue
                     expect(result instanceof _converse.Message).toBe(true);
@@ -128,7 +128,7 @@
                             </result>
                         </message>`);
                     view.model.onMessage(stanza);
-                    await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+                    await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
                     expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
                     stanza = u.toStanza(
@@ -148,7 +148,7 @@
 
                     spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
                     view.model.onMessage(stanza);
-                    await test_utils.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
+                    await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
                     expect(view.model.findDuplicateFromArchiveID.calls.count()).toBe(1);
                     const result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue
                     expect(result instanceof _converse.Message).toBe(true);
@@ -173,7 +173,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 _converse.api.archive.query();
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client"><query queryid="${queryid}" xmlns="urn:xmpp:mam:2"/></iq>`);
@@ -193,7 +193,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 _converse.api.archive.query({'with':'juliet@capulet.lit'});
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
@@ -221,7 +221,7 @@
                 await test_utils.waitUntilDiscoConfirmed(_converse, room_jid, null, [Strophe.NS.MAM]);
 
                 const sent_stanzas = _converse.connection.sent_stanzas;
-                const stanza = await test_utils.waitUntil(
+                const stanza = await u.waitUntil(
                     () => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
 
                 const queryid = stanza.querySelector('query').getAttribute('queryid');
@@ -249,7 +249,7 @@
                 await test_utils.waitUntilDiscoConfirmed(_converse, room_jid, null, [Strophe.NS.MAM]);
 
                 const sent_stanzas = _converse.connection.sent_stanzas;
-                const sent_stanza = await test_utils.waitUntil(
+                const sent_stanza = await u.waitUntil(
                     () => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
                 const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
 
@@ -327,7 +327,7 @@
                     'start': start,
                     'end': end
                 });
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
@@ -380,7 +380,7 @@
                 }
                 const start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query({'start': start});
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
@@ -413,7 +413,7 @@
                 });
                 const start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query({'start': start, 'max':10});
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
@@ -453,7 +453,7 @@
                     'after': '09af3-cc343-b409f',
                     'max':10
                 });
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
@@ -488,7 +488,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 _converse.api.archive.query({'before': '', 'max':10});
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
@@ -527,7 +527,7 @@
                 rsm['with'] = 'romeo@montague.lit'; // eslint-disable-line dot-notation
                 rsm.start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query(rsm);
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
@@ -564,7 +564,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 const promise = _converse.api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'});
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
 
                 /*  <message id='aeb213' to='juliet@capulet.lit/chamber'>
@@ -682,7 +682,7 @@
                     .c('never').c('jid').t('montague@montague.lit');
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                await test_utils.waitUntil(() => _converse.onMAMPreferences.calls.count());
+                await u.waitUntil(() => _converse.onMAMPreferences.calls.count());
                 expect(_converse.onMAMPreferences).toHaveBeenCalled();
 
                 expect(sent_stanza.toString()).toBe(
@@ -711,7 +711,7 @@
                         .c('always').up()
                         .c('never');
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await test_utils.waitUntil(() => feature.save.calls.count());
+                await u.waitUntil(() => feature.save.calls.count());
                 expect(feature.save).toHaveBeenCalled();
                 expect(feature.get('preferences')['default']).toBe('never'); // eslint-disable-line dot-notation
                 done();
@@ -738,8 +738,7 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                const view = _converse.chatboxviews.get(contact_jid);
-                await test_utils.waitUntil(() => sent_stanza);
+                await u.waitUntil(() => sent_stanza);
                 const stanza_el = sent_stanza.root().nodeTree;
                 const queryid = stanza_el.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(

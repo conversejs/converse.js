@@ -3,7 +3,9 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-message-view
+ */
 import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
 import filesize from "filesize";
@@ -27,8 +29,8 @@ converse.plugins.add('converse-message-view', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-            { __ } = _converse;
+        const { _converse } = this;
+        const { __ } = _converse;
 
 
         function onTagFoundDuringXSSFilter (tag, html, options) {

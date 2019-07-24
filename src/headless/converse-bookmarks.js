@@ -4,15 +4,14 @@
 // Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
-
-/* This is a Converse.js plugin which adds views for bookmarks specified
- * in XEP-0048.
+/**
+ * @module converse-bookmarks
+ * @description
+ * Converse.js plugin which adds views for bookmarks specified in XEP-0048.
  */
-
+import "@converse/headless/converse-muc";
 import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
-import muc from "@converse/headless/converse-muc";
 
 const { Backbone, Promise, Strophe, $iq, sizzle, _ } = converse.env;
 const u = converse.env.utils;
@@ -263,8 +262,7 @@ converse.plugins.add('converse-bookmarks', {
             if (!_converse.allow_bookmarks) {
                 return;
             }
-            const supported = await _converse.checkBookmarksSupport();
-            if (supported) {
+            if (await _converse.checkBookmarksSupport()) {
                 _converse.bookmarks = new _converse.Bookmarks();
                 await _converse.bookmarks.fetchBookmarks();
                 /**

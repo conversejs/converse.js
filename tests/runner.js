@@ -10,8 +10,7 @@ var config = {
         'mock': 'tests/mock',
         'sinon': 'node_modules/sinon/pkg/sinon',
         'test-utils': 'tests/utils',
-        'transcripts': 'converse-logs/converse-logs',
-        'wait-until-promise': 'node_modules/wait-until-promise/index'
+        'transcripts': 'converse-logs/converse-logs'
     },
     shim: {
         'jasmine-html': {
@@ -65,12 +64,11 @@ var specs = [
     "spec/http-file-upload"
 ];
 
-require(['console-reporter', 'mock', 'sinon', 'wait-until-promise'], (ConsoleReporter, mock, sinon, waitUntilPromise) => {
+require(['console-reporter', 'mock', 'sinon'], (ConsoleReporter, mock, sinon) => {
     if (window.view_mode) {
         mock.view_mode = window.view_mode;
     }
     window.sinon = sinon;
-    window.waitUntilPromise = waitUntilPromise.default;
     // Load the specs
     require(specs, jasmine => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000;

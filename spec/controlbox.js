@@ -59,7 +59,7 @@
                     ask: 'subscribe',
                     fullname: mock.pend_names[0]
                 });
-                await test_utils.waitUntil(() => _.filter(_converse.rosterview.el.querySelectorAll('.roster-group li'), u.isVisible).length, 700);
+                await u.waitUntil(() => _.filter(_converse.rosterview.el.querySelectorAll('.roster-group li'), u.isVisible).length, 700);
                 // Checking that only one entry is created because both JID is same (Case sensitive check)
                 expect(_.filter(_converse.rosterview.el.querySelectorAll('li'), u.isVisible).length).toBe(1);
                 expect(_converse.rosterview.update).toHaveBeenCalled();
@@ -76,7 +76,7 @@
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, sender_jid);
-                await test_utils.waitUntil(() => _converse.chatboxes.length);
+                await u.waitUntil(() => _converse.chatboxes.length);
                 const chatview = _converse.chatboxviews.get(sender_jid);
                 chatview.model.set({'minimized': true});
 
@@ -91,7 +91,7 @@
                     }).c('body').t('hello').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator").length);
+                await u.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator").length);
                 spyOn(chatview.model, 'incrementUnreadMsgCounter').and.callThrough();
                 expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('1');
                 expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('1');
@@ -104,7 +104,7 @@
                     }).c('body').t('hello again').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => chatview.model.incrementUnreadMsgCounter.calls.count());
+                await u.waitUntil(() => chatview.model.incrementUnreadMsgCounter.calls.count());
                 expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('2');
                 expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');
                 chatview.model.set({'minimized': false});
@@ -139,7 +139,7 @@
                 cbview.el.querySelector('.change-status').click()
                 var modal = _converse.xmppstatusview.status_modal;
 
-                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                await u.waitUntil(() => u.isVisible(modal.el), 1000);
                 const view = _converse.xmppstatusview;
                 modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
                 modal.el.querySelector('[type="submit"]').click();
@@ -168,7 +168,7 @@
                 cbview.el.querySelector('.change-status').click()
                 const modal = _converse.xmppstatusview.status_modal;
 
-                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                await u.waitUntil(() => u.isVisible(modal.el), 1000);
                 const view = _converse.xmppstatusview;
                 const msg = 'I am happy';
                 modal.el.querySelector('input[name="status_message"]').value = msg;
@@ -202,7 +202,7 @@
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const sendIQ = _converse.connection.sendIQ;
             let sent_stanza, IQ_id;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -240,7 +240,7 @@
             expect(modal.jid_auto_complete).toBe(undefined);
             expect(modal.name_auto_complete).toBe(undefined);
 
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
             expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
             const input_jid = modal.el.querySelector('input[name="jid"]');
             const input_name = modal.el.querySelector('input[name="name"]');
@@ -248,7 +248,7 @@
             modal.el.querySelector('button[type="submit"]').click();
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
-            const sent_stanza = await test_utils.waitUntil(
+            const sent_stanza = await u.waitUntil(
                 () => IQ_stanzas.filter(s => sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, s).length).pop()
             );
             expect(Strophe.serialize(sent_stanza)).toEqual(
@@ -284,7 +284,7 @@
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
 
             // We only have autocomplete for the name input
             expect(modal.jid_auto_complete).toBe(undefined);
@@ -293,7 +293,7 @@
             const input_el = modal.el.querySelector('input[name="name"]');
             input_el.value = 'marty';
             input_el.dispatchEvent(new Event('input'));
-            await test_utils.waitUntil(() => modal.el.querySelector('.suggestion-box li'), 1000);
+            await u.waitUntil(() => modal.el.querySelector('.suggestion-box li'), 1000);
             const sendIQ = _converse.connection.sendIQ;
             let sent_stanza, IQ_id;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -357,7 +357,7 @@
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             modal = _converse.rosterview.add_contact_modal;
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
 
             expect(modal.jid_auto_complete).toBe(undefined);
             expect(modal.name_auto_complete).toBe(undefined);

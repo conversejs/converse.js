@@ -36,9 +36,11 @@ parts
 *.pyc
 *.egg-info
 lib
+lib64
 include
 bin
 develop-eggs
+pyvenv.cfg
 
 converse-logs/*.html
 

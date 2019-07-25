@@ -116,6 +116,7 @@ stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 .PHONY: clean
 clean:
 	npm run clean
+	rm -r lib bin include parts
 
 .PHONY: dev
 dev: stamp-npm
@@ -227,7 +228,7 @@ check: eslint dist/converse.js
 ## Documentation
 
 ./bin/activate:
-	python3 -m venv .
+	python3.7 -m venv .
 
 .installed.cfg: requirements.txt buildout.cfg
 	./bin/pip install -r requirements.txt

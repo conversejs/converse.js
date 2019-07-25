@@ -103,6 +103,10 @@ release:
 	make build
 	npm run pack
 
+.PHONY: postrelease
+postrelease:
+	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/converse-core.js
+
 ########################################################################
 ## Install dependencies
 

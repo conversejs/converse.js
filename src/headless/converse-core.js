@@ -94,9 +94,11 @@ const CORE_PLUGINS = [
 /**
  * A private, closured object containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
- *
+ * @global
  * @namespace _converse
  */
+// XXX: Strictly speaking _converse is not a global, but we need to set it as
+// such to get JSDoc to create the correct document site strucure.
 const _converse = {
     'templates': {},
     'promises': {}

@@ -315,7 +315,7 @@ converse.plugins.add('converse-minimize', {
              * to create space.
              * @private
              * @method _converse.ChatBoxViews#trimChats
-             * @param { [ChatBoxView|ChatRoomView|ControlBoxView|HeadlinesBoxView] } newchat
+             * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesBoxView } [newchat]
              */
             async trimChats (newchat) {
                 if (_converse.no_trimming || !_converse.connection.connected || _converse.view_mode !== 'overlayed') {

@@ -427,10 +427,12 @@ async function attemptNonPreboundSession (credentials) {
     if (_converse.authentication === _converse.LOGIN) {
         if (credentials) {
             connect(credentials);
+        } else if (_converse.credentials_url) {
+            // We give credentials_url preference, because
+            // _converse.connection.pass might be an expired token.
+            connect(await getLoginCredentials());
         } else if (_converse.jid && (_converse.password || _converse.connection.pass)) {
             connect();
-        } else if (_converse.credentials_url) {
-            connect(await getLoginCredentials());
         } else if (!_converse.isTestEnv() && window.PasswordCredential) {
             connect(await getLoginCredentialsFromBrowser());
         } else {

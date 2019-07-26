@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-03-02 11:17+0000\n"
+"PO-Revision-Date: 2019-06-18 19:04+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.7\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -467,9 +467,8 @@ msgid "name@conference.example.org"
 msgstr "nome@conferencia.exemplo.org"
 
 #: dist/converse-no-dependencies.js:36387
-#, fuzzy
 msgid "Groupchat name"
-msgstr "Enderezo da conversa en grupo"
+msgstr "Nome da conversa en grupo"
 
 #: dist/converse-no-dependencies.js:36387
 msgid "Groupchat address"
@@ -596,9 +595,8 @@ msgid "Change user role to participant"
 msgstr "Cambiar o rol da usuaria a participante"
 
 #: dist/converse-no-dependencies.js:37010
-#, fuzzy
 msgid "Remove this groupchat"
-msgstr "Deixar esta conversa en grupo"
+msgstr "Eliminar esta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:37010
 msgid "Kick user from groupchat"
@@ -952,6 +950,8 @@ msgid ""
 "Sorry, we aren't able to fetch any devices to send an OMEMO encrypted "
 "message to."
 msgstr ""
+"Lamentámolo, non podemos atopar dispositivos aos que enviar a mensaxe "
+"cifrada OMEMO."
 
 #: dist/converse-no-dependencies.js:39310
 msgid ""
@@ -1080,7 +1080,7 @@ msgstr "%1$sTradúzao%2$s para o seu idioma"
 #: dist/converse-no-dependencies.js:40382
 #, javascript-format
 msgid "I am %1$s"
-msgstr "Eu son %1$s"
+msgstr "Estou %1$s"
 
 #: dist/converse-no-dependencies.js:40385
 msgid "Change settings"
@@ -1261,16 +1261,15 @@ msgstr "Engadir"
 
 #: dist/converse-no-dependencies.js:42000
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "Lamentámolo, non atopamos un contacto con ese nome"
 
 #: dist/converse-no-dependencies.js:42024
 msgid "You cannot add yourself as a contact"
-msgstr ""
+msgstr "Non pode engadirse vostede mesma como contacto"
 
 #: dist/converse-no-dependencies.js:42028
-#, fuzzy
 msgid "This contact has already been added"
-msgstr "Este contacto hai tempo que non está conectado"
+msgstr "Este contacto xa foi engadido"
 
 #: dist/converse-no-dependencies.js:42091
 msgid "Filter"
@@ -1456,7 +1455,7 @@ msgstr "Introduza unha nova Conversa en grupo"
 
 #: dist/converse-no-dependencies.js:75256
 msgid "This field is required"
-msgstr ""
+msgstr "Este campo é requerido"
 
 #: dist/converse-no-dependencies.js:75262
 msgid "Join"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-01-07 18:06+0000\n"
+"PO-Revision-Date: 2019-06-18 19:04+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.7\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -301,7 +301,7 @@ msgstr "لقد تم طردُك مؤقتًا مِن فريق المحادثة ه�
 #: dist/converse-no-dependencies.js:36135
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
-msgstr ""
+msgstr "لقد تم إزالتك من هذه المحادثة الجماعية بسبب تغير في الانتساب"
 
 #: dist/converse-no-dependencies.js:36136
 msgid ""
@@ -343,7 +343,7 @@ msgstr "لقد تم طرد %1$s مِن فريق المحادثة مؤقتًا"
 #: dist/converse-no-dependencies.js:36153
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr ""
+msgstr "تمت إزالة %1$s بسبب تغير في الانتساب"
 
 #: dist/converse-no-dependencies.js:36154
 #, javascript-format
@@ -461,9 +461,8 @@ msgid "name@conference.example.org"
 msgstr "name@conference.example.org"
 
 #: dist/converse-no-dependencies.js:36387
-#, fuzzy
 msgid "Groupchat name"
-msgstr "عنوان فريق المحادثة"
+msgstr "اسم المحادثة الجماعية"
 
 #: dist/converse-no-dependencies.js:36387
 msgid "Groupchat address"
@@ -472,7 +471,7 @@ msgstr "عنوان فريق المحادثة"
 #: dist/converse-no-dependencies.js:36459
 #, javascript-format
 msgid "Groupchat info for %1$s"
-msgstr ""
+msgstr "معلومات فريق المحادثة %1$s"
 
 #: dist/converse-no-dependencies.js:36662
 #, javascript-format
@@ -480,9 +479,9 @@ msgid "%1$s is no longer an admin of this groupchat"
 msgstr "لم يعد %1$s مديرا لفريق المحادثة هذا بعد الآن"
 
 #: dist/converse-no-dependencies.js:36664
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr "منح صفة ملكية فريق المحادثة للمستخدِم"
+msgstr "لم يعد %1$s مالكا لفريق المحادثة الجماعية هذا"
 
 #: dist/converse-no-dependencies.js:36666
 #, fuzzy, javascript-format
@@ -490,14 +489,14 @@ msgid "%1$s is no longer banned from this groupchat"
 msgstr "لقد تم طردُك مِن فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:36670
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a permanent member of this groupchat"
-msgstr "أنت لست مِن بين قائمة أعضاء غرفة المحادثة هذه."
+msgstr "لم يَعُد %1$s مِن بين قائمة الأعضاء الدائمين لفريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:36674
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
-msgstr "أنت لست مِن بين قائمة أعضاء غرفة المحادثة هذه."
+msgstr "أصبح الآن %1$s  مِن بين الأعضاء الدائمين في فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:36676
 #, javascript-format
@@ -506,9 +505,9 @@ msgstr "لقد تم طردُ %1$s مِن فريق المحادثة هذا"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:36679
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "لم يعد %1$s مديرا لفريق المحادثة هذا بعد الآن"
+msgstr "أصبح الآن %1$s %2$s لفريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:36691
 #, javascript-format
@@ -518,7 +517,7 @@ msgstr "لم يعُد %1$s مِن المُشْرِفين"
 #: dist/converse-no-dependencies.js:36695
 #, javascript-format
 msgid "%1$s has been given a voice again"
-msgstr ""
+msgstr "تم منح فرصة الكلام مُجدَّدًا إلى %1$s"
 
 #: dist/converse-no-dependencies.js:36699
 #, javascript-format
@@ -548,7 +547,7 @@ msgstr "إخفاء قائمة المشاركين"
 
 #: dist/converse-no-dependencies.js:36909
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "ممنوع: ليس لديك الدور اللازم من أجل القيام بذلك."
 
 #: dist/converse-no-dependencies.js:36922
 msgid ""
@@ -575,7 +574,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37010
 msgid "Change user's affiliation to admin"
-msgstr ""
+msgstr "تغيير دور المستخدم إلى صفة مدير"
 
 #: dist/converse-no-dependencies.js:37010
 msgid "Ban user from groupchat"
@@ -586,9 +585,8 @@ msgid "Change user role to participant"
 msgstr "تغيير دور المستخدِم إلى مُشترِك"
 
 #: dist/converse-no-dependencies.js:37010
-#, fuzzy
 msgid "Remove this groupchat"
-msgstr "مغادرة فريق المحادثة"
+msgstr "إزالة فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:37010
 msgid "Kick user from groupchat"
@@ -693,9 +691,9 @@ msgid "%1$s has left and re-entered the groupchat"
 msgstr "لقد انسحب %1$s مِن فريق المحادثة ثم قام بالإلتحاق به مجددا"
 
 #: dist/converse-no-dependencies.js:37667
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
-msgstr "لقد انسحب %1$s مِن فريق المحادثة ثم قام بالإلتحاق به مجددا"
+msgstr "لقد انسحب %1$s مِن فريق المحادثة ثم قام بالالتحاق به مجددا. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:37686
 #, javascript-format
@@ -892,7 +890,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:38889
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
-msgstr ""
+msgstr "آسف ، لقد تعذر فك تشفير رسالة OMEMO المتلقاة بسبب خطا."
 
 #: dist/converse-no-dependencies.js:39013
 #, javascript-format
@@ -909,9 +907,8 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:39017
-#, fuzzy
 msgid "Unable to send an encrypted message due to an unexpected error."
-msgstr "المعذرة، لا يمكن إرسال الرسالة بسبب خطأ."
+msgstr "المعذرة، لا يمكن إرسال رسالة مشفرة بسبب حدوث خطأ غير متوقع."
 
 #: dist/converse-no-dependencies.js:39104
 #, javascript-format
@@ -971,9 +968,8 @@ msgid "Full Name"
 msgstr "الإسم الكامل"
 
 #: dist/converse-no-dependencies.js:40227
-#, fuzzy
 msgid "XMPP Address (JID)"
-msgstr "عنوان XMPP"
+msgstr "عنوان  XMPP (JID)"
 
 #: dist/converse-no-dependencies.js:40229
 msgid "Role"
@@ -1386,9 +1382,9 @@ msgid ""
 msgstr "قام %1$s بدعوتك للإلتحاق بفريق المحادثة : %2$s"
 
 #: dist/converse-no-dependencies.js:50679
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: the groupchat %1$s does not exist."
-msgstr "فريق المحادثة هذا ليس له وُجود بعد."
+msgstr "خطأ: فريق المحادثة هذا %1$s ليس له وُجود."
 
 #: dist/converse-no-dependencies.js:50681
 msgid "Sorry, you're not allowed to register in this groupchat"
@@ -1521,15 +1517,13 @@ msgstr "غير مجهول"
 
 #: dist/converse-no-dependencies.js:75922
 #: dist/converse-no-dependencies.js:76070
-#, fuzzy
 msgid "All other groupchat participants can see your XMPP address"
-msgstr "يُمكن لكل أعضاء فريق المحادثة الإطلاع على إسم المستخدِم XMPP الخاص بك"
+msgstr "يُمكن لكافة المشارِكين في فريق المحادثة الإطلاع على عنوان XMPP الخاص بك"
 
 #: dist/converse-no-dependencies.js:75930
 #: dist/converse-no-dependencies.js:76078
-#, fuzzy
 msgid "Only moderators can see your XMPP address"
-msgstr "بإمكان المشرفين فقط رؤية إسم XMPP الخاص بك"
+msgstr "بإمكان المشرفين فقط رؤية عنوان XMPP الخاص بك"
 
 #: dist/converse-no-dependencies.js:75938
 #: dist/converse-no-dependencies.js:76086

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-03-02 11:17+0000\n"
+"PO-Revision-Date: 2019-05-03 17:47+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.7-dev\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -466,9 +466,8 @@ msgid "name@conference.example.org"
 msgstr "jmeno@conference.priklad.cz"
 
 #: dist/converse-no-dependencies.js:36387
-#, fuzzy
 msgid "Groupchat name"
-msgstr "Adresa skupinového chatu"
+msgstr "Název skupinového chatu"
 
 #: dist/converse-no-dependencies.js:36387
 msgid "Groupchat address"
@@ -595,9 +594,8 @@ msgid "Change user role to participant"
 msgstr "Změnit roli uživatele na účastníka"
 
 #: dist/converse-no-dependencies.js:37010
-#, fuzzy
 msgid "Remove this groupchat"
-msgstr "Odejít z tohoto skupinového chatu"
+msgstr "Odstranit tento skupinový chat"
 
 #: dist/converse-no-dependencies.js:37010
 msgid "Kick user from groupchat"
@@ -953,6 +951,8 @@ msgid ""
 "Sorry, we aren't able to fetch any devices to send an OMEMO encrypted "
 "message to."
 msgstr ""
+"Omlouváme se, nemůžeme najít žádná zařízení, na které lze poslat zprávu "
+"zašifrovanou pomocí OMEMO."
 
 #: dist/converse-no-dependencies.js:39310
 msgid ""
@@ -1265,16 +1265,15 @@ msgstr "Přidat"
 
 #: dist/converse-no-dependencies.js:42000
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "Omlouváme se, nelze najít kontakt s tímto jménem"
 
 #: dist/converse-no-dependencies.js:42024
 msgid "You cannot add yourself as a contact"
-msgstr ""
+msgstr "Nemůžete přidat sebe sama jako kontakt"
 
 #: dist/converse-no-dependencies.js:42028
-#, fuzzy
 msgid "This contact has already been added"
-msgstr "Tento kontakt je na delší dobu pryč"
+msgstr "Tento kontakt byl již přidán"
 
 #: dist/converse-no-dependencies.js:42091
 msgid "Filter"
@@ -1461,7 +1460,7 @@ msgstr "Vstoupit do nového skupinového chatu"
 
 #: dist/converse-no-dependencies.js:75256
 msgid "This field is required"
-msgstr ""
+msgstr "Toto pole je vyžadováno"
 
 #: dist/converse-no-dependencies.js:75262
 msgid "Join"

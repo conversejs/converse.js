@@ -12,16 +12,19 @@
 
         describe("Authentication", function () {
 
-            it("needs either a bosh_service_url a websocket_url or both", mock.initConverse((done, _converse) => {
+            it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(async (done, _converse) => {
                 const url = _converse.bosh_service_url;
                 const connection = _converse.connection;
                 delete _converse.bosh_service_url;
                 delete _converse.connection;
-                expect(_converse.initConnection).toThrow(
-                    new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both."));
-                _converse.bosh_service_url = url;
-                _converse.connection = connection;
-                done();
+                try {
+                    await _converse.initConnection();
+                } catch (e) {
+                    _converse.bosh_service_url = url;
+                    _converse.connection = connection;
+                    expect(e.message).toBe("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+                    done();
+                }
             }));
         });
 

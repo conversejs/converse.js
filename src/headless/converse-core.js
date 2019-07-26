@@ -521,9 +521,11 @@ function clearSession  () {
 }
 
 
-_converse.initConnection = function () {
-    /* Creates a new Strophe.Connection instance if we don't already have one.
-     */
+/**
+ * Creates a new Strophe.Connection instance and if applicable, attempt to
+ * restore the BOSH session or if `auto_login` is true, attempt to log in.
+ */
+_converse.initConnection = async function () {
     if (!_converse.connection) {
         if (!_converse.bosh_service_url && ! _converse.websocket_url) {
             throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
@@ -545,6 +547,11 @@ _converse.initConnection = function () {
         } else {
             throw new Error("initConnection: this browser does not support "+
                             "websockets and bosh_service_url wasn't specified.");
+        }
+        if (_converse.auto_login) {
+            _converse.api.user.login();
+        } else if (_converse.api.connection.isType('bosh')) {
+            await _converse.restoreBOSHSession();
         }
     }
     setUpXMLLogging();
@@ -644,15 +651,10 @@ function setUpXMLLogging () {
 }
 
 
-function finishInitialization () {
+async function finishInitialization () {
     initClientConfig();
     initPlugins();
-    _converse.initConnection();
-    if (_converse.auto_login) {
-        _converse.api.user.login();
-    } else if (_converse.api.connection.isType('bosh')) {
-        _converse.restoreBOSHSession();
-    }
+    await _converse.initConnection();
     _converse.registerGlobalEventHandlers();
     if (!Backbone.history.started) {
         Backbone.history.start();

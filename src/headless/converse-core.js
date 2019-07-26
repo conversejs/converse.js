@@ -496,7 +496,7 @@ function reconnect () {
 
     _converse.connection.reconnecting = true;
     tearDown();
-    _converse.api.user.login(null, null, true);
+    return _converse.api.user.login(null, null, true);
 }
 
 const debouncedReconnect = _.debounce(reconnect, 2000);
@@ -620,6 +620,7 @@ async function onConnected (reconnecting) {
     /* Called as soon as a new connection has been established, either
      * by logging in or by attaching to an existing BOSH session.
      */
+    delete _converse.connection.reconnecting;
     _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
     await setUserJID(_converse.connection.jid);
     /**
@@ -1371,6 +1372,11 @@ _converse.api = {
          */
         async reconnect () {
             const conn_status = _converse.connfeedback.get('connection_status');
+
+            if (_converse.authentication === _converse.ANONYMOUS) {
+                tearDown();
+                clearSession();
+            }
             if (conn_status === Strophe.Status.CONNFAIL) {
                 // When reconnecting with a new transport, we call setUserJID
                 // so that a new resource is generated, to avoid multiple
@@ -1388,8 +1394,6 @@ _converse.api = {
                         // When reconnecting anonymously, we need to connect with only
                         // the domain, not the full JID that we had in our previous
                         // (now failed) session.
-                        tearDown();
-                        clearSession();
                         await setUserJID(_converse.settings.jid);
                     } else {
                         await setUserJID(_converse.bare_jid);
@@ -1403,14 +1407,12 @@ _converse.api = {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
-                tearDown();
-                clearSession();
                 await setUserJID(_converse.settings.jid);
             }
-            if ([Strophe.Status.RECONNECTING, Strophe.Status.CONNFAIL].includes(conn_status)) {
+            if (_converse.connection.reconnecting) {
                 debouncedReconnect();
             } else {
-                reconnect();
+                return reconnect();
             }
         },
 

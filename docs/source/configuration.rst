@@ -451,6 +451,7 @@ Example:
 
 .. _`bosh-service-url`:
 
+
 bosh_service_url
 ----------------
 
@@ -953,6 +954,28 @@ other domains.
 
 If you want to restrict MUCs to only this domain, then set `locked_domain`_ to
 ``true``.
+
+
+muc_fetch_members
+-----------------
+
+* Default:  ``true``
+
+Determines whether Converse.js will fetch the member lists for a MUC
+(multi-user chat) when the user first enters it.
+
+Here's the relevant part from the MUC XEP: https://xmpp.org/extensions/xep-0045.html#getmemberlist
+
+The MUC service won't necessarily allow any user to fetch member lists,
+but can usually be configured to do so.
+
+The member lists consists of three lists of users who have the affiliations
+``member``, ``admin`` and ``owner`` respectively.
+
+By fetching member lists, Converse.js will always show these users as
+participants of the MUC, which makes it behave a bit more like modern chat
+apps.
+
 
 muc_history_max_stanzas
 -----------------------

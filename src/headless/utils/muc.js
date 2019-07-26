@@ -39,10 +39,11 @@ const { Strophe, sizzle, _ } = converse.env;
  *      to 'none'.
  * @param { array } new_list - Array containing the new affiliations
  * @param { array } old_list - Array containing the old affiliations
+ * @returns { array }
  */
 u.computeAffiliationsDelta = function computeAffiliationsDelta (exclude_existing, remove_absentees, new_list, old_list) {
-    const new_jids = _.map(new_list, 'jid');
-    const old_jids = _.map(old_list, 'jid');
+    const new_jids = new_list.map(o => o.jid);
+    const old_jids = old_list.map(o => o.jid);
 
     // Get the new affiliations
     let delta = _.map(

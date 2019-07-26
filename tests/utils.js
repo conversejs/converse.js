@@ -287,7 +287,9 @@
 
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
-        await utils.returnMemberLists(_converse, muc_jid, members);
+        if (_converse.muc_fetch_members) {
+            await utils.returnMemberLists(_converse, muc_jid, members);
+        }
     };
 
     utils.clearBrowserStorage = function () {

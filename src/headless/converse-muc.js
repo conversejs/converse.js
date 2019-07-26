@@ -116,6 +116,7 @@ converse.plugins.add('converse-muc', {
             'auto_register_muc_nickname': false,
             'locked_muc_domain': false,
             'muc_domain': undefined,
+            'muc_fetch_members': true,
             'muc_history_max_stanzas': undefined,
             'muc_instant_rooms': true,
             'muc_nickname_from_jid': false
@@ -417,7 +418,9 @@ converse.plugins.add('converse-muc', {
 
             async onConnectionStatusChanged () {
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-                    await this.occupants.fetchMembers();
+                    if (_converse.muc_fetch_members) {
+                        await this.occupants.fetchMembers();
+                    }
                     // It's possible to fetch messages before entering a MUC,
                     // but we don't support this use-case currently. By
                     // fetching messages after members we can immediately
@@ -856,18 +859,11 @@ converse.plugins.add('converse-muc', {
              * @param { object } members - A map of jids, affiliations and
              *      optionally reasons. Only those entries with the
              *      same affiliation as being currently set will be considered.
-             * @returns
-             *  A promise which resolves and fails depending on the XMPP server response.
+             * @returns { Promise } A promise which resolves and fails depending on the XMPP server response.
              */
             setAffiliation (affiliation, members) {
-                members = _.filter(members, (member) =>
-                    // We only want those members who have the right
-                    // affiliation (or none, which implies the provided one).
-                    _.isUndefined(member.affiliation) ||
-                            member.affiliation === affiliation
-                );
-                const promises = _.map(members, _.bind(this.sendAffiliationIQ, this, affiliation));
-                return Promise.all(promises);
+                members = members.filter(m => _.isUndefined(m.affiliation) || m.affiliation === affiliation);
+                return Promise.all(members.map(m => this.sendAffiliationIQ(affiliation, m)));
             },
 
             /**
@@ -1050,18 +1046,20 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Send IQ stanzas to the server to modify the
-             * affiliations in this groupchat.
+             * Send IQ stanzas to the server to modify affiliations for users in this groupchat.
+             *
              * See: https://xmpp.org/extensions/xep-0045.html#modifymember
              * @private
              * @method _converse.ChatRoom#setAffiliations
-             * @param { object } members - A map of jids, affiliations and optionally reasons
-             * @param { function } onSuccess - callback for a succesful response
-             * @param { function } onError - callback for an error response
+             * @param { Object[] } members
+             * @param { string } members[].jid - The JID of the user whose affiliation will change
+             * @param { Array } members[].affiliation - The new affiliation for this user
+             * @param { string } [members[].reason] - An optional reason for the affiliation change
+             * @returns { Promise }
              */
             setAffiliations (members) {
-                const affiliations = _.uniq(_.map(members, 'affiliation'));
-                return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
+                const affiliations = _.uniq(members.map(m => m.affiliation));
+                return Promise.all(affiliations.map(a => this.setAffiliation(a, members)));
             },
 
             /**
@@ -1101,10 +1099,15 @@ converse.plugins.add('converse-muc', {
                     this.occupants.findWhere({'nick': nick_or_jid});
             },
 
+            /**
+             * Returns a map of JIDs that have the affiliations
+             * as provided.
+             * @private
+             * @method _converse.ChatRoom#getJidsWithAffiliations
+             * @param { string|array } affiliation - An array of affiliations or
+             *      a string if only one affiliation.
+             */
             async getJidsWithAffiliations (affiliations) {
-                /* Returns a map of JIDs that have the affiliations
-                 * as provided.
-                 */
                 if (_.isString(affiliations)) {
                     affiliations = [affiliations];
                 }
@@ -1135,11 +1138,17 @@ converse.plugins.add('converse-muc', {
              *  updated or once it's been established there's no need
              *  to update the list.
              */
-            updateMemberLists (members, affiliations, deltaFunc) {
-                this.getJidsWithAffiliations(affiliations)
-                    .then(old_members => this.setAffiliations(deltaFunc(members, old_members)))
-                    .then(() => this.occupants.fetchMembers())
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            async updateMemberLists (members, affiliations, deltaFunc) {
+                try {
+                    const old_members = await this.getJidsWithAffiliations(affiliations);
+                    await this.setAffiliations(deltaFunc(members, old_members));
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    return;
+                }
+                if (_converse.muc_fetch_members) {
+                    return this.occupants.fetchMembers();
+                }
             },
 
             /**

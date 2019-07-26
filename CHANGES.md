@@ -21,6 +21,7 @@
 - New config option [clear_messages_on_reconnection](https://conversejs.org/docs/html/configuration.html#clear-messages-on-reconnection)
 - New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks)
 - New config option [message_limit](https://conversejs.org/docs/html/configuration.html#message-limit)
+- New config option [muc_fetch_members](https://conversejs.org/docs/html/configuration.html#muc-fetch-members)
 - New config option [muc_mention_autocomplete_min_chars](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-min-chars)
 - New config option [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
 - New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton)

@@ -28,6 +28,7 @@
   By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
   "embed" the full app and not just a single chat. To embed just a single chat, it's now
   necessary to explicitly set `singleton` to `true`.
+- Re-add the previously removed config option [keepalive](https://conversejs.org/docs/html/configuration.html#keepalive)
 - New event: [chatBoxBlurred](https://conversejs.org/docs/html/api/-_converse.html#event:chatBoxBlurred)
 - New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)
 - #316: Add support for XEP-0198 Stream Management

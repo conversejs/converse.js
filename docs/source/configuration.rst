@@ -758,6 +758,15 @@ messaging instead.
 This value may be provided together with a ``password`` instead of supplying a
 `credentials_url`_ when setting ``auto_login`` to ``true``.
 
+.. _`keepalive`:
+
+keepalive
+---------
+
+* Default:    ``true``
+
+Determines whether Converse will attempt to keep you logged in across page loads.
+
 
 .. _`locales`:
 

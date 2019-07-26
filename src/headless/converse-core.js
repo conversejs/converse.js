@@ -218,6 +218,7 @@ _converse.default_settings = {
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
+    keepalive: true,
     locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
@@ -525,7 +526,7 @@ function clearSession  () {
  * Creates a new Strophe.Connection instance and if applicable, attempt to
  * restore the BOSH session or if `auto_login` is true, attempt to log in.
  */
-_converse.initConnection = async function () {
+_converse.initConnection = function () {
     if (!_converse.connection) {
         if (!_converse.bosh_service_url && ! _converse.websocket_url) {
             throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
@@ -541,17 +542,15 @@ _converse.initConnection = async function () {
                 Object.assign(
                     _converse.default_connection_options,
                     _converse.connection_options,
-                    {'keepalive': true}
+                    {'keepalive': _converse.keepalive}
                 )
             );
         } else {
             throw new Error("initConnection: this browser does not support "+
                             "websockets and bosh_service_url wasn't specified.");
         }
-        if (_converse.auto_login) {
+        if (_converse.auto_login || _converse.keepalive) {
             _converse.api.user.login();
-        } else if (_converse.api.connection.isType('bosh')) {
-            await _converse.restoreBOSHSession();
         }
     }
     setUpXMLLogging();
@@ -654,7 +653,7 @@ function setUpXMLLogging () {
 async function finishInitialization () {
     initClientConfig();
     initPlugins();
-    await _converse.initConnection();
+    _converse.initConnection();
     _converse.registerGlobalEventHandlers();
     if (!Backbone.history.started) {
         Backbone.history.start();

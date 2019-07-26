@@ -759,6 +759,8 @@ _converse.initialize = async function (settings, callback) {
     _.assignIn(this, this.default_settings);
     // Allow only whitelisted configuration attributes to be overwritten
     _.assignIn(this, _.pick(settings, Object.keys(this.default_settings)));
+    this.settings = {};
+    _.assignIn(this.settings, _.pick(settings, Object.keys(this.default_settings)));
 
     if (this.authentication === _converse.ANONYMOUS) {
         if (this.auto_login && !this.jid) {
@@ -958,9 +960,14 @@ _converse.initialize = async function (settings, callback) {
     this.onDisconnected = function () {
         const reason = _converse.disconnection_reason;
         if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
-            if (_converse.credentials_url && _converse.auto_reconnect) {
-                /* In this case, we reconnect, because we might be receiving
-                 * expirable tokens from the credentials_url.
+            if (_converse.auto_reconnect && (_converse.credentials_url || _converse.authentication === _converse.ANONYMOUS)) {
+                /**
+                 * If `credentials_url` is set, we reconnect, because we might
+                 * be receiving expirable tokens from the credentials_url.
+                 *
+                 * If `authentication` is anonymous, we reconnect because we
+                 * might have tried to attach with stale BOSH session tokens
+                 * or with a cached JID and password
                  */
                 return _converse.api.connection.reconnect();
             } else {
@@ -1377,11 +1384,24 @@ _converse.api = {
                     _converse.connection._proto = new Strophe.Bosh(_converse.connection);
                     _converse.connection.service = _converse.bosh_service_url;
                 } else if (_converse.api.connection.isType('bosh') && _converse.websocket_url) {
-                    await setUserJID(_converse.bare_jid);
+                    if (_converse.authentication === _converse.ANONYMOUS) {
+                        // When reconnecting anonymously, we need to connect with only
+                        // the domain, not the full JID that we had in our previous
+                        // (now failed) session.
+                        await setUserJID(_converse.settings.jid);
+                    } else {
+                        await setUserJID(_converse.bare_jid);
+                    }
                     _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Websocket(_converse.connection);
                     _converse.connection.service = _converse.websocket_url;
                 }
+            }
+            if (conn_status === Strophe.Status.AUTHFAIL && _converse.authentication === _converse.ANONYMOUS) {
+                // When reconnecting anonymously, we need to connect with only
+                // the domain, not the full JID that we had in our previous
+                // (now failed) session.
+                await setUserJID(_converse.settings.jid);
             }
             if ([Strophe.Status.RECONNECTING, Strophe.Status.CONNFAIL].includes(conn_status)) {
                 debouncedReconnect();

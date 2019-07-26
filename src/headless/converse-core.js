@@ -1388,6 +1388,8 @@ _converse.api = {
                         // When reconnecting anonymously, we need to connect with only
                         // the domain, not the full JID that we had in our previous
                         // (now failed) session.
+                        tearDown();
+                        clearSession();
                         await setUserJID(_converse.settings.jid);
                     } else {
                         await setUserJID(_converse.bare_jid);
@@ -1401,6 +1403,8 @@ _converse.api = {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
+                tearDown();
+                clearSession();
                 await setUserJID(_converse.settings.jid);
             }
             if ([Strophe.Status.RECONNECTING, Strophe.Status.CONNFAIL].includes(conn_status)) {

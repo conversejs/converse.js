@@ -2048,20 +2048,21 @@ converse.plugins.add('converse-muc', {
             return getChatRoom(jid, attrs, true);
         };
 
+        /**
+         * Automatically join groupchats, based on the
+         * "auto_join_rooms" configuration setting, which is an array
+         * of strings (groupchat JIDs) or objects (with groupchat JID and other
+         * settings).
+         */
         function autoJoinRooms () {
-            /* Automatically join groupchats, based on the
-             * "auto_join_rooms" configuration setting, which is an array
-             * of strings (groupchat JIDs) or objects (with groupchat JID and other
-             * settings).
-             */
             _converse.auto_join_rooms.forEach(groupchat => {
-                if (_converse.chatboxes.where({'jid': groupchat}).length) {
-                    return;
-                }
                 if (_.isString(groupchat)) {
+                    if (_converse.chatboxes.where({'jid': groupchat}).length) {
+                        return;
+                    }
                     _converse.api.rooms.open(groupchat);
                 } else if (_.isObject(groupchat)) {
-                    _converse.api.rooms.open(groupchat.jid, groupchat);
+                    _converse.api.rooms.open(groupchat.jid, _.clone(groupchat));
                 } else {
                     _converse.log(
                         'Invalid groupchat criteria specified for "auto_join_rooms"',

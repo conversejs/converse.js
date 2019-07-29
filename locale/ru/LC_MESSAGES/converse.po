@@ -802,7 +802,7 @@ msgstr "Тема очищена %1$s"
 
 #: dist/converse-no-dependencies.js:37913
 msgid "Groupchats"
-msgstr "Конматы"
+msgstr "Комнаты"
 
 #: dist/converse-no-dependencies.js:37914
 msgid "Add a new groupchat"

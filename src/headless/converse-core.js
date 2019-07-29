@@ -1494,7 +1494,7 @@ _converse.api = {
                 if (await _converse.restoreBOSHSession()) {
                     return;
                 } else if (_converse.authentication === _converse.PREBIND) {
-                    return _converse.startNewBOSHSession();
+                    return _converse.startNewPreboundBOSHSession();
                 }
             } else if (_converse.authentication === _converse.PREBIND) {
                 throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");

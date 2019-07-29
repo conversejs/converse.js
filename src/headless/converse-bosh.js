@@ -13,6 +13,8 @@ import converse from "./converse-core";
 
 const { Backbone, Strophe, _ } = converse.env;
 
+const BOSH_SESSION_ID = 'converse.bosh-session';
+
 
 converse.plugins.add('converse-bosh', {
 
@@ -26,7 +28,7 @@ converse.plugins.add('converse-bosh', {
 
 
         async function initBOSHSession () {
-            const id = 'converse.bosh-session';
+            const id = BOSH_SESSION_ID;
             if (!_converse.bosh_session) {
                 _converse.bosh_session = new Backbone.Model({id});
                 _converse.bosh_session.browserStorage = new BrowserStorage.session(id);
@@ -40,7 +42,7 @@ converse.plugins.add('converse-bosh', {
         }
 
 
-        _converse.startNewBOSHSession = function () {
+        _converse.startNewPreboundBOSHSession = function () {
             if (!_converse.prebind_url) {
                 throw new Error(
                     "attemptPreboundSession: If you use prebind then you MUST supply a prebind_url");
@@ -97,14 +99,20 @@ converse.plugins.add('converse-bosh', {
 
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('clearSession', () => {
-            if (!_.isUndefined(_converse.bosh_session)) {
+            if (_converse.bosh_session === undefined) {
+                // Remove manually, even if we don't have the corresponding
+                // model, to avoid trying to reconnect to a stale BOSH session
+                const id = BOSH_SESSION_ID;
+                sessionStorage.removeItem(id);
+                sessionStorage.removeItem(`${id}-${id}`);
+            } else {
                 _converse.bosh_session.destroy();
                 delete _converse.bosh_session;
             }
         });
 
         _converse.api.listen.on('setUserJID', () => {
-            if (!_.isUndefined(_converse.bosh_session)) {
+            if (_converse.bosh_session !== undefined) {
                 _converse.bosh_session.save({'jid': _converse.jid});
             }
         });
@@ -127,7 +135,7 @@ converse.plugins.add('converse-bosh', {
                  * @example _converse.api.tokens.get('rid');
                  */
                 get (id) {
-                    if (_.isUndefined(_converse.connection)) {
+                    if (_converse.connection === undefined) {
                         return null;
                     }
                     if (id.toLowerCase() === 'rid') {

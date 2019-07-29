@@ -156,6 +156,13 @@ u.isHeadlineMessage = function (_converse, message) {
     return false;
 };
 
+u.isServiceUnavailableError = function (stanza) {
+    if (!_.isElement(stanza)) {
+        return false;
+    }
+    return sizzle(`error[type="cancel"] service-unavailable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length > 0;
+}
+
 u.merge = function merge (first, second) {
     /* Merge the second object into the first one.
      */

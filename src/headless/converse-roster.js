@@ -653,21 +653,18 @@ converse.plugins.add('converse-roster', {
                 if (this.rosterVersioningSupported()) {
                     stanza.attrs({'ver': this.data.get('version')});
                 }
-                let iq;
-                try {
-                    iq = await _converse.api.sendIQ(stanza);
-                } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
-                    return _converse.log(
-                        "Error while trying to fetch roster from the server",
-                        Strophe.LogLevel.ERROR
-                    );
-                }
-                const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
-                if (query) {
-                    const items = sizzle(`item`, query);
-                    items.forEach(item => this.updateContact(item));
-                    this.data.save('version', query.getAttribute('ver'));
+                const iq = await _converse.api.sendIQ(stanza, null, false);
+                if (iq.getAttribute('type') !== 'error') {
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
+                    if (query) {
+                        const items = sizzle(`item`, query);
+                        items.forEach(item => this.updateContact(item));
+                        this.data.save('version', query.getAttribute('ver'));
+                    }
+                } else if (!u.isServiceUnavailableError(iq)) {
+                    // Some unknown error happened, so we will try to fetch again if the page reloads.
+                    _converse.log(iq, Strophe.LogLevel.ERROR);
+                    return _converse.log("Error while trying to fetch roster from the server", Strophe.LogLevel.ERROR);
                 }
                 _converse.session.save('roster_fetched', true);
                 /**

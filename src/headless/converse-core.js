@@ -1837,14 +1837,23 @@ _converse.api = {
     /**
      * Send an IQ stanza and receive a promise
      * @method _converse.api.sendIQ
+     * @param { XMLElement } stanza
+     * @param { Integer } timeout
+     * @param { Boolean } reject - Whether an error IQ should cause the promise
+     *  to be rejected. If `false`, the promise will resolve instead of being rejected.
      * @returns {Promise} A promise which resolves when we receive a `result` stanza
      * or is rejected when we receive an `error` stanza.
      */
-    sendIQ (stanza, timeout) {
-        return new Promise((resolve, reject) => {
-            _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
-            _converse.api.trigger('send', stanza);
-        });
+    sendIQ (stanza, timeout, reject=true) {
+        timeout = timeout || _converse.IQ_TIMEOUT;
+        let promise;
+        if (reject) {
+            promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
+        } else {
+            promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
+        }
+        _converse.api.trigger('send', stanza);
+        return promise;
     }
 };
 

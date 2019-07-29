@@ -217,6 +217,9 @@
             it("has a method 'get' which returns wrapped contacts", mock.initConverse(async (done, _converse) => {
                 // Check that it returns nothing if a non-existing JID is given
                 test_utils.createContacts(_converse, 'current');
+                // Hack to avoid having to fetch the roster again.
+                _converse.session.set('roster_fetched', true);
+
                 let contact = await _converse.api.contacts.get('non-existing@jabber.org');
                 expect(contact).toBeFalsy();
                 // Check when a single jid is given

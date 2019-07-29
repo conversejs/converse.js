@@ -308,7 +308,7 @@ converse.plugins.add('converse-message-view', {
 
             showMessageVersionsModal (ev) {
                 ev.preventDefault();
-                if (_.isUndefined(this.model.message_versions_modal)) {
+                if (this.model.message_versions_modal === undefined) {
                     this.model.message_versions_modal = new _converse.MessageVersionsModal({'model': this.model});
                 }
                 this.model.message_versions_modal.show(ev);

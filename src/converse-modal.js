@@ -91,7 +91,7 @@ converse.plugins.add('converse-modal', {
                         type = 'alert-warning';
                     }
 
-                    if (_.isUndefined(alert)) {
+                    if (alert === undefined) {
                         const model = new Backbone.Model({
                             'title': title,
                             'messages': messages,

@@ -251,13 +251,13 @@ converse.plugins.add('converse-chatview', {
                     '_converse': _converse,
                     'allow_contact_removal': _converse.allow_contact_removal,
                     'display_name': this.model.getDisplayName(),
-                    'is_roster_contact': !_.isUndefined(this.model.contact),
+                    'is_roster_contact': this.model.contact !== undefined,
                     'utils': u
                 }));
             },
 
             registerContactEventHandlers () {
-                if (!_.isUndefined(this.model.contact)) {
+                if (this.model.contact !== undefined) {
                     this.model.contact.on('change', this.render, this);
                     this.model.contact.vcard.on('change', this.render, this);
                     this.model.contact.on('destroy', () => {
@@ -447,7 +447,7 @@ converse.plugins.add('converse-chatview', {
 
             showUserDetailsModal (ev) {
                 ev.preventDefault();
-                if (_.isUndefined(this.user_details_modal)) {
+                if (this.user_details_modal === undefined) {
                     this.user_details_modal = new _converse.UserDetailsModal({model: this.model});
                 }
                 this.user_details_modal.show(ev);
@@ -518,7 +518,7 @@ converse.plugins.add('converse-chatview', {
                 this.heading.render();
                 this.heading.chatview = this;
 
-                if (!_.isUndefined(this.model.contact)) {
+                if (this.model.contact !== undefined) {
                     this.model.contact.on('destroy', this.heading.render, this);
                 }
                 const flyout = this.el.querySelector('.flyout');
@@ -1140,7 +1140,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             createEmojiPicker () {
-                if (_.isUndefined(_converse.emojipicker)) {
+                if (_converse.emojipicker === undefined) {
                     const storage = _converse.config.get('storage'),
                           id = `converse.emoji-${_converse.bare_jid}`;
                     _converse.emojipicker = new _converse.EmojiPicker({'id': id});
@@ -1160,7 +1160,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             toggleEmojiMenu (ev) {
-                if (_.isUndefined(this.emoji_dropdown)) {
+                if (this.emoji_dropdown === undefined) {
                     ev.stopPropagation();
                     this.createEmojiPicker();
                     this.insertEmojiPicker();
@@ -1383,7 +1383,7 @@ converse.plugins.add('converse-chatview', {
 
             _scrollDown () {
                 /* Inner method that gets debounced */
-                if (_.isUndefined(this.content)) {
+                if (this.content === undefined) {
                     return;
                 }
                 if (u.isVisible(this.content) && !this.model.get('scrolled')) {
@@ -1461,7 +1461,7 @@ converse.plugins.add('converse-chatview', {
                   * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
                   */
                 'get' (jids) {
-                    if (_.isUndefined(jids)) {
+                    if (jids === undefined) {
                         _converse.log(
                             "chatviews.get: You need to provide at least one JID",
                             Strophe.LogLevel.ERROR

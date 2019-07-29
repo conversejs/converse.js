@@ -902,7 +902,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             fetchSession () {
-                if (_.isUndefined(this._setup_promise)) {
+                if (this._setup_promise === undefined) {
                     this._setup_promise = new Promise((resolve, reject) => {
                         this.fetch({
                             'success': () => {
@@ -1012,7 +1012,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             fetchDevices () {
-                if (_.isUndefined(this._devices_promise)) {
+                if (this._devices_promise === undefined) {
                     this._devices_promise = new Promise(resolve => {
                         this.devices.fetch({
                             'success': _.flow(c => this.onDevicesFound(c), resolve),
@@ -1172,7 +1172,7 @@ converse.plugins.add('converse-omemo', {
         }
 
         function restoreOMEMOSession () {
-            if (_.isUndefined(_converse.omemo_store))  {
+            if (_converse.omemo_store === undefined)  {
                 const storage = _converse.config.get('storage'),
                       id = `converse.omemosession-${_converse.bare_jid}`;
                 _converse.omemo_store = new _converse.OMEMOStore({'id': id});

@@ -192,14 +192,14 @@ converse.plugins.add('converse-bookmarks', {
 
             markRoomAsBookmarked (bookmark) {
                 const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
-                if (!_.isUndefined(groupchat)) {
+                if (groupchat !== undefined) {
                     groupchat.save('bookmarked', true);
                 }
             },
 
             markRoomAsUnbookmarked (bookmark) {
                 const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
-                if (!_.isUndefined(groupchat)) {
+                if (groupchat !== undefined) {
                     groupchat.save('bookmarked', false);
                 }
             },
@@ -222,7 +222,7 @@ converse.plugins.add('converse-bookmarks', {
 
             onBookmarksReceived (deferred, iq) {
                 this.createBookmarksFromStanza(iq);
-                if (!_.isUndefined(deferred)) {
+                if (deferred !== undefined) {
                     return deferred.resolve();
                 }
             },
@@ -276,7 +276,7 @@ converse.plugins.add('converse-bookmarks', {
         }
 
         _converse.api.listen.on('clearSession', () => {
-            if (!_.isUndefined(_converse.bookmarks)) {
+            if (_converse.bookmarks !== undefined) {
                 _converse.bookmarks.reset();
                 _converse.bookmarks.browserStorage._clear();
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);

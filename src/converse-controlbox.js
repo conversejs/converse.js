@@ -186,7 +186,7 @@ converse.plugins.add('converse-controlbox', {
             },
 
             initialize () {
-                if (_.isUndefined(_converse.controlboxtoggle)) {
+                if (_converse.controlboxtoggle === undefined) {
                     _converse.controlboxtoggle = new _converse.ControlBoxToggle();
                 }
                 _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
@@ -214,7 +214,7 @@ converse.plugins.add('converse-controlbox', {
 
             render () {
                 if (this.model.get('connected')) {
-                    if (_.isUndefined(this.model.get('closed'))) {
+                    if (this.model.get('closed') === undefined) {
                         this.model.set('closed', !_converse.show_controlbox_by_default);
                     }
                 }

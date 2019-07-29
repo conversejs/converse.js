@@ -784,7 +784,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             showAddContactModal (ev) {
-                if (_.isUndefined(this.add_contact_modal)) {
+                if (this.add_contact_modal === undefined) {
                     this.add_contact_modal = new _converse.AddContactModal({'model': new Backbone.Model()});
                 }
                 this.add_contact_modal.show(ev);
@@ -944,7 +944,7 @@ converse.plugins.add('converse-rosterview', {
         _converse.api.listen.on('chatBoxesInitialized', () => {
             function highlightRosterItem (chatbox) {
                 const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});
-                if (!_.isUndefined(contact)) {
+                if (contact !== undefined) {
                     contact.trigger('highlight');
                 }
             }

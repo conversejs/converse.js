@@ -161,7 +161,7 @@
                 'name':  'The Lounge',
                 'nick': ' Othello'
             });
-            expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBeTruthy();
+            expect(_converse.chatboxviews.get(jid) === undefined).toBeTruthy();
 
             jid = 'theplay@conference.shakespeare.lit';
             _converse.bookmarks.create({
@@ -170,7 +170,7 @@
                 'name':  'The Play',
                 'nick': ' Othello'
             });
-            expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBeFalsy();
+            expect(_converse.chatboxviews.get(jid) === undefined).toBeFalsy();
 
             // Check that we don't auto-join if muc_respect_autojoin is false
             _converse.muc_respect_autojoin = false;
@@ -181,7 +181,7 @@
                 'name':  'Balcony',
                 'nick': ' Othello'
             });
-            expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBe(true);
+            expect(_converse.chatboxviews.get(jid) === undefined).toBe(true);
             done();
         }));
 

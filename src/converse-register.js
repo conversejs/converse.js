@@ -90,7 +90,7 @@ converse.plugins.add('converse-register', {
         Object.assign(_converse.LoginPanel.prototype, {
 
             insertRegisterLink () {
-                if (_.isUndefined(this.registerlinkview)) {
+                if (this.registerlinkview === undefined) {
                     this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
                     this.registerlinkview.render();
                     const buttons = this.el.querySelector('.buttons');

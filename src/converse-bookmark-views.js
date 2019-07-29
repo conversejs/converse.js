@@ -129,7 +129,7 @@ converse.plugins.add('converse-bookmark-views', {
             setBookmarkState () {
                 /* Set whether the groupchat is bookmarked or not.
                  */
-                if (!_.isUndefined(_converse.bookmarks)) {
+                if (_converse.bookmarks !== undefined) {
                     const models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                     if (!models.length) {
                         this.model.save('bookmarked', false);
@@ -278,7 +278,7 @@ converse.plugins.add('converse-bookmark-views', {
 
             insertIntoControlBox () {
                 const controlboxview = _converse.chatboxviews.get('controlbox');
-                if (!_.isUndefined(controlboxview) && !u.rootContains(_converse.root, this.el)) {
+                if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
                     const el = controlboxview.el.querySelector('.bookmarks-list');
                     if (!_.isNull(el)) {
                         el.parentNode.replaceChild(this.el, el);

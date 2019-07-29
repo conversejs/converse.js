@@ -111,7 +111,7 @@ converse.plugins.add('converse-notification', {
             // XXX Eventually this can be refactored to use Notification's sound
             // feature, but no browser currently supports it.
             // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
-            if (_converse.play_sounds && !_.isUndefined(window.Audio)) {
+            if (_converse.play_sounds && window.Audio !== undefined) {
                 const audioOgg = new Audio(_converse.sounds_path+"msg_received.ogg");
                 const canPlayOgg = audioOgg.canPlayType('audio/ogg');
                 if (canPlayOgg === 'probably') {
@@ -157,14 +157,14 @@ converse.plugins.add('converse-notification', {
             } else if (message.getAttribute('type') === 'groupchat') {
                 title = __("%1$s says", Strophe.getResourceFromJid(full_from_jid));
             } else {
-                if (_.isUndefined(_converse.roster)) {
+                if (_converse.roster === undefined) {
                     _converse.log(
                         "Could not send notification, because roster is undefined",
                         Strophe.LogLevel.ERROR);
                     return;
                 }
                 roster_item = _converse.roster.get(from_jid);
-                if (!_.isUndefined(roster_item)) {
+                if (roster_item !== undefined) {
                     title = __("%1$s says", roster_item.getDisplayName());
                 } else {
                     if (_converse.allow_non_roster_messaging) {

@@ -262,21 +262,21 @@ converse.plugins.add('converse-profile', {
             },
 
             showProfileModal (ev) {
-                if (_.isUndefined(this.profile_modal)) {
+                if (this.profile_modal === undefined) {
                     this.profile_modal = new _converse.ProfileModal({model: this.model});
                 }
                 this.profile_modal.show(ev);
             },
 
             showStatusChangeModal (ev) {
-                if (_.isUndefined(this.status_modal)) {
+                if (this.status_modal === undefined) {
                     this.status_modal = new _converse.ChatStatusModal({model: this.model});
                 }
                 this.status_modal.show(ev);
             },
 
             showClientInfoModal(ev) {
-                if (_.isUndefined(this.client_info_modal)) {
+                if (this.client_info_modal === undefined) {
                     this.client_info_modal = new _converse.ClientInfoModal({model: this.model});
                 }
                 this.client_info_modal.show(ev);

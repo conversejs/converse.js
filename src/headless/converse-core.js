@@ -291,7 +291,7 @@ Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
  * @param { String } str - The string to translate
  */
 _converse.__ = function (str) {
-    if (_.isUndefined(i18n)) {
+    if (i18n === undefined) {
         return str;
     }
     return i18n.translate.apply(i18n, arguments);
@@ -505,7 +505,7 @@ const debouncedReconnect = _.debounce(reconnect, 2000);
 
 
 function clearSession  () {
-    if (!_.isUndefined(_converse.session)) {
+    if (_converse.session !== undefined) {
         _converse.session.destroy();
         delete _converse.session;
     }
@@ -740,10 +740,10 @@ function cleanup () {
 
 
 _converse.initialize = async function (settings, callback) {
-    settings = !_.isUndefined(settings) ? settings : {};
+    settings = settings !== undefined ? settings : {};
     const init_promise = u.getResolveablePromise();
     PROMISES.forEach(addPromise);
-    if (!_.isUndefined(_converse.connection)) {
+    if (_converse.connection !== undefined) {
         cleanup();
     }
 
@@ -782,7 +782,7 @@ _converse.initialize = async function (settings, callback) {
     });
 
     /* Localisation */
-    if (!_.isUndefined(i18n)) {
+    if (i18n !== undefined) {
         i18n.setLocales(settings.i18n, _converse);
     } else {
         _converse.locale = 'en';
@@ -977,7 +977,7 @@ _converse.initialize = async function (settings, callback) {
                 return _converse.finishDisconnection();
             }
         } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-                (!_.isUndefined(reason) && reason === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
+                (reason !== undefined && reason === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
                 reason === "host-unknown" ||
                 reason === "remote-connection-failed" ||
                 !_converse.auto_reconnect) {
@@ -991,10 +991,10 @@ _converse.initialize = async function (settings, callback) {
         /* Used to keep track of why we got disconnected, so that we can
          * decide on what the next appropriate action is (in onDisconnected)
          */
-        if (_.isUndefined(cause)) {
+        if (cause === undefined) {
             delete _converse.disconnection_cause;
             delete _converse.disconnection_reason;
-        } else if (_.isUndefined(_converse.disconnection_cause) || override) {
+        } else if (_converse.disconnection_cause === undefined || override) {
             _converse.disconnection_cause = cause;
             _converse.disconnection_reason = reason;
         }
@@ -1049,7 +1049,7 @@ _converse.initialize = async function (settings, callback) {
             if (message === "host-unknown" || message == "remote-connection-failed") {
                 feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
                     `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
-            } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
+            } else if (message !== undefined && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
                 feedback = __("The XMPP server did not offer a supported authentication mechanism");
             }
             _converse.setConnectionStatus(status, feedback);
@@ -1087,7 +1087,7 @@ _converse.initialize = async function (settings, callback) {
     this.initStatus = (reconnecting) => {
         // If there's no xmppstatus obj, then we were never connected to
         // begin with, so we set reconnecting to false.
-        reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
+        reconnecting = _converse.xmppstatus === undefined ? false : reconnecting;
         if (reconnecting) {
             _converse.onStatusInitialized(reconnecting);
         } else {
@@ -1306,7 +1306,7 @@ _converse.initialize = async function (settings, callback) {
     if (_converse.isTestEnv()) {
         await finishInitialization();
         return _converse;
-    } else if (!_.isUndefined(i18n)) {
+    } else if (i18n !== undefined) {
         const url = u.interpolate(_converse.locales_url, {'locale': _converse.locale});
         try {
             await i18n.fetchTranslations(_converse.locale, _converse.locales, url);
@@ -1457,7 +1457,7 @@ _converse.api = {
             _converse.trigger.apply(_converse, arguments);
         }
         const promise = _converse.promises[name];
-        if (!_.isUndefined(promise)) {
+        if (promise !== undefined) {
             promise.resolve();
         }
     },
@@ -1517,7 +1517,7 @@ _converse.api = {
         logout () {
             clearSession();
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
-            if (!_.isUndefined(_converse.connection)) {
+            if (_converse.connection !== undefined) {
                 _converse.connection.disconnect();
             } else {
                 tearDown();
@@ -1804,7 +1804,7 @@ _converse.api = {
             return u.waitUntil(condition);
         } else {
             const promise = _converse.promises[condition];
-            if (_.isUndefined(promise)) {
+            if (promise === undefined) {
                 return null;
             }
             return promise;
@@ -1914,7 +1914,7 @@ const converse = {
          */
         add (name, plugin) {
             plugin.__name__ = name;
-            if (!_.isUndefined(_converse.pluggable.plugins[name])) {
+            if (_converse.pluggable.plugins[name] !== undefined) {
                 throw new TypeError(
                     `Error: plugin with name "${name}" has already been ` + 'registered!'
                 );

@@ -19,7 +19,7 @@
             expect(_.includes(list.classList, 'hidden')).toBeTruthy();
 
             await test_utils.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
-            expect(_.isUndefined(_converse.rooms_list_view)).toBeFalsy();
+            expect(_converse.rooms_list_view === undefined).toBeFalsy();
 
             const lview = _converse.rooms_list_view
             await u.waitUntil(() => lview.el.querySelectorAll(".open-room").length);
@@ -288,7 +288,7 @@
 
             test_utils.openControlBox();
             const room_jid = 'kitchen@conference.shakespeare.lit';
-            await u.waitUntil(() => !_.isUndefined(_converse.rooms_list_view), 500);
+            await u.waitUntil(() => _converse.rooms_list_view !== undefined, 500);
             await test_utils.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'romeo');
             const view = _converse.chatboxviews.get(room_jid);
             view.model.set({'minimized': true});

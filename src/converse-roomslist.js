@@ -135,7 +135,7 @@ converse.plugins.add('converse-roomslist', {
             showRoomDetailsModal (ev) {
                 const room = _converse.chatboxes.get(this.model.get('jid'));
                 ev.preventDefault();
-                if (_.isUndefined(room.room_details_modal)) {
+                if (room.room_details_modal === undefined) {
                     room.room_details_modal = new _converse.RoomDetailsModal({'model': room});
                 }
                 room.room_details_modal.show(ev);
@@ -199,7 +199,7 @@ converse.plugins.add('converse-roomslist', {
 
             insertIntoControlBox () {
                 const controlboxview = _converse.chatboxviews.get('controlbox');
-                if (!_.isUndefined(controlboxview) && !u.rootContains(_converse.root, this.el)) {
+                if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
                     const el = controlboxview.el.querySelector('.open-rooms-list');
                     if (!_.isNull(el)) {
                         el.parentNode.replaceChild(this.el, el);

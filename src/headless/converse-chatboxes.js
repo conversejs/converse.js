@@ -415,7 +415,7 @@ converse.plugins.add('converse-chatboxes', {
              * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
              */
             setChatState (state, options) {
-                if (!_.isUndefined(this.chat_state_timeout)) {
+                if (this.chat_state_timeout !== undefined) {
                     window.clearTimeout(this.chat_state_timeout);
                     delete this.chat_state_timeout;
                 }
@@ -611,7 +611,7 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             handleReceipt (stanza, from_jid, is_carbon, is_me, is_mam) {
-                const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
+                const requests_receipt = sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop() !== undefined;
                 if (requests_receipt && !is_carbon && !is_me) {
                     this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
                 }
@@ -1112,7 +1112,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 const contact_jid = is_me ? Strophe.getBareJidFromJid(to_jid) : from_bare_jid;
                 const contact = await _converse.api.contacts.get(contact_jid);
-                const is_roster_contact = !_.isUndefined(contact);
+                const is_roster_contact = contact !== undefined;
                 if (!is_me && !is_roster_contact && !_converse.allow_non_roster_messaging) {
                     return;
                 }
@@ -1365,7 +1365,7 @@ converse.plugins.add('converse-chatboxes', {
                  *
                  */
                 get (jids) {
-                    if (_.isUndefined(jids)) {
+                    if (jids === undefined) {
                         const result = [];
                         _converse.chatboxes.each(function (chatbox) {
                             // FIXME: Leaky abstraction from MUC. We need to add a

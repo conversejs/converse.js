@@ -862,7 +862,7 @@ converse.plugins.add('converse-muc', {
              * @returns { Promise } A promise which resolves and fails depending on the XMPP server response.
              */
             setAffiliation (affiliation, members) {
-                members = members.filter(m => _.isUndefined(m.affiliation) || m.affiliation === affiliation);
+                members = members.filter(m => m.affiliation === undefined || m.affiliation === affiliation);
                 return Promise.all(members.map(m => this.sendAffiliationIQ(affiliation, m)));
             },
 
@@ -1039,7 +1039,7 @@ converse.plugins.add('converse-muc', {
                         'nick': member.nick,
                         'jid': member.jid
                     });
-                if (!_.isUndefined(member.reason)) {
+                if (member.reason !== undefined) {
                     iq.c("reason", member.reason);
                 }
                 return _converse.api.sendIQ(iq);
@@ -1917,8 +1917,8 @@ converse.plugins.add('converse-muc', {
 
             async fetchMembers () {
                 const new_members = await this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']);
-                const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m));
-                const new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m));
+                const new_jids = new_members.map(m => m.jid).filter(m => m !== undefined);
+                const new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => m !== undefined);
                 const removed_members = this.filter(m => {
                         return ['admin', 'member', 'owner'].includes(m.get('affiliation')) &&
                             !new_nicks.includes(m.get('nick')) &&
@@ -2148,13 +2148,13 @@ converse.plugins.add('converse-muc', {
                  */
                 create (jids, attrs={}) {
                     attrs = _.isString(attrs) ? {'nick': attrs} : (attrs || {});
-                    if (_.isUndefined(attrs.maximize)) {
+                    if (attrs.maximize === undefined) {
                         attrs.maximize = false;
                     }
                     if (!attrs.nick && _converse.muc_nickname_from_jid) {
                         attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                     }
-                    if (_.isUndefined(jids)) {
+                    if (jids === undefined) {
                         throw new TypeError('rooms.create: You need to provide at least one JID');
                     } else if (_.isString(jids)) {
                         return createChatRoom(jids, attrs);
@@ -2223,7 +2223,7 @@ converse.plugins.add('converse-muc', {
                  */
                 async open (jids, attrs, force=false) {
                     await _converse.api.waitUntil('chatBoxesFetched');
-                    if (_.isUndefined(jids)) {
+                    if (jids === undefined) {
                         const err_msg = 'rooms.open: You need to provide at least one JID';
                         _converse.log(err_msg, Strophe.LogLevel.ERROR);
                         throw(new TypeError(err_msg));
@@ -2264,10 +2264,10 @@ converse.plugins.add('converse-muc', {
                 get (jids, attrs, create) {
                     if (_.isString(attrs)) {
                         attrs = {'nick': attrs};
-                    } else if (_.isUndefined(attrs)) {
+                    } else if (attrs === undefined) {
                         attrs = {};
                     }
-                    if (_.isUndefined(jids)) {
+                    if (jids === undefined) {
                         const result = [];
                         _converse.chatboxes.each(function (chatbox) {
                             if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {

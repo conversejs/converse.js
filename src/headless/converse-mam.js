@@ -200,7 +200,7 @@ converse.plugins.add('converse-mam', {
         /************************ BEGIN Event Handlers ************************/
         function getMAMPrefsFromFeature (feature) {
             const prefs = feature.get('preferences') || {};
-            if (feature.get('var') !== Strophe.NS.MAM || _.isUndefined(_converse.message_archiving)) {
+            if (feature.get('var') !== Strophe.NS.MAM || _converse.message_archiving === undefined) {
                 return;
             }
             if (prefs['default'] !== _converse.message_archiving) {

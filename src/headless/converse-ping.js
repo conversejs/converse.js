@@ -40,9 +40,9 @@ converse.plugins.add('converse-ping', {
             if (_.isNil(jid)) {
                 jid = Strophe.getDomainFromJid(_converse.bare_jid);
             }
-            if (_.isUndefined(timeout) ) { timeout = null; }
-            if (_.isUndefined(success) ) { success = null; }
-            if (_.isUndefined(error) ) { error = null; }
+            if (timeout === undefined ) { timeout = null; }
+            if (success === undefined ) { success = null; }
+            if (error === undefined ) { error = null; }
             if (_converse.connection) {
                 const id = _converse.connection.getUniqueId('ping');
                 const iq = $iq({
@@ -66,7 +66,7 @@ converse.plugins.add('converse-ping', {
         };
 
         _converse.registerPongHandler = function () {
-            if (!_.isUndefined(_converse.connection.disco)) {
+            if (_converse.connection.disco !== undefined) {
                 _converse.api.disco.own.features.add(Strophe.NS.PING);
             }
             return _converse.connection.addHandler(_converse.pong, Strophe.NS.PING, "iq", "get");

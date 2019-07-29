@@ -204,7 +204,7 @@ u.getEmojisByCategory = function (_converse) {
     /* Return a dict of emojis with the categories as keys and
      * lists of emojis in that category as values.
      */
-    if (_.isUndefined(_converse.emojis_by_category)) {
+    if (_converse.emojis_by_category === undefined) {
         const emojis = Object.values(_.mapValues(emoji_list, function (value, key, o) {
             value._shortname = key;
             return value

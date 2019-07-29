@@ -907,7 +907,7 @@ converse.plugins.add('converse-roster', {
         });
 
         _converse.unregisterPresenceHandler = function () {
-            if (!_.isUndefined(_converse.presence_ref)) {
+            if (_converse.presence_ref !== undefined) {
                 _converse.connection.deleteHandler(_converse.presence_ref);
                 delete _converse.presence_ref;
             }
@@ -917,7 +917,7 @@ converse.plugins.add('converse-roster', {
         /********** Event Handlers *************/
         function updateUnreadCounter (chatbox) {
             const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});
-            if (!_.isUndefined(contact)) {
+            if (contact !== undefined) {
                 contact.save({'num_unread': chatbox.get('num_unread')});
             }
         }
@@ -949,7 +949,7 @@ converse.plugins.add('converse-roster', {
         _converse.api.listen.on('afterTearDown', () => {
             if (_converse.presences) {
                 _converse.presences.each(p => {
-                    _.each(p.resources.reject(_.isUndefined), r => r.destroy({'silent': true}));
+                    p.resources.reject(r => r === undefined).forEach(r => r.destroy({'silent': true}));
                     p.save({'show': 'offline'}, {'silent': true})
                 });
             }
@@ -1049,7 +1049,7 @@ converse.plugins.add('converse-roster', {
                 async get (jids) {
                     await _converse.api.waitUntil('rosterContactsFetched');
                     const _getter = jid => _converse.roster.get(Strophe.getBareJidFromJid(jid));
-                    if (_.isUndefined(jids)) {
+                    if (jids === undefined) {
                         jids = _converse.roster.pluck('jid');
                     } else if (_.isString(jids)) {
                         return _getter(jids);

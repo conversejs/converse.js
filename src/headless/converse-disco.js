@@ -161,7 +161,7 @@ converse.plugins.add('converse-disco', {
                         return;
                     }
                     const jid = item.getAttribute('jid');
-                    if (_.isUndefined(this.items.get(jid))) {
+                    if (this.items.get(jid) === undefined) {
                         const entity = _converse.disco_entities.get(jid);
                         if (entity) {
                             this.items.add(entity);

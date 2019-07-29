@@ -173,7 +173,7 @@ u.applyUserSettings = function applyUserSettings (context, settings, user_settin
      * add settings which are whitelisted.
      */
     for (var k in settings) {
-        if (_.isUndefined(user_settings[k])) {
+        if (user_settings[k] === undefined) {
             continue;
         }
         if (_.isObject(settings[k]) && !Array.isArray(settings[k])) {

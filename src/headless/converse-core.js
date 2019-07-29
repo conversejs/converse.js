@@ -423,8 +423,14 @@ function tearDown () {
 }
 
 
-async function attemptNonPreboundSession (credentials) {
+async function attemptNonPreboundSession (credentials, automatic) {
     if (_converse.authentication === _converse.LOGIN) {
+        // XXX: If EITHER ``keepalive`` or ``auto_login`` is ``true`` and
+        // ``authentication`` is set to ``login``, then Converse will try to log the user in,
+        // since we don't have a way to distinguish between wether we're
+        // restoring a previous session (``keepalive``) or whether we're
+        // automatically setting up a new session (``auto_login``).
+        // So we can't do the check (!automatic || _converse.auto_login) here.
         if (credentials) {
             connect(credentials);
         } else if (_converse.credentials_url) {
@@ -438,7 +444,7 @@ async function attemptNonPreboundSession (credentials) {
         } else {
             throw new Error("attemptNonPreboundSession: Could not find any credentials to log you in with!");
         }
-    } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication)) {
+    } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication) && (!automatic || _converse.auto_login)) {
         connect();
     }
 }
@@ -552,7 +558,7 @@ _converse.initConnection = async function () {
                             "websockets and bosh_service_url wasn't specified.");
         }
         if (_converse.auto_login || _converse.keepalive) {
-            await _converse.api.user.login();
+            await _converse.api.user.login(null, null, true);
         }
     }
     setUpXMLLogging();
@@ -1488,12 +1494,17 @@ _converse.api = {
          * @method _converse.api.user.login
          * @param {string} [jid]
          * @param {string} [password]
+         * @param {boolean} [automatic=false] - An internally used flag that indicates whether
+         *  this method was called automatically once the connection has been
+         *  initialized. It's used together with the `auto_login` configuration flag
+         *  to determine whether Converse should try to log the user in if it
+         *  fails to restore a previous auth'd session.
          */
-        async login (jid, password) {
+        async login (jid, password, automatic=false) {
             if (_converse.api.connection.isType('bosh')) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
-                } else if (_converse.authentication === _converse.PREBIND) {
+                } else if (_converse.authentication === _converse.PREBIND && (!automatic || _converse.auto_login)) {
                     return _converse.startNewPreboundBOSHSession();
                 }
             } else if (_converse.authentication === _converse.PREBIND) {
@@ -1506,7 +1517,7 @@ _converse.api = {
             }
             password = password || _converse.password;
             const credentials = (jid && password) ? { jid, password } : null;
-            attemptNonPreboundSession(credentials);
+            attemptNonPreboundSession(credentials, automatic);
         },
 
         /**

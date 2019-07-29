@@ -274,8 +274,6 @@ auto_login
 This option can be used to let Converse automatically log the user in as
 soon as the page loads.
 
-It should be used either with ``authentication`` set to ``anonymous`` or to ``login``.
-
 If ``authentication`` is set to ``login``, then you will also need to provide a
 valid ``jid`` and ``password`` values, either manually by passing them in, or
 by the `credentials_url`_ setting. Setting a ``credentials_url`` is preferable
@@ -291,7 +289,25 @@ This is a useful setting if you'd like to create a custom login form in your
 website. You'll need to write some JavaScript to accept that custom form's
 login credentials, then you can pass those credentials (``jid`` and
 ``password``) to ``converse.initialize`` to start Converse and log the user
-into their XMPP account.
+in to their XMPP account.
+
+.. note::
+
+The interaction between ``keepalive`` and ``auto_login`` is unfortunately
+inconsistent depending on the ``authentication`` method used.
+
+If ``auto_login`` is set to ``false`` and ``authentication`` is set to
+``anonymous``, ``external`` or ``prebind``, then Converse won't automatically
+log the user in.
+
+If ``authentication`` set to ``login`` the situation is much more
+ambiguous, since we don't have a way to distinguish between wether we're
+restoring a previous session (``keepalive``) or whether we're
+automatically setting up a new session (``auto_login``).
+
+So currently if EITHER ``keepalive`` or ``auto_login`` is ``true`` and
+``authentication`` is set to ``login``, then Converse will try to log the user in.
+
 
 auto_away
 ---------

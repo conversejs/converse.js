@@ -498,7 +498,7 @@ function reconnect () {
 
     _converse.connection.reconnecting = true;
     tearDown();
-    return _converse.api.user.login(null, null, true);
+    return _converse.api.user.login();
 }
 
 const debouncedReconnect = _.debounce(reconnect, 2000);
@@ -1488,14 +1488,12 @@ _converse.api = {
          * @method _converse.api.user.login
          * @param {string} [jid]
          * @param {string} [password]
-         * @param {boolean} [reconnecting]
          */
-        async login (jid, password, reconnecting) {
+        async login (jid, password) {
             if (_converse.api.connection.isType('bosh')) {
-                const uses_prebind = (_converse.authentication === _converse.PREBIND && _converse.prebind_url);
-                if (!reconnecting && await _converse.restoreBOSHSession()) {
+                if (await _converse.restoreBOSHSession()) {
                     return;
-                } else if (reconnecting && uses_prebind) {
+                } else if (_converse.authentication === _converse.PREBIND) {
                     return _converse.startNewBOSHSession();
                 }
             } else if (_converse.authentication === _converse.PREBIND) {

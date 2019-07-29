@@ -165,21 +165,23 @@ converse.plugins.add('converse-roster', {
                 }
             },
 
+            /**
+             * Return the resource with the highest priority.
+             * If multiple resources have the same priority, take the latest one.
+             * @private
+             */
             getHighestPriorityResource () {
-                /* Return the resource with the highest priority.
-                 *
-                 * If multiple resources have the same priority, take the
-                 * latest one.
-                 */
                 return this.resources.sortBy(r => `${r.get('priority')}-${r.get('timestamp')}`).reverse()[0];
             },
 
+            /**
+             * Adds a new resource and it's associated attributes as taken
+             * from the passed in presence stanza.
+             * Also updates the presence if the resource has higher priority (and is newer).
+             * @private
+             * @param { XMLElement } presence: The presence stanza
+             */
             addResource (presence) {
-                /* Adds a new resource and it's associated attributes as taken
-                 * from the passed in presence stanza.
-                 *
-                 * Also updates the presence if the resource has higher priority (and is newer).
-                 */
                 const jid = presence.getAttribute('from'),
                       name = Strophe.getResourceFromJid(jid),
                       delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop(),
@@ -198,13 +200,14 @@ converse.plugins.add('converse-roster', {
                 }
             },
 
-
+            /**
+             * Remove the passed in resource from the resources map.
+             * Also redetermines the presence given that there's one less
+             * resource.
+             * @private
+             * @param { string } name: The resource name
+             */
             removeResource (name) {
-                /* Remove the passed in resource from the resources map.
-                 *
-                 * Also redetermines the presence given that there's one less
-                 * resource.
-                 */
                 const resource = this.resources.get(name);
                 if (resource) {
                     resource.destroy();
@@ -375,7 +378,7 @@ converse.plugins.add('converse-roster', {
              * Instruct the XMPP server to remove this contact from our roster
              * @private
              * @method _converse.RosterContacts#
-             * @returns { Promise } 
+             * @returns { Promise }
              */
             removeFromRoster () {
                 const iq = $iq({type: 'set'})
@@ -394,10 +397,9 @@ converse.plugins.add('converse-roster', {
             model: _converse.RosterContact,
 
             comparator (contact1, contact2) {
-                /* Groups are sorted alphabetically, ignoring case.
-                 * However, Ungrouped, Requesting Contacts and Pending Contacts
-                 * appear last and in that order.
-                 */
+                // Groups are sorted alphabetically, ignoring case.
+                // However, Ungrouped, Requesting Contacts and Pending Contacts
+                // appear last and in that order.
                 const status1 = contact1.presence.get('show') || 'offline';
                 const status2 = contact2.presence.get('show') || 'offline';
                 if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
@@ -410,19 +412,16 @@ converse.plugins.add('converse-roster', {
             },
 
             onConnected () {
-                /* Called as soon as the connection has been established
-                 * (either after initial login, or after reconnection).
-                 *
-                 * Use the opportunity to register stanza handlers.
-                 */
+                // Called as soon as the connection has been established
+                // (either after initial login, or after reconnection).
+                // Use the opportunity to register stanza handlers.
                 this.registerRosterHandler();
                 this.registerRosterXHandler();
             },
 
             registerRosterHandler () {
-                /* Register a handler for roster IQ "set" stanzas, which update
-                 * roster contacts.
-                 */
+                // Register a handler for roster IQ "set" stanzas, which update
+                // roster contacts.
                 _converse.connection.addHandler(iq => {
                     _converse.roster.onRosterPush(iq);
                     return true;
@@ -430,9 +429,8 @@ converse.plugins.add('converse-roster', {
             },
 
             registerRosterXHandler () {
-                /* Register a handler for RosterX message stanzas, which are
-                 * used to suggest roster contacts to a user.
-                 */
+                // Register a handler for RosterX message stanzas, which are
+                // used to suggest roster contacts to a user.
                 let t = 0;
                 _converse.connection.addHandler(
                     function (msg) {
@@ -448,14 +446,13 @@ converse.plugins.add('converse-roster', {
                 );
             },
 
+            /**
+             * Fetches the roster contacts, first by trying the browser cache,
+             * and if that's empty, then by querying the XMPP server.
+             * @private
+             * @returns {promise} Promise which resolves once the contacts have been fetched.
+             */
             async fetchRosterContacts () {
-                /* Fetches the roster contacts, first by trying the
-                 * sessionStorage cache, and if that's empty, then by querying
-                 * the XMPP server.
-                 *
-                 * Returns a promise which resolves once the contacts have been
-                 * fetched.
-                 */
                 let collection;
                 try {
                     collection = await new Promise((resolve, reject) => {
@@ -642,8 +639,13 @@ converse.plugins.add('converse-roster', {
                 return !!(_converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version'));
             },
 
+            /**
+             * Fetch the roster from the XMPP server
+             * @private
+             * @emits _converse#roster
+             * @returns {promise}
+             */
             async fetchFromServer () {
-                /* Fetch the roster from the XMPP server */
                 const stanza = $iq({
                     'type': 'get',
                     'id': _converse.connection.getUniqueId('roster')
@@ -661,17 +663,10 @@ converse.plugins.add('converse-roster', {
                         Strophe.LogLevel.ERROR
                     );
                 }
-                return this.onReceivedFromServer(iq);
-            },
-
-            onReceivedFromServer (iq) {
-                /* An IQ stanza containing the roster has been received from
-                 * the XMPP server.
-                 */
                 const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
                 if (query) {
                     const items = sizzle(`item`, query);
-                    _.each(items, (item) => this.updateContact(item));
+                    items.forEach(item => this.updateContact(item));
                     this.data.save('version', query.getAttribute('ver'));
                 }
                 _converse.session.save('roster_fetched', true);
@@ -687,10 +682,12 @@ converse.plugins.add('converse-roster', {
                 _converse.api.trigger('roster', iq);
             },
 
+            /* Update or create RosterContact models based on the given `item` XML
+             * node received in the resulting IQ stanza from the server.
+             * @private
+             * @param { XMLElement } item
+             */
             updateContact (item) {
-                /* Update or create RosterContact models based on items
-                 * received in the IQ from the server.
-                 */
                 const jid = item.getAttribute('jid');
                 if (this.isSelf(jid)) { return; }
 

@@ -210,10 +210,24 @@ converse.plugins.add('converse-mam', {
             }
         }
 
-        _converse.api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
-        _converse.api.listen.on('afterMessagesFetched', chat => chat.fetchNewestMessages());
-        _converse.api.listen.on('chatReconnected', chat => chat.fetchNewestMessages());
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
+        _converse.api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
+        _converse.api.listen.on('chatReconnected', chat => chat.fetchNewestMessages());
+        _converse.api.listen.on('enteredNewRoom', chat => chat.fetchNewestMessages());
+
+        _converse.api.listen.on('afterMessagesFetched', chat => {
+            // XXX: We don't want to query MAM every time this is triggered
+            // since it's not necessary when the chat is restored from cache.
+            // (given that BOSH or SMACKS will ensure that you get messages
+            // sent during the reload).
+            //
+            // With MUCs we can listen for `enteredNewRoom` but for
+            // one-on-one we have to use this hacky solutoin for now.
+            // `chat_state` is `undefined` only for newly created chats.
+            if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE && chat.get('chat_state') === undefined) {
+                chat.fetchNewestMessages();
+            }
+        });
 
         _converse.api.listen.on('chatRoomOpened', (room) => {
             room.on('change:mam_enabled', room.fetchArchivedMessagesIfNecessary, room);

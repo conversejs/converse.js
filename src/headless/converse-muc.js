@@ -428,6 +428,14 @@ converse.plugins.add('converse-muc', {
                     // thereby avoiding re-renders (and therefore DOM reflows).
                     this.fetchMessages();
 
+                    /**
+                     * Triggered when the user has entered a new MUC and *after* cached messages have been fetched.
+                     * @event _converse#enteredNewRoom
+                     * @type { _converse.ChatRoom}
+                     * @example _converse.api.listen.on('enteredNewRoom', model => { ... });
+                     */
+                    _converse.api.trigger('enteredNewRoom', this);
+
                     if (_converse.auto_register_muc_nickname &&
                             await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
                         this.registerNickname()

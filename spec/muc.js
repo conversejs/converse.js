@@ -2016,7 +2016,7 @@
                 });
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', text);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', jasmine.any(_converse.Message));
                 const chat_content = view.el.querySelector('.chat-content');
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
 

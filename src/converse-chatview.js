@@ -885,11 +885,9 @@ converse.plugins.add('converse-chatview', {
             async onFormSubmitted (ev) {
                 ev.preventDefault();
                 const textarea = this.el.querySelector('.chat-textarea');
-                const message = textarea.value.trim();
-                if (_converse.message_limit && message.length > _converse.message_limit) {
-                    return;
-                }
-                if (!message.replace(/\s/g, '').length) {
+                const message_text = textarea.value.trim();
+                if (_converse.message_limit && message_text.length > _converse.message_limit ||
+                        !message_text.replace(/\s/g, '').length) {
                     return;
                 }
                 if (!_converse.connection.authenticated) {
@@ -907,18 +905,21 @@ converse.plugins.add('converse-chatview', {
                 }
                 u.addClass('disabled', textarea);
                 textarea.setAttribute('disabled', 'disabled');
-                if (this.parseMessageForCommands(message) ||
-                    await this.model.sendMessage(message, spoiler_hint)) {
 
+                const is_command = this.parseMessageForCommands(message_text);
+                const message = is_command ? null : await this.model.sendMessage(message_text, spoiler_hint);
+                if (is_command || message) {
                     hint_el.value = '';
                     textarea.value = '';
                     u.removeClass('correcting', textarea);
                     textarea.style.height = 'auto'; // Fixes weirdness
+                }
+                if (message) {
                     /**
-                     * Triggered just before an HTML5 message notification will be sent out.
+                     * Triggered whenever a message is sent by the user
                      * @event _converse#messageSend
                      * @type { _converse.Message }
-                     * @example _converse.api.listen.on('messageSend', data => { ... });
+                     * @example _converse.api.listen.on('messageSend', message => { ... });
                      */
                     _converse.api.trigger('messageSend', message);
                 }

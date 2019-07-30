@@ -192,15 +192,17 @@ converse.plugins.add('converse-omemo', {
                     const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                     attrs['is_encrypted'] = true;
                     attrs['plaintext'] = attrs.message;
+                    let message, stanza;
                     try {
                         const devices = await _converse.getBundlesAndBuildSessions(this);
-                        const stanza = await _converse.createOMEMOMessageStanza(this, this.messages.create(attrs), devices);
-                        _converse.api.send(stanza);
+                        message = this.messages.create(attrs);
+                        stanza = await _converse.createOMEMOMessageStanza(this, message, devices);
                     } catch (e) {
                         this.handleMessageSendError(e);
-                        return false;
+                        return null;
                     }
-                    return true;
+                    _converse.api.send(stanza);
+                    return message;
                 } else {
                     return this.__super__.sendMessage.apply(this, arguments);
                 }

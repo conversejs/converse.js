@@ -705,13 +705,12 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             /**
-             * Responsible for sending off a text message inside an ongoing
-             * chat conversation.
-             *
+             * Responsible for sending off a text message inside an ongoing chat conversation.
              * @method _converse.ChatBox#sendMessage
              * @memberOf _converse.ChatBox
-             * @param {String} text - The chat message text
-             * @param {String} spoiler_hint - An optional hint, if the message being sent is a spoiler
+             * @param { String } text - The chat message text
+             * @param { String } spoiler_hint - An optional hint, if the message being sent is a spoiler
+             * @returns { _converse.Message }
              * @example
              * const chat = _converse.api.chats.get('buddy1@example.com');
              * chat.sendMessage('hello world');
@@ -735,7 +734,7 @@ converse.plugins.add('converse-chatboxes', {
                     message = this.messages.create(attrs);
                 }
                 _converse.api.send(this.createMessageStanza(message));
-                return true;
+                return message;
             },
 
             /**

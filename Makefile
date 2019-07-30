@@ -120,7 +120,6 @@ stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 .PHONY: clean
 clean:
 	npm run clean
-	rm -r lib bin include parts
 
 .PHONY: dev
 dev: stamp-npm

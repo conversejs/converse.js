@@ -295,10 +295,13 @@ converse.plugins.add('converse-chatboxes', {
                 this.fetchMessages();
             },
 
+            getMessagesCacheKey () {
+                return `converse.messages-${this.get('jid')}-${_converse.bare_jid}`;
+            },
+
             initMessages () {
                 this.messages = new this.messagesCollection();
-                this.messages.browserStorage = new BrowserStorage.session(
-                    `converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
+                this.messages.browserStorage = new BrowserStorage.session(this.getMessagesCacheKey());
                 this.messages.chatbox = this;
 
                 this.messages.on('change:upload', (message) => {

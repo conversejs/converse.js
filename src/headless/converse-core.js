@@ -219,7 +219,7 @@ _converse.default_settings = {
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
     keepalive: true,
-    locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
+    locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
         'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl',

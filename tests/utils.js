@@ -292,12 +292,6 @@
         }
     };
 
-    utils.clearBrowserStorage = function () {
-        window.localStorage.clear();
-        window.sessionStorage.clear();
-        return this;
-    };
-
     utils.clearChatBoxMessages = function (converse, jid) {
         var view = converse.chatboxviews.get(jid);
         view.el.querySelector('.chat-content').innerHTML = '';

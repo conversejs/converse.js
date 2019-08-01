@@ -572,7 +572,7 @@ _converse.initConnection = async function () {
 };
 
 
-async function initUserSession (jid) {
+async function setUserJID (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (!_converse.session || _converse.session.get('id') !== id) {
@@ -583,6 +583,7 @@ async function initUserSession (jid) {
             _converse.session.clear();
             _converse.session.save({'id': id});
         }
+        saveJIDtoSession(jid);
         /**
          * Triggered once the user's session has been initialized. The session is a
          * cache which stores information about the user's current session.
@@ -590,11 +591,18 @@ async function initUserSession (jid) {
          * @memberOf _converse
          */
         _converse.api.trigger('userSessionInitialized');
+    } else {
+        saveJIDtoSession(jid);
     }
+    /**
+     * Triggered whenever the user's JID has been updated
+     * @event _converse#setUserJID
+     */
+    _converse.api.trigger('setUserJID');
+    return jid;
 }
 
-async function setUserJID (jid) {
-    await initUserSession(jid);
+function saveJIDtoSession (jid) {
     jid = _converse.session.get('jid') || jid;
     if (_converse.authentication !== _converse.ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + _converse.generateResource();
@@ -603,7 +611,6 @@ async function setUserJID (jid) {
     // `connection.bind` the new resource is found by Strophe.js
     // and sent to the XMPP server.
     _converse.connection.jid = jid;
-
     _converse.jid = jid;
     _converse.bare_jid = Strophe.getBareJidFromJid(jid);
     _converse.resource = Strophe.getResourceFromJid(jid);
@@ -615,12 +622,6 @@ async function setUserJID (jid) {
        'domain': _converse.domain,
        'active': true
     });
-    /**
-     * Triggered whenever the user's JID has been updated
-     * @event _converse#setUserJID
-     */
-    _converse.api.trigger('setUserJID');
-    return jid;
 }
 
 

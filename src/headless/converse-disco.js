@@ -293,52 +293,6 @@ converse.plugins.add('converse-disco', {
             }
         }
 
-        async function initializeDisco () {
-            addClientFeatures();
-            _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
-
-            _converse.disco_entities = new _converse.DiscoEntities();
-            _converse.disco_entities.browserStorage = new BrowserStorage.session(
-                `converse.disco-entities-${_converse.bare_jid}`
-            );
-
-            const collection = await _converse.disco_entities.fetchEntities();
-            if (collection.length === 0 || !collection.get(_converse.domain)) {
-                // If we don't have an entity for our own XMPP server,
-                // create one.
-                _converse.disco_entities.create({'jid': _converse.domain});
-            }
-            /**
-             * Triggered once the `converse-disco` plugin has been initialized and the
-             * `_converse.disco_entities` collection will be available and populated with at
-             * least the service discovery features of the user's own server.
-             * @event _converse#discoInitialized
-             * @example _converse.api.listen.on('discoInitialized', () => { ... });
-             */
-            _converse.api.trigger('discoInitialized');
-        }
-
-        _converse.api.listen.on('userSessionInitialized', initStreamFeatures);
-        _converse.api.listen.on('beforeResourceBinding', initStreamFeatures);
-
-        _converse.api.listen.on('reconnected', initializeDisco);
-        _converse.api.listen.on('connected', initializeDisco);
-
-        _converse.api.listen.on('beforeTearDown', () => {
-            if (_converse.disco_entities) {
-                _converse.disco_entities.each((entity) => {
-                    entity.features.reset();
-                    entity.features.browserStorage._clear();
-                });
-                _converse.disco_entities.reset();
-                _converse.disco_entities.browserStorage._clear();
-            }
-            if (_converse.stream_features) {
-                _converse.stream_features.reset();
-                _converse.stream_features.browserStorage._clear();
-            }
-        });
-
         const plugin = this;
         plugin._identities = [];
         plugin._features = [];
@@ -374,6 +328,57 @@ converse.plugins.add('converse-disco', {
             return true;
         }
 
+
+        async function initializeDisco () {
+            addClientFeatures();
+            _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
+
+            _converse.disco_entities = new _converse.DiscoEntities();
+            _converse.disco_entities.browserStorage = new BrowserStorage.session(
+                `converse.disco-entities-${_converse.bare_jid}`
+            );
+
+            const collection = await _converse.disco_entities.fetchEntities();
+            if (collection.length === 0 || !collection.get(_converse.domain)) {
+                // If we don't have an entity for our own XMPP server,
+                // create one.
+                _converse.disco_entities.create({'jid': _converse.domain});
+            }
+            /**
+             * Triggered once the `converse-disco` plugin has been initialized and the
+             * `_converse.disco_entities` collection will be available and populated with at
+             * least the service discovery features of the user's own server.
+             * @event _converse#discoInitialized
+             * @example _converse.api.listen.on('discoInitialized', () => { ... });
+             */
+            _converse.api.trigger('discoInitialized');
+        }
+
+        /******************** Event Handlers ********************/
+
+        _converse.api.listen.on('userSessionInitialized', initStreamFeatures);
+        _converse.api.listen.on('beforeResourceBinding', initStreamFeatures);
+
+        _converse.api.listen.on('reconnected', initializeDisco);
+        _converse.api.listen.on('connected', initializeDisco);
+
+        _converse.api.listen.on('beforeTearDown', () => {
+            if (_converse.disco_entities) {
+                _converse.disco_entities.each((entity) => {
+                    entity.features.reset();
+                    entity.features.browserStorage._clear();
+                });
+                _converse.disco_entities.reset();
+                _converse.disco_entities.browserStorage._clear();
+            }
+            if (_converse.stream_features) {
+                Array.from(_converse.stream_features.models).forEach(f => f.destroy());
+                _converse.stream_features.browserStorage._clear();
+            }
+        });
+
+
+        /************************ API ************************/
 
         Object.assign(_converse.api, {
             /**

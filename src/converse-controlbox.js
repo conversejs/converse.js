@@ -567,6 +567,9 @@ converse.plugins.add('converse-controlbox', {
             }
         });
 
+
+        /******************** Event Handlers ********************/
+
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
             _converse.chatboxes.on('add', item => {
                 if (item.get('type') === _converse.CONTROLBOX_TYPE) {
@@ -627,7 +630,8 @@ converse.plugins.add('converse-controlbox', {
         });
 
 
-        /************************ BEGIN API ************************/
+        /************************ API ************************/
+
         Object.assign(_converse.api, {
             /**
              * The "controlbox" namespace groups methods pertaining to the

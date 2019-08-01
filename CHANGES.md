@@ -50,6 +50,7 @@
 - #1550: Legitimate carbons being blocked due to erroneous forgery check
 - #1554: Room auto-configuration broke if the config form contained fields with type `fixed`
 - #1558: `this.get` is not a function error when `forward_messages` is set to `true`.
+- #1561: Don't call `clear` on local or session storage
 - #1572: In `fullscreen` view mode the top is cut off on iOS
 - #1575: MUC invitation autocomplete list doesn't appear
 - #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`

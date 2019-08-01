@@ -529,7 +529,7 @@ function clearSession  () {
         _converse.session.browserStorage._clear();
         delete _converse.session;
     }
-    if (_converse.shouldClearCache()) {
+    if (_converse.shouldClearCache() && _converse.xmppstatus) {
         _converse.xmppstatus.destroy();
         _converse.xmppstatus.browserStorage._clear();
         delete _converse.xmppstatus;

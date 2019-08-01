@@ -108,6 +108,15 @@ _converse.VERSION_NAME = "v5.0.0dev";
 
 Object.assign(_converse, Backbone.Events);
 
+_converse.Collection = Backbone.Collection.extend({
+    clearSession () {
+        Array.from(this.models).forEach(m => m.destroy());
+        this.browserStorage._clear();
+        this.reset();
+    }
+});
+
+
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');
 
@@ -510,18 +519,23 @@ function reconnect () {
 const debouncedReconnect = _.debounce(reconnect, 2000);
 
 
+_converse.shouldClearCache = function () {
+    return !_converse.config.get('trusted') || _converse.isTestEnv();
+}
+
 function clearSession  () {
     if (_converse.session !== undefined) {
         _converse.session.destroy();
+        _converse.session.browserStorage._clear();
         delete _converse.session;
     }
-    // TODO: Refactor so that we don't clear
-    if (!_converse.config.get('trusted') || _converse.isTestEnv()) {
-        window.localStorage.clear();
-        window.sessionStorage.clear();
+    if (_converse.shouldClearCache()) {
+        _converse.xmppstatus.destroy();
+        _converse.xmppstatus.browserStorage._clear();
+        delete _converse.xmppstatus;
     }
     /**
-     * Triggered once the session information has been cleared,
+     * Triggered once the user session has been cleared,
      * for example when the user has logged out or when Converse has
      * disconnected for some other reason.
      * @event _converse#clearSession
@@ -674,6 +688,29 @@ async function finishInitialization () {
         });
     }
 }
+
+
+/**
+ * Properly tear down the session so that it's possible to manually connect again.
+ * @method finishDisconnection
+ * @emits _converse#disconnected
+ * @private
+ */
+function finishDisconnection () {
+    _converse.log('DISCONNECTED');
+    delete _converse.connection.reconnecting;
+    _converse.connection.reset();
+    tearDown();
+    clearSession();
+    /**
+     * Triggered after converse.js has disconnected from the XMPP server.
+     * @event _converse#disconnected
+     * @memberOf _converse
+     * @example _converse.api.listen.on('disconnected', () => { ... });
+     */
+    _converse.api.trigger('disconnected');
+}
+
 
 function fetchLoginCredentials (wait=0) {
     return new Promise(
@@ -938,28 +975,6 @@ _converse.initialize = async function (settings, callback) {
 
 
     /**
-     * Properly tear down the session so that it's possible to manually connect again.
-     * @method finishDisconnection
-     * @private
-     * @memberOf _converse
-     */
-    this.finishDisconnection = function () {
-        _converse.log('DISCONNECTED');
-        delete _converse.connection.reconnecting;
-        _converse.connection.reset();
-        tearDown();
-        clearSession();
-        /**
-         * Triggered after converse.js has disconnected from the XMPP server.
-         * @event _converse#disconnected
-         * @memberOf _converse
-         * @example _converse.api.listen.on('disconnected', () => { ... });
-         */
-        _converse.api.trigger('disconnected');
-    };
-
-
-    /**
      * Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
      * Will either start a teardown process for converse.js or attempt
      * to reconnect.
@@ -981,14 +996,14 @@ _converse.initialize = async function (settings, callback) {
                  */
                 return _converse.api.connection.reconnect();
             } else {
-                return _converse.finishDisconnection();
+                return finishDisconnection();
             }
         } else if (_converse.disconnection_cause === _converse.LOGOUT ||
                 (reason !== undefined && reason === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
                 reason === "host-unknown" ||
                 reason === "remote-connection-failed" ||
                 !_converse.auto_reconnect) {
-            return _converse.finishDisconnection();
+            return finishDisconnection();
         }
         _converse.api.connection.reconnect();
     };
@@ -1364,9 +1379,6 @@ _converse.api = {
         disconnect () {
             if (_converse.connection) {
                 _converse.connection.disconnect();
-            } else {
-                tearDown();
-                clearSession();
             }
         },
 
@@ -1527,12 +1539,9 @@ _converse.api = {
          * @example _converse.api.user.logout();
          */
         logout () {
-            clearSession();
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (_converse.connection !== undefined) {
                 _converse.connection.disconnect();
-            } else {
-                tearDown();
             }
             // Recreate all the promises
             Object.keys(_converse.promises).forEach(addPromise);

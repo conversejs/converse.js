@@ -331,7 +331,7 @@ converse.plugins.add('converse-muc', {
          * @namespace _converse.ChatRoomMessages
          * @memberOf _converse
          */
-        _converse.ChatRoomMessages = Backbone.Collection.extend({
+        _converse.ChatRoomMessages = _converse.Collection.extend({
             model: _converse.ChatRoomMessage,
             comparator: 'time'
         });
@@ -607,6 +607,16 @@ converse.plugins.add('converse-muc', {
                 }
                 u.safeSave(this, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
                 this.removeHandlers();
+            },
+
+            close () {
+                try {
+                    this.features.destroy();
+                    this.features.browserStorage._clear();
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                }
+                return _converse.ChatBox.prototype.close.call(this);
             },
 
             sendUnavailablePresence (exit_msg) {
@@ -1908,7 +1918,7 @@ converse.plugins.add('converse-muc', {
         });
 
 
-        _converse.ChatRoomOccupants = Backbone.Collection.extend({
+        _converse.ChatRoomOccupants = _converse.Collection.extend({
             model: _converse.ChatRoomOccupant,
 
             comparator (occupant1, occupant2) {

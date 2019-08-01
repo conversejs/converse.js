@@ -290,7 +290,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             shouldBeVisible () {
-                return _converse.roster.length >= 5 || this.isActive();
+                return _converse.roster && _converse.roster.length >= 5 || this.isActive();
             },
 
             showOrHide () {
@@ -859,7 +859,6 @@ converse.plugins.add('converse-rosterview', {
             },
 
             reset () {
-                _converse.roster.reset();
                 this.removeAll();
                 this.render().update();
                 return this;
@@ -943,7 +942,7 @@ converse.plugins.add('converse-rosterview', {
         /* -------- Event Handlers ----------- */
         _converse.api.listen.on('chatBoxesInitialized', () => {
             function highlightRosterItem (chatbox) {
-                const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});
+                const contact = _converse.roster && _converse.roster.findWhere({'jid': chatbox.get('jid')});
                 if (contact !== undefined) {
                     contact.trigger('highlight');
                 }

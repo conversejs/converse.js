@@ -47,7 +47,7 @@ converse.plugins.add('converse-roomslist', {
         _converse.api.promises.add('roomsListInitialized');
 
 
-        _converse.OpenRooms = Backbone.Collection.extend({
+        _converse.OpenRooms = _converse.Collection.extend({
 
             comparator (room) {
                 if (_converse.bookmarks && room.get('bookmarked')) {

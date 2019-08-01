@@ -107,6 +107,7 @@ converse.plugins.add('converse-bosh', {
                 sessionStorage.removeItem(`${id}-${id}`);
             } else {
                 _converse.bosh_session.destroy();
+                _converse.bosh_session.browserStorage._clear();
                 delete _converse.bosh_session;
             }
         });

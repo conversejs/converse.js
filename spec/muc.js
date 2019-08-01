@@ -1969,7 +1969,7 @@
 
                 const text = 'This is a received message';
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 if (!view.el.querySelectorAll('.chat-area').length) {
                     view.renderChatArea();
@@ -2001,7 +2001,7 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 if (!view.el.querySelectorAll('.chat-area').length) {
                     view.renderChatArea();
@@ -2742,7 +2742,7 @@
 
                 spyOn(view, 'onMinimized').and.callThrough();
                 spyOn(view, 'onMaximized').and.callThrough();
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.el.querySelector('.toggle-chatbox-button').click();
 
@@ -2770,7 +2770,7 @@
                 await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 spyOn(view, 'close').and.callThrough();
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 spyOn(view.model, 'leave');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.el.querySelector('.close-chatbox-button').click();
@@ -3787,7 +3787,7 @@
                     'from': view.model.get('jid'),
                     'to': _converse.connection.jid
                 });
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 expect(_converse.chatboxes.length).toBe(2);
                 _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
                 await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));

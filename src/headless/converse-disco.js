@@ -43,24 +43,24 @@ converse.plugins.add('converse-disco', {
             initialize (attrs, options) {
                 this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
 
-                this.dataforms = new Backbone.Collection();
+                this.dataforms = new _converse.Collection();
                 this.dataforms.browserStorage = new BrowserStorage.session(
                     `converse.dataforms-${this.get('jid')}`
                 );
 
-                this.features = new Backbone.Collection();
+                this.features = new _converse.Collection();
                 this.features.browserStorage = new BrowserStorage.session(
                     `converse.features-${this.get('jid')}`
                 );
                 this.features.on('add', this.onFeatureAdded, this);
 
-                this.fields = new Backbone.Collection();
+                this.fields = new _converse.Collection();
                 this.fields.browserStorage = new BrowserStorage.session(
                     `converse.fields-${this.get('jid')}`
                 );
                 this.fields.on('add', this.onFieldAdded, this);
 
-                this.identities = new Backbone.Collection();
+                this.identities = new _converse.Collection();
                 this.identities.browserStorage = new BrowserStorage.session(
                     `converse.identities-${this.get('jid')}`
                 );
@@ -226,7 +226,7 @@ converse.plugins.add('converse-disco', {
             }
         });
 
-        _converse.DiscoEntities = Backbone.Collection.extend({
+        _converse.DiscoEntities = _converse.Collection.extend({
             model: _converse.DiscoEntity,
 
             fetchEntities () {
@@ -267,7 +267,7 @@ converse.plugins.add('converse-disco', {
             const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
             const id = `converse.stream-features-${bare_jid}`;
             if (!_converse.stream_features || _converse.stream_features.browserStorage.id !== id) {
-                _converse.stream_features = new Backbone.Collection();
+                _converse.stream_features = new _converse.Collection();
                 _converse.stream_features.browserStorage = new BrowserStorage.session(id);
                 _converse.stream_features.fetch({
                     success (collection) {
@@ -363,17 +363,20 @@ converse.plugins.add('converse-disco', {
         _converse.api.listen.on('connected', initializeDisco);
 
         _converse.api.listen.on('beforeTearDown', () => {
-            if (_converse.disco_entities) {
-                _converse.disco_entities.each((entity) => {
-                    entity.features.reset();
-                    entity.features.browserStorage._clear();
-                });
-                _converse.disco_entities.reset();
-                _converse.disco_entities.browserStorage._clear();
-            }
             if (_converse.stream_features) {
-                Array.from(_converse.stream_features.models).forEach(f => f.destroy());
-                _converse.stream_features.browserStorage._clear();
+                _converse.stream_features.clearSession();
+                delete _converse.stream_features;
+            }
+        });
+
+        _converse.api.listen.on('clearSession', () => {
+            if (_converse.shouldClearCache() && _converse.disco_entities) {
+                Array.from(_converse.disco_entities.models).forEach(e => e.features.clearSession());
+                Array.from(_converse.disco_entities.models).forEach(e => e.identities.clearSession());
+                Array.from(_converse.disco_entities.models).forEach(e => e.dataforms.clearSession());
+                Array.from(_converse.disco_entities.models).forEach(e => e.fields.clearSession());
+                _converse.disco_entities.clearSession();
+                delete _converse.disco_entities;
             }
         });
 

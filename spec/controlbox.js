@@ -24,7 +24,7 @@
             expect(u.isVisible(el)).toBe(false);
             spyOn(_converse.controlboxtoggle, 'onClick').and.callThrough();
             spyOn(_converse.controlboxtoggle, 'showControlBox').and.callThrough();
-            spyOn(_converse.api, "trigger");
+            spyOn(_converse.api, "trigger").and.callThrough();
             // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
             _converse.controlboxtoggle.delegateEvents();
             document.querySelector('.toggle-controlbox').click();
@@ -38,12 +38,12 @@
 
         describe("The \"Contacts\" section", function () {
 
-            it("can be used to add contact and it checks for case-sensivity", 
+            it("can be used to add contact and it checks for case-sensivity",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 test_utils.openControlBox();
                 // Adding two contacts one with Capital initials and one with small initials of same JID (Case sensitive check)

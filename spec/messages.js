@@ -737,7 +737,7 @@
             const include_nick = false;
             await test_utils.waitForRoster(_converse, 'current', 2, include_nick);
             test_utils.openControlBox();
-            spyOn(_converse.api, "trigger");
+            spyOn(_converse.api, "trigger").and.callThrough();
             const contact_name = mock.cur_names[1];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
@@ -1382,7 +1382,7 @@
 
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, contact_jid)
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
@@ -1626,7 +1626,7 @@
                     _converse.allow_non_roster_messaging = false;
                     _converse.api.trigger('rosterContactsFetched');
 
-                    spyOn(_converse.api, "trigger");
+                    spyOn(_converse.api, "trigger").and.callThrough();
                     const message = 'This is a received message from someone not on the roster';
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     const msg = $msg({

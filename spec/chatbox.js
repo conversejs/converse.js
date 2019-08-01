@@ -263,7 +263,7 @@
                 const view = await test_utils.openChatBoxFor(_converse, contact_jid);
                 const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', _converse.rosterview.el).pop();
                 const jid = el.textContent.replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 el.click();
                 await u.waitUntil(() => _converse.api.trigger.calls.count(), 500);
                 expect(_converse.chatboxes.length).toEqual(2);
@@ -280,7 +280,7 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 test_utils.openControlBox();
 
                 test_utils.openChatBoxes(_converse, 6);
@@ -323,7 +323,7 @@
 
                 spyOn(chatview, 'close').and.callThrough();
                 spyOn(controlview, 'close').and.callThrough();
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
 
                 // We need to rebind all events otherwise our spy won't be called
                 controlview.delegateEvents();
@@ -356,7 +356,7 @@
                 const trimmed_chatboxes = _converse.minimized_chats;
                 const chatview = _converse.chatboxviews.get(contact_jid);
                 spyOn(chatview, 'minimize').and.callThrough();
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 // We need to rebind all events otherwise our spy won't be called
                 chatview.delegateEvents();
                 chatview.el.querySelector('.toggle-chatbox-button').click();
@@ -390,7 +390,7 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 _converse.chatboxes.browserStorage._clear();
 
                 test_utils.closeControlBox();
@@ -538,7 +538,7 @@
 
                     let toolbar, call_button;
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    spyOn(_converse.api, "trigger");
+                    spyOn(_converse.api, "trigger").and.callThrough();
                     // First check that the button doesn't show if it's not enabled
                     // via "visible_toolbar_buttons"
                     _converse.visible_toolbar_buttons.call = false;
@@ -603,7 +603,7 @@
                     await test_utils.waitForRoster(_converse, 'current');
                     test_utils.openControlBox();
 
-                    spyOn(_converse.api, "trigger");
+                    spyOn(_converse.api, "trigger").and.callThrough();
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     // <composing> state
                     const msg = $msg({
@@ -690,7 +690,7 @@
                         var view = _converse.chatboxviews.get(contact_jid);
                         expect(view.model.get('chat_state')).toBe('active');
                         spyOn(_converse.connection, 'send');
-                        spyOn(_converse.api, "trigger");
+                        spyOn(_converse.api, "trigger").and.callThrough();
                         view.onKeyDown({
                             target: view.el.querySelector('textarea.chat-textarea'),
                             keyCode: 1
@@ -724,7 +724,7 @@
                         test_utils.openControlBox();
 
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse.api, "trigger");
+                        spyOn(_converse.api, "trigger").and.callThrough();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -1052,7 +1052,7 @@
                         test_utils.openControlBox();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse.api, "trigger");
+                        spyOn(_converse.api, "trigger").and.callThrough();
                         await test_utils.openChatBoxFor(_converse, sender_jid);
                         const view = _converse.chatboxviews.get(sender_jid);
                         expect(view.el.querySelectorAll('.chat-event').length).toBe(0);
@@ -1093,7 +1093,7 @@
                         await test_utils.waitForRoster(_converse, 'current', 3);
                         test_utils.openControlBox();
 
-                        spyOn(_converse.api, "trigger");
+                        spyOn(_converse.api, "trigger").and.callThrough();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         // <paused> state
                         const msg = $msg({
@@ -1125,7 +1125,7 @@
                 test_utils.openControlBox();
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 await test_utils.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 let message = 'This message is another sent from this chatbox';

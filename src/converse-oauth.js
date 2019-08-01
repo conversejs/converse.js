@@ -77,7 +77,7 @@ converse.plugins.add("converse-oauth", {
             'oauth_providers': {},
         });
 
-        _converse.OAuthProviders = Backbone.Collection.extend({
+        _converse.OAuthProviders = _converse.Collection.extend({
             'sync': __.noop,
 
             initialize () {

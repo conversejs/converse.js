@@ -238,7 +238,7 @@ converse.plugins.add('converse-chatboxes', {
         });
 
 
-        _converse.Messages = Backbone.Collection.extend({
+        _converse.Messages = _converse.Collection.extend({
             model: _converse.Message,
             comparator: 'time'
         });
@@ -977,7 +977,7 @@ converse.plugins.add('converse-chatboxes', {
         });
 
 
-        _converse.ChatBoxes = Backbone.Collection.extend({
+        _converse.ChatBoxes = _converse.Collection.extend({
             comparator: 'time_opened',
 
             model (attrs, options) {

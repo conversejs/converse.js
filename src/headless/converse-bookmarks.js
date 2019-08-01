@@ -93,7 +93,7 @@ converse.plugins.add('converse-bookmarks', {
 
         _converse.Bookmark = Backbone.Model;
 
-        _converse.Bookmarks = Backbone.Collection.extend({
+        _converse.Bookmarks = _converse.Collection.extend({
             model: _converse.Bookmark,
             comparator: (item) => item.get('name').toLowerCase(),
 

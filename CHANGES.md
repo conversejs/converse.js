@@ -57,6 +57,7 @@
 - #1579: Trim spaces at the beginning and end of a JID (when adding contact)
 - #1585: Upload files by pasting from clipboard
 - #1586: Not possible to kick someone with a space in their nickname
+- Bugfix: "Cannot read property 'parentElement' of null" in shadow dom
 
 ### Breaking changes
 

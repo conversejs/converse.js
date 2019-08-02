@@ -748,6 +748,10 @@ converse.plugins.add('converse-chatboxes', {
              */
             sendChatState () {
                 if (_converse.send_chat_state_notifications && this.get('chat_state')) {
+                    const allowed = _converse.send_chat_state_notifications;
+                    if (Array.isArray(allowed) && !allowed.includes(this.get('chat_state'))) {
+                        return;
+                    }
                     _converse.api.send(
                         $msg({
                             'id': _converse.connection.getUniqueId(),

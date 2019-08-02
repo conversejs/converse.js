@@ -715,6 +715,30 @@
                         done();
                     }));
 
+                    it("is NOT sent out if send_chat_state_notifications doesn't allow it",
+                        mock.initConverse(
+                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'send_chat_state_notifications': []},
+                            async function (done, _converse) {
+
+                        await test_utils.waitForRoster(_converse, 'current');
+                        test_utils.openControlBox();
+                        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+
+                        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                        await test_utils.openChatBoxFor(_converse, contact_jid);
+                        var view = _converse.chatboxviews.get(contact_jid);
+                        expect(view.model.get('chat_state')).toBe('active');
+                        spyOn(_converse.connection, 'send');
+                        spyOn(_converse.api, "trigger").and.callThrough();
+                        view.onKeyDown({
+                            target: view.el.querySelector('textarea.chat-textarea'),
+                            keyCode: 1
+                        });
+                        expect(view.model.get('chat_state')).toBe('composing');
+                        expect(_converse.connection.send).not.toHaveBeenCalled();
+                        done();
+                    }));
+
                     it("will be shown if received",
                         mock.initConverse(
                             null, ['rosterGroupsFetched'], {},

@@ -951,6 +951,22 @@ converse.plugins.add('converse-rosterview', {
             _converse.chatboxes.on('change:hidden', chatbox => highlightRosterItem(chatbox));
         });
 
+
+        _converse.api.listen.on('controlboxInitialized', (view) => {
+            function insertRoster () {
+                if (!view.model.get('connected') || _converse.authentication === _converse.ANONYMOUS) {
+                    return;
+                }
+                /* Place the rosterview inside the "Contacts" panel. */
+                _converse.api.waitUntil('rosterViewInitialized')
+                    .then(() => view.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
+                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            }
+            insertRoster();
+            view.model.on('change:connected', insertRoster);
+        });
+
+
         function initRoster () {
             /* Create an instance of RosterView once the RosterGroups
              * collection has been created (in @converse/headless/converse-core.js)

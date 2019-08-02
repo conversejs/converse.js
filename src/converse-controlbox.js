@@ -9,7 +9,6 @@
  */
 import "converse-chatview";
 import "converse-profile";
-import "converse-rosterview";
 import _FormData from "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
@@ -197,9 +196,6 @@ converse.plugins.add('converse-controlbox', {
                 this.model.on('show', this.show, this);
                 this.model.on('change:closed', this.ensureClosedState, this);
                 this.render();
-                if (this.model.get('connected')) {
-                    this.insertRoster();
-                }
                 /**
                  * Triggered when the _converse.ControlBoxView has been initialized and therefore
                  * exists. The controlbox contains the login and register forms when the user is
@@ -238,18 +234,7 @@ converse.plugins.add('converse-controlbox', {
             onConnected () {
                 if (this.model.get('connected')) {
                     this.render();
-                    this.insertRoster();
                 }
-            },
-
-            insertRoster () {
-                if (_converse.authentication === _converse.ANONYMOUS) {
-                    return;
-                }
-                /* Place the rosterview inside the "Contacts" panel. */
-                _converse.api.waitUntil('rosterViewInitialized')
-                    .then(() => this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             },
 
              createBrandHeadingHTML () {

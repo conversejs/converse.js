@@ -742,6 +742,10 @@ converse.plugins.add('converse-muc', {
                         this.features.get('moderated') && this.getOwnRole() === 'visitor') {
                     return;
                 }
+                const allowed = _converse.send_chat_state_notifications;
+                if (Array.isArray(allowed) && !allowed.includes(this.get('chat_state'))) {
+                    return;
+                }
                 const chat_state = this.get('chat_state');
                 if (chat_state === _converse.GONE) {
                     // <gone/> is not applicable within MUC context

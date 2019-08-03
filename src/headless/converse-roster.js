@@ -948,9 +948,6 @@ converse.plugins.add('converse-roster', {
                     p.save({'show': 'offline'}, {'silent': true})
                 });
             }
-            if (_converse.roster) {
-                _converse.roster.reset();
-            }
         });
 
         _converse.api.listen.on('clearSession', () => {
@@ -981,7 +978,7 @@ converse.plugins.add('converse-roster', {
             if (_converse.haveResumed()) {
                 _converse.presences.fetch();
             } else {
-                _converse.presences.browserStorage._clear();
+                _converse.presences.clearSession();
             }
             /**
              * Triggered once the _converse.Presences collection has been

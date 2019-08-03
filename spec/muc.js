@@ -420,9 +420,9 @@
                 }));
             });
 
-            it("clears cached messages when it gets closed",
+            it("clears cached messages when it gets closed and clear_messages_on_reconnection is true",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched'], {'clear_messages_on_reconnection': true},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';

@@ -301,9 +301,9 @@ converse.plugins.add('converse-chatboxes', {
 
             initMessages () {
                 this.messages = new this.messagesCollection();
-                this.messages.browserStorage = new BrowserStorage.session(this.getMessagesCacheKey());
+                const storage = _converse.config.get('storage');
+                this.messages.browserStorage = new BrowserStorage[storage](this.getMessagesCacheKey());
                 this.messages.chatbox = this;
-
                 this.messages.on('change:upload', (message) => {
                     if (message.get('upload') === _converse.SUCCESS) {
                         _converse.api.send(this.createMessageStanza(message));
@@ -349,7 +349,9 @@ converse.plugins.add('converse-chatboxes', {
                 } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 } finally {
-                    this.clearMessages();
+                    if (_converse.clear_messages_on_reconnection) {
+                        this.clearMessages();
+                    }
                 }
             },
 

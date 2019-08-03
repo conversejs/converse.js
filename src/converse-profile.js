@@ -35,6 +35,7 @@ converse.plugins.add('converse-profile', {
               { __ } = _converse;
 
         _converse.api.settings.update({
+            'show_profile': true,
             'show_client_info': true
         });
 

@@ -1387,6 +1387,13 @@ not fulfilled.
 
 Requires the `src/converse-notification.js` plugin.
 
+show_profile
+----------------
+
+* Default:  ``true``
+
+Specifies whether the detailed user profile is shown when the controlbox user avatar is clicked.
+
 use_system_emojis
 -----------------
 * Default: ``true``

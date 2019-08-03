@@ -64,6 +64,7 @@ converse.plugins.add('converse-chatview', {
             'message_limit': 0,
             'show_send_button': false,
             'show_toolbar': true,
+            'show_user_details': true,
             'time_format': 'HH:mm',
             'use_system_emojis': true,
             'visible_toolbar_buttons': {

@@ -58,6 +58,7 @@
 - #1585: Upload files by pasting from clipboard
 - #1586: Not possible to kick someone with a space in their nickname
 - Bugfix: "Cannot read property 'parentElement' of null" in shadow dom
+- New config setting [show_user_details](https://conversejs.org/docs/html/configuration.html#show_user_details)
 
 ### Breaking changes
 

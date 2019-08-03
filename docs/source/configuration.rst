@@ -1439,6 +1439,13 @@ show_send_button
 
 If set to ``true``, a button will be visible which can be clicked to send a message.
 
+show_user_details
+----------------
+
+* Default:  ``true``
+
+Specifies whether a button will be visible which can be clicked to show the contact user details.
+
 singleton
 ---------
 

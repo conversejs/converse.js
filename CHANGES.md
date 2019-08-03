@@ -47,6 +47,7 @@
 - #1524: OMEMO libsignal-protocol.js Invalid signature
 - #1532: Converse reloads on enter pressed in the filter box
 - #1538: Allow adding self as contact
+- #1548: Add support for paging through the MAM results when filling in the blanks
 - #1550: Legitimate carbons being blocked due to erroneous forgery check
 - #1554: Room auto-configuration broke if the config form contained fields with type `fixed`
 - #1558: `this.get` is not a function error when `forward_messages` is set to `true`.

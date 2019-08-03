@@ -12,8 +12,197 @@
     const sizzle = converse.env.sizzle;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
+    // Implements the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
     describe("Message Archive Management", function () {
-        // Implement the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
+
+        describe("The XEP-0313 Archive", function () {
+
+            it("is queried when the user enters a new MUC",
+                mock.initConverse(
+                    null, ['discoInitialized'], {'archived_messages_page_size': 2},
+                    async function (done, _converse) {
+
+                spyOn(_converse.ChatBox.prototype, 'fetchArchivedMessages').and.callThrough();
+                const sent_IQs = _converse.connection.IQ_stanzas;
+                const muc_jid = 'orchard@chat.shakespeare.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                let view = _converse.chatboxviews.get(muc_jid);
+                let iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+                expect(Strophe.serialize(iq_get)).toBe(
+                    `<iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
+                        `<query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="${Strophe.NS.MAM}">`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
+                            `</x>`+
+                            `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max><before></before></set>`+
+                        `</query>`+
+                    `</iq>`);
+
+                let first_msg_id = _converse.connection.getUniqueId();
+                let last_msg_id = _converse.connection.getUniqueId();
+                let message = u.toStanza(
+                    `<message xmlns="jabber:client"
+                            to="romeo@montague.lit/orchard"
+                            from="${muc_jid}">
+                        <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${first_msg_id}">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                <message from="${muc_jid}/some1" type="groupchat">
+                                    <body>2nd Message</body>
+                                </message>
+                            </forwarded>
+                        </result>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(message));
+
+                message = u.toStanza(
+                    `<message xmlns="jabber:client"
+                            to="romeo@montague.lit/orchard"
+                            from="${muc_jid}">
+                        <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${last_msg_id}">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                <message from="${muc_jid}/some1" type="groupchat">
+                                    <body>3rd Message</body>
+                                </message>
+                            </forwarded>
+                        </result>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(message));
+
+                // Clear so that we don't match the older query
+                while (sent_IQs.length) { sent_IQs.pop(); }
+
+                // XXX: Even though the count is 3, when fetching messages for
+                // the first time, we don't paginate, so that message
+                // is not fetched. The user needs to manually load older
+                // messages for it to be fetched.
+                // TODO: we need to add a clickable link to load older messages
+                let result = u.toStanza(
+                    `<iq type='result' id='${iq_get.getAttribute('id')}'>
+                        <fin xmlns='urn:xmpp:mam:2'>
+                            <set xmlns='http://jabber.org/protocol/rsm'>
+                                <first index='0'>${first_msg_id}</first>
+                                <last>${last_msg_id}</last>
+                                <count>3</count>
+                            </set>
+                        </fin>
+                    </iq>`);
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+                await u.waitUntil(() => view.model.messages.length === 2);
+                view.close();
+                // Clear so that we don't match the older query
+                while (sent_IQs.length) { sent_IQs.pop(); }
+
+                await u.waitUntil(() => _converse.chatboxes.length === 1);
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                view = _converse.chatboxviews.get(muc_jid);
+                await u.waitUntil(() => view.model.messages.length);
+
+                iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+                expect(Strophe.serialize(iq_get)).toBe(
+                    `<iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
+                        `<query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="${Strophe.NS.MAM}">`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
+                            `</x>`+
+                            `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max><after>${message.querySelector('result').getAttribute('id')}</after><before></before></set>`+
+                        `</query>`+
+                    `</iq>`);
+
+                first_msg_id = _converse.connection.getUniqueId();
+                last_msg_id = _converse.connection.getUniqueId();
+                message = u.toStanza(
+                    `<message xmlns="jabber:client"
+                            to="romeo@montague.lit/orchard"
+                            from="${muc_jid}">
+                        <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${first_msg_id}">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                <message from="${muc_jid}/some1" type="groupchat">
+                                    <body>4th Message</body>
+                                </message>
+                            </forwarded>
+                        </result>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(message));
+
+                message = u.toStanza(
+                    `<message xmlns="jabber:client"
+                            to="romeo@montague.lit/orchard"
+                            from="${muc_jid}">
+                        <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${last_msg_id}">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                <message from="${muc_jid}/some1" type="groupchat">
+                                    <body>5th Message</body>
+                                </message>
+                            </forwarded>
+                        </result>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(message));
+
+                // Clear so that we don't match the older query
+                while (sent_IQs.length) { sent_IQs.pop(); }
+
+                result = u.toStanza(
+                    `<iq type='result' id='${iq_get.getAttribute('id')}'>
+                        <fin xmlns='urn:xmpp:mam:2'>
+                            <set xmlns='http://jabber.org/protocol/rsm'>
+                                <first index='0'>${first_msg_id}</first>
+                                <last>${last_msg_id}</last>
+                                <count>5</count>
+                            </set>
+                        </fin>
+                    </iq>`);
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+                await u.waitUntil(() => view.model.messages.length === 4);
+
+                iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+                expect(Strophe.serialize(iq_get)).toBe(
+                    `<iq id="${iq_get.getAttribute('id')}" to="orchard@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                        `<query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="urn:xmpp:mam:2">`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
+                            `</x>`+
+                            `<set xmlns="http://jabber.org/protocol/rsm">`+
+                                `<max>2</max><before>${first_msg_id}</before>`+
+                            `</set>`+
+                        `</query>`+
+                    `</iq>`);
+
+                const msg_id = _converse.connection.getUniqueId();
+                message = u.toStanza(
+                    `<message xmlns="jabber:client"
+                            to="romeo@montague.lit/orchard"
+                            from="${muc_jid}">
+                        <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${msg_id}">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                <message from="${muc_jid}/some1" type="groupchat">
+                                    <body>6th Message</body>
+                                </message>
+                            </forwarded>
+                        </result>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(message));
+
+                result = u.toStanza(
+                    `<iq type='result' id='${iq_get.getAttribute('id')}'>
+                        <fin xmlns="urn:xmpp:mam:2" complete="true">
+                            <set xmlns="http://jabber.org/protocol/rsm">
+                                <first index="0">${msg_id}</first>
+                                <last>${msg_id}</last>
+                                <count>6</count>
+                            </set>
+                        </fin>
+                    </iq>`);
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+                await u.waitUntil(() => view.model.messages.length === 5);
+                expect(view.model.fetchArchivedMessages.calls.count()).toBe(3);
+                done();
+            }));
+        });
 
         describe("An archived message", function () {
 

@@ -102,14 +102,25 @@ converse.plugins.add('converse-mam', {
                 } else {
                     message_handler = _converse.chatboxes.onMessage.bind(_converse.chatboxes)
                 }
-                const result = await _converse.api.archive.query(
-                    Object.assign({
+                const query = Object.assign({
                         'groupchat': is_groupchat,
                         'before': '', // Page backwards from the most recent message
                         'max': _converse.archived_messages_page_size,
                         'with': this.get('jid'),
-                    }, options));
+                    }, options);
+                const result = await _converse.api.archive.query(query);
                 result.messages.forEach(message_handler);
+
+                const catching_up = query.before || query.after;
+                if (result.rsm) {
+                    if (catching_up) {
+                        return this.fetchArchivedMessages(result.rsm.previous(_converse.archived_messages_page_size));
+                    } else {
+                        // TODO: Add a special kind of message which will
+                        // render as a link to fetch further messages, either
+                        // to fetch older messages or to fill in a gap.
+                    }
+                }
             },
 
             async findDuplicateFromArchiveID (stanza) {
@@ -455,7 +466,7 @@ converse.plugins.add('converse-mam', {
                         stanza.up();
                         if (options instanceof _converse.RSM) {
                             stanza.cnode(options.toXML());
-                        } else if (_.intersection(_converse.RSM_ATTRIBUTES, Object.keys(options)).length) {
+                        } else if (intersection(_converse.RSM_ATTRIBUTES, Object.keys(options)).length) {
                             stanza.cnode(new _converse.RSM(options).toXML());
                         }
                     }
@@ -483,10 +494,13 @@ converse.plugins.add('converse-mam', {
                     }
                     _converse.connection.deleteHandler(message_handler);
 
-                    const set = iq_result ? iq_result.querySelector('set') : null;
-                    if (set !== null) {
-                        rsm = new _converse.RSM({'xml': set});
-                        Object.assign(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+                    const fin = iq_result && sizzle(`fin[xmlns="${Strophe.NS.MAM}"]`, iq_result).pop();
+                    if (fin && [null, 'false'].includes(fin.getAttribute('complete'))) {
+                        const set = sizzle(`set[xmlns="${Strophe.NS.RSM}"]`, fin).pop();
+                        if (set) {
+                            rsm = new _converse.RSM({'xml': set});
+                            Object.assign(rsm, pick(options, [...MAM_ATTRIBUTES, ..._converse.RSM_ATTRIBUTES]));
+                        }
                     }
                     return { messages, rsm }
                 }

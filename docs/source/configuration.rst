@@ -1334,8 +1334,8 @@ If set to ``true``, Converse will show any roster groups you might have configur
     Converse can only show users and groups that were previously configured
     elsewhere.
 
-show_chatstate_notifications
-----------------------------
+show_chat_state_notifications
+-----------------------------
 
 * Default:  ``false``
 

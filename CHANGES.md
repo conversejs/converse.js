@@ -10,6 +10,7 @@
 - Groupchat default configuration now supports `list-multi` fields
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 - Bugfix: Modal auto-closes when you open it for a second time.
+- Bugfix: `Cannot read property 'parentElement' of null` in shadow DOM
 - Take roster nickname into consideration when rendering messages and chat headings.
 - Hide the textarea when a user is muted in a groupchat.
 - Don't restore a BOSH session without knowing the JID
@@ -58,7 +59,6 @@
 - #1579: Trim spaces at the beginning and end of a JID (when adding contact)
 - #1585: Upload files by pasting from clipboard
 - #1586: Not possible to kick someone with a space in their nickname
-- Bugfix: "Cannot read property 'parentElement' of null" in shadow dom
 
 ### Breaking changes
 
@@ -75,6 +75,7 @@
 - Removed events `statusChanged` and `statusMessageChanged`. Instead, you can
   listen on the `change:status` or `change:status\_message` events on
   `_converse.xmppstatus`.
+- #1403: Rename show_chatstate_notifications to show_chat_state_notifications
 
 ### API changes
 

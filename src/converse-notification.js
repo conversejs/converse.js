@@ -29,7 +29,7 @@ converse.plugins.add('converse-notification', {
         _converse.api.settings.update({
             notify_all_room_messages: false,
             show_desktop_notifications: true,
-            show_chatstate_notifications: false,
+            show_chat_state_notifications: false,
             chatstate_notification_blacklist: [],
             // ^ a list of JIDs to ignore concerning chat state notifications
             play_sounds: true,
@@ -248,7 +248,7 @@ converse.plugins.add('converse-notification', {
              * Will show an HTML5 notification to indicate that the chat
              * status has changed.
              */
-            if (_converse.areDesktopNotificationsEnabled() && _converse.show_chatstate_notifications) {
+            if (_converse.areDesktopNotificationsEnabled() && _converse.show_chat_state_notifications) {
                 _converse.showChatStateNotification(contact);
             }
         };

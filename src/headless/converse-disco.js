@@ -407,7 +407,7 @@ converse.plugins.add('converse-disco', {
                      */
                     async getFeature (name, xmlns) {
                         await _converse.api.waitUntil('streamFeaturesAdded');
-                        if (_.isNil(name) || _.isNil(xmlns)) {
+                        if (!name || !xmlns) {
                             throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
                         }
                         if (_converse.stream_features === undefined && !_converse.api.connection.connected()) {
@@ -567,7 +567,7 @@ converse.plugins.add('converse-disco', {
                      */
                     async get (jid, create=false) {
                         await _converse.api.waitUntil('discoInitialized');
-                        if (_.isNil(jid)) {
+                        if (!jid) {
                             return _converse.disco_entities;
                         }
                         if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
@@ -626,7 +626,7 @@ converse.plugins.add('converse-disco', {
                      * _converse.api.disco.features.get(Strophe.NS.MAM, _converse.bare_jid);
                      */
                     async get (feature, jid) {
-                        if (_.isNil(jid)) {
+                        if (!jid) {
                             throw new TypeError('You need to provide an entity JID');
                         }
                         await _converse.api.waitUntil('discoInitialized');
@@ -682,7 +682,7 @@ converse.plugins.add('converse-disco', {
                  * await _converse.api.disco.refreshFeatures('room@conference.example.org');
                  */
                 async refreshFeatures (jid) {
-                    if (_.isNil(jid)) {
+                    if (!jid) {
                         throw new TypeError('api.disco.refreshFeatures: You need to provide an entity JID');
                     }
                     await _converse.api.waitUntil('discoInitialized');
@@ -712,7 +712,7 @@ converse.plugins.add('converse-disco', {
                  * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
                  */
                 async getFeatures (jid) {
-                    if (_.isNil(jid)) {
+                    if (!jid) {
                         throw new TypeError('api.disco.getFeatures: You need to provide an entity JID');
                     }
                     await _converse.api.waitUntil('discoInitialized');
@@ -733,7 +733,7 @@ converse.plugins.add('converse-disco', {
                  * const fields = await _converse.api.disco.getFields('room@conference.example.org');
                  */
                 async getFields (jid) {
-                    if (_.isNil(jid)) {
+                    if (!jid) {
                         throw new TypeError('api.disco.getFields: You need to provide an entity JID');
                     }
                     await _converse.api.waitUntil('discoInitialized');
@@ -765,10 +765,10 @@ converse.plugins.add('converse-disco', {
                  * @example
                  * _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(
                  *     function (identity) {
-                 *         if (_.isNil(identity)) {
-                 *             // The entity DOES NOT have this identity
-                 *         } else {
+                 *         if (identity) {
                  *             // The entity DOES have this identity
+                 *         } else {
+                 *             // The entity DOES NOT have this identity
                  *         }
                  *     }
                  * ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));

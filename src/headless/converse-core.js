@@ -477,9 +477,7 @@ function connect (credentials) {
             BOSH_WAIT
         );
     } else if (_converse.authentication === _converse.LOGIN) {
-        const password = _.isNil(credentials)
-            ? _converse.connection.pass || _converse.password
-            : credentials.password;
+        const password = credentials ? credentials.password : (_converse.connection.pass || _converse.password);
         if (!password) {
             if (_converse.auto_login) {
                 throw new Error("autoLogin: If you use auto_login and "+
@@ -834,7 +832,7 @@ _converse.initialize = async function (settings, callback) {
 
     // Module-level variables
     // ----------------------
-    this.callback = callback || _.noop;
+    this.callback = callback || function noop () {};
     /* When reloading the page:
      * For new sessions, we need to send out a presence stanza to notify
      * the server/network that we're online.
@@ -1085,7 +1083,7 @@ _converse.initialize = async function (settings, callback) {
         this.msg_counter += 1;
         const unreadMsgCount = this.msg_counter;
         let title = document.title;
-        if (_.isNil(title)) {
+        if (!title) {
             return;
         }
         if (title.search(/^Messages \(\d+\) /) === -1) {
@@ -1098,7 +1096,7 @@ _converse.initialize = async function (settings, callback) {
     this.clearMsgCounter = function () {
         this.msg_counter = 0;
         let title = document.title;
-        if (_.isNil(title)) {
+        if (!title) {
             return;
         }
         if (title.search(/^Messages \(\d+\) /) !== -1) {

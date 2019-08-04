@@ -28,11 +28,7 @@ converse.plugins.add('converse-modal', {
                     backdrop: 'static',
                     keyboard: true
                 });
-                this.el.addEventListener('hide.bs.modal', (event) => {
-                    if (!_.isNil(this.trigger_el)) {
-                        this.trigger_el.classList.remove('selected');
-                    }
-                }, false);
+                this.el.addEventListener('hide.bs.modal', () => u.removeClass('selected', this.trigger_el), false);
             },
 
             insertIntoDOM () {

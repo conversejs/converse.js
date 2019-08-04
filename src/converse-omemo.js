@@ -70,7 +70,7 @@ function parseBundle (bundle_el) {
 converse.plugins.add('converse-omemo', {
 
     enabled (_converse) {
-        return !_.isNil(window.libsignal) && !_converse.blacklisted_plugins.includes('converse-omemo') && _converse.config.get('trusted');
+        return window.libsignal && !_converse.blacklisted_plugins.includes('converse-omemo') && _converse.config.get('trusted');
     },
 
     dependencies: ["converse-chatview", "converse-pubsub"],
@@ -696,7 +696,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             isTrustedIdentity (identifier, identity_key, direction) {
-                if (_.isNil(identifier)) {
+                if (identifier === null || identifier === undefined) {
                     throw new Error("Can't check identity key for invalid key");
                 }
                 if (!(identity_key instanceof ArrayBuffer)) {
@@ -710,14 +710,14 @@ converse.plugins.add('converse-omemo', {
             },
 
             loadIdentityKey (identifier) {
-                if (_.isNil(identifier)) {
+                if (identifier === null || identifier === undefined) {
                     throw new Error("Can't load identity_key for invalid identifier");
                 }
                 return Promise.resolve(u.base64ToArrayBuffer(this.get('identity_key'+identifier)));
             },
 
             saveIdentity (identifier, identity_key) {
-                if (_.isNil(identifier)) {
+                if (identifier === null || identifier === undefined) {
                     throw new Error("Can't save identity_key for invalid identifier");
                 }
                 const address = new libsignal.SignalProtocolAddress.fromString(identifier),
@@ -1104,7 +1104,7 @@ converse.plugins.add('converse-omemo', {
         async function fetchOwnDevices () {
             await fetchDeviceLists();
             let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
-            if (_.isNil(own_devicelist)) {
+            if (!own_devicelist) {
                 own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
             }
             return own_devicelist.fetchDevices();

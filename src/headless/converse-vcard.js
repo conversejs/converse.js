@@ -65,7 +65,7 @@ converse.plugins.add('converse-vcard', {
         async function onVCardData (jid, iq) {
             const vcard = iq.querySelector('vCard');
             let result = {};
-            if (!_.isNull(vcard)) {
+            if (vcard !== null) {
                 result = {
                     'stanza': iq,
                     'fullname': _.get(vcard.querySelector('FN'), 'textContent'),

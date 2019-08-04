@@ -221,7 +221,7 @@ converse.plugins.add('converse-dragresize', {
                     height = "";
                 }
                 const flyout_el = this.el.querySelector('.box-flyout');
-                if (!_.isNull(flyout_el)) {
+                if (flyout_el !== null) {
                     flyout_el.style.height = height;
                 }
             },
@@ -234,7 +234,7 @@ converse.plugins.add('converse-dragresize', {
                 }
                 this.el.style.width = width;
                 const flyout_el = this.el.querySelector('.box-flyout');
-                if (!_.isNull(flyout_el)) {
+                if (flyout_el !== null) {
                     flyout_el.style.width = width;
                 }
             },

@@ -648,13 +648,17 @@ converse.plugins.add('converse-rosterview', {
                 return matches;
             },
 
+            /**
+             * Filter the group's contacts based on the query "q".
+             *
+             * If all contacts are filtered out (i.e. hidden), then the
+             * group must be filtered out as well.
+             * @private
+             * @param { string } q - The query to filter against
+             * @param { string } type
+             */
             filter (q, type) {
-                /* Filter the group's contacts based on the query "q".
-                 *
-                 * If all contacts are filtered out (i.e. hidden), then the
-                 * group must be filtered out as well.
-                 */
-                if (_.isNil(q)) {
+                if (q === null || q === undefined) {
                     type = type || _converse.rosterview.filter_view.model.get('filter_type');
                     if (type === 'state') {
                         q = _converse.rosterview.filter_view.model.get('chat_state');

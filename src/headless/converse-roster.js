@@ -191,7 +191,7 @@ converse.plugins.add('converse-roster', {
                           'name': name,
                           'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
                           'show': _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-                          'timestamp': _.isNil(delay) ? (new Date()).toISOString() : dayjs(delay.getAttribute('stamp')).toISOString()
+                          'timestamp': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString()
                        };
                 if (resource) {
                     resource.save(settings);

@@ -66,26 +66,24 @@ converse.plugins.add('converse-roomslist', {
                 _converse.chatboxes.on('change:num_unread', this.onChatBoxChanged, this);
                 _converse.chatboxes.on('change:num_unread_general', this.onChatBoxChanged, this);
                 _converse.chatboxes.on('remove', this.onChatBoxRemoved, this);
-                this.reset(_.map(_converse.chatboxes.where({'type': 'chatroom'}), 'attributes'));
+                this.reset(_.map(_converse.chatboxes.where({'type': _converse.CHATROOMS_TYPE}), 'attributes'));
             },
 
             onChatBoxAdded (item) {
-                if (item.get('type') === 'chatroom') {
+                if (item.get('type') === _converse.CHATROOMS_TYPE) {
                     this.create(item.attributes);
                 }
             },
 
             onChatBoxChanged (item) {
-                if (item.get('type') === 'chatroom') {
+                if (item.get('type') === _converse.CHATROOMS_TYPE) {
                     const room =  this.get(item.get('jid'));
-                    if (!_.isNil(room)) {
-                        room.set(item.attributes);
-                    }
+                    room && room.set(item.attributes);
                 }
             },
 
             onChatBoxRemoved (item) {
-                if (item.get('type') === 'chatroom') {
+                if (item.get('type') === _converse.CHATROOMS_TYPE) {
                     const room = this.get(item.get('jid'))
                     this.remove(room);
                 }
@@ -201,7 +199,7 @@ converse.plugins.add('converse-roomslist', {
                 const controlboxview = _converse.chatboxviews.get('controlbox');
                 if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
                     const el = controlboxview.el.querySelector('.open-rooms-list');
-                    if (!_.isNull(el)) {
+                    if (el !== null) {
                         el.parentNode.replaceChild(this.el, el);
                     }
                 }

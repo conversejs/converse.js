@@ -589,7 +589,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             addSpinner (append=false) {
-                if (_.isNull(this.el.querySelector('.spinner'))) {
+                if (this.el.querySelector('.spinner') === null) {
                     if (append) {
                         this.content.insertAdjacentHTML('beforeend', tpl_spinner());
                         this.scrollDown();
@@ -615,14 +615,13 @@ converse.plugins.add('converse-chatview', {
              *      which specifies its creation date.
              */
             insertDayIndicator (next_msg_el) {
-                const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)"),
-                      prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
-                      next_msg_date = next_msg_el.getAttribute('data-isodate');
-
-                if (_.isNull(prev_msg_date) && _.isNull(next_msg_date)) {
+                const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)");
+                const prev_msg_date = (prev_msg_el === null) ? null : prev_msg_el.getAttribute('data-isodate');
+                const next_msg_date = next_msg_el.getAttribute('data-isodate');
+                if (prev_msg_date === null && next_msg_date === null) {
                     return;
                 }
-                if (_.isNull(prev_msg_date) || dayjs(next_msg_date).isAfter(prev_msg_date, 'day')) {
+                if ((prev_msg_date === null) || dayjs(next_msg_date).isAfter(prev_msg_date, 'day')) {
                     const day_date = dayjs(next_msg_date).startOf('day');
                     next_msg_el.insertAdjacentHTML('beforeBegin',
                         tpl_new_day({
@@ -644,12 +643,12 @@ converse.plugins.add('converse-chatview', {
             getLastMessageDate (cutoff) {
                 const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)');
                 const oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
-                if (!_.isNull(oldest_date) && dayjs(oldest_date).isAfter(cutoff)) {
+                if (oldest_date !== null && dayjs(oldest_date).isAfter(cutoff)) {
                     return null;
                 }
                 const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-state-notification)');
                 const most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
-                if (_.isNull(most_recent_date)) {
+                if (most_recent_date === null) {
                     return null;
                 }
                 if (dayjs(most_recent_date).isBefore(cutoff)) {
@@ -740,7 +739,7 @@ converse.plugins.add('converse-chatview', {
                 const current_msg_date = dayjs(view.model.get('time')).toDate() || new Date(),
                       previous_msg_date = this.getLastMessageDate(current_msg_date);
 
-                if (_.isNull(previous_msg_date)) {
+                if (previous_msg_date === null) {
                     this.content.insertAdjacentElement('afterbegin', view.el);
                 } else {
                     const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date.toISOString()}"]:last`, this.content).pop();
@@ -1040,14 +1039,14 @@ converse.plugins.add('converse-chatview', {
 
                 const textarea = this.el.querySelector('.chat-textarea');
                 if (textarea.value &&
-                        (currently_correcting === null || currently_correcting.get('message') !== textarea.value)) {
+                        ((currently_correcting === null) || currently_correcting.get('message') !== textarea.value)) {
                     if (! confirm(__("You have an unsent message which will be lost if you continue. Are you sure?"))) {
                         return;
                     }
                 }
 
                 if (currently_correcting !== message) {
-                    if (!_.isNil(currently_correcting)) {
+                    if (currently_correcting !== null) {
                         currently_correcting.save('correcting', false);
                     }
                     message.save('correcting', true);
@@ -1277,7 +1276,7 @@ converse.plugins.add('converse-chatview', {
 
             insertEmojiPicker () {
                 var picker_el = this.el.querySelector('.emoji-picker');
-                if (!_.isNull(picker_el)) {
+                if (picker_el !== null) {
                     picker_el.innerHTML = '';
                     picker_el.appendChild(this.emoji_picker_view.el);
                 }
@@ -1346,7 +1345,7 @@ converse.plugins.add('converse-chatview', {
 
             hideNewMessagesIndicator () {
                 const new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
-                if (!_.isNull(new_msgs_indicator)) {
+                if (new_msgs_indicator !== null) {
                     new_msgs_indicator.classList.add('hidden');
                 }
             },

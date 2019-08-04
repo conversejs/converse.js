@@ -177,7 +177,7 @@ converse.plugins.add('converse-message-view', {
             },
 
             replaceElement (msg) {
-                if (!_.isNil(this.el.parentElement)) {
+                if (this.el.parentElement) {
                     this.el.parentElement.replaceChild(msg, this.el);
                 }
                 this.setElement(msg);

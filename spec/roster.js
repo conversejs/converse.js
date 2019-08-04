@@ -121,7 +121,7 @@
 
                 const filter = _converse.rosterview.el.querySelector('.roster-filter');
                 test_utils.openControlBox();
-                expect(_.isNull(filter)).toBe(false);
+                expect(filter === null).toBe(false);
                 test_utils.createContacts(_converse, 'current').openControlBox();
 
                 const view = _converse.chatboxviews.get('controlbox');

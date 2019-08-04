@@ -21,10 +21,10 @@ const Strophe = strophe.default.Strophe;
 const u = {};
 
 u.logger = Object.assign({
-    'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-    'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-    'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-    'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
+    'debug': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
+    'error': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
+    'info': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
+    'warn': _.get(console, 'log') ? console.log.bind(console) : function noop () {}
 }, console);
 
 u.isTagEqual = function (stanza, name) {
@@ -144,9 +144,7 @@ u.isHeadlineMessage = function (_converse, message) {
     if (chatbox && chatbox.get('type') === _converse.CHATROOMS_TYPE) {
         return false;
     }
-    if (message.getAttribute('type') !== 'error' &&
-            !_.isNil(from_jid) &&
-            !_.includes(from_jid, '@')) {
+    if (message.getAttribute('type') !== 'error' && from_jid && !_.includes(from_jid, '@')) {
         // Some servers (I'm looking at you Prosody) don't set the message
         // type to "headline" when sending server messages. For now we
         // check if an @ signal is included, and if not, we assume it's

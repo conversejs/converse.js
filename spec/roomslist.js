@@ -337,7 +337,7 @@
             // When the chat gets maximized again, the unread indicators are removed
             view.model.set({'minimized': false});
             indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
-            expect(_.isNull(indicator_el));
+            expect(indicator_el === null);
             room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
             expect(_.includes(room_el.classList, 'unread-msgs')).toBeFalsy();
             done();

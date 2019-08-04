@@ -108,7 +108,7 @@ converse.plugins.add('converse-register', {
 
             showLoginOrRegisterForm () {
                 const { _converse } = this.__super__;
-                if (_.isNil(this.registerpanel)) {
+                if (!this.registerpanel) {
                     return;
                 }
                 if (this.model.get('active-form') == "register") {
@@ -308,7 +308,7 @@ converse.plugins.add('converse-register', {
                  * other methods.
                  */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (_.isNull(ev.target.querySelector('input[name=domain]'))) {
+                if (ev.target.querySelector('input[name=domain]') === null) {
                     this.submitRegistrationForm(ev.target);
                 } else {
                     this.onProviderChosen(ev.target);
@@ -367,7 +367,7 @@ converse.plugins.add('converse-register', {
 
             giveFeedback (message, klass) {
                 let feedback = this.el.querySelector('.reg-feedback');
-                if (!_.isNull(feedback)) {
+                if (feedback !== null) {
                     feedback.parentNode.removeChild(feedback);
                 }
                 const form = this.el.querySelector('form');
@@ -513,10 +513,10 @@ converse.plugins.add('converse-register', {
             showValidationError (message) {
                 const form = this.el.querySelector('form');
                 let flash = form.querySelector('.form-errors');
-                if (_.isNull(flash)) {
+                if (flash === null) {
                     flash = '<div class="form-errors hidden"></div>';
                     const instructions = form.querySelector('p.instructions');
-                    if (_.isNull(instructions)) {
+                    if (instructions === null) {
                         form.insertAdjacentHTML('afterbegin', flash);
                     } else {
                         instructions.insertAdjacentHTML('afterend', flash);

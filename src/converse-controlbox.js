@@ -172,7 +172,7 @@ converse.plugins.add('converse-controlbox', {
                 }
             },
 
-            onReconnection: _.noop
+            onReconnection: function noop () {}
         });
 
 
@@ -245,7 +245,7 @@ converse.plugins.add('converse-controlbox', {
 
             insertBrandHeading () {
                 const heading_el = this.el.querySelector('.brand-heading-container');
-                if (_.isNull(heading_el)) {
+                if (heading_el === null) {
                     const el = this.el.querySelector('.controlbox-head');
                     el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
                 } else {
@@ -255,7 +255,9 @@ converse.plugins.add('converse-controlbox', {
 
             renderLoginPanel () {
                 this.el.classList.add("logged-out");
-                if (_.isNil(this.loginpanel)) {
+                if (this.loginpanel) {
+                    this.loginpanel.render();
+                } else {
                     this.loginpanel = new _converse.LoginPanel({
                         'model': new _converse.LoginPanelModel()
                     });
@@ -263,8 +265,6 @@ converse.plugins.add('converse-controlbox', {
                     panes.innerHTML = '';
                     panes.appendChild(this.loginpanel.render().el);
                     this.insertBrandHeading();
-                } else {
-                    this.loginpanel.render();
                 }
                 this.loginpanel.initPopovers();
                 return this;

@@ -110,7 +110,7 @@ export default {
     },
 
     translate (str) {
-        if (_.isNil(jed_instance)) {
+        if (!jed_instance) {
             return Jed.sprintf.apply(Jed, arguments);
         }
         const t = jed_instance.translate(str);

@@ -87,7 +87,7 @@
             _converse.minimized_chats.toggleview.model.set({'collapsed': true});
 
             const unread_el = _converse.minimized_chats.toggleview.el.querySelector('.unread-message-count');
-            expect(_.isNull(unread_el)).toBe(true);
+            expect(unread_el === null).toBe(true);
 
             for (i=0; i<3; i++) {
                 contact_jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';

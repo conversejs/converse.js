@@ -23,7 +23,7 @@ const AvatarMixin = {
     renderAvatar (el) {
         el = el || this.el;
         const avatar_el = el.querySelector('canvas.avatar, svg.avatar');
-        if (_.isNull(avatar_el)) {
+        if (avatar_el === null) {
             return;
         }
         if (this.model.vcard) {
@@ -91,7 +91,7 @@ converse.plugins.add('converse-chatboxviews', {
                  */
                 if (!this.el) {
                     let el = _converse.root.querySelector('#conversejs');
-                    if (_.isNull(el)) {
+                    if (el === null) {
                         el = document.createElement('div');
                         el.setAttribute('id', 'conversejs');
                         u.addClass(`theme-${_converse.theme}`, el);

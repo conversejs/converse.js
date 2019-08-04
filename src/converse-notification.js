@@ -62,7 +62,7 @@ converse.plugins.add('converse-notification', {
             }
             const room = _converse.chatboxes.get(room_jid);
             const body = message.querySelector('body');
-            if (_.isNull(body)) {
+            if (body === null) {
                 return false;
             }
             const mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
@@ -76,10 +76,9 @@ converse.plugins.add('converse-notification', {
 
         _converse.isMessageToHiddenChat = function (message) {
             if (_converse.isUniView()) {
-                const jid = Strophe.getBareJidFromJid(message.getAttribute('from')),
-                      view = _converse.chatboxviews.get(jid);
-
-                if (!_.isNil(view)) {
+                const jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                const view = _converse.chatboxviews.get(jid);
+                if (view) {
                     return view.model.get('hidden') || _converse.windowState === 'hidden' || !u.isVisible(view.el);
                 }
                 return true;
@@ -89,7 +88,7 @@ converse.plugins.add('converse-notification', {
 
         _converse.shouldNotifyOfMessage = function (message) {
             const forwarded = message.querySelector('forwarded');
-            if (!_.isNull(forwarded)) {
+            if (forwarded !== null) {
                 return false;
             } else if (message.getAttribute('type') === 'groupchat') {
                 return _converse.shouldNotifyOfGroupMessage(message);

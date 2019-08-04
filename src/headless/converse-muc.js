@@ -1027,8 +1027,8 @@ converse.plugins.add('converse-muc', {
              */
             saveAffiliationAndRole (pres) {
                 const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
-                const is_self = !_.isNull(pres.querySelector("status[code='110']"));
-                if (is_self && !_.isNil(item)) {
+                const is_self = (pres.querySelector("status[code='110']") !== null);
+                if (is_self && item) {
                     const affiliation = item.getAttribute('affiliation');
                     const role = item.getAttribute('role');
                     const changes = {};
@@ -1848,7 +1848,7 @@ converse.plugins.add('converse-muc', {
             incrementUnreadMsgCounter (message) {
                 if (!message) { return; }
                 const body = message.get('message');
-                if (_.isNil(body)) { return; }
+                if (!body) { return; }
                 if (u.isNewMessage(message) && this.isHidden()) {
                     const settings = {'num_unread_general': this.get('num_unread_general') + 1};
                     if (this.isUserMentioned(message)) {

@@ -497,7 +497,7 @@
                     const textarea = view.el.querySelector('.chat-textarea');
                     const ev = {
                         target: textarea,
-                        preventDefault: _.noop,
+                        preventDefault: function noop () {},
                         keyCode: 13 // Enter
                     };
                     view.onKeyDown(ev);
@@ -546,7 +546,7 @@
                     let view = _converse.chatboxviews.get(contact_jid);
                     toolbar = view.el.querySelector('ul.chat-toolbar');
                     call_button = toolbar.querySelector('.toggle-call');
-                    expect(_.isNull(call_button)).toBeTruthy();
+                    expect(call_button === null).toBeTruthy();
                     view.close();
                     // Now check that it's shown if enabled and that it emits
                     // callButtonClicked
@@ -1167,7 +1167,7 @@
                 view.el.querySelector('.chat-textarea').value = message;
                 view.onKeyDown({
                     target: view.el.querySelector('textarea.chat-textarea'),
-                    preventDefault: _.noop,
+                    preventDefault: function noop () {},
                     keyCode: 13
                 });
                 expect(view.clearMessages).toHaveBeenCalled();

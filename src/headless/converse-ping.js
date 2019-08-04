@@ -37,9 +37,7 @@ converse.plugins.add('converse-ping', {
             //
             // var feature = _converse.disco_entities[_converse.domain].features.findWhere({'var': Strophe.NS.PING});
             _converse.lastStanzaDate = new Date();
-            if (_.isNil(jid)) {
-                jid = Strophe.getDomainFromJid(_converse.bare_jid);
-            }
+            jid = jid || Strophe.getDomainFromJid(_converse.bare_jid);
             if (timeout === undefined ) { timeout = null; }
             if (success === undefined ) { success = null; }
             if (error === undefined ) { error = null; }

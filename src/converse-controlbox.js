@@ -476,6 +476,9 @@ converse.plugins.add('converse-controlbox', {
             className: 'controlbox-pane',
 
             initialize () {
+                if (!_converse.XMPPStatusView) {
+                    return;
+                }
                 _converse.xmppstatusview = new _converse.XMPPStatusView({
                     'model': _converse.xmppstatus
                 });

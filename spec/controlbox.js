@@ -267,7 +267,7 @@
                 async function (done, _converse) {
 
             const xhr = {
-                'open': function noop () {},
+                'open': function open () {},
                 'send': function () {
                     xhr.responseText = JSON.stringify([
                         {"jid": "marty@mcfly.net", "fullname": "Marty McFly"},
@@ -328,7 +328,7 @@
             test_utils.createContacts(_converse, 'all').openControlBox();
             var modal;
             const xhr = {
-                'open': function noop () {},
+                'open': function open () {},
                 'send': function () {
                     const value = modal.el.querySelector('input[name="name"]').value;
                     if (value === 'existing') {

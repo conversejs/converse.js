@@ -126,7 +126,7 @@
             textarea.value = 'This message will be encrypted';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             iq_stanza = await u.waitUntil(() => bundleFetched(_converse, contact_jid, '555'));
@@ -310,7 +310,7 @@
             textarea.value = 'This message will be encrypted';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             iq_stanza = await u.waitUntil(() => bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'), 1000);
@@ -458,7 +458,7 @@
             textarea.value = 'This is an encrypted message from this device';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             iq_stanza = await u.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '988349631'));
@@ -515,7 +515,7 @@
             textarea.value = 'This message will be encrypted';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
@@ -1251,7 +1251,7 @@
             textarea.value = 'This message will be sent encrypted';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13
             });
 

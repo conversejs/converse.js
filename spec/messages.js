@@ -27,7 +27,7 @@
             textarea.value = 'But soft, what light through yonder airlock breaks?';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -55,7 +55,7 @@
             textarea.value = 'But soft, what light through yonder window breaks?';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             expect(_converse.connection.send).toHaveBeenCalled();
@@ -161,7 +161,7 @@
             textarea.value = 'But soft, what light through yonder airlock breaks?';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -184,7 +184,7 @@
             textarea.value = 'But soft, what light through yonder window breaks?';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             expect(_converse.connection.send).toHaveBeenCalled();
@@ -237,7 +237,7 @@
             textarea.value = 'It is the east, and Juliet is the one.';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -246,7 +246,7 @@
             textarea.value =  'Arise, fair sun, and kill the envious moon';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -277,7 +277,7 @@
             textarea.value = 'It is the east, and Juliet is the sun.';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
@@ -1331,7 +1331,7 @@
                 textarea.value = 'But soft, what light through yonder airlock breaks?';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13 // Enter
                 });
                 await u.waitUntil(() => _converse.api.chats.get().length);
@@ -1354,7 +1354,7 @@
                 textarea.value = 'Another message';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13 // Enter
                 });
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -2537,7 +2537,7 @@
             textarea.value = 'But soft, what light through yonder airlock breaks?';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -2561,7 +2561,7 @@
             textarea.value = 'But soft, what light through yonder window breaks?';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             expect(_converse.connection.send).toHaveBeenCalled();
@@ -2636,7 +2636,7 @@
             textarea.value = 'But soft, what light through yonder airlock breaks?';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -2715,7 +2715,7 @@
             textarea.value = 'But soft, what light through yonder airlock breaks?';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -2751,7 +2751,7 @@
             textarea.value = 'But soft, what light through yonder airlock breaks?';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -2996,8 +2996,8 @@
                 textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
                 const enter_event = {
                     'target': textarea,
-                    'preventDefault': function noop () {},
-                    'stopPropagation': function noop () {},
+                    'preventDefault': function preventDefault () {},
+                    'stopPropagation': function stopPropagation () {},
                     'keyCode': 13 // Enter
                 }
                 spyOn(_converse.connection, 'send');
@@ -3074,8 +3074,8 @@
                 textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
                 const enter_event = {
                     'target': textarea,
-                    'preventDefault': function noop () {},
-                    'stopPropagation': function noop () {},
+                    'preventDefault': function preventDefault () {},
+                    'stopPropagation': function stopPropagation () {},
                     'keyCode': 13 // Enter
                 }
                 view.onKeyDown(enter_event);

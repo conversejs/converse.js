@@ -78,7 +78,7 @@ converse.plugins.add("converse-oauth", {
         });
 
         _converse.OAuthProviders = _converse.Collection.extend({
-            'sync': _function noop () {},
+            'sync': function sync () {},
 
             initialize () {
                 _.each(_converse.user_settings.oauth_providers, (provider) => {

@@ -497,7 +497,7 @@
                     const textarea = view.el.querySelector('.chat-textarea');
                     const ev = {
                         target: textarea,
-                        preventDefault: function noop () {},
+                        preventDefault: function preventDefault () {},
                         keyCode: 13 // Enter
                     };
                     view.onKeyDown(ev);
@@ -1167,7 +1167,7 @@
                 view.el.querySelector('.chat-textarea').value = message;
                 view.onKeyDown({
                     target: view.el.querySelector('textarea.chat-textarea'),
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(view.clearMessages).toHaveBeenCalled();

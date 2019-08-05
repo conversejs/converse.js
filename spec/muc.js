@@ -2011,7 +2011,7 @@
                 textarea.value = text;
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -2864,7 +2864,7 @@
                 const textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = '/clear';
 
-                const enter = { 'target': textarea, 'preventDefault': function noop () {}, 'keyCode': 13 };
+                const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
                 view.onKeyDown(enter);
                 textarea.value = '/help';
                 view.onKeyDown(enter);
@@ -2935,7 +2935,7 @@
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 var textarea = view.el.querySelector('.chat-textarea');
-                const enter = { 'target': textarea, 'preventDefault': function noop () {}, 'keyCode': 13 };
+                const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
                 spyOn(window, 'confirm').and.callFake(() => true);
                 textarea.value = '/clear';
                 view.onKeyDown(enter);
@@ -2999,7 +2999,7 @@
                 textarea.value = '/member chris Welcome to the club!';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(_converse.connection.send).not.toHaveBeenCalled();
@@ -3011,7 +3011,7 @@
                 textarea.value = '/member marc Welcome to the club!';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(_converse.connection.send).toHaveBeenCalled();
@@ -3126,7 +3126,7 @@
                 textarea.value = '/topic This is the groupchat subject';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(_converse.connection.send).toHaveBeenCalled();
@@ -3136,7 +3136,7 @@
                 textarea.value = '/subject This is a new subject';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
 
@@ -3150,7 +3150,7 @@
                 textarea.value = '/Subject This is yet another subject';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(sent_stanza.textContent).toBe('This is yet another subject');
@@ -3173,7 +3173,7 @@
                 textarea.value = '/clear';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(view.clearMessages).toHaveBeenCalled();
@@ -3215,7 +3215,7 @@
                 textarea.value = '/owner';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
@@ -3303,7 +3303,7 @@
                 textarea.value = '/ban';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
@@ -3404,7 +3404,7 @@
                 textarea.value = '/kick';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
@@ -3508,7 +3508,7 @@
                 textarea.value = '/op';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
 
@@ -3651,7 +3651,7 @@
                 textarea.value = '/mute';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: function noop () {},
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
 

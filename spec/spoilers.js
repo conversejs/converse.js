@@ -111,7 +111,7 @@
             textarea.value = 'This is the spoiler';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -188,7 +188,7 @@
 
             view.onKeyDown({
                 target: textarea,
-                preventDefault: function noop () {},
+                preventDefault: function preventDefault () {},
                 keyCode: 13
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));

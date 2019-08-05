@@ -410,6 +410,12 @@ converse.plugins.add('converse-disco', {
                         if (_.isNil(name) || _.isNil(xmlns)) {
                             throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
                         }
+                        if (_converse.stream_features === undefined && !_converse.api.connection.connected()) {
+                            // Happens during tests when disco lookups happen asynchronously after teardown.
+                            const msg = `Tried to get feature ${name} ${xmlns} but _converse.stream_features has been torn down`;
+                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            return;
+                        }
                         return _converse.stream_features.findWhere({'name': name, 'xmlns': xmlns});
                     }
                 },
@@ -564,6 +570,12 @@ converse.plugins.add('converse-disco', {
                         if (_.isNil(jid)) {
                             return _converse.disco_entities;
                         }
+                        if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
+                            // Happens during tests when disco lookups happen asynchronously after teardown.
+                            const msg = `Tried to look up entity ${jid} but _converse.disco_entities has been torn down`;
+                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            return;
+                        }
                         const entity = _converse.disco_entities.get(jid);
                         if (entity || !create) {
                             return entity;
@@ -619,6 +631,13 @@ converse.plugins.add('converse-disco', {
                         }
                         await _converse.api.waitUntil('discoInitialized');
                         let entity = await _converse.api.disco.entities.get(jid, true);
+
+                        if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
+                            // Happens during tests when disco lookups happen asynchronously after teardown.
+                            const msg = `Tried to get feature ${feature} for ${jid} but _converse.disco_entities has been torn down`;
+                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            return;
+                        }
                         entity = await entity.waitUntilFeaturesDiscovered;
                         const promises = _.concat(
                             entity.items.map(item => item.hasFeature(feature)),
@@ -756,6 +775,12 @@ converse.plugins.add('converse-disco', {
                  */
                 async getIdentity (category, type, jid) {
                     const e = await _converse.api.disco.entities.get(jid, true);
+                    if (e === undefined && !_converse.api.connection.connected()) {
+                        // Happens during tests when disco lookups happen asynchronously after teardown.
+                        const msg = `Tried to look up category ${category} for ${jid} but _converse.disco_entities has been torn down`;
+                        _converse.log(msg, Strophe.LogLevel.WARN);
+                        return;
+                    }
                     return e.getIdentity(category, type);
                 }
             }

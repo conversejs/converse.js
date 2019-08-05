@@ -956,7 +956,7 @@ converse.plugins.add('converse-rosterview', {
         });
 
 
-        _converse.api.listen.on('controlboxInitialized', (view) => {
+        _converse.api.listen.on('controlBoxInitialized', (view) => {
             function insertRoster () {
                 if (!view.model.get('connected') || _converse.authentication === _converse.ANONYMOUS) {
                     return;

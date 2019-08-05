@@ -1937,7 +1937,7 @@ converse.plugins.add('converse-muc-views', {
             }
         });
 
-        _converse.api.listen.on('controlboxInitialized', (view) => {
+        _converse.api.listen.on('controlBoxInitialized', (view) => {
             if (!_converse.allow_muc) {
                 return;
             }

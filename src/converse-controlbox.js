@@ -152,7 +152,7 @@ converse.plugins.add('converse-controlbox', {
             sticky_controlbox: false
         });
 
-        _converse.api.promises.add('controlboxInitialized');
+        _converse.api.promises.add('controlBoxInitialized');
 
         const addControlBox = () => _converse.chatboxes.add({'id': 'controlbox'});
 
@@ -171,7 +171,7 @@ converse.plugins.add('converse-controlbox', {
                 }
             },
 
-            onReconnection: function noop () {}
+           onReconnection: function onReconnection () {}
         });
 
 
@@ -199,11 +199,11 @@ converse.plugins.add('converse-controlbox', {
                  * Triggered when the _converse.ControlBoxView has been initialized and therefore
                  * exists. The controlbox contains the login and register forms when the user is
                  * logged out and a list of the user's contacts and group chats when logged in.
-                 * @event _converse#controlboxInitialized
+                 * @event _converse#controlBoxInitialized
                  * @type { _converse.ControlBoxView }
-                 * @example _converse.api.listen.on('controlboxInitialized', view => { ... });
+                 * @example _converse.api.listen.on('controlBoxInitialized', view => { ... });
                  */
-                _converse.api.trigger('controlboxInitialized', this);
+                _converse.api.trigger('controlBoxInitialized', this);
                 _converse.api.trigger('chatBoxInitialized', this);
             },
 

@@ -139,7 +139,7 @@ converse.plugins.add('converse-register', {
 
 
         function setActiveForm (value) {
-            _converse.api.waitUntil('controlboxInitialized').then(() => {
+            _converse.api.waitUntil('controlBoxInitialized').then(() => {
                 const controlbox = _converse.chatboxes.get('controlbox')
                 controlbox.set({'active-form': value});
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
@@ -684,7 +684,7 @@ converse.plugins.add('converse-register', {
         });
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('controlboxInitialized', view => {
+        _converse.api.listen.on('controlBoxInitialized', view => {
             view.model.on('change:active-form', view.showLoginOrRegisterForm, view);
         });
         /************************ END Event Handlers ************************/

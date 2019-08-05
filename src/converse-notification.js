@@ -38,17 +38,6 @@ converse.plugins.add('converse-notification', {
             notification_delay: 5000
         });
 
-        _converse.isOnlyChatStateNotification = (msg) =>
-            // See XEP-0085 Chat State Notification
-            _.isNull(msg.querySelector('body')) && (
-                    _.isNull(msg.querySelector(_converse.ACTIVE)) ||
-                    _.isNull(msg.querySelector(_converse.COMPOSING)) ||
-                    _.isNull(msg.querySelector(_converse.INACTIVE)) ||
-                    _.isNull(msg.querySelector(_converse.PAUSED)) ||
-                    _.isNull(msg.querySelector(_converse.GONE))
-                )
-        ;
-
         _converse.shouldNotifyOfGroupMessage = function (message) {
             /* Is this a group message worthy of notification?
              */
@@ -96,9 +85,8 @@ converse.plugins.add('converse-notification', {
                 // We want to show notifications for headline messages.
                 return _converse.isMessageToHiddenChat(message);
             }
-            const is_me = Strophe.getBareJidFromJid(
-                    message.getAttribute('from')) === _converse.bare_jid;
-            return !_converse.isOnlyChatStateNotification(message) &&
+            const is_me = Strophe.getBareJidFromJid(message.getAttribute('from')) === _converse.bare_jid;
+            return !u.isOnlyChatStateNotification(message) &&
                 !is_me &&
                 (_converse.show_desktop_notifications === 'all' || _converse.isMessageToHiddenChat(message));
         };

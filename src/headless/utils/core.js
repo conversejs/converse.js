@@ -128,11 +128,20 @@ u.isEmptyMessage = function (attrs) {
         !attrs['message'];
 };
 
-u.isOnlyChatStateNotification = function (attrs) {
-    if (attrs instanceof Backbone.Model) {
-        attrs = attrs.attributes;
+u.isOnlyChatStateNotification = function (msg) {
+    if (msg instanceof Element) {
+        // See XEP-0085 Chat State Notification
+        return (msg.querySelector('body') === null) && (
+                    (msg.querySelector('active') !== null) ||
+                    (msg.querySelector('composing') !== null) ||
+                    (msg.querySelector('inactive') !== null) ||
+                    (msg.querySelector('paused') !== null) ||
+                    (msg.querySelector('gone') !== null));
     }
-    return attrs['chat_state'] && u.isEmptyMessage(attrs);
+    if (msg instanceof Backbone.Model) {
+        msg = msg.attributes;
+    }
+    return msg['chat_state'] && u.isEmptyMessage(msg);
 };
 
 u.isHeadlineMessage = function (_converse, message) {

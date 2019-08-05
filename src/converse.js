@@ -17,6 +17,7 @@ import "converse-muc-views";       // Views related to MUC
 import "converse-notification";    // HTML5 Notifications
 import "converse-omemo";
 import "converse-push";            // XEP-0357 Push Notifications
+import "converse-profile";
 import "converse-register";        // XEP-0077 In-band registration
 import "converse-roomslist";       // Show currently open chat rooms
 import "converse-rosterview";

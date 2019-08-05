@@ -8,7 +8,6 @@
  * @module converse-controlbox
  */
 import "converse-chatview";
-import "converse-profile";
 import _FormData from "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
@@ -476,16 +475,13 @@ converse.plugins.add('converse-controlbox', {
             className: 'controlbox-pane',
 
             initialize () {
-                if (!_converse.XMPPStatusView) {
-                    return;
-                }
-                _converse.xmppstatusview = new _converse.XMPPStatusView({
-                    'model': _converse.xmppstatus
-                });
-                this.el.insertAdjacentElement(
-                    'afterBegin',
-                    _converse.xmppstatusview.render().el
-                );
+                /**
+                 * Triggered once the {@link _converse.ControlBoxPane} has been initialized
+                 * @event _converse#controlBoxPaneInitialized
+                 * @type { _converse.ControlBoxPane }
+                 * @example _converse.api.listen.on('controlBoxPaneInitialized', view => { ... });
+                 */
+                _converse.api.trigger('controlBoxPaneInitialized', this);
             }
         });
 

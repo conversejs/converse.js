@@ -306,6 +306,14 @@ converse.plugins.add('converse-profile', {
                 }
             }
         });
+
+
+        /******************** Event Handlers ********************/
+
+        _converse.api.listen.on('controlBoxPaneInitialized', (view) => {
+            _converse.xmppstatusview = new _converse.XMPPStatusView({'model': _converse.xmppstatus});
+            view.el.insertAdjacentElement('afterBegin', _converse.xmppstatusview.render().el);
+        });
     }
 });
 

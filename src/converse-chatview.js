@@ -363,7 +363,7 @@ converse.plugins.add('converse-chatview', {
                 this.render();
                 this.updateAfterMessagesFetched();
                 /**
-                 * Triggered once the _converse.ChatBoxView has been initialized
+                 * Triggered once the {@link _converse.ChatBoxView} has been initialized
                  * @event _converse#chatBoxInitialized
                  * @type { _converse.ChatBoxView | _converse.HeadlinesBoxView }
                  * @example _converse.api.listen.on('chatBoxInitialized', view => { ... });

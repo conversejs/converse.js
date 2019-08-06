@@ -1166,7 +1166,8 @@ converse.plugins.add('converse-chatboxes', {
              * @method _converse.ChatBox#getChatBox
              * @param { string } jid - The JID of the user whose chat box we want
              * @param { boolean } create - Should a new chat box be created if none exists?
-             * @param { object } attrs - Optional chat box atributes.
+             * @param { object } attrs - Optional chat box atributes. If the
+             *  chat box already exists, its attributes will be updated.
              */
             getChatBox (jid, attrs={}, create) {
                 if (_.isObject(jid)) {
@@ -1177,7 +1178,9 @@ converse.plugins.add('converse-chatboxes', {
                 jid = Strophe.getBareJidFromJid(jid.toLowerCase());
 
                 let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
-                if (!chatbox && create) {
+                if (chatbox) {
+                    chatbox.save(attrs);
+                } else if (create) {
                     Object.assign(attrs, {'jid': jid, 'id': jid});
                     chatbox = this.create(attrs, {
                         'error' (model, response) {

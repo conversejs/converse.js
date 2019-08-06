@@ -73,17 +73,16 @@ converse.plugins.add('converse-mam', {
                 if (this.disable_mam) {
                     return;
                 }
-                const most_recent_msg = u.getMostRecentMessage(this);
-
-                if (!most_recent_msg) {
-                    this.fetchArchivedMessages({'before': ''});
-                } else {
+                const most_recent_msg = this.getMostRecentMessage();
+                if (most_recent_msg) {
                     const stanza_id = most_recent_msg.get(`stanza_id ${this.get('jid')}`);
                     if (stanza_id) {
                         this.fetchArchivedMessages({'after': stanza_id}, 'forwards');
                     } else {
                         this.fetchArchivedMessages({'start': most_recent_msg.get('time')}, 'forwards');
                     }
+                } else {
+                    this.fetchArchivedMessages({'before': ''});
                 }
             },
 

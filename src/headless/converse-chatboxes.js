@@ -395,6 +395,15 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
+            getMostRecentMessage () {
+                for (var i=this.messages.length-1; i>=0; i--) {
+                    const message = this.messages.at(i);
+                    if (message.get('type') === this.get('message_type')) {
+                        return message;
+                    }
+                }
+            },
+
             getUpdatedMessageAttributes (message, stanza) {
                 // Overridden in converse-muc and converse-mam
                 return {};

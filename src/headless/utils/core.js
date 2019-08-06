@@ -98,11 +98,6 @@ u.isSameBareJID = function (jid1, jid2) {
             Strophe.getBareJidFromJid(jid2).toLowerCase();
 };
 
-u.getMostRecentMessage = function (model) {
-    const messages = model.messages.filter('message');
-    return messages[messages.length-1];
-}
-
 u.isNewMessage = function (message) {
     /* Given a stanza, determine whether it's a new
      * message, i.e. not a MAM archived one.

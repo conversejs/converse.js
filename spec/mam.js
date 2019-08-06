@@ -46,7 +46,7 @@
                             from="${muc_jid}">
                         <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${first_msg_id}">
                             <forwarded xmlns="urn:xmpp:forward:0">
-                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:15:23Z"/>
                                 <message from="${muc_jid}/some1" type="groupchat">
                                     <body>2nd Message</body>
                                 </message>
@@ -61,7 +61,7 @@
                             from="${muc_jid}">
                         <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${last_msg_id}">
                             <forwarded xmlns="urn:xmpp:forward:0">
-                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:16:23Z"/>
                                 <message from="${muc_jid}/some1" type="groupchat">
                                     <body>3rd Message</body>
                                 </message>
@@ -106,7 +106,7 @@
                             `<x type="submit" xmlns="jabber:x:data">`+
                                 `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                             `</x>`+
-                            `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max><after>${message.querySelector('result').getAttribute('id')}</after><before></before></set>`+
+                            `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max><after>${message.querySelector('result').getAttribute('id')}</after></set>`+
                         `</query>`+
                     `</iq>`);
 
@@ -133,7 +133,7 @@
                             from="${muc_jid}">
                         <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${last_msg_id}">
                             <forwarded xmlns="urn:xmpp:forward:0">
-                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:18:23Z"/>
                                 <message from="${muc_jid}/some1" type="groupchat">
                                     <body>5th Message</body>
                                 </message>
@@ -166,7 +166,7 @@
                                 `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                             `</x>`+
                             `<set xmlns="http://jabber.org/protocol/rsm">`+
-                                `<max>2</max><before>${first_msg_id}</before>`+
+                                `<max>2</max><after>${last_msg_id}</after>`+
                             `</set>`+
                         `</query>`+
                     `</iq>`);
@@ -178,7 +178,7 @@
                             from="${muc_jid}">
                         <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${msg_id}">
                             <forwarded xmlns="urn:xmpp:forward:0">
-                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:19:23Z"/>
                                 <message from="${muc_jid}/some1" type="groupchat">
                                     <body>6th Message</body>
                                 </message>
@@ -200,6 +200,8 @@
                 _converse.connection._dataRecv(test_utils.createRequest(result));
                 await u.waitUntil(() => view.model.messages.length === 5);
                 expect(view.model.fetchArchivedMessages.calls.count()).toBe(3);
+                const msg_els = view.content.querySelectorAll('.chat-msg__text');
+                expect(Array.from(msg_els).map(e => e.textContent).join(' ')).toBe("2nd Message 3rd Message 4th Message 5th Message 6th Message");
                 done();
             }));
         });

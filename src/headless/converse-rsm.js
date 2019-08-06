@@ -49,12 +49,12 @@ converse.plugins.add('converse-rsm', {
                 return xml.tree();
             }
 
-            next (max) {
-                return new RSM({max: max, after: this.last});
+            next (max, before) {
+                return new RSM({max: max, after: this.last, before});
             }
 
-            previous (max) {
-                return new RSM({max: max, before: this.first});
+            previous (max, after) {
+                return new RSM({max: max, before: this.first, after});
             }
 
             fromXMLElement (xmlElement) {

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-07 10:49+0200\n"
-"PO-Revision-Date: 2019-04-06 17:03+0000\n"
-"Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
+"PO-Revision-Date: 2019-08-08 13:23+0000\n"
+"Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.6-dev\n"
+"X-Generator: Weblate 3.8-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -161,9 +161,8 @@ msgid "Clear all messages"
 msgstr "Alle Nachrichten löschen"
 
 #: dist/converse-no-dependencies.js:28096
-#, fuzzy
 msgid "Message characters remaining"
-msgstr "Nachrichtenarchivierung"
+msgstr "Verbleibende Zeichen"
 
 #: dist/converse-no-dependencies.js:28101
 msgid "Insert emojis"
@@ -407,14 +406,14 @@ msgid "%1$s is no longer banned from this groupchat"
 msgstr "%1$s ist in diesem Gruppenchat nicht mehr gesperrt"
 
 #: dist/converse-no-dependencies.js:32646
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr "%1$s ist nicht mehr Eigentümer dieses Gruppenchats"
+msgstr "%1$s ist nicht mehr ein Mitglied dieses Gruppenchats"
 
 #: dist/converse-no-dependencies.js:32650
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr "%1$s ist nun ständiges Mitglied dieses Gruppenchats"
+msgstr "%1$s ist nun Mitglied dieses Gruppenchats"
 
 #: dist/converse-no-dependencies.js:32652
 #, javascript-format
@@ -1100,7 +1099,7 @@ msgstr "Gruppenteilnehmer anzeigen"
 #. Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
 #: dist/converse-no-dependencies.js:37589
 msgid "Open Groupchats"
-msgstr "Öffne Gruppenchats"
+msgstr "Offene Gruppenchats"
 
 #: dist/converse-no-dependencies.js:37639
 #, javascript-format

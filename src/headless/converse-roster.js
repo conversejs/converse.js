@@ -941,19 +941,17 @@ converse.plugins.add('converse-roster', {
             });
         });
 
-        _converse.api.listen.on('afterTearDown', () => {
+        function clearPresences () {
             if (_converse.presences) {
-                _converse.presences.each(p => {
+                _converse.presences.forEach(p => {
                     p.resources.reject(r => r === undefined).forEach(r => r.destroy({'silent': true}));
-                    p.save({'show': 'offline'}, {'silent': true})
                 });
+                _converse.presences.clearSession();
             }
-        });
+        }
 
         _converse.api.listen.on('clearSession', () => {
-            if (_converse.presences) {
-                _converse.presences.browserStorage._clear();
-            }
+            clearPresences();
             if (_converse.shouldClearCache()) {
                 if (_converse.roster) {
                     _.invoke(_converse, 'roster.data.destroy');
@@ -969,16 +967,18 @@ converse.plugins.add('converse-roster', {
         });
 
         _converse.api.listen.on('statusInitialized', (reconnecting) => {
-            if (!reconnecting) {
-                _converse.presences = new _converse.Presences();
-            }
-            _converse.presences.browserStorage =
-                new BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
-
-            if (_converse.haveResumed()) {
-                _converse.presences.fetch();
+            if (reconnecting) {
+                // When reconnecting and not resuming a previous session,
+                // we clear all cached presence data, since it might be stale
+                // and we'll receive new presence updates
+                !_converse.haveResumed() && clearPresences();
             } else {
-                _converse.presences.clearSession();
+                _converse.presences = new _converse.Presences();
+                const id = `converse.presences-${_converse.bare_jid}`;
+                _converse.presences.browserStorage = new BrowserStorage.session(id);
+                // We might be continuing an existing session, so we fetch
+                // cached presence data.
+                _converse.presences.fetch();
             }
             /**
              * Triggered once the _converse.Presences collection has been

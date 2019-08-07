@@ -231,8 +231,8 @@ _converse.default_settings = {
     locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
-        'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl',
-        'pl', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
+        'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'oc',
+        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
     ],
     message_carbons: true,
     nickname: undefined,
@@ -1902,7 +1902,7 @@ const converse = {
      *     auto_subscribe: false,
      *     bosh_service_url: 'https://bind.example.com',
      *     hide_muc_server: false,
-     *     i18n: locales['en'],
+     *     i18n: 'en',
      *     play_sounds: true,
      *     show_controlbox_by_default: true,
      *     debug: false,

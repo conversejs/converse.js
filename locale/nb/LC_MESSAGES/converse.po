@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-07 10:49+0200\n"
-"PO-Revision-Date: 2019-04-06 17:04+0000\n"
+"PO-Revision-Date: 2019-08-08 13:23+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.6-dev\n"
+"X-Generator: Weblate 3.8-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -515,8 +515,9 @@ msgstr ""
 "utviklerkonsoll for detaljer."
 
 #: dist/converse-no-dependencies.js:33085
+#, fuzzy
 msgid "You can run the following commands"
-msgstr ""
+msgstr "Du kan kjøre følgende kommandoer"
 
 #: dist/converse-no-dependencies.js:33086
 msgid "Change user's affiliation to admin"

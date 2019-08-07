@@ -276,8 +276,7 @@ converse.plugins.add('converse-bookmarks', {
 
         _converse.api.listen.on('clearSession', () => {
             if (_converse.bookmarks !== undefined) {
-                _converse.bookmarks.reset();
-                _converse.bookmarks.browserStorage._clear();
+                _converse.bookmarks.clearSession();
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
             }
         });

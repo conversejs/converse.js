@@ -107,9 +107,10 @@ converse.plugins.add('converse-profile', {
                     _converse.log(err, Strophe.LogLevel.FATAL);
                     _converse.api.alert.show(
                         Strophe.LogLevel.ERROR,
-                        __('Error'),
-                        [__("Sorry, an error happened while trying to save your profile data."),
-                        __("You can check your browser's developer console for any error output.")]
+                        __('Error'), [
+                            __("Sorry, an error happened while trying to save your profile data."),
+                            __("You can check your browser's developer console for any error output.")
+                        ]
                     )
                 });
                 this.modal.hide();

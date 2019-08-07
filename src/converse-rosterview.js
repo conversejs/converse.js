@@ -509,8 +509,9 @@ converse.plugins.add('converse-rosterview', {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                     _converse.api.alert.show(
                         Strophe.LogLevel.ERROR,
-                        __('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName())
-                    );
+                        __('Error'),
+                        [__('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName())]
+                    )
                 }
             },
 

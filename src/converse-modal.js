@@ -75,7 +75,7 @@ converse.plugins.add('converse-modal', {
 
         Object.assign(_converse.api, {
             'alert': {
-                'show' (type, title, messages) {
+                show (type, title, messages) {
                     if (_.isString(messages)) {
                         messages = [messages];
                     }

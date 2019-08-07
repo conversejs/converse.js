@@ -184,6 +184,7 @@ converse.plugins.add('converse-roomslist', {
                 this.el.innerHTML = tpl_rooms_list({
                     'toggle_state': this.list_model.get('toggle-state'),
                     'desc_rooms': __('Click to toggle the list of open groupchats'),
+                    // Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
                     'label_rooms': __('Open Groupchats'),
                     '_converse': _converse
                 });

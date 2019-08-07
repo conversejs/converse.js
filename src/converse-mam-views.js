@@ -33,21 +33,23 @@ converse.plugins.add('converse-mam-views', {
                 return result;
             },
 
-            onScroll (ev) {
+            async onScroll (ev) {
                 const { _converse } = this.__super__;
                 if (this.content.scrollTop === 0 && this.model.messages.length) {
-                    const oldest_message = this.model.messages.at(0);
+                    const oldest_message = this.model.getOldestMessage();
                     const by_jid = this.model.get('jid');
-                    const stanza_id = oldest_message.get(`stanza_id ${by_jid}`);
+                    const stanza_id = oldest_message && oldest_message.get(`stanza_id ${by_jid}`);
+                    this.addSpinner();
                     if (stanza_id) {
-                        this.model.fetchArchivedMessages({
+                        await this.model.fetchArchivedMessages({
                             'before': stanza_id
                         });
                     } else {
-                        this.model.fetchArchivedMessages({
+                        await this.model.fetchArchivedMessages({
                             'end': oldest_message.get('time')
                         });
                     }
+                    this.clearSpinner();
                 }
             }
         },

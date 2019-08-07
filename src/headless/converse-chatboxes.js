@@ -395,8 +395,18 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
+            getOldestMessage () {
+                for (let i=0; i<this.messages.length; i++) {
+                    const message = this.messages.at(i);
+                    if (message.get('type') === this.get('message_type')) {
+                        return message;
+                    }
+                }
+            },
+
+
             getMostRecentMessage () {
-                for (var i=this.messages.length-1; i>=0; i--) {
+                for (let i=this.messages.length-1; i>=0; i--) {
                     const message = this.messages.at(i);
                     if (message.get('type') === this.get('message_type')) {
                         return message;

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-07 10:49+0200\n"
-"PO-Revision-Date: 2019-04-06 17:03+0000\n"
+"PO-Revision-Date: 2019-08-08 13:23+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 3.6-dev\n"
+"X-Generator: Weblate 3.8-dev\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -147,28 +147,24 @@ msgid "Choose a file to send"
 msgstr "נא לבחור קובץ לשליחה"
 
 #: dist/converse-no-dependencies.js:28089
-#, fuzzy
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr "לחץ כאן כדי לכתוב הודעת מצב מותאמת"
+msgstr "יש ללחוץ כאן כדי לכתוב הודעת מצב רגילה (לא מותאמת)"
 
 #: dist/converse-no-dependencies.js:28091
-#, fuzzy
 msgid "Click to write your message as a spoiler"
-msgstr "לחץ כאן כדי לכתוב הודעת מצב מותאמת"
+msgstr "יש ללחוץ כאן כדי לכתוב הודעת מצב מותאמת"
 
 #: dist/converse-no-dependencies.js:28095
 msgid "Clear all messages"
 msgstr "טהר את כל ההודעות"
 
 #: dist/converse-no-dependencies.js:28096
-#, fuzzy
 msgid "Message characters remaining"
-msgstr "העברת הודעות לארכיון"
+msgstr "תווים שנותרו להודעה"
 
 #: dist/converse-no-dependencies.js:28101
-#, fuzzy
 msgid "Insert emojis"
-msgstr "הכנס סמיילי"
+msgstr "הוספת אמוג׳ים"
 
 #: dist/converse-no-dependencies.js:28102
 msgid "Start a call"
@@ -190,7 +186,7 @@ msgstr "הצגת תפריט זה"
 #: dist/converse-no-dependencies.js:28626
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
-msgstr ""
+msgstr "יש לך הודעה שלא נשלחה שתאבד אם לא תישמר. להמשיך?"
 
 #: dist/converse-no-dependencies.js:28710
 msgid "Are you sure you want to clear the messages from this conversation?"

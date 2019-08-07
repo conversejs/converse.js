@@ -1051,7 +1051,10 @@ converse.plugins.add('converse-chatboxes', {
                 _converse.api.trigger('chatBoxesFetched');
             },
 
-            onConnected () {
+            onConnected (reconnecting) {
+                if (reconnecting) {
+                    return;
+                }
                 const storage = _converse.config.get('storage');
                 this.browserStorage = new BrowserStorage[storage](
                     `converse.chatboxes-${_converse.bare_jid}`);
@@ -1265,7 +1268,7 @@ converse.plugins.add('converse-chatboxes', {
             _converse.api.trigger('chatBoxesInitialized');
         });
 
-        _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
+        _converse.api.listen.on('presencesInitialized', (reconnecting) => _converse.chatboxes.onConnected(reconnecting));
         _converse.api.listen.on('reconnected', () => _converse.chatboxes.forEach(m => m.onReconnection()));
         /************************ END Event Handlers ************************/
 

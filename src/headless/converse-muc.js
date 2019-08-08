@@ -770,15 +770,8 @@ converse.plugins.add('converse-muc', {
                 if (this.features.get('membersonly')) {
                     // When inviting to a members-only groupchat, we first add
                     // the person to the member list by giving them an
-                    // affiliation of 'member' (if they're not affiliated
-                    // already), otherwise they won't be able to join.
-                    const map = {}; map[recipient] = 'member';
-                    const deltaFunc = _.partial(u.computeAffiliationsDelta, true, false);
-                    this.updateMemberLists(
-                        [{'jid': recipient, 'affiliation': 'member', 'reason': reason}],
-                        ['member', 'owner', 'admin'],
-                        deltaFunc
-                    );
+                    // affiliation of 'member' otherwise they won't be able to join.
+                    this.updateMemberLists([{'jid': recipient, 'affiliation': 'member', 'reason': reason}]);
                 }
                 const attrs = {
                     'xmlns': 'jabber:x:conference',
@@ -845,24 +838,6 @@ converse.plugins.add('converse-muc', {
                     attrs[fieldname.replace('muc_', '')] = true;
                 });
                 this.features.save(attrs);
-            },
-
-            /* Send an IQ stanza to the server, asking it for the
-             * member-list of this groupchat.
-             * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-             * @private
-             * @method _converse.ChatRoom#requestMemberList
-             * @param { string } affiliation - The specific member list to
-             *      fetch. 'admin', 'owner' or 'member'.
-             * @returns:
-             *  A promise which resolves once the list has been retrieved.
-             */
-            requestMemberList (affiliation) {
-                affiliation = affiliation || 'member';
-                const iq = $iq({to: this.get('jid'), type: "get"})
-                    .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                        .c("item", {'affiliation': affiliation});
-                return _converse.api.sendIQ(iq);
             },
 
             /**
@@ -1122,25 +1097,27 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Returns a map of JIDs that have the affiliations
-             * as provided.
+             * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
+             * Returns an array of {@link MemberListItem} objects, representing occupants
+             * that have the given affiliation.
+             * See: https://xmpp.org/extensions/xep-0045.html#modifymember
              * @private
-             * @method _converse.ChatRoom#getJidsWithAffiliations
-             * @param { string|array } affiliation - An array of affiliations or
-             *      a string if only one affiliation.
+             * @method _converse.ChatRoom#getAffiliationList
+             * @param { ("admin"|"owner"|"member") } affiliation
+             * @returns { Promise<MemberListItem[]> }
              */
-            async getJidsWithAffiliations (affiliations) {
-                if (_.isString(affiliations)) {
-                    affiliations = [affiliations];
+            async getAffiliationList (affiliation) {
+                const iq = $iq({to: this.get('jid'), type: "get"})
+                    .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                        .c("item", {'affiliation': affiliation});
+                const result = await _converse.api.sendIQ(iq, null, false);
+                if (result.getAttribute('type') === 'error') {
+                    const err_msg = `Not allowed to fetch ${affiliation} list for MUC ${this.get('jid')}`;
+                    _converse.log(err_msg, Strophe.LogLevel.WARN);
+                    _converse.log(result, Strophe.LogLevel.WARN);
+                    return null;
                 }
-                const result = await Promise.all(affiliations.map(a =>
-                    this.requestMemberList(a)
-                        .then(iq => u.parseMemberListIQ(iq))
-                        .catch(iq => {
-                            _converse.log(iq, Strophe.LogLevel.ERROR);
-                        })
-                ));
-                return [].concat.apply([], result).filter(p => p);
+                return u.parseMemberListIQ(result).filter(p => p);
             },
 
             /**
@@ -1151,23 +1128,17 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#updateMemberLists
              * @param { object } members - Map of member jids and affiliations.
-             * @param { string|array } affiliation - An array of affiliations or
-             *      a string if only one affiliation.
-             * @param { function } deltaFunc - The function to compute the delta
-             *      between old and new member lists.
              * @returns { Promise }
              *  A promise which is resolved once the list has been
              *  updated or once it's been established there's no need
              *  to update the list.
              */
-            async updateMemberLists (members, affiliations, deltaFunc) {
-                try {
-                    const old_members = await this.getJidsWithAffiliations(affiliations);
-                    await this.setAffiliations(deltaFunc(members, old_members));
-                } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
-                    return;
-                }
+            async updateMemberLists (members) {
+                const all_affiliations = ['member', 'admin', 'owner'];
+                const aff_lists = await Promise.all(all_affiliations.map(a => this.getAffiliationList(a)));
+                const known_affiliations = all_affiliations.filter(a => aff_lists[all_affiliations.indexOf(a)] !== null);
+                const old_members = aff_lists.reduce((acc, val) => (val !== null ? [...val, ...acc] : acc), []);
+                await this.setAffiliations(u.computeAffiliationsDelta(true, false, members, old_members));
                 if (_converse.muc_fetch_members) {
                     return this.occupants.fetchMembers();
                 }
@@ -1938,11 +1909,14 @@ converse.plugins.add('converse-muc', {
             },
 
             async fetchMembers () {
-                const new_members = await this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']);
+                const all_affiliations = ['member', 'admin', 'owner'];
+                const aff_lists = await Promise.all(all_affiliations.map(a => this.chatroom.getAffiliationList(a)));
+                const new_members = aff_lists.reduce((acc, val) => (val !== null ? [...val, ...acc] : acc), []);
+                const known_affiliations = all_affiliations.filter(a => aff_lists[all_affiliations.indexOf(a)] !== null);
                 const new_jids = new_members.map(m => m.jid).filter(m => m !== undefined);
                 const new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => m !== undefined);
                 const removed_members = this.filter(m => {
-                        return ['admin', 'member', 'owner'].includes(m.get('affiliation')) &&
+                        return known_affiliations.includes(m.get('affiliation')) &&
                             !new_nicks.includes(m.get('nick')) &&
                             !new_jids.includes(m.get('jid'));
                     });
@@ -1956,12 +1930,9 @@ converse.plugins.add('converse-muc', {
                     }
                 });
                 new_members.forEach(attrs => {
-                    let occupant;
-                    if (attrs.jid) {
-                        occupant = this.findOccupant({'jid': attrs.jid});
-                    } else {
-                        occupant = this.findOccupant({'nick': attrs.nick});
-                    }
+                    const occupant = attrs.jid ?
+                        this.findOccupant({'jid': attrs.jid}) :
+                        this.findOccupant({'nick': attrs.nick});
                     if (occupant) {
                         occupant.save(attrs);
                     } else {

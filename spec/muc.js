@@ -400,17 +400,38 @@
 
         describe("A Groupchat", function () {
 
-
             describe("upon being entered", function () {
+
                 it("will fetch the member list if muc_fetch_members is true",
                     mock.initConverse(
                         null, ['rosterGroupsFetched'], {'muc_fetch_members': true},
                         async function (done, _converse) {
 
+                    const sent_IQs = _converse.connection.IQ_stanzas;
+                    const muc_jid = 'lounge@montague.lit';
                     spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
-                    await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                    let view = _converse.chatboxviews.get('lounge@montague.lit');
+                    await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                    let view = _converse.chatboxviews.get(muc_jid);
                     expect(view.model.occupants.fetchMembers).toHaveBeenCalled();
+
+                    // Check in reverse order that we requested all three lists
+                    const owner_iq = sent_IQs.pop();
+                    expect(Strophe.serialize(owner_iq)).toBe(
+                        `<iq id="${owner_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>`+
+                        `</iq>`);
+
+                    const admin_iq = sent_IQs.pop();
+                    expect(Strophe.serialize(admin_iq)).toBe(
+                        `<iq id="${admin_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>`+
+                        `</iq>`);
+
+                    const member_iq = sent_IQs.pop();
+                    expect(Strophe.serialize(member_iq)).toBe(
+                        `<iq id="${member_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>`+
+                        `</iq>`);
 
                     _converse.muc_fetch_members = false;
                     await test_utils.openAndEnterChatRoom(_converse, 'orchard@montague.lit', 'romeo');
@@ -418,6 +439,90 @@
                     expect(view.model.occupants.fetchMembers.calls.count()).toBe(1);
                     done();
                 }));
+
+                describe("when fetching the member lists", function () {
+
+                    it("gracefully handles being forbidden from fetching the lists for certain affiliations",
+                        mock.initConverse(
+                            null, ['rosterGroupsFetched'], {'muc_fetch_members': true},
+                            async function (done, _converse) {
+
+                        const sent_IQs = _converse.connection.IQ_stanzas;
+                        const muc_jid = 'lounge@montague.lit';
+                        const features = [
+                            'http://jabber.org/protocol/muc',
+                            'jabber:iq:register',
+                            'muc_hidden',
+                            'muc_membersonly',
+                            'muc_passwordprotected',
+                            Strophe.NS.MAM,
+                            Strophe.NS.SID
+                        ];
+                        const nick = 'romeo';
+                        const room = Strophe.getNodeFromJid(muc_jid);
+                        const server = Strophe.getDomainFromJid(muc_jid);
+                        await _converse.api.rooms.open(muc_jid);
+                        await test_utils.getRoomFeatures(_converse, room, server, features);
+                        await test_utils.waitForReservedNick(_converse, muc_jid, nick);
+                        test_utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
+                        const view = _converse.chatboxviews.get(muc_jid);
+                        await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+
+                        // Check in reverse order that we requested all three lists
+                        const owner_iq = sent_IQs.pop();
+                        expect(Strophe.serialize(owner_iq)).toBe(
+                            `<iq id="${owner_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                                `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>`+
+                            `</iq>`);
+                        const admin_iq = sent_IQs.pop();
+                        expect(Strophe.serialize(admin_iq)).toBe(
+                            `<iq id="${admin_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                                `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>`+
+                            `</iq>`);
+                        const member_iq = sent_IQs.pop();
+                        expect(Strophe.serialize(member_iq)).toBe(
+                            `<iq id="${member_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                                `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>`+
+                            `</iq>`);
+
+                        // It might be that the user is not allowed to fetch certain lists.
+                        let err_stanza = u.toStanza(
+                            `<iq xmlns="jabber:client" type="error" to="${_converse.jid}" from="${muc_jid}" id="${admin_iq.getAttribute('id')}">
+                                <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+                            </iq>`);
+                        _converse.connection._dataRecv(test_utils.createRequest(err_stanza));
+
+                        err_stanza = u.toStanza(
+                            `<iq xmlns="jabber:client" type="error" to="${_converse.jid}" from="${muc_jid}" id="${owner_iq.getAttribute('id')}">
+                                <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+                            </iq>`);
+                        _converse.connection._dataRecv(test_utils.createRequest(err_stanza));
+
+                        // Now the service sends the member lists to the user
+                        const member_list_stanza = $iq({
+                                'from': muc_jid,
+                                'id': member_iq.getAttribute('id'),
+                                'to': 'romeo@montague.lit/orchard',
+                                'type': 'result'
+                            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
+                                .c('item', {
+                                    'affiliation': 'member',
+                                    'jid': 'hag66@shakespeare.lit',
+                                    'nick': 'thirdwitch',
+                                    'role': 'participant'
+                                });
+                        _converse.connection._dataRecv(test_utils.createRequest(member_list_stanza));
+
+                        await u.waitUntil(() => view.model.occupants.length > 1);
+                        expect(view.model.occupants.length).toBe(2);
+                        // The existing owner occupant should not have their
+                        // affiliation removed due to the owner list
+                        // not being returned (forbidden err).
+                        expect(view.model.occupants.findWhere({'jid': _converse.bare_jid}).get('affiliation')).toBe('owner');
+                        expect(view.model.occupants.findWhere({'jid': 'hag66@shakespeare.lit'}).get('affiliation')).toBe('member');
+                        done();
+                    }));
+                });
             });
 
             it("clears cached messages when it gets closed and clear_messages_on_reconnection is true",
@@ -2935,7 +3040,7 @@
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 var textarea = view.el.querySelector('.chat-textarea');
-                const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+                const enter = { 'target': textarea, 'preventDefault': function () {}, 'keyCode': 13 };
                 spyOn(window, 'confirm').and.callFake(() => true);
                 textarea.value = '/clear';
                 view.onKeyDown(enter);
@@ -4208,33 +4313,23 @@
 
                 spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
                 const sendIQ = _converse.connection.sendIQ;
-                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const sent_IQs = _converse.connection.IQ_stanzas;
                 const muc_jid = 'coven@chat.shakespeare.lit';
 
                 await _converse.api.rooms.open(muc_jid, {'nick': 'romeo'});
-                let stanza = await u.waitUntil(() => _.filter(
-                    IQ_stanzas,
-                    iq => iq.querySelector(
-                        `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                    )).pop());
+
                 // Check that the groupchat queried for the feautures.
+                let stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`)).pop());
                 expect(Strophe.serialize(stanza)).toBe(
                     `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute("id")}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                     `</iq>`);
 
-                const sent_IQs = _converse.connection.IQ_stanzas;
-                const last_sent_IQ = sent_IQs.pop();
-                expect(Strophe.serialize(last_sent_IQ)).toBe(
-                    `<iq from="romeo@montague.lit/orchard" id="${last_sent_IQ.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
-                        `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
-                    `</iq>`);
-
-                const view = _converse.chatboxviews.get(muc_jid);
                 // State that the chat is members-only via the features IQ
+                const view = _converse.chatboxviews.get(muc_jid);
                 const features_stanza = $iq({
                         from: 'coven@chat.shakespeare.lit',
-                        'id': last_sent_IQ.getAttribute('id'),
+                        'id': stanza.getAttribute('id'),
                         'to': 'romeo@montague.lit/desktop',
                         'type': 'result'
                     })
@@ -4261,49 +4356,30 @@
                         sent_stanza = stanza;
                     }
                 });
-                var name = mock.cur_names[0];
-                const invitee_jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                var reason = "Please join this groupchat";
+                const invitee_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                const reason = "Please join this groupchat";
                 view.model.directInvite(invitee_jid, reason);
 
                 // Check in reverse order that we requested all three lists
-                // (member, owner and admin).
-                const admin_iq = sent_IQs.pop();
                 const owner_iq = sent_IQs.pop();
-                const member_iq = sent_IQs.pop();
-                expect(Strophe.serialize(admin_iq)).toBe(
-                    `<iq id="${admin_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
-                        `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                            `<item affiliation="admin"/>`+
-                        `</query>`+
-                    `</iq>`);
                 expect(Strophe.serialize(owner_iq)).toBe(
                     `<iq id="${owner_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
-                        `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                            `<item affiliation="owner"/>`+
-                        `</query>`+
-                    `</iq>`);
-                expect(Strophe.serialize(member_iq)).toBe(
-                    `<iq id="${member_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
-                        `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                            `<item affiliation="member"/>`+
-                        `</query>`+
+                        `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>`+
                     `</iq>`);
 
-                /* Now the service sends the member list to the user
-                 *
-                 *  <iq from='coven@chat.shakespeare.lit'
-                 *      id='member3'
-                 *      to='crone1@shakespeare.lit/desktop'
-                 *      type='result'>
-                 *  <query xmlns='http://jabber.org/protocol/muc#admin'>
-                 *      <item affiliation='member'
-                 *          jid='hag66@shakespeare.lit'
-                 *          nick='thirdwitch'
-                 *          role='participant'/>
-                 *  </query>
-                 *  </iq>
-                 */
+                const admin_iq = sent_IQs.pop();
+                expect(Strophe.serialize(admin_iq)).toBe(
+                    `<iq id="${admin_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
+                        `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>`+
+                    `</iq>`);
+
+                const member_iq = sent_IQs.pop();
+                expect(Strophe.serialize(member_iq)).toBe(
+                    `<iq id="${member_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
+                        `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>`+
+                    `</iq>`);
+
+                // Now the service sends the member lists to the user
                 const member_list_stanza = $iq({
                         'from': 'coven@chat.shakespeare.lit',
                         'id': member_iq.getAttribute('id'),
@@ -4343,11 +4419,8 @@
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(owner_list_stanza));
 
-                stanza = await u.waitUntil(() => _.filter(
-                    IQ_stanzas,
-                    iq => iq.querySelector(
-                        `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`
-                    )).pop());
+                // Converse puts the user on the member list
+                stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`)).pop());
                 expect(stanza.outerHTML,
                     `<iq id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
@@ -4407,8 +4480,7 @@
                 expect(delta.length).toBe(0);
 
                 // With exclude_existing set to false, any changed affiliations
-                // will be included in the delta (i.e. existing affiliations
-                // are included in the comparison).
+                // will be included in the delta (i.e. existing affiliations are included in the comparison).
                 old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
                 delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(1);
@@ -4436,6 +4508,10 @@
                 // affiliation, we set 'exclude_existing' to true
                 exclude_existing = true;
                 old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
+                delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+
+                old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'admin'}];
                 delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(0);
                 done();

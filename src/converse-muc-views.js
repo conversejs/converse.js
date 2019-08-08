@@ -617,8 +617,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             informOfOccupantsAffiliationChange (occupant) {
-                const previous_affiliation = occupant._previousAttributes.affiliation,
-                      current_affiliation = occupant.get('affiliation');
+                const previous_affiliation = occupant._previousAttributes.affiliation;
+                const current_affiliation = occupant.get('affiliation');
 
                 if (previous_affiliation === 'admin') {
                     this.showChatEvent(__("%1$s is no longer an admin of this groupchat", occupant.get('nick')))

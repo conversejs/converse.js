@@ -260,18 +260,7 @@
         _converse.connection._dataRecv(utils.createRequest(owner_list_stanza));
     };
 
-
-    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
-        muc_jid = muc_jid.toLowerCase();
-        const room = Strophe.getNodeFromJid(muc_jid);
-        const server = Strophe.getDomainFromJid(muc_jid);
-        await _converse.api.rooms.open(muc_jid);
-        await utils.getRoomFeatures(_converse, room, server, features);
-        await utils.waitForReservedNick(_converse, muc_jid, nick);
-
-        // The user has just entered the room (because join was called)
-        // and receives their own presence from the server.
-        // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
+    utils.receiveOwnMUCPresence = function (_converse, muc_jid, nick) {
         const presence = $pres({
                 to: _converse.connection.jid,
                 from: `${muc_jid}/${nick}`,
@@ -284,7 +273,20 @@
             }).up()
             .c('status').attrs({code:'110'});
         _converse.connection._dataRecv(utils.createRequest(presence));
+    }
 
+
+    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
+        muc_jid = muc_jid.toLowerCase();
+        const room = Strophe.getNodeFromJid(muc_jid);
+        const server = Strophe.getDomainFromJid(muc_jid);
+        await _converse.api.rooms.open(muc_jid);
+        await utils.getRoomFeatures(_converse, room, server, features);
+        await utils.waitForReservedNick(_converse, muc_jid, nick);
+        // The user has just entered the room (because join was called)
+        // and receives their own presence from the server.
+        // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
+        utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
         if (_converse.muc_fetch_members) {

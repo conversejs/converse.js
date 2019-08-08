@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.0 (Unreleased)
+## 5.0.0 (2019-08-08)
 - BOSH support has been moved to a plugin.
 - Support for XEP-0410 to check whether we're still present in a room
 - Initial support for the [CredentialsContainer](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer) web API

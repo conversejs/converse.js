@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "description": "Browser based XMPP chat client",
   "browser": "dist/converse.js",
   "module": "src/converse.js",
@@ -53,7 +53,7 @@
     "@babel/cli": "^7.5.0",
     "@babel/core": "^7.5.4",
     "@babel/preset-env": "^7.5.4",
-    "@converse/headless": "^4.0.2",
+    "@converse/headless": "file:src/headless",
     "@fortawesome/fontawesome-free": "5.9.0",
     "babel-loader": "^8.0.6",
     "backbone.nativeview": "conversejs/Backbone.NativeView#5997c8197ca594e6b8469447f28310c78bd1d95e",

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-07 10:49+0200\n"
+"POT-Creation-Date: 2019-08-08 17:32+0200\n"
 "PO-Revision-Date: 2019-04-11 06:03+0000\n"
 "Last-Translator: Michal Čihař <michal@cihar.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
@@ -28,13 +28,13 @@ msgstr "Ar tikrai norite ištrinti žymę \"%1$s\"?"
 
 #: dist/converse-no-dependencies.js:26987
 #: dist/converse-no-dependencies.js:27103
-#: dist/converse-no-dependencies.js:37518
+#: dist/converse-no-dependencies.js:37520
 msgid "Unbookmark this groupchat"
 msgstr "Panaikinti šio kambario žymę"
 
 #: dist/converse-no-dependencies.js:26987
 #: dist/converse-no-dependencies.js:27065
-#: dist/converse-no-dependencies.js:37519
+#: dist/converse-no-dependencies.js:37521
 msgid "Bookmark this groupchat"
 msgstr "Sukurti šio kambario žymę"
 
@@ -43,9 +43,9 @@ msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr "Ar pageidaujate atidaryti šį kambarį automatiškai kai prisijungiate?"
 
 #: dist/converse-no-dependencies.js:27067
-#: dist/converse-no-dependencies.js:36249
-#: dist/converse-no-dependencies.js:73643
-#: dist/converse-no-dependencies.js:75150
+#: dist/converse-no-dependencies.js:36251
+#: dist/converse-no-dependencies.js:73642
+#: dist/converse-no-dependencies.js:75149
 msgid "Cancel"
 msgstr "Atšaukti"
 
@@ -58,13 +58,13 @@ msgid "What should your nickname for this groupchat be?"
 msgstr "Koks bus jūsų slapyvardis šiame kambaryje?"
 
 #: dist/converse-no-dependencies.js:27070
-#: dist/converse-no-dependencies.js:36253
-#: dist/converse-no-dependencies.js:73641
+#: dist/converse-no-dependencies.js:36255
+#: dist/converse-no-dependencies.js:73640
 msgid "Save"
 msgstr "Išsaugoti"
 
 #: dist/converse-no-dependencies.js:27101
-#: dist/converse-no-dependencies.js:37517
+#: dist/converse-no-dependencies.js:37519
 msgid "Leave this groupchat"
 msgstr "Išeiti iš šio kambario"
 
@@ -74,13 +74,13 @@ msgstr "Ištrinti šią žymę"
 
 #: dist/converse-no-dependencies.js:27104
 #: dist/converse-no-dependencies.js:32250
-#: dist/converse-no-dependencies.js:37520
+#: dist/converse-no-dependencies.js:37522
 msgid "Show more information on this groupchat"
 msgstr "Parodyti daugiau informacijos apie šį kambarį"
 
 #: dist/converse-no-dependencies.js:27107
 #: dist/converse-no-dependencies.js:32249
-#: dist/converse-no-dependencies.js:37522
+#: dist/converse-no-dependencies.js:37524
 #, fuzzy
 msgid "Click to open this groupchat"
 msgstr "Spustelėkite, kad atidarytumėte šį kambarį"
@@ -103,22 +103,23 @@ msgid "Sorry, something went wrong while trying to refresh"
 msgstr "Deja, įvyko klaida bandant atnaujinti"
 
 #: dist/converse-no-dependencies.js:27849
-#: dist/converse-no-dependencies.js:38297
+#: dist/converse-no-dependencies.js:38299
 msgid "Are you sure you want to remove this contact?"
 msgstr "Ar tikrai norite pašalinti šį kontaktą?"
 
 #: dist/converse-no-dependencies.js:27858
-#: dist/converse-no-dependencies.js:34681
-#: dist/converse-no-dependencies.js:34993
-#: dist/converse-no-dependencies.js:34997
-#: dist/converse-no-dependencies.js:35047
-#: dist/converse-no-dependencies.js:36199
-#: dist/converse-no-dependencies.js:39376
+#: dist/converse-no-dependencies.js:34683
+#: dist/converse-no-dependencies.js:34995
+#: dist/converse-no-dependencies.js:34999
+#: dist/converse-no-dependencies.js:35049
+#: dist/converse-no-dependencies.js:36201
+#: dist/converse-no-dependencies.js:38317
+#: dist/converse-no-dependencies.js:39378
 msgid "Error"
 msgstr "Klaida"
 
 #: dist/converse-no-dependencies.js:27858
-#: dist/converse-no-dependencies.js:38315
+#: dist/converse-no-dependencies.js:38317
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
 msgstr "Deja, įvyko klaida bandant pašalinti %1$s iš kontaktų."
@@ -228,7 +229,7 @@ msgstr "vartotojas@domenas"
 
 #: dist/converse-no-dependencies.js:29600
 #: dist/converse-no-dependencies.js:33951
-#: dist/converse-no-dependencies.js:37846
+#: dist/converse-no-dependencies.js:37848
 msgid "Please enter a valid XMPP address"
 msgstr "Įveskite teisingą XMPP adresą"
 
@@ -302,8 +303,8 @@ msgid "Requires authentication"
 msgstr "Reikalinga autentikacija"
 
 #: dist/converse-no-dependencies.js:32154
-#: dist/converse-no-dependencies.js:73374
-#: dist/converse-no-dependencies.js:73526
+#: dist/converse-no-dependencies.js:73373
+#: dist/converse-no-dependencies.js:73525
 msgid "Hidden"
 msgstr "Paslėptas"
 
@@ -312,8 +313,8 @@ msgid "Requires an invitation"
 msgstr "Reikalingas pakvietimas"
 
 #: dist/converse-no-dependencies.js:32156
-#: dist/converse-no-dependencies.js:73438
-#: dist/converse-no-dependencies.js:73590
+#: dist/converse-no-dependencies.js:73437
+#: dist/converse-no-dependencies.js:73589
 msgid "Moderated"
 msgstr "Moderuojamas"
 
@@ -322,8 +323,8 @@ msgid "Non-anonymous"
 msgstr "Ne anonimiškas"
 
 #: dist/converse-no-dependencies.js:32158
-#: dist/converse-no-dependencies.js:73398
-#: dist/converse-no-dependencies.js:73550
+#: dist/converse-no-dependencies.js:73397
+#: dist/converse-no-dependencies.js:73549
 msgid "Open"
 msgstr "Atidarytas"
 
@@ -332,20 +333,20 @@ msgid "Permanent"
 msgstr "Pastovus"
 
 #: dist/converse-no-dependencies.js:32160
-#: dist/converse-no-dependencies.js:73382
-#: dist/converse-no-dependencies.js:73534
+#: dist/converse-no-dependencies.js:73381
+#: dist/converse-no-dependencies.js:73533
 msgid "Public"
 msgstr "Viešas"
 
 #: dist/converse-no-dependencies.js:32161
-#: dist/converse-no-dependencies.js:73430
-#: dist/converse-no-dependencies.js:73582
+#: dist/converse-no-dependencies.js:73429
+#: dist/converse-no-dependencies.js:73581
 msgid "Semi-anonymous"
 msgstr "Pusiau anonimiškas"
 
 #: dist/converse-no-dependencies.js:32162
-#: dist/converse-no-dependencies.js:73414
-#: dist/converse-no-dependencies.js:73566
+#: dist/converse-no-dependencies.js:73413
+#: dist/converse-no-dependencies.js:73565
 msgid "Temporary"
 msgstr "Laikinas"
 
@@ -598,13 +599,13 @@ msgid "Error: invalid number of arguments"
 msgstr "Klaida: netinkamas argumentų skaičius"
 
 #: dist/converse-no-dependencies.js:33336
-#: dist/converse-no-dependencies.js:46932
+#: dist/converse-no-dependencies.js:46915
 #, javascript-format
 msgid "This action was done by %1$s."
 msgstr "Šį veiksmą atliko %1$s."
 
 #: dist/converse-no-dependencies.js:33342
-#: dist/converse-no-dependencies.js:46936
+#: dist/converse-no-dependencies.js:46919
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "Pateikta priežastis: \"%1$s\"."
@@ -691,8 +692,8 @@ msgid "Please choose your nickname"
 msgstr "Prašome pasirinkti slapyvardį"
 
 #: dist/converse-no-dependencies.js:33771
-#: dist/converse-no-dependencies.js:36166
-#: dist/converse-no-dependencies.js:72734
+#: dist/converse-no-dependencies.js:36168
+#: dist/converse-no-dependencies.js:72733
 msgid "Nickname"
 msgstr "Slapyvardis"
 
@@ -799,12 +800,12 @@ msgstr "prisijungė"
 msgid "wants to be your contact"
 msgstr "nori būti jūsų kontaktu"
 
-#: dist/converse-no-dependencies.js:34681
+#: dist/converse-no-dependencies.js:34683
 #, fuzzy
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Deja, įvyko klaida bandant pašalinti įrenginį."
 
-#: dist/converse-no-dependencies.js:34695
+#: dist/converse-no-dependencies.js:34697
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -814,11 +815,11 @@ msgstr ""
 "pašalins senus raktus ir visi anksčiau šifruoti pranešimai daugiau negalės "
 "būti iššifruoti šiame įrenginyje."
 
-#: dist/converse-no-dependencies.js:34880
+#: dist/converse-no-dependencies.js:34882
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "Deja, dėl klaidos nepavyko iššifruoti gauto OMEMO pranešimo."
 
-#: dist/converse-no-dependencies.js:34985
+#: dist/converse-no-dependencies.js:34987
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
@@ -828,7 +829,7 @@ msgstr ""
 "butumėte prenumeravę jo (jos) būseną, kad galėtumete matyti jo (jos) OMEMO "
 "informaciją"
 
-#: dist/converse-no-dependencies.js:34987
+#: dist/converse-no-dependencies.js:34989
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
@@ -837,11 +838,11 @@ msgstr ""
 "Deja, negalime nusiųsti užšifruoto pranešimo, nes %1$s nutolęs serveris "
 "nerastas"
 
-#: dist/converse-no-dependencies.js:34989
+#: dist/converse-no-dependencies.js:34991
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr "Neįmanoma nusiųsti užšifruoto pranešimo dėl nenumatytos klaidos."
 
-#: dist/converse-no-dependencies.js:35042
+#: dist/converse-no-dependencies.js:35044
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
@@ -849,7 +850,7 @@ msgstr ""
 "Negalima panaudoti taškas-į-tašką šifravimo šiame kambaryje, arba kambarys "
 "turi dalinį anonimiškumą arba ne visi dalyviai palaiko OMEMO."
 
-#: dist/converse-no-dependencies.js:35044
+#: dist/converse-no-dependencies.js:35046
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
@@ -858,12 +859,12 @@ msgstr ""
 "Negalima panaudoti taškas-į-tašką šifravimo, kadangi %1$s naudoja klietą "
 "nepalaikantį OMEMO."
 
-#: dist/converse-no-dependencies.js:35158
+#: dist/converse-no-dependencies.js:35160
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:35232
+#: dist/converse-no-dependencies.js:35234
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
@@ -871,7 +872,7 @@ msgstr ""
 "Tai yra OMEMO užšifruotas pranešimas, kurio jūsų klientas tikriausiai "
 "nepalaiko. Daugiau informacijos rasite https://conversations.im/omemo"
 
-#: dist/converse-no-dependencies.js:35932
+#: dist/converse-no-dependencies.js:35934
 #, javascript-format
 msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
@@ -880,41 +881,41 @@ msgstr ""
 "%1$s tikriausiai neturi kliento palaikančio OMEMO. Daugiau nebus galima "
 "naudoti pokalbių šifravimą šiame kambaryje."
 
-#: dist/converse-no-dependencies.js:36160
+#: dist/converse-no-dependencies.js:36162
 msgid "Your avatar image"
 msgstr "Jūsų pseudoportretas"
 
-#: dist/converse-no-dependencies.js:36161
+#: dist/converse-no-dependencies.js:36163
 msgid "Your Profile"
 msgstr "Jūsų profilis"
 
-#: dist/converse-no-dependencies.js:36162
-#: dist/converse-no-dependencies.js:36247
-#: dist/converse-no-dependencies.js:73460
-#: dist/converse-no-dependencies.js:74700
-#: dist/converse-no-dependencies.js:75936
-#: dist/converse-no-dependencies.js:76050
+#: dist/converse-no-dependencies.js:36164
+#: dist/converse-no-dependencies.js:36249
+#: dist/converse-no-dependencies.js:73459
+#: dist/converse-no-dependencies.js:74699
+#: dist/converse-no-dependencies.js:75935
+#: dist/converse-no-dependencies.js:76049
 msgid "Close"
 msgstr "Uždaryti"
 
-#: dist/converse-no-dependencies.js:36163
+#: dist/converse-no-dependencies.js:36165
 msgid "Email"
 msgstr "El. paštas"
 
-#: dist/converse-no-dependencies.js:36164
+#: dist/converse-no-dependencies.js:36166
 msgid "Full Name"
 msgstr "Visas vardas"
 
-#: dist/converse-no-dependencies.js:36165
+#: dist/converse-no-dependencies.js:36167
 #, fuzzy
 msgid "XMPP Address (JID)"
 msgstr "XMPP adresas (JID)"
 
-#: dist/converse-no-dependencies.js:36167
+#: dist/converse-no-dependencies.js:36169
 msgid "Role"
 msgstr "Vaidmuo"
 
-#: dist/converse-no-dependencies.js:36168
+#: dist/converse-no-dependencies.js:36170
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
@@ -922,144 +923,144 @@ msgstr ""
 "Kelių vaidmenų atskirimui naudokite kablelius. Jūsų vaidmenys rodomi šalia "
 "jūsų vardo jūsų pranešimuose."
 
-#: dist/converse-no-dependencies.js:36169
+#: dist/converse-no-dependencies.js:36171
 msgid "URL"
 msgstr "URL"
 
-#: dist/converse-no-dependencies.js:36199
+#: dist/converse-no-dependencies.js:36201
 #, fuzzy
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "Deja, įvyko klaida bandant išsaugoti jūsų profilio duomenis."
 
-#: dist/converse-no-dependencies.js:36199
+#: dist/converse-no-dependencies.js:36201
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
 "Galite patikrinti ar yra kokių nors klaidų jūsų naršyklės vystytojo "
 "konsolėje."
 
-#: dist/converse-no-dependencies.js:36246
-#: dist/converse-no-dependencies.js:38019
+#: dist/converse-no-dependencies.js:36248
+#: dist/converse-no-dependencies.js:38021
 msgid "Away"
 msgstr "Pasišalinęs"
 
-#: dist/converse-no-dependencies.js:36248
-#: dist/converse-no-dependencies.js:38018
+#: dist/converse-no-dependencies.js:36250
+#: dist/converse-no-dependencies.js:38020
 msgid "Busy"
 msgstr "Užsiėmęs"
 
-#: dist/converse-no-dependencies.js:36250
+#: dist/converse-no-dependencies.js:36252
 msgid "Custom status"
 msgstr "Pritaikyta būsena"
 
-#: dist/converse-no-dependencies.js:36251
-#: dist/converse-no-dependencies.js:38021
+#: dist/converse-no-dependencies.js:36253
+#: dist/converse-no-dependencies.js:38023
 msgid "Offline"
 msgstr "Neprisijungęs"
 
-#: dist/converse-no-dependencies.js:36252
-#: dist/converse-no-dependencies.js:38016
+#: dist/converse-no-dependencies.js:36254
+#: dist/converse-no-dependencies.js:38018
 msgid "Online"
 msgstr "Prisijungęs"
 
-#: dist/converse-no-dependencies.js:36254
+#: dist/converse-no-dependencies.js:36256
 msgid "Away for long"
 msgstr "Ilgai pasišalinęs"
 
-#: dist/converse-no-dependencies.js:36255
+#: dist/converse-no-dependencies.js:36257
 msgid "Change chat status"
 msgstr "Keisti pokalbio būseną"
 
-#: dist/converse-no-dependencies.js:36256
+#: dist/converse-no-dependencies.js:36258
 msgid "Personal status message"
 msgstr "Asmeninis būsenos pranešimas"
 
-#: dist/converse-no-dependencies.js:36291
+#: dist/converse-no-dependencies.js:36293
 msgid "About"
 msgstr "Apie"
 
-#: dist/converse-no-dependencies.js:36293
+#: dist/converse-no-dependencies.js:36295
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
 "%1$s Atviro Kodo %2$s XMPP pokalbių klientas pateiktas jums %3$s Opkode %2$s"
 
-#: dist/converse-no-dependencies.js:36294
+#: dist/converse-no-dependencies.js:36296
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
 msgstr "%1$s Išverskite %2$s jį į jūsų kalbą"
 
-#: dist/converse-no-dependencies.js:36318
+#: dist/converse-no-dependencies.js:36320
 #, javascript-format
 msgid "I am %1$s"
 msgstr "Aš esu %1$s"
 
-#: dist/converse-no-dependencies.js:36321
+#: dist/converse-no-dependencies.js:36323
 msgid "Change settings"
 msgstr "Pakeisti nustatymus"
 
-#: dist/converse-no-dependencies.js:36322
+#: dist/converse-no-dependencies.js:36324
 msgid "Click to change your chat status"
 msgstr "Spustelėkite norėdami pakeisti pokalbio būseną"
 
-#: dist/converse-no-dependencies.js:36323
+#: dist/converse-no-dependencies.js:36325
 msgid "Log out"
 msgstr "Atsijungti"
 
-#: dist/converse-no-dependencies.js:36324
+#: dist/converse-no-dependencies.js:36326
 msgid "Show details about this chat client"
 msgstr "Parodyti šio pokalbių kliento duomenis"
 
-#: dist/converse-no-dependencies.js:36325
+#: dist/converse-no-dependencies.js:36327
 msgid "Your profile"
 msgstr "Jūsų profilis"
 
-#: dist/converse-no-dependencies.js:36365
+#: dist/converse-no-dependencies.js:36367
 msgid "Are you sure you want to log out?"
 msgstr "Ar tikrai norite atsijungti?"
 
-#: dist/converse-no-dependencies.js:36374
-#: dist/converse-no-dependencies.js:36384
+#: dist/converse-no-dependencies.js:36376
+#: dist/converse-no-dependencies.js:36386
 msgid "online"
 msgstr "prisijungęs"
 
-#: dist/converse-no-dependencies.js:36376
+#: dist/converse-no-dependencies.js:36378
 msgid "busy"
 msgstr "užsiėmęs"
 
-#: dist/converse-no-dependencies.js:36378
+#: dist/converse-no-dependencies.js:36380
 msgid "away for long"
 msgstr "ilgai pasišalinęs"
 
-#: dist/converse-no-dependencies.js:36380
+#: dist/converse-no-dependencies.js:36382
 msgid "away"
 msgstr "pasišalinęs"
 
-#: dist/converse-no-dependencies.js:36382
+#: dist/converse-no-dependencies.js:36384
 msgid "offline"
 msgstr "neprisijungęs"
 
-#: dist/converse-no-dependencies.js:36698
+#: dist/converse-no-dependencies.js:36700
 msgid " e.g. conversejs.org"
 msgstr "pvz. converse.org"
 
-#: dist/converse-no-dependencies.js:36813
+#: dist/converse-no-dependencies.js:36815
 msgid "Fetch registration form"
 msgstr "Parsiųsti registracijos formą"
 
-#: dist/converse-no-dependencies.js:36814
+#: dist/converse-no-dependencies.js:36816
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Patarimas: Yra pasiekiamas sąrašas viešų XMPP teikėjų"
 
-#: dist/converse-no-dependencies.js:36815
+#: dist/converse-no-dependencies.js:36817
 msgid "here"
 msgstr "čia"
 
-#: dist/converse-no-dependencies.js:36864
+#: dist/converse-no-dependencies.js:36866
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "Deja, mes negalimeprisijungti prie jūsų pasirinkto teikėjo."
 
-#: dist/converse-no-dependencies.js:36880
+#: dist/converse-no-dependencies.js:36882
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -1067,7 +1068,7 @@ msgstr ""
 "Deja, nurodytas teikėjas nepalaiko tiesioginės paskyros registracijos. "
 "Prašome pabandyti kitą teikėją."
 
-#: dist/converse-no-dependencies.js:36906
+#: dist/converse-no-dependencies.js:36908
 #, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
@@ -1076,15 +1077,15 @@ msgstr ""
 "Įvyko klaida bandant užmegzti ryšį su \"%1$s\". Ar esate tikri, kad jis "
 "egzistuoja?"
 
-#: dist/converse-no-dependencies.js:37075
+#: dist/converse-no-dependencies.js:37077
 msgid "Now logging you in"
 msgstr "Dabar jus prijungiame"
 
-#: dist/converse-no-dependencies.js:37079
+#: dist/converse-no-dependencies.js:37081
 msgid "Registered successfully"
 msgstr "Sėkmingai užregistruotas"
 
-#: dist/converse-no-dependencies.js:37183
+#: dist/converse-no-dependencies.js:37185
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -1092,152 +1093,152 @@ msgstr ""
 "Teikėjas atmetė jūsų registracijos bandymą. Prašome patikrinti ar jūsų "
 "pateiktos reikšmės teisingos."
 
-#: dist/converse-no-dependencies.js:37587
+#: dist/converse-no-dependencies.js:37589
 msgid "Click to toggle the list of open groupchats"
 msgstr "Spustelėkite, kad parodyti sąrašą kambarių"
 
 #. Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
-#: dist/converse-no-dependencies.js:37589
+#: dist/converse-no-dependencies.js:37591
 msgid "Open Groupchats"
 msgstr "Atidaryti Kambarius"
 
-#: dist/converse-no-dependencies.js:37639
+#: dist/converse-no-dependencies.js:37641
 #, fuzzy, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Ar tikrai norite išeiti iš kambario %1$s?"
 
-#: dist/converse-no-dependencies.js:37816
+#: dist/converse-no-dependencies.js:37818
 msgid "This contact is busy"
 msgstr "Šis kontaktas yra užsiėmęs"
 
-#: dist/converse-no-dependencies.js:37817
+#: dist/converse-no-dependencies.js:37819
 msgid "This contact is online"
 msgstr "Šis kontaktas yra prisijungęs"
 
-#: dist/converse-no-dependencies.js:37818
+#: dist/converse-no-dependencies.js:37820
 msgid "This contact is offline"
 msgstr "Šis kontaktas yra atsijungęs"
 
-#: dist/converse-no-dependencies.js:37819
+#: dist/converse-no-dependencies.js:37821
 msgid "This contact is unavailable"
 msgstr "Šis kontaktas yra nepasiekiamas"
 
-#: dist/converse-no-dependencies.js:37820
+#: dist/converse-no-dependencies.js:37822
 msgid "This contact is away for an extended period"
 msgstr "Šis kontaktas yra ilgai pasišalinęs"
 
-#: dist/converse-no-dependencies.js:37821
+#: dist/converse-no-dependencies.js:37823
 msgid "This contact is away"
 msgstr "Šis kontaktas yra pasišalinęs"
 
-#: dist/converse-no-dependencies.js:37824
+#: dist/converse-no-dependencies.js:37826
 msgid "Groups"
 msgstr "Grupės"
 
-#: dist/converse-no-dependencies.js:37838
+#: dist/converse-no-dependencies.js:37840
 msgid "Contact name"
 msgstr "Kontakto vardas"
 
-#: dist/converse-no-dependencies.js:37838
+#: dist/converse-no-dependencies.js:37840
 msgid "Optional nickname"
 msgstr "Neprivalomas slapyvardis"
 
-#: dist/converse-no-dependencies.js:37841
+#: dist/converse-no-dependencies.js:37843
 msgid "Add a Contact"
 msgstr "Pridėti kontaktą"
 
-#: dist/converse-no-dependencies.js:37842
+#: dist/converse-no-dependencies.js:37844
 msgid "XMPP Address"
 msgstr "XMPP adresas"
 
-#: dist/converse-no-dependencies.js:37844
+#: dist/converse-no-dependencies.js:37846
 msgid "name@example.org"
 msgstr "vardas@pavyzdys.lt"
 
-#: dist/converse-no-dependencies.js:37845
+#: dist/converse-no-dependencies.js:37847
 msgid "Add"
 msgstr "Pridėti"
 
-#: dist/converse-no-dependencies.js:37923
+#: dist/converse-no-dependencies.js:37925
 msgid "Sorry, could not find a contact with that name"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:37947
+#: dist/converse-no-dependencies.js:37949
 #, fuzzy
 msgid "This contact has already been added"
 msgstr "Šis kontaktas yra ilgai pasišalinęs"
 
-#: dist/converse-no-dependencies.js:38010
+#: dist/converse-no-dependencies.js:38012
 msgid "Filter"
 msgstr "Filtras"
 
-#: dist/converse-no-dependencies.js:38011
+#: dist/converse-no-dependencies.js:38013
 msgid "Filter by contact name"
 msgstr "Filtruoti pagal kontakto vardą"
 
-#: dist/converse-no-dependencies.js:38012
+#: dist/converse-no-dependencies.js:38014
 msgid "Filter by group name"
 msgstr "Filtruoti pagal grupės pavadinimą"
 
-#: dist/converse-no-dependencies.js:38013
+#: dist/converse-no-dependencies.js:38015
 msgid "Filter by status"
 msgstr "Filtruoti pagal būseną"
 
-#: dist/converse-no-dependencies.js:38014
+#: dist/converse-no-dependencies.js:38016
 msgid "Any"
 msgstr "Bet kuris"
 
-#: dist/converse-no-dependencies.js:38015
+#: dist/converse-no-dependencies.js:38017
 msgid "Unread"
 msgstr "Neskaityta"
 
-#: dist/converse-no-dependencies.js:38017
+#: dist/converse-no-dependencies.js:38019
 msgid "Chatty"
 msgstr "Kalbus"
 
-#: dist/converse-no-dependencies.js:38020
+#: dist/converse-no-dependencies.js:38022
 msgid "Extended Away"
 msgstr "Ilgai pasišalinęs"
 
-#: dist/converse-no-dependencies.js:38194
-#: dist/converse-no-dependencies.js:38250
+#: dist/converse-no-dependencies.js:38196
+#: dist/converse-no-dependencies.js:38252
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "Spustelėkite, jei norite pašalinti %1$s iš kontaktų"
 
-#: dist/converse-no-dependencies.js:38202
+#: dist/converse-no-dependencies.js:38204
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
 msgstr "Spustelėkite, jei norite priimti prašymą pridėti į kontaktus iš %1$s"
 
-#: dist/converse-no-dependencies.js:38203
+#: dist/converse-no-dependencies.js:38205
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
 msgstr "Spustelėkite, jei norite atmesti prašymą pridėti į kontaktus iš %1$s"
 
-#: dist/converse-no-dependencies.js:38249
+#: dist/converse-no-dependencies.js:38251
 #, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
 msgstr "Spustelėkite, kad pradėtumėte pokalbį su %1$s (JID: %2$s)"
 
-#: dist/converse-no-dependencies.js:38333
+#: dist/converse-no-dependencies.js:38335
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Ar tikrai norite atmesti šį prašymą pridėti į kontaktus?"
 
-#: dist/converse-no-dependencies.js:38608
+#: dist/converse-no-dependencies.js:38610
 msgid "Contacts"
 msgstr "Kontaktai"
 
-#: dist/converse-no-dependencies.js:38609
+#: dist/converse-no-dependencies.js:38611
 msgid "Add a contact"
 msgstr "Pridėti kontaktą"
 
-#: dist/converse-no-dependencies.js:38610
+#: dist/converse-no-dependencies.js:38612
 #, fuzzy
 msgid "Re-sync your contacts"
 msgstr "Pakartotinai sinchronizuoti jūsų kontaktus"
 
-#: dist/converse-no-dependencies.js:39376
+#: dist/converse-no-dependencies.js:39378
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr "Deja, įvyko klaida bandant išsaugoti jūsų žymę."
 
@@ -1278,107 +1279,107 @@ msgstr ""
 msgid "Sorry, an error occurred:"
 msgstr "Deja, įvyko klaida:"
 
-#: dist/converse-no-dependencies.js:41903
+#: dist/converse-no-dependencies.js:41907
 msgid "The connection has dropped, attempting to reconnect."
 msgstr "Ryšys nutrūko, bandoma prisijungti iš naujo."
 
-#: dist/converse-no-dependencies.js:42524
+#: dist/converse-no-dependencies.js:42528
 msgid "An error occurred while connecting to the chat server."
 msgstr "Bandant prisijungti prie pokalbių serverio įvyko klaida."
 
-#: dist/converse-no-dependencies.js:42531
+#: dist/converse-no-dependencies.js:42535
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
 msgstr ""
 "Jūsų vartotojo vardas ir / arba slaptažodis yra neteisingas. Prašome, "
 "pabandykite dar kartą."
 
-#: dist/converse-no-dependencies.js:42543
+#: dist/converse-no-dependencies.js:42547
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr "Atsiprašome, nepavyko prisijungti prie XMPP serverio su domenu: %1$s"
 
-#: dist/converse-no-dependencies.js:42545
+#: dist/converse-no-dependencies.js:42549
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "XMPP serveris nepateikė palaikomo autentifikavimo mechanizmo"
 
-#: dist/converse-no-dependencies.js:45272
+#: dist/converse-no-dependencies.js:45276
 #, fuzzy
 msgid "This groupchat is not anonymous"
 msgstr "Šis pokalbių kambarys nėra anonimiškas"
 
-#: dist/converse-no-dependencies.js:45273
+#: dist/converse-no-dependencies.js:45277
 #, fuzzy
 msgid "This groupchat now shows unavailable members"
 msgstr "Šiame kambaryje dabar rodomi nepasiekiami nariai"
 
-#: dist/converse-no-dependencies.js:45274
+#: dist/converse-no-dependencies.js:45278
 #, fuzzy
 msgid "This groupchat does not show unavailable members"
 msgstr "Šiame kambaryje nerodomi nepasiekiami nariai"
 
-#: dist/converse-no-dependencies.js:45275
+#: dist/converse-no-dependencies.js:45279
 #, fuzzy
 msgid "The groupchat configuration has changed"
 msgstr "Kambario konfigūracija pasikeitė"
 
-#: dist/converse-no-dependencies.js:45276
+#: dist/converse-no-dependencies.js:45280
 #, fuzzy
 msgid "groupchat logging is now enabled"
 msgstr "Kambarių žurnalo įrašymas dabar įjungtas"
 
-#: dist/converse-no-dependencies.js:45277
+#: dist/converse-no-dependencies.js:45281
 #, fuzzy
 msgid "groupchat logging is now disabled"
 msgstr "Kambarių žurnalo įrašymas dabar išjungtas"
 
-#: dist/converse-no-dependencies.js:45278
+#: dist/converse-no-dependencies.js:45282
 #, fuzzy
 msgid "This groupchat is now no longer anonymous"
 msgstr "Šis kambarys nebėra anonimiškas"
 
-#: dist/converse-no-dependencies.js:45279
+#: dist/converse-no-dependencies.js:45283
 #, fuzzy
 msgid "This groupchat is now semi-anonymous"
 msgstr "Šis kambarys dabar yra pusiau anonimiškas"
 
-#: dist/converse-no-dependencies.js:45280
+#: dist/converse-no-dependencies.js:45284
 #, fuzzy
 msgid "This groupchat is now fully-anonymous"
 msgstr "Šis kambarys dabar yra visiškai anonimiškas"
 
-#: dist/converse-no-dependencies.js:45281
+#: dist/converse-no-dependencies.js:45285
 #, fuzzy
 msgid "A new groupchat has been created"
 msgstr "Naujas kambarys buvo sukurtas"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:45285
+#: dist/converse-no-dependencies.js:45289
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "Jūsų slapyvardis buvo automatiškai nustatytas kaip %1$s"
 
-#: dist/converse-no-dependencies.js:45286
+#: dist/converse-no-dependencies.js:45290
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "Jūsų slapyvardis buvo pakeistas į %1$s"
 
-#: dist/converse-no-dependencies.js:45289
+#: dist/converse-no-dependencies.js:45293
 #, fuzzy
 msgid "You have been banned from this groupchat"
 msgstr "Jums buvo uždrausta prieeiga prie šio kambario"
 
-#: dist/converse-no-dependencies.js:45290
+#: dist/converse-no-dependencies.js:45294
 #, fuzzy
 msgid "You have been kicked from this groupchat"
 msgstr "Jūs buvote pašalintas iš šio kambario"
 
-#: dist/converse-no-dependencies.js:45291
+#: dist/converse-no-dependencies.js:45295
 #, fuzzy
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "Jūs buvote pašalinti iš šio kambario dėl narystės pakeitimo"
 
-#: dist/converse-no-dependencies.js:45292
+#: dist/converse-no-dependencies.js:45296
 #, fuzzy
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
@@ -1387,7 +1388,7 @@ msgstr ""
 "Jūs buvote pašalinti iš šio kambario, nes kambarys pakeistas į tik-nariams "
 "ir jūs nesate narys"
 
-#: dist/converse-no-dependencies.js:45293
+#: dist/converse-no-dependencies.js:45297
 #, fuzzy
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
@@ -1397,43 +1398,43 @@ msgstr ""
 "išjungiama"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:45297
+#: dist/converse-no-dependencies.js:45301
 #, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s buvo užblokuotas"
 
-#: dist/converse-no-dependencies.js:45298
+#: dist/converse-no-dependencies.js:45302
 #, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "%1$s slapyvardis buvo pakeistas"
 
-#: dist/converse-no-dependencies.js:45299
+#: dist/converse-no-dependencies.js:45303
 #, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s buvo pašalintas"
 
-#: dist/converse-no-dependencies.js:45300
+#: dist/converse-no-dependencies.js:45304
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s buvo pašalintas dėl narystės pakeitimo"
 
-#: dist/converse-no-dependencies.js:45301
+#: dist/converse-no-dependencies.js:45305
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s buvo pašalintas nes nėra narys"
 
-#: dist/converse-no-dependencies.js:46492
+#: dist/converse-no-dependencies.js:46475
 #, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
 msgstr "Jums neleidžiama registruotis šiame kambaryje."
 
-#: dist/converse-no-dependencies.js:46494
+#: dist/converse-no-dependencies.js:46477
 #, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr "Jums neleidžiama registruotis šiame kambaryje nes jis yra tik-nariams."
 
-#: dist/converse-no-dependencies.js:46525
+#: dist/converse-no-dependencies.js:46508
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
@@ -1441,27 +1442,27 @@ msgstr ""
 "Negalima užregistruoti jūsų slapyvardžio šiame kambaryje, jis nepalaiko "
 "registracijos."
 
-#: dist/converse-no-dependencies.js:46527
+#: dist/converse-no-dependencies.js:46510
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
 "Negalima užregistruoti jūsų slapyvardžio šiame kambaryje, pateikta "
 "neteisinga duomenų forma."
 
-#: dist/converse-no-dependencies.js:46808
+#: dist/converse-no-dependencies.js:46791
 #, fuzzy
 msgid ""
 "Your message was not delivered because you're not allowed to send messages "
 "in this groupchat."
 msgstr "Deja, jums neleidžiama registruotis šiame kambaryje"
 
-#: dist/converse-no-dependencies.js:46810
+#: dist/converse-no-dependencies.js:46793
 #, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr "Jums neleidžiama registruotis šiame kambaryje."
 
-#: dist/converse-no-dependencies.js:46982
+#: dist/converse-no-dependencies.js:46965
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
@@ -1469,52 +1470,52 @@ msgstr ""
 "Jūsų pasirinktas slapyvardis rezervuotas arba jau naudojamas, prašome "
 "pasirinkti kitą"
 
-#: dist/converse-no-dependencies.js:47006
+#: dist/converse-no-dependencies.js:46989
 #, fuzzy
 msgid "Password incorrect"
 msgstr "Apsaugotas slaptažodžiu"
 
-#: dist/converse-no-dependencies.js:47012
+#: dist/converse-no-dependencies.js:46995
 msgid "You are not on the member list of this groupchat."
 msgstr "Jūs nesate šio kambario narių sąraše."
 
-#: dist/converse-no-dependencies.js:47016
+#: dist/converse-no-dependencies.js:46999
 #, fuzzy
 msgid "You have been banned from this groupchat."
 msgstr "Jums buvo uždrausta prieiga prie šio kambario."
 
-#: dist/converse-no-dependencies.js:47022
+#: dist/converse-no-dependencies.js:47005
 #, fuzzy
 msgid "You are not allowed to create new groupchats."
 msgstr "Jums neleidžiama kurti naujus kambarius."
 
-#: dist/converse-no-dependencies.js:47026
+#: dist/converse-no-dependencies.js:47009
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Jūsų slapyvardis neatitinka šio kambario politikos."
 
-#: dist/converse-no-dependencies.js:47040
+#: dist/converse-no-dependencies.js:47023
 msgid "This groupchat does not (yet) exist."
 msgstr "Šis kambarys (dar) neegzistuoja."
 
-#: dist/converse-no-dependencies.js:47044
+#: dist/converse-no-dependencies.js:47027
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "Pasiektas šio kambario dalyvių maksimalus skaičius."
 
-#: dist/converse-no-dependencies.js:47048
+#: dist/converse-no-dependencies.js:47031
 msgid "Remote server not found"
 msgstr "Nutolęs serveris nerastas"
 
-#: dist/converse-no-dependencies.js:47050
+#: dist/converse-no-dependencies.js:47033
 #, javascript-format
 msgid "The explanation given is: \"%1$s\"."
 msgstr "Pateiktas paaiškinimas: \"%1$s\"."
 
-#: dist/converse-no-dependencies.js:47372
+#: dist/converse-no-dependencies.js:47352
 #, fuzzy, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s pakvietė jus prisijungti prie kambario: %2$s"
 
-#: dist/converse-no-dependencies.js:47374
+#: dist/converse-no-dependencies.js:47354
 #, javascript-format
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
@@ -1523,224 +1524,224 @@ msgstr ""
 "%1$s pakvietė jus prisijungti prie kambario: %2$s, ir pateikė tokią "
 "priežastį: \"%3$s\""
 
-#: dist/converse-no-dependencies.js:48026
+#: dist/converse-no-dependencies.js:48006
 msgid "My contacts"
 msgstr "Mano kontaktai"
 
-#: dist/converse-no-dependencies.js:48027
+#: dist/converse-no-dependencies.js:48007
 msgid "Pending contacts"
 msgstr "Nepatvirtinti kontaktai"
 
-#: dist/converse-no-dependencies.js:48028
+#: dist/converse-no-dependencies.js:48008
 msgid "Contact requests"
 msgstr "Prašymai pridėti prie kontaktų"
 
-#: dist/converse-no-dependencies.js:48029
+#: dist/converse-no-dependencies.js:48009
 msgid "Ungrouped"
 msgstr "Nesugrupuota"
 
-#: dist/converse-no-dependencies.js:48604
+#: dist/converse-no-dependencies.js:48584
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr "Deja, įvyko klaida bandant pridėti %1$s kaip kontaktą."
 
-#: dist/converse-no-dependencies.js:48842
+#: dist/converse-no-dependencies.js:48822
 msgid "This client does not allow presence subscriptions"
 msgstr "Šis klientas neleidžia aktyvumo prenumeratos"
 
-#: dist/converse-no-dependencies.js:48955
+#: dist/converse-no-dependencies.js:48935
 msgid "Click to hide these contacts"
 msgstr "Spustelėkite, kad paslėptumėte šiuos kontaktus"
 
-#: dist/converse-no-dependencies.js:72726
+#: dist/converse-no-dependencies.js:72725
 msgid "Enter a new Groupchat"
 msgstr "Įvesti naują kambarį"
 
-#: dist/converse-no-dependencies.js:72736
+#: dist/converse-no-dependencies.js:72735
 msgid "This field is required"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:72742
+#: dist/converse-no-dependencies.js:72741
 msgid "Join"
 msgstr "Prisijungti"
 
-#: dist/converse-no-dependencies.js:73274
+#: dist/converse-no-dependencies.js:73273
 #, fuzzy
 msgid "You're not allowed to send messages in this room"
 msgstr "Jums neleidžiama registruotis šiame kambaryje."
 
-#: dist/converse-no-dependencies.js:73293
+#: dist/converse-no-dependencies.js:73292
 #, fuzzy
 msgid "This groupchat no longer exists"
 msgstr "Šis kambarys daugiau neegzistuoja"
 
-#: dist/converse-no-dependencies.js:73299
+#: dist/converse-no-dependencies.js:73298
 msgid "The conversation has moved. Click below to enter."
 msgstr "Pokalbis buvo perkeltas. Spustelėkite žemiau įėjimui."
 
-#: dist/converse-no-dependencies.js:73326
+#: dist/converse-no-dependencies.js:73325
 msgid "Name"
 msgstr "Vardas"
 
-#: dist/converse-no-dependencies.js:73330
+#: dist/converse-no-dependencies.js:73329
 #, fuzzy
 msgid "Groupchat address (JID)"
 msgstr "Kambario adresas (JID)"
 
-#: dist/converse-no-dependencies.js:73334
+#: dist/converse-no-dependencies.js:73333
 msgid "Description"
 msgstr "Aprašymas"
 
-#: dist/converse-no-dependencies.js:73340
+#: dist/converse-no-dependencies.js:73339
 msgid "Topic"
 msgstr "Tema"
 
-#: dist/converse-no-dependencies.js:73344
+#: dist/converse-no-dependencies.js:73343
 msgid "Topic author"
 msgstr "Temos autorius"
 
-#: dist/converse-no-dependencies.js:73350
+#: dist/converse-no-dependencies.js:73349
 #, fuzzy
 msgid "Online users"
 msgstr "Prisijungę vartotojai"
 
-#: dist/converse-no-dependencies.js:73354
-#: dist/converse-no-dependencies.js:73504
+#: dist/converse-no-dependencies.js:73353
+#: dist/converse-no-dependencies.js:73503
 msgid "Features"
 msgstr "Savybės"
 
-#: dist/converse-no-dependencies.js:73358
-#: dist/converse-no-dependencies.js:73510
+#: dist/converse-no-dependencies.js:73357
+#: dist/converse-no-dependencies.js:73509
 msgid "Password protected"
 msgstr "Apsaugotas slaptažodžiu"
 
-#: dist/converse-no-dependencies.js:73360
-#: dist/converse-no-dependencies.js:73508
+#: dist/converse-no-dependencies.js:73359
+#: dist/converse-no-dependencies.js:73507
 msgid "This groupchat requires a password before entry"
 msgstr "Šis kambarys reikalauja slaptažodžio įėjimui"
 
-#: dist/converse-no-dependencies.js:73366
+#: dist/converse-no-dependencies.js:73365
 msgid "No password required"
 msgstr "Slaptažodis nereikalingas"
 
-#: dist/converse-no-dependencies.js:73368
-#: dist/converse-no-dependencies.js:73516
+#: dist/converse-no-dependencies.js:73367
+#: dist/converse-no-dependencies.js:73515
 msgid "This groupchat does not require a password upon entry"
 msgstr "Šis kambarys nereikalauja slaptažodžio įėjimui"
 
-#: dist/converse-no-dependencies.js:73376
-#: dist/converse-no-dependencies.js:73524
+#: dist/converse-no-dependencies.js:73375
+#: dist/converse-no-dependencies.js:73523
 msgid "This groupchat is not publicly searchable"
 msgstr "Šis kambarys neprieinamas viešoje paieškoje"
 
-#: dist/converse-no-dependencies.js:73384
-#: dist/converse-no-dependencies.js:73532
+#: dist/converse-no-dependencies.js:73383
+#: dist/converse-no-dependencies.js:73531
 msgid "This groupchat is publicly searchable"
 msgstr "Šis kambarys prieinamas viešoje paieškoje"
 
-#: dist/converse-no-dependencies.js:73390
-#: dist/converse-no-dependencies.js:73542
+#: dist/converse-no-dependencies.js:73389
+#: dist/converse-no-dependencies.js:73541
 msgid "Members only"
 msgstr "Tik nariams"
 
-#: dist/converse-no-dependencies.js:73392
+#: dist/converse-no-dependencies.js:73391
 #, fuzzy
 msgid "This groupchat is restricted to members only"
 msgstr "Šis kambarys prieinamas tik nariams"
 
-#: dist/converse-no-dependencies.js:73400
-#: dist/converse-no-dependencies.js:73548
+#: dist/converse-no-dependencies.js:73399
+#: dist/converse-no-dependencies.js:73547
 msgid "Anyone can join this groupchat"
 msgstr "Bet kas gali įeiti į šį kambarį"
 
-#: dist/converse-no-dependencies.js:73406
-#: dist/converse-no-dependencies.js:73558
+#: dist/converse-no-dependencies.js:73405
+#: dist/converse-no-dependencies.js:73557
 msgid "Persistent"
 msgstr "Pastovus"
 
-#: dist/converse-no-dependencies.js:73408
-#: dist/converse-no-dependencies.js:73556
+#: dist/converse-no-dependencies.js:73407
+#: dist/converse-no-dependencies.js:73555
 msgid "This groupchat persists even if it's unoccupied"
 msgstr "Šis kambarys išlieka net kai neturi lankytojų"
 
-#: dist/converse-no-dependencies.js:73416
-#: dist/converse-no-dependencies.js:73564
+#: dist/converse-no-dependencies.js:73415
+#: dist/converse-no-dependencies.js:73563
 msgid "This groupchat will disappear once the last person leaves"
 msgstr "Šis kambarys dings kai paskutinis žmogus išeis"
 
-#: dist/converse-no-dependencies.js:73422
-#: dist/converse-no-dependencies.js:73574
+#: dist/converse-no-dependencies.js:73421
+#: dist/converse-no-dependencies.js:73573
 #, fuzzy
 msgid "Not anonymous"
 msgstr "Ne anonimiškas"
 
-#: dist/converse-no-dependencies.js:73424
-#: dist/converse-no-dependencies.js:73572
+#: dist/converse-no-dependencies.js:73423
+#: dist/converse-no-dependencies.js:73571
 msgid "All other groupchat participants can see your XMPP address"
 msgstr "Visi kiti kambario dalyviai gali matyti jūsų XMPP adresą"
 
-#: dist/converse-no-dependencies.js:73432
-#: dist/converse-no-dependencies.js:73580
+#: dist/converse-no-dependencies.js:73431
+#: dist/converse-no-dependencies.js:73579
 msgid "Only moderators can see your XMPP address"
 msgstr "Tik moderatoriai gali matyti jūsų XMPP adresą"
 
-#: dist/converse-no-dependencies.js:73440
-#: dist/converse-no-dependencies.js:73588
+#: dist/converse-no-dependencies.js:73439
+#: dist/converse-no-dependencies.js:73587
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr "Dalyviai turi paprašyti rašymo leidimo įeinant į kambarį"
 
-#: dist/converse-no-dependencies.js:73446
-#: dist/converse-no-dependencies.js:73598
+#: dist/converse-no-dependencies.js:73445
+#: dist/converse-no-dependencies.js:73597
 msgid "Not moderated"
 msgstr "Ne moderuojamas"
 
-#: dist/converse-no-dependencies.js:73448
-#: dist/converse-no-dependencies.js:73596
+#: dist/converse-no-dependencies.js:73447
+#: dist/converse-no-dependencies.js:73595
 msgid "Participants entering this groupchat can write right away"
 msgstr "Dalyviams leidžiama rašyti iškart įeinant į šį kambarį"
 
-#: dist/converse-no-dependencies.js:73454
-#: dist/converse-no-dependencies.js:73606
+#: dist/converse-no-dependencies.js:73453
+#: dist/converse-no-dependencies.js:73605
 msgid "Message archiving"
 msgstr "Pranešimų archivavimas"
 
-#: dist/converse-no-dependencies.js:73456
-#: dist/converse-no-dependencies.js:73604
+#: dist/converse-no-dependencies.js:73455
+#: dist/converse-no-dependencies.js:73603
 msgid "Messages are archived on the server"
 msgstr "Pranešimai archivuojami serveryje"
 
-#: dist/converse-no-dependencies.js:73518
+#: dist/converse-no-dependencies.js:73517
 msgid "No password"
 msgstr "Be slaptažodžio"
 
-#: dist/converse-no-dependencies.js:73540
+#: dist/converse-no-dependencies.js:73539
 msgid "this groupchat is restricted to members only"
 msgstr "šis kambarys prieinamas tik nariams"
 
-#: dist/converse-no-dependencies.js:74051
+#: dist/converse-no-dependencies.js:74050
 msgid "Uploading file:"
 msgstr "Įkeliamas failas:"
 
-#: dist/converse-no-dependencies.js:74513
-#: dist/converse-no-dependencies.js:75956
+#: dist/converse-no-dependencies.js:74512
+#: dist/converse-no-dependencies.js:75955
 #, fuzzy
 msgid "XMPP Address:"
 msgstr "XMPP adresas:"
 
-#: dist/converse-no-dependencies.js:74519
+#: dist/converse-no-dependencies.js:74518
 msgid "Password:"
 msgstr "Slaptažodis:"
 
-#: dist/converse-no-dependencies.js:74521
+#: dist/converse-no-dependencies.js:74520
 msgid "password"
 msgstr "slaptažodis"
 
-#: dist/converse-no-dependencies.js:74531
+#: dist/converse-no-dependencies.js:74530
 msgid "This is a trusted device"
 msgstr "Tai yra patikimas įrenginys"
 
-#: dist/converse-no-dependencies.js:74533
+#: dist/converse-no-dependencies.js:74532
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1755,176 +1756,176 @@ msgstr ""
 "Atkreipiame dėmesį, kad naudojant nepatikimą įrenginį OMEMO šifravimas NĖRA "
 "galimas."
 
-#: dist/converse-no-dependencies.js:74537
+#: dist/converse-no-dependencies.js:74536
 #, fuzzy
 msgid "Log in"
 msgstr "Prisijungti"
 
-#: dist/converse-no-dependencies.js:74543
+#: dist/converse-no-dependencies.js:74542
 msgid "Click here to log in anonymously"
 msgstr "Spustelėkite čia norėdami prisijungti anonimiškai"
 
-#: dist/converse-no-dependencies.js:74659
+#: dist/converse-no-dependencies.js:74658
 msgid "This message has been edited"
 msgstr "Šis pranešimas buvo redaguotas"
 
-#: dist/converse-no-dependencies.js:74665
+#: dist/converse-no-dependencies.js:74664
 #, fuzzy
 msgid "Edit this message"
 msgstr "Redaguoti šį pranešimą"
 
-#: dist/converse-no-dependencies.js:74686
+#: dist/converse-no-dependencies.js:74685
 msgid "Message versions"
 msgstr "Pranešimo versijos"
 
-#: dist/converse-no-dependencies.js:74913
+#: dist/converse-no-dependencies.js:74912
 msgid "Save and close"
 msgstr "Išsaugoti ir uždaryti"
 
-#: dist/converse-no-dependencies.js:74917
+#: dist/converse-no-dependencies.js:74916
 msgid "This device's OMEMO fingerprint"
 msgstr "Šio įrenginio OMEMO atspaudas"
 
-#: dist/converse-no-dependencies.js:74927
+#: dist/converse-no-dependencies.js:74926
 msgid "Generate new keys and fingerprint"
 msgstr "Sugeneruoti naujus raktus ir atspaudus"
 
-#: dist/converse-no-dependencies.js:74931
+#: dist/converse-no-dependencies.js:74930
 msgid "Select all"
 msgstr "Pasirinkti viską"
 
-#: dist/converse-no-dependencies.js:74933
+#: dist/converse-no-dependencies.js:74932
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr "Pažymėti, kad pasirinkti visų kitų OMEMO įrenginių atspaudus"
 
-#: dist/converse-no-dependencies.js:74935
+#: dist/converse-no-dependencies.js:74934
 msgid "Other OMEMO-enabled devices"
 msgstr "Kiti įrenginiai su įjungtu OMEMO"
 
-#: dist/converse-no-dependencies.js:74943
-#: dist/converse-no-dependencies.js:74951
+#: dist/converse-no-dependencies.js:74942
+#: dist/converse-no-dependencies.js:74950
 msgid "Checkbox for selecting the following fingerprint"
 msgstr "Pažymėti šio atspaudo pasirinkimui"
 
-#: dist/converse-no-dependencies.js:74953
+#: dist/converse-no-dependencies.js:74952
 msgid "Device without a fingerprint"
 msgstr "Įrenginys be atspaudo"
 
-#: dist/converse-no-dependencies.js:74959
+#: dist/converse-no-dependencies.js:74958
 msgid "Remove checked devices and close"
 msgstr "Ištrinti pasirinktus įrenginius ir uždaryti"
 
-#: dist/converse-no-dependencies.js:75043
+#: dist/converse-no-dependencies.js:75042
 msgid "Don't have a chat account?"
 msgstr "Neturite pokalbių paskyros?"
 
-#: dist/converse-no-dependencies.js:75045
+#: dist/converse-no-dependencies.js:75044
 msgid "Create an account"
 msgstr "Sukurti paskyrą"
 
-#: dist/converse-no-dependencies.js:75066
+#: dist/converse-no-dependencies.js:75065
 msgid "Create your account"
 msgstr "Sukurti jūsų paskyrą"
 
-#: dist/converse-no-dependencies.js:75068
+#: dist/converse-no-dependencies.js:75067
 msgid "Please enter the XMPP provider to register with:"
 msgstr "Prašome nurodyti XMPP teikėją registracijai:"
 
-#: dist/converse-no-dependencies.js:75086
-#: dist/converse-no-dependencies.js:75125
+#: dist/converse-no-dependencies.js:75085
+#: dist/converse-no-dependencies.js:75124
 msgid "Already have a chat account?"
 msgstr "Jau turite pokalbių paskyrą?"
 
-#: dist/converse-no-dependencies.js:75088
-#: dist/converse-no-dependencies.js:75127
+#: dist/converse-no-dependencies.js:75087
+#: dist/converse-no-dependencies.js:75126
 msgid "Log in here"
 msgstr "Prisijunkite čia"
 
-#: dist/converse-no-dependencies.js:75109
+#: dist/converse-no-dependencies.js:75108
 msgid "Account Registration:"
 msgstr "Paskyros registracija:"
 
-#: dist/converse-no-dependencies.js:75117
+#: dist/converse-no-dependencies.js:75116
 msgid "Register"
 msgstr "Registruotis"
 
-#: dist/converse-no-dependencies.js:75121
+#: dist/converse-no-dependencies.js:75120
 msgid "Choose a different provider"
 msgstr "Pasirinkite kitą teikėją"
 
-#: dist/converse-no-dependencies.js:75146
+#: dist/converse-no-dependencies.js:75145
 msgid "Hold tight, we're fetching the registration form…"
 msgstr "Palaukite, parsiunčiame registracijos formą..."
 
-#: dist/converse-no-dependencies.js:75886
+#: dist/converse-no-dependencies.js:75885
 msgid "Messages are being sent in plaintext"
 msgstr "Pranešimai siunčiami atviru tekstu"
 
-#: dist/converse-no-dependencies.js:75940
+#: dist/converse-no-dependencies.js:75939
 msgid "The User's Profile Image"
 msgstr "Vartotojo profilio nuotrauka"
 
-#: dist/converse-no-dependencies.js:75950
+#: dist/converse-no-dependencies.js:75949
 msgid "Full Name:"
 msgstr "Visas vardas:"
 
-#: dist/converse-no-dependencies.js:75964
+#: dist/converse-no-dependencies.js:75963
 msgid "Nickname:"
 msgstr "Slapyvardis:"
 
-#: dist/converse-no-dependencies.js:75972
+#: dist/converse-no-dependencies.js:75971
 msgid "URL:"
 msgstr "URL:"
 
-#: dist/converse-no-dependencies.js:75982
+#: dist/converse-no-dependencies.js:75981
 msgid "Email:"
 msgstr "El. paštas:"
 
-#: dist/converse-no-dependencies.js:75992
+#: dist/converse-no-dependencies.js:75991
 msgid "Role:"
 msgstr "Vaidmuo:"
 
-#: dist/converse-no-dependencies.js:76000
+#: dist/converse-no-dependencies.js:75999
 msgid "OMEMO Fingerprints"
 msgstr "OMEMO atspaudai"
 
-#: dist/converse-no-dependencies.js:76024
+#: dist/converse-no-dependencies.js:76023
 msgid "Trusted"
 msgstr "Patikimas"
 
-#: dist/converse-no-dependencies.js:76038
+#: dist/converse-no-dependencies.js:76037
 msgid "Untrusted"
 msgstr "Nepatikimas"
 
-#: dist/converse-no-dependencies.js:76052
+#: dist/converse-no-dependencies.js:76051
 msgid "Refresh"
 msgstr "Perkrauti"
 
-#: dist/converse-no-dependencies.js:76056
+#: dist/converse-no-dependencies.js:76055
 #, fuzzy
 msgid "Remove as contact"
 msgstr "Pašalinti kontaktą"
 
-#: dist/converse-no-dependencies.js:76261
+#: dist/converse-no-dependencies.js:76260
 #, javascript-format
 msgid "Download audio file \"%1$s\""
 msgstr "Parsiųsti audio failą \"%1$s\""
 
-#: dist/converse-no-dependencies.js:76281
+#: dist/converse-no-dependencies.js:76280
 #, javascript-format
 msgid "Download file \"%1$s\""
 msgstr "Parsiųsti failą \"%1$s\""
 
-#: dist/converse-no-dependencies.js:76298
+#: dist/converse-no-dependencies.js:76297
 #, javascript-format
 msgid "Download image \"%1$s\""
 msgstr "Parsiųsti atvaizdą \"%1$s\""
 
-#: dist/converse-no-dependencies.js:76332
+#: dist/converse-no-dependencies.js:76331
 msgid "Download"
 msgstr "Parsiųsti"
 
-#: dist/converse-no-dependencies.js:76351
+#: dist/converse-no-dependencies.js:76350
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Parsiųsti video failą \"%1$s\""

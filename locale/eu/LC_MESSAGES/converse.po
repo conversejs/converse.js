@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-07 10:49+0200\n"
+"POT-Creation-Date: 2019-08-08 17:32+0200\n"
 "PO-Revision-Date: 2019-06-18 19:04+0000\n"
 "Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
@@ -26,13 +26,13 @@ msgstr "Ziur al zaude \"%1$s\" laster-marka ezabatu nahi duzula?"
 
 #: dist/converse-no-dependencies.js:26987
 #: dist/converse-no-dependencies.js:27103
-#: dist/converse-no-dependencies.js:37518
+#: dist/converse-no-dependencies.js:37520
 msgid "Unbookmark this groupchat"
 msgstr "Kendu gela hau laster-marketatik"
 
 #: dist/converse-no-dependencies.js:26987
 #: dist/converse-no-dependencies.js:27065
-#: dist/converse-no-dependencies.js:37519
+#: dist/converse-no-dependencies.js:37521
 msgid "Bookmark this groupchat"
 msgstr "Egin gela honen laster-marka"
 
@@ -41,9 +41,9 @@ msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr "Gela honetan automatikoki sartu nahiko zenuke abioan?"
 
 #: dist/converse-no-dependencies.js:27067
-#: dist/converse-no-dependencies.js:36249
-#: dist/converse-no-dependencies.js:73643
-#: dist/converse-no-dependencies.js:75150
+#: dist/converse-no-dependencies.js:36251
+#: dist/converse-no-dependencies.js:73642
+#: dist/converse-no-dependencies.js:75149
 msgid "Cancel"
 msgstr "Utzi"
 
@@ -56,13 +56,13 @@ msgid "What should your nickname for this groupchat be?"
 msgstr "Zein izango litzateke gela honetarako zure ezizena?"
 
 #: dist/converse-no-dependencies.js:27070
-#: dist/converse-no-dependencies.js:36253
-#: dist/converse-no-dependencies.js:73641
+#: dist/converse-no-dependencies.js:36255
+#: dist/converse-no-dependencies.js:73640
 msgid "Save"
 msgstr "Gorde"
 
 #: dist/converse-no-dependencies.js:27101
-#: dist/converse-no-dependencies.js:37517
+#: dist/converse-no-dependencies.js:37519
 msgid "Leave this groupchat"
 msgstr "Atera gela honetatik"
 
@@ -72,13 +72,13 @@ msgstr "Laster-marka hau ezabatu"
 
 #: dist/converse-no-dependencies.js:27104
 #: dist/converse-no-dependencies.js:32250
-#: dist/converse-no-dependencies.js:37520
+#: dist/converse-no-dependencies.js:37522
 msgid "Show more information on this groupchat"
 msgstr "Erakutsi gela honi buruzko informazio gehiago"
 
 #: dist/converse-no-dependencies.js:27107
 #: dist/converse-no-dependencies.js:32249
-#: dist/converse-no-dependencies.js:37522
+#: dist/converse-no-dependencies.js:37524
 msgid "Click to open this groupchat"
 msgstr "Klikatu gela hau irekitzeko"
 
@@ -99,22 +99,23 @@ msgid "Sorry, something went wrong while trying to refresh"
 msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan"
 
 #: dist/converse-no-dependencies.js:27849
-#: dist/converse-no-dependencies.js:38297
+#: dist/converse-no-dependencies.js:38299
 msgid "Are you sure you want to remove this contact?"
 msgstr "Ziur al zaude kontaktu hau ezabatu nahi duzula?"
 
 #: dist/converse-no-dependencies.js:27858
-#: dist/converse-no-dependencies.js:34681
-#: dist/converse-no-dependencies.js:34993
-#: dist/converse-no-dependencies.js:34997
-#: dist/converse-no-dependencies.js:35047
-#: dist/converse-no-dependencies.js:36199
-#: dist/converse-no-dependencies.js:39376
+#: dist/converse-no-dependencies.js:34683
+#: dist/converse-no-dependencies.js:34995
+#: dist/converse-no-dependencies.js:34999
+#: dist/converse-no-dependencies.js:35049
+#: dist/converse-no-dependencies.js:36201
+#: dist/converse-no-dependencies.js:38317
+#: dist/converse-no-dependencies.js:39378
 msgid "Error"
 msgstr "Errorea"
 
 #: dist/converse-no-dependencies.js:27858
-#: dist/converse-no-dependencies.js:38315
+#: dist/converse-no-dependencies.js:38317
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
 msgstr "Barkatu, akats bat izan da %1$s kontaktu moduan ezabatzean."
@@ -222,7 +223,7 @@ msgstr "erabiltzailea@domeinua"
 
 #: dist/converse-no-dependencies.js:29600
 #: dist/converse-no-dependencies.js:33951
-#: dist/converse-no-dependencies.js:37846
+#: dist/converse-no-dependencies.js:37848
 msgid "Please enter a valid XMPP address"
 msgstr "Mesedez sar ezazu baleko XMPP helbide bat"
 
@@ -294,8 +295,8 @@ msgid "Requires authentication"
 msgstr "Autentifikazioa behar da"
 
 #: dist/converse-no-dependencies.js:32154
-#: dist/converse-no-dependencies.js:73374
-#: dist/converse-no-dependencies.js:73526
+#: dist/converse-no-dependencies.js:73373
+#: dist/converse-no-dependencies.js:73525
 msgid "Hidden"
 msgstr "Ezkutua"
 
@@ -304,8 +305,8 @@ msgid "Requires an invitation"
 msgstr "Gonbidapena behar da"
 
 #: dist/converse-no-dependencies.js:32156
-#: dist/converse-no-dependencies.js:73438
-#: dist/converse-no-dependencies.js:73590
+#: dist/converse-no-dependencies.js:73437
+#: dist/converse-no-dependencies.js:73589
 msgid "Moderated"
 msgstr "Moderatua"
 
@@ -314,8 +315,8 @@ msgid "Non-anonymous"
 msgstr "Ez-anonimoa"
 
 #: dist/converse-no-dependencies.js:32158
-#: dist/converse-no-dependencies.js:73398
-#: dist/converse-no-dependencies.js:73550
+#: dist/converse-no-dependencies.js:73397
+#: dist/converse-no-dependencies.js:73549
 msgid "Open"
 msgstr "Ireki"
 
@@ -324,20 +325,20 @@ msgid "Permanent"
 msgstr "Iraunkorra"
 
 #: dist/converse-no-dependencies.js:32160
-#: dist/converse-no-dependencies.js:73382
-#: dist/converse-no-dependencies.js:73534
+#: dist/converse-no-dependencies.js:73381
+#: dist/converse-no-dependencies.js:73533
 msgid "Public"
 msgstr "Publikoa"
 
 #: dist/converse-no-dependencies.js:32161
-#: dist/converse-no-dependencies.js:73430
-#: dist/converse-no-dependencies.js:73582
+#: dist/converse-no-dependencies.js:73429
+#: dist/converse-no-dependencies.js:73581
 msgid "Semi-anonymous"
 msgstr "Erdi-anonimoa"
 
 #: dist/converse-no-dependencies.js:32162
-#: dist/converse-no-dependencies.js:73414
-#: dist/converse-no-dependencies.js:73566
+#: dist/converse-no-dependencies.js:73413
+#: dist/converse-no-dependencies.js:73565
 msgid "Temporary"
 msgstr "Aldi baterako"
 
@@ -584,13 +585,13 @@ msgid "Error: invalid number of arguments"
 msgstr "Errorea: Argumentu kopuru baliogabea"
 
 #: dist/converse-no-dependencies.js:33336
-#: dist/converse-no-dependencies.js:46932
+#: dist/converse-no-dependencies.js:46915
 #, javascript-format
 msgid "This action was done by %1$s."
 msgstr "Ekintza hau %1$s -k egina izan da."
 
 #: dist/converse-no-dependencies.js:33342
-#: dist/converse-no-dependencies.js:46936
+#: dist/converse-no-dependencies.js:46919
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "Emandako arrazoia ondorengoa da: \"%1$s\"."
@@ -674,8 +675,8 @@ msgid "Please choose your nickname"
 msgstr "Mesedez, aukeratu zure ezizena"
 
 #: dist/converse-no-dependencies.js:33771
-#: dist/converse-no-dependencies.js:36166
-#: dist/converse-no-dependencies.js:72734
+#: dist/converse-no-dependencies.js:36168
+#: dist/converse-no-dependencies.js:72733
 msgid "Nickname"
 msgstr "Ezizena"
 
@@ -782,11 +783,11 @@ msgstr "linean jarri da"
 msgid "wants to be your contact"
 msgstr "zure kontaktua izan nahi du"
 
-#: dist/converse-no-dependencies.js:34681
+#: dist/converse-no-dependencies.js:34683
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Errore bat gertatu da gailuak kentzen saiatzean."
 
-#: dist/converse-no-dependencies.js:34695
+#: dist/converse-no-dependencies.js:34697
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -796,11 +797,11 @@ msgstr ""
 "zaharrak ezabatuko ditu eta aurretiaz enkriptaturiko mezu guztiak ezingo "
 "dira irakurri gailu honetan."
 
-#: dist/converse-no-dependencies.js:34880
+#: dist/converse-no-dependencies.js:34882
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "Ezin izan da jasotako OMEMO mezu bat deszifratu errore bat dela eta."
 
-#: dist/converse-no-dependencies.js:34985
+#: dist/converse-no-dependencies.js:34987
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
@@ -810,7 +811,7 @@ msgstr ""
 "presentzia eguneraketetara izen emanda egotea behar duelako beraien OMEMO "
 "informazioa ikusi ahal izateko."
 
-#: dist/converse-no-dependencies.js:34987
+#: dist/converse-no-dependencies.js:34989
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
@@ -819,29 +820,29 @@ msgstr ""
 "Barkatu, ez gara gai enkriptaturiko mezua bidaltzeko %1$s -rentzako urruneko "
 "zerbitzaria ezin delako topatu."
 
-#: dist/converse-no-dependencies.js:34989
+#: dist/converse-no-dependencies.js:34991
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr "Ezin izan da mezua bidali errore bat dela eta."
 
-#: dist/converse-no-dependencies.js:35042
+#: dist/converse-no-dependencies.js:35044
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:35044
+#: dist/converse-no-dependencies.js:35046
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:35158
+#: dist/converse-no-dependencies.js:35160
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:35232
+#: dist/converse-no-dependencies.js:35234
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
@@ -849,7 +850,7 @@ msgstr ""
 "Hau zifratutako OMEMO mezu bat da eta badirudi zure bezeroak ez duela "
 "onartzen. Gehiago jakiteko:  https://conversations.im/omemo"
 
-#: dist/converse-no-dependencies.js:35932
+#: dist/converse-no-dependencies.js:35934
 #, javascript-format
 msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
@@ -858,40 +859,40 @@ msgstr ""
 "Badirudi %1$s -(e)k ez daukala OMEMO erabiltzeko gai den bezerorik. Ezingo "
 "da enkriptaturiko elkarrizketarik izan talde honetan."
 
-#: dist/converse-no-dependencies.js:36160
+#: dist/converse-no-dependencies.js:36162
 msgid "Your avatar image"
 msgstr "Zure abatarraren irudia"
 
-#: dist/converse-no-dependencies.js:36161
+#: dist/converse-no-dependencies.js:36163
 msgid "Your Profile"
 msgstr "Zure profila"
 
-#: dist/converse-no-dependencies.js:36162
-#: dist/converse-no-dependencies.js:36247
-#: dist/converse-no-dependencies.js:73460
-#: dist/converse-no-dependencies.js:74700
-#: dist/converse-no-dependencies.js:75936
-#: dist/converse-no-dependencies.js:76050
+#: dist/converse-no-dependencies.js:36164
+#: dist/converse-no-dependencies.js:36249
+#: dist/converse-no-dependencies.js:73459
+#: dist/converse-no-dependencies.js:74699
+#: dist/converse-no-dependencies.js:75935
+#: dist/converse-no-dependencies.js:76049
 msgid "Close"
 msgstr "Itxi"
 
-#: dist/converse-no-dependencies.js:36163
+#: dist/converse-no-dependencies.js:36165
 msgid "Email"
 msgstr "Emaila"
 
-#: dist/converse-no-dependencies.js:36164
+#: dist/converse-no-dependencies.js:36166
 msgid "Full Name"
 msgstr "Izen osoa"
 
-#: dist/converse-no-dependencies.js:36165
+#: dist/converse-no-dependencies.js:36167
 msgid "XMPP Address (JID)"
 msgstr "XMPP helbidea (JID)"
 
-#: dist/converse-no-dependencies.js:36167
+#: dist/converse-no-dependencies.js:36169
 msgid "Role"
 msgstr "Rola"
 
-#: dist/converse-no-dependencies.js:36168
+#: dist/converse-no-dependencies.js:36170
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
@@ -899,142 +900,142 @@ msgstr ""
 "Banatu rolak komen bidez. Zure rolak izenaren ondoan agertzen dira txat "
 "mezuetan."
 
-#: dist/converse-no-dependencies.js:36169
+#: dist/converse-no-dependencies.js:36171
 msgid "URL"
 msgstr "URLa"
 
-#: dist/converse-no-dependencies.js:36199
+#: dist/converse-no-dependencies.js:36201
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "Errore bat gertatu da zure profileko datuak gordetzen saiatzean."
 
-#: dist/converse-no-dependencies.js:36199
+#: dist/converse-no-dependencies.js:36201
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
 "Zure nabigatzaileko garatzaile kontsolan egiaztatu dezakezu errorerik dagoen."
 
-#: dist/converse-no-dependencies.js:36246
-#: dist/converse-no-dependencies.js:38019
+#: dist/converse-no-dependencies.js:36248
+#: dist/converse-no-dependencies.js:38021
 msgid "Away"
 msgstr "Kanpoan"
 
-#: dist/converse-no-dependencies.js:36248
-#: dist/converse-no-dependencies.js:38018
+#: dist/converse-no-dependencies.js:36250
+#: dist/converse-no-dependencies.js:38020
 msgid "Busy"
 msgstr "Lanpetua"
 
-#: dist/converse-no-dependencies.js:36250
+#: dist/converse-no-dependencies.js:36252
 msgid "Custom status"
 msgstr "Egoera pertsonalizatua"
 
-#: dist/converse-no-dependencies.js:36251
-#: dist/converse-no-dependencies.js:38021
+#: dist/converse-no-dependencies.js:36253
+#: dist/converse-no-dependencies.js:38023
 msgid "Offline"
 msgstr "Deskonektaturik"
 
-#: dist/converse-no-dependencies.js:36252
-#: dist/converse-no-dependencies.js:38016
+#: dist/converse-no-dependencies.js:36254
+#: dist/converse-no-dependencies.js:38018
 msgid "Online"
 msgstr "Linean"
 
-#: dist/converse-no-dependencies.js:36254
+#: dist/converse-no-dependencies.js:36256
 msgid "Away for long"
 msgstr "Kanpoan denbora luzerako"
 
-#: dist/converse-no-dependencies.js:36255
+#: dist/converse-no-dependencies.js:36257
 msgid "Change chat status"
 msgstr "Txat egoera aldatu"
 
-#: dist/converse-no-dependencies.js:36256
+#: dist/converse-no-dependencies.js:36258
 msgid "Personal status message"
 msgstr "Egoera mezu pertsonala"
 
-#: dist/converse-no-dependencies.js:36291
+#: dist/converse-no-dependencies.js:36293
 msgid "About"
 msgstr "Honi buruz"
 
-#: dist/converse-no-dependencies.js:36293
+#: dist/converse-no-dependencies.js:36295
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:36294
+#: dist/converse-no-dependencies.js:36296
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:36318
+#: dist/converse-no-dependencies.js:36320
 #, javascript-format
 msgid "I am %1$s"
 msgstr "%1$s nago"
 
-#: dist/converse-no-dependencies.js:36321
+#: dist/converse-no-dependencies.js:36323
 msgid "Change settings"
 msgstr "Ezarpenak aldatu"
 
-#: dist/converse-no-dependencies.js:36322
+#: dist/converse-no-dependencies.js:36324
 msgid "Click to change your chat status"
 msgstr "Klikatu zure txat egoera aldatzeko"
 
-#: dist/converse-no-dependencies.js:36323
+#: dist/converse-no-dependencies.js:36325
 msgid "Log out"
 msgstr "Saioa itxi"
 
-#: dist/converse-no-dependencies.js:36324
+#: dist/converse-no-dependencies.js:36326
 #, fuzzy
 msgid "Show details about this chat client"
 msgstr "Erakutsi gela honi buruzko informazio gehiago"
 
-#: dist/converse-no-dependencies.js:36325
+#: dist/converse-no-dependencies.js:36327
 msgid "Your profile"
 msgstr "Zure profila"
 
-#: dist/converse-no-dependencies.js:36365
+#: dist/converse-no-dependencies.js:36367
 msgid "Are you sure you want to log out?"
 msgstr "Ziur al zaude saioa itxi nahi duzula?"
 
-#: dist/converse-no-dependencies.js:36374
-#: dist/converse-no-dependencies.js:36384
+#: dist/converse-no-dependencies.js:36376
+#: dist/converse-no-dependencies.js:36386
 msgid "online"
 msgstr "Linean"
 
-#: dist/converse-no-dependencies.js:36376
+#: dist/converse-no-dependencies.js:36378
 msgid "busy"
 msgstr "Lanpetua"
 
-#: dist/converse-no-dependencies.js:36378
+#: dist/converse-no-dependencies.js:36380
 msgid "away for long"
 msgstr "kanpoan denbora luzerako"
 
-#: dist/converse-no-dependencies.js:36380
+#: dist/converse-no-dependencies.js:36382
 msgid "away"
 msgstr "Kanpoan"
 
-#: dist/converse-no-dependencies.js:36382
+#: dist/converse-no-dependencies.js:36384
 msgid "offline"
 msgstr "deskonektatua"
 
-#: dist/converse-no-dependencies.js:36698
+#: dist/converse-no-dependencies.js:36700
 msgid " e.g. conversejs.org"
 msgstr " adib. conversejs.org"
 
-#: dist/converse-no-dependencies.js:36813
+#: dist/converse-no-dependencies.js:36815
 msgid "Fetch registration form"
 msgstr "Erregistro formularioa eskuratu"
 
-#: dist/converse-no-dependencies.js:36814
+#: dist/converse-no-dependencies.js:36816
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Aholkua: XMPP hornitzaile publikoen zerrenda bat dago eskuragarri"
 
-#: dist/converse-no-dependencies.js:36815
+#: dist/converse-no-dependencies.js:36817
 msgid "here"
 msgstr "hemen"
 
-#: dist/converse-no-dependencies.js:36864
+#: dist/converse-no-dependencies.js:36866
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "Barkatu, ezin izan dugu zuk aukeraturiko hornitzailera konektatu."
 
-#: dist/converse-no-dependencies.js:36880
+#: dist/converse-no-dependencies.js:36882
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -1042,7 +1043,7 @@ msgstr ""
 "Barkatu, emandako hornitzaileak ez du banda kontuen erregistroa onartzen. "
 "Saiatu beste hornitzaile batekin."
 
-#: dist/converse-no-dependencies.js:36906
+#: dist/converse-no-dependencies.js:36908
 #, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
@@ -1051,15 +1052,15 @@ msgstr ""
 "Zerbait oker joan da \"%1$s\"-(r)ekin konexioa ezartzean. Ziur al zaude "
 "existitzen dela?"
 
-#: dist/converse-no-dependencies.js:37075
+#: dist/converse-no-dependencies.js:37077
 msgid "Now logging you in"
 msgstr "Orain saio hasten"
 
-#: dist/converse-no-dependencies.js:37079
+#: dist/converse-no-dependencies.js:37081
 msgid "Registered successfully"
 msgstr "Arrakastaz erregistratua"
 
-#: dist/converse-no-dependencies.js:37183
+#: dist/converse-no-dependencies.js:37185
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -1067,152 +1068,152 @@ msgstr ""
 "Hornitzaileak zure izen emate saiakera ukatu du. Mesedez egiaztatu sartutako "
 "balioak zuzenak direla."
 
-#: dist/converse-no-dependencies.js:37587
+#: dist/converse-no-dependencies.js:37589
 msgid "Click to toggle the list of open groupchats"
 msgstr "Egin klik irekitako gelen zerrenda hedatu/tolesteko"
 
 #. Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
-#: dist/converse-no-dependencies.js:37589
+#: dist/converse-no-dependencies.js:37591
 msgid "Open Groupchats"
 msgstr "Irekitako gelak"
 
-#: dist/converse-no-dependencies.js:37639
+#: dist/converse-no-dependencies.js:37641
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Ziur al zaude %1$s gelatik atera nahi duzula?"
 
-#: dist/converse-no-dependencies.js:37816
+#: dist/converse-no-dependencies.js:37818
 msgid "This contact is busy"
 msgstr "Kontaktu hau lanpeturik dago"
 
-#: dist/converse-no-dependencies.js:37817
+#: dist/converse-no-dependencies.js:37819
 msgid "This contact is online"
 msgstr "Kontaktu hau linean dago"
 
-#: dist/converse-no-dependencies.js:37818
+#: dist/converse-no-dependencies.js:37820
 msgid "This contact is offline"
 msgstr "Kontaktu hau lineaz kanpo dago"
 
-#: dist/converse-no-dependencies.js:37819
+#: dist/converse-no-dependencies.js:37821
 msgid "This contact is unavailable"
 msgstr "Kontaktu hau ez dago erabilgarri"
 
-#: dist/converse-no-dependencies.js:37820
+#: dist/converse-no-dependencies.js:37822
 msgid "This contact is away for an extended period"
 msgstr "Kontaktu hau kanpoan dago denbora luzez"
 
-#: dist/converse-no-dependencies.js:37821
+#: dist/converse-no-dependencies.js:37823
 msgid "This contact is away"
 msgstr "Kontaktu hau kanpoan dago"
 
-#: dist/converse-no-dependencies.js:37824
+#: dist/converse-no-dependencies.js:37826
 msgid "Groups"
 msgstr "Taldeak"
 
-#: dist/converse-no-dependencies.js:37838
+#: dist/converse-no-dependencies.js:37840
 msgid "Contact name"
 msgstr "Kontaktu izena"
 
-#: dist/converse-no-dependencies.js:37838
+#: dist/converse-no-dependencies.js:37840
 msgid "Optional nickname"
 msgstr "Aukerako ezizena"
 
-#: dist/converse-no-dependencies.js:37841
+#: dist/converse-no-dependencies.js:37843
 msgid "Add a Contact"
 msgstr "Kontaktu bat gehitu"
 
-#: dist/converse-no-dependencies.js:37842
+#: dist/converse-no-dependencies.js:37844
 msgid "XMPP Address"
 msgstr "XMPP Helbidea"
 
-#: dist/converse-no-dependencies.js:37844
+#: dist/converse-no-dependencies.js:37846
 msgid "name@example.org"
 msgstr "izena@adibidea.org"
 
-#: dist/converse-no-dependencies.js:37845
+#: dist/converse-no-dependencies.js:37847
 msgid "Add"
 msgstr "Gehitu"
 
-#: dist/converse-no-dependencies.js:37923
+#: dist/converse-no-dependencies.js:37925
 msgid "Sorry, could not find a contact with that name"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:37947
+#: dist/converse-no-dependencies.js:37949
 #, fuzzy
 msgid "This contact has already been added"
 msgstr "Kontaktu hau kanpoan dago denbora luzez"
 
-#: dist/converse-no-dependencies.js:38010
+#: dist/converse-no-dependencies.js:38012
 msgid "Filter"
 msgstr "Iragazi"
 
-#: dist/converse-no-dependencies.js:38011
+#: dist/converse-no-dependencies.js:38013
 msgid "Filter by contact name"
 msgstr "Kontaktu izenaz iragazi"
 
-#: dist/converse-no-dependencies.js:38012
+#: dist/converse-no-dependencies.js:38014
 msgid "Filter by group name"
 msgstr "Talde izenaz iragazi"
 
-#: dist/converse-no-dependencies.js:38013
+#: dist/converse-no-dependencies.js:38015
 msgid "Filter by status"
 msgstr "Egoeraren araberan iragazi"
 
-#: dist/converse-no-dependencies.js:38014
+#: dist/converse-no-dependencies.js:38016
 msgid "Any"
 msgstr "Edozein"
 
-#: dist/converse-no-dependencies.js:38015
+#: dist/converse-no-dependencies.js:38017
 msgid "Unread"
 msgstr "Irakurri gabe"
 
-#: dist/converse-no-dependencies.js:38017
+#: dist/converse-no-dependencies.js:38019
 msgid "Chatty"
 msgstr "Hitzduna"
 
-#: dist/converse-no-dependencies.js:38020
+#: dist/converse-no-dependencies.js:38022
 msgid "Extended Away"
 msgstr "Denbora luzez at"
 
-#: dist/converse-no-dependencies.js:38194
-#: dist/converse-no-dependencies.js:38250
+#: dist/converse-no-dependencies.js:38196
+#: dist/converse-no-dependencies.js:38252
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "Klikatu %1$s kontaktuetatik ezabatzeko"
 
-#: dist/converse-no-dependencies.js:38202
+#: dist/converse-no-dependencies.js:38204
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
 msgstr "Klikatu %1$s -(r)en kontaktu eskaera onartzeko"
 
-#: dist/converse-no-dependencies.js:38203
+#: dist/converse-no-dependencies.js:38205
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
 msgstr "Klikatu %1$s -(r)en kontaktu eskaera baztertzeko"
 
-#: dist/converse-no-dependencies.js:38249
+#: dist/converse-no-dependencies.js:38251
 #, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
 msgstr "Klikatu %1$s (JID: %2$s) -(r)ekin berriketan egiteko"
 
-#: dist/converse-no-dependencies.js:38333
+#: dist/converse-no-dependencies.js:38335
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Ziur al,zaude kontaktu eskaera hau baztertu nahi duzula?"
 
-#: dist/converse-no-dependencies.js:38608
+#: dist/converse-no-dependencies.js:38610
 msgid "Contacts"
 msgstr "Kontaktuak"
 
-#: dist/converse-no-dependencies.js:38609
+#: dist/converse-no-dependencies.js:38611
 msgid "Add a contact"
 msgstr "Kontaktu bat gehitu"
 
-#: dist/converse-no-dependencies.js:38610
+#: dist/converse-no-dependencies.js:38612
 #, fuzzy
 msgid "Re-sync your contacts"
 msgstr "Nere kontaktuak"
 
-#: dist/converse-no-dependencies.js:39376
+#: dist/converse-no-dependencies.js:39378
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan."
 
@@ -1255,94 +1256,94 @@ msgstr ""
 msgid "Sorry, an error occurred:"
 msgstr "Errore bat gertatu da:"
 
-#: dist/converse-no-dependencies.js:41903
+#: dist/converse-no-dependencies.js:41907
 msgid "The connection has dropped, attempting to reconnect."
 msgstr "Konexioa galdu egin da, birkonektatzen saiatzen."
 
-#: dist/converse-no-dependencies.js:42524
+#: dist/converse-no-dependencies.js:42528
 msgid "An error occurred while connecting to the chat server."
 msgstr "Akats bat izan da txat zerbitzariarekin konektatzean."
 
-#: dist/converse-no-dependencies.js:42531
+#: dist/converse-no-dependencies.js:42535
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
 msgstr ""
 "Zure Jabber ID-a/edo pasahitza ez dira zuzenak. Mesedez saiatu berriro."
 
-#: dist/converse-no-dependencies.js:42543
+#: dist/converse-no-dependencies.js:42547
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr "Barkatu, ezin izan dugu XMPP ostalarira konektatu %1$s domeinuarekin"
 
-#: dist/converse-no-dependencies.js:42545
+#: dist/converse-no-dependencies.js:42549
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
 "XMPP zerbitzariak ez du lagunduriko autentikazio mekanismorik eskaintzen"
 
-#: dist/converse-no-dependencies.js:45272
+#: dist/converse-no-dependencies.js:45276
 msgid "This groupchat is not anonymous"
 msgstr "Gela hau ez da erabiltzaile anonimoentzat"
 
-#: dist/converse-no-dependencies.js:45273
+#: dist/converse-no-dependencies.js:45277
 msgid "This groupchat now shows unavailable members"
 msgstr "Gela honek orain kide eskuragaitzak erakusten ditu"
 
-#: dist/converse-no-dependencies.js:45274
+#: dist/converse-no-dependencies.js:45278
 msgid "This groupchat does not show unavailable members"
 msgstr "Gela honek ez ditu kide eskuragaitzak erakusten"
 
-#: dist/converse-no-dependencies.js:45275
+#: dist/converse-no-dependencies.js:45279
 msgid "The groupchat configuration has changed"
 msgstr "Gelaren ezarpenak aldatu egin dira"
 
-#: dist/converse-no-dependencies.js:45276
+#: dist/converse-no-dependencies.js:45280
 msgid "groupchat logging is now enabled"
 msgstr "gelan izen ematea gaituta dago orain"
 
-#: dist/converse-no-dependencies.js:45277
+#: dist/converse-no-dependencies.js:45281
 msgid "groupchat logging is now disabled"
 msgstr "gelan izen ematea desgaituta dago orain"
 
-#: dist/converse-no-dependencies.js:45278
+#: dist/converse-no-dependencies.js:45282
 msgid "This groupchat is now no longer anonymous"
 msgstr "dagoeneko gela hau ez da anonimoa"
 
-#: dist/converse-no-dependencies.js:45279
+#: dist/converse-no-dependencies.js:45283
 msgid "This groupchat is now semi-anonymous"
 msgstr "gela hau orain erdi-anonimoa da orain"
 
-#: dist/converse-no-dependencies.js:45280
+#: dist/converse-no-dependencies.js:45284
 msgid "This groupchat is now fully-anonymous"
 msgstr "gela hau orain erabat anonimoa da"
 
-#: dist/converse-no-dependencies.js:45281
+#: dist/converse-no-dependencies.js:45285
 msgid "A new groupchat has been created"
 msgstr "Gela berri bat sortu da"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:45285
+#: dist/converse-no-dependencies.js:45289
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "Zure ezizena %1$s bezala ezarria izan da automatikoki"
 
-#: dist/converse-no-dependencies.js:45286
+#: dist/converse-no-dependencies.js:45290
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "Zure ezizena %1$s -ra aldatua izan da"
 
-#: dist/converse-no-dependencies.js:45289
+#: dist/converse-no-dependencies.js:45293
 msgid "You have been banned from this groupchat"
 msgstr "Gela honetan debekatua  izan zara"
 
-#: dist/converse-no-dependencies.js:45290
+#: dist/converse-no-dependencies.js:45294
 msgid "You have been kicked from this groupchat"
 msgstr "Gela honetatik kanporatua  izan zara"
 
-#: dist/converse-no-dependencies.js:45291
+#: dist/converse-no-dependencies.js:45295
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "Gela honetatik ezabatua izan zara afiliazio aldaketa bat dela eta"
 
-#: dist/converse-no-dependencies.js:45292
+#: dist/converse-no-dependencies.js:45296
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
@@ -1350,7 +1351,7 @@ msgstr ""
 "Gela honetatik ezabatua izan zara gelako sarbidea kideentzako soilik ezarri "
 "delako eta zu ez zara kidea"
 
-#: dist/converse-no-dependencies.js:45293
+#: dist/converse-no-dependencies.js:45297
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
@@ -1358,43 +1359,43 @@ msgstr ""
 "Gela honetatik ezabatua izan zara zerbitzuaren ostatatzea itxi egingo delako"
 
 #. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:45297
+#: dist/converse-no-dependencies.js:45301
 #, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s bidalia izan da"
 
-#: dist/converse-no-dependencies.js:45298
+#: dist/converse-no-dependencies.js:45302
 #, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "%1$s -(r)en ezizena aldatu egin da"
 
-#: dist/converse-no-dependencies.js:45299
+#: dist/converse-no-dependencies.js:45303
 #, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s bidalia izan da"
 
-#: dist/converse-no-dependencies.js:45300
+#: dist/converse-no-dependencies.js:45304
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s ezabatua izan da afiliazio aldaketa bat dela eta"
 
-#: dist/converse-no-dependencies.js:45301
+#: dist/converse-no-dependencies.js:45305
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s ezabatua izan da kidea ez delako"
 
-#: dist/converse-no-dependencies.js:46492
+#: dist/converse-no-dependencies.js:46475
 msgid "You're not allowed to register yourself in this groupchat."
 msgstr "Ez duzu baimenik zure burua gela honetan erregistratzeko."
 
-#: dist/converse-no-dependencies.js:46494
+#: dist/converse-no-dependencies.js:46477
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
 "Ez duzu baimenik zure burua gela honetan erregistratzeko kideentzako "
 "bakarrik delako."
 
-#: dist/converse-no-dependencies.js:46525
+#: dist/converse-no-dependencies.js:46508
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
@@ -1402,27 +1403,27 @@ msgstr ""
 "Ezin da zure ezizena gela honetan erregistratu, ez du erregistratzea "
 "onartzen."
 
-#: dist/converse-no-dependencies.js:46527
+#: dist/converse-no-dependencies.js:46510
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
 "Ezin da zure ezizena gela honetan erregistratu, datu formulario baliogabea "
 "eman da."
 
-#: dist/converse-no-dependencies.js:46808
+#: dist/converse-no-dependencies.js:46791
 #, fuzzy
 msgid ""
 "Your message was not delivered because you're not allowed to send messages "
 "in this groupchat."
 msgstr "Ez duzu baimenik gela honetan erregistratzeko"
 
-#: dist/converse-no-dependencies.js:46810
+#: dist/converse-no-dependencies.js:46793
 #, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr "Ez duzu baimenik zure burua gela honetan erregistratzeko."
 
-#: dist/converse-no-dependencies.js:46982
+#: dist/converse-no-dependencies.js:46965
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
@@ -1430,50 +1431,50 @@ msgstr ""
 "Aukeratutako ezizena erreserbatuta dago edo erabiltzen ari da une honetan, "
 "aukeratu beste bat."
 
-#: dist/converse-no-dependencies.js:47006
+#: dist/converse-no-dependencies.js:46989
 #, fuzzy
 msgid "Password incorrect"
 msgstr "Pasahitzez babestua"
 
-#: dist/converse-no-dependencies.js:47012
+#: dist/converse-no-dependencies.js:46995
 msgid "You are not on the member list of this groupchat."
 msgstr "Ez zaude gela honetako kideen zerrendan."
 
-#: dist/converse-no-dependencies.js:47016
+#: dist/converse-no-dependencies.js:46999
 msgid "You have been banned from this groupchat."
 msgstr "Gela honetatik debekatua izan zara."
 
-#: dist/converse-no-dependencies.js:47022
+#: dist/converse-no-dependencies.js:47005
 msgid "You are not allowed to create new groupchats."
 msgstr "Ez duzu baimenik gela berriak sortzeko."
 
-#: dist/converse-no-dependencies.js:47026
+#: dist/converse-no-dependencies.js:47009
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Zure ezizenak ez ditu gela honetako arauak betetzen."
 
-#: dist/converse-no-dependencies.js:47040
+#: dist/converse-no-dependencies.js:47023
 msgid "This groupchat does not (yet) exist."
 msgstr "Gela hau ez da existitzen (oraindik)."
 
-#: dist/converse-no-dependencies.js:47044
+#: dist/converse-no-dependencies.js:47027
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "Gela hau gehienezko parte-hartzaile  kopurura iritsi da."
 
-#: dist/converse-no-dependencies.js:47048
+#: dist/converse-no-dependencies.js:47031
 msgid "Remote server not found"
 msgstr "Ez da urruneko zerbitzaria aurkitu"
 
-#: dist/converse-no-dependencies.js:47050
+#: dist/converse-no-dependencies.js:47033
 #, javascript-format
 msgid "The explanation given is: \"%1$s\"."
 msgstr "Emandako arrazoia ondorengoa da: \"%1$s\"."
 
-#: dist/converse-no-dependencies.js:47372
+#: dist/converse-no-dependencies.js:47352
 #, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s erabiltzaileak %2$s gelara gonbidatu zaitu"
 
-#: dist/converse-no-dependencies.js:47374
+#: dist/converse-no-dependencies.js:47354
 #, javascript-format
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
@@ -1482,223 +1483,223 @@ msgstr ""
 "%1$s erabiltzaileak %2$s gelara elkartzera gonbidatu zaitu, eta ondorengo "
 "arrazoia eman du: \"%3$s\""
 
-#: dist/converse-no-dependencies.js:48026
+#: dist/converse-no-dependencies.js:48006
 msgid "My contacts"
 msgstr "Nere kontaktuak"
 
-#: dist/converse-no-dependencies.js:48027
+#: dist/converse-no-dependencies.js:48007
 msgid "Pending contacts"
 msgstr "Zain dauden kontaktuak"
 
-#: dist/converse-no-dependencies.js:48028
+#: dist/converse-no-dependencies.js:48008
 msgid "Contact requests"
 msgstr "Kontaktu eskaerak"
 
-#: dist/converse-no-dependencies.js:48029
+#: dist/converse-no-dependencies.js:48009
 msgid "Ungrouped"
 msgstr "Sailkatu gabe"
 
-#: dist/converse-no-dependencies.js:48604
+#: dist/converse-no-dependencies.js:48584
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr "Barkatu, akats bat izan da %1$s kontaktu moduan gehitzean."
 
-#: dist/converse-no-dependencies.js:48842
+#: dist/converse-no-dependencies.js:48822
 msgid "This client does not allow presence subscriptions"
 msgstr "Bezero honek ez du onartzen aurrez aurreko harpidetzarik"
 
-#: dist/converse-no-dependencies.js:48955
+#: dist/converse-no-dependencies.js:48935
 msgid "Click to hide these contacts"
 msgstr "Klikatu kontaktu hauek ezkutatzeko"
 
-#: dist/converse-no-dependencies.js:72726
+#: dist/converse-no-dependencies.js:72725
 msgid "Enter a new Groupchat"
 msgstr "Sartu gela berri batean"
 
-#: dist/converse-no-dependencies.js:72736
+#: dist/converse-no-dependencies.js:72735
 msgid "This field is required"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:72742
+#: dist/converse-no-dependencies.js:72741
 msgid "Join"
 msgstr "Batu"
 
-#: dist/converse-no-dependencies.js:73274
+#: dist/converse-no-dependencies.js:73273
 #, fuzzy
 msgid "You're not allowed to send messages in this room"
 msgstr "Ez duzu baimenik zure burua gela honetan erregistratzeko."
 
-#: dist/converse-no-dependencies.js:73293
+#: dist/converse-no-dependencies.js:73292
 #, fuzzy
 msgid "This groupchat no longer exists"
 msgstr "Gela ez da gehiago existituko"
 
-#: dist/converse-no-dependencies.js:73299
+#: dist/converse-no-dependencies.js:73298
 msgid "The conversation has moved. Click below to enter."
 msgstr "Elkarrizketa hau mugitua izan da. Klikatu azpian sartzeko."
 
-#: dist/converse-no-dependencies.js:73326
+#: dist/converse-no-dependencies.js:73325
 msgid "Name"
 msgstr "Izena"
 
-#: dist/converse-no-dependencies.js:73330
+#: dist/converse-no-dependencies.js:73329
 msgid "Groupchat address (JID)"
 msgstr "Gelaren helbidea (JID)"
 
-#: dist/converse-no-dependencies.js:73334
+#: dist/converse-no-dependencies.js:73333
 msgid "Description"
 msgstr "Deskribapena"
 
-#: dist/converse-no-dependencies.js:73340
+#: dist/converse-no-dependencies.js:73339
 msgid "Topic"
 msgstr "Mintzagaia"
 
-#: dist/converse-no-dependencies.js:73344
+#: dist/converse-no-dependencies.js:73343
 msgid "Topic author"
 msgstr "Mintzagaiaren egilea"
 
-#: dist/converse-no-dependencies.js:73350
+#: dist/converse-no-dependencies.js:73349
 msgid "Online users"
 msgstr "Erabiltzaileak linean"
 
-#: dist/converse-no-dependencies.js:73354
-#: dist/converse-no-dependencies.js:73504
+#: dist/converse-no-dependencies.js:73353
+#: dist/converse-no-dependencies.js:73503
 msgid "Features"
 msgstr "Ezaugarriak"
 
-#: dist/converse-no-dependencies.js:73358
-#: dist/converse-no-dependencies.js:73510
+#: dist/converse-no-dependencies.js:73357
+#: dist/converse-no-dependencies.js:73509
 msgid "Password protected"
 msgstr "Pasahitzez babestua"
 
-#: dist/converse-no-dependencies.js:73360
-#: dist/converse-no-dependencies.js:73508
+#: dist/converse-no-dependencies.js:73359
+#: dist/converse-no-dependencies.js:73507
 msgid "This groupchat requires a password before entry"
 msgstr "Gela honek pasahitza eskatzen du sartu ahal izateko"
 
-#: dist/converse-no-dependencies.js:73366
+#: dist/converse-no-dependencies.js:73365
 msgid "No password required"
 msgstr "Ez da pasahitzik eskatzen"
 
-#: dist/converse-no-dependencies.js:73368
-#: dist/converse-no-dependencies.js:73516
+#: dist/converse-no-dependencies.js:73367
+#: dist/converse-no-dependencies.js:73515
 msgid "This groupchat does not require a password upon entry"
 msgstr "Gela honek ez du pasahitzik eskatzen sartzeko"
 
-#: dist/converse-no-dependencies.js:73376
-#: dist/converse-no-dependencies.js:73524
+#: dist/converse-no-dependencies.js:73375
+#: dist/converse-no-dependencies.js:73523
 msgid "This groupchat is not publicly searchable"
 msgstr "Gela hau ezin da publikoki bilatua izan"
 
-#: dist/converse-no-dependencies.js:73384
-#: dist/converse-no-dependencies.js:73532
+#: dist/converse-no-dependencies.js:73383
+#: dist/converse-no-dependencies.js:73531
 msgid "This groupchat is publicly searchable"
 msgstr "Gela hau publikoki bilatua izan daiteke"
 
-#: dist/converse-no-dependencies.js:73390
-#: dist/converse-no-dependencies.js:73542
+#: dist/converse-no-dependencies.js:73389
+#: dist/converse-no-dependencies.js:73541
 msgid "Members only"
 msgstr "Kideak soilik"
 
-#: dist/converse-no-dependencies.js:73392
+#: dist/converse-no-dependencies.js:73391
 msgid "This groupchat is restricted to members only"
 msgstr "Gela hau kideei soilik dagokie"
 
-#: dist/converse-no-dependencies.js:73400
-#: dist/converse-no-dependencies.js:73548
+#: dist/converse-no-dependencies.js:73399
+#: dist/converse-no-dependencies.js:73547
 msgid "Anyone can join this groupchat"
 msgstr "Gela honetan edozein sartu daiteke"
 
-#: dist/converse-no-dependencies.js:73406
-#: dist/converse-no-dependencies.js:73558
+#: dist/converse-no-dependencies.js:73405
+#: dist/converse-no-dependencies.js:73557
 msgid "Persistent"
 msgstr "Iraunkorra"
 
-#: dist/converse-no-dependencies.js:73408
-#: dist/converse-no-dependencies.js:73556
+#: dist/converse-no-dependencies.js:73407
+#: dist/converse-no-dependencies.js:73555
 msgid "This groupchat persists even if it's unoccupied"
 msgstr "Gela honek bere horretan jarraituko du hustu arren"
 
-#: dist/converse-no-dependencies.js:73416
-#: dist/converse-no-dependencies.js:73564
+#: dist/converse-no-dependencies.js:73415
+#: dist/converse-no-dependencies.js:73563
 msgid "This groupchat will disappear once the last person leaves"
 msgstr "Gela hau desagertu egingo da azken pertsonak uzten duen unean"
 
-#: dist/converse-no-dependencies.js:73422
-#: dist/converse-no-dependencies.js:73574
+#: dist/converse-no-dependencies.js:73421
+#: dist/converse-no-dependencies.js:73573
 msgid "Not anonymous"
 msgstr "Ez-anonimoa"
 
-#: dist/converse-no-dependencies.js:73424
-#: dist/converse-no-dependencies.js:73572
+#: dist/converse-no-dependencies.js:73423
+#: dist/converse-no-dependencies.js:73571
 #, fuzzy
 msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 "Gelako gainontzeko parte-hartzaileek zure XMPP erabiltzailea ikus dezakete"
 
-#: dist/converse-no-dependencies.js:73432
-#: dist/converse-no-dependencies.js:73580
+#: dist/converse-no-dependencies.js:73431
+#: dist/converse-no-dependencies.js:73579
 #, fuzzy
 msgid "Only moderators can see your XMPP address"
 msgstr "Moderatzaileek soilik ikus dezakete zure XMPP erabiltzailea"
 
-#: dist/converse-no-dependencies.js:73440
-#: dist/converse-no-dependencies.js:73588
+#: dist/converse-no-dependencies.js:73439
+#: dist/converse-no-dependencies.js:73587
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr "Grla honetara sartzen diren kideek idazteko baimena eskatu behar dute"
 
-#: dist/converse-no-dependencies.js:73446
-#: dist/converse-no-dependencies.js:73598
+#: dist/converse-no-dependencies.js:73445
+#: dist/converse-no-dependencies.js:73597
 msgid "Not moderated"
 msgstr "Moderatu gabea"
 
-#: dist/converse-no-dependencies.js:73448
-#: dist/converse-no-dependencies.js:73596
+#: dist/converse-no-dependencies.js:73447
+#: dist/converse-no-dependencies.js:73595
 msgid "Participants entering this groupchat can write right away"
 msgstr "Gela honetara gehitzen diren kideek berehala idatz dezakete"
 
-#: dist/converse-no-dependencies.js:73454
-#: dist/converse-no-dependencies.js:73606
+#: dist/converse-no-dependencies.js:73453
+#: dist/converse-no-dependencies.js:73605
 msgid "Message archiving"
 msgstr "Mezu artxibaketa"
 
-#: dist/converse-no-dependencies.js:73456
-#: dist/converse-no-dependencies.js:73604
+#: dist/converse-no-dependencies.js:73455
+#: dist/converse-no-dependencies.js:73603
 msgid "Messages are archived on the server"
 msgstr "Mezuak zerbitzarian gordetzen dira"
 
-#: dist/converse-no-dependencies.js:73518
+#: dist/converse-no-dependencies.js:73517
 msgid "No password"
 msgstr "Pasahitzik gabe"
 
-#: dist/converse-no-dependencies.js:73540
+#: dist/converse-no-dependencies.js:73539
 msgid "this groupchat is restricted to members only"
 msgstr "Gela hau kideei soilik dagokie"
 
-#: dist/converse-no-dependencies.js:74051
+#: dist/converse-no-dependencies.js:74050
 msgid "Uploading file:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74513
-#: dist/converse-no-dependencies.js:75956
+#: dist/converse-no-dependencies.js:74512
+#: dist/converse-no-dependencies.js:75955
 #, fuzzy
 msgid "XMPP Address:"
 msgstr "XMPP Helbidea"
 
-#: dist/converse-no-dependencies.js:74519
+#: dist/converse-no-dependencies.js:74518
 msgid "Password:"
 msgstr "Pasahitza:"
 
-#: dist/converse-no-dependencies.js:74521
+#: dist/converse-no-dependencies.js:74520
 msgid "password"
 msgstr "pasahitza"
 
-#: dist/converse-no-dependencies.js:74531
+#: dist/converse-no-dependencies.js:74530
 msgid "This is a trusted device"
 msgstr "Hau gailu fidagarri bat da"
 
-#: dist/converse-no-dependencies.js:74533
+#: dist/converse-no-dependencies.js:74532
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1711,177 +1712,177 @@ msgstr ""
 "ezabatzea nahiago baduzu. Saioa esplizituki amaitzea ezinbestekoa da, "
 "bestela agian ez dira datu guztiak ezabatuko."
 
-#: dist/converse-no-dependencies.js:74537
+#: dist/converse-no-dependencies.js:74536
 msgid "Log in"
 msgstr "Hasi saioa"
 
-#: dist/converse-no-dependencies.js:74543
+#: dist/converse-no-dependencies.js:74542
 msgid "Click here to log in anonymously"
 msgstr "Klikatu hemen saioa anonimoki hasteko"
 
-#: dist/converse-no-dependencies.js:74659
+#: dist/converse-no-dependencies.js:74658
 msgid "This message has been edited"
 msgstr "Mezu hau editatu da"
 
-#: dist/converse-no-dependencies.js:74665
+#: dist/converse-no-dependencies.js:74664
 msgid "Edit this message"
 msgstr "Editatu mezu hau"
 
-#: dist/converse-no-dependencies.js:74686
+#: dist/converse-no-dependencies.js:74685
 msgid "Message versions"
 msgstr "Mezuaren bertsioak"
 
-#: dist/converse-no-dependencies.js:74913
+#: dist/converse-no-dependencies.js:74912
 msgid "Save and close"
 msgstr "Gorde eta itxi"
 
-#: dist/converse-no-dependencies.js:74917
+#: dist/converse-no-dependencies.js:74916
 msgid "This device's OMEMO fingerprint"
 msgstr "Gailu honen OMEMO hatz-marka"
 
-#: dist/converse-no-dependencies.js:74927
+#: dist/converse-no-dependencies.js:74926
 msgid "Generate new keys and fingerprint"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:74931
+#: dist/converse-no-dependencies.js:74930
 msgid "Select all"
 msgstr "Hautatu guztiak"
 
-#: dist/converse-no-dependencies.js:74933
+#: dist/converse-no-dependencies.js:74932
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr "Beste OMEMO gailuen hatz-markak hautatzeko koadroa"
 
-#: dist/converse-no-dependencies.js:74935
+#: dist/converse-no-dependencies.js:74934
 msgid "Other OMEMO-enabled devices"
 msgstr "Beste OMEMO-gai diren gailuak"
 
-#: dist/converse-no-dependencies.js:74943
-#: dist/converse-no-dependencies.js:74951
+#: dist/converse-no-dependencies.js:74942
+#: dist/converse-no-dependencies.js:74950
 msgid "Checkbox for selecting the following fingerprint"
 msgstr "Hurrengo hatz-marka hautatzeko koadroa"
 
-#: dist/converse-no-dependencies.js:74953
+#: dist/converse-no-dependencies.js:74952
 msgid "Device without a fingerprint"
 msgstr "Hatz-markarik gabeko gailua"
 
-#: dist/converse-no-dependencies.js:74959
+#: dist/converse-no-dependencies.js:74958
 msgid "Remove checked devices and close"
 msgstr "Kendu markatutako gailuak eta itxi"
 
-#: dist/converse-no-dependencies.js:75043
+#: dist/converse-no-dependencies.js:75042
 msgid "Don't have a chat account?"
 msgstr "Ez duzu txat konturik?"
 
-#: dist/converse-no-dependencies.js:75045
+#: dist/converse-no-dependencies.js:75044
 msgid "Create an account"
 msgstr "Sortu kontu bat"
 
-#: dist/converse-no-dependencies.js:75066
+#: dist/converse-no-dependencies.js:75065
 msgid "Create your account"
 msgstr "Zure kontua sortu"
 
-#: dist/converse-no-dependencies.js:75068
+#: dist/converse-no-dependencies.js:75067
 msgid "Please enter the XMPP provider to register with:"
 msgstr "Mesedez sartu XMPP hornitzailea:"
 
-#: dist/converse-no-dependencies.js:75086
-#: dist/converse-no-dependencies.js:75125
+#: dist/converse-no-dependencies.js:75085
+#: dist/converse-no-dependencies.js:75124
 msgid "Already have a chat account?"
 msgstr "Baduzu txat konturik?"
 
-#: dist/converse-no-dependencies.js:75088
-#: dist/converse-no-dependencies.js:75127
+#: dist/converse-no-dependencies.js:75087
+#: dist/converse-no-dependencies.js:75126
 msgid "Log in here"
 msgstr "Hasi saioa hemen"
 
-#: dist/converse-no-dependencies.js:75109
+#: dist/converse-no-dependencies.js:75108
 msgid "Account Registration:"
 msgstr "Kontu erregistroa:"
 
-#: dist/converse-no-dependencies.js:75117
+#: dist/converse-no-dependencies.js:75116
 msgid "Register"
 msgstr "Erregistratu"
 
-#: dist/converse-no-dependencies.js:75121
+#: dist/converse-no-dependencies.js:75120
 msgid "Choose a different provider"
 msgstr "Hornitzaile ezberdin bat aukeratu"
 
-#: dist/converse-no-dependencies.js:75146
+#: dist/converse-no-dependencies.js:75145
 msgid "Hold tight, we're fetching the registration form…"
 msgstr "Itxaron, erregistro formularioa eskuratzen ari gara…"
 
-#: dist/converse-no-dependencies.js:75886
+#: dist/converse-no-dependencies.js:75885
 msgid "Messages are being sent in plaintext"
 msgstr "Mezuak testu lauan bidaltzen dira"
 
-#: dist/converse-no-dependencies.js:75940
+#: dist/converse-no-dependencies.js:75939
 msgid "The User's Profile Image"
 msgstr "Erabiltzailearen profileko argazkia"
 
-#: dist/converse-no-dependencies.js:75950
+#: dist/converse-no-dependencies.js:75949
 #, fuzzy
 msgid "Full Name:"
 msgstr "Izen osoa"
 
-#: dist/converse-no-dependencies.js:75964
+#: dist/converse-no-dependencies.js:75963
 #, fuzzy
 msgid "Nickname:"
 msgstr "Ezizena"
 
-#: dist/converse-no-dependencies.js:75972
+#: dist/converse-no-dependencies.js:75971
 msgid "URL:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:75982
+#: dist/converse-no-dependencies.js:75981
 #, fuzzy
 msgid "Email:"
 msgstr "Emaila"
 
-#: dist/converse-no-dependencies.js:75992
+#: dist/converse-no-dependencies.js:75991
 #, fuzzy
 msgid "Role:"
 msgstr "Rola"
 
-#: dist/converse-no-dependencies.js:76000
+#: dist/converse-no-dependencies.js:75999
 msgid "OMEMO Fingerprints"
 msgstr "OMEMO hatz-markak"
 
-#: dist/converse-no-dependencies.js:76024
+#: dist/converse-no-dependencies.js:76023
 msgid "Trusted"
 msgstr "Fidagarria"
 
-#: dist/converse-no-dependencies.js:76038
+#: dist/converse-no-dependencies.js:76037
 msgid "Untrusted"
 msgstr "Ez fidagarria"
 
-#: dist/converse-no-dependencies.js:76052
+#: dist/converse-no-dependencies.js:76051
 msgid "Refresh"
 msgstr "Freskatu"
 
-#: dist/converse-no-dependencies.js:76056
+#: dist/converse-no-dependencies.js:76055
 msgid "Remove as contact"
 msgstr "Kendu kontaktuetatik"
 
-#: dist/converse-no-dependencies.js:76261
+#: dist/converse-no-dependencies.js:76260
 #, javascript-format
 msgid "Download audio file \"%1$s\""
 msgstr "Deskargatu audio fitxategia \"%1$s\""
 
-#: dist/converse-no-dependencies.js:76281
+#: dist/converse-no-dependencies.js:76280
 #, javascript-format
 msgid "Download file \"%1$s\""
 msgstr "Deskargatu fitxategia: \"%1$s"
 
-#: dist/converse-no-dependencies.js:76298
+#: dist/converse-no-dependencies.js:76297
 #, javascript-format
 msgid "Download image \"%1$s\""
 msgstr "Deskargatu irudia: \"%1$s"
 
-#: dist/converse-no-dependencies.js:76332
+#: dist/converse-no-dependencies.js:76331
 msgid "Download"
 msgstr "Deskargatu"
 
-#: dist/converse-no-dependencies.js:76351
+#: dist/converse-no-dependencies.js:76350
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Deskargatu bideo fitxategia \"%1$s\""

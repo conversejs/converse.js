@@ -129,16 +129,13 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss dist/converse.css dist/converse.min.css dist/website.css dist/website.min.css dist/font-awesome.css
+css: sass/*.scss dist/converse.css dist/converse.min.css dist/website.css dist/website.min.css
 
 dist/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
 
 dist/website.min.css:: stamp-npm dist/website.css
 	$(CLEANCSS) dist/website.css > $@
-
-dist/font-awesome.css:: stamp-npm sass
-	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
 
 dist/converse.css:: stamp-npm webpack.config.js sass
 	npm run converse.css

@@ -57,7 +57,7 @@
     "@fortawesome/fontawesome-free": "5.9.0",
     "babel-loader": "^8.0.6",
     "backbone.nativeview": "conversejs/Backbone.NativeView#5997c8197ca594e6b8469447f28310c78bd1d95e",
-    "backbone.overview": "jcbrand/Backbone.Overview#d83d0fc0e40aaf3fb5b4db81576b0eba46d6739a",
+    "backbone.overview": "1.0.3",
     "backbone.vdomview": "^1.0.1",
     "bootstrap": "^4.3.1",
     "bootstrap.native": "^2.0.26",

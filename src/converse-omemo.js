@@ -8,6 +8,7 @@
 /**
  * @module converse-omemo
  */
+import "converse-profile";
 import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
@@ -73,7 +74,7 @@ converse.plugins.add('converse-omemo', {
         return window.libsignal && !_converse.blacklisted_plugins.includes('converse-omemo') && _converse.config.get('trusted');
     },
 
-    dependencies: ["converse-chatview", "converse-pubsub"],
+    dependencies: ["converse-chatview", "converse-pubsub", "converse-profile"],
 
     overrides: {
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-08 17:32+0200\n"
-"PO-Revision-Date: 2019-08-08 13:23+0000\n"
+"PO-Revision-Date: 2019-08-14 12:40+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -190,6 +190,8 @@ msgstr "Dieses Menü anzeigen"
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
+"Sie haben eine nicht gesendete Nachricht, die verloren geht, wenn Sie "
+"fortfahren. Sind Sie sicher?"
 
 #: dist/converse-no-dependencies.js:28710
 msgid "Are you sure you want to clear the messages from this conversation?"
@@ -433,7 +435,7 @@ msgid "%1$s is no longer a moderator"
 msgstr "%1$s ist kein Moderator mehr"
 
 #: dist/converse-no-dependencies.js:32680
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice"
 msgstr "%1$s darf nun wieder schreiben"
 
@@ -486,15 +488,14 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:32904
 #: dist/converse-no-dependencies.js:32917
-#, fuzzy
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr ""
-"Fehler: der Gruppenchat-Teilnehmer \"%1$s\" konnte nicht gefunden werden"
+"Fehler: Konnte keinen Groupchat-Teilnehmer anhand ihrer Kriterien finden"
 
 #: dist/converse-no-dependencies.js:32909
-#, fuzzy
 msgid "Error: found multiple groupchat participant based on your arguments"
-msgstr "Jeder in dem Gruppenchat kann ihre XMPP-Adresse sehen"
+msgstr ""
+"Fehler: Mehrere Gruppenchat-Teilnehmer basierend auf Ihren Kriterien gefunden"
 
 #: dist/converse-no-dependencies.js:33001
 msgid ""
@@ -506,7 +507,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:33085
 msgid "You can run the following commands"
-msgstr ""
+msgstr "Sie können die folgenden Befehle ausführen"
 
 #: dist/converse-no-dependencies.js:33086
 msgid "Change user's affiliation to admin"
@@ -515,11 +516,12 @@ msgstr "Zugehörigkeit des Benutzers zu Administrator ändern"
 #: dist/converse-no-dependencies.js:33086
 msgid "Ban user by changing their affiliation to outcast"
 msgstr ""
+"Sperren Sie Benutzer, indem Sie ihre Zugehörigkeit zu ausgeschlossenen "
+"Personen ändern"
 
 #: dist/converse-no-dependencies.js:33086
-#, fuzzy
 msgid "Clear the chat area"
-msgstr "Dieses Chat-Fenster schließen"
+msgstr "Löschen des Chatbereichs"
 
 #: dist/converse-no-dependencies.js:33086
 msgid "Change user role to participant"
@@ -558,13 +560,12 @@ msgid "Grant ownership of this groupchat"
 msgstr "Besitzrechte an diesem Gruppenchat vergeben"
 
 #: dist/converse-no-dependencies.js:33086
-#, fuzzy
 msgid "Register your nickname"
-msgstr "Eigenen Spitznamen ändern"
+msgstr "Registrieren Sie Ihren Spitznamen"
 
 #: dist/converse-no-dependencies.js:33086
 msgid "Revoke the user's current affiliation"
-msgstr ""
+msgstr "Widerrufen der aktuellen Zugehörigkeit des Benutzers"
 
 #: dist/converse-no-dependencies.js:33086
 msgid "Set groupchat subject"
@@ -580,9 +581,9 @@ msgstr "Stummgeschaltetem Benutzer erlauben Nachrichten zu senden"
 
 #. e.g. Your nickname is "coolguy69"
 #: dist/converse-no-dependencies.js:33114
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname is \"%1$s\""
-msgstr "Ihr Spitzname wurde geändert zu: %1$s"
+msgstr "Ihr Spitzname ist \"%1$s\""
 
 #: dist/converse-no-dependencies.js:33141
 msgid "Error: invalid number of arguments"
@@ -690,9 +691,8 @@ msgid "Enter groupchat"
 msgstr "Gruppenchat beitreten"
 
 #: dist/converse-no-dependencies.js:33795
-#, fuzzy
 msgid "You need to provide a nickname"
-msgstr "Ihr XMPP/ Jabber Provider Domain Name:"
+msgstr "Sie müssen einen Nicknamen angeben"
 
 #: dist/converse-no-dependencies.js:33815
 #, javascript-format
@@ -854,8 +854,7 @@ msgstr ""
 "Ende-zu-Ende Verschlüsselung konnte nicht verwendet werden, da %1$s einen "
 "Client verwendet, der OMEMO nicht unterstützt."
 
-#: dist/converse-no-dependencies.js:35160
-#, fuzzy
+#: dist/converse-no-dependencies.js:35158
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
@@ -1443,19 +1442,20 @@ msgstr ""
 "Sie können Ihren Nicknamen nicht in diesem Gruppenchat registrieren, "
 "ungültige Formulardaten wurde übermittelt."
 
-#: dist/converse-no-dependencies.js:46791
-#, fuzzy
+#: dist/converse-no-dependencies.js:46808
 msgid ""
 "Your message was not delivered because you're not allowed to send messages "
 "in this groupchat."
 msgstr ""
-"Leider ist es dir nicht erlaubt, dich in diesem Gruppenchat zu anmelden"
+"Ihre Nachricht wurde nicht zugestellt, weil Sie in diesem Gruppenchat keine "
+"Nachrichten senden dürfen."
 
-#: dist/converse-no-dependencies.js:46793
-#, fuzzy
+#: dist/converse-no-dependencies.js:46810
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "Sie dürfen sich nicht an diesem Gruppenchat anmelden."
+msgstr ""
+"Ihre Nachricht wurde nicht zugestellt, weil Sie im Gruppenchat nicht "
+"vertreten sind."
 
 #: dist/converse-no-dependencies.js:46965
 msgid ""
@@ -1465,10 +1465,9 @@ msgstr ""
 "Der gewählte Spitzname ist reserviert oder derzeit in Gebrauch. Bitte wähle "
 "einen Anderen."
 
-#: dist/converse-no-dependencies.js:46989
-#, fuzzy
+#: dist/converse-no-dependencies.js:47006
 msgid "Password incorrect"
-msgstr "Passwortgeschützt"
+msgstr "Passwort falsch"
 
 #: dist/converse-no-dependencies.js:46995
 msgid "You are not on the member list of this groupchat."
@@ -1557,10 +1556,9 @@ msgstr "Dieses Feld ist ein Pflichtfeld"
 msgid "Join"
 msgstr "Betreten"
 
-#: dist/converse-no-dependencies.js:73273
-#, fuzzy
+#: dist/converse-no-dependencies.js:73274
 msgid "You're not allowed to send messages in this room"
-msgstr "Sie dürfen sich nicht an diesem Gruppenchat anmelden."
+msgstr "Sie dürfen in diesem Gruppenchat keine Nachrichten senden"
 
 #: dist/converse-no-dependencies.js:73292
 msgid "This groupchat no longer exists"

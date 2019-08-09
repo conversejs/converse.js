@@ -44,8 +44,7 @@ const config = {
                     "prependFilenameComment": __dirname
                 }
             }]
-        },
-        {
+        }, {
             test: /webfonts\/.*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
             use: [
             {

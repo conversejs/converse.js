@@ -1163,7 +1163,7 @@ Use OMEMO encryption by default when the chat supports it.
 ping_interval
 -------------
 
-* Default:  ``180``
+* Default:  ``60``
 
 Make ping to server in order to keep connection with server killing sessions after idle timeout.
 The ping are sent only if no messages are sent in the last ``ping_interval`` seconds

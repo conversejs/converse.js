@@ -141,11 +141,12 @@ converse.plugins.add('converse-roomslist', {
 
             getRoomsListElementName () {
                 if (this.model.get('bookmarked') && _converse.bookmarks) {
-                    const bookmark = _.head(_converse.bookmarks.where({'jid': this.model.get('jid')}));
-                    return bookmark.get('name');
-                } else {
-                    return this.model.get('name');
+                    const bookmark = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
+                    if (bookmark) {
+                        return bookmark.get('name');
+                    }
                 }
+                return this.model.get('name');
             }
         });
 

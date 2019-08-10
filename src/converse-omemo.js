@@ -1004,8 +1004,12 @@ converse.plugins.add('converse-omemo', {
                     try {
                         ids = await this.fetchDevicesFromServer()
                     } catch (e) {
-                        _converse.log(`Could not fetch devices for ${this.get('jid')}`);
-                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        if (e === null) {
+                            _converse.log(`Timeout error while fetching devices for ${this.get('jid')}`, Strophe.LogLevel.ERROR);
+                        } else {
+                            _converse.log(`Could not fetch devices for ${this.get('jid')}`, Strophe.LogLevel.ERROR);
+                            _converse.log(e, Strophe.LogLevel.ERROR);
+                        }
                         this.destroy();
                     }
                     if (this.get('jid') === _converse.bare_jid) {

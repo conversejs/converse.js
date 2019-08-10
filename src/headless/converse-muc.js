@@ -1111,7 +1111,14 @@ converse.plugins.add('converse-muc', {
                     .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
                         .c("item", {'affiliation': affiliation});
                 const result = await _converse.api.sendIQ(iq, null, false);
-                if (result.getAttribute('type') === 'error') {
+                if (result === null) {
+                    const err_msg = `Error: timeout while fetching ${affiliation} list for MUC ${this.get('jid')}`;
+                    const err = new Error(err_msg);
+                    _converse.log(err_msg, Strophe.LogLevel.WARN);
+                    _converse.log(result, Strophe.LogLevel.WARN);
+                    return err;
+                }
+                if (u.isErrorStanza(result)) {
                     const err_msg = `Error: not allowed to fetch ${affiliation} list for MUC ${this.get('jid')}`;
                     const err = new Error(err_msg);
                     _converse.log(err_msg, Strophe.LogLevel.WARN);

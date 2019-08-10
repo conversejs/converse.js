@@ -234,9 +234,13 @@ converse.plugins.add('converse-mam', {
 
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
         _converse.api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
-        _converse.api.listen.on('chatReconnected', chat => chat.fetchNewestMessages());
         _converse.api.listen.on('enteredNewRoom', chat => chat.fetchNewestMessages());
-
+        _converse.api.listen.on('chatReconnected', chat => {
+            // XXX: For MUCs, we listen to enteredNewRoom instead
+            if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+                chat.fetchNewestMessages();
+            }
+        });
         _converse.api.listen.on('afterMessagesFetched', chat => {
             // XXX: We don't want to query MAM every time this is triggered
             // since it's not necessary when the chat is restored from cache.

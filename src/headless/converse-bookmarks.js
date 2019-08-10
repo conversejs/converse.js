@@ -43,10 +43,11 @@ converse.plugins.add('converse-bookmarks', {
                 const { _converse } = this.__super__;
                 if (this.get('bookmarked') && _converse.bookmarks) {
                     const bookmark = _converse.bookmarks.findWhere({'jid': this.get('jid')});
-                    return bookmark.get('name');
-                } else {
-                    return this.__super__.getDisplayName.apply(this, arguments);
+                    if (bookmark) {
+                        return bookmark.get('name');
+                    }
                 }
+                return this.__super__.getDisplayName.apply(this, arguments);
             },
 
             getAndPersistNickname (nick) {

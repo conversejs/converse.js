@@ -17,6 +17,14 @@
 <body class="reset">
 <div id="conversejs-bg"></div>
 <script>
+
+    converse.plugins.add('converse-debug', {
+        initialize () {
+            const { _converse } = this;
+            window._converse = _converse;
+        }
+    });
+
     converse.initialize({
         auto_away: 300,
         i18n: 'af',
@@ -27,6 +35,7 @@
         // ],
         websocket_url: 'wss://conversejs.org/xmpp-websocket',
         bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+        whitelisted_plugins: ['converse-debug'],
         view_mode: 'fullscreen',
         notify_all_room_messages: [
             'discuss@conference.conversejs.org'

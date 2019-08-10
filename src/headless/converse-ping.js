@@ -10,9 +10,8 @@
  * as specified in XEP-0199 XMPP Ping.
  */
 import converse from "./converse-core";
-
-// Strophe methods for building stanzas
 const { Strophe, $iq, _ } = converse.env;
+const u = converse.env.utils;
 
 Strophe.addNamespace('PING', "urn:xmpp:ping");
 
@@ -24,80 +23,99 @@ converse.plugins.add('converse-ping', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        let lastStanzaDate;
 
         _converse.api.settings.update({
-            ping_interval: 180 //in seconds
+            ping_interval: 60 //in seconds
         });
 
-        _converse.ping = function (jid, success, error, timeout) {
-            // XXX: We could first check here if the server advertised that
-            // it supports PING.
-            // However, some servers don't advertise while still keeping the
-            // connection option due to pings.
-            //
-            // var feature = _converse.disco_entities[_converse.domain].features.findWhere({'var': Strophe.NS.PING});
-            _converse.lastStanzaDate = new Date();
-            jid = jid || Strophe.getDomainFromJid(_converse.bare_jid);
-            if (timeout === undefined ) { timeout = null; }
-            if (success === undefined ) { success = null; }
-            if (error === undefined ) { error = null; }
-            if (_converse.connection) {
-                const id = _converse.connection.getUniqueId('ping');
-                const iq = $iq({
-                    'type': 'get',
-                    'to': jid,
-                    'id': id
-                }).c('ping', {'xmlns': Strophe.NS.PING});
-                _converse.connection.sendIQ(iq, success, error, timeout);
-                return true;
-            }
-            return false;
-        };
-
-        _converse.pong = function (ping) {
-            _converse.lastStanzaDate = new Date();
+        function pong (ping) {
+            lastStanzaDate = new Date();
             const from = ping.getAttribute('from');
             const id = ping.getAttribute('id');
             const iq = $iq({type: 'result', to: from,id: id});
             _converse.connection.sendIQ(iq);
             return true;
-        };
+        }
 
-        _converse.registerPongHandler = function () {
+        function registerPongHandler () {
             if (_converse.connection.disco !== undefined) {
                 _converse.api.disco.own.features.add(Strophe.NS.PING);
             }
-            return _converse.connection.addHandler(_converse.pong, Strophe.NS.PING, "iq", "get");
-        };
+            return _converse.connection.addHandler(pong, Strophe.NS.PING, "iq", "get");
+        }
 
-        _converse.registerPingHandler = function () {
-            _converse.registerPongHandler();
+        function registerPingHandler () {
+            _converse.connection.addHandler(() => {
+                if (_converse.ping_interval > 0) {
+                    // Handler on each stanza, saves the received date
+                    // in order to ping only when needed.
+                    lastStanzaDate = new Date();
+                    return true;
+                }
+            });
+        }
+
+        setTimeout(() => {
             if (_converse.ping_interval > 0) {
-                _converse.connection.addHandler(function () {
-                    /* Handler on each stanza, saves the received date
-                     * in order to ping only when needed.
-                     */
-                    _converse.lastStanzaDate = new Date();
-                    return true;
-                });
-                _converse.connection.addTimedHandler(1000, function () {
-                    const now = new Date();
-                    if (!_converse.lastStanzaDate) {
-                        _converse.lastStanzaDate = now;
-                    }
-                    if ((now - _converse.lastStanzaDate)/1000 > _converse.ping_interval) {
-                        return _converse.ping();
-                    }
-                    return true;
-                });
+                const now = new Date();
+                if (!lastStanzaDate) {
+                    lastStanzaDate = now;
+                }
+                if ((now - lastStanzaDate)/1000 > _converse.ping_interval) {
+                    return _converse.api.ping();
+                }
+                return true;
             }
-        };
+        }, 1000);
+
 
         const onConnected = function () {
             // Wrapper so that we can spy on registerPingHandler in tests
-            _converse.registerPingHandler();
+            registerPongHandler();
+            registerPingHandler();
         };
         _converse.api.listen.on('connected', onConnected);
         _converse.api.listen.on('reconnected', onConnected);
+
+
+        /************************ BEGIN API ************************/
+        Object.assign(_converse.api, {
+            /**
+             * Pings the service represented by the passed in JID by sending an
+             * IQ stanza.
+             * @private
+             * @method _converse.api.ping
+             * @param { string } [jid] - The JID of the service to ping
+             */
+            async ping (jid) {
+                // XXX: We could first check here if the server advertised that it supports PING.
+                // However, some servers don't advertise while still responding to pings
+                //
+                // const feature = _converse.disco_entities[_converse.domain].features.findWhere({'var': Strophe.NS.PING});
+                lastStanzaDate = new Date();
+                jid = jid || Strophe.getDomainFromJid(_converse.bare_jid);
+                if (_converse.connection) {
+                    const iq = $iq({
+                            'type': 'get',
+                            'to': jid,
+                            'id': _converse.connection.getUniqueId('ping')
+                        }).c('ping', {'xmlns': Strophe.NS.PING});
+
+                    const result = await _converse.api.sendIQ(iq, 10000, false);
+                    if (result === null) {
+                        _converse.log(`Timeout while pinging ${jid}`, Strophe.LogLevel.WARN);
+                        if (jid === Strophe.getDomainFromJid(_converse.bare_jid)) {
+                            _converse.api.connection.reconnect();
+                        }
+                    } else if (u.isErrorStanza(result)) {
+                        _converse.log(`Error while pinging ${jid}`, Strophe.LogLevel.ERROR);
+                        _converse.log(result, Strophe.LogLevel.ERROR);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 });

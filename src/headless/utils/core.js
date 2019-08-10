@@ -162,6 +162,12 @@ u.isErrorObject = function (o) {
     return o instanceof Error;
 }
 
+u.isErrorStanza = function (stanza) {
+    if (!_.isElement(stanza)) {
+        return false;
+    }
+    return stanza.getAttribute('type') === 'error';
+}
 
 u.isForbiddenError = function (stanza) {
     if (!_.isElement(stanza)) {

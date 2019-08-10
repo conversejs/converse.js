@@ -323,6 +323,10 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             fetchMessages () {
+                if (this.messages.fetched) {
+                    _converse.log(`Not re-fetching messages for ${this.get('jid')}`, Strophe.LogLevel.INFO);
+                    return;
+                }
                 this.messages.fetched = u.getResolveablePromise();
                 const resolve = this.messages.fetched.resolve;
                 this.messages.fetch({
@@ -334,11 +338,13 @@ converse.plugins.add('converse-chatboxes', {
 
             clearMessages () {
                 try {
+                    this.messages.models.forEach(m => m.destroy());
                     this.messages.reset();
                 } catch (e) {
                     this.messages.trigger('reset');
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 } finally {
+                    delete this.messages.fetched;
                     this.messages.browserStorage._clear();
                 }
             },

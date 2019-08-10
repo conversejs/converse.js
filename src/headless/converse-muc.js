@@ -397,8 +397,7 @@ converse.plugins.add('converse-muc', {
                     Strophe.LogLevel.DEBUG
                 );
                 if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
-                    // We're not restoring a room from cache, so let's clear
-                    // the cache (which might be stale).
+                    // We're not restoring a room from cache, so let's clear the potentially stale cache.
                     this.removeNonMembers();
                     await this.refreshRoomFeatures();
                     if (_converse.clear_messages_on_reconnection) {
@@ -411,6 +410,7 @@ converse.plugins.add('converse-muc', {
                     }
                     this.join();
                 } else if (!(await this.rejoinIfNecessary())) {
+                    // We've restored the room from cache and we're still joined.
                     this.features.fetch();
                     this.fetchMessages();
                 }
@@ -1519,6 +1519,7 @@ converse.plugins.add('converse-muc', {
                 if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }
+
                 const message = await this.getDuplicateMessage(original_stanza);
                 if (message) {
                     this.updateMessage(message, original_stanza);

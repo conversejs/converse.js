@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-08 17:32+0200\n"
-"PO-Revision-Date: 2019-06-18 19:04+0000\n"
+"PO-Revision-Date: 2019-08-14 12:40+0200\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.7\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: dist/converse-no-dependencies.js:26952
 #, javascript-format
@@ -888,7 +888,7 @@ msgstr "عنوان الرابط"
 
 #: dist/converse-no-dependencies.js:36201
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الإحتفاظ ببيانات ملفك الشخصي."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ ببيانات ملفك الشخصي."
 
 #: dist/converse-no-dependencies.js:36201
 msgid "You can check your browser's developer console for any error output."
@@ -939,11 +939,12 @@ msgstr ""
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
+"برنامج %1$sحر ومفتوح المصدر%2$s للمحادثة عبر XMPP طوّره لكم %3$s Opkode %2$s"
 
 #: dist/converse-no-dependencies.js:36296
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr ""
+msgstr "%1$s ترجموه %2$s إلى لغتكم"
 
 #: dist/converse-no-dependencies.js:36320
 #, javascript-format
@@ -1005,7 +1006,7 @@ msgstr "جارٍ جلب استمارة التسجيل"
 
 #: dist/converse-no-dependencies.js:36816
 msgid "Tip: A list of public XMPP providers is available"
-msgstr ""
+msgstr "نصيحة: قائمة علنية لمزوّدي خدمة XMPP متوفرة"
 
 #: dist/converse-no-dependencies.js:36817
 msgid "here"
@@ -1231,7 +1232,7 @@ msgstr "لقد إنقطع الإتصال، عملية إعادة الربط جا
 
 #: dist/converse-no-dependencies.js:42528
 msgid "An error occurred while connecting to the chat server."
-msgstr "طرأ هناك خطأ أنثاء الربط بخادوم المحادثة."
+msgstr "طرأ هناك خطأ أثناء الربط بخادم المحادثة."
 
 #: dist/converse-no-dependencies.js:42535
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
@@ -1240,7 +1241,7 @@ msgstr "مُعرِّف جابر الخاص بك أو كلمتك السرية خ�
 #: dist/converse-no-dependencies.js:42547
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "عذرا، لم نتمكن مِن الإتصال بخادوم XMPP عبر النطاق : %1$s"
+msgstr "عذرا، لم نتمكن مِن الاتصال بخادوم XMPP عبر النطاق : %1$s"
 
 #: dist/converse-no-dependencies.js:42549
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -1433,12 +1434,12 @@ msgstr "السبب : \"%1$s\"."
 msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "قام %1$s بدعوتك للإلتحاق بفريق المحادثة : %2$s"
 
-#: dist/converse-no-dependencies.js:47354
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:47374
+#, javascript-format
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
-msgstr "قام %1$s بدعوتك للإلتحاق بفريق المحادثة : %2$s"
+msgstr "قام %1$s بدعوتك للالتحاق بفريق المحادثة : %2$s لهذا السبب: \"%3$s\""
 
 #: dist/converse-no-dependencies.js:48006
 msgid "My contacts"
@@ -1454,7 +1455,7 @@ msgstr "طلبات التراسل"
 
 #: dist/converse-no-dependencies.js:48009
 msgid "Ungrouped"
-msgstr ""
+msgstr "بدون فريق"
 
 #: dist/converse-no-dependencies.js:48584
 #, javascript-format
@@ -1649,7 +1650,7 @@ msgstr "كلمة السر"
 
 #: dist/converse-no-dependencies.js:74530
 msgid "This is a trusted device"
-msgstr "أنا على جهاز أثق فيه"
+msgstr "هذا جهاز موثوق فيه"
 
 #: dist/converse-no-dependencies.js:74532
 msgid ""
@@ -1690,7 +1691,7 @@ msgstr "بصمة أوميمو الخاصة بهذا الجهاز"
 
 #: dist/converse-no-dependencies.js:74926
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "توليد مفاتيح جديدة وبصمة"
 
 #: dist/converse-no-dependencies.js:74930
 msgid "Select all"
@@ -1719,7 +1720,7 @@ msgstr "أزالة الأجهزة التي تم اختيارها ثم إغلاق
 
 #: dist/converse-no-dependencies.js:75042
 msgid "Don't have a chat account?"
-msgstr "لا تمتلك حسابًا للمحادثة بعدُ ؟"
+msgstr "لا تمتلكون حسابًا للمحادثة بعدُ؟"
 
 #: dist/converse-no-dependencies.js:75044
 msgid "Create an account"
@@ -1736,7 +1737,7 @@ msgstr "يرجى إدخال مزود خدمة XMPP الذي تود إنشاء ح
 #: dist/converse-no-dependencies.js:75085
 #: dist/converse-no-dependencies.js:75124
 msgid "Already have a chat account?"
-msgstr "عندك حساب مُحادثة ؟"
+msgstr "هل تمتلك حساب مُحادثة؟"
 
 #: dist/converse-no-dependencies.js:75087
 #: dist/converse-no-dependencies.js:75126

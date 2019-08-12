@@ -53,7 +53,7 @@ converse.plugins.add('converse-vcard', {
         });
 
 
-        _converse.VCards = Backbone.Collection.extend({
+        _converse.VCards = _converse.Collection.extend({
             model: _converse.VCard,
 
             initialize () {
@@ -65,7 +65,7 @@ converse.plugins.add('converse-vcard', {
         async function onVCardData (jid, iq) {
             const vcard = iq.querySelector('vCard');
             let result = {};
-            if (!_.isNull(vcard)) {
+            if (vcard !== null) {
                 result = {
                     'stanza': iq,
                     'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
@@ -135,6 +135,13 @@ converse.plugins.add('converse-vcard', {
             if (_converse.session) {
                 const jid = _converse.session.get('bare_jid');
                 _converse.xmppstatus.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
+            }
+        });
+
+        _converse.api.listen.on('clearSession', () => {
+            if (_converse.shouldClearCache() && _converse.vcards) {
+                _converse.vcards.clearSession();
+                delete _converse.vcards;
             }
         });
 

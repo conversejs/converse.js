@@ -90,7 +90,7 @@ converse.plugins.add('converse-register', {
         Object.assign(_converse.LoginPanel.prototype, {
 
             insertRegisterLink () {
-                if (_.isUndefined(this.registerlinkview)) {
+                if (this.registerlinkview === undefined) {
                     this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
                     this.registerlinkview.render();
                     const buttons = this.el.querySelector('.buttons');
@@ -108,7 +108,7 @@ converse.plugins.add('converse-register', {
 
             showLoginOrRegisterForm () {
                 const { _converse } = this.__super__;
-                if (_.isNil(this.registerpanel)) {
+                if (!this.registerpanel) {
                     return;
                 }
                 if (this.model.get('active-form') == "register") {
@@ -139,7 +139,7 @@ converse.plugins.add('converse-register', {
 
 
         function setActiveForm (value) {
-            _converse.api.waitUntil('controlboxInitialized').then(() => {
+            _converse.api.waitUntil('controlBoxInitialized').then(() => {
                 const controlbox = _converse.chatboxes.get('controlbox')
                 controlbox.set({'active-form': value});
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
@@ -308,7 +308,7 @@ converse.plugins.add('converse-register', {
                  * other methods.
                  */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (_.isNull(ev.target.querySelector('input[name=domain]'))) {
+                if (ev.target.querySelector('input[name=domain]') === null) {
                     this.submitRegistrationForm(ev.target);
                 } else {
                     this.onProviderChosen(ev.target);
@@ -367,7 +367,7 @@ converse.plugins.add('converse-register', {
 
             giveFeedback (message, klass) {
                 let feedback = this.el.querySelector('.reg-feedback');
-                if (!_.isNull(feedback)) {
+                if (feedback !== null) {
                     feedback.parentNode.removeChild(feedback);
                 }
                 const form = this.el.querySelector('form');
@@ -513,10 +513,10 @@ converse.plugins.add('converse-register', {
             showValidationError (message) {
                 const form = this.el.querySelector('form');
                 let flash = form.querySelector('.form-errors');
-                if (_.isNull(flash)) {
+                if (flash === null) {
                     flash = '<div class="form-errors hidden"></div>';
                     const instructions = form.querySelector('p.instructions');
-                    if (_.isNull(instructions)) {
+                    if (instructions === null) {
                         form.insertAdjacentHTML('afterbegin', flash);
                     } else {
                         instructions.insertAdjacentHTML('afterend', flash);
@@ -684,7 +684,7 @@ converse.plugins.add('converse-register', {
         });
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('controlboxInitialized', view => {
+        _converse.api.listen.on('controlBoxInitialized', view => {
             view.model.on('change:active-form', view.showLoginOrRegisterForm, view);
         });
         /************************ END Event Handlers ************************/

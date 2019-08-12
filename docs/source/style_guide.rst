@@ -20,10 +20,10 @@ We use camelCase for function names and underscores for variables names.
 
 For example:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     function thisIsAFunction () {
-        var this_is_a_variable;
+        let this_is_a_variable;
         ...
     }
 
@@ -34,7 +34,7 @@ In general, spaces are put around operators, such as the equals ``=`` or plus ``
 
 For example:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     if (sublocale != locale) {
         // do something
@@ -42,7 +42,7 @@ For example:
 
 An exception is when they appear inside for-loop expressions, for example:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     for (i=0; i<msgs_length; i++) {
         // do something
@@ -51,18 +51,23 @@ An exception is when they appear inside for-loop expressions, for example:
 Generally though, rather err on the side of adding spaces, since they make the
 code much more readable.
 
-Constants are written in ALL_CAPS
----------------------------------
+Global constants are written in ALL_CAPS
+----------------------------------------
 
-Identifiers that denote constant values should be written in
+Global identifiers that denote constant values should be written in
 all capital letters, with underscores between words.
 
 For example:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
-    var SECONDS_IN_HOUR = 3600;
-    var seconds_since_message = 0;
+    const SECONDS_IN_HOUR = 3600;
+
+    function update () {
+        const timeout = 20;
+        let seconds_since_message = 0;
+        // other stuff here
+    }
 
 
 Function declaration and invocation
@@ -71,7 +76,7 @@ Function declaration and invocation
 When declaring a function, the function name and the brackets after it are separated
 with a space. Like so:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     function update (model) {
         model.foo = 'bar';
@@ -80,7 +85,7 @@ with a space. Like so:
 When calling the same function, the brackets are written without a space in
 between:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     update(model);
 
@@ -102,7 +107,7 @@ The closing curly bracket appears on its own line.
 
 For example:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     if (locales[locale]) {
         return locales[locale];
@@ -122,7 +127,7 @@ the compiler (for example if its only one line inside the ``if`` statement).
 
 For example, like this:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     if (condition === true) {
         this.updateRoomsList();

@@ -290,7 +290,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             shouldBeVisible () {
-                return _converse.roster.length >= 5 || this.isActive();
+                return _converse.roster && _converse.roster.length >= 5 || this.isActive();
             },
 
             showOrHide () {
@@ -509,8 +509,9 @@ converse.plugins.add('converse-rosterview', {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                     _converse.api.alert.show(
                         Strophe.LogLevel.ERROR,
-                        __('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName())
-                    );
+                        __('Error'),
+                        [__('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName())]
+                    )
                 }
             },
 
@@ -648,13 +649,17 @@ converse.plugins.add('converse-rosterview', {
                 return matches;
             },
 
+            /**
+             * Filter the group's contacts based on the query "q".
+             *
+             * If all contacts are filtered out (i.e. hidden), then the
+             * group must be filtered out as well.
+             * @private
+             * @param { string } q - The query to filter against
+             * @param { string } type
+             */
             filter (q, type) {
-                /* Filter the group's contacts based on the query "q".
-                 *
-                 * If all contacts are filtered out (i.e. hidden), then the
-                 * group must be filtered out as well.
-                 */
-                if (_.isNil(q)) {
+                if (q === null || q === undefined) {
                     type = type || _converse.rosterview.filter_view.model.get('filter_type');
                     if (type === 'state') {
                         q = _converse.rosterview.filter_view.model.get('chat_state');
@@ -784,7 +789,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             showAddContactModal (ev) {
-                if (_.isUndefined(this.add_contact_modal)) {
+                if (this.add_contact_modal === undefined) {
                     this.add_contact_modal = new _converse.AddContactModal({'model': new Backbone.Model()});
                 }
                 this.add_contact_modal.show(ev);
@@ -859,7 +864,6 @@ converse.plugins.add('converse-rosterview', {
             },
 
             reset () {
-                _converse.roster.reset();
                 this.removeAll();
                 this.render().update();
                 return this;
@@ -943,14 +947,30 @@ converse.plugins.add('converse-rosterview', {
         /* -------- Event Handlers ----------- */
         _converse.api.listen.on('chatBoxesInitialized', () => {
             function highlightRosterItem (chatbox) {
-                const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});
-                if (!_.isUndefined(contact)) {
+                const contact = _converse.roster && _converse.roster.findWhere({'jid': chatbox.get('jid')});
+                if (contact !== undefined) {
                     contact.trigger('highlight');
                 }
             }
             _converse.chatboxes.on('destroy', chatbox => highlightRosterItem(chatbox));
             _converse.chatboxes.on('change:hidden', chatbox => highlightRosterItem(chatbox));
         });
+
+
+        _converse.api.listen.on('controlBoxInitialized', (view) => {
+            function insertRoster () {
+                if (!view.model.get('connected') || _converse.authentication === _converse.ANONYMOUS) {
+                    return;
+                }
+                /* Place the rosterview inside the "Contacts" panel. */
+                _converse.api.waitUntil('rosterViewInitialized')
+                    .then(() => view.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
+                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            }
+            insertRoster();
+            view.model.on('change:connected', insertRoster);
+        });
+
 
         function initRoster () {
             /* Create an instance of RosterView once the RosterGroups

@@ -42,7 +42,7 @@ converse.plugins.add("converse-oauth", {
 
             insertOAuthProviders () {
                 const { _converse } = this.__super__;
-                if (_.isUndefined(this.oauth_providers_view)) {
+                if (this.oauth_providers_view === undefined) {
                     this.oauth_providers_view =
                         new _converse.OAuthProvidersView({'model': _converse.oauth_providers});
 
@@ -77,8 +77,8 @@ converse.plugins.add("converse-oauth", {
             'oauth_providers': {},
         });
 
-        _converse.OAuthProviders = Backbone.Collection.extend({
-            'sync': __.noop,
+        _converse.OAuthProviders = _converse.Collection.extend({
+            'sync': function sync () {},
 
             initialize () {
                 _.each(_converse.user_settings.oauth_providers, (provider) => {

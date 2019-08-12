@@ -516,7 +516,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 test_utils.openControlBox(_converse);
                 // Create some contacts so that we can test positioning
                 test_utils.createContacts(_converse, 'current');

@@ -43,10 +43,11 @@ converse.plugins.add('converse-bookmarks', {
                 const { _converse } = this.__super__;
                 if (this.get('bookmarked') && _converse.bookmarks) {
                     const bookmark = _converse.bookmarks.findWhere({'jid': this.get('jid')});
-                    return bookmark.get('name');
-                } else {
-                    return this.__super__.getDisplayName.apply(this, arguments);
+                    if (bookmark) {
+                        return bookmark.get('name');
+                    }
                 }
+                return this.__super__.getDisplayName.apply(this, arguments);
             },
 
             getAndPersistNickname (nick) {
@@ -93,7 +94,7 @@ converse.plugins.add('converse-bookmarks', {
 
         _converse.Bookmark = Backbone.Model;
 
-        _converse.Bookmarks = Backbone.Collection.extend({
+        _converse.Bookmarks = _converse.Collection.extend({
             model: _converse.Bookmark,
             comparator: (item) => item.get('name').toLowerCase(),
 
@@ -192,14 +193,14 @@ converse.plugins.add('converse-bookmarks', {
 
             markRoomAsBookmarked (bookmark) {
                 const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
-                if (!_.isUndefined(groupchat)) {
+                if (groupchat !== undefined) {
                     groupchat.save('bookmarked', true);
                 }
             },
 
             markRoomAsUnbookmarked (bookmark) {
                 const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
-                if (!_.isUndefined(groupchat)) {
+                if (groupchat !== undefined) {
                     groupchat.save('bookmarked', false);
                 }
             },
@@ -222,7 +223,7 @@ converse.plugins.add('converse-bookmarks', {
 
             onBookmarksReceived (deferred, iq) {
                 this.createBookmarksFromStanza(iq);
-                if (!_.isUndefined(deferred)) {
+                if (deferred !== undefined) {
                     return deferred.resolve();
                 }
             },
@@ -231,10 +232,9 @@ converse.plugins.add('converse-bookmarks', {
                 window.sessionStorage.setItem(this.fetched_flag, true);
                 _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
                 _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
-                if (!_.isNil(deferred)) {
+                if (deferred) {
                     if (iq.querySelector('error[type="cancel"] item-not-found')) {
-                        // Not an exception, the user simply doesn't have
-                        // any bookmarks.
+                        // Not an exception, the user simply doesn't have any bookmarks.
                         return deferred.resolve();
                     } else {
                         return deferred.reject(new Error("Could not fetch bookmarks"));
@@ -276,9 +276,8 @@ converse.plugins.add('converse-bookmarks', {
         }
 
         _converse.api.listen.on('clearSession', () => {
-            if (!_.isUndefined(_converse.bookmarks)) {
-                _converse.bookmarks.reset();
-                _converse.bookmarks.browserStorage._clear();
+            if (_converse.bookmarks !== undefined) {
+                _converse.bookmarks.clearSession();
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
             }
         });

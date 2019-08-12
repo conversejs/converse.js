@@ -20,8 +20,10 @@
                             async (done, _converse) => {
 
                         // TODO: not yet testing show_desktop_notifications setting
-                        test_utils.createContacts(_converse, 'current');
                         await test_utils.createContacts(_converse, 'current');
+                        // Hack to avoid having to fetch the roster again.
+                        _converse.session.set('roster_fetched', true);
+
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
@@ -137,9 +139,9 @@
                         done();
                     }));
 
-                    it("is shown when a user changes their chat state (if show_chatstate_notifications is true)", mock.initConverse((done, _converse) => {
+                    it("is shown when a user changes their chat state (if show_chat_state_notifications is true)", mock.initConverse((done, _converse) => {
                         // TODO: not yet testing show_desktop_notifications setting
-                        _converse.show_chatstate_notifications = true;
+                        _converse.show_chat_state_notifications = true;
 
                         test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);

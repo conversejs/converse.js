@@ -43,24 +43,24 @@ converse.plugins.add('converse-disco', {
             initialize (attrs, options) {
                 this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
 
-                this.dataforms = new Backbone.Collection();
+                this.dataforms = new _converse.Collection();
                 this.dataforms.browserStorage = new BrowserStorage.session(
                     `converse.dataforms-${this.get('jid')}`
                 );
 
-                this.features = new Backbone.Collection();
+                this.features = new _converse.Collection();
                 this.features.browserStorage = new BrowserStorage.session(
                     `converse.features-${this.get('jid')}`
                 );
                 this.features.on('add', this.onFeatureAdded, this);
 
-                this.fields = new Backbone.Collection();
+                this.fields = new _converse.Collection();
                 this.fields.browserStorage = new BrowserStorage.session(
                     `converse.fields-${this.get('jid')}`
                 );
                 this.fields.on('add', this.onFieldAdded, this);
 
-                this.identities = new Backbone.Collection();
+                this.identities = new _converse.Collection();
                 this.identities.browserStorage = new BrowserStorage.session(
                     `converse.identities-${this.get('jid')}`
                 );
@@ -161,7 +161,7 @@ converse.plugins.add('converse-disco', {
                         return;
                     }
                     const jid = item.getAttribute('jid');
-                    if (_.isUndefined(this.items.get(jid))) {
+                    if (this.items.get(jid) === undefined) {
                         const entity = _converse.disco_entities.get(jid);
                         if (entity) {
                             this.items.add(entity);
@@ -226,7 +226,7 @@ converse.plugins.add('converse-disco', {
             }
         });
 
-        _converse.DiscoEntities = Backbone.Collection.extend({
+        _converse.DiscoEntities = _converse.Collection.extend({
             model: _converse.DiscoEntity,
 
             fetchEntities () {
@@ -267,7 +267,7 @@ converse.plugins.add('converse-disco', {
             const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
             const id = `converse.stream-features-${bare_jid}`;
             if (!_converse.stream_features || _converse.stream_features.browserStorage.id !== id) {
-                _converse.stream_features = new Backbone.Collection();
+                _converse.stream_features = new _converse.Collection();
                 _converse.stream_features.browserStorage = new BrowserStorage.session(id);
                 _converse.stream_features.fetch({
                     success (collection) {
@@ -292,52 +292,6 @@ converse.plugins.add('converse-disco', {
                 });
             }
         }
-
-        async function initializeDisco () {
-            addClientFeatures();
-            _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
-
-            _converse.disco_entities = new _converse.DiscoEntities();
-            _converse.disco_entities.browserStorage = new BrowserStorage.session(
-                `converse.disco-entities-${_converse.bare_jid}`
-            );
-
-            const collection = await _converse.disco_entities.fetchEntities();
-            if (collection.length === 0 || !collection.get(_converse.domain)) {
-                // If we don't have an entity for our own XMPP server,
-                // create one.
-                _converse.disco_entities.create({'jid': _converse.domain});
-            }
-            /**
-             * Triggered once the `converse-disco` plugin has been initialized and the
-             * `_converse.disco_entities` collection will be available and populated with at
-             * least the service discovery features of the user's own server.
-             * @event _converse#discoInitialized
-             * @example _converse.api.listen.on('discoInitialized', () => { ... });
-             */
-            _converse.api.trigger('discoInitialized');
-        }
-
-        _converse.api.listen.on('userSessionInitialized', initStreamFeatures);
-        _converse.api.listen.on('beforeResourceBinding', initStreamFeatures);
-
-        _converse.api.listen.on('reconnected', initializeDisco);
-        _converse.api.listen.on('connected', initializeDisco);
-
-        _converse.api.listen.on('beforeTearDown', () => {
-            if (_converse.disco_entities) {
-                _converse.disco_entities.each((entity) => {
-                    entity.features.reset();
-                    entity.features.browserStorage._clear();
-                });
-                _converse.disco_entities.reset();
-                _converse.disco_entities.browserStorage._clear();
-            }
-            if (_converse.stream_features) {
-                _converse.stream_features.reset();
-                _converse.stream_features.browserStorage._clear();
-            }
-        });
 
         const plugin = this;
         plugin._identities = [];
@@ -375,6 +329,60 @@ converse.plugins.add('converse-disco', {
         }
 
 
+        async function initializeDisco () {
+            addClientFeatures();
+            _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
+
+            _converse.disco_entities = new _converse.DiscoEntities();
+            _converse.disco_entities.browserStorage = new BrowserStorage.session(
+                `converse.disco-entities-${_converse.bare_jid}`
+            );
+
+            const collection = await _converse.disco_entities.fetchEntities();
+            if (collection.length === 0 || !collection.get(_converse.domain)) {
+                // If we don't have an entity for our own XMPP server,
+                // create one.
+                _converse.disco_entities.create({'jid': _converse.domain});
+            }
+            /**
+             * Triggered once the `converse-disco` plugin has been initialized and the
+             * `_converse.disco_entities` collection will be available and populated with at
+             * least the service discovery features of the user's own server.
+             * @event _converse#discoInitialized
+             * @example _converse.api.listen.on('discoInitialized', () => { ... });
+             */
+            _converse.api.trigger('discoInitialized');
+        }
+
+        /******************** Event Handlers ********************/
+
+        _converse.api.listen.on('userSessionInitialized', initStreamFeatures);
+        _converse.api.listen.on('beforeResourceBinding', initStreamFeatures);
+
+        _converse.api.listen.on('reconnected', initializeDisco);
+        _converse.api.listen.on('connected', initializeDisco);
+
+        _converse.api.listen.on('beforeTearDown', () => {
+            if (_converse.stream_features) {
+                _converse.stream_features.clearSession();
+                delete _converse.stream_features;
+            }
+        });
+
+        _converse.api.listen.on('clearSession', () => {
+            if (_converse.shouldClearCache() && _converse.disco_entities) {
+                Array.from(_converse.disco_entities.models).forEach(e => e.features.clearSession());
+                Array.from(_converse.disco_entities.models).forEach(e => e.identities.clearSession());
+                Array.from(_converse.disco_entities.models).forEach(e => e.dataforms.clearSession());
+                Array.from(_converse.disco_entities.models).forEach(e => e.fields.clearSession());
+                _converse.disco_entities.clearSession();
+                delete _converse.disco_entities;
+            }
+        });
+
+
+        /************************ API ************************/
+
         Object.assign(_converse.api, {
             /**
              * The XEP-0030 service discovery API
@@ -399,8 +407,14 @@ converse.plugins.add('converse-disco', {
                      */
                     async getFeature (name, xmlns) {
                         await _converse.api.waitUntil('streamFeaturesAdded');
-                        if (_.isNil(name) || _.isNil(xmlns)) {
+                        if (!name || !xmlns) {
                             throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
+                        }
+                        if (_converse.stream_features === undefined && !_converse.api.connection.connected()) {
+                            // Happens during tests when disco lookups happen asynchronously after teardown.
+                            const msg = `Tried to get feature ${name} ${xmlns} but _converse.stream_features has been torn down`;
+                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            return;
                         }
                         return _converse.stream_features.findWhere({'name': name, 'xmlns': xmlns});
                     }
@@ -553,8 +567,14 @@ converse.plugins.add('converse-disco', {
                      */
                     async get (jid, create=false) {
                         await _converse.api.waitUntil('discoInitialized');
-                        if (_.isNil(jid)) {
+                        if (!jid) {
                             return _converse.disco_entities;
+                        }
+                        if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
+                            // Happens during tests when disco lookups happen asynchronously after teardown.
+                            const msg = `Tried to look up entity ${jid} but _converse.disco_entities has been torn down`;
+                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            return;
                         }
                         const entity = _converse.disco_entities.get(jid);
                         if (entity || !create) {
@@ -606,11 +626,18 @@ converse.plugins.add('converse-disco', {
                      * _converse.api.disco.features.get(Strophe.NS.MAM, _converse.bare_jid);
                      */
                     async get (feature, jid) {
-                        if (_.isNil(jid)) {
+                        if (!jid) {
                             throw new TypeError('You need to provide an entity JID');
                         }
                         await _converse.api.waitUntil('discoInitialized');
                         let entity = await _converse.api.disco.entities.get(jid, true);
+
+                        if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
+                            // Happens during tests when disco lookups happen asynchronously after teardown.
+                            const msg = `Tried to get feature ${feature} for ${jid} but _converse.disco_entities has been torn down`;
+                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            return;
+                        }
                         entity = await entity.waitUntilFeaturesDiscovered;
                         const promises = _.concat(
                             entity.items.map(item => item.hasFeature(feature)),
@@ -655,7 +682,7 @@ converse.plugins.add('converse-disco', {
                  * await _converse.api.disco.refreshFeatures('room@conference.example.org');
                  */
                 async refreshFeatures (jid) {
-                    if (_.isNil(jid)) {
+                    if (!jid) {
                         throw new TypeError('api.disco.refreshFeatures: You need to provide an entity JID');
                     }
                     await _converse.api.waitUntil('discoInitialized');
@@ -685,7 +712,7 @@ converse.plugins.add('converse-disco', {
                  * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
                  */
                 async getFeatures (jid) {
-                    if (_.isNil(jid)) {
+                    if (!jid) {
                         throw new TypeError('api.disco.getFeatures: You need to provide an entity JID');
                     }
                     await _converse.api.waitUntil('discoInitialized');
@@ -706,7 +733,7 @@ converse.plugins.add('converse-disco', {
                  * const fields = await _converse.api.disco.getFields('room@conference.example.org');
                  */
                 async getFields (jid) {
-                    if (_.isNil(jid)) {
+                    if (!jid) {
                         throw new TypeError('api.disco.getFields: You need to provide an entity JID');
                     }
                     await _converse.api.waitUntil('discoInitialized');
@@ -738,16 +765,22 @@ converse.plugins.add('converse-disco', {
                  * @example
                  * _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(
                  *     function (identity) {
-                 *         if (_.isNil(identity)) {
-                 *             // The entity DOES NOT have this identity
-                 *         } else {
+                 *         if (identity) {
                  *             // The entity DOES have this identity
+                 *         } else {
+                 *             // The entity DOES NOT have this identity
                  *         }
                  *     }
                  * ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                  */
                 async getIdentity (category, type, jid) {
                     const e = await _converse.api.disco.entities.get(jid, true);
+                    if (e === undefined && !_converse.api.connection.connected()) {
+                        // Happens during tests when disco lookups happen asynchronously after teardown.
+                        const msg = `Tried to look up category ${category} for ${jid} but _converse.disco_entities has been torn down`;
+                        _converse.log(msg, Strophe.LogLevel.WARN);
+                        return;
+                    }
                     return e.getIdentity(category, type);
                 }
             }

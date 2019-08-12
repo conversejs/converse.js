@@ -8,8 +8,6 @@
  * @module converse-controlbox
  */
 import "converse-chatview";
-import "converse-profile";
-import "converse-rosterview";
 import _FormData from "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
@@ -154,7 +152,7 @@ converse.plugins.add('converse-controlbox', {
             sticky_controlbox: false
         });
 
-        _converse.api.promises.add('controlboxInitialized');
+        _converse.api.promises.add('controlBoxInitialized');
 
         const addControlBox = () => _converse.chatboxes.add({'id': 'controlbox'});
 
@@ -173,7 +171,7 @@ converse.plugins.add('converse-controlbox', {
                 }
             },
 
-            onReconnection: _.noop
+           onReconnection: function onReconnection () {}
         });
 
 
@@ -186,7 +184,7 @@ converse.plugins.add('converse-controlbox', {
             },
 
             initialize () {
-                if (_.isUndefined(_converse.controlboxtoggle)) {
+                if (_converse.controlboxtoggle === undefined) {
                     _converse.controlboxtoggle = new _converse.ControlBoxToggle();
                 }
                 _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
@@ -197,24 +195,21 @@ converse.plugins.add('converse-controlbox', {
                 this.model.on('show', this.show, this);
                 this.model.on('change:closed', this.ensureClosedState, this);
                 this.render();
-                if (this.model.get('connected')) {
-                    this.insertRoster();
-                }
                 /**
                  * Triggered when the _converse.ControlBoxView has been initialized and therefore
                  * exists. The controlbox contains the login and register forms when the user is
                  * logged out and a list of the user's contacts and group chats when logged in.
-                 * @event _converse#controlboxInitialized
+                 * @event _converse#controlBoxInitialized
                  * @type { _converse.ControlBoxView }
-                 * @example _converse.api.listen.on('controlboxInitialized', view => { ... });
+                 * @example _converse.api.listen.on('controlBoxInitialized', view => { ... });
                  */
-                _converse.api.trigger('controlboxInitialized', this);
+                _converse.api.trigger('controlBoxInitialized', this);
                 _converse.api.trigger('chatBoxInitialized', this);
             },
 
             render () {
                 if (this.model.get('connected')) {
-                    if (_.isUndefined(this.model.get('closed'))) {
+                    if (this.model.get('closed') === undefined) {
                         this.model.set('closed', !_converse.show_controlbox_by_default);
                     }
                 }
@@ -238,18 +233,7 @@ converse.plugins.add('converse-controlbox', {
             onConnected () {
                 if (this.model.get('connected')) {
                     this.render();
-                    this.insertRoster();
                 }
-            },
-
-            insertRoster () {
-                if (_converse.authentication === _converse.ANONYMOUS) {
-                    return;
-                }
-                /* Place the rosterview inside the "Contacts" panel. */
-                _converse.api.waitUntil('rosterViewInitialized')
-                    .then(() => this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             },
 
              createBrandHeadingHTML () {
@@ -260,7 +244,7 @@ converse.plugins.add('converse-controlbox', {
 
             insertBrandHeading () {
                 const heading_el = this.el.querySelector('.brand-heading-container');
-                if (_.isNull(heading_el)) {
+                if (heading_el === null) {
                     const el = this.el.querySelector('.controlbox-head');
                     el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
                 } else {
@@ -270,7 +254,9 @@ converse.plugins.add('converse-controlbox', {
 
             renderLoginPanel () {
                 this.el.classList.add("logged-out");
-                if (_.isNil(this.loginpanel)) {
+                if (this.loginpanel) {
+                    this.loginpanel.render();
+                } else {
                     this.loginpanel = new _converse.LoginPanel({
                         'model': new _converse.LoginPanelModel()
                     });
@@ -278,8 +264,6 @@ converse.plugins.add('converse-controlbox', {
                     panes.innerHTML = '';
                     panes.appendChild(this.loginpanel.render().el);
                     this.insertBrandHeading();
-                } else {
-                    this.loginpanel.render();
                 }
                 this.loginpanel.initPopovers();
                 return this;
@@ -491,13 +475,13 @@ converse.plugins.add('converse-controlbox', {
             className: 'controlbox-pane',
 
             initialize () {
-                _converse.xmppstatusview = new _converse.XMPPStatusView({
-                    'model': _converse.xmppstatus
-                });
-                this.el.insertAdjacentElement(
-                    'afterBegin',
-                    _converse.xmppstatusview.render().el
-                );
+                /**
+                 * Triggered once the {@link _converse.ControlBoxPane} has been initialized
+                 * @event _converse#controlBoxPaneInitialized
+                 * @type { _converse.ControlBoxPane }
+                 * @example _converse.api.listen.on('controlBoxPaneInitialized', view => { ... });
+                 */
+                _converse.api.trigger('controlBoxPaneInitialized', this);
             }
         });
 
@@ -567,6 +551,9 @@ converse.plugins.add('converse-controlbox', {
             }
         });
 
+
+        /******************** Event Handlers ********************/
+
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
             _converse.chatboxes.on('add', item => {
                 if (item.get('type') === _converse.CONTROLBOX_TYPE) {
@@ -583,18 +570,17 @@ converse.plugins.add('converse-controlbox', {
         });
 
         _converse.api.listen.on('clearSession', () => {
-            if (_converse.config.get('trusted')) {
-                const chatboxes = _.get(_converse, 'chatboxes', null);
-                if (!_.isNil(chatboxes)) {
-                    const controlbox = chatboxes.get('controlbox');
-                    if (controlbox &&
-                            controlbox.collection &&
-                            controlbox.collection.browserStorage) {
-                        controlbox.save({'connected': false});
-                    }
-                }
+            const chatboxviews = _.get(_converse, 'chatboxviews', null);
+            const view = chatboxviews && chatboxviews.get('controlbox');
+            if (view) {
+               u.safeSave(view.model, {'connected': false});
+               if (_.get(view, 'controlbox_pane')) {
+                  view.controlbox_pane.remove();
+                  delete view.controlbox_pane;
+               }
             }
         });
+
 
         Promise.all([
             _converse.api.waitUntil('connectionInitialized'),
@@ -618,16 +604,8 @@ converse.plugins.add('converse-controlbox', {
         _converse.api.listen.on('disconnected', () => disconnect().renderLoginPanel());
         _converse.api.listen.on('will-reconnect', disconnect);
 
-        _converse.api.listen.on('clearSession', () => {
-            const view = _converse.chatboxviews.get('controlbox');
-            if (view && view.controlbox_pane) {
-                view.controlbox_pane.remove();
-                delete view.controlbox_pane;
-            }
-        });
+        /************************ API ************************/
 
-
-        /************************ BEGIN API ************************/
         Object.assign(_converse.api, {
             /**
              * The "controlbox" namespace groups methods pertaining to the

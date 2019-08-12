@@ -1,6 +1,6 @@
 {
   "name": "@converse/headless",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "description": "Converse.js Headless build",
   "author": "cmrd Senya <senya@riseup.net>",
   "homepage": "https://conversejs.org",
@@ -29,7 +29,7 @@
     "jed": "1.1.1",
     "lodash": "^4.17.14",
     "pluggable.js": "2.0.1",
-    "strophe.js": "strophe/strophejs#c572c9b1a5c95529784b363fcfe927b281c2f62e",
+    "strophe.js": "1.3.4",
     "twemoji": "^12.1.2"
   }
 }

@@ -34,10 +34,10 @@ function getAutoCompleteProperty (name, options) {
 }
 
 const logger = _.assign({
-    'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-    'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-    'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-    'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
+    'debug': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
+    'error': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
+    'info': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
+    'warn': _.get(console, 'log') ? console.log.bind(console) : function noop () {}
 }, console);
 
 const XFORM_TYPE_MAP = {
@@ -227,15 +227,15 @@ u.calculateElementHeight = function (el) {
 
 u.getNextElement = function (el, selector='*') {
     let next_el = el.nextElementSibling;
-    while (!_.isNull(next_el) && !sizzle.matchesSelector(next_el, selector)) {
+    while ((next_el instanceof Element) && !sizzle.matchesSelector(next_el, selector)) {
         next_el = next_el.nextElementSibling;
     }
     return next_el;
 }
 
 u.getPreviousElement = function (el, selector='*') {
-    let prev_el = el.previousSibling;
-    while (!_.isNull(prev_el) && !sizzle.matchesSelector(prev_el, selector)) {
+    let prev_el = el.previousElementSibling;
+    while ((prev_el instanceof Element) && !sizzle.matchesSelector(prev_el, selector)) {
         prev_el = prev_el.previousSibling
     }
     return prev_el;
@@ -243,7 +243,7 @@ u.getPreviousElement = function (el, selector='*') {
 
 u.getFirstChildElement = function (el, selector='*') {
     let first_el = el.firstElementChild;
-    while (!_.isNull(first_el) && !sizzle.matchesSelector(first_el, selector)) {
+    while ((first_el instanceof Element) && !sizzle.matchesSelector(first_el, selector)) {
         first_el = first_el.nextSibling
     }
     return first_el;
@@ -251,33 +251,29 @@ u.getFirstChildElement = function (el, selector='*') {
 
 u.getLastChildElement = function (el, selector='*') {
     let last_el = el.lastElementChild;
-    while (!_.isNull(last_el) && !sizzle.matchesSelector(last_el, selector)) {
+    while ((last_el instanceof Element) && !sizzle.matchesSelector(last_el, selector)) {
         last_el = last_el.previousSibling
     }
     return last_el;
 }
 
 u.hasClass = function (className, el) {
-    return el.classList.contains(className);
+    return (el instanceof Element) && el.classList.contains(className);
 };
 
 u.addClass = function (className, el) {
-    if (el instanceof Element) {
-        el.classList.add(className);
-    }
+    (el instanceof Element) && el.classList.add(className);
+    return el;
 }
 
 u.removeClass = function (className, el) {
-    if (el instanceof Element) {
-        el.classList.remove(className);
-    }
+    (el instanceof Element) && el.classList.remove(className);
     return el;
 }
 
 u.removeElement = function (el) {
-    if (!_.isNil(el) && !_.isNil(el.parentNode)) {
-        el.parentNode.removeChild(el);
-    }
+    (el instanceof Element) && el.parentNode && el.parentNode.removeChild(el);
+    return el;
 }
 
 u.showElement = _.flow(
@@ -286,15 +282,13 @@ u.showElement = _.flow(
 )
 
 u.hideElement = function (el) {
-    if (!_.isNil(el)) {
-        el.classList.add('hidden');
-    }
+    (el instanceof Element) && el.classList.add('hidden');
     return el;
 }
 
 u.ancestor = function (el, selector) {
     let parent = el;
-    while (!_.isNil(parent) && !sizzle.matchesSelector(parent, selector)) {
+    while ((parent instanceof Element) && !sizzle.matchesSelector(parent, selector)) {
         parent = parent.parentElement;
     }
     return parent;
@@ -304,7 +298,7 @@ u.nextUntil = function (el, selector, include_self=false) {
     /* Return the element's siblings until one matches the selector. */
     const matches = [];
     let sibling_el = el.nextElementSibling;
-    while (!_.isNil(sibling_el) && !sibling_el.matches(selector)) {
+    while ((sibling_el instanceof Element) && !sibling_el.matches(selector)) {
         matches.push(sibling_el);
         sibling_el = sibling_el.nextElementSibling;
     }
@@ -398,8 +392,8 @@ u.slideToggleElement = function (el, duration) {
  */
 u.slideOut = function (el, duration=200) {
     return new Promise((resolve, reject) => {
-        if (_.isNil(el)) {
-            const err = "Undefined or null element passed into slideOut"
+        if (!el) {
+            const err = "An element needs to be passed in to slideOut"
             logger.warn(err);
             reject(new Error(err));
             return;
@@ -457,8 +451,8 @@ u.slideOut = function (el, duration=200) {
 u.slideIn = function (el, duration=200) {
     /* Hides/collapses an element by sliding it into itself. */
     return new Promise((resolve, reject) => {
-        if (_.isNil(el)) {
-            const err = "Undefined or null element passed into slideIn";
+        if (!el) {
+            const err = "An element needs to be passed in to slideIn";
             logger.warn(err);
             return reject(new Error(err));
         } else if (_.includes(el.classList, 'collapsed')) {
@@ -518,8 +512,8 @@ u.isVisible = function (el) {
 
 
 u.fadeIn = function (el, callback) {
-    if (_.isNil(el)) {
-        logger.warn("Undefined or null element passed into fadeIn");
+    if (!el) {
+        logger.warn("An element needs to be passed in to fadeIn");
     }
     if (window.converse_disable_effects) {
         el.classList.remove('hidden');
@@ -561,7 +555,7 @@ u.xForm2webForm = function (field, stanza, options) {
                     'value': value,
                     'label': option.getAttribute('label'),
                     'selected': _.includes(values, value),
-                    'required': !_.isNil(field.querySelector('required'))
+                    'required': !!field.querySelector('required')
                 })
             }
         );
@@ -571,7 +565,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'label': field.getAttribute('label'),
             'options': options.join(''),
             'multiple': (field.getAttribute('type') === 'list-multi'),
-            'required': !_.isNil(field.querySelector('required'))
+            'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('type') === 'fixed') {
         const text = _.get(field.querySelector('value'), 'textContent');
@@ -581,7 +575,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
             'value': _.get(field.querySelector('value'), 'textContent'),
-            'required': !_.isNil(field.querySelector('required'))
+            'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('type') === 'boolean') {
         return tpl_form_checkbox({
@@ -589,7 +583,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
             'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
-            'required': !_.isNil(field.querySelector('required'))
+            'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'url') {
         return tpl_form_url({
@@ -603,7 +597,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'type': XFORM_TYPE_MAP[field.getAttribute('type')],
             'label': field.getAttribute('label') || '',
             'value': _.get(field.querySelector('value'), 'textContent'),
-            'required': !_.isNil(field.querySelector('required'))
+            'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'ocr') { // Captcha
         const uri = field.querySelector('uri');
@@ -613,7 +607,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'name': field.getAttribute('var'),
             'data': _.get(el, 'textContent'),
             'type': uri.getAttribute('type'),
-            'required': !_.isNil(field.querySelector('required'))
+            'required': !!field.querySelector('required')
         });
     } else {
         const name = field.getAttribute('var');
@@ -624,7 +618,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'fixed_username': options.fixed_username,
             'autocomplete': getAutoCompleteProperty(name, options),
             'placeholder': null,
-            'required': !_.isNil(field.querySelector('required')),
+            'required': !!field.querySelector('required'),
             'type': XFORM_TYPE_MAP[field.getAttribute('type')],
             'value': _.get(field.querySelector('value'), 'textContent')
         });

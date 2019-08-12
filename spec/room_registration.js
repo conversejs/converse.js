@@ -24,7 +24,7 @@
                 textarea.value = '/register';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 let stanza = await u.waitUntil(() => _.filter(

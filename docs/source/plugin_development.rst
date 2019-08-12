@@ -10,38 +10,62 @@ Writing a plugin
 Introduction
 ------------
 
-Converse exposes a plugin architecture through which developers can modify
-and extend its functionality.
+Converse.js has a plugin architecture based on `pluggable.js <https://github.com/jcbrand/pluggable.js/>`_
+and is itself composed out of plugins.
 
-Using plugins is good engineering practice, and using them is the *only* recommended
-way of changing Converse or adding new features to it.
+There are only a few files that are included in the default build of Converse
+which aren't plugins.
 
-In particular, plugins have the following advantages:
+An important one is `converse-core.js <https://github.com/conversejs/converse.js/blob/master/src/headless/converse-core.js>`_,
+which is responsible for bootstrapping the plugin architecture,
+setting up and maintaining the connection to the XMPP
+server and declaring the public (`window.converse </docs/html/api/converse.html>`_) and protected (`_converse.api </docs/html/api/-_converse.api.html>`_) APIs.
 
-The main benefit of plugins is their *isolation of concerns* (and features).
-From this benefit flows various 2nd degree advantages, such as the ability to
+The other non-plugin files all contain utility methods in
+`src/utils <https://github.com/conversejs/converse.js/blob/master/src/utils>`_ and
+`src/headless/utils <https://github.com/conversejs/converse.js/blob/master/src/headless/utils>`_.
+
+As a general rule, any file in the ``./src`` directory that starts with
+``converse-`` is a plugin (with the exception of ``converse-core.js``.
+
+The plugin architecture lets you add new features or modify existing functionality in a
+modular and self-contained way, without having to change other files.
+
+This ensures that plugins are fully optional (one of the design goals of
+Converse) and can be removed from the main build without breaking the app.
+For example, the ``converse-omemo``,
+``converse-rosterview``, ``converse-dragresize``, ``converse-minimize``,
+``converse-muc`` and ``converse-muc-views`` plugins can all be removed from the
+build without breaking the app.
+
+To more deeply understand how the plugin architecture works, read the
+`pluggable.js documentation <https://jcbrand.github.io/pluggable.js/>`_
+and to understand its inner workings, refer to the `annotated source code
+<https://jcbrand.github.io/pluggable.js/docs/pluggable.html>`_.
+
+Advantages of plugins
+---------------------
+
+Writing a plugin is the recommended way to customize or add new features to Converse.
+
+The main benefit of plugins is that they allow for **isolation of concerns** (and features).
+From this benefit flows various 2nd order advantages, such as the ability to
 make smaller production builds (by excluding unused plugins) and an easier
 upgrade path by avoiding touching Converse's internals.
 
+Plugins are especially useful if you want to add proprietary modifications, since the
+Mozilla Public License version 2 doesn't require you to open source your
+plugin files. Be aware that this doesn't apply when you intend to use libsignal for
+OMEMO encryption because libsignal's license is GPLv3 (and turns the entire app
+into a GPLv3 app).
+
 Each plugin comes in its own file, and Converse's plugin architecture,
-called `pluggable.js <https://github.com/jcbrand/pluggable.js/>`_, provides you
+`pluggable.js <https://github.com/jcbrand/pluggable.js/>`_, provides you
 with the ability to "hook in" to the core code and other plugins.
 
-Converse itself is composed out of plugins and uses pluggable.js. Take a look at the
-`src <https://github.com/jcbrand/converse.js/tree/master/src>`_ directory. All
-the files that follow the pattern `converse-*.js` are plugins.
-
-Plugins (by way of Pluggable.js) enable developers to extend and override existing objects,
+Plugins enable developers to extend and override existing objects,
 functions and the `Backbone <http://backbonejs.org/>`_ models and views that make up
-Converse.
-
-Besides that, in plugins you can also write new Backbone (or other) models and views,
-in order to add a new functionality.
-
-To more deeply understand how this plugin architecture works, please read the
-`pluggable.js documentation <https://jcbrand.github.io/pluggable.js/>`_
-and to understand its inner workings, please refer to the `annotated source code
-<https://jcbrand.github.io/pluggable.js/docs/pluggable.html>`_.
+Converse. You can also create new Backbone (or other) models and views.
 
 .. note:: **Trying out a plugin in JSFiddle**
 

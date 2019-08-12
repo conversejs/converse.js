@@ -213,65 +213,74 @@
     };
 
 
-    utils.returnMemberLists = async function (_converse, muc_jid, members=[]) {
+    utils.returnMemberLists = async function (_converse, muc_jid, members=[], affiliations=['member', 'owner', 'admin']) {
         const stanzas = _converse.connection.IQ_stanzas;
-        const member_IQ = await u.waitUntil(() => _.filter(
-            stanzas,
-            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
-        ).pop());
-        const member_list_stanza = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': member_IQ.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
-        members.forEach(member => {
-            member_list_stanza.c('item', {
-                'affiliation': 'member',
-                'jid': 'hag66@shakespeare.lit',
-                'nick': member,
-                'role': 'participant'
+
+        if (affiliations.includes('member')) {
+            const member_IQ = await u.waitUntil(() => _.filter(
+                stanzas,
+                s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
+            ).pop());
+            const member_list_stanza = $iq({
+                    'from': 'coven@chat.shakespeare.lit',
+                    'id': member_IQ.getAttribute('id'),
+                    'to': 'romeo@montague.lit/orchard',
+                    'type': 'result'
+                }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+            members.filter(m => m.affiliation === 'member').forEach(m => {
+                member_list_stanza.c('item', {
+                    'affiliation': m.affiliation,
+                    'jid': m.jid,
+                    'nick': m.nick
+                });
             });
-        });
-        _converse.connection._dataRecv(utils.createRequest(member_list_stanza));
+            _converse.connection._dataRecv(utils.createRequest(member_list_stanza));
+        }
 
-        const admin_IQ = await u.waitUntil(() => _.filter(
-            stanzas,
-            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
-        ).pop());
-        const admin_list_stanza = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': admin_IQ.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
-        _converse.connection._dataRecv(utils.createRequest(admin_list_stanza));
+        if (affiliations.includes('admin')) {
+            const admin_IQ = await u.waitUntil(() => _.filter(
+                stanzas,
+                s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
+            ).pop());
+            const admin_list_stanza = $iq({
+                    'from': 'coven@chat.shakespeare.lit',
+                    'id': admin_IQ.getAttribute('id'),
+                    'to': 'romeo@montague.lit/orchard',
+                    'type': 'result'
+                }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+            members.filter(m => m.affiliation === 'admin').forEach(m => {
+                admin_list_stanza.c('item', {
+                    'affiliation': m.affiliation,
+                    'jid': m.jid,
+                    'nick': m.nick
+                });
+            });
+            _converse.connection._dataRecv(utils.createRequest(admin_list_stanza));
+        }
 
-        const owner_IQ = await u.waitUntil(() => _.filter(
-            stanzas,
-            s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
-        ).pop());
-        const owner_list_stanza = $iq({
-                'from': 'coven@chat.shakespeare.lit',
-                'id': owner_IQ.getAttribute('id'),
-                'to': 'romeo@montague.lit/orchard',
-                'type': 'result'
-            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
-        _converse.connection._dataRecv(utils.createRequest(owner_list_stanza));
+        if (affiliations.includes('owner')) {
+            const owner_IQ = await u.waitUntil(() => _.filter(
+                stanzas,
+                s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
+            ).pop());
+            const owner_list_stanza = $iq({
+                    'from': 'coven@chat.shakespeare.lit',
+                    'id': owner_IQ.getAttribute('id'),
+                    'to': 'romeo@montague.lit/orchard',
+                    'type': 'result'
+                }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN});
+            members.filter(m => m.affiliation === 'owner').forEach(m => {
+                owner_list_stanza.c('item', {
+                    'affiliation': m.affiliation,
+                    'jid': m.jid,
+                    'nick': m.nick
+                });
+            });
+            _converse.connection._dataRecv(utils.createRequest(owner_list_stanza));
+        }
     };
 
-
-    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
-        muc_jid = muc_jid.toLowerCase();
-        const room = Strophe.getNodeFromJid(muc_jid);
-        const server = Strophe.getDomainFromJid(muc_jid);
-        await _converse.api.rooms.open(muc_jid);
-        await utils.getRoomFeatures(_converse, room, server, features);
-        await utils.waitForReservedNick(_converse, muc_jid, nick);
-
-        // The user has just entered the room (because join was called)
-        // and receives their own presence from the server.
-        // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
+    utils.receiveOwnMUCPresence = function (_converse, muc_jid, nick) {
         const presence = $pres({
                 to: _converse.connection.jid,
                 from: `${muc_jid}/${nick}`,
@@ -284,16 +293,25 @@
             }).up()
             .c('status').attrs({code:'110'});
         _converse.connection._dataRecv(utils.createRequest(presence));
+    }
 
+
+    utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
+        muc_jid = muc_jid.toLowerCase();
+        const room = Strophe.getNodeFromJid(muc_jid);
+        const server = Strophe.getDomainFromJid(muc_jid);
+        await _converse.api.rooms.open(muc_jid);
+        await utils.getRoomFeatures(_converse, room, server, features);
+        await utils.waitForReservedNick(_converse, muc_jid, nick);
+        // The user has just entered the room (because join was called)
+        // and receives their own presence from the server.
+        // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
+        utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
-        await utils.returnMemberLists(_converse, muc_jid, members);
-    };
-
-    utils.clearBrowserStorage = function () {
-        window.localStorage.clear();
-        window.sessionStorage.clear();
-        return this;
+        if (_converse.muc_fetch_members) {
+            await utils.returnMemberLists(_converse, muc_jid, members);
+        }
     };
 
     utils.clearChatBoxMessages = function (converse, jid) {

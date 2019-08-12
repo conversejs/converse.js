@@ -1,6 +1,13 @@
 # Changelog
 
-## 5.0.0 (Unreleased)
+## 5.0.1 (Unreleased)
+
+- Add a new GUI for moderator actions. You can trigger it by entering `/modtools` in a MUC.
+- Reconnect if the server doesn't respond to a `ping` within 10 seconds.
+- Don't query for MAM MUC messages before the cached messages have been restored (another cause of duplicate messages).
+
+## 5.0.0 (2019-08-08)
+
 - BOSH support has been moved to a plugin.
 - Support for XEP-0410 to check whether we're still present in a room
 - Initial support for the [CredentialsContainer](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer) web API
@@ -10,6 +17,7 @@
 - Groupchat default configuration now supports `list-multi` fields
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 - Bugfix: Modal auto-closes when you open it for a second time.
+- Bugfix: `Cannot read property 'parentElement' of null` in shadow DOM
 - Take roster nickname into consideration when rendering messages and chat headings.
 - Hide the textarea when a user is muted in a groupchat.
 - Don't restore a BOSH session without knowing the JID
@@ -21,12 +29,14 @@
 - New config option [clear_messages_on_reconnection](https://conversejs.org/docs/html/configuration.html#clear-messages-on-reconnection)
 - New config option [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks)
 - New config option [message_limit](https://conversejs.org/docs/html/configuration.html#message-limit)
+- New config option [muc_fetch_members](https://conversejs.org/docs/html/configuration.html#muc-fetch-members)
 - New config option [muc_mention_autocomplete_min_chars](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-min-chars)
 - New config option [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
 - New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton)
   By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
   "embed" the full app and not just a single chat. To embed just a single chat, it's now
   necessary to explicitly set `singleton` to `true`.
+- Re-add the previously removed config option [keepalive](https://conversejs.org/docs/html/configuration.html#keepalive)
 - New event: [chatBoxBlurred](https://conversejs.org/docs/html/api/-_converse.html#event:chatBoxBlurred)
 - New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)
 - #316: Add support for XEP-0198 Stream Management
@@ -45,15 +55,18 @@
 - #1524: OMEMO libsignal-protocol.js Invalid signature
 - #1532: Converse reloads on enter pressed in the filter box
 - #1538: Allow adding self as contact
+- #1548: Add support for paging through the MAM results when filling in the blanks
 - #1550: Legitimate carbons being blocked due to erroneous forgery check
 - #1554: Room auto-configuration broke if the config form contained fields with type `fixed`
 - #1558: `this.get` is not a function error when `forward_messages` is set to `true`.
+- #1561: Don't call `clear` on local or session storage
 - #1572: In `fullscreen` view mode the top is cut off on iOS
 - #1575: MUC invitation autocomplete list doesn't appear
 - #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`
 - #1579: Trim spaces at the beginning and end of a JID (when adding contact)
 - #1585: Upload files by pasting from clipboard
 - #1586: Not possible to kick someone with a space in their nickname
+- #1664: Blacklisting converse-profile makes the control box totally blank
 
 ### Breaking changes
 
@@ -70,6 +83,7 @@
 - Removed events `statusChanged` and `statusMessageChanged`. Instead, you can
   listen on the `change:status` or `change:status\_message` events on
   `_converse.xmppstatus`.
+- #1403: Rename show_chatstate_notifications to show_chat_state_notifications
 
 ### API changes
 

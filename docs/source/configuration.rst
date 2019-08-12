@@ -274,8 +274,6 @@ auto_login
 This option can be used to let Converse automatically log the user in as
 soon as the page loads.
 
-It should be used either with ``authentication`` set to ``anonymous`` or to ``login``.
-
 If ``authentication`` is set to ``login``, then you will also need to provide a
 valid ``jid`` and ``password`` values, either manually by passing them in, or
 by the `credentials_url`_ setting. Setting a ``credentials_url`` is preferable
@@ -291,7 +289,25 @@ This is a useful setting if you'd like to create a custom login form in your
 website. You'll need to write some JavaScript to accept that custom form's
 login credentials, then you can pass those credentials (``jid`` and
 ``password``) to ``converse.initialize`` to start Converse and log the user
-into their XMPP account.
+in to their XMPP account.
+
+.. note::
+
+The interaction between ``keepalive`` and ``auto_login`` is unfortunately
+inconsistent depending on the ``authentication`` method used.
+
+If ``auto_login`` is set to ``false`` and ``authentication`` is set to
+``anonymous``, ``external`` or ``prebind``, then Converse won't automatically
+log the user in.
+
+If ``authentication`` set to ``login`` the situation is much more
+ambiguous, since we don't have a way to distinguish between wether we're
+restoring a previous session (``keepalive``) or whether we're
+automatically setting up a new session (``auto_login``).
+
+So currently if EITHER ``keepalive`` or ``auto_login`` is ``true`` and
+``authentication`` is set to ``login``, then Converse will try to log the user in.
+
 
 auto_away
 ---------
@@ -384,11 +400,11 @@ automatically joined once the user has logged in.
 
 You can either specify a simple list of room JIDs, in which case your nickname
 will be taken from your JID, or you can specify a list of maps, where each map
-specifies the room's JID and the nickname that should be used.
+specifies the room's JID and other options.
 
 For example::
 
-    `[{'jid': 'room@example.org', 'nick': 'WizardKing69' }]`
+    `[{'jid': 'room@example.org', 'nick': 'WizardKing69', 'minimized': true }]`
 
 
 blacklisted_plugins
@@ -450,6 +466,7 @@ Example:
 
 
 .. _`bosh-service-url`:
+
 
 bosh_service_url
 ----------------
@@ -757,6 +774,15 @@ messaging instead.
 This value may be provided together with a ``password`` instead of supplying a
 `credentials_url`_ when setting ``auto_login`` to ``true``.
 
+.. _`keepalive`:
+
+keepalive
+---------
+
+* Default:    ``true``
+
+Determines whether Converse will attempt to keep you logged in across page loads.
+
 
 .. _`locales`:
 
@@ -954,6 +980,28 @@ other domains.
 If you want to restrict MUCs to only this domain, then set `locked_domain`_ to
 ``true``.
 
+
+muc_fetch_members
+-----------------
+
+* Default:  ``true``
+
+Determines whether Converse.js will fetch the member lists for a MUC
+(multi-user chat) when the user first enters it.
+
+Here's the relevant part from the MUC XEP: https://xmpp.org/extensions/xep-0045.html#getmemberlist
+
+The MUC service won't necessarily allow any user to fetch member lists,
+but can usually be configured to do so.
+
+The member lists consists of three lists of users who have the affiliations
+``member``, ``admin`` and ``owner`` respectively.
+
+By fetching member lists, Converse.js will always show these users as
+participants of the MUC, which makes it behave a bit more like modern chat
+apps.
+
+
 muc_history_max_stanzas
 -----------------------
 
@@ -1115,7 +1163,7 @@ Use OMEMO encryption by default when the chat supports it.
 ping_interval
 -------------
 
-* Default:  ``180``
+* Default:  ``60``
 
 Make ping to server in order to keep connection with server killing sessions after idle timeout.
 The ping are sent only if no messages are sent in the last ``ping_interval`` seconds
@@ -1286,8 +1334,8 @@ If set to ``true``, Converse will show any roster groups you might have configur
     Converse can only show users and groups that were previously configured
     elsewhere.
 
-show_chatstate_notifications
-----------------------------
+show_chat_state_notifications
+-----------------------------
 
 * Default:  ``false``
 
@@ -1355,8 +1403,19 @@ send_chat_state_notifications
 
 * Default: ``true``
 
-Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_)
-should be sent out or not.
+Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_) should be sent out or not.
+
+Can also be set to an Array in order to allow only certain types of chat state notifications.
+
+For example:
+
+.. code-block:: javascript
+
+        converse.initialize({
+            'send_chat_state_notifications':  ['composing']
+        });
+
+Valid values are ``'active', 'composing', 'gone' 'inactive', 'paused'``
 
 show_images_inline
 ------------------

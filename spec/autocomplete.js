@@ -41,8 +41,8 @@
             const textarea = view.el.querySelector('textarea.chat-textarea');
             const at_event = {
                 'target': textarea,
-                'preventDefault': _.noop,
-                'stopPropagation': _.noop,
+                'preventDefault': function preventDefault () {},
+                'stopPropagation': function stopPropagation () {},
                 'keyCode': 50,
                 'key': '@'
             };
@@ -84,8 +84,8 @@
             // Press tab
             const tab_event = {
                 'target': textarea,
-                'preventDefault': _.noop,
-                'stopPropagation': _.noop,
+                'preventDefault': function preventDefault () {},
+                'stopPropagation': function stopPropagation () {},
                 'keyCode': 9,
                 'key': 'Tab'
             }
@@ -97,7 +97,7 @@
 
             const backspace_event = {
                 'target': textarea,
-                'preventDefault': _.noop,
+                'preventDefault': function preventDefault () {},
                 'keyCode': 8
             }
             for (var i=0; i<3; i++) {
@@ -129,7 +129,7 @@
             const up_arrow_event = {
                 'target': textarea,
                 'preventDefault': () => (up_arrow_event.defaultPrevented = true),
-                'stopPropagation': _.noop,
+                'stopPropagation': function stopPropagation () {},
                 'keyCode': 38
             }
             view.onKeyDown(up_arrow_event);
@@ -140,8 +140,8 @@
 
             view.onKeyDown({
                 'target': textarea,
-                'preventDefault': _.noop,
-                'stopPropagation': _.noop,
+                'preventDefault': function preventDefault () {},
+                'stopPropagation': function stopPropagation () {},
                 'keyCode': 13 // Enter
             });
             expect(textarea.value).toBe('hello s @some2 ');
@@ -195,8 +195,8 @@
             // Press backspace
             const backspace_event = {
                 'target': textarea,
-                'preventDefault': _.noop,
-                'stopPropagation': _.noop,
+                'preventDefault': function preventDefault () {},
+                'stopPropagation': function stopPropagation () {},
                 'keyCode': 8,
                 'key': 'Backspace'
             }

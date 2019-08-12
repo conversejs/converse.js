@@ -47,7 +47,7 @@ converse.plugins.add('converse-roomslist', {
         _converse.api.promises.add('roomsListInitialized');
 
 
-        _converse.OpenRooms = Backbone.Collection.extend({
+        _converse.OpenRooms = _converse.Collection.extend({
 
             comparator (room) {
                 if (_converse.bookmarks && room.get('bookmarked')) {
@@ -66,26 +66,24 @@ converse.plugins.add('converse-roomslist', {
                 _converse.chatboxes.on('change:num_unread', this.onChatBoxChanged, this);
                 _converse.chatboxes.on('change:num_unread_general', this.onChatBoxChanged, this);
                 _converse.chatboxes.on('remove', this.onChatBoxRemoved, this);
-                this.reset(_.map(_converse.chatboxes.where({'type': 'chatroom'}), 'attributes'));
+                this.reset(_.map(_converse.chatboxes.where({'type': _converse.CHATROOMS_TYPE}), 'attributes'));
             },
 
             onChatBoxAdded (item) {
-                if (item.get('type') === 'chatroom') {
+                if (item.get('type') === _converse.CHATROOMS_TYPE) {
                     this.create(item.attributes);
                 }
             },
 
             onChatBoxChanged (item) {
-                if (item.get('type') === 'chatroom') {
+                if (item.get('type') === _converse.CHATROOMS_TYPE) {
                     const room =  this.get(item.get('jid'));
-                    if (!_.isNil(room)) {
-                        room.set(item.attributes);
-                    }
+                    room && room.set(item.attributes);
                 }
             },
 
             onChatBoxRemoved (item) {
-                if (item.get('type') === 'chatroom') {
+                if (item.get('type') === _converse.CHATROOMS_TYPE) {
                     const room = this.get(item.get('jid'))
                     this.remove(room);
                 }
@@ -135,7 +133,7 @@ converse.plugins.add('converse-roomslist', {
             showRoomDetailsModal (ev) {
                 const room = _converse.chatboxes.get(this.model.get('jid'));
                 ev.preventDefault();
-                if (_.isUndefined(room.room_details_modal)) {
+                if (room.room_details_modal === undefined) {
                     room.room_details_modal = new _converse.RoomDetailsModal({'model': room});
                 }
                 room.room_details_modal.show(ev);
@@ -143,11 +141,12 @@ converse.plugins.add('converse-roomslist', {
 
             getRoomsListElementName () {
                 if (this.model.get('bookmarked') && _converse.bookmarks) {
-                    const bookmark = _.head(_converse.bookmarks.where({'jid': this.model.get('jid')}));
-                    return bookmark.get('name');
-                } else {
-                    return this.model.get('name');
+                    const bookmark = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
+                    if (bookmark) {
+                        return bookmark.get('name');
+                    }
                 }
+                return this.model.get('name');
             }
         });
 
@@ -186,6 +185,7 @@ converse.plugins.add('converse-roomslist', {
                 this.el.innerHTML = tpl_rooms_list({
                     'toggle_state': this.list_model.get('toggle-state'),
                     'desc_rooms': __('Click to toggle the list of open groupchats'),
+                    // Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
                     'label_rooms': __('Open Groupchats'),
                     '_converse': _converse
                 });
@@ -199,9 +199,9 @@ converse.plugins.add('converse-roomslist', {
 
             insertIntoControlBox () {
                 const controlboxview = _converse.chatboxviews.get('controlbox');
-                if (!_.isUndefined(controlboxview) && !u.rootContains(_converse.root, this.el)) {
+                if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
                     const el = controlboxview.el.querySelector('.open-rooms-list');
-                    if (!_.isNull(el)) {
+                    if (el !== null) {
                         el.parentNode.replaceChild(this.el, el);
                     }
                 }

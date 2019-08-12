@@ -25,7 +25,9 @@ import 'dayjs/locale/it';
 import 'dayjs/locale/ja';
 import 'dayjs/locale/nb';
 import 'dayjs/locale/nl';
+import 'dayjs/locale/oc-lnc';
 import 'dayjs/locale/pl';
+import 'dayjs/locale/pt';
 import 'dayjs/locale/pt-br';
 import 'dayjs/locale/ro';
 import 'dayjs/locale/ru';
@@ -110,7 +112,7 @@ export default {
     },
 
     translate (str) {
-        if (_.isNil(jed_instance)) {
+        if (!jed_instance) {
             return Jed.sprintf.apply(Jed, arguments);
         }
         const t = jed_instance.translate(str);

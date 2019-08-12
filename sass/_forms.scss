@@ -44,7 +44,7 @@
             font-size: var(--font-size);
         }
 
-        &#converse-register, 
+        &#converse-register,
         &#converse-login {
             legend {
                 width: 100%;
@@ -95,7 +95,6 @@
             input[type=submit] {
                 padding-left: 1em;
                 padding-right: 1em;
-                margin: 0.5em 0;
                 border: none;
             }
             input.error {

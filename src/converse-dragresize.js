@@ -147,13 +147,17 @@ converse.plugins.add('converse-dragresize', {
         const dragResizable = {
 
             initDragResize () {
-                /* Determine and store the default box size.
-                 * We need this information for the drag-resizing feature.
-                 */
+                const view = this;
+                const debouncedSetDimensions = _.debounce(() => view.setDimensions());
+                window.addEventListener('resize', view.debouncedSetDimensions)
+                this.model.on('destroy', () => window.removeEventListener('resize', debouncedSetDimensions));
+
+                // Determine and store the default box size.
+                // We need this information for the drag-resizing feature.
                 const flyout = this.el.querySelector('.box-flyout');
                 const style = window.getComputedStyle(flyout);
 
-                if (_.isUndefined(this.model.get('height'))) {
+                if (this.model.get('height') === undefined) {
                     const height = parseInt(style.height.replace(/px$/, ''), 10);
                     const width = parseInt(style.width.replace(/px$/, ''), 10);
                     this.model.set('height', height);
@@ -217,7 +221,7 @@ converse.plugins.add('converse-dragresize', {
                     height = "";
                 }
                 const flyout_el = this.el.querySelector('.box-flyout');
-                if (!_.isNull(flyout_el)) {
+                if (flyout_el !== null) {
                     flyout_el.style.height = height;
                 }
             },
@@ -230,7 +234,7 @@ converse.plugins.add('converse-dragresize', {
                 }
                 this.el.style.width = width;
                 const flyout_el = this.el.querySelector('.box-flyout');
-                if (!_.isNull(flyout_el)) {
+                if (flyout_el !== null) {
                     flyout_el.style.width = width;
                 }
             },
@@ -251,7 +255,7 @@ converse.plugins.add('converse-dragresize', {
                 }
             },
 
-            onStartVerticalResize (ev) {
+            onStartVerticalResize (ev, trigger=true) {
                 if (!_converse.allow_dragresize) { return true; }
                 // Record element attributes for mouseMove().
                 const flyout = this.el.querySelector('.box-flyout'),
@@ -262,9 +266,17 @@ converse.plugins.add('converse-dragresize', {
                     'direction': 'top'
                 };
                 this.prev_pageY = ev.pageY;
+                if (trigger) {
+                    /**
+                     * Triggered once the user starts to vertically resize a {@link _converse.ChatBoxView}
+                     * @event _converse#startVerticalResize
+                     * @example _converse.api.listen.on('startVerticalResize', (view) => { ... });
+                     */
+                    _converse.api.trigger('startVerticalResize', this);
+                }
             },
 
-            onStartHorizontalResize (ev) {
+            onStartHorizontalResize (ev, trigger=true) {
                 if (!_converse.allow_dragresize) { return true; }
                 const flyout = this.el.querySelector('.box-flyout'),
                       style = window.getComputedStyle(flyout);
@@ -274,12 +286,27 @@ converse.plugins.add('converse-dragresize', {
                     'direction': 'left'
                 };
                 this.prev_pageX = ev.pageX;
+                if (trigger) {
+                    /**
+                     * Triggered once the user starts to horizontally resize a {@link _converse.ChatBoxView}
+                     * @event _converse#startHorizontalResize
+                     * @example _converse.api.listen.on('startHorizontalResize', (view) => { ... });
+                     */
+                    _converse.api.trigger('startHorizontalResize', this);
+                }
+
             },
 
             onStartDiagonalResize (ev) {
-                this.onStartHorizontalResize(ev);
-                this.onStartVerticalResize(ev);
+                this.onStartHorizontalResize(ev, false);
+                this.onStartVerticalResize(ev, false);
                 _converse.resizing.direction = 'topleft';
+                /**
+                 * Triggered once the user starts to diagonally resize a {@link _converse.ChatBoxView}
+                 * @event _converse#startDiagonalResize
+                 * @example _converse.api.listen.on('startDiagonalResize', (view) => { ... });
+                 */
+                _converse.api.trigger('startDiagonalResize', this);
             },
         };
         Object.assign(_converse.ChatBoxView.prototype, dragResizable);
@@ -290,9 +317,9 @@ converse.plugins.add('converse-dragresize', {
             * default_value. If value is close enough to
             * default_value, then default_value is returned instead.
             */
-            if (_.isUndefined(value)) {
+            if (value === undefined) {
                 return undefined;
-            } else if (_.isUndefined(default_value)) {
+            } else if (default_value === undefined) {
                 return value;
             }
             const resistance = 10;
@@ -335,12 +362,7 @@ converse.plugins.add('converse-dragresize', {
             });
         }
         _converse.api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
-
         _converse.api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
-
-        _converse.api.listen.on('chatBoxInitialized', view => {
-            window.addEventListener('resize', _.debounce(() => view.setDimensions(), 100));
-        });
         /************************ END Event Handlers ************************/
     }
 });

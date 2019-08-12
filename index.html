@@ -11,21 +11,20 @@
 
     <!-- These files are NOT needed when using converse.js in your own project. -->
     <link rel="shortcut icon" type="image/ico" href="images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/4.2.0/css/font-awesome.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/4.2.0/css/website.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/5.0.0/dist/website.min.css" />
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
     <script type="text/javascript" src="/src/website.js"></script>
     <script type="text/javascript" src="analytics.js"></script>
     <!-- *********************************************************************** -->
 
     <![if gte IE 11]>
-        <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/4.2.0/css/converse.min.css" />
+        <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/5.0.0/dist/converse.min.css" />
         <script src="https://cdn.conversejs.org/3rdparty/libsignal-protocol.min.js"></script>
-        <script src="https://cdn.conversejs.org/4.2.0/dist/converse.min.js"></script>
+        <script src="https://cdn.conversejs.org/5.0.0/dist/converse.min.js"></script>
     <![endif]>
 </head>
 
-<body id="page-top" data-spy="scroll">
+<body id="page-top" data-spy="scroll" class="converse-website">
 
 <section class="section-wrapper">
 	<nav class="navbar sticky-top navbar-expand-lg" role="navigation">
@@ -144,67 +143,61 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6">
-                    <section>
-                        <span class="feature-icon page-scroll"><a class="fa fa-globe" href="#features" title="Integration"></a></span>
-                        <header>
-                            <h2>Integration</h2>
-                        </header>
-                        <ul class="integration">
-                            <!-- xmpp server -->
-                            <li><a href="https://www.igniterealtime.org/projects/openfire/plugins.jsp" target="_blank" rel="noopener">Openfire</a></li>
-                            <li><a href="https://modules.prosody.im/mod_conversejs.html" target="_blank" rel="noopener">Prosody</a></li>
-                            <!-- xmpp frameworks -->
-                            <li><a href="https://github.com/mikemarsian/conversejs-rails" target="_blank" rel="noopener">Ruby on Rails</a></li>
-                            <li><a href="https://pypi.python.org/pypi/django-conversejs" target="_blank" rel="noopener">Django (option 1)</a></li>
-                            <li><a href="https://github.com/fpytloun/django-xmpp" target="_blank" rel="noopener">Django (option 2)</a></li>
-                            <!-- xmpp as plugin -->
-                            <li><a href="https://github.com/jcbrand/patterns.converse" target="_blank" rel="noopener">Patternslib</a></li>
-                            <li><a href="https://github.com/devurandom/roundcube-converse.js-xmpp-plugin" target="_blank" rel="noopener">Roundcube</a></li>
-                            <li><a href="https://wordpress.org/plugins/conversejs/" target="_blank" rel="noopener">Wordpress</a></li>
-                            <li><a href="https://github.com/collective/collective.converse" target="_blank" rel="noopener">Plone</a></li>
-                            <li><a href="https://github.com/keensoft/alfresco-js-chat-share" target="_blank" rel="noopener">Alfresco</a></li>
-                            <li><a href="https://github.com/friendica/friendica-addons/tree/master/xmpp/converse" target="_blank" rel="noopener">Friendica</a></li>
-                            <li><a href="https://doc.tiki.org/xmpp" target="_blank" rel="noopener">Tiki Wiki CMS Groupware</a></li>
-                        </ul>
-                    </section>
+                    <header>
+                        <h2>Integration</h2>
+                    </header>
+                    <ul class="integration">
+                        <!-- xmpp server -->
+                        <li><a href="https://www.igniterealtime.org/projects/openfire/plugins.jsp" target="_blank" rel="noopener">Openfire</a></li>
+                        <li><a href="https://modules.prosody.im/mod_conversejs.html" target="_blank" rel="noopener">Prosody</a></li>
+                        <!-- xmpp frameworks -->
+                        <li><a href="https://github.com/mikemarsian/conversejs-rails" target="_blank" rel="noopener">Ruby on Rails</a></li>
+                        <li><a href="https://pypi.python.org/pypi/django-conversejs" target="_blank" rel="noopener">Django (option 1)</a></li>
+                        <li><a href="https://github.com/fpytloun/django-xmpp" target="_blank" rel="noopener">Django (option 2)</a></li>
+                        <!-- xmpp as plugin -->
+                        <li><a href="https://github.com/jcbrand/patterns.converse" target="_blank" rel="noopener">Patternslib</a></li>
+                        <li><a href="https://github.com/devurandom/roundcube-converse.js-xmpp-plugin" target="_blank" rel="noopener">Roundcube</a></li>
+                        <li><a href="https://wordpress.org/plugins/conversejs/" target="_blank" rel="noopener">Wordpress</a></li>
+                        <li><a href="https://github.com/collective/collective.converse" target="_blank" rel="noopener">Plone</a></li>
+                        <li><a href="https://github.com/keensoft/alfresco-js-chat-share" target="_blank" rel="noopener">Alfresco</a></li>
+                        <li><a href="https://github.com/friendica/friendica-addons/tree/master/xmpp/converse" target="_blank" rel="noopener">Friendica</a></li>
+                        <li><a href="https://doc.tiki.org/xmpp" target="_blank" rel="noopener">Tiki Wiki CMS Groupware</a></li>
+                    </ul>
                 </div>
                 <div class="col-lg-6">
-                    <section>
-                        <span class="feature-icon page-scroll"><a class="fa fa-check-square" href="#features" title="Features"></a></span>
-                    </section>
-                        <header>
-                            <h2>Features</h2>
-                        </header>
-                        <ul class="features">
-                            <li>Available as overlayed chat boxes or as a fullscreen application.
-                                See <a href="https://inverse.chat" target="_blank" rel="noopener">inverse.chat</a> for the fullscreen version.
-                            </li>
-                            <li>A <a href="https://conversejs.org/docs/html/plugin_development.html" target="_blank" rel="noopener">plugin architecture</a> based on <a href="https://conversejs.github.io/pluggable.js/" target="_blank" rel="noopener">pluggable.js</a></li>
-                            <li>Single-user and group chat</li>
-                            <li>Contacts and groups</li>
-                            <li>Multi-user chatrooms (<a href="https://xmpp.org/extensions/xep-0045.html" target="_blank" rel="noopener">XEP 45</a>)</li>
-                            <li>Chatroom bookmarks (<a href="https://xmpp.org/extensions/xep-0048.html" target="_blank" rel="noopener">XEP 48</a>)</li>
-                            <li>Direct invitations to chat rooms (<a href="https://xmpp.org/extensions/xep-0249.html" target="_blank" rel="noopener">XEP 249</a>)</li>
-                            <li>vCard support (<a href="https://xmpp.org/extensions/xep-0054.html" target="_blank" rel="noopener">XEP 54</a>)</li>
-                            <li>Service discovery (<a href="https://xmpp.org/extensions/xep-0030.html" target="_blank" rel="noopener">XEP 30</a>)</li>
-                            <li>In-band registration (<a href="https://xmpp.org/extensions/xep-0077.html" target="_blank" rel="noopener">XEP 77</a>)</li>
-                            <li>Roster item exchange (<a href="https://xmpp.org/extensions/xep-0144.html" target="_blank" rel="noopener">XEP 144</a>)</li>
-                            <li>Chat statuses (online, busy, away, offline)</li>
-                            <li>Custom status messages</li>
-                            <li>Typing and chat state notifications (<a href="https://xmpp.org/extensions/xep-0085.html" target="_blank" rel="noopener">XEP 85</a>)</li>
-                            <li>Desktop notifications</li>
-                            <li>File sharing / HTTP File Upload (<a href="https://xmpp.org/extensions/xep-0363.html" target="_blank" rel="noopener">XEP 363</a>)</li>
-                            <li>Messages appear in all connected chat clients / Message Carbons (<a href="https://xmpp.org/extensions/xep-0280.html" target="_blank" rel="noopener">XEP 280</a>)</li>
-                            <li>Third person "/me" messages (<a href="https://xmpp.org/extensions/xep-0245.html" target="_blank" rel="noopener">XEP 245</a>)</li>
-                            <li>XMPP Ping (<a href="https://xmpp.org/extensions/xep-0199.html" target="_blank" rel="noopener">XEP 199</a>)</li>
-                            <li>Server-side archiving of messages (<a href="https://xmpp.org/extensions/xep-0313.html" target="_blank" rel="noopener">XEP 313</a>)</li>
-                            <li>Hidden messages (aka Spoilers) (<a href="https://xmpp.org/extensions/xep-0382.html" target="_blank" rel="noopener">XEP 382</a>)</li>
-                            <li>Client state indication (<a href="https://xmpp.org/extensions/xep-0352.html" target="_blank" rel="noopener">XEP 352</a>)</li>
-                            <li>Last Message Correction (<a href="https://xmpp.org/extensions/xep-0308.html" target="_blank" rel="noopener">XEP 308</a>)</li>
-                            <li>OMEMO encrypted messaging (<a href="https://xmpp.org/extensions/xep-0384.html" target="_blank" rel="noopener">XEP 384</a>)</li>
-                            <li>Supports anonymous logins, see the <a href="https://conversejs.org/demo/anonymous.html" target="_blank" rel="noopener">anonymous login demo</a>.</li>
-                            <li>Translated into 28 languages</li>
-                        </ul>
+                    <header>
+                        <h2>Features</h2>
+                    </header>
+                    <ul class="features">
+                        <li>Available as overlayed chat boxes or as a fullscreen application.
+                            See <a href="https://inverse.chat" target="_blank" rel="noopener">inverse.chat</a> for the fullscreen version.
+                        </li>
+                        <li>A <a href="https://conversejs.org/docs/html/plugin_development.html" target="_blank" rel="noopener">plugin architecture</a> based on <a href="https://conversejs.github.io/pluggable.js/" target="_blank" rel="noopener">pluggable.js</a></li>
+                        <li>Single-user and group chat</li>
+                        <li>Contacts and groups</li>
+                        <li>Multi-user chatrooms (<a href="https://xmpp.org/extensions/xep-0045.html" target="_blank" rel="noopener">XEP 45</a>)</li>
+                        <li>Chatroom bookmarks (<a href="https://xmpp.org/extensions/xep-0048.html" target="_blank" rel="noopener">XEP 48</a>)</li>
+                        <li>Direct invitations to chat rooms (<a href="https://xmpp.org/extensions/xep-0249.html" target="_blank" rel="noopener">XEP 249</a>)</li>
+                        <li>vCard support (<a href="https://xmpp.org/extensions/xep-0054.html" target="_blank" rel="noopener">XEP 54</a>)</li>
+                        <li>Service discovery (<a href="https://xmpp.org/extensions/xep-0030.html" target="_blank" rel="noopener">XEP 30</a>)</li>
+                        <li>In-band registration (<a href="https://xmpp.org/extensions/xep-0077.html" target="_blank" rel="noopener">XEP 77</a>)</li>
+                        <li>Roster item exchange (<a href="https://xmpp.org/extensions/xep-0144.html" target="_blank" rel="noopener">XEP 144</a>)</li>
+                        <li>Chat statuses (online, busy, away, offline)</li>
+                        <li>Custom status messages</li>
+                        <li>Typing and chat state notifications (<a href="https://xmpp.org/extensions/xep-0085.html" target="_blank" rel="noopener">XEP 85</a>)</li>
+                        <li>Desktop notifications</li>
+                        <li>File sharing / HTTP File Upload (<a href="https://xmpp.org/extensions/xep-0363.html" target="_blank" rel="noopener">XEP 363</a>)</li>
+                        <li>Messages appear in all connected chat clients / Message Carbons (<a href="https://xmpp.org/extensions/xep-0280.html" target="_blank" rel="noopener">XEP 280</a>)</li>
+                        <li>Third person "/me" messages (<a href="https://xmpp.org/extensions/xep-0245.html" target="_blank" rel="noopener">XEP 245</a>)</li>
+                        <li>XMPP Ping (<a href="https://xmpp.org/extensions/xep-0199.html" target="_blank" rel="noopener">XEP 199</a>)</li>
+                        <li>Server-side archiving of messages (<a href="https://xmpp.org/extensions/xep-0313.html" target="_blank" rel="noopener">XEP 313</a>)</li>
+                        <li>Hidden messages (aka Spoilers) (<a href="https://xmpp.org/extensions/xep-0382.html" target="_blank" rel="noopener">XEP 382</a>)</li>
+                        <li>Client state indication (<a href="https://xmpp.org/extensions/xep-0352.html" target="_blank" rel="noopener">XEP 352</a>)</li>
+                        <li>Last Message Correction (<a href="https://xmpp.org/extensions/xep-0308.html" target="_blank" rel="noopener">XEP 308</a>)</li>
+                        <li>OMEMO encrypted messaging (<a href="https://xmpp.org/extensions/xep-0384.html" target="_blank" rel="noopener">XEP 384</a>)</li>
+                        <li>Supports anonymous logins, see the <a href="https://conversejs.org/demo/anonymous.html" target="_blank" rel="noopener">anonymous login demo</a>.</li>
+                        <li>Translated into 29 languages</li>
+                    </ul>
                 </div>
             </div>
         </div>

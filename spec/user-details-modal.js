@@ -43,7 +43,7 @@
             show_modal_button = view.el.querySelector('.show-user-details-modal');
             show_modal_button.click();
             remove_contact_button = modal.el.querySelector('button.remove-contact');
-            expect(_.isNull(remove_contact_button)).toBeTruthy();
+            expect(remove_contact_button === null).toBeTruthy();
             done();
         }));
 

@@ -126,7 +126,7 @@
             textarea.value = 'This message will be encrypted';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: _.noop,
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             iq_stanza = await u.waitUntil(() => bundleFetched(_converse, contact_jid, '555'));
@@ -310,7 +310,7 @@
             textarea.value = 'This message will be encrypted';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: _.noop,
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             iq_stanza = await u.waitUntil(() => bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'), 1000);
@@ -458,7 +458,7 @@
             textarea.value = 'This is an encrypted message from this device';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: _.noop,
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             iq_stanza = await u.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '988349631'));
@@ -515,7 +515,7 @@
             textarea.value = 'This message will be encrypted';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: _.noop,
+                preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
             let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
@@ -1232,7 +1232,7 @@
             const toolbar = view.el.querySelector('.chat-toolbar');
             expect(view.model.get('omemo_active')).toBe(undefined);
             let toggle = toolbar.querySelector('.toggle-omemo');
-            expect(_.isNull(toggle)).toBe(false);
+            expect(toggle === null).toBe(false);
             expect(u.hasClass('fa-unlock', toggle)).toBe(true);
             expect(u.hasClass('fa-lock', toggle)).toBe(false);
 
@@ -1251,7 +1251,7 @@
             textarea.value = 'This message will be sent encrypted';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: _.noop,
+                preventDefault: function preventDefault () {},
                 keyCode: 13
             });
 
@@ -1298,7 +1298,7 @@
             const toolbar = view.el.querySelector('.chat-toolbar');
             let toggle = toolbar.querySelector('.toggle-omemo');
             expect(view.model.get('omemo_active')).toBe(undefined);
-            expect(_.isNull(toggle)).toBe(false);
+            expect(toggle === null).toBe(false);
             expect(u.hasClass('fa-unlock', toggle)).toBe(true);
             expect(u.hasClass('fa-lock', toggle)).toBe(false);
             expect(u.hasClass('disabled', toggle)).toBe(false);
@@ -1356,7 +1356,7 @@
 
             expect(view.model.get('omemo_active')).toBe(true);
             toggle = toolbar.querySelector('.toggle-omemo');
-            expect(_.isNull(toggle)).toBe(false);
+            expect(toggle === null).toBe(false);
             expect(u.hasClass('fa-unlock', toggle)).toBe(false);
             expect(u.hasClass('fa-lock', toggle)).toBe(true);
             expect(u.hasClass('disabled', toggle)).toBe(false);
@@ -1367,13 +1367,13 @@
             view.model.features.save({'nonanonymous': false, 'semianonymous': true});
             await u.waitUntil(() => !view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
-            expect(_.isNull(toggle)).toBe(true);
+            expect(toggle === null).toBe(true);
             expect(view.model.get('omemo_supported')).toBe(false);
 
             view.model.features.save({'nonanonymous': true, 'semianonymous': false});
             await u.waitUntil(() => view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
-            expect(_.isNull(toggle)).toBe(false);
+            expect(toggle === null).toBe(false);
             expect(u.hasClass('fa-unlock', toggle)).toBe(true);
             expect(u.hasClass('fa-lock', toggle)).toBe(false);
             expect(u.hasClass('disabled', toggle)).toBe(false);
@@ -1382,12 +1382,12 @@
             view.model.features.save({'membersonly': false, 'open': true});
             await u.waitUntil(() => !view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
-            expect(_.isNull(toggle)).toBe(true);
+            expect(toggle === null).toBe(true);
 
             view.model.features.save({'membersonly': true, 'open': false});
             await u.waitUntil(() => view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
-            expect(_.isNull(toggle)).toBe(false);
+            expect(toggle === null).toBe(false);
             expect(u.hasClass('fa-unlock', toggle)).toBe(true);
             expect(u.hasClass('fa-lock', toggle)).toBe(false);
             expect(u.hasClass('disabled', toggle)).toBe(false);
@@ -1436,7 +1436,7 @@
             );
 
             toggle = toolbar.querySelector('.toggle-omemo');
-            expect(_.isNull(toggle)).toBe(false);
+            expect(toggle === null).toBe(false);
             expect(u.hasClass('fa-unlock', toggle)).toBe(true);
             expect(u.hasClass('fa-lock', toggle)).toBe(false);
             expect(u.hasClass('disabled', toggle)).toBe(true);

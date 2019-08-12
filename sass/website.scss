@@ -197,7 +197,7 @@ a {
 .intro {
     margin-top: -4em;
     height: calc(100vh + 4em);
-    background: url(images/header.jpg) no-repeat bottom center scroll;
+    background: url(/images/header.jpg) no-repeat bottom center scroll;
     background-color: #211018;
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -205,13 +205,13 @@ a {
     -o-background-size: cover;
 }
 .features-section {
-    background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #85505f, #384955, #655361);
+    background: url('/images/bgtr.svg') top right no-repeat, url('/images/bgbl.svg') bottom left no-repeat, url('/images/bgbl.svg') bottom left no-repeat, url('/images/overlay.png'), linear-gradient(45deg, #85505f, #384955, #655361);
 }
 .features-section a {
     color: #82B397;
 }
 .outro {
-    background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #384955, #655361, #85505f);
+    background: url('/images/bgtr.svg') top right no-repeat, url('/images/bgbl.svg') bottom left no-repeat, url('/images/overlay.png'), linear-gradient(45deg, #384955, #655361, #85505f);
 }
 
 section {

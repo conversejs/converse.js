@@ -67,7 +67,7 @@ serve_bg: stamp-npm
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.2.0 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=5.0.0 -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies-es2015.js
@@ -101,7 +101,11 @@ release:
 	make po
 	make po2json
 	make build
-	npm run pack
+	npm pack
+
+.PHONY: postrelease
+postrelease:
+	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)dev";/' src/headless/converse-core.js
 
 ########################################################################
 ## Install dependencies
@@ -116,6 +120,7 @@ stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 .PHONY: clean
 clean:
 	npm run clean
+	rm -rf lib bin include parts
 
 .PHONY: dev
 dev: stamp-npm
@@ -124,16 +129,13 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss dist/converse.css dist/converse.min.css dist/website.css dist/website.min.css dist/font-awesome.css
+css: sass/*.scss dist/converse.css dist/converse.min.css dist/website.css dist/website.min.css
 
 dist/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
 
 dist/website.min.css:: stamp-npm dist/website.css
 	$(CLEANCSS) dist/website.css > $@
-
-dist/font-awesome.css:: stamp-npm sass
-	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
 
 dist/converse.css:: stamp-npm webpack.config.js sass
 	npm run converse.css
@@ -227,10 +229,12 @@ check: eslint dist/converse.js
 ## Documentation
 
 ./bin/activate:
-	virtualenv .
+	python3.7 -m venv .
 
 .installed.cfg: requirements.txt buildout.cfg
 	./bin/pip install -r requirements.txt
+	./bin/pip install --upgrade pip==19.2.1
+	./bin/pip install --upgrade setuptools==41.0.1
 	./bin/buildout -v
 
 docsdev: ./bin/activate .installed.cfg

@@ -116,6 +116,7 @@ converse.plugins.add('converse-muc', {
             'auto_register_muc_nickname': false,
             'locked_muc_domain': false,
             'muc_domain': undefined,
+            'muc_fetch_members': true,
             'muc_history_max_stanzas': undefined,
             'muc_instant_rooms': true,
             'muc_nickname_from_jid': false
@@ -330,7 +331,7 @@ converse.plugins.add('converse-muc', {
          * @namespace _converse.ChatRoomMessages
          * @memberOf _converse
          */
-        _converse.ChatRoomMessages = Backbone.Collection.extend({
+        _converse.ChatRoomMessages = _converse.Collection.extend({
             model: _converse.ChatRoomMessage,
             comparator: 'time'
         });
@@ -396,8 +397,7 @@ converse.plugins.add('converse-muc', {
                     Strophe.LogLevel.DEBUG
                 );
                 if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
-                    // We're not restoring a room from cache, so let's clear
-                    // the cache (which might be stale).
+                    // We're not restoring a room from cache, so let's clear the potentially stale cache.
                     this.removeNonMembers();
                     await this.refreshRoomFeatures();
                     if (_converse.clear_messages_on_reconnection) {
@@ -410,6 +410,7 @@ converse.plugins.add('converse-muc', {
                     }
                     this.join();
                 } else if (!(await this.rejoinIfNecessary())) {
+                    // We've restored the room from cache and we're still joined.
                     this.features.fetch();
                     this.fetchMessages();
                 }
@@ -417,13 +418,23 @@ converse.plugins.add('converse-muc', {
 
             async onConnectionStatusChanged () {
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-                    await this.occupants.fetchMembers();
+                    if (_converse.muc_fetch_members) {
+                        await this.occupants.fetchMembers();
+                    }
                     // It's possible to fetch messages before entering a MUC,
                     // but we don't support this use-case currently. By
                     // fetching messages after members we can immediately
                     // assign an occupant to the message before rendering it,
                     // thereby avoiding re-renders (and therefore DOM reflows).
                     this.fetchMessages();
+
+                    /**
+                     * Triggered when the user has entered a new MUC and *after* cached messages have been fetched.
+                     * @event _converse#enteredNewRoom
+                     * @type { _converse.ChatRoom}
+                     * @example _converse.api.listen.on('enteredNewRoom', model => { ... });
+                     */
+                    _converse.api.trigger('enteredNewRoom', this);
 
                     if (_converse.auto_register_muc_nickname &&
                             await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
@@ -598,6 +609,16 @@ converse.plugins.add('converse-muc', {
                 this.removeHandlers();
             },
 
+            close () {
+                try {
+                    this.features.destroy();
+                    this.features.browserStorage._clear();
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                }
+                return _converse.ChatBox.prototype.close.call(this);
+            },
+
             sendUnavailablePresence (exit_msg) {
                 const presence = $pres({
                     type: "unavailable",
@@ -721,6 +742,10 @@ converse.plugins.add('converse-muc', {
                         this.features.get('moderated') && this.getOwnRole() === 'visitor') {
                     return;
                 }
+                const allowed = _converse.send_chat_state_notifications;
+                if (Array.isArray(allowed) && !allowed.includes(this.get('chat_state'))) {
+                    return;
+                }
                 const chat_state = this.get('chat_state');
                 if (chat_state === _converse.GONE) {
                     // <gone/> is not applicable within MUC context
@@ -745,15 +770,8 @@ converse.plugins.add('converse-muc', {
                 if (this.features.get('membersonly')) {
                     // When inviting to a members-only groupchat, we first add
                     // the person to the member list by giving them an
-                    // affiliation of 'member' (if they're not affiliated
-                    // already), otherwise they won't be able to join.
-                    const map = {}; map[recipient] = 'member';
-                    const deltaFunc = _.partial(u.computeAffiliationsDelta, true, false);
-                    this.updateMemberLists(
-                        [{'jid': recipient, 'affiliation': 'member', 'reason': reason}],
-                        ['member', 'owner', 'admin'],
-                        deltaFunc
-                    );
+                    // affiliation of 'member' otherwise they won't be able to join.
+                    this.updateMemberLists([{'jid': recipient, 'affiliation': 'member', 'reason': reason}]);
                 }
                 const attrs = {
                     'xmlns': 'jabber:x:conference',
@@ -822,24 +840,6 @@ converse.plugins.add('converse-muc', {
                 this.features.save(attrs);
             },
 
-            /* Send an IQ stanza to the server, asking it for the
-             * member-list of this groupchat.
-             * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-             * @private
-             * @method _converse.ChatRoom#requestMemberList
-             * @param { string } affiliation - The specific member list to
-             *      fetch. 'admin', 'owner' or 'member'.
-             * @returns:
-             *  A promise which resolves once the list has been retrieved.
-             */
-            requestMemberList (affiliation) {
-                affiliation = affiliation || 'member';
-                const iq = $iq({to: this.get('jid'), type: "get"})
-                    .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                        .c("item", {'affiliation': affiliation});
-                return _converse.api.sendIQ(iq);
-            },
-
             /**
              * Send IQ stanzas to the server to set an affiliation for
              * the provided JIDs.
@@ -856,18 +856,11 @@ converse.plugins.add('converse-muc', {
              * @param { object } members - A map of jids, affiliations and
              *      optionally reasons. Only those entries with the
              *      same affiliation as being currently set will be considered.
-             * @returns
-             *  A promise which resolves and fails depending on the XMPP server response.
+             * @returns { Promise } A promise which resolves and fails depending on the XMPP server response.
              */
             setAffiliation (affiliation, members) {
-                members = _.filter(members, (member) =>
-                    // We only want those members who have the right
-                    // affiliation (or none, which implies the provided one).
-                    _.isUndefined(member.affiliation) ||
-                            member.affiliation === affiliation
-                );
-                const promises = _.map(members, _.bind(this.sendAffiliationIQ, this, affiliation));
-                return Promise.all(promises);
+                members = members.filter(m => m.affiliation === undefined || m.affiliation === affiliation);
+                return Promise.all(members.map(m => this.sendAffiliationIQ(affiliation, m)));
             },
 
             /**
@@ -1009,8 +1002,8 @@ converse.plugins.add('converse-muc', {
              */
             saveAffiliationAndRole (pres) {
                 const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
-                const is_self = !_.isNull(pres.querySelector("status[code='110']"));
-                if (is_self && !_.isNil(item)) {
+                const is_self = (pres.querySelector("status[code='110']") !== null);
+                if (is_self && item) {
                     const affiliation = item.getAttribute('affiliation');
                     const role = item.getAttribute('role');
                     const changes = {};
@@ -1043,25 +1036,27 @@ converse.plugins.add('converse-muc', {
                         'nick': member.nick,
                         'jid': member.jid
                     });
-                if (!_.isUndefined(member.reason)) {
+                if (member.reason !== undefined) {
                     iq.c("reason", member.reason);
                 }
                 return _converse.api.sendIQ(iq);
             },
 
             /**
-             * Send IQ stanzas to the server to modify the
-             * affiliations in this groupchat.
+             * Send IQ stanzas to the server to modify affiliations for users in this groupchat.
+             *
              * See: https://xmpp.org/extensions/xep-0045.html#modifymember
              * @private
              * @method _converse.ChatRoom#setAffiliations
-             * @param { object } members - A map of jids, affiliations and optionally reasons
-             * @param { function } onSuccess - callback for a succesful response
-             * @param { function } onError - callback for an error response
+             * @param { Object[] } members
+             * @param { string } members[].jid - The JID of the user whose affiliation will change
+             * @param { Array } members[].affiliation - The new affiliation for this user
+             * @param { string } [members[].reason] - An optional reason for the affiliation change
+             * @returns { Promise }
              */
             setAffiliations (members) {
-                const affiliations = _.uniq(_.map(members, 'affiliation'));
-                return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
+                const affiliations = _.uniq(members.map(m => m.affiliation));
+                return Promise.all(affiliations.map(a => this.setAffiliation(a, members)));
             },
 
             /**
@@ -1101,21 +1096,36 @@ converse.plugins.add('converse-muc', {
                     this.occupants.findWhere({'nick': nick_or_jid});
             },
 
-            async getJidsWithAffiliations (affiliations) {
-                /* Returns a map of JIDs that have the affiliations
-                 * as provided.
-                 */
-                if (_.isString(affiliations)) {
-                    affiliations = [affiliations];
+            /**
+             * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
+             * Returns an array of {@link MemberListItem} objects, representing occupants
+             * that have the given affiliation.
+             * See: https://xmpp.org/extensions/xep-0045.html#modifymember
+             * @private
+             * @method _converse.ChatRoom#getAffiliationList
+             * @param { ("admin"|"owner"|"member") } affiliation
+             * @returns { Promise<MemberListItem[]> }
+             */
+            async getAffiliationList (affiliation) {
+                const iq = $iq({to: this.get('jid'), type: "get"})
+                    .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                        .c("item", {'affiliation': affiliation});
+                const result = await _converse.api.sendIQ(iq, null, false);
+                if (result === null) {
+                    const err_msg = `Error: timeout while fetching ${affiliation} list for MUC ${this.get('jid')}`;
+                    const err = new Error(err_msg);
+                    _converse.log(err_msg, Strophe.LogLevel.WARN);
+                    _converse.log(result, Strophe.LogLevel.WARN);
+                    return err;
                 }
-                const result = await Promise.all(affiliations.map(a =>
-                    this.requestMemberList(a)
-                        .then(iq => u.parseMemberListIQ(iq))
-                        .catch(iq => {
-                            _converse.log(iq, Strophe.LogLevel.ERROR);
-                        })
-                ));
-                return [].concat.apply([], result).filter(p => p);
+                if (u.isErrorStanza(result)) {
+                    const err_msg = `Error: not allowed to fetch ${affiliation} list for MUC ${this.get('jid')}`;
+                    const err = new Error(err_msg);
+                    _converse.log(err_msg, Strophe.LogLevel.WARN);
+                    _converse.log(result, Strophe.LogLevel.WARN);
+                    return err;
+                }
+                return u.parseMemberListIQ(result).filter(p => p);
             },
 
             /**
@@ -1126,20 +1136,20 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#updateMemberLists
              * @param { object } members - Map of member jids and affiliations.
-             * @param { string|array } affiliation - An array of affiliations or
-             *      a string if only one affiliation.
-             * @param { function } deltaFunc - The function to compute the delta
-             *      between old and new member lists.
              * @returns { Promise }
              *  A promise which is resolved once the list has been
              *  updated or once it's been established there's no need
              *  to update the list.
              */
-            updateMemberLists (members, affiliations, deltaFunc) {
-                this.getJidsWithAffiliations(affiliations)
-                    .then(old_members => this.setAffiliations(deltaFunc(members, old_members)))
-                    .then(() => this.occupants.fetchMembers())
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            async updateMemberLists (members) {
+                const all_affiliations = ['member', 'admin', 'owner'];
+                const aff_lists = await Promise.all(all_affiliations.map(a => this.getAffiliationList(a)));
+                const known_affiliations = all_affiliations.filter(a => !u.isErrorObject(aff_lists[all_affiliations.indexOf(a)]));
+                const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc: [...val, ...acc]), []);
+                await this.setAffiliations(u.computeAffiliationsDelta(true, false, members, old_members));
+                if (_converse.muc_fetch_members) {
+                    return this.occupants.fetchMembers();
+                }
             },
 
             /**
@@ -1509,6 +1519,7 @@ converse.plugins.add('converse-muc', {
                 if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }
+
                 const message = await this.getDuplicateMessage(original_stanza);
                 if (message) {
                     this.updateMessage(message, original_stanza);
@@ -1817,7 +1828,7 @@ converse.plugins.add('converse-muc', {
             incrementUnreadMsgCounter (message) {
                 if (!message) { return; }
                 const body = message.get('message');
-                if (_.isNil(body)) { return; }
+                if (!body) { return; }
                 if (u.isNewMessage(message) && this.isHidden()) {
                     const settings = {'num_unread_general': this.get('num_unread_general') + 1};
                     if (this.isUserMentioned(message)) {
@@ -1891,7 +1902,7 @@ converse.plugins.add('converse-muc', {
         });
 
 
-        _converse.ChatRoomOccupants = Backbone.Collection.extend({
+        _converse.ChatRoomOccupants = _converse.Collection.extend({
             model: _converse.ChatRoomOccupant,
 
             comparator (occupant1, occupant2) {
@@ -1907,11 +1918,14 @@ converse.plugins.add('converse-muc', {
             },
 
             async fetchMembers () {
-                const new_members = await this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']);
-                const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m));
-                const new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m));
+                const all_affiliations = ['member', 'admin', 'owner'];
+                const aff_lists = await Promise.all(all_affiliations.map(a => this.chatroom.getAffiliationList(a)));
+                const new_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc : [...val, ...acc]), []);
+                const known_affiliations = all_affiliations.filter(a => !u.isErrorObject(aff_lists[all_affiliations.indexOf(a)]));
+                const new_jids = new_members.map(m => m.jid).filter(m => m !== undefined);
+                const new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => m !== undefined);
                 const removed_members = this.filter(m => {
-                        return ['admin', 'member', 'owner'].includes(m.get('affiliation')) &&
+                        return known_affiliations.includes(m.get('affiliation')) &&
                             !new_nicks.includes(m.get('nick')) &&
                             !new_jids.includes(m.get('jid'));
                     });
@@ -1925,12 +1939,9 @@ converse.plugins.add('converse-muc', {
                     }
                 });
                 new_members.forEach(attrs => {
-                    let occupant;
-                    if (attrs.jid) {
-                        occupant = this.findOccupant({'jid': attrs.jid});
-                    } else {
-                        occupant = this.findOccupant({'nick': attrs.nick});
-                    }
+                    const occupant = attrs.jid ?
+                        this.findOccupant({'jid': attrs.jid}) :
+                        this.findOccupant({'nick': attrs.nick});
                     if (occupant) {
                         occupant.save(attrs);
                     } else {
@@ -2039,20 +2050,21 @@ converse.plugins.add('converse-muc', {
             return getChatRoom(jid, attrs, true);
         };
 
+        /**
+         * Automatically join groupchats, based on the
+         * "auto_join_rooms" configuration setting, which is an array
+         * of strings (groupchat JIDs) or objects (with groupchat JID and other
+         * settings).
+         */
         function autoJoinRooms () {
-            /* Automatically join groupchats, based on the
-             * "auto_join_rooms" configuration setting, which is an array
-             * of strings (groupchat JIDs) or objects (with groupchat JID and other
-             * settings).
-             */
             _converse.auto_join_rooms.forEach(groupchat => {
-                if (_converse.chatboxes.where({'jid': groupchat}).length) {
-                    return;
-                }
                 if (_.isString(groupchat)) {
+                    if (_converse.chatboxes.where({'jid': groupchat}).length) {
+                        return;
+                    }
                     _converse.api.rooms.open(groupchat);
                 } else if (_.isObject(groupchat)) {
-                    _converse.api.rooms.open(groupchat.jid, groupchat.nick);
+                    _converse.api.rooms.open(groupchat.jid, _.clone(groupchat));
                 } else {
                     _converse.log(
                         'Invalid groupchat criteria specified for "auto_join_rooms"',
@@ -2138,13 +2150,10 @@ converse.plugins.add('converse-muc', {
                  */
                 create (jids, attrs={}) {
                     attrs = _.isString(attrs) ? {'nick': attrs} : (attrs || {});
-                    if (_.isUndefined(attrs.maximize)) {
-                        attrs.maximize = false;
-                    }
                     if (!attrs.nick && _converse.muc_nickname_from_jid) {
                         attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                     }
-                    if (_.isUndefined(jids)) {
+                    if (jids === undefined) {
                         throw new TypeError('rooms.create: You need to provide at least one JID');
                     } else if (_.isString(jids)) {
                         return createChatRoom(jids, attrs);
@@ -2171,8 +2180,7 @@ converse.plugins.add('converse-muc', {
                  *     For a list of configuration values that can be passed in, refer to these values
                  *     in the [XEP-0045 MUC specification](https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
                  *     The values should be named without the `muc#roomconfig_` prefix.
-                 * @param {boolean} [attrs.maximize] A boolean, indicating whether minimized rooms should also be
-                 *     maximized, when opened. Set to `false` by default.
+                 * @param {boolean} [attrs.minimized] A boolean, indicating whether the room should be opened minimized or not.
                  * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
                  *     brought to the foreground and therefore replace the currently shown chat.
                  *     If there is no chat currently open, then this option is ineffective.
@@ -2213,7 +2221,7 @@ converse.plugins.add('converse-muc', {
                  */
                 async open (jids, attrs, force=false) {
                     await _converse.api.waitUntil('chatBoxesFetched');
-                    if (_.isUndefined(jids)) {
+                    if (jids === undefined) {
                         const err_msg = 'rooms.open: You need to provide at least one JID';
                         _converse.log(err_msg, Strophe.LogLevel.ERROR);
                         throw(new TypeError(err_msg));
@@ -2254,10 +2262,10 @@ converse.plugins.add('converse-muc', {
                 get (jids, attrs, create) {
                     if (_.isString(attrs)) {
                         attrs = {'nick': attrs};
-                    } else if (_.isUndefined(attrs)) {
+                    } else if (attrs === undefined) {
                         attrs = {};
                     }
-                    if (_.isUndefined(jids)) {
+                    if (jids === undefined) {
                         const result = [];
                         _converse.chatboxes.each(function (chatbox) {
                             if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {

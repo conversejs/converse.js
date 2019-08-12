@@ -400,13 +400,139 @@
 
         describe("A Groupchat", function () {
 
-            it("clears cached messages when it gets closed",
+            describe("upon being entered", function () {
+
+                it("will fetch the member list if muc_fetch_members is true",
+                    mock.initConverse(
+                        null, ['rosterGroupsFetched'], {'muc_fetch_members': true},
+                        async function (done, _converse) {
+
+                    const sent_IQs = _converse.connection.IQ_stanzas;
+                    const muc_jid = 'lounge@montague.lit';
+                    spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
+                    await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                    let view = _converse.chatboxviews.get(muc_jid);
+                    expect(view.model.occupants.fetchMembers).toHaveBeenCalled();
+
+                    // Check in reverse order that we requested all three lists
+                    const owner_iq = sent_IQs.pop();
+                    expect(Strophe.serialize(owner_iq)).toBe(
+                        `<iq id="${owner_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>`+
+                        `</iq>`);
+
+                    const admin_iq = sent_IQs.pop();
+                    expect(Strophe.serialize(admin_iq)).toBe(
+                        `<iq id="${admin_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>`+
+                        `</iq>`);
+
+                    const member_iq = sent_IQs.pop();
+                    expect(Strophe.serialize(member_iq)).toBe(
+                        `<iq id="${member_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>`+
+                        `</iq>`);
+
+                    _converse.muc_fetch_members = false;
+                    await test_utils.openAndEnterChatRoom(_converse, 'orchard@montague.lit', 'romeo');
+                    view = _converse.chatboxviews.get('orchard@montague.lit');
+                    expect(view.model.occupants.fetchMembers.calls.count()).toBe(1);
+                    done();
+                }));
+
+                describe("when fetching the member lists", function () {
+
+                    it("gracefully handles being forbidden from fetching the lists for certain affiliations",
+                        mock.initConverse(
+                            null, ['rosterGroupsFetched'], {'muc_fetch_members': true},
+                            async function (done, _converse) {
+
+                        const sent_IQs = _converse.connection.IQ_stanzas;
+                        const muc_jid = 'lounge@montague.lit';
+                        const features = [
+                            'http://jabber.org/protocol/muc',
+                            'jabber:iq:register',
+                            'muc_hidden',
+                            'muc_membersonly',
+                            'muc_passwordprotected',
+                            Strophe.NS.MAM,
+                            Strophe.NS.SID
+                        ];
+                        const nick = 'romeo';
+                        const room = Strophe.getNodeFromJid(muc_jid);
+                        const server = Strophe.getDomainFromJid(muc_jid);
+                        await _converse.api.rooms.open(muc_jid);
+                        await test_utils.getRoomFeatures(_converse, room, server, features);
+                        await test_utils.waitForReservedNick(_converse, muc_jid, nick);
+                        test_utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
+                        const view = _converse.chatboxviews.get(muc_jid);
+                        await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+
+                        // Check in reverse order that we requested all three lists
+                        const owner_iq = sent_IQs.pop();
+                        expect(Strophe.serialize(owner_iq)).toBe(
+                            `<iq id="${owner_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                                `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>`+
+                            `</iq>`);
+                        const admin_iq = sent_IQs.pop();
+                        expect(Strophe.serialize(admin_iq)).toBe(
+                            `<iq id="${admin_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                                `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>`+
+                            `</iq>`);
+                        const member_iq = sent_IQs.pop();
+                        expect(Strophe.serialize(member_iq)).toBe(
+                            `<iq id="${member_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
+                                `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>`+
+                            `</iq>`);
+
+                        // It might be that the user is not allowed to fetch certain lists.
+                        let err_stanza = u.toStanza(
+                            `<iq xmlns="jabber:client" type="error" to="${_converse.jid}" from="${muc_jid}" id="${admin_iq.getAttribute('id')}">
+                                <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+                            </iq>`);
+                        _converse.connection._dataRecv(test_utils.createRequest(err_stanza));
+
+                        err_stanza = u.toStanza(
+                            `<iq xmlns="jabber:client" type="error" to="${_converse.jid}" from="${muc_jid}" id="${owner_iq.getAttribute('id')}">
+                                <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+                            </iq>`);
+                        _converse.connection._dataRecv(test_utils.createRequest(err_stanza));
+
+                        // Now the service sends the member lists to the user
+                        const member_list_stanza = $iq({
+                                'from': muc_jid,
+                                'id': member_iq.getAttribute('id'),
+                                'to': 'romeo@montague.lit/orchard',
+                                'type': 'result'
+                            }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
+                                .c('item', {
+                                    'affiliation': 'member',
+                                    'jid': 'hag66@shakespeare.lit',
+                                    'nick': 'thirdwitch',
+                                    'role': 'participant'
+                                });
+                        _converse.connection._dataRecv(test_utils.createRequest(member_list_stanza));
+
+                        await u.waitUntil(() => view.model.occupants.length > 1);
+                        expect(view.model.occupants.length).toBe(2);
+                        // The existing owner occupant should not have their
+                        // affiliation removed due to the owner list
+                        // not being returned (forbidden err).
+                        expect(view.model.occupants.findWhere({'jid': _converse.bare_jid}).get('affiliation')).toBe('owner');
+                        expect(view.model.occupants.findWhere({'jid': 'hag66@shakespeare.lit'}).get('affiliation')).toBe('member');
+                        done();
+                    }));
+                });
+            });
+
+            it("clears cached messages when it gets closed and clear_messages_on_reconnection is true",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched'], {'clear_messages_on_reconnection': true},
                     async function (done, _converse) {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                const view = _converse.chatboxviews.get('lounge@montague.lit');
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid , 'romeo');
+                const view = _converse.chatboxviews.get(muc_jid);
                 const message = 'Hello world',
                         nick = mock.chatroom_names[0],
                         msg = $msg({
@@ -1487,7 +1613,13 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit'
-                await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', [], ['juliet']);
+
+                const members = [{
+                    'nick': 'juliet',
+                    'jid': 'juliet@capulet.lit',
+                    'affiliation': 'member'
+                }];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
                 const view = _converse.chatboxviews.get(muc_jid);
                 await u.waitUntil(() => view.model.occupants.length === 2);
 
@@ -1948,7 +2080,7 @@
 
                 const text = 'This is a received message';
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 if (!view.el.querySelectorAll('.chat-area').length) {
                     view.renderChatArea();
@@ -1980,7 +2112,7 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 if (!view.el.querySelectorAll('.chat-area').length) {
                     view.renderChatArea();
@@ -1990,12 +2122,12 @@
                 textarea.value = text;
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', text);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', jasmine.any(_converse.Message));
                 const chat_content = view.el.querySelector('.chat-content');
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
 
@@ -2721,7 +2853,7 @@
 
                 spyOn(view, 'onMinimized').and.callThrough();
                 spyOn(view, 'onMaximized').and.callThrough();
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.el.querySelector('.toggle-chatbox-button').click();
 
@@ -2749,13 +2881,82 @@
                 await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 spyOn(view, 'close').and.callThrough();
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 spyOn(view.model, 'leave');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.el.querySelector('.close-chatbox-button').click();
                 expect(view.close).toHaveBeenCalled();
                 expect(view.model.leave).toHaveBeenCalled();
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                done();
+            }));
+
+            it("informs users of role and affiliation changes",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const view = _converse.api.chatviews.get(muc_jid);
+                let presence = $pres({
+                        'from': 'lounge@montague.lit/annoyingGuy',
+                        'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
+                        'to': 'romeo@montague.lit/desktop'
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'annoyingguy@montague.lit',
+                            'affiliation': 'member',
+                            'role': 'participant'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                let info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy has entered the groupchat");
+
+                presence = $pres({
+                        'from': 'lounge@montague.lit/annoyingGuy',
+                        'to': 'romeo@montague.lit/desktop'
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'annoyingguy@montague.lit',
+                            'affiliation': 'member',
+                            'role': 'visitor'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy has been muted");
+
+                presence = $pres({
+                        'from': 'lounge@montague.lit/annoyingGuy',
+                        'to': 'romeo@montague.lit/desktop'
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'annoyingguy@montague.lit',
+                            'affiliation': 'member',
+                            'role': 'participant'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice");
+
+                // Check that we don't see an info message concerning the role,
+                // if the affiliation has changed.
+                presence = $pres({
+                        'from': 'lounge@montague.lit/annoyingGuy',
+                        'to': 'romeo@montague.lit/desktop'
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'annoyingguy@montague.lit',
+                            'affiliation': 'none',
+                            'role': 'visitor'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy is no longer a member of this groupchat");
                 done();
             }));
         });
@@ -2774,13 +2975,13 @@
                 const textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = '/clear';
 
-                const enter = { 'target': textarea, 'preventDefault': _.noop, 'keyCode': 13 };
+                const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
                 view.onKeyDown(enter);
                 textarea.value = '/help';
                 view.onKeyDown(enter);
 
                 let info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_messages.length).toBe(19);
+                expect(info_messages.length).toBe(20);
                 expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
@@ -2790,6 +2991,7 @@
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
                 expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
                 expect(info_messages.pop().textContent).toBe('/mute: Remove user\'s ability to post messages');
+                expect(info_messages.pop().textContent).toBe('/modtools: Opens up the moderator tools GUI');
                 expect(info_messages.pop().textContent).toBe('/member: Grant membership to a user');
                 expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
                 expect(info_messages.pop().textContent).toBe('/kick: Kick user from groupchat');
@@ -2808,11 +3010,11 @@
                 textarea.value = '/help';
                 view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);
-                expect(info_messages.length).toBe(17);
+                expect(info_messages.length).toBe(18);
                 let commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
                 expect(commands).toEqual([
                     "/admin", "/ban", "/clear", "/deop", "/destroy",
-                    "/help", "/kick", "/me", "/member", "/mute", "/nick",
+                    "/help", "/kick", "/me", "/member", "/modtools", "/mute", "/nick",
                     "/op", "/register", "/revoke", "/subject", "/topic", "/voice"
                 ]);
                 occupant.set('affiliation', 'member');
@@ -2845,7 +3047,7 @@
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 var textarea = view.el.querySelector('.chat-textarea');
-                const enter = { 'target': textarea, 'preventDefault': _.noop, 'keyCode': 13 };
+                const enter = { 'target': textarea, 'preventDefault': function () {}, 'keyCode': 13 };
                 spyOn(window, 'confirm').and.callFake(() => true);
                 textarea.value = '/clear';
                 view.onKeyDown(enter);
@@ -2853,7 +3055,7 @@
                 view.onKeyDown(enter);
 
                 const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_messages.length).toBe(17);
+                expect(info_messages.length).toBe(18);
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
                 expect(info_messages.pop().textContent).toBe('/revoke: Revoke the user\'s current affiliation');
@@ -2861,6 +3063,7 @@
                 expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
                 expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
+                expect(info_messages.pop().textContent).toBe('/modtools: Opens up the moderator tools GUI');
                 expect(info_messages.pop().textContent).toBe('/member: Grant membership to a user');
                 expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
                 expect(info_messages.pop().textContent).toBe('/kick: Kick user from groupchat');
@@ -2909,7 +3112,7 @@
                 textarea.value = '/member chris Welcome to the club!';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(_converse.connection.send).not.toHaveBeenCalled();
@@ -2921,7 +3124,7 @@
                 textarea.value = '/member marc Welcome to the club!';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(_converse.connection.send).toHaveBeenCalled();
@@ -3036,7 +3239,7 @@
                 textarea.value = '/topic This is the groupchat subject';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(_converse.connection.send).toHaveBeenCalled();
@@ -3046,7 +3249,7 @@
                 textarea.value = '/subject This is a new subject';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
 
@@ -3060,7 +3263,7 @@
                 textarea.value = '/Subject This is yet another subject';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(sent_stanza.textContent).toBe('This is yet another subject');
@@ -3083,7 +3286,7 @@
                 textarea.value = '/clear';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(view.clearMessages).toHaveBeenCalled();
@@ -3125,7 +3328,7 @@
                 textarea.value = '/owner';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
@@ -3213,7 +3416,7 @@
                 textarea.value = '/ban';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
@@ -3314,7 +3517,7 @@
                 textarea.value = '/kick';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
@@ -3418,7 +3621,7 @@
                 textarea.value = '/op';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
 
@@ -3561,7 +3764,7 @@
                 textarea.value = '/mute';
                 view.onKeyDown({
                     target: textarea,
-                    preventDefault: _.noop,
+                    preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
 
@@ -3653,7 +3856,7 @@
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice again");
+                expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice");
                 done();
             }));
 
@@ -3697,7 +3900,7 @@
                     'from': view.model.get('jid'),
                     'to': _converse.connection.jid
                 });
-                spyOn(_converse.api, "trigger");
+                spyOn(_converse.api, "trigger").and.callThrough();
                 expect(_converse.chatboxes.length).toBe(2);
                 _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
                 await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
@@ -4116,32 +4319,25 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                var sent_IQs = [], IQ_ids = [];
+                spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
                 const sendIQ = _converse.connection.sendIQ;
-                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const sent_IQs = _converse.connection.IQ_stanzas;
                 const muc_jid = 'coven@chat.shakespeare.lit';
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQs.push(iq);
-                    IQ_ids.push(sendIQ.bind(this)(iq, callback, errback));
-                });
 
                 await _converse.api.rooms.open(muc_jid, {'nick': 'romeo'});
-                let stanza = await u.waitUntil(() => _.filter(
-                    IQ_stanzas,
-                    iq => iq.querySelector(
-                        `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                    )).pop());
+
                 // Check that the groupchat queried for the feautures.
+                let stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`)).pop());
                 expect(Strophe.serialize(stanza)).toBe(
                     `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute("id")}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                     `</iq>`);
 
-                const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 // State that the chat is members-only via the features IQ
+                const view = _converse.chatboxviews.get(muc_jid);
                 const features_stanza = $iq({
                         from: 'coven@chat.shakespeare.lit',
-                        'id': IQ_ids.pop(),
+                        'id': stanza.getAttribute('id'),
                         'to': 'romeo@montague.lit/desktop',
                         'type': 'result'
                     })
@@ -4168,53 +4364,33 @@
                         sent_stanza = stanza;
                     }
                 });
-                var name = mock.cur_names[0];
-                const invitee_jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                var reason = "Please join this groupchat";
+                const invitee_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                const reason = "Please join this groupchat";
                 view.model.directInvite(invitee_jid, reason);
 
                 // Check in reverse order that we requested all three lists
-                // (member, owner and admin).
-                const admin_iq_id = IQ_ids.pop();
-                const owner_iq_id = IQ_ids.pop();
-                const member_iq_id = IQ_ids.pop();
-
-                expect(sent_IQs.pop().toLocaleString()).toBe(
-                    `<iq id="${admin_iq_id}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
-                        `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                            `<item affiliation="admin"/>`+
-                        `</query>`+
-                    `</iq>`);
-                expect(sent_IQs.pop().toLocaleString()).toBe(
-                    `<iq id="${owner_iq_id}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
-                        `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                            `<item affiliation="owner"/>`+
-                        `</query>`+
-                    `</iq>`);
-                expect(sent_IQs.pop().toLocaleString()).toBe(
-                    `<iq id="${member_iq_id}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
-                        `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                            `<item affiliation="member"/>`+
-                        `</query>`+
+                const owner_iq = sent_IQs.pop();
+                expect(Strophe.serialize(owner_iq)).toBe(
+                    `<iq id="${owner_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
+                        `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="owner"/></query>`+
                     `</iq>`);
 
-                /* Now the service sends the member list to the user
-                 *
-                 *  <iq from='coven@chat.shakespeare.lit'
-                 *      id='member3'
-                 *      to='crone1@shakespeare.lit/desktop'
-                 *      type='result'>
-                 *  <query xmlns='http://jabber.org/protocol/muc#admin'>
-                 *      <item affiliation='member'
-                 *          jid='hag66@shakespeare.lit'
-                 *          nick='thirdwitch'
-                 *          role='participant'/>
-                 *  </query>
-                 *  </iq>
-                 */
-                var member_list_stanza = $iq({
+                const admin_iq = sent_IQs.pop();
+                expect(Strophe.serialize(admin_iq)).toBe(
+                    `<iq id="${admin_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
+                        `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="admin"/></query>`+
+                    `</iq>`);
+
+                const member_iq = sent_IQs.pop();
+                expect(Strophe.serialize(member_iq)).toBe(
+                    `<iq id="${member_iq.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
+                        `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>`+
+                    `</iq>`);
+
+                // Now the service sends the member lists to the user
+                const member_list_stanza = $iq({
                         'from': 'coven@chat.shakespeare.lit',
-                        'id': member_iq_id,
+                        'id': member_iq.getAttribute('id'),
                         'to': 'romeo@montague.lit/orchard',
                         'type': 'result'
                     }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
@@ -4226,9 +4402,9 @@
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(member_list_stanza));
 
-                var admin_list_stanza = $iq({
+                const admin_list_stanza = $iq({
                         'from': 'coven@chat.shakespeare.lit',
-                        'id': admin_iq_id,
+                        'id': admin_iq.getAttribute('id'),
                         'to': 'romeo@montague.lit/orchard',
                         'type': 'result'
                     }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
@@ -4239,9 +4415,9 @@
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(admin_list_stanza));
 
-                var owner_list_stanza = $iq({
+                const owner_list_stanza = $iq({
                         'from': 'coven@chat.shakespeare.lit',
-                        'id': owner_iq_id,
+                        'id': owner_iq.getAttribute('id'),
                         'to': 'romeo@montague.lit/orchard',
                         'type': 'result'
                     }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
@@ -4250,20 +4426,28 @@
                             'jid': 'crone1@shakespeare.lit',
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(owner_list_stanza));
-                await u.waitUntil(() => IQ_ids.length, 300);
-                stanza = await u.waitUntil(() => _.filter(
-                    IQ_stanzas,
-                    iq => iq.querySelector(
-                        `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`
-                    )).pop());
+
+                // Converse puts the user on the member list
+                stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`)).pop());
                 expect(stanza.outerHTML,
-                    `<iq id="${IQ_ids.pop()}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                    `<iq id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                             `<item affiliation="member" jid="${invitee_jid}">`+
                                 `<reason>Please join this groupchat</reason>`+
                             `</item>`+
                         `</query>`+
                     `</iq>`);
+
+                const result = $iq({
+                        'from': 'coven@chat.shakespeare.lit',
+                        'id': stanza.getAttribute('id'),
+                        'to': 'romeo@montague.lit/orchard',
+                        'type': 'result'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+
+                await u.waitUntil(() => view.model.occupants.fetchMembers.calls.count());
+
                 // Finally check that the user gets invited.
                 expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
                     `<message from="romeo@montague.lit/orchard" id="${sent_id}" to="${invitee_jid}" xmlns="jabber:client">`+
@@ -4304,8 +4488,7 @@
                 expect(delta.length).toBe(0);
 
                 // With exclude_existing set to false, any changed affiliations
-                // will be included in the delta (i.e. existing affiliations
-                // are included in the comparison).
+                // will be included in the delta (i.e. existing affiliations are included in the comparison).
                 old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
                 delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(1);
@@ -4333,6 +4516,10 @@
                 // affiliation, we set 'exclude_existing' to true
                 exclude_existing = true;
                 old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
+                delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+
+                old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'admin'}];
                 delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(0);
                 done();
@@ -5129,7 +5316,7 @@
                         from='trollbox@montague.lit/troll'
                         to='romeo@montague.lit/orchard'>
                     <x xmlns='http://jabber.org/protocol/muc#user'>
-                        <item affiliation='moderator'
+                        <item affiliation='none'
                             nick='troll'
                             role='visitor'/>
                         <status code='110'/>
@@ -5147,7 +5334,7 @@
                 view.model.features.set('moderated', false);
                 expect(view.el.querySelector('.muc-bottom-panel')).toBe(null);
                 let textarea = view.el.querySelector('.chat-textarea');
-                expect(_.isNull(textarea)).toBe(false);
+                expect(textarea === null).toBe(false);
 
                 view.model.features.set('moderated', true);
                 expect(view.el.querySelector('.chat-textarea')).toBe(null);
@@ -5156,16 +5343,16 @@
 
                 // Check now that things get restored when the user is given a voice
                 let info_msgs = sizzle('.chat-info', view.el);
-                expect(info_msgs.length).toBe(4);
-                expect(info_msgs[2].textContent).toBe("troll is no longer a moderator");
-                expect(info_msgs[3].textContent).toBe("troll has been muted");
+                expect(info_msgs.length).toBe(2);
+                expect(info_msgs[0].textContent).toBe("troll has entered the groupchat");
+                expect(info_msgs[1].textContent).toBe("troll is no longer an owner of this groupchat");
 
                 stanza = u.toStanza(`
                     <presence
                         from='trollbox@montague.lit/troll'
                         to='romeo@montague.lit/orchard'>
                     <x xmlns='http://jabber.org/protocol/muc#user'>
-                        <item affiliation='moderator'
+                        <item affiliation='none'
                             nick='troll'
                             role='participant'/>
                         <status code='110'/>
@@ -5178,14 +5365,12 @@
                 expect(bottom_panel).toBe(null);
 
                 textarea = view.el.querySelector('.chat-textarea');
-                expect(_.isNull(textarea)).toBe(false);
+                expect(textarea === null).toBe(false);
 
-                expect(info_msgs.length).toBe(5);
-                expect(info_msgs[4].textContent).toBe("troll has been given a voice again");
+                expect(info_msgs.length).toBe(3);
+                expect(info_msgs[2].textContent).toBe("troll has been given a voice");
                 done();
             }));
         });
     });
 }));
-
-

@@ -111,7 +111,7 @@
             textarea.value = 'This is the spoiler';
             view.onKeyDown({
                 target: textarea,
-                preventDefault: _.noop,
+                preventDefault: function preventDefault () {},
                 keyCode: 13
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -130,7 +130,7 @@
              */
             const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
             const spoiler_el = stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]');
-            expect(_.isNull(spoiler_el)).toBeFalsy();
+            expect(spoiler_el === null).toBeFalsy();
             expect(spoiler_el.textContent).toBe('');
 
             const body_el = stanza.querySelector('body');
@@ -188,7 +188,7 @@
 
             view.onKeyDown({
                 target: textarea,
-                preventDefault: _.noop,
+                preventDefault: function preventDefault () {},
                 keyCode: 13
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -208,7 +208,7 @@
             const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
             const spoiler_el = stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]');
 
-            expect(_.isNull(spoiler_el)).toBeFalsy();
+            expect(spoiler_el === null).toBeFalsy();
             expect(spoiler_el.textContent).toBe('This is the hint');
 
             const body_el = stanza.querySelector('body');

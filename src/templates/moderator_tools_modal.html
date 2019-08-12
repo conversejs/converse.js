@@ -1,0 +1,168 @@
+<div class="modal" id="list-chatrooms-modal" tabindex="-1" role="dialog" aria-labelledby="list-chatrooms-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="list-chatrooms-modal-label">{{{o.__('Moderator Tools')}}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body d-flex flex-column">
+                <ul class="nav nav-pills justify-content-center">
+                    <li role="presentation" class="nav-item">
+                        <a class="nav-link active" id="roles-tab" href="#roles-tabpanel" aria-controls="roles-tabpanel" role="tab" data-toggle="tab">Roles</a>
+                    </li>
+                    <li role="presentation" class="nav-item">
+                        <a class="nav-link" id="affiliations-tab" href="#affiliations-tabpanel" aria-controls="affiliations-tabpanel" role="tab" data-toggle="tab">Affiliations</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
+                        <form class="converse-form query-role">
+                            <div class="form-group">
+                                <label for="role">
+                                    <strong>{{{o.__('Role')}}}:</strong>
+                                </label>
+                                <div class="row">
+                                    <div class="col">
+                                        <select class="custom-select select-role" name="role">
+                                            {[ o.roles.forEach(function (role) { ]}
+                                                <option value="{{{role}}}" {[ if (role === o.role)  { ]} selected="selected" {[ } ]}>{{{role}}}</option>
+                                            {[ }); ]}
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="submit" class="btn btn-primary" name="users_with_role" value="{{{o.__('Show users')}}}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="scrollable-container">
+                        <ul class="list-group list-group--users">
+                            {[ if (o.loading_users_with_role)  { ]}
+                                <li class="list-group-item"> <span class="spinner fa fa-spinner centered"/> </li>
+                            {[ } ]}
+                            {[ if (o.users_with_role && o.users_with_role.length === 0) { ]}
+                                <li class="list-group-item">{{{o.__('No users with that role found.')}}}</li>
+                            {[ } ]}
+                            {[ (o.users_with_role || []).forEach(function (item) { ]}
+                                <li class="list-group-item">
+                                    <ul class="list-group">
+                                        <li class="list-group-item active">
+                                            <div><strong>JID:</strong> {{{item.jid}}}</div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div><strong>Nickname:</strong> {{{item.nick}}}</div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div><strong>Role:</strong> {{{item.role}}}<a href="#" data-form="role-form" class="toggle-form right fa fa-wrench"></a></div>
+                                            <form class="role-form hidden">
+                                                <div class="form-group">
+                                                    <input type="hidden" name="jid" value="{{{item.jid}}}"/>
+                                                    <input type="hidden" name="nick" value="{{{item.nick}}}"/>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <label><strong>{{{o.__('New Role')}}}:</strong></label>
+                                                            <select class="custom-select select-role" name="role">
+                                                                {[ o.allowed_roles.forEach(function (role) { ]}
+                                                                    <option value="{{{role}}}" {[ if (role === item.role)  { ]} selected="selected" {[ } ]}>{{{role}}}</option>
+                                                                {[ }); ]}
+                                                            </select>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label><strong>{{{o.__('Reason')}}}:</strong></label>
+                                                            <input class="form-control" type="text" name="reason"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="submit" class="btn btn-primary" value="{{{o.__('Change role')}}}"/>
+                                                </div>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {[ }); ]}
+                        </ul>
+                        </div>
+                    </div>
+
+
+                    <div class="tab-pane" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
+                        <form class="converse-form query-affiliation">
+                            <div class="form-group">
+                                <label for="affiliation">
+                                    <strong>{{{o.__('Affiliation')}}}:</strong>
+                                </label>
+                                <div class="row">
+                                    <div class="col">
+                                        <select class="custom-select select-affiliation" name="affiliation">
+                                            {[ o.affiliations.forEach(function (aff) { ]}
+                                                <option value="{{{aff}}}" {[ if (aff === o.affiliation)  { ]} selected="selected" {[ } ]}>{{{aff}}}</option>
+                                            {[ }); ]}
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="submit" class="btn btn-primary" name="users_with_affiliation" value="{{{o.__('Show users')}}}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <ul class="list-group list-group--users">
+                            {[ if (o.loading_users_with_affiliation)  { ]}
+                                <li class="list-group-item"> <span class="spinner fa fa-spinner centered"/> </li>
+                            {[ } else { ]}
+                                {[ if (o.users_with_affiliation && o.users_with_affiliation.length === 0) { ]}
+                                    <li class="list-group-item">{{{o.__('No users with that affiliation found.')}}}</li>
+                                {[ } ]}
+                                {[ if (o.users_with_affiliation instanceof Error) { ]}
+                                    <li class="list-group-item">{{{o.users_with_affiliation.message}}}</li>
+                                {[ } ]}
+                                {[ (o.users_with_affiliation || []).forEach(function (item) { ]}
+                                    <li class="list-group-item">
+                                        <ul class="list-group">
+                                            <li class="list-group-item active">
+                                                <div><strong>JID:</strong> {{{item.jid}}}</div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div><strong>Nickname:</strong> {{{item.nick}}}</div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div><strong>Affiliation:</strong> {{{item.affiliation}}} <a href="#" data-form="affiliation-form" class="toggle-form right fa fa-wrench"></a></div>
+                                                <form class="affiliation-form hidden">
+                                                    <div class="form-group">
+                                                        <input type="hidden" name="jid" value="{{{item.jid}}}"/>
+                                                        <input type="hidden" name="nick" value="{{{item.nick}}}"/>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <label><strong>{{{o.__('New affiliation')}}}:</strong></label>
+                                                                <select class="custom-select select-affiliation" name="affiliation">
+                                                                    {[ o.allowed_affiliations.forEach(function (aff) { ]}
+                                                                        <option value="{{{aff}}}" {[ if (aff === item.affiliation)  { ]} selected="selected" {[ } ]}>{{{aff}}}</option>
+                                                                    {[ }); ]}
+                                                                </select>
+                                                            </div>
+                                                            <div class="col">
+                                                                <label><strong>{{{o.__('Reason')}}}:</strong></label>
+                                                                <input class="form-control" type="text" name="reason"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="submit" class="btn btn-primary" name="change" value="{{{o.__('Change affiliation')}}}"/>
+                                                    </div>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                {[ }); ]}
+                            {[ } ]}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

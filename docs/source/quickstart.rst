@@ -66,8 +66,8 @@ via the *script* and *link* tags:
 
 .. code-block:: html
 
-    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/4.2.0/dist/converse.min.css">
-    <script src="https://cdn.conversejs.org/4.2.0/dist/converse.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/5.0.0/dist/converse.min.css">
+    <script src="https://cdn.conversejs.org/5.0.0/dist/converse.min.js" charset="utf-8"></script>
 
 
 Option 2: Download the builds from Github

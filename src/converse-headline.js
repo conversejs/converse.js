@@ -112,8 +112,8 @@ converse.plugins.add('converse-headline', {
             },
 
             // Override to avoid the methods in converse-chatview.js
-            'renderMessageForm': _.noop,
-            'afterShown': _.noop
+            'renderMessageForm': function renderMessageForm () {},
+            'afterShown': function afterShown () {}
         });
 
         async function onHeadlineMessage (message) {

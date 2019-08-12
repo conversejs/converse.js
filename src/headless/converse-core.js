@@ -117,6 +117,14 @@ _converse.Collection = Backbone.Collection.extend({
 });
 
 
+/**
+ * Custom error for indicating timeouts
+ * @namespace _converse
+ */
+class TimeoutError extends Error {}
+_converse.TimeoutError = TimeoutError;
+
+
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');
 

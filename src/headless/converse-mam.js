@@ -128,6 +128,11 @@ converse.plugins.add('converse-mam', {
                 const result = await _converse.api.archive.query(query);
                 result.messages.forEach(message_handler);
 
+                if (result.error) {
+                    result.error.retry = () => this.fetchArchivedMessages(options, page);
+                    this.createMessageFromError(result.error);
+                }
+
                 if (page && result.rsm) {
                     if (page === 'forwards') {
                         options = result.rsm.next(_converse.archived_messages_page_size, options.before);
@@ -298,9 +303,9 @@ converse.plugins.add('converse-mam', {
                   * * `index`
                   * * `count`
                   * @throws {Error} An error is thrown if the XMPP server responds with an error.
-                  * @returns {Promise<Object>} A promise which resolves to an object which
-                  * will have keys `messages` and `rsm` which contains a _converse.RSM object
-                  * on which "next" or "previous" can be called before passing it in again
+                  * @returns { (Promise<Object> | _converse.TimeoutError) } A promise which resolves
+                  * to an object which will have keys `messages` and `rsm` which contains a _converse.RSM
+                  * object on which "next" or "previous" can be called before passing it in again
                   * to this method, to get the next or previous page in the result set.
                   *
                   * @example
@@ -506,17 +511,22 @@ converse.plugins.add('converse-mam', {
                         return true;
                     }, Strophe.NS.MAM);
 
-                    let iq_result, rsm;
-                    try {
-                        iq_result = await _converse.api.sendIQ(stanza, _converse.message_archiving_timeout)
-                    } catch (e) {
-                        _converse.log(
-                            "Error or timeout while trying to fetch "+
-                            "archived messages", Strophe.LogLevel.ERROR);
-                        _converse.log(e, Strophe.LogLevel.ERROR);
+                    let error;
+                    const iq_result = await _converse.api.sendIQ(stanza, _converse.message_archiving_timeout, false)
+                    if (iq_result === null) {
+                        const err_msg = "Timeout while trying to fetch archived messages.";
+                        _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                        error = new _converse.TimeoutError(err_msg);
+                        return { messages, error };
+
+                    } else if (u.isErrorStanza(iq_result)) {
+                        _converse.log("Error stanza received while trying to fetch archived messages", Strophe.LogLevel.ERROR);
+                        _converse.log(iq_result, Strophe.LogLevel.ERROR);
+                        return { messages };
                     }
                     _converse.connection.deleteHandler(message_handler);
 
+                    let rsm;
                     const fin = iq_result && sizzle(`fin[xmlns="${Strophe.NS.MAM}"]`, iq_result).pop();
                     if (fin && [null, 'false'].includes(fin.getAttribute('complete'))) {
                         const set = sizzle(`set[xmlns="${Strophe.NS.RSM}"]`, fin).pop();
@@ -525,7 +535,7 @@ converse.plugins.add('converse-mam', {
                             Object.assign(rsm, Object.assign(pick(options, [...MAM_ATTRIBUTES, ..._converse.RSM_ATTRIBUTES]), rsm));
                         }
                     }
-                    return { messages, rsm }
+                    return { messages, rsm, error };
                 }
             }
         });

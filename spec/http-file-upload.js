@@ -573,7 +573,7 @@
                         await u.waitUntil(() => view.el.querySelectorAll('.message').length)
                         const messages = view.el.querySelectorAll('.message.chat-error');
                         expect(messages.length).toBe(1);
-                        expect(messages[0].textContent).toBe(
+                        expect(messages[0].textContent.trim()).toBe(
                             'The size of your file, my-juliet.jpg, exceeds the maximum allowed by your server, which is 5 MB.');
                         done();
                     }));

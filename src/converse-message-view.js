@@ -15,6 +15,7 @@ import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
 import tpl_message_versions_modal from "templates/message_versions_modal.html";
+import tpl_spinner from "templates/spinner.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss/dist/xss";
 
@@ -80,7 +81,8 @@ converse.plugins.add('converse-message-view', {
 
         _converse.MessageView = _converse.ViewWithAvatar.extend({
             events: {
-                'click .chat-msg__edit-modal': 'showMessageVersionsModal'
+                'click .chat-msg__edit-modal': 'showMessageVersionsModal',
+                'click .retry': 'onRetryClicked'
             },
 
             initialize () {
@@ -162,6 +164,16 @@ converse.plugins.add('converse-message-view', {
                 } else {
                     this.remove();
                 }
+            },
+
+            async onRetryClicked () {
+                this.showSpinner();
+                await this.model.error.retry();
+                this.model.destroy();
+            },
+
+            showSpinner () {
+                this.el.innerHTML = tpl_spinner();
             },
 
             onMessageEdited () {

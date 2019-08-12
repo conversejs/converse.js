@@ -1430,7 +1430,7 @@
 
             await u.waitUntil(() => !view.model.get('omemo_supported'));
 
-            expect(view.el.querySelector('.chat-error').textContent).toBe(
+            expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
                 "oldguy doesn't appear to have a client that supports OMEMO. "+
                 "Encrypted chat will no longer be possible in this grouchat."
             );

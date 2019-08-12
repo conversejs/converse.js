@@ -1761,7 +1761,7 @@
                             .t('Server-to-server connection failed: Connecting failed: connection timeout');
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                    expect(chat_content.querySelector('.chat-error').textContent).toEqual(error_txt);
+                    expect(chat_content.querySelector('.chat-error').textContent.trim()).toEqual(error_txt);
                     stanza = $msg({
                             'to': _converse.connection.jid,
                             'type': 'error',

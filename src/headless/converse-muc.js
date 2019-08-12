@@ -1550,7 +1550,8 @@ converse.plugins.add('converse-muc', {
                     } else {
                         const attrs = {
                             'type': 'error',
-                            'message': text
+                            'message': text,
+                            'ephemeral': true
                         }
                         this.messages.create(attrs);
                     }

@@ -2,7 +2,6 @@
  * --------------------
  * Any of the following components may be removed if they're not needed.
  */
-
 import "@converse/headless/headless";
 import "converse-autocomplete";
 import "converse-bookmark-views";  // Views for XEP-0048 Bookmarks

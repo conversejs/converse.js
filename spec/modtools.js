@@ -135,5 +135,65 @@
             expect(user_els[0].textContent.trim()).toBe('No users with that role found.');
             done();
         }));
+
+        it("shows an error message if a particular affiliation list may not be retrieved",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
+            const muc_jid = 'lounge@montague.lit';
+            const members = [
+                {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
+                {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
+                {'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'admin'},
+                {'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'owner'},
+                {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'},
+            ];
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => (view.model.occupants.length === 5));
+
+            const textarea = view.el.querySelector('.chat-textarea');
+            textarea.value = '/modtools';
+            const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+            view.onKeyDown(enter);
+            await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
+
+            const modal = view.modtools_modal;
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
+            const tab = modal.el.querySelector('#affiliations-tab');
+            // Clear so that we don't match older stanzas
+            _converse.connection.IQ_stanzas = [];
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            tab.click();
+            const select = modal.el.querySelector('.select-affiliation');
+            select.value = 'outcast';
+            const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
+            button.click();
+
+            const iq_query = await u.waitUntil(() => _.filter(
+                IQ_stanzas,
+                s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="outcast"]`, s).length
+            ).pop());
+
+            const error = u.toStanza(
+                `<iq from="${muc_jid}"
+                     id="${iq_query.getAttribute('id')}"
+                     type="error"
+                     to="${_converse.jid}">
+
+                     <error type="auth">
+                        <forbidden xmlns="${Strophe.NS.STANZAS}"/>
+                     </error>
+                </iq>`);
+            _converse.connection._dataRecv(test_utils.createRequest(error));
+            await u.waitUntil(() => !modal.loading_users_with_affiliation);
+
+            const user_els = modal.el.querySelectorAll('.list-group--users > li');
+            expect(user_els.length).toBe(1);
+            expect(user_els[0].textContent.trim()).toBe('Error: not allowed to fetch outcast list for MUC lounge@montague.lit');
+            done();
+        }));
     });
 }));

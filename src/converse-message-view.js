@@ -219,7 +219,7 @@ converse.plugins.add('converse-message-view', {
                  * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
                  */
                 await _converse.api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
-                text = this.isMeCommand() ? text.substring(4) : text;
+                text = this.model.isMeCommand() ? text.substring(4) : text;
                 text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
                 text = u.geoUriToHttp(text, _converse.geouri_replacement);
                 text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
@@ -239,7 +239,7 @@ converse.plugins.add('converse-message-view', {
             },
 
             async renderChatMessage () {
-                const is_me_message = this.isMeCommand();
+                const is_me_message = this.model.isMeCommand();
                 const time = dayjs(this.model.get('time'));
                 const role = this.model.vcard ? this.model.vcard.get('role') : null;
                 const roles = role ? role.split(',') : [];
@@ -265,7 +265,7 @@ converse.plugins.add('converse-message-view', {
                     msg.querySelector('.chat-msg__media').innerHTML = this.transformOOBURL(url);
                 }
 
-                const text = this.getMessageText();
+                const text = this.model.getMessageText();
                 const msg_content = msg.querySelector('.chat-msg__text');
                 if (text && text !== url) {
                     msg_content.innerHTML = await this.transformBodyText(text);
@@ -351,27 +351,6 @@ converse.plugins.add('converse-message-view', {
                     this.model.message_versions_modal = new _converse.MessageVersionsModal({'model': this.model});
                 }
                 this.model.message_versions_modal.show(ev);
-            },
-
-            getMessageText () {
-                if (this.model.get('is_encrypted')) {
-                    return this.model.get('plaintext') ||
-                           (_converse.debug ? __('Unencryptable OMEMO message') : null);
-                }
-                return this.model.get('message');
-            },
-
-            isMeCommand () {
-                const text = this.getMessageText();
-                if (!text) {
-                    return false;
-                }
-                return text.startsWith('/me ');
-            },
-
-            processMessageText () {
-                var text = this.get('message');
-                text = u.geoUriToHttp(text, _converse.geouri_replacement);
             },
 
             getExtraMessageClasses () {

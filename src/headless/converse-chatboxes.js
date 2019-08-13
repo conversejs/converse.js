@@ -150,6 +150,22 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
+            getMessageText () {
+                if (this.get('is_encrypted')) {
+                    return this.get('plaintext') ||
+                           (_converse.debug ? __('Unencryptable OMEMO message') : null);
+                }
+                return this.get('message');
+            },
+
+            isMeCommand () {
+                const text = this.getMessageText();
+                if (!text) {
+                    return false;
+                }
+                return text.startsWith('/me ');
+            },
+
             sendSlotRequestStanza () {
                 /* Send out an IQ stanza to request a file upload slot.
                  *

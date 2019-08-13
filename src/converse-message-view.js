@@ -8,6 +8,7 @@
  */
 import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
+import { debounce } from 'lodash'
 import filesize from "filesize";
 import html from "./utils/html";
 import tpl_csn from "templates/csn.html";
@@ -19,7 +20,7 @@ import tpl_spinner from "templates/spinner.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss/dist/xss";
 
-const { Backbone, _, dayjs } = converse.env;
+const { Backbone, dayjs } = converse.env;
 
 
 converse.plugins.add('converse-message-view', {
@@ -52,7 +53,7 @@ converse.plugins.add('converse-message-view', {
             }
             const uri = new URI(tag);
             const protocol = uri.protocol().toLowerCase();
-            if (!_.includes(["https", "http", "xmpp", "ftp"], protocol)) {
+            if (!["https", "http", "xmpp", "ftp"].includes(protocol)) {
                 // Not a URL, the tag will get filtered as usual
                 return;
             }
@@ -86,7 +87,7 @@ converse.plugins.add('converse-message-view', {
             },
 
             initialize () {
-                this.debouncedRender = _.debounce(() => {
+                this.debouncedRender = debounce(() => {
                     // If the model gets destroyed in the meantime,
                     // it no longer has a collection
                     if (this.model.collection) {
@@ -148,8 +149,8 @@ converse.plugins.add('converse-message-view', {
                 if (this.model.changed.progress) {
                     return this.renderFileUploadProgresBar();
                 }
-                if (_.filter(['correcting', 'message', 'type', 'upload', 'received'],
-                             prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
+                const isValidChange = prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop);
+                if (['correcting', 'message', 'type', 'upload', 'received'].filter(isValidChange).length) {
                     await this.debouncedRender();
                 }
                 if (edited) {
@@ -196,6 +197,23 @@ converse.plugins.add('converse-message-view', {
                 return this.el;
             },
 
+            transformOOBURL (url) {
+                url = u.renderFileURL(_converse, url);
+                url = u.renderMovieURL(_converse, url);
+                url = u.renderAudioURL(_converse, url);
+                return u.renderImageURL(_converse, url);
+            },
+
+            transformBodyText (text) {
+                text = this.isMeCommand() ? text.substring(4) : text;
+                text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
+                text = u.geoUriToHttp(text, _converse.geouri_replacement);
+                text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
+                text = u.addHyperlinks(text);
+                text = u.renderNewLines(text);
+                return u.addEmoji(_converse, text);
+            },
+
             async renderChatMessage () {
                 const is_me_message = this.isMeCommand();
                 const time = dayjs(this.model.get('time'));
@@ -220,27 +238,13 @@ converse.plugins.add('converse-message-view', {
 
                 const url = this.model.get('oob_url');
                 if (url) {
-                    msg.querySelector('.chat-msg__media').innerHTML = _.flow(
-                        _.partial(u.renderFileURL, _converse),
-                        _.partial(u.renderMovieURL, _converse),
-                        _.partial(u.renderAudioURL, _converse),
-                        _.partial(u.renderImageURL, _converse))(url);
+                    msg.querySelector('.chat-msg__media').innerHTML = this.transformOOBURL(url);
                 }
 
-                let text = this.getMessageText();
+                const text = this.getMessageText();
                 const msg_content = msg.querySelector('.chat-msg__text');
                 if (text && text !== url) {
-                    if (is_me_message) {
-                        text = text.substring(4);
-                    }
-                    text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
-                    msg_content.innerHTML = _.flow(
-                        _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
-                        _.partial(u.addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox),
-                        u.addHyperlinks,
-                        u.renderNewLines,
-                        _.partial(u.addEmoji, _converse, _)
-                    )(text);
+                    msg_content.innerHTML = this.transformBodyText(text);
                 }
                 const promise = u.renderImageURLs(_converse, msg_content);
                 if (this.model.get('type') !== 'headline') {

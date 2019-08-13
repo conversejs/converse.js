@@ -223,7 +223,7 @@ u.calculateElementHeight = function (el) {
 
 u.getNextElement = function (el, selector='*') {
     let next_el = el.nextElementSibling;
-    while ((next_el instanceof Element) && !sizzle.matchesSelector(next_el, selector)) {
+    while (next_el !== null && !sizzle.matchesSelector(next_el, selector)) {
         next_el = next_el.nextElementSibling;
     }
     return next_el;
@@ -231,24 +231,24 @@ u.getNextElement = function (el, selector='*') {
 
 u.getPreviousElement = function (el, selector='*') {
     let prev_el = el.previousElementSibling;
-    while ((prev_el instanceof Element) && !sizzle.matchesSelector(prev_el, selector)) {
-        prev_el = prev_el.previousSibling
+    while (prev_el !== null && !sizzle.matchesSelector(prev_el, selector)) {
+        prev_el = prev_el.previousElementSibling
     }
     return prev_el;
 }
 
 u.getFirstChildElement = function (el, selector='*') {
     let first_el = el.firstElementChild;
-    while ((first_el instanceof Element) && !sizzle.matchesSelector(first_el, selector)) {
-        first_el = first_el.nextSibling
+    while (first_el !== null && !sizzle.matchesSelector(first_el, selector)) {
+        first_el = first_el.nextElementSibling
     }
     return first_el;
 }
 
 u.getLastChildElement = function (el, selector='*') {
     let last_el = el.lastElementChild;
-    while ((last_el instanceof Element) && !sizzle.matchesSelector(last_el, selector)) {
-        last_el = last_el.previousSibling
+    while (last_el !== null && !sizzle.matchesSelector(last_el, selector)) {
+        last_el = last_el.previousElementSibling
     }
     return last_el;
 }
@@ -284,7 +284,7 @@ u.hideElement = function (el) {
 
 u.ancestor = function (el, selector) {
     let parent = el;
-    while ((parent instanceof Element) && !sizzle.matchesSelector(parent, selector)) {
+    while (parent !== null && !sizzle.matchesSelector(parent, selector)) {
         parent = parent.parentElement;
     }
     return parent;
@@ -294,7 +294,7 @@ u.nextUntil = function (el, selector, include_self=false) {
     /* Return the element's siblings until one matches the selector. */
     const matches = [];
     let sibling_el = el.nextElementSibling;
-    while ((sibling_el instanceof Element) && !sibling_el.matches(selector)) {
+    while (sibling_el !== null && !sibling_el.matches(selector)) {
         matches.push(sibling_el);
         sibling_el = sibling_el.nextElementSibling;
     }

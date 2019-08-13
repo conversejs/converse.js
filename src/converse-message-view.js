@@ -80,6 +80,11 @@ converse.plugins.add('converse-message-view', {
         });
 
 
+        /**
+         * @class
+         * @namespace _converse.MessageView
+         * @memberOf _converse
+         */
         _converse.MessageView = _converse.ViewWithAvatar.extend({
             events: {
                 'click .chat-msg__edit-modal': 'showMessageVersionsModal',
@@ -204,14 +209,33 @@ converse.plugins.add('converse-message-view', {
                 return u.renderImageURL(_converse, url);
             },
 
-            transformBodyText (text) {
+            async transformBodyText (text) {
+                /**
+                 * Synchronous event which provides a hook for transforming a chat message's body text
+                 * before the default transformations have been applied.
+                 * @event _converse#beforeMessageBodyTransformed
+                 * @param { _converse.MessageView } view - The view representing the message
+                 * @param { string } text - The message text
+                 * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
+                 */
+                await _converse.api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
                 text = this.isMeCommand() ? text.substring(4) : text;
                 text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
                 text = u.geoUriToHttp(text, _converse.geouri_replacement);
                 text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
                 text = u.addHyperlinks(text);
                 text = u.renderNewLines(text);
-                return u.addEmoji(_converse, text);
+                text = u.addEmoji(_converse, text);
+                /**
+                 * Synchronous event which provides a hook for transforming a chat message's body text
+                 * after the default transformations have been applied.
+                 * @event _converse#afterMessageBodyTransformed
+                 * @param { _converse.MessageView } view - The view representing the message
+                 * @param { string } text - The message text
+                 * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
+                 */
+                await _converse.api.trigger('afterMessageBodyTransformed', this, text, {'Synchronous': true});
+                return text;
             },
 
             async renderChatMessage () {
@@ -244,13 +268,12 @@ converse.plugins.add('converse-message-view', {
                 const text = this.getMessageText();
                 const msg_content = msg.querySelector('.chat-msg__text');
                 if (text && text !== url) {
-                    msg_content.innerHTML = this.transformBodyText(text);
+                    msg_content.innerHTML = await this.transformBodyText(text);
+                    await u.renderImageURLs(_converse, msg_content);
                 }
-                const promise = u.renderImageURLs(_converse, msg_content);
                 if (this.model.get('type') !== 'headline') {
                     this.renderAvatar(msg);
                 }
-                await promise;
                 this.replaceElement(msg);
                 if (this.model.collection) {
                     // If the model gets destroyed in the meantime, it no

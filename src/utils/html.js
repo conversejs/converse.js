@@ -161,33 +161,29 @@ u.renderImageURL = function (_converse, url) {
 };
 
 
+/**
+ * Returns a Promise which resolves once all images have been loaded.
+ * @returns {Promise}
+ */
 u.renderImageURLs = function (_converse, el) {
-    /* Returns a Promise which resolves once all images have been loaded.
-     */
     if (!_converse.show_images_inline) {
         return Promise.resolve();
     }
-    const { __ } = _converse;
     const list = el.textContent.match(URL_REGEX) || [];
     return Promise.all(
-        _.map(list, url =>
+        list.map(url =>
             new Promise((resolve, reject) => {
                 if (u.isImageURL(url)) {
                     return isImage(url).then(img => {
                         const i = new Image();
                         i.src = img.src;
                         i.addEventListener('load', resolve);
-                        // We also resolve for non-images, otherwise the
-                        // Promise.all resolves prematurely.
+                        // We also resolve (instead of reject) for non-images,
+                        // otherwise the Promise.all resolves prematurely.
                         i.addEventListener('error', resolve);
-
                         const { __ } = _converse;
-                        _.each(sizzle(`a[href="${url}"]`, el), (a) => {
-                            a.outerHTML= tpl_image({
-                                'url': url,
-                                'label_download': __('Download')
-                            })
-                        });
+                        sizzle(`a[href="${url}"]`, el)
+                            .forEach(a => (a.outerHTML = tpl_image({url, 'label_download': __('Download')})));
                     }).catch(resolve)
                 } else {
                     return resolve();

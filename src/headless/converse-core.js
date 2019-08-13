@@ -1463,16 +1463,18 @@ _converse.api = {
      * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}
      * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
      *
+     * Some events also double as promises and can be waited on via {@link _converse.api.waitUntil}.
+     *
      * @method _converse.api.trigger
      * @param {string} name - The event name
      * @param {...any} [argument] - Argument to be passed to the event handler
      * @param {object} [options]
      * @param {boolean} [options.synchronous] - Whether the event is synchronous or not.
-     *    When a synchronous event is fired, Converse will wait for all
-     *    promises returned by the event's handlers to finish before continuing.
+     *  When a synchronous event is fired, a promise will be returned
+     *  by {@link _converse.api.trigger} which resolves once all the
+     *  event handlers' promises have been resolved.
      */
     async trigger (name) {
-        /* Event emitter and promise resolver */
         const args = Array.from(arguments);
         const options = args.pop();
         if (options && options.synchronous) {

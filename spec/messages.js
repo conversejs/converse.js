@@ -565,6 +565,7 @@
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(false);
             // Now check that the message appears inside the chatbox in the DOM
+            await new Promise(resolve => view.once('messageInserted', resolve));
             const chat_content = view.el.querySelector('.chat-content');
             expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(msgtext);
             expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
@@ -1603,6 +1604,7 @@
                     expect(view).toBeDefined();
                     expect(chatbox.get('fullname') === sender_jid);
 
+                    await new Promise(resolve => view.once('messageInserted', resolve));
                     await u.waitUntil(() => view.el.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
                     let author_el = view.el.querySelector('.chat-msg__author');
                     expect( _.includes(author_el.textContent.trim(), 'Mercutio')).toBeTruthy();
@@ -3010,9 +3012,9 @@
                             `xmlns="jabber:client">`+
                                 `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                                `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                                `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                                `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                                 `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
 
@@ -3087,9 +3089,9 @@
                             `xmlns="jabber:client">`+
                                 `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                                `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                                `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                                `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
                                 `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
                 done();

@@ -32,8 +32,8 @@ const AvatarMixin = {
                 'width': avatar_el.getAttribute('width'),
                 'height': avatar_el.getAttribute('height'),
             }
-            const image_type = this.model.vcard.get('image_type'),
-                  image = this.model.vcard.get('image');
+            const image_type = this.model.vcard.get('image_type');
+            const image = this.model.vcard.get('image');
             data['image'] = "data:" + image_type + ";base64," + image;
             avatar_el.outerHTML = tpl_avatar(data);
         }

@@ -54,6 +54,7 @@ var specs = [
     "spec/chatbox",
     "spec/user-details-modal",
     "spec/messages",
+    "spec/muc_messages",
     "spec/muc",
     "spec/modtools",
     "spec/room_registration",

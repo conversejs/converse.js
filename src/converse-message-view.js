@@ -111,12 +111,10 @@ converse.plugins.add('converse-message-view', {
                     });
                 }
 
-                if (this.model.occupantAdded) {
-                    this.model.occupantAdded.then(() => {
-                        this.model.occupant.on('change:role', this.debouncedRender, this);
-                        this.model.occupant.on('change:affiliation', this.debouncedRender, this);
-                        this.debouncedRender();
-                    });
+                if (this.model.occupant) {
+                    this.model.occupant.on('change:role', this.debouncedRender, this);
+                    this.model.occupant.on('change:affiliation', this.debouncedRender, this);
+                    this.debouncedRender();
                 }
 
                 this.model.on('change', this.onChanged, this);

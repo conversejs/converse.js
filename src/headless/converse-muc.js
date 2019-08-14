@@ -1602,7 +1602,7 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza: The presence stanza received
              */
             createInfoMessages (stanza) {
-                const is_self = !_.isNull(stanza.querySelector("status[code='110']"));
+                const is_self = stanza.querySelector("status[code='110']") !== null;
                 const x = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza).pop();
                 if (!x) {
                     return;

@@ -1010,20 +1010,26 @@ converse.plugins.add('converse-chatboxes', {
                 return this.trigger("show");
             },
 
+            /**
+             * Indicates whether the chat is hidden and therefore
+             * whether a newly received message will be visible
+             * to the user or not.
+             * @returns {boolean}
+             */
             isHidden () {
-                /* Returns a boolean to indicate whether a newly received
-                 * message will be visible to the user or not.
-                 */
                 return this.get('hidden') ||
                     this.get('minimized') ||
                     this.isScrolledUp() ||
                     _converse.windowState === 'hidden';
             },
 
+            /**
+             * Given a newly received {@link _converse.Message} instance,
+             * update the unread counter if necessary.
+             * @private
+             * @param {_converse.Message} message
+             */
             incrementUnreadMsgCounter (message) {
-                /* Given a newly received message, update the unread counter if
-                 * necessary.
-                 */
                 if (!message || !message.get('message')) {
                     return;
                 }

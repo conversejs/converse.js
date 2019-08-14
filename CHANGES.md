@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.1 (Unreleased)
+## 5.0.1 (2019-08-14)
 
 - Add a new GUI for moderator actions. You can trigger it by entering `/modtools` in a MUC.
 - Reconnect if the server doesn't respond to a `ping` within 10 seconds.

@@ -354,6 +354,7 @@ converse.plugins.add('converse-chatboxes', {
                     'success': _.flow(this.afterMessagesFetched.bind(this), resolve),
                     'error': _.flow(this.afterMessagesFetched.bind(this), resolve)
                 });
+                return this.messages.fetched;
             },
 
             clearMessages () {

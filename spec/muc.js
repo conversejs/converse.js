@@ -587,8 +587,16 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit');
-                const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                const sent_IQs = _converse.connection.IQ_stanzas;
+                const muc_jid = 'coven@chat.shakespeare.lit';
+                const room = Strophe.getNodeFromJid(muc_jid);
+                const server = Strophe.getDomainFromJid(muc_jid);
+                const nick = 'romeo';
+                await _converse.api.rooms.open(muc_jid);
+                await test_utils.getRoomFeatures(_converse, room, server);
+                await test_utils.waitForReservedNick(_converse, muc_jid, nick);
+
+                const view = _converse.chatboxviews.get(muc_jid);
                 const chat_content = view.el.querySelector('.chat-content');
                 /* <presence to="romeo@montague.lit/_converse.js-29092160"
                  *           from="coven@chat.shakespeare.lit/some1">

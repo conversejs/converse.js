@@ -264,18 +264,38 @@ converse.plugins.add('converse-muc', {
                         }
                     }, 10000);
                 } else {
-                    this.occupantAdded = u.getResolveablePromise();
                     this.setOccupant();
                     this.setVCard();
                 }
             },
 
+            onOccupantRemoved (occupant) {
+                delete this.occupant;
+                const chatbox = _.get(this, 'collection.chatbox');
+                chatbox.occupants.on('add', this.onOccupantAdded, this);
+            },
+
+            onOccupantAdded (occupant) {
+                if (occupant.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
+                    this.occupant = occupant;
+                    this.occupant.on('destroy', this.onOccupantRemoved, this);
+                    const chatbox = _.get(this, 'collection.chatbox');
+                    chatbox.occupants.off('add', this.onOccupantAdded, this);
+                }
+            },
+
             setOccupant () {
+                if (this.get('type') !== 'groupchat') { return; }
                 const chatbox = _.get(this, 'collection.chatbox');
                 if (!chatbox) { return; }
                 const nick = Strophe.getResourceFromJid(this.get('from'));
                 this.occupant = chatbox.occupants.findWhere({'nick': nick});
-                this.occupantAdded.resolve();
+                if (this.occupant) {
+                    this.occupant.on('destroy', this.onOccupantRemoved, this);
+                } else {
+                    chatbox.occupants.on('add', this.onOccupantAdded, this);
+                }
+
             },
 
             getVCardForChatroomOccupant () {
@@ -373,7 +393,7 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            initialize() {
+            async initialize() {
                 if (_converse.vcards) {
                     this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')}) ||
                         _converse.vcards.create({'jid': this.get('jid')});
@@ -384,9 +404,11 @@ converse.plugins.add('converse-muc', {
                 this.on('change:chat_state', this.sendChatState, this);
                 this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
-                this.initOccupants();
-                this.registerHandlers();
                 this.initMessages();
+                this.registerHandlers();
+
+                await this.initOccupants();
+                await this.fetchMessages();
                 this.enterRoom();
             },
 
@@ -412,7 +434,6 @@ converse.plugins.add('converse-muc', {
                 } else if (!(await this.rejoinIfNecessary())) {
                     // We've restored the room from cache and we're still joined.
                     this.features.fetch();
-                    this.fetchMessages();
                 }
             },
 
@@ -421,15 +442,8 @@ converse.plugins.add('converse-muc', {
                     if (_converse.muc_fetch_members) {
                         await this.occupants.fetchMembers();
                     }
-                    // It's possible to fetch messages before entering a MUC,
-                    // but we don't support this use-case currently. By
-                    // fetching messages after members we can immediately
-                    // assign an occupant to the message before rendering it,
-                    // thereby avoiding re-renders (and therefore DOM reflows).
-                    this.fetchMessages();
-
                     /**
-                     * Triggered when the user has entered a new MUC and *after* cached messages have been fetched.
+                     * Triggered when the user has entered a new MUC
                      * @event _converse#enteredNewRoom
                      * @type { _converse.ChatRoom}
                      * @example _converse.api.listen.on('enteredNewRoom', model => { ... });
@@ -480,12 +494,11 @@ converse.plugins.add('converse-muc', {
                         'error': resolve
                     });
                 });
+                return this.occupants.fetched;
             },
 
             registerHandlers () {
-                /* Register presence and message handlers for this chat
-                 * groupchat
-                 */
+                // Register presence and message handlers for this groupchat
                 const room_jid = this.get('jid');
                 this.removeHandlers();
                 this.presence_handler = _converse.connection.addHandler(stanza => {
@@ -2288,3 +2301,5 @@ converse.plugins.add('converse-muc', {
         /************************ END API ************************/
     }
 });
+
+

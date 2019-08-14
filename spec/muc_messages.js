@@ -180,6 +180,62 @@
             expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
             expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat moderator owner');
+
+
+            const add_events = view.model.occupants._events.add.length;
+            msg = $msg({
+                from: 'lounge@montague.lit/some1',
+                id: (new Date()).getTime(),
+                to: 'romeo@montague.lit',
+                type: 'groupchat'
+            }).c('body').t('Message from someone not in the MUC right now').tree();
+            await view.model.onMessage(msg);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.model.messages.last().occupant).toBeUndefined();
+            // Check that there's a new "add" event handler, for when the occupant appears.
+            expect(view.model.occupants._events.add.length).toBe(add_events+1);
+
+            // Check that the occupant gets added/removed to the message as it
+            // gets removed or added.
+            presence = $pres({
+                    to:'romeo@montague.lit/orchard',
+                    from:'lounge@montague.lit/some1',
+                    id: u.getUniqueId()
+            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({jid: 'some1@montague.lit/orchard'});
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+            await u.waitUntil(() => view.model.messages.last().occupant);
+            expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
+            expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
+            // Check that the "add" event handler was removed.
+            expect(view.model.occupants._events.add.length).toBe(add_events);
+
+            presence = $pres({
+                    to:'romeo@montague.lit/orchard',
+                    type: 'unavailable',
+                    from:'lounge@montague.lit/some1',
+                    id: u.getUniqueId()
+            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({jid: 'some1@montague.lit/orchard'});
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+            await u.waitUntil(() => !view.model.messages.last().occupant);
+            expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
+            expect(view.model.messages.last().occupant).toBeUndefined();
+            // Check that there's a new "add" event handler, for when the occupant appears.
+            expect(view.model.occupants._events.add.length).toBe(add_events+1);
+
+            presence = $pres({
+                    to:'romeo@montague.lit/orchard',
+                    from:'lounge@montague.lit/some1',
+                    id: u.getUniqueId()
+            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({jid: 'some1@montague.lit/orchard'});
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+            await u.waitUntil(() => view.model.messages.last().occupant);
+            expect(view.model.messages.last().get('message')).toBe('Message from someone not in the MUC right now');
+            expect(view.model.messages.last().occupant.get('nick')).toBe('some1');
+            // Check that the "add" event handler was removed.
+            expect(view.model.occupants._events.add.length).toBe(add_events);
             done();
         }));
 

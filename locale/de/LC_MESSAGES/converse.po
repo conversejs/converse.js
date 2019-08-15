@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-14 12:46+0200\n"
-"PO-Revision-Date: 2019-08-14 12:40+0200\n"
+"PO-Revision-Date: 2019-09-11 15:29+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.8\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -503,7 +503,7 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
-"Fehler: Das „%1$s”-Kommando benötigt zwei Argumente: Den Benutzernamen und "
+"Fehler: Das „%1$s”-Kommando benötigt zwei Argumente: Den Spitznamen und "
 "einen Grund."
 
 #: dist/converse-no-dependencies.js:33169
@@ -515,7 +515,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:33174
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
-"Fehler: Mehrere Gruppenchat-Teilnehmer basierend auf Ihren Kriterien gefunden"
+"Fehler: Mehrere Gruppenchat-Teilnehmer basierend auf ihren Kriterien gefunden"
 
 #: dist/converse-no-dependencies.js:33266
 msgid ""
@@ -716,7 +716,7 @@ msgstr "Gruppenchat beitreten"
 
 #: dist/converse-no-dependencies.js:34071
 msgid "You need to provide a nickname"
-msgstr "Sie müssen einen Nicknamen angeben"
+msgstr "Sie müssen einen Spitznamen angeben"
 
 #: dist/converse-no-dependencies.js:34091
 #, javascript-format
@@ -1461,14 +1461,14 @@ msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
-"Sie können Ihren Nicknamen in diesem Gruppenchat nicht registrieren, er "
+"Sie können Ihren Spitznamen in diesem Gruppenchat nicht registrieren, er "
 "unterstützt keine Registrierung."
 
 #: dist/converse-no-dependencies.js:46917
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
-"Sie können Ihren Nicknamen nicht in diesem Gruppenchat registrieren, "
+"Sie können Ihren Spitznamen nicht in diesem Gruppenchat registrieren, "
 "ungültige Formulardaten wurde übermittelt."
 
 #: dist/converse-no-dependencies.js:47198
@@ -1491,8 +1491,8 @@ msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
-"Der gewählte Spitzname ist reserviert oder derzeit in Gebrauch. Bitte wähle "
-"einen Anderen."
+"Der gewählte Spitzname ist reserviert oder derzeit in Gebrauch. Bitte wählen "
+"Sie einen Anderen."
 
 #: dist/converse-no-dependencies.js:47397
 msgid "Password incorrect"

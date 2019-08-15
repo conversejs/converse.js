@@ -119,8 +119,9 @@ converse.plugins.add('converse-chatview', {
                     Object.assign(
                         this.model.toJSON(), {
                             '_': _,
-                            'emoji_categories': _converse.emojis.categories,
-                            'emojis_by_category': _converse.emojis.by_category,
+                            '_converse': _converse,
+                            'emoji_categories': _converse.emoji_categories,
+                            'emojis_by_category': u.getEmojisByCategory(),
                             'shouldBeHidden': this.shouldBeHidden,
                             'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                             'toned_emojis': _converse.emojis.toned,
@@ -162,10 +163,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             chooseCategory (ev) {
-                ev.preventDefault();
-                ev.stopPropagation();
-                const target = ev.target.nodeName === 'IMG' ?
-                    ev.target.parentElement : ev.target;
+                const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
                 const category = target.getAttribute("data-category").trim();
                 this.model.save({
                     'current_category': category,

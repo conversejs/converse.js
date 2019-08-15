@@ -9,9 +9,9 @@
 import * as twemoji from "twemoji";
 import _ from "./lodash.noconflict";
 import converse from "./converse-core";
-import u from "./utils/core";
 
 const { Strophe } = converse.env;
+const u = converse.env.utils;
 
 const ASCII_LIST = {
     '*\\0/*':'1f646',
@@ -137,9 +137,8 @@ const ASCII_REPLACE_REGEX = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*
 
 
 function convert (unicode) {
-    /* For converting unicode code points and code pairs
-     * to their respective characters
-     */
+    // Converts unicode code points and code pairs
+    // to their respective characters
     if (unicode.indexOf("-") > -1) {
         const parts = [],
               s = unicode.split('-');
@@ -171,15 +170,45 @@ converse.plugins.add('converse-emoji', {
 
         _converse.api.settings.update({
             'emoji_image_path': twemoji.default.base,
-            'emoji_json_path': '/dist/emojis.json'
+            'emoji_json_path': '/dist/emojis.json',
+            'emoji_categories': {
+                "smileys": ":grinning:",
+                "people": ":thumbsup:",
+                "activity": ":soccer:",
+                "travel": ":motorcycle:",
+                "objects": ":bomb:",
+                "nature": ":rainbow:",
+                "food": ":hotdog:",
+                "symbols": ":musical_note:",
+                "flags": ":flag_ac:"
+            }
         });
         _converse.api.promises.add(['emojisInitialized']);
         twemoji.default.base = _converse.emoji_image_path;
 
+        _converse.emoji_category_labels = {
+            "smileys": __("Smileys and emotions"),
+            "people": __("People"),
+            "activity": __("Activities"),
+            "travel": __("Travel"),
+            "objects": __("Objects"),
+            "nature": __("Animals and nature"),
+            "food": __("Food and drink"),
+            "symbols": __("Symbols"),
+            "flags": __("Flags")
+        }
+
         _converse.emojis = {};
 
         u.getEmojiRenderer = function () {
-            return _converse.use_system_emojis ? u.shortnameToUnicode : _.flow(u.shortnameToUnicode, twemoji.default.parse);
+            const how = {
+                'attributes': (icon, variant) => {
+                    const codepoint = twemoji.default.convert.toCodePoint(icon);
+                    return {'title': `${u.getEmojisByAtrribute('cp')[codepoint]['sn']} ${icon}`}
+                }
+            };
+            const toUnicode = u.shortnameToUnicode;
+            return _converse.use_system_emojis ? toUnicode: text => twemoji.default.parse(toUnicode(text), how);
         };
 
         u.addEmoji = function (text) {
@@ -189,96 +218,12 @@ converse.plugins.add('converse-emoji', {
         function getTonedEmojis () {
             if (!_converse.toned_emojis) {
                 _converse.toned_emojis = _.uniq(
-                    _.map(
-                        _.filter(
-                            _converse.emojis.by_category.people,
-                            person => _.includes(person._shortname, '_tone')
-                        ),
-                        person => person._shortname.replace(/_tone[1-5]/, '')
-                    )
+                    u.getEmojisByCategory().people
+                        .filter(person => person.sn.includes('_tone'))
+                        .map(person => person.sn.replace(/_tone[1-5]/, ''))
                 );
             }
             return _converse.toned_emojis;
-        }
-
-        function getEmojisByCategory () {
-            /* Return a dict of emojis with the categories as keys and
-             * lists of emojis in that category as values.
-             */
-            const emojis = Object.values(_.mapValues(_converse.emojis.json, function (value, key, o) {
-                value._shortname = key;
-                return value
-            }));
-            const tones = [':tone1:', ':tone2:', ':tone3:', ':tone4:', ':tone5:'];
-            const excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:'];
-            const excluded_substrings = [
-                ':woman', ':man', ':women_', ':men_', '_man_', '_woman_', '_woman:', '_man:'
-            ];
-            const excluded_categories = ['modifier', 'regional'];
-            const categories = _.difference(
-                _.uniq(_.map(emojis, _.partial(_.get, _, 'category'))),
-                excluded_categories
-            );
-            const emojis_by_category = {};
-            _.forEach(categories, (cat) => {
-                let list = _.sortBy(_.filter(emojis, ['category', cat]), ['uc_base']);
-                list = _.filter(
-                    list,
-                    (item) => !_.includes(_.concat(tones, excluded), item._shortname) &&
-                            !_.some(excluded_substrings, _.partial(_.includes, item._shortname))
-                );
-                if (cat === 'people') {
-                    const idx = _.findIndex(list, ['uc_base', '1f600']);
-                    list = _.union(_.slice(list, idx), _.slice(list, 0, idx+1));
-                } else if (cat === 'activity') {
-                    list = _.union(_.slice(list, 27-1), _.slice(list, 0, 27));
-                } else if (cat === 'objects') {
-                    list = _.union(_.slice(list, 24-1), _.slice(list, 0, 24));
-                } else if (cat === 'travel') {
-                    list = _.union(_.slice(list, 17-1), _.slice(list, 0, 17));
-                } else if (cat === 'symbols') {
-                    list = _.union(_.slice(list, 60-1), _.slice(list, 0, 60));
-                }
-                emojis_by_category[cat] = list;
-            });
-            return emojis_by_category;
-        }
-
-        u.isSingleEmoji = function (str) {
-            str = str.trim();
-            if (!str || (str.length > 2 && !str.startsWith(':'))) {
-                return;
-            }
-            const result = _.flow(u.shortnameToUnicode, twemoji.default.parse)(str)
-            const match = result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
-            return match && match.length === 1;
-        }
-
-        /**
-         * Returns unicode represented by the psased in shortname.
-         * @private
-         * @param {string} str - String containg the shortname(s)
-         */
-        u.shortnameToUnicode = function (str) {
-            str = str.replace(_converse.emojis.shortnames_regex, shortname => {
-                if( (typeof shortname === 'undefined') || (shortname === '') || (!(shortname in _converse.emojis.json)) ) {
-                    // if the shortname doesnt exist just return the entire match
-                    return shortname;
-                }
-                const unicode = _converse.emojis.json[shortname].uc_output.toUpperCase();
-                return convert(unicode);
-            });
-            // Also replace ASCII smileys
-            str = str.replace(ASCII_REPLACE_REGEX, (entire, m1, m2, m3) => {
-                if( (typeof m3 === 'undefined') || (m3 === '') || (!(u.unescapeHTML(m3) in ASCII_LIST)) ) {
-                    // if the ascii doesnt exist just return the entire match
-                    return entire;
-                }
-                m3 = u.unescapeHTML(m3);
-                const unicode = ASCII_LIST[m3].toUpperCase();
-                return m2+convert(unicode);
-            });
-            return str;
         }
 
         function getShortNames () {
@@ -286,8 +231,8 @@ converse.plugins.add('converse-emoji', {
             for (const emoji in _converse.emojis.json) {
                 if (!Object.prototype.hasOwnProperty.call(_converse.emojis.json, emoji) || (emoji === '')) continue;
                 shortnames.push(emoji.replace(/[+]/g, "\\$&"));
-                for (let i = 0; i < _converse.emojis.json[emoji].shortnames.length; i++) {
-                    shortnames.push(_converse.emojis.json[emoji].shortnames[i].replace(/[+]/g, "\\$&"));
+                for (let i = 0; i < _converse.emojis.json[emoji].sns.length; i++) {
+                    shortnames.push(_converse.emojis.json[emoji].sns[i].replace(/[+]/g, "\\$&"));
                 }
             }
             return shortnames.join('|');
@@ -323,11 +268,121 @@ converse.plugins.add('converse-emoji', {
             return promise;
         }
 
+
+        /************************ BEGIN Utils ************************/
+        // Closured cache
+        const emojis_by_attribute = {};
+
+        Object.assign(u, {
+            /**
+             * @method u.shortnameToUnicode
+             * Returns unicode represented by the passed in shortname.
+             * @param {string} str - String containg the shortname(s)
+             */
+            shortnameToUnicode (str) {
+                str = str.replace(_converse.emojis.shortnames_regex, shortname => {
+                    if( (typeof shortname === 'undefined') || (shortname === '') || (!(shortname in _converse.emojis.json)) ) {
+                        // if the shortname doesnt exist just return the entire match
+                        return shortname;
+                    }
+                    const unicode = _converse.emojis.json[shortname].cp.toUpperCase();
+                    return convert(unicode);
+                });
+                // Also replace ASCII smileys
+                str = str.replace(ASCII_REPLACE_REGEX, (entire, m1, m2, m3) => {
+                    if( (typeof m3 === 'undefined') || (m3 === '') || (!(u.unescapeHTML(m3) in ASCII_LIST)) ) {
+                        // if the ascii doesnt exist just return the entire match
+                        return entire;
+                    }
+                    m3 = u.unescapeHTML(m3);
+                    const unicode = ASCII_LIST[m3].toUpperCase();
+                    return m2+convert(unicode);
+                });
+                return str;
+            },
+
+            /**
+             * Determines whether the passed in string is just a single emoji shortname;
+             * @method u.isSingleEmoji
+             * @param {string} shortname - A string which migh be just an emoji shortname
+             * @returns {boolean}
+             */
+            isSingleEmoji (shortname) {
+                shortname = shortname.trim();
+                if (!shortname || (shortname.length > 2 && !shortname.startsWith(':'))) {
+                    return;
+                }
+                const result = twemoji.default.parse(u.shortnameToUnicode(shortname));
+                const match = result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
+                return match && match.length === 1;
+            },
+
+            /**
+             * @method u.getEmojisByAtrribute
+             * @param {string} attr - The attribute according to which the
+             *  returned map should be keyed.
+             * @returns {object} - Map of emojis with the passed in attribute values
+             *  as keys and a list of emojis for a particular category as values.
+             */
+            getEmojisByAtrribute (attr) {
+                if (emojis_by_attribute[attr]) {
+                    return emojis_by_attribute[attr];
+                }
+                if (attr === 'category') {
+                    return u.getEmojisByCategory();
+                }
+                emojis_by_attribute[attr] = {};
+                const all_variants = _converse.emojis_list
+                    .map(e => e[attr])
+                    .filter((c, i, arr) => arr.indexOf(c) == i);
+
+                all_variants.forEach(v => {
+                    emojis_by_attribute[attr][v] = _.find(_converse.emojis_list, i => (i[attr] === v));
+                });
+                return emojis_by_attribute[attr];
+            },
+
+            /**
+             * @method u.getEmojisByCategory
+             * @returns {object} - Map of emojis with categories as keys
+             *  and a list of emojis for a particular category as values.
+             */
+            getEmojisByCategory () {
+                if (emojis_by_attribute['category']) {
+                    return emojis_by_attribute['category'];
+                }
+                const tones = [':tone1:', ':tone2:', ':tone3:', ':tone4:', ':tone5:'];
+                const excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:'];
+                const excluded_substrings = [':woman', ':man', ':women_', ':men_', '_man_', '_woman_', '_woman:', '_man:'];
+                const is_excluded = sn => [...tones, ...excluded].includes(sn);
+                const has_excluded_substring = sn => excluded_substrings.reduce((out, str) => (out || sn.includes(str)), false);
+                emojis_by_attribute['category'] = {};
+                _converse.emojis.all_categories.forEach(cat => {
+                    let list = _.sortBy(_converse.emojis_list.filter(e => e.c === cat), ['cp']);
+                    list = list.filter(item => (!is_excluded(item.sn) && !has_excluded_substring(item.sn)));
+                    if (cat === 'smileys') {
+                        const idx = _.findIndex(list, ['cp', '1f600']);
+                        list = _.union(_.slice(list, idx), _.slice(list, 0, idx+1));
+                    }
+                    emojis_by_attribute['category'][cat] = list;
+                });
+                return emojis_by_attribute['category'];
+            }
+        });
+        /************************ END Utils ************************/
+
         await fetchEmojiJSON();
         _converse.emojis.shortnames_regex = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+getShortNames()+")", "gi");
-        _converse.emojis.by_category = getEmojisByCategory();
-        _converse.emojis.categories = ["people", "activity", "travel", "objects", "nature", "food", "symbols", "flags"];
+        _converse.emojis_list = Object.values(_converse.emojis.json);
+
+        const excluded_categories = ['modifier', 'regional'];
+        _converse.emojis.all_categories = _converse.emojis_list
+                .map(e => e.c)
+                .filter((c, i, arr) => arr.indexOf(c) == i)
+                .filter(c => !excluded_categories.includes(c));
+
         _converse.emojis.toned = getTonedEmojis();
+
         /**
          * Triggered once the JSON file representing emoji data has been
          * fetched and its save to start calling emoji utility methods.

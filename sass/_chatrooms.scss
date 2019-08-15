@@ -324,7 +324,6 @@
         }
 
         .sendXMPPMessage {
-
             .suggestion-box__results--above {
                 bottom: 4.5em;
             }
@@ -338,6 +337,7 @@
                     color: var(--message-input-color);
                 }
             }
+
             .chat-textarea {
                 &:active, &:focus{
                     outline-color: var(--chatroom-head-color);

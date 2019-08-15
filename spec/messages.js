@@ -927,7 +927,7 @@
 
         it("will display larger if it's a single emoji",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {'use_system_emojis': false},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');

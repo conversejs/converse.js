@@ -1931,8 +1931,8 @@ const converse = {
      * @memberOf converse
      */
     plugins: {
-        /** Registers a new plugin.
-         *
+        /**
+         * Registers a new plugin.
          * @method converse.plugins.add
          * @param {string} name The name of the plugin
          * @param {object} plugin The plugin object

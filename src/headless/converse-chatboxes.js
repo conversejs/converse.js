@@ -405,7 +405,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 const room_jids = _converse.auto_join_rooms.map(s => _.isObject(s) ? s.jid : s);
                 const auto_join = _converse.auto_join_private_chats.concat(room_jids);
-                if (_converse.singleton && !_.includes(auto_join, attrs.jid)) {
+                if (_converse.singleton && !_.includes(auto_join, attrs.jid) && !_converse.auto_join_on_invite) {                
                     const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
                     _converse.log(msg, Strophe.LogLevel.WARN);
                     return msg;

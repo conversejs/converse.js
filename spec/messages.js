@@ -954,7 +954,6 @@
                     'id': _converse.connection.getUniqueId()
                 }).c('body').t('😇 Hello world! 😇 😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            debugger;
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
            message = chat_content.querySelector('.message:last-child .chat-msg__text');
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);

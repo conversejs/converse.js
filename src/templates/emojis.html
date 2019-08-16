@@ -3,7 +3,7 @@
         <ul>
             {[ Object.keys(o.emoji_categories).forEach(function (category) { ]}
                 <li data-category="{{{category}}}" class="emoji-category {[ if (o.current_category === category) { ]} picked {[ } ]}">
-                    <a class="pick-category" href="#emoji-picker-{{{category}}}" data-category="{{{category}}}"> {{ o.transform(o.emoji_categories[category]) }} </a>
+                    <a class="pick-category" href="#emoji-picker-{{{category}}}" data-category="{{{category}}}"> {{ o.transformCategory(o.emoji_categories[category]) }} </a>
                 </li>
             {[ }); ]}
         </ul>
@@ -22,7 +22,7 @@
         {[ }); ]}
     </div>
     <div class="emoji-skintone-picker">
-        <label>Skin tone:</label>
+        <label>Skin tone</label>
         <ul>
             {[ o.skintones.forEach(function (skintone) { ]}
                 <li data-skintone="{{{skintone}}}" class="emoji-skintone {[ if (o.current_skintone === skintone) { ]} picked {[ } ]}">

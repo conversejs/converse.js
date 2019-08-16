@@ -150,11 +150,19 @@ converse.plugins.add('converse-emoji-views', {
                             'shouldBeHidden': emojiShouldBeHidden,
                             'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                             'toned_emojis': _converse.emojis.toned,
-                            'transform': u.getEmojiRenderer()
+                            'transform': u.getEmojiRenderer(),
+                            'transformCategory': shortname => u.getEmojiRenderer()(this.getTonedShortname(shortname))
                         }
                     )
                 );
                 return html;
+            },
+
+            getTonedShortname (shortname) {
+                if (_converse.emojis.toned.includes(shortname) && this.model.get('current_skintone')) {
+                    return `${shortname.slice(0, shortname.length-1)}_${this.model.get('current_skintone')}:`
+                }
+                return shortname;
             },
 
             chooseSkinTone (ev) {

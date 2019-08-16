@@ -13,7 +13,7 @@ import BrowserStorage from "backbone.browserStorage";
 import bootstrap from "bootstrap.native";
 import tpl_emoji_button from "templates/emoji_button.html";
 import tpl_emojis from "templates/emojis.html";
-const { Backbone } = converse.env;
+const { Backbone, _ } = converse.env;
 const u = converse.env.utils;
 
 
@@ -106,32 +106,18 @@ converse.plugins.add('converse-emoji-views', {
         Object.assign(_converse.ChatBoxView.prototype, emoji_aware_chat_view);
 
 
-        function emojiShouldBeHidden (shortname, current_skintone, toned_emojis) {
-            // Helper method for the template which decides whether an
-            // emoji should be hidden, based on which skin tone is
-            // currently being applied.
-            if (shortname.includes('_tone')) {
-                if (!current_skintone || !shortname.includes(current_skintone)) {
-                    return true;
-                }
-            } else {
-                if (current_skintone && toned_emojis.includes(shortname)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
         _converse.EmojiPickerView = Backbone.VDOMView.extend({
             className: 'emoji-picker__container',
             events: {
-                'click .emoji-category-picker li.emoji-category': 'chooseCategory',
+                'click .emoji-picker__header li.emoji-category': 'chooseCategory',
                 'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone',
-                'click .toggle-smiley ul.emoji-picker li': 'insertEmoji'
+                'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
+                'keydown .emoji-search': 'onKeyDown'
             },
 
             initialize () {
+                this.debouncedFilter = _.debounce(input => this.filter(input), 100);
+                this.model.on('change:query', this.render, this);
                 this.model.on('change:current_skintone', this.render, this);
                 this.model.on('change:current_category', () => {
                     this.render();
@@ -144,10 +130,11 @@ converse.plugins.add('converse-emoji-views', {
                 const html = tpl_emojis(
                     Object.assign(
                         this.model.toJSON(), {
+                            '__': __,
                             '_converse': _converse,
                             'emoji_categories': _converse.emoji_categories,
                             'emojis_by_category': u.getEmojisByCategory(),
-                            'shouldBeHidden': emojiShouldBeHidden,
+                            'shouldBeHidden': shortname => this.shouldBeHidden(shortname),
                             'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                             'toned_emojis': _converse.emojis.toned,
                             'transform': u.getEmojiRenderer(),
@@ -156,6 +143,58 @@ converse.plugins.add('converse-emoji-views', {
                     )
                 );
                 return html;
+            },
+
+            filter (input) {
+                this.model.set({'query': input.value});
+            },
+
+            onKeyDown (ev) {
+                if (ev.keyCode === _converse.keycodes.TAB) {
+                    ev.preventDefault();
+                    const match = _.find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
+                    if (match) {
+                        // XXX: Ideally we would set `query` on the model and
+                        // then let the view re-render, instead of doing it
+                        // manually here. Unfortunately this doesn't work, the
+                        // value gets set on the HTML element, but is not
+                        // visible to the new user.
+                        ev.target.value = match;
+                        this.filter(ev.target);
+                    }
+                } else if (ev.keyCode === _converse.keycodes.ENTER) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    if (_converse.emoji_shortnames.includes(ev.target.value)) {
+                        this.chatview.insertIntoTextArea(ev.target.value);
+                        // XXX: See above
+                        ev.target.value = '';
+                        this.filter(ev.target);
+                    }
+                } else {
+                    this.debouncedFilter(ev.target);
+                }
+            },
+
+            shouldBeHidden (shortname) {
+                // Helper method for the template which decides whether an
+                // emoji should be hidden, based on which skin tone is
+                // currently being applied.
+                const current_skintone = this.model.get('current_skintone');
+                if (shortname.includes('_tone')) {
+                    if (!current_skintone || !shortname.includes(current_skintone)) {
+                        return true;
+                    }
+                } else {
+                    if (current_skintone && _converse.emojis.toned.includes(shortname)) {
+                        return true;
+                    }
+                }
+                const query = this.model.get('query');
+                if (query && !_converse.FILTER_CONTAINS(shortname, query)) {
+                    return true;
+                }
+                return false;
             },
 
             getTonedShortname (shortname) {
@@ -197,6 +236,10 @@ converse.plugins.add('converse-emoji-views', {
                 ev.preventDefault();
                 ev.stopPropagation();
                 const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
+                // XXX: See above
+                const input = this.el.querySelector('.emoji-search');
+                input.value = '';
+                this.filter(input);
                 this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'));
             }
         });

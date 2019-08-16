@@ -1,5 +1,6 @@
 <div class="emoji-picker__container">
-    <div class="emoji-category-picker">
+    <div class="emoji-picker__header">
+        <input class="form-control emoji-search" name="emoji-search" placeholder="{{{o.__('Search')}}}"/>
         <ul>
             {[ Object.keys(o.emoji_categories).forEach(function (category) { ]}
                 <li data-category="{{{category}}}" class="emoji-category {[ if (o.current_category === category) { ]} picked {[ } ]}">
@@ -8,18 +9,32 @@
             {[ }); ]}
         </ul>
     </div>
+
+
     <div class="emoji-picker__lists">
-        {[ Object.keys(o.emoji_categories).forEach(function (category) { ]}
-            <a id="emoji-picker-{{{category}}}" class="emoji-category__heading">{{{o._converse.emoji_category_labels[category]}}}</a>
-            <ul class="emoji-picker emoji-picker-{{{category}}}">
-                {[ o.emojis_by_category[category].forEach(function (emoji) { ]}
-                <li class="emoji insert-emoji {[ if (o.shouldBeHidden(emoji.sn, o.current_skintone, o.toned_emojis)) { ]} hidden {[ }; ]}"
+        {[ if (o.query) { ]}
+            <a id="emoji-picker-search-results" class="emoji-category__heading">{{{o.__('Search results')}}}</a>
+            <ul class="emoji-picker">
+                {[ o._converse.emojis_list.forEach(function (emoji) { ]}
+                <li class="emoji insert-emoji {[ if (o.shouldBeHidden(emoji.sn)) { ]} hidden {[ }; ]}"
                     data-emoji="{{{emoji.sn}}}" title="{{{emoji.sn}}}">
                         <a href="#" data-emoji="{{{emoji.sn}}}"> {{ o.transform(emoji.sn) }}  </a>
                 </li>
                 {[ }); ]}
             </ul>
-        {[ }); ]}
+        {[ } else { ]}
+            {[ Object.keys(o.emoji_categories).forEach(function (category) { ]}
+                <a id="emoji-picker-{{{category}}}" class="emoji-category__heading">{{{o._converse.emoji_category_labels[category]}}}</a>
+                <ul class="emoji-picker">
+                    {[ o.emojis_by_category[category].forEach(function (emoji) { ]}
+                    <li class="emoji insert-emoji {[ if (o.shouldBeHidden(emoji.sn)) { ]} hidden {[ }; ]}"
+                        data-emoji="{{{emoji.sn}}}" title="{{{emoji.sn}}}">
+                            <a href="#" data-emoji="{{{emoji.sn}}}"> {{ o.transform(emoji.sn) }}  </a>
+                    </li>
+                    {[ }); ]}
+                </ul>
+            {[ }); ]}
+        {[ } ]}
     </div>
     <div class="emoji-skintone-picker">
         <label>Skin tone</label>

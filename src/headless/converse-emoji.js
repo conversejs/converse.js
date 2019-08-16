@@ -382,6 +382,7 @@ converse.plugins.add('converse-emoji', {
         await fetchEmojiJSON();
         _converse.emojis.shortnames_regex = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+getShortNames()+")", "gi");
         _converse.emojis_list = Object.values(_converse.emojis.json);
+        _converse.emoji_shortnames = _converse.emojis_list.map(m => m.sn);
 
         const excluded_categories = ['modifier', 'regional'];
         _converse.emojis.all_categories = _converse.emojis_list

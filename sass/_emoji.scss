@@ -16,6 +16,8 @@
                 padding-bottom: 0;
                 background-color: var(--chat-head-color);
                 .emoji-picker__container {
+                    display: flex;
+                    flex-direction: column;
                     overflow-y: hidden;
                     background: white;
                     .emoji-picker__lists {
@@ -29,13 +31,18 @@
                         flex-direction: column;
                     }
                     .emoji-skintone-picker {
-                        padding: 0.25em 0;
+                        display: flex;
+                        label {
+                            margin: 0;
+                            padding: 0 0.5em;
+                            white-space: nowrap;
+                            font-size: var(--font-size);
+                            color: var(--heading-color);
+                        }
+                        padding: 0.5em 0;
                         background-color: var(--chat-head-color);
                         width: auto;
-                        font-size: var(--font-size-huge);
-                        &:hover {
-                            background-color: var(--highlight-color);
-                        }
+                        font-size: var(--font-size-large);
                     }
                 }
                 .emoji-picker {
@@ -114,9 +121,6 @@
 #conversejs.converse-overlayed {
     .emoji-picker__container {
         height: var(--embedded-emoji-picker-height);
-        .emoji-picker__lists {
-            height: calc(var(--embedded-emoji-picker-height) - 4em;
-        }
     }
 }
 
@@ -152,9 +156,6 @@
 #conversejs.converse-fullscreen {
     .emoji-picker__container {
         height: var(--fullpage-emoji-picker-height);
-        .emoji-picker__lists {
-            height: calc(var(--fullpage-emoji-picker-height) - 4em;
-        }
     }
     .chatbox {
         .sendXMPPMessage {

@@ -451,18 +451,15 @@
                     const view = _converse.chatboxviews.get(contact_jid);
                     const toolbar = view.el.querySelector('ul.chat-toolbar');
                     expect(toolbar.querySelectorAll('li.toggle-smiley').length).toBe(1);
-                    // Register spies
                     spyOn(view, 'toggleEmojiMenu').and.callThrough();
-                    spyOn(view, 'insertEmoji').and.callThrough();
 
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     toolbar.querySelector('li.toggle-smiley').click();
 
-                    await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container')));
-                    const picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
-                    const items = picker.querySelectorAll('.emoji-picker li');
-                    items[0].click()
-                    expect(view.insertEmoji).toHaveBeenCalled();
+                    await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
+                    const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                    const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
+                    item.click()
                     expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':grinning: ');
                     toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
                     done();
@@ -485,10 +482,9 @@
                     expect(counter.textContent).toBe('188');
 
                     toolbar.querySelector('li.toggle-smiley').click();
-                    await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container')));
-                    var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
-                    var items = picker.querySelectorAll('.emoji-picker li');
-                    items[0].click()
+                    const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                    const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
+                    item.click()
                     expect(counter.textContent).toBe('177');
 
                     const textarea = view.el.querySelector('.chat-textarea');

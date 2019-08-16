@@ -283,6 +283,10 @@ body.converse-fullscreen {
         margin: 0;
     }
 
+    a {
+      cursor: pointer;
+    }
+
     a, a:visited, a:not([href]):not([tabindex]) {
         text-decoration: none;
         color: var(--link-color);

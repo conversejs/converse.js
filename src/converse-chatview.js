@@ -7,20 +7,16 @@
 /**
  * @module converse-chatview
  */
-import "@converse/headless/converse-emoji";
 import "backbone.nativeview";
 import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
-import * as twemoji from "twemoji";
 import BrowserStorage from "backbone.browserStorage";
 import { Overview } from "backbone.overview";
-import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.html";
 import tpl_chatbox_head from "templates/chatbox_head.html";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
-import tpl_emojis from "templates/emojis.html";
 import tpl_error_message from "templates/error_message.html";
 import tpl_help_message from "templates/help_message.html";
 import tpl_info from "templates/info.html";
@@ -49,7 +45,6 @@ converse.plugins.add('converse-chatview', {
      * NB: These plugins need to have already been loaded via require.js.
      */
     dependencies: [
-        "converse-emoji",
         "converse-chatboxviews",
         "converse-disco",
         "converse-message-view",
@@ -65,20 +60,16 @@ converse.plugins.add('converse-chatview', {
 
         _converse.api.settings.update({
             'auto_focus': true,
-            'emoji_image_path': twemoji.default.base,
             'message_limit': 0,
             'show_send_button': false,
             'show_toolbar': true,
             'time_format': 'HH:mm',
-            'use_system_emojis': true,
             'visible_toolbar_buttons': {
                 'call': false,
                 'clear': true,
-                'emoji': true,
                 'spoiler': true
             },
         });
-        twemoji.default.base = _converse.emoji_image_path;
 
         function onWindowStateChanged (data) {
             if (_converse.chatboxviews) {
@@ -90,87 +81,6 @@ converse.plugins.add('converse-chatview', {
             }
         }
         _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
-
-
-        _converse.EmojiPicker = Backbone.Model.extend({
-            defaults: {
-                'current_category': 'people',
-                'current_skintone': '',
-                'scroll_position': 0
-            }
-        });
-
-
-        _converse.EmojiPickerView = Backbone.VDOMView.extend({
-            className: 'emoji-picker-container',
-            events: {
-                'click .emoji-category-picker li.emoji-category': 'chooseCategory',
-                'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone'
-            },
-
-            initialize () {
-                this.model.on('change:current_skintone', this.render, this);
-                this.model.on('change:current_category', this.render, this);
-                _converse.api.trigger('emojiPickerViewInitialized');
-            },
-
-            toHTML () {
-                const html = tpl_emojis(
-                    Object.assign(
-                        this.model.toJSON(), {
-                            '_': _,
-                            '_converse': _converse,
-                            'emoji_categories': _converse.emoji_categories,
-                            'emojis_by_category': u.getEmojisByCategory(),
-                            'shouldBeHidden': this.shouldBeHidden,
-                            'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
-                            'toned_emojis': _converse.emojis.toned,
-                            'transform': u.getEmojiRenderer()
-                        }
-                    )
-                );
-                return html;
-            },
-
-            shouldBeHidden (shortname, current_skintone, toned_emojis) {
-                /* Helper method for the template which decides whether an
-                 * emoji should be hidden, based on which skin tone is
-                 * currently being applied.
-                 */
-                if (_.includes(shortname, '_tone')) {
-                    if (!current_skintone || !_.includes(shortname, current_skintone)) {
-                        return true;
-                    }
-                } else {
-                    if (current_skintone && _.includes(toned_emojis, shortname)) {
-                        return true;
-                    }
-                }
-                return false;
-            },
-
-            chooseSkinTone (ev) {
-                ev.preventDefault();
-                ev.stopPropagation();
-                const target = ev.target.nodeName === 'IMG' ?
-                    ev.target.parentElement : ev.target;
-                const skintone = target.getAttribute("data-skintone").trim();
-                if (this.model.get('current_skintone') === skintone) {
-                    this.model.save({'current_skintone': ''});
-                } else {
-                    this.model.save({'current_skintone': skintone});
-                }
-            },
-
-            chooseCategory (ev) {
-                const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-                const category = target.getAttribute("data-category").trim();
-                this.model.save({
-                    'current_category': category,
-                    'scroll_position': 0
-                });
-            }
-        });
 
 
         _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
@@ -336,8 +246,6 @@ converse.plugins.add('converse-chatview', {
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-clear': 'clearMessages',
                 'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
-                'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
-                'click .toggle-smiley': 'toggleEmojiMenu',
                 'click .upload-file': 'toggleFileUpload',
                 'input .chat-textarea': 'inputChanged',
                 'keydown .chat-textarea': 'onKeyDown',
@@ -361,9 +269,6 @@ converse.plugins.add('converse-chatview', {
 
                 this.model.presence.on('change:show', this.onPresenceChanged, this);
                 this.render();
-                this.createEmojiPicker();
-                this.insertEmojiPicker();
-                await this.renderEmojiPicker();
                 await this.updateAfterMessagesFetched();
 
                 /**
@@ -509,11 +414,7 @@ converse.plugins.add('converse-chatview', {
                 const all_resources_support_spolers = results.reduce((acc, val) => (acc && val), true);
                 if (all_resources_support_spolers) {
                     const html = tpl_spoiler_button(this.model.toJSON());
-                    if (_converse.visible_toolbar_buttons.emoji) {
-                        this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
-                    } else {
-                        this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
-                    }
+                    this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
                 }
             },
 
@@ -544,9 +445,7 @@ converse.plugins.add('converse-chatview', {
                     'message_limit': _converse.message_limit,
                     'show_call_button': _converse.visible_toolbar_buttons.call,
                     'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
-                    'tooltip_insert_smiley': __('Insert emojis'),
                     'tooltip_start_call': __('Start a call'),
-                    'use_emoji': _converse.visible_toolbar_buttons.emoji,
                 }
             },
 
@@ -987,10 +886,7 @@ converse.plugins.add('converse-chatview', {
                     } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
                         return this.onEscapePressed(ev);
                     } else if (ev.keyCode === _converse.keycodes.ENTER) {
-                        if (this.emoji_dropdown && u.isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
-                            this.emoji_dropdown.toggle();
-                        }
-                        return this.onFormSubmitted(ev);
+                        return this.onEnterPressed(ev);
                     } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
                         const textarea = this.el.querySelector('.chat-textarea');
                         if (!textarea.value || u.hasClass('correcting', textarea)) {
@@ -1020,6 +916,10 @@ converse.plugins.add('converse-chatview', {
 
             getOwnMessages () {
                 return this.model.messages.filter({'sender': 'me'});
+            },
+
+            onEnterPressed (ev) {
+                return this.onFormSubmitted(ev);
             },
 
             onEscapePressed (ev) {
@@ -1143,35 +1043,6 @@ converse.plugins.add('converse-chatview', {
                 u.placeCaretAtEnd(textarea);
             },
 
-            createEmojiPicker () {
-                if (_converse.emojipicker === undefined) {
-                    const storage = _converse.config.get('storage'),
-                          id = `converse.emoji-${_converse.bare_jid}`;
-                    _converse.emojipicker = new _converse.EmojiPicker({'id': id});
-                    _converse.emojipicker.browserStorage = new BrowserStorage[storage](id);
-                    _converse.emojipicker.fetch();
-                }
-                this.emoji_picker_view = new _converse.EmojiPickerView({'model': _converse.emojipicker});
-            },
-
-            insertEmoji (ev) {
-                ev.preventDefault();
-                ev.stopPropagation();
-                const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-                this.insertIntoTextArea(target.getAttribute('data-emoji'));
-            },
-
-            toggleEmojiMenu (ev) {
-                if (this.emoji_dropdown === undefined) {
-                    ev.stopPropagation();
-
-                    const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
-                    this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
-                    this.emoji_dropdown.el = dropdown_el;
-                    this.emoji_dropdown.toggle();
-                }
-            },
-
             toggleCall (ev) {
                 ev.stopPropagation();
                 /**
@@ -1267,19 +1138,6 @@ converse.plugins.add('converse-chatview', {
                  */
                 _converse.api.trigger('chatBoxClosed', this);
                 return this;
-            },
-
-            async renderEmojiPicker () {
-                await _converse.api.waitUntil('emojisInitialized');
-                this.emoji_picker_view.render();
-            },
-
-            insertEmojiPicker () {
-                const picker_el = this.el.querySelector('.emoji-picker');
-                if (picker_el !== null) {
-                    picker_el.innerHTML = '';
-                    picker_el.appendChild(this.emoji_picker_view.el);
-                }
             },
 
             emitFocused () {

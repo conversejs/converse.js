@@ -10,7 +10,7 @@ import * as twemoji from "twemoji";
 import _ from "./lodash.noconflict";
 import converse from "./converse-core";
 
-const { Strophe } = converse.env;
+const { Backbone, Strophe } = converse.env;
 const u = converse.env.utils;
 
 const ASCII_LIST = {
@@ -197,6 +197,14 @@ converse.plugins.add('converse-emoji', {
             "symbols": __("Symbols"),
             "flags": __("Flags")
         }
+
+        _converse.EmojiPicker = Backbone.Model.extend({
+            defaults: {
+                'current_category': 'people',
+                'current_skintone': '',
+                'scroll_position': 0
+            }
+        });
 
         _converse.emojis = {};
 

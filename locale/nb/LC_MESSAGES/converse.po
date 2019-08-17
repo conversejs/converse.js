@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-14 12:46+0200\n"
-"PO-Revision-Date: 2019-08-08 13:23+0000\n"
+"POT-Creation-Date: 2019-08-08 17:32+0200\n"
+"PO-Revision-Date: 2019-09-11 15:31+0200\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.8\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -190,6 +190,7 @@ msgstr "Viser denne menyen"
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
+"Du har en usendt melding som vil gå tapt hvis du fortsetter. Er du sikker?"
 
 #: dist/converse-no-dependencies.js:28703
 msgid "Are you sure you want to clear the messages from this conversation?"
@@ -546,7 +547,7 @@ msgstr "Endre brukerens tilknytning til administrator"
 
 #: dist/converse-no-dependencies.js:33362
 msgid "Ban user by changing their affiliation to outcast"
-msgstr ""
+msgstr "Bannlys bruker ved å endre deres tilhørighet til fredløs"
 
 #: dist/converse-no-dependencies.js:33362
 #, fuzzy
@@ -604,7 +605,7 @@ msgstr "Endre ditt kallenavn"
 
 #: dist/converse-no-dependencies.js:33362
 msgid "Revoke the user's current affiliation"
-msgstr ""
+msgstr "Tilbakekall brukerens nåværende tilhørighet"
 
 #: dist/converse-no-dependencies.js:33362
 #, fuzzy
@@ -737,7 +738,7 @@ msgstr "Ta del i rommet"
 
 #: dist/converse-no-dependencies.js:34071
 msgid "You need to provide a nickname"
-msgstr ""
+msgstr "Du må angi et brukernavn"
 
 #: dist/converse-no-dependencies.js:34091
 #, javascript-format

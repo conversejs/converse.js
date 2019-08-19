@@ -42,6 +42,29 @@ converse.plugins.add('converse-emoji-views', {
                     this.emoji_dropdown.toggle();
                 }
                 this.__super__.onEnterPressed.apply(this, arguments);
+            },
+
+            async onTabPressed (ev) {
+                const { _converse } = this.__super__;
+                const input = ev.target;
+                const value = u.getCurrentWord(input, null, /(:.*?:)/g);
+                if (value.startsWith(':')) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    if (this.emoji_dropdown === undefined) {
+                        this.createEmojiDropdown();
+                    }
+                    this.emoji_dropdown.toggle();
+                    await _converse.api.waitUntil('emojisInitialized');
+                    this.emoji_picker_view.model.set({
+                        'autocompleting': value,
+                        'position': ev.target.selectionStart
+                    });
+                    this.emoji_picker_view.filter(value, true);
+                    this.emoji_picker_view.render();
+                } else {
+                    this.__super__.onTabPressed.apply(this, arguments);
+                }
             }
         },
 
@@ -82,12 +105,16 @@ converse.plugins.add('converse-emoji-views', {
                 this.emoji_picker_view.chatview = this;
             },
 
+            createEmojiDropdown (ev) {
+                const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
+                this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+                this.emoji_dropdown.el = dropdown_el;
+            },
+
             async toggleEmojiMenu (ev) {
                 if (this.emoji_dropdown === undefined) {
                     ev.stopPropagation();
-                    const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
-                    this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
-                    this.emoji_dropdown.el = dropdown_el;
+                    this.createEmojiDropdown();
                     this.emoji_dropdown.toggle();
                     await _converse.api.waitUntil('emojisInitialized');
                     this.emoji_picker_view.render();
@@ -116,7 +143,7 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             initialize () {
-                this.debouncedFilter = _.debounce(input => this.filter(input), 50);
+                this.debouncedFilter = _.debounce(input => this.filter(input.value), 50);
                 this.model.on('change:query', this.render, this);
                 this.model.on('change:current_skintone', this.render, this);
                 this.model.on('change:current_category', () => {
@@ -145,8 +172,16 @@ converse.plugins.add('converse-emoji-views', {
                 return html;
             },
 
-            filter (input) {
-                this.model.set({'query': input.value});
+            filter (value, set_property) {
+                this.model.set({'query': value});
+                if (set_property) {
+                    // XXX: Ideally we would set `query` on the model and
+                    // then let the view re-render, instead of doing it
+                    // manually here. Snabbdom supports setting properties,
+                    // Backbone.VDOMView doesn't.
+                    const input = this.el.querySelector('.emoji-search');
+                    input.value = value;
+                }
             },
 
             onKeyDown (ev) {
@@ -154,25 +189,21 @@ converse.plugins.add('converse-emoji-views', {
                     ev.preventDefault();
                     const match = _.find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
                     if (match) {
-                        // XXX: Ideally we would set `query` on the model and
-                        // then let the view re-render, instead of doing it
-                        // manually here. Snabbdom supports setting properties,
-                        // Backbone.VDOMView doesn't.
-                        ev.target.value = match;
-                        this.filter(ev.target);
+                        this.filter(match, true);
                     }
                 } else if (ev.keyCode === _converse.keycodes.ENTER) {
                     ev.preventDefault();
                     ev.stopPropagation();
                     if (_converse.emoji_shortnames.includes(ev.target.value)) {
-                        this.chatview.insertIntoTextArea(ev.target.value);
+                        const replace = this.model.get('autocompleting');
+                        const position = this.model.get('position');
+                        this.model.set({'autocompleting': null, 'position': null});
+                        this.chatview.insertIntoTextArea(ev.target.value, replace, false, position);
                         this.chatview.emoji_dropdown.toggle();
-                        // XXX: See above
-                        ev.target.value = '';
-                        this.filter(ev.target);
+                        this.filter('', true);
                     }
                 } else {
-                    this.debouncedFilter(ev.target);
+                    this.debouncedFilter(ev.target.value);
                 }
             },
 
@@ -239,12 +270,12 @@ converse.plugins.add('converse-emoji-views', {
                 ev.preventDefault();
                 ev.stopPropagation();
                 const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-                this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'));
+                const replace = this.model.get('autocompleting');
+                const position = this.model.get('position');
+                this.model.set({'autocompleting': null, 'position': null});
+                this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'), replace, false, position);
                 this.chatview.emoji_dropdown.toggle();
-                // XXX: See above
-                const input = this.el.querySelector('.emoji-search');
-                input.value = '';
-                this.filter(input);
+                this.filter('', true);
             }
         });
 

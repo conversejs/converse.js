@@ -772,7 +772,7 @@
                  *  </result>
                  *  </message>
                  */
-                const msg1 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
+                const msg1 = $msg({'id':'aeb212', 'to':'juliet@capulet.lit/chamber'})
                             .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73623'})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
@@ -943,7 +943,7 @@
                         `</query>`+
                     `</iq>`
                 );
-                const msg1 = $msg({'id':'aeb213', 'to': contact_jid})
+                const msg1 = $msg({'id':'aeb212', 'to': contact_jid})
                             .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73623'})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
@@ -972,6 +972,110 @@
                             .c('last').t('09af3-cc343-b409f').up()
                             .c('count').t('16');
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                done();
+            }));
+
+            it("will show an error message if the MAM query times out",
+                mock.initConverse(
+                    null, ['discoInitialized'], {},
+                    async function (done, _converse) {
+
+                const sendIQ = _converse.connection.sendIQ;
+
+                let timeout_happened = false;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sendIQ.bind(this)(iq, callback, errback);
+                    if (!timeout_happened) {
+                        if (typeof(iq.tree) === "function") {
+                            iq = iq.tree();
+                        }
+                        if (sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length) {
+                            // We emulate a timeout event
+                            callback(null);
+                            timeout_happened = true;
+                        }
+                    }
+                });
+                await test_utils.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                await test_utils.openChatBoxFor(_converse, contact_jid);
+                await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
+
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                let sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length).pop());
+                let queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                        `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
+                                `<field var="with"><value>mercutio@montague.lit</value></field>`+
+                            `</x>`+
+                            `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `</query>`+
+                    `</iq>`);
+
+                const view = _converse.chatboxviews.get(contact_jid);
+                expect(view.model.messages.length).toBe(1);
+                expect(view.model.messages.at(0).get('ephemeral')).toBe(false);
+                expect(view.model.messages.at(0).get('type')).toBe('error');
+                expect(view.model.messages.at(0).get('message')).toBe('Timeout while trying to fetch archived messages.');
+
+                let err_message = view.el.querySelector('.message.chat-error');
+                err_message.querySelector('.retry').click();
+                expect(err_message.querySelector('.spinner')).not.toBe(null);
+
+                while (_converse.connection.IQ_stanzas.length) {
+                    _converse.connection.IQ_stanzas.pop();
+                }
+                sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length).pop());
+                queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                        `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
+                                `<field var="with"><value>mercutio@montague.lit</value></field>`+
+                            `</x>`+
+                            `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `</query>`+
+                    `</iq>`);
+
+                const msg1 = $msg({'id':'aeb212', 'to': contact_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid': queryid, 'id':'28482-98726-73623'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to': contact_jid,
+                                        'from': _converse.bare_jid,
+                                        'type':'chat' })
+                                    .c('body').t("Call me but love, and I'll be new baptized;");
+                _converse.connection._dataRecv(test_utils.createRequest(msg1));
+
+                const msg2 = $msg({'id':'aeb213', 'to': contact_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid': queryid, 'id':'28482-98726-73624'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:18:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to': contact_jid,
+                                        'from': _converse.bare_jid,
+                                        'type':'chat' })
+                                    .c('body').t("Henceforth I never will be Romeo.");
+                _converse.connection._dataRecv(test_utils.createRequest(msg2));
+
+                const stanza = $iq({'type': 'result', 'id': sent_stanza.getAttribute('id')})
+                    .c('fin', {'xmlns': 'urn:xmpp:mam:2', 'complete': true})
+                        .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
+                            .c('first', {'index': '0'}).t('28482-98726-73623').up()
+                            .c('last').t('28482-98726-73624').up()
+                            .c('count').t('2');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await u.waitUntil(() => view.model.messages.length === 2, 500);
+                err_message = view.el.querySelector('.message.chat-error');
+                expect(err_message).toBe(null);
                 done();
             }));
         });

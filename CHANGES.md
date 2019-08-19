@@ -1,10 +1,13 @@
 # Changelog
 
-## 5.0.1 (Unreleased)
+## 5.0.1 (2019-08-14)
 
 - Add a new GUI for moderator actions. You can trigger it by entering `/modtools` in a MUC.
 - Reconnect if the server doesn't respond to a `ping` within 10 seconds.
 - Don't query for MAM MUC messages before the cached messages have been restored (another cause of duplicate messages).
+- Show an error message and option to retry when fetching of the MAM archive times out
+- Bugfix: `TypeError: o.getAttribute is not a function converse-chatview.js` (can cause messages to not appear).
+- #1679: Room invitation fails with singleton and random server assigned room name
 
 ## 5.0.0 (2019-08-08)
 

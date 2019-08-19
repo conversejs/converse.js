@@ -8,6 +8,7 @@
  */
 import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
+import { debounce } from 'lodash'
 import filesize from "filesize";
 import html from "./utils/html";
 import tpl_csn from "templates/csn.html";
@@ -15,10 +16,11 @@ import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
 import tpl_message_versions_modal from "templates/message_versions_modal.html";
+import tpl_spinner from "templates/spinner.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss/dist/xss";
 
-const { Backbone, _, dayjs } = converse.env;
+const { Backbone, dayjs } = converse.env;
 
 
 converse.plugins.add('converse-message-view', {
@@ -51,7 +53,7 @@ converse.plugins.add('converse-message-view', {
             }
             const uri = new URI(tag);
             const protocol = uri.protocol().toLowerCase();
-            if (!_.includes(["https", "http", "xmpp", "ftp"], protocol)) {
+            if (!["https", "http", "xmpp", "ftp"].includes(protocol)) {
                 // Not a URL, the tag will get filtered as usual
                 return;
             }
@@ -78,13 +80,19 @@ converse.plugins.add('converse-message-view', {
         });
 
 
+        /**
+         * @class
+         * @namespace _converse.MessageView
+         * @memberOf _converse
+         */
         _converse.MessageView = _converse.ViewWithAvatar.extend({
             events: {
-                'click .chat-msg__edit-modal': 'showMessageVersionsModal'
+                'click .chat-msg__edit-modal': 'showMessageVersionsModal',
+                'click .retry': 'onRetryClicked'
             },
 
             initialize () {
-                this.debouncedRender = _.debounce(() => {
+                this.debouncedRender = debounce(() => {
                     // If the model gets destroyed in the meantime,
                     // it no longer has a collection
                     if (this.model.collection) {
@@ -103,12 +111,10 @@ converse.plugins.add('converse-message-view', {
                     });
                 }
 
-                if (this.model.occupantAdded) {
-                    this.model.occupantAdded.then(() => {
-                        this.model.occupant.on('change:role', this.debouncedRender, this);
-                        this.model.occupant.on('change:affiliation', this.debouncedRender, this);
-                        this.debouncedRender();
-                    });
+                if (this.model.occupant) {
+                    this.model.occupant.on('change:role', this.debouncedRender, this);
+                    this.model.occupant.on('change:affiliation', this.debouncedRender, this);
+                    this.debouncedRender();
                 }
 
                 this.model.on('change', this.onChanged, this);
@@ -146,8 +152,8 @@ converse.plugins.add('converse-message-view', {
                 if (this.model.changed.progress) {
                     return this.renderFileUploadProgresBar();
                 }
-                if (_.filter(['correcting', 'message', 'type', 'upload', 'received'],
-                             prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
+                const isValidChange = prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop);
+                if (['correcting', 'message', 'type', 'upload', 'received'].filter(isValidChange).length) {
                     await this.debouncedRender();
                 }
                 if (edited) {
@@ -162,6 +168,16 @@ converse.plugins.add('converse-message-view', {
                 } else {
                     this.remove();
                 }
+            },
+
+            async onRetryClicked () {
+                this.showSpinner();
+                await this.model.error.retry();
+                this.model.destroy();
+            },
+
+            showSpinner () {
+                this.el.innerHTML = tpl_spinner();
             },
 
             onMessageEdited () {
@@ -184,8 +200,44 @@ converse.plugins.add('converse-message-view', {
                 return this.el;
             },
 
+            transformOOBURL (url) {
+                url = u.renderFileURL(_converse, url);
+                url = u.renderMovieURL(_converse, url);
+                url = u.renderAudioURL(_converse, url);
+                return u.renderImageURL(_converse, url);
+            },
+
+            async transformBodyText (text) {
+                /**
+                 * Synchronous event which provides a hook for transforming a chat message's body text
+                 * before the default transformations have been applied.
+                 * @event _converse#beforeMessageBodyTransformed
+                 * @param { _converse.MessageView } view - The view representing the message
+                 * @param { string } text - The message text
+                 * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
+                 */
+                await _converse.api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
+                text = this.model.isMeCommand() ? text.substring(4) : text;
+                text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
+                text = u.geoUriToHttp(text, _converse.geouri_replacement);
+                text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
+                text = u.addHyperlinks(text);
+                text = u.renderNewLines(text);
+                text = u.addEmoji(_converse, text);
+                /**
+                 * Synchronous event which provides a hook for transforming a chat message's body text
+                 * after the default transformations have been applied.
+                 * @event _converse#afterMessageBodyTransformed
+                 * @param { _converse.MessageView } view - The view representing the message
+                 * @param { string } text - The message text
+                 * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
+                 */
+                await _converse.api.trigger('afterMessageBodyTransformed', this, text, {'Synchronous': true});
+                return text;
+            },
+
             async renderChatMessage () {
-                const is_me_message = this.isMeCommand();
+                const is_me_message = this.model.isMeCommand();
                 const time = dayjs(this.model.get('time'));
                 const role = this.model.vcard ? this.model.vcard.get('role') : null;
                 const roles = role ? role.split(',') : [];
@@ -208,33 +260,18 @@ converse.plugins.add('converse-message-view', {
 
                 const url = this.model.get('oob_url');
                 if (url) {
-                    msg.querySelector('.chat-msg__media').innerHTML = _.flow(
-                        _.partial(u.renderFileURL, _converse),
-                        _.partial(u.renderMovieURL, _converse),
-                        _.partial(u.renderAudioURL, _converse),
-                        _.partial(u.renderImageURL, _converse))(url);
+                    msg.querySelector('.chat-msg__media').innerHTML = this.transformOOBURL(url);
                 }
 
-                let text = this.getMessageText();
+                const text = this.model.getMessageText();
                 const msg_content = msg.querySelector('.chat-msg__text');
                 if (text && text !== url) {
-                    if (is_me_message) {
-                        text = text.substring(4);
-                    }
-                    text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
-                    msg_content.innerHTML = _.flow(
-                        _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
-                        _.partial(u.addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox),
-                        u.addHyperlinks,
-                        u.renderNewLines,
-                        _.partial(u.addEmoji, _converse, _)
-                    )(text);
+                    msg_content.innerHTML = await this.transformBodyText(text);
+                    await u.renderImageURLs(_converse, msg_content);
                 }
-                const promise = u.renderImageURLs(_converse, msg_content);
                 if (this.model.get('type') !== 'headline') {
                     this.renderAvatar(msg);
                 }
-                await promise;
                 this.replaceElement(msg);
                 if (this.model.collection) {
                     // If the model gets destroyed in the meantime, it no
@@ -312,27 +349,6 @@ converse.plugins.add('converse-message-view', {
                     this.model.message_versions_modal = new _converse.MessageVersionsModal({'model': this.model});
                 }
                 this.model.message_versions_modal.show(ev);
-            },
-
-            getMessageText () {
-                if (this.model.get('is_encrypted')) {
-                    return this.model.get('plaintext') ||
-                           (_converse.debug ? __('Unencryptable OMEMO message') : null);
-                }
-                return this.model.get('message');
-            },
-
-            isMeCommand () {
-                const text = this.getMessageText();
-                if (!text) {
-                    return false;
-                }
-                return text.startsWith('/me ');
-            },
-
-            processMessageText () {
-                var text = this.get('message');
-                text = u.geoUriToHttp(text, _converse.geouri_replacement);
             },
 
             getExtraMessageClasses () {

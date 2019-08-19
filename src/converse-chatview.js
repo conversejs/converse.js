@@ -307,7 +307,6 @@ converse.plugins.add('converse-chatview', {
 
         /**
          * The View of an open/ongoing chat conversation.
-         *
          * @class
          * @namespace _converse.ChatBoxView
          * @memberOf _converse

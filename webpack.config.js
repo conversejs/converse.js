@@ -50,8 +50,8 @@ const config = {
             {
                 loader: 'file-loader',
                 options: {
-                    name: '[path][name].[ext]',
-                    outputPath: '../dist/'
+                    name: '[name].[ext]',
+                    outputPath: 'webfonts/'
                 }
             }
             ]

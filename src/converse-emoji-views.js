@@ -116,7 +116,7 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             initialize () {
-                this.debouncedFilter = _.debounce(input => this.filter(input), 100);
+                this.debouncedFilter = _.debounce(input => this.filter(input), 50);
                 this.model.on('change:query', this.render, this);
                 this.model.on('change:current_skintone', this.render, this);
                 this.model.on('change:current_category', () => {
@@ -156,9 +156,8 @@ converse.plugins.add('converse-emoji-views', {
                     if (match) {
                         // XXX: Ideally we would set `query` on the model and
                         // then let the view re-render, instead of doing it
-                        // manually here. Unfortunately this doesn't work, the
-                        // value gets set on the HTML element, but is not
-                        // visible to the new user.
+                        // manually here. Snabbdom supports setting properties,
+                        // Backbone.VDOMView doesn't.
                         ev.target.value = match;
                         this.filter(ev.target);
                     }
@@ -167,6 +166,7 @@ converse.plugins.add('converse-emoji-views', {
                     ev.stopPropagation();
                     if (_converse.emoji_shortnames.includes(ev.target.value)) {
                         this.chatview.insertIntoTextArea(ev.target.value);
+                        this.chatview.emoji_dropdown.toggle();
                         // XXX: See above
                         ev.target.value = '';
                         this.filter(ev.target);
@@ -222,7 +222,10 @@ converse.plugins.add('converse-emoji-views', {
                 ev.stopPropagation();
                 const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
                 const category = target.getAttribute("data-category").trim();
-                this.model.save({'current_category': category});
+                // XXX: See above
+                const input = this.el.querySelector('.emoji-search');
+                input.value = '';
+                this.model.save({'current_category': category, 'query': undefined});
             },
 
             setScrollPosition () {
@@ -236,11 +239,12 @@ converse.plugins.add('converse-emoji-views', {
                 ev.preventDefault();
                 ev.stopPropagation();
                 const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
+                this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'));
+                this.chatview.emoji_dropdown.toggle();
                 // XXX: See above
                 const input = this.el.querySelector('.emoji-search');
                 input.value = '';
                 this.filter(input);
-                this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'));
             }
         });
 

@@ -61,6 +61,7 @@ var specs = [
     "spec/autocomplete",
     "spec/minchats",
     "spec/notification",
+    "spec/emojis",
     "spec/login",
     "spec/register",
     "spec/http-file-upload"

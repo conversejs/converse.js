@@ -54,14 +54,13 @@ converse.plugins.add('converse-emoji-views', {
                     if (this.emoji_dropdown === undefined) {
                         this.createEmojiDropdown();
                     }
-                    this.emoji_dropdown.toggle();
                     await _converse.api.waitUntil('emojisInitialized');
                     this.emoji_picker_view.model.set({
                         'autocompleting': value,
                         'position': ev.target.selectionStart
-                    });
+                    }, {'silent': true});
                     this.emoji_picker_view.filter(value, true);
-                    this.emoji_picker_view.render();
+                    this.emoji_dropdown.toggle();
                 } else {
                     this.__super__.onTabPressed.apply(this, arguments);
                 }
@@ -94,7 +93,7 @@ converse.plugins.add('converse-emoji-views', {
         const emoji_aware_chat_view = {
 
             createEmojiPicker () {
-                if (_converse.emojipicker === undefined) {
+                if (!_converse.emojipicker) {
                     const storage = _converse.config.get('storage'),
                           id = `converse.emoji-${_converse.bare_jid}`;
                     _converse.emojipicker = new _converse.EmojiPicker({'id': id});
@@ -143,7 +142,7 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             initialize () {
-                this.debouncedFilter = _.debounce(input => this.filter(input.value), 50);
+                this.debouncedFilter = _.debounce(input => this.filter(input.value), 150);
                 this.model.on('change:query', this.render, this);
                 this.model.on('change:current_skintone', this.render, this);
                 this.model.on('change:current_category', () => {
@@ -203,7 +202,7 @@ converse.plugins.add('converse-emoji-views', {
                         this.filter('', true);
                     }
                 } else {
-                    this.debouncedFilter(ev.target.value);
+                    this.debouncedFilter(ev.target);
                 }
             },
 

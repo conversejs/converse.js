@@ -1048,12 +1048,9 @@ converse.plugins.add('converse-chatview', {
                     if (position && typeof replace == 'string') {
                         textarea.value = textarea.value.replace(
                             new RegExp(replace, 'g'),
-                            (match, offset) => {
-                                return offset == position-replace.length ? value : match
-                            }
+                            (match, offset) => (offset == position-replace.length ? value+' ' : match)
                         );
                     } else {
-                        textarea.value = '';
                         textarea.value = value;
                     }
                 } else {
@@ -1061,7 +1058,6 @@ converse.plugins.add('converse-chatview', {
                     if (existing && (existing[existing.length-1] !== ' ')) {
                         existing = existing + ' ';
                     }
-                    textarea.value = '';
                     textarea.value = existing+value+' ';
                 }
                 this.updateCharCounter(textarea.value);

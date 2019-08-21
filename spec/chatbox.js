@@ -438,33 +438,6 @@
                     done();
                 }));
 
-                it("contains a button for inserting emojis",
-                    mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
-
-                    await test_utils.waitForRoster(_converse, 'current');
-                    test_utils.openControlBox();
-
-                    const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    await test_utils.openChatBoxFor(_converse, contact_jid);
-                    const view = _converse.chatboxviews.get(contact_jid);
-                    const toolbar = view.el.querySelector('ul.chat-toolbar');
-                    expect(toolbar.querySelectorAll('li.toggle-smiley').length).toBe(1);
-                    spyOn(view, 'toggleEmojiMenu').and.callThrough();
-
-                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    toolbar.querySelector('li.toggle-smiley').click();
-
-                    await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
-                    const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
-                    const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
-                    item.click()
-                    expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':grinning: ');
-                    toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
-                    done();
-                }));
-
                 it("shows the remaining character count if a message_limit is configured",
                     mock.initConverse(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 200},

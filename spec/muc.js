@@ -3955,7 +3955,7 @@
                 const chat_body = view.el.querySelector('.chatroom-body');
                 expect(view.renderPasswordForm).toHaveBeenCalled();
                 expect(chat_body.querySelectorAll('form.chatroom-form').length).toBe(1);
-                expect(chat_body.querySelector('label').textContent.trim())
+                expect(chat_body.querySelector('.chatroom-form label').textContent.trim())
                     .toBe('This groupchat requires a password');
 
                 // Let's submit the form

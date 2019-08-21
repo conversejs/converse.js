@@ -198,30 +198,21 @@ converse.plugins.add('converse-emoji', {
             "flags": __("Flags")
         }
 
+        /**
+         * Model for storing data related to the Emoji picker widget
+         * @class
+         * @namespace _converse.EmojiPicker
+         * @memberOf _converse
+         */
         _converse.EmojiPicker = Backbone.Model.extend({
             defaults: {
-                'current_category': 'people',
+                'current_category': 'smileys',
                 'current_skintone': '',
                 'scroll_position': 0
             }
         });
 
         _converse.emojis = {};
-
-        u.getEmojiRenderer = function () {
-            const how = {
-                'attributes': (icon, variant) => {
-                    const codepoint = twemoji.default.convert.toCodePoint(icon);
-                    return {'title': `${u.getEmojisByAtrribute('cp')[codepoint]['sn']} ${icon}`}
-                }
-            };
-            const toUnicode = u.shortnameToUnicode;
-            return _converse.use_system_emojis ? toUnicode: text => twemoji.default.parse(toUnicode(text), how);
-        };
-
-        u.addEmoji = function (text) {
-            return u.getEmojiRenderer()(text);
-        }
 
         function getTonedEmojis () {
             if (!_converse.toned_emojis) {
@@ -282,9 +273,41 @@ converse.plugins.add('converse-emoji', {
         const emojis_by_attribute = {};
 
         Object.assign(u, {
+
             /**
-             * @method u.shortnameToUnicode
+             * Replaces emoji shortnames in the passed-in string with unicode or image-based emojis
+             * (based on the value of `use_system_emojis`).
+             * @method u.addEmoji
+             * @param {string} text = The text
+             * @returns {string} The text with shortnames replaced with emoji
+             *  unicodes or images.
+             */
+            addEmoji (text) {
+                return u.getEmojiRenderer()(text);
+            },
+
+            /**
+             * Based on the value of `use_system_emojis` will return either
+             * a function that converts emoji shortnames into unicode glyphs
+             * (see {@link u.shortnameToUnicode} or one that converts them into images.
+             * unicode emojis
+             * @method u.getEmojiRenderer
+             * @returns {function}
+             */
+            getEmojiRenderer () {
+                const how = {
+                    'attributes': (icon, variant) => {
+                        const codepoint = twemoji.default.convert.toCodePoint(icon);
+                        return {'title': `${u.getEmojisByAtrribute('cp')[codepoint]['sn']} ${icon}`}
+                    }
+                };
+                const toUnicode = u.shortnameToUnicode;
+                return _converse.use_system_emojis ? toUnicode: text => twemoji.default.parse(toUnicode(text), how);
+            },
+
+            /**
              * Returns unicode represented by the passed in shortname.
+             * @method u.shortnameToUnicode
              * @param {string} str - String containg the shortname(s)
              */
             shortnameToUnicode (str) {
@@ -386,9 +409,9 @@ converse.plugins.add('converse-emoji', {
 
         const excluded_categories = ['modifier', 'regional'];
         _converse.emojis.all_categories = _converse.emojis_list
-                .map(e => e.c)
-                .filter((c, i, arr) => arr.indexOf(c) == i)
-                .filter(c => !excluded_categories.includes(c));
+            .map(e => e.c)
+            .filter((c, i, arr) => arr.indexOf(c) == i)
+            .filter(c => !excluded_categories.includes(c));
 
         _converse.emojis.toned = getTonedEmojis();
 
@@ -398,5 +421,16 @@ converse.plugins.add('converse-emoji', {
          * @event _converse#emojisInitialized
          */
         _converse.api.trigger('emojisInitialized');
+
+
+        /************************ BEGIN Event Handlers ************************/
+        _converse.api.listen.on('clearSession', () => {
+            if (_converse.emojipicker) {
+                _converse.emojipicker.browserStorage._clear();
+                _converse.emojipicker.destroy();
+                delete _converse.emojipicker
+            }
+        });
+        /************************ END Event Handlers ************************/
     }
 });

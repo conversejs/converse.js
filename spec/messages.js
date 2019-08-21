@@ -925,41 +925,6 @@
             done();
         }));
 
-        it("will display larger if it's a single emoji",
-            mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {'use_system_emojis': false},
-                async function (done, _converse) {
-
-            await test_utils.waitForRoster(_converse, 'current');
-            const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            _converse.chatboxes.onMessage($msg({
-                    'from': sender_jid,
-                    'to': _converse.connection.jid,
-                    'type': 'chat',
-                    'id': _converse.connection.getUniqueId()
-                }).c('body').t('😇').up()
-                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise(resolve => _converse.on('chatBoxInitialized', resolve));
-            const view = _converse.api.chatviews.get(sender_jid);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-
-            const chat_content = view.el.querySelector('.chat-content');
-            let message = chat_content.querySelector('.chat-msg__text');
-            expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
-
-            _converse.chatboxes.onMessage($msg({
-                    'from': sender_jid,
-                    'to': _converse.connection.jid,
-                    'type': 'chat',
-                    'id': _converse.connection.getUniqueId()
-                }).c('body').t('😇 Hello world! 😇 😇').up()
-                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-           message = chat_content.querySelector('.message:last-child .chat-msg__text');
-            expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
-            done();
-        }));
-
         it("will render newlines",
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},

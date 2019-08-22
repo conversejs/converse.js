@@ -60,7 +60,7 @@
                 }
                 view.onKeyDown(tab_event);
                 await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
-                const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                let picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
                 const input = picker.querySelector('.emoji-search');
                 expect(input.value).toBe(':gri');
                 let visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
@@ -81,6 +81,28 @@
                 view.emoji_picker_view.onKeyDown(enter_event);
                 expect(input.value).toBe('');
                 expect(textarea.value).toBe(':grimacing: ');
+
+                // Test that username starting with : doesn't cause issues
+                const presence = $pres({
+                        'from': `${muc_jid}/:username`,
+                        'id': '27C55F89-1C6A-459A-9EB5-77690145D624',
+                        'to': _converse.jid
+                    })
+                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            'jid': 'some1@montague.lit',
+                            'affiliation': 'member',
+                            'role': 'participant'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                textarea.value = ':use';
+                view.onKeyDown(tab_event);
+                await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
+                picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                expect(input.value).toBe(':use');
+                visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
+                expect(visible_emojis.length).toBe(0);
                 done();
             }));
 

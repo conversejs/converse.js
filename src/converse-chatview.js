@@ -883,8 +883,6 @@ converse.plugins.add('converse-chatview', {
                     if (ev.keyCode === _converse.keycodes.FORWARD_SLASH) {
                         // Forward slash is used to run commands. Nothing to do here.
                         return;
-                    } else if (ev.keyCode === _converse.keycodes.TAB) {
-                        return this.onTabPressed(ev);
                     } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
                         return this.onEscapePressed(ev);
                     } else if (ev.keyCode === _converse.keycodes.ENTER) {
@@ -923,8 +921,6 @@ converse.plugins.add('converse-chatview', {
             onEnterPressed (ev) {
                 return this.onFormSubmitted(ev);
             },
-
-            onTabPressed (ev) {}, // noop, overridden in other plugins
 
             onEscapePressed (ev) {
                 ev.preventDefault();

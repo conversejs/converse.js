@@ -42,28 +42,6 @@ converse.plugins.add('converse-emoji-views', {
                     this.emoji_dropdown.toggle();
                 }
                 this.__super__.onEnterPressed.apply(this, arguments);
-            },
-
-            async onTabPressed (ev) {
-                const { _converse } = this.__super__;
-                const input = ev.target;
-                const value = u.getCurrentWord(input, null, /(:.*?:)/g);
-                if (value.startsWith(':')) {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                    if (this.emoji_dropdown === undefined) {
-                        this.createEmojiDropdown();
-                    }
-                    await _converse.api.waitUntil('emojisInitialized');
-                    this.emoji_picker_view.model.set({
-                        'autocompleting': value,
-                        'position': ev.target.selectionStart
-                    }, {'silent': true});
-                    this.emoji_picker_view.filter(value, true);
-                    this.emoji_dropdown.toggle();
-                } else {
-                    this.__super__.onTabPressed.apply(this, arguments);
-                }
             }
         },
 
@@ -71,6 +49,19 @@ converse.plugins.add('converse-emoji-views', {
             events: {
                 'click .toggle-smiley': 'toggleEmojiMenu'
             },
+
+            onKeyDown (ev) {
+                const { _converse } = this.__super__;
+                if (ev.keyCode === _converse.keycodes.TAB) {
+                    const value = u.getCurrentWord(ev.target, null, /(:.*?:)/g);
+                    if (value.startsWith(':')) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        return this.autocompleteInPicker(ev.target, value);
+                    }
+                }
+                return this.__super__.onKeyDown.call(this, ev);
+            }
         }
     },
 
@@ -91,6 +82,19 @@ converse.plugins.add('converse-emoji-views', {
 
 
         const emoji_aware_chat_view = {
+
+            async autocompleteInPicker (input, value) {
+                if (this.emoji_dropdown === undefined) {
+                    this.createEmojiDropdown();
+                }
+                await _converse.api.waitUntil('emojisInitialized');
+                this.emoji_picker_view.model.set({
+                    'autocompleting': value,
+                    'position': input.selectionStart
+                }, {'silent': true});
+                this.emoji_picker_view.filter(value, true);
+                this.emoji_dropdown.toggle();
+            },
 
             createEmojiPicker () {
                 if (!_converse.emojipicker) {

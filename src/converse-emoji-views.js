@@ -162,7 +162,7 @@ converse.plugins.add('converse-emoji-views', {
                             '__': __,
                             '_converse': _converse,
                             'emoji_categories': _converse.emoji_categories,
-                            'emojis_by_category': u.getEmojisByCategory(),
+                            'emojis_by_category': _converse.emojis.json,
                             'shouldBeHidden': shortname => this.shouldBeHidden(shortname),
                             'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                             'toned_emojis': _converse.emojis.toned,

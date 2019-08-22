@@ -3,7 +3,7 @@
         <input class="form-control emoji-search" name="emoji-search" placeholder="{{{o.__('Search')}}}"/>
         <ul>
             {[ Object.keys(o.emoji_categories).forEach(function (category) { ]}
-                <li data-category="{{{category}}}" class="emoji-category {[ if (o.current_category === category) { ]} picked {[ } ]}">
+                <li data-category="{{{category}}}" class="emoji-category {[ if (o.current_category === category) { ]} picked {[ } ]}" title="{{{o._converse.emoji_category_labels[category]}}}">
                     <a class="pick-category" href="#emoji-picker-{{{category}}}" data-category="{{{category}}}"> {{ o.transformCategory(o.emoji_categories[category]) }} </a>
                 </li>
             {[ }); ]}
@@ -24,7 +24,7 @@
             {[ Object.keys(o.emoji_categories).forEach(function (category) { ]}
                 <a id="emoji-picker-{{{category}}}" class="emoji-category__heading" data-category="{{{category}}}">{{{o._converse.emoji_category_labels[category]}}}</a>
                 <ul class="emoji-picker" data-category="{{{category}}}">
-                    {[ o.emojis_by_category[category].forEach(function (emoji) { ]}
+                    {[ Object.values(o.emojis_by_category[category]).forEach(function (emoji) { ]}
                     <li class="emoji insert-emoji {[ if (o.shouldBeHidden(emoji.sn)) { ]} hidden {[ }; ]}"
                         data-emoji="{{{emoji.sn}}}" title="{{{emoji.sn}}}">
                             <a href="#" data-emoji="{{{emoji.sn}}}"> {{ o.transform(emoji.sn) }}  </a>

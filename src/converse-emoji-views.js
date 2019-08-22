@@ -194,7 +194,7 @@ converse.plugins.add('converse-emoji-views', {
                 const options = {
                     root: this.el.querySelector('.emoji-picker__lists'),
                     rootMargin: '0px',
-                    threshold: [0.1, 0.25, 0.5]
+                    threshold: [0.1, 0.2, 0.3]
                 }
                 const handler = _.debounce(ev => {
                     const current = ev.filter(e => e.isIntersecting).pop();

@@ -13,7 +13,7 @@ import BrowserStorage from "backbone.browserStorage";
 import bootstrap from "bootstrap.native";
 import tpl_emoji_button from "templates/emoji_button.html";
 import tpl_emojis from "templates/emojis.html";
-const { Backbone, _ } = converse.env;
+const { Backbone, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 
@@ -116,7 +116,6 @@ converse.plugins.add('converse-emoji-views', {
                     this.createEmojiDropdown();
                     this.emoji_dropdown.toggle();
                     await _converse.api.waitUntil('emojisInitialized');
-                    this.emoji_picker_view.render();
                     this.emoji_picker_view.setScrollPosition();
                 }
             },
@@ -141,14 +140,14 @@ converse.plugins.add('converse-emoji-views', {
                 'keydown .emoji-search': 'onKeyDown'
             },
 
-            initialize () {
+            async initialize () {
                 this.debouncedFilter = _.debounce(input => this.filter(input.value), 150);
                 this.model.on('change:query', this.render, this);
                 this.model.on('change:current_skintone', this.render, this);
-                this.model.on('change:current_category', () => {
-                    this.render();
-                    this.setScrollPosition();
-                });
+                this.model.on('change:current_category', this.render, this);
+                await _converse.api.waitUntil('emojisInitialized');
+                this.render();
+                this.initIntersectionObserver();
                 _converse.api.trigger('emojiPickerViewInitialized');
             },
 
@@ -181,6 +180,38 @@ converse.plugins.add('converse-emoji-views', {
                     const input = this.el.querySelector('.emoji-search');
                     input.value = value;
                 }
+            },
+
+            initIntersectionObserver () {
+                if (!window.IntersectionObserver) {
+                    return;
+                }
+                const categories = sizzle('.emoji-picker__header .emoji-category', this.el);
+                const options = {
+                    root: this.el.querySelector('.emoji-picker__lists'),
+                    rootMargin: '0px',
+                    threshold: [0.1, 0.25, 0.5]
+                }
+                const handler = _.debounce(ev => {
+                    const current = ev.filter(e => e.isIntersecting).pop();
+                    if (current) {
+                        const category = current.target.getAttribute('data-category');
+                        const old_category = this.model.get('current_category');
+                        if (old_category !== category) {
+                            // XXX: Manually set the classes, it's quicker than using the VDOM
+                            this.model.set(
+                                {'current_category': category},
+                                {'silent': true}
+                            );
+                            const new_el = categories.filter(el => el.getAttribute('data-category') === category).pop();
+                            const old_el = categories.filter(el => el.getAttribute('data-category') === old_category).pop();
+                            new_el && u.addClass('picked', new_el);
+                            old_el && u.removeClass('picked', old_el);
+                        }
+                    }
+                }, 100);
+                const observer = new IntersectionObserver(handler, options);
+                sizzle('.emoji-picker', this.el).forEach(a => observer.observe(a));
             },
 
             onKeyDown (ev) {
@@ -256,13 +287,14 @@ converse.plugins.add('converse-emoji-views', {
                 const input = this.el.querySelector('.emoji-search');
                 input.value = '';
                 this.model.save({'current_category': category, 'query': undefined});
+                this.setScrollPosition();
             },
 
             setScrollPosition () {
                 const category = this.model.get('current_category');
                 const el = this.el.querySelector('.emoji-picker__lists');
                 const heading = this.el.querySelector(`#emoji-picker-${category}`);
-                el.scrollTop = heading.offsetTop - heading.offsetHeight*2;
+                el.scrollTop = heading.offsetTop - heading.offsetHeight*3;
             },
 
             insertEmoji (ev) {

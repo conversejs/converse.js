@@ -14,7 +14,7 @@ const config = {
         path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
         publicPath: '/dist/', // URL base path for all assets
         filename: 'converse.js',
-        chunkFilename: 'converse.[name].js'
+        chunkFilename: '[name].js'
     },
     devtool: 'source-map',
     plugins: [new MiniCssExtractPlugin({filename: '../dist/converse.css'})],
@@ -46,6 +46,19 @@ const config = {
                     "prependFilenameComment": __dirname
                 }
             }]
+        }, {
+            test: /LC_MESSAGES\/converse.po$/,
+            type: "json",
+            use: [
+            {
+                loader: 'po-loader',
+                options: {
+                    'format': 'jed',
+                    'domain': 'converse'
+                }
+            }
+            ]
+        }, {
         }, {
             test: /webfonts\/.*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
             use: [

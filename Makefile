@@ -14,7 +14,6 @@ JSDOC			?=  ./node_modules/.bin/jsdoc
 LERNA			?= ./node_modules/.bin/lerna
 OXIPNG			?= oxipng
 PAPER		   	=
-PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS				?= ./node_modules/.bin/r.js
 NPX				?= ./node_modules/.bin/npx
 SASS			?= ./node_modules/.bin/node-sass
@@ -43,7 +42,6 @@ help:
 	@echo " dev             Set up the development environment. To force a fresh start, run 'make clean' first."
 	@echo " html            Make standalone HTML files of the documentation."
 	@echo " po              Generate gettext PO files for each i18n language."
-	@echo " po2json         Generate JSON files from the language PO files."
 	@echo " pot             Generate a gettext POT file to be used for translations."
 	@echo " release         Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
 	@echo " serve           Serve this directory via a webserver on port 8000."
@@ -77,10 +75,6 @@ pot: dist/converse-no-dependencies-es2015.js
 po:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./locale/converse.pot -U \;
 
-.PHONY: po2json
-po2json:
-	find ./locale -maxdepth 1 -mindepth 1 -type d -exec $(PO2JSON) -f jed1.x -d converse {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
-
 ########################################################################
 ## Release management
 
@@ -99,7 +93,6 @@ release:
 	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' demo/*.html
 	make pot
 	make po
-	make po2json
 	make build
 	npm pack
 

@@ -237,7 +237,6 @@ _converse.default_settings = {
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
     keepalive: true,
-    locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
         'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'oc',
@@ -1336,9 +1335,8 @@ _converse.initialize = async function (settings, callback) {
         await finishInitialization();
         return _converse;
     } else if (i18n !== undefined) {
-        const url = u.interpolate(_converse.locales_url, {'locale': _converse.locale});
         try {
-            await i18n.fetchTranslations(_converse.locale, _converse.locales, url);
+            await i18n.fetchTranslations(_converse.locale, _converse.locales);
         } catch (e) {
             _converse.log(e.message, Strophe.LogLevel.FATAL);
         }

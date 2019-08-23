@@ -129,37 +129,12 @@ export default {
      * @method i18n#fetchTranslations
      * @param { String } locale -The given i18n locale
      * @param { Array } supported_locales -  List of locales supported
-     * @param { String } locale_url - The URL from which the translations should be fetched
      */
-    fetchTranslations (locale, supported_locales, locale_url) {
-        return new Promise((resolve, reject) => {
-            if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
-                return resolve();
-            }
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', locale_url, true);
-            xhr.setRequestHeader(
-                'Accept',
-                "application/json, text/javascript"
-            );
-            xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 400) {
-                    try {
-                        const data = window.JSON.parse(xhr.responseText);
-                        jed_instance = new Jed(data);
-                        resolve();
-                    } catch (e) {
-                        xhr.onerror(e);
-                    }
-                } else {
-                    xhr.onerror();
-                }
-            };
-            xhr.onerror = (e) => {
-                const err_message = e ? ` Error: ${e.message}` : '';
-                reject(new Error(`Could not fetch translations. Status: ${xhr.statusText}. ${err_message}`));
-            }
-            xhr.send();
-        });
+    async fetchTranslations (locale, supported_locales) {
+        if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
+            return;
+        }
+        const { default: data } = await import(/*webpackChunkName: "locales/[request]" */ `../../locale/${locale}/LC_MESSAGES/converse.po`);
+        jed_instance = new Jed(data);
     }
 };

@@ -19,6 +19,7 @@
     "clean": "rm -rf node_modules stamp-npm dist *.zip",
     "converse-headless.js": "webpack --mode=development --type=headless",
     "converse-headless.min.js": "npm run converse-headless.js && webpack --mode=production --type=headless",
+    "nodeps": "webpack --config webpack.nodeps.js",
     "build": "webpack --config webpack.prod.js",
     "lerna": "lerna bootstrap --hoist --ignore-scripts",
     "prepare": "npm run lerna && npm run build"

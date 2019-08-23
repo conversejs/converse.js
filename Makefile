@@ -21,6 +21,7 @@ SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS	  	=
 UGLIFYJS		?= node_modules/.bin/uglifyjs
+XGETTEXT		= xgettext
 
 
 # Internal variables.
@@ -65,10 +66,13 @@ serve_bg: stamp-npm
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=5.0.1 -c
+dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js stamp-npm @converse/headless
+	npm run nodeps
+
+GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ -keyword=___ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=5.0.1 dist/converse-no-dependencies.js -c
 
 .PHONY: pot
-pot: dist/converse-no-dependencies-es2015.js
+pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 
 .PHONY: po
@@ -155,18 +159,13 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 	$(OXIPNG) $@
 
 BUILDS = src/headless/dist/converse-headless.js \
-	src/headless/dist/converse-headless.min.js \
-	dist/converse-no-dependencies.js \
-	dist/converse-no-dependencies-es2015.js
+		 src/headless/dist/converse-headless.min.js
 
 src/headless/dist/converse-headless.js: src webpack.common.js stamp-npm @converse/headless
 	npm run converse-headless.js
 src/headless/dist/converse-headless.min.js: src webpack.common.js stamp-npm @converse/headless
 	npm run converse-headless.min.js
-dist/converse-no-dependencies.js: src webpack.common.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=development --type=nodeps
-dist/converse-no-dependencies-es2015.js: src webpack.common.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=development --type=nodeps --lang=es2015
+
 
 @converse/headless: src/headless
 

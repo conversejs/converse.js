@@ -8,7 +8,6 @@
 //
 import * as strophe from 'strophe.js/src/core';
 import Backbone from "backbone";
-import Promise from "es6-promise/dist/es6-promise.auto";
 import _ from "../lodash.noconflict";
 import sizzle from "sizzle";
 

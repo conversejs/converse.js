@@ -1,3 +1,4 @@
+/* global __dirname, module, process */
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const minimist = require('minimist');
 const path = require('path');
@@ -8,12 +9,6 @@ const config = {
     externals: [{
         "window": "window"
     }],
-    plugins: [
-        new HTMLWebpackPlugin({
-            title: 'Production',
-            template: 'webpack.html'
-        })
-    ],
     module: {
         rules: [
         {

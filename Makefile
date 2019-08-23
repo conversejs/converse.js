@@ -154,27 +154,18 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 	$(INKSCAPE) -e $@ -w $* $<
 	$(OXIPNG) $@
 
-BUILDS = dist/converse.js \
-	dist/converse.min.js \
-	src/headless/dist/converse-headless.js \
+BUILDS = src/headless/dist/converse-headless.js \
 	src/headless/dist/converse-headless.min.js \
-	dist/converse-no-dependencies.min.js \
 	dist/converse-no-dependencies.js \
 	dist/converse-no-dependencies-es2015.js
 
-dist/converse.js: src webpack.config.js stamp-npm @converse/headless
-	npm run converse.js
-dist/converse.min.js: src webpack.config.js stamp-npm @converse/headless
-	npm run converse.min.js
-src/headless/dist/converse-headless.js: src webpack.config.js stamp-npm @converse/headless
+src/headless/dist/converse-headless.js: src webpack.common.js stamp-npm @converse/headless
 	npm run converse-headless.js
-src/headless/dist/converse-headless.min.js: src webpack.config.js stamp-npm @converse/headless
+src/headless/dist/converse-headless.min.js: src webpack.common.js stamp-npm @converse/headless
 	npm run converse-headless.min.js
-dist/converse-no-dependencies.js: src webpack.config.js stamp-npm @converse/headless
+dist/converse-no-dependencies.js: src webpack.common.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=development --type=nodeps
-dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=production --type=nodeps
-dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @converse/headless
+dist/converse-no-dependencies-es2015.js: src webpack.common.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=development --type=nodeps --lang=es2015
 
 @converse/headless: src/headless
@@ -183,7 +174,8 @@ dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @conver
 dist:: build
 
 .PHONY: build
-build:: stamp-npm css $(BUILDS)
+build:: stamp-npm css
+	npm run build
 
 ########################################################################
 ## Tests
@@ -197,7 +189,7 @@ eslint: stamp-npm
 	$(ESLINT) spec/
 
 .PHONY: check
-check: eslint dist/converse.js
+check: eslint build
 	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --disable-gpu --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################

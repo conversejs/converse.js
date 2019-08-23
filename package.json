@@ -17,6 +17,8 @@
   "scripts": {
     "start": "webpack-dev-server --config webpack.dev.js",
     "clean": "rm -rf node_modules stamp-npm dist *.zip",
+    "converse-headless.js": "webpack --mode=development --type=headless",
+    "converse-headless.min.js": "npm run converse-headless.js && webpack --mode=production --type=headless",
     "build": "webpack --config webpack.prod.js",
     "lerna": "lerna bootstrap --hoist --ignore-scripts",
     "prepare": "npm run lerna && npm run build"
@@ -50,6 +52,7 @@
     "@babel/preset-env": "^7.5.4",
     "@converse/headless": "file:src/headless",
     "@fortawesome/fontawesome-free": "5.9.0",
+    "autoprefixer": "^9.6.1",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
@@ -84,6 +87,8 @@
     "npm": "^6.4.1",
     "po-loader": "^0.5.0",
     "po2json": "^1.0.0-alpha",
+    "postcss-clean": "^1.1.0",
+    "postcss-loader": "^3.0.0",
     "prettierx": "^0.6.0",
     "requirejs": "2.3.6",
     "run-headless-chromium": "^0.1.1",

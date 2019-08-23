@@ -122,7 +122,7 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss dist/converse.css dist/converse.min.css dist/website.css dist/website.min.css
+css: sass/*.scss dist/website.css dist/website.min.css
 
 dist/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
@@ -130,27 +130,9 @@ dist/website.css:: stamp-npm sass
 dist/website.min.css:: stamp-npm dist/website.css
 	$(CLEANCSS) dist/website.css > $@
 
-dist/converse.css:: stamp-npm webpack.config.js sass
-	npm run converse.css
-
-dist/converse.min.css:: stamp-npm dist/converse.css
-	npm run converse.min.css
-
-.PHONY: watchcss
-watchcss: stamp-npm
-	$(NPX)  webpack --type=css --mode=development --watch
-
-.PHONY: watchjs
-watchjs: stamp-npm src/headless/dist/converse-headless.js
-	$(NPX)  webpack --mode=development  --watch
-
-.PHONY: watchjsheadless
-watchjsheadless: stamp-npm
-	$(NPX)  webpack --mode=development  --watch --type=headless
-
 .PHONY: watch
 watch: stamp-npm
-	make -j 3 watchcss  watchjsheadless watchjs
+	npm start
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \

@@ -1,23 +1,19 @@
-/*global path, __dirname, module, process */
-'use strict'
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 const minimist = require('minimist');
 const path = require('path');
 const webpack = require('webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
     entry: path.resolve(__dirname, 'src/converse.js'),
     externals: [{
         "window": "window"
     }],
-    output: {
-        path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
-        publicPath: '/dist/', // URL base path for all assets
-        filename: 'converse.js',
-        chunkFilename: '[name].js'
-    },
-    devtool: 'source-map',
-    plugins: [new MiniCssExtractPlugin({filename: '../dist/converse.css'})],
+    plugins: [
+        new HTMLWebpackPlugin({
+            title: 'Production',
+            template: 'webpack.html'
+        })
+    ],
     module: {
         rules: [
         {
@@ -29,7 +25,7 @@ const config = {
             use: "exports-loader?filterXSS,filterCSS"
         },
         {
-            test: /templates\/.*\.(html|svg)$/,
+            test: /\.(html|svg)$/,
             exclude: /node_modules/,
             use: [{
                 loader: 'lodash-template-webpack-loader',
@@ -74,7 +70,7 @@ const config = {
             test: /\.scss$/,
             use: [
                 'style-loader',
-                MiniCssExtractPlugin.loader, {
+                {
                     loader: 'css-loader',
                     options: {
                         sourceMap: true
@@ -82,12 +78,13 @@ const config = {
                 }, {
                     loader: 'sass-loader',
                     options: {
-                    includePaths: [
-                        path.resolve(__dirname, 'node_modules/')
-                    ],
-                    sourceMap: true
+                        includePaths: [
+                            path.resolve(__dirname, 'node_modules/'),
+                        ],
+                        sourceMap: true
+                    }
                 }
-            }]
+            ]
         }, {
             test: /\.js$/,
             exclude: /(node_modules|spec|mockup)/,
@@ -174,15 +171,6 @@ function parameterize () {
             "strophe": "strophe",
             "window": "window"
         }];
-    }
-
-    if (type === 'css') {
-        console.log("Building only CSS");
-        config.entry = path.resolve(__dirname, 'sass/converse.scss');
-        config.output = {
-            path: path.resolve(__dirname, 'tmp'),
-            filename: 'css-builder.js'
-        }
     }
 
     if (mode === 'production') {

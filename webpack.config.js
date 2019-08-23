@@ -11,8 +11,10 @@ const config = {
         "window": "window"
     }],
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'converse.js'
+        path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
+        publicPath: '/dist/', // URL base path for all assets
+        filename: 'converse.js',
+        chunkFilename: 'converse.[name].js'
     },
     devtool: 'source-map',
     plugins: [new MiniCssExtractPlugin({filename: '../dist/converse.css'})],
@@ -139,37 +141,26 @@ function parameterize () {
 
     if (type === 'headless') {
         console.log("Making a headless build");
-        extend(config, {
-            entry: "@converse/headless/headless.js",
-            output: {
-                path: path.resolve(__dirname, 'dist'),
-                filename: 'converse-headless.js'
-            },
-        });
+        config.entry = "@converse/headless/headless.js";
+        config.output.filename = 'converse-headless.js';
     }
 
     if (type === 'nodeps') {
         console.log("Making a build without 3rd party dependencies");
-        extend(config, {
-            entry: path.resolve(__dirname, 'src/converse.js'),
-            externals: [{
-                "backbone": "backbone",
-                "backbone.nativeview": "backbone.nativeview",
-                "backbone.vdomview": "backbone.vdomview",
-                "backbone.browserStorage": "backbone.browserStorage",
-                "backbone.overview": "backbone.overview",
-                "es6-promise": "es6-promise",
-                "lodash": "lodash",
-                "lodash.converter": "lodash.converter",
-                "lodash.noconflict": "lodash.noconflict",
-                "strophe": "strophe",
-                "window": "window"
-            }],
-            output: {
-                path: path.resolve(__dirname, 'dist'),
-                filename: 'converse-no-dependencies.js'
-            },
-        });
+        config.output.filename = 'converse-no-dependencies.js';
+        config.externals = [{
+            "backbone": "backbone",
+            "backbone.nativeview": "backbone.nativeview",
+            "backbone.vdomview": "backbone.vdomview",
+            "backbone.browserStorage": "backbone.browserStorage",
+            "backbone.overview": "backbone.overview",
+            "es6-promise": "es6-promise",
+            "lodash": "lodash",
+            "lodash.converter": "lodash.converter",
+            "lodash.noconflict": "lodash.noconflict",
+            "strophe": "strophe",
+            "window": "window"
+        }];
     }
 
     if (type === 'css') {

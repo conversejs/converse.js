@@ -647,10 +647,6 @@ domain_placeholder
 The placeholder text shown in the domain input on the registration form.
 
 
-emoji_json_path
----------------
-
-* Default: ``emojis/``
 
 
 emoji_image_path

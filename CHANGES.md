@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.0.2 (Unreleased)
+
+- The JSON representing emojis is now fetched asynchronously as a separate file `converse.emojis.js`.
+- Webpack is now configured with a `publicPath` set to `/dist/`. This is necessary
+  so that chunks (such as the Emojis JSON) can be fetched asynchronously. This
+  means that all your assets need to be served at `/dist`. If you need to set a
+  different path, you'll need to set `publicPath` in `webpack.config.js` to
+  your preferred path and then rebuild all assets (e.g. `make dist`).
+
 ## 5.0.1 (2019-08-14)
 
 - Add a new GUI for moderator actions. You can trigger it by entering `/modtools` in a MUC.

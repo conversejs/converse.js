@@ -34,7 +34,7 @@
                 const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
                 const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
                 item.click()
-                expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':grinning: ');
+                expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':smiley: ');
                 toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
                 done();
             }));
@@ -65,9 +65,9 @@
                 expect(input.value).toBe(':gri');
                 let visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
                 expect(visible_emojis.length).toBe(3);
-                expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
-                expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':grin:');
-                expect(visible_emojis[2].getAttribute('data-emoji')).toBe(':grinning:');
+                expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grin:');
+                expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':grinning:');
+                expect(visible_emojis[2].getAttribute('data-emoji')).toBe(':grimacing:');
 
                 // Test that TAB autocompletes the to first match
                 view.emoji_picker_view.onKeyDown(tab_event);
@@ -121,7 +121,7 @@
                 await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
                 const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
                 const input = picker.querySelector('.emoji-search');
-                expect(sizzle('.insert-emoji:not(.hidden)', picker).length).toBe(1420);
+                expect(sizzle('.insert-emoji:not(.hidden)', picker).length).toBe(1589);
 
                 expect(view.emoji_picker_view.model.get('query')).toBeUndefined();
                 input.value = 'smiley';

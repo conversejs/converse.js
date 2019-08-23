@@ -367,6 +367,7 @@ converse.plugins.add('converse-emoji', {
         _converse.emojis_map = Object.keys(_converse.emojis.json).reduce((result, cat) => Object.assign(result, _converse.emojis.json[cat]), {});
         _converse.emojis_list = Object.keys(_converse.emojis.json).reduce((result, cat) => [...result, ...Object.values(_converse.emojis.json[cat])], []);
         _converse.emoji_shortnames = _converse.emojis_list.map(m => m.sn);
+        _converse.emoji_shortnames.sort();
 
         const getShortNames = () => _converse.emojis_list.map(emoji => emoji.sn.replace(/[+]/g, "\\$&")).join('|');
         _converse.emojis.shortnames_regex = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+getShortNames()+")", "gi");

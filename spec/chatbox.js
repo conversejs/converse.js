@@ -458,7 +458,7 @@
                     const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
                     const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
                     item.click()
-                    expect(counter.textContent).toBe('177');
+                    expect(counter.textContent).toBe('179');
 
                     const textarea = view.el.querySelector('.chat-textarea');
                     const ev = {

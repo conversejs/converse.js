@@ -23,7 +23,7 @@ const MUC_ROLE_WEIGHTS = {
     'none':         2,
 };
 
-const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, _ } = converse.env;
+const { Strophe, Backbone, $iq, $build, $msg, $pres, sizzle, _ } = converse.env;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");

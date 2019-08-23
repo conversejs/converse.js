@@ -10,7 +10,7 @@ import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import tpl_vcard from "./templates/vcard.html";
 
-const { Backbone, Promise, Strophe, _, $iq, $build, dayjs, sizzle } = converse.env;
+const { Backbone, Strophe, _, $iq, $build, dayjs, sizzle } = converse.env;
 const u = converse.env.utils;
 
 

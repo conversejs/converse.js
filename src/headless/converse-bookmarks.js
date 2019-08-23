@@ -13,7 +13,7 @@ import "@converse/headless/converse-muc";
 import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 
-const { Backbone, Promise, Strophe, $iq, sizzle, _ } = converse.env;
+const { Backbone, Strophe, $iq, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 

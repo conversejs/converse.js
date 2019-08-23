@@ -12,7 +12,7 @@ import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import sizzle from "sizzle";
 
-const { Backbone, Promise, Strophe, $iq, utils, _ } = converse.env;
+const { Backbone, Strophe, $iq, utils, _ } = converse.env;
 
 converse.plugins.add('converse-disco', {
 

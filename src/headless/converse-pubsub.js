@@ -9,7 +9,7 @@
 import "./converse-disco";
 import converse from "./converse-core";
 
-const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, dayjs, _ } = converse.env;
+const { Strophe, Backbone, $iq, $build, $msg, $pres, dayjs, _ } = converse.env;
 
 Strophe.addNamespace('PUBSUB_ERROR', Strophe.NS.PUBSUB+"#errors");
 

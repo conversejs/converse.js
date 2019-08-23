@@ -29,7 +29,7 @@ import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.html";
 import xss from "xss/dist/xss";
 
-const { $msg, Backbone, Promise, Strophe, _, sizzle, dayjs } = converse.env;
+const { $msg, Backbone, Strophe, _, sizzle, dayjs } = converse.env;
 const u = converse.env.utils;
 
 

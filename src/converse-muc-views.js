@@ -43,7 +43,7 @@ import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
 
-const { Backbone, Promise, Strophe, dayjs, sizzle, _, $iq, $msg, $pres } = converse.env;
+const { Backbone, Strophe, dayjs, sizzle, _, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 
 const ROLES = ['moderator', 'participant', 'visitor'];

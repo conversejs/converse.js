@@ -11,7 +11,6 @@ import 'strophe.js/src/websocket';
 import * as strophe from 'strophe.js/src/core';
 import Backbone from 'backbone';
 import BrowserStorage from 'backbone.browserStorage';
-import Promise from 'es6-promise/dist/es6-promise.auto';
 import _ from './lodash.noconflict';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
@@ -832,10 +831,15 @@ _converse.initialize = async function (settings, callback) {
     });
 
     /* Localisation */
-    if (i18n !== undefined) {
-        i18n.setLocales(settings.i18n, _converse);
-    } else {
+    if (i18n === undefined || _converse.isTestEnv()) {
         _converse.locale = 'en';
+    } else {
+        try {
+            _converse.locale = i18n.getLocale(settings.i18n, _converse.locales);
+            await i18n.fetchTranslations(_converse);
+        } catch (e) {
+            _converse.log(e.message, Strophe.LogLevel.FATAL);
+        }
     }
 
     // Module-level variables
@@ -1331,18 +1335,12 @@ _converse.initialize = async function (settings, callback) {
         this.connection = settings.connection;
     }
 
-    if (_converse.isTestEnv()) {
-        await finishInitialization();
-        return _converse;
-    } else if (i18n !== undefined) {
-        try {
-            await i18n.fetchTranslations(_converse.locale, _converse.locales);
-        } catch (e) {
-            _converse.log(e.message, Strophe.LogLevel.FATAL);
-        }
-    }
     await finishInitialization();
-    return init_promise;
+    if (_converse.isTestEnv()) {
+        return _converse;
+    } else {
+        return init_promise;
+    }
 };
 
 /**

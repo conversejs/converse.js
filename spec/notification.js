@@ -19,11 +19,7 @@
                             null, ['rosterGroupsFetched'], {},
                             async (done, _converse) => {
 
-                        // TODO: not yet testing show_desktop_notifications setting
-                        await test_utils.createContacts(_converse, 'current');
-                        // Hack to avoid having to fetch the roster again.
-                        _converse.session.set('roster_fetched', true);
-
+                        await test_utils.waitForRoster(_converse, 'current');
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);

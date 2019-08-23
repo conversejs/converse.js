@@ -170,14 +170,15 @@
         describe("When not supported", function () {
             describe("A file upload toolbar button", function () {
 
-                it("does not appear in private chats", mock.initConverse(async (done, _converse) => {
-                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    test_utils.createContacts(_converse, 'current');
-                    // Hack to avoid having to fetch the roster again.
-                    _converse.session.set('roster_fetched', true);
+                it("does not appear in private chats",
+                    mock.initConverse(
+                        null, ['emojisInitialized'], {},
+                        async function (done, _converse) {
 
-                    test_utils.openChatBoxFor(_converse, contact_jid);
-
+                    await test_utils.waitForRoster(_converse, 'current', 3);
+                    test_utils.openControlBox();
+                    const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                    await test_utils.openChatBoxFor(_converse, contact_jid);
                     await test_utils.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
                         [{'category': 'server', 'type':'IM'}],

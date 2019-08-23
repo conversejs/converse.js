@@ -22,13 +22,12 @@
 @import "bootstrap/scss/close";
 @import "bootstrap/scss/utilities";
 
-@import "bourbon";
 @mixin fade-in {
     opacity: 0;  /* make things invisible upon start */
-    @include animation-name(fadein);
-    @include animation-fill-mode(forwards);
-    @include animation-duration(1s);
-    @include animation-timing-function(ease);
+    animation-name: fadein;
+    animation-fill-mode: forwards;
+    animation-duration: 1s;
+    animation-timing-function: ease;
 }
 
 .fade-in {

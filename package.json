@@ -62,7 +62,6 @@
     "bootstrap": "^4.3.1",
     "bootstrap.native": "^2.0.26",
     "bootstrap.native-loader": "2.0.0",
-    "bourbon": "^4.3.2",
     "clean-css-cli": "^4.3.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.0.0",

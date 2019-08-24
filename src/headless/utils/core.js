@@ -8,7 +8,6 @@
 //
 import * as strophe from 'strophe.js/src/core';
 import Backbone from "backbone";
-import Promise from "es6-promise/dist/es6-promise.auto";
 import _ from "../lodash.noconflict";
 import sizzle from "sizzle";
 
@@ -418,11 +417,25 @@ u.siblingIndex = function (el) {
     return i;
 };
 
-u.getCurrentWord = function (input, index) {
+/**
+ * Returns the current word being written in the input element
+ * @method u#getCurrentWord
+ * @param {HTMLElement} input - The HTMLElement in which text is being entered
+ * @param {integer} [index] - An optional rightmost boundary index. If given, the text
+ *  value of the input element will only be considered up until this index.
+ * @param {string} [delineator] - An optional string delineator to
+ *  differentiate between words.
+ * @private
+ */
+u.getCurrentWord = function (input, index, delineator) {
     if (!index) {
         index = input.selectionEnd || undefined;
     }
-    return _.last(input.value.slice(0, index).split(' '));
+    let [word] = input.value.slice(0, index).split(' ').slice(-1);
+    if (delineator) {
+        [word] = word.split(delineator).slice(-1);
+    }
+    return word;
 };
 
 u.replaceCurrentWord = function (input, new_value) {
@@ -535,6 +548,7 @@ u.getUniqueId = function () {
 
 /**
  * Clears the specified timeout and interval.
+ * @method u#clearTimers
  * @param {number} timeout - Id if the timeout to clear.
  * @param {number} interval - Id of the interval to clear.
  * @private
@@ -550,12 +564,13 @@ function clearTimers(timeout, interval) {
 /**
  * Creates a {@link Promise} that resolves if the passed in function returns a truthy value.
  * Rejects if it throws or does not return truthy within the given max_wait.
+ * @method u#waitUntil
  * @param {Function} func - The function called every check_delay,
- * and the result of which is the resolved value of the promise.
+ *  and the result of which is the resolved value of the promise.
  * @param {number} [max_wait=300] - The time to wait before rejecting the promise.
  * @param {number} [check_delay=3] - The time to wait before each invocation of {func}.
  * @returns {Promise} A promise resolved with the value of func,
- * or rejected with the exception thrown by it or it times out.
+ *  or rejected with the exception thrown by it or it times out.
  * @copyright Simen Bekkhus 2016
  * @license MIT
  */

@@ -647,6 +647,8 @@ domain_placeholder
 The placeholder text shown in the domain input on the registration form.
 
 
+
+
 emoji_image_path
 ----------------
 
@@ -745,14 +747,13 @@ i18n
 
 Specify the locale/language.
 
-The translations for that locale must be available in JSON format at the
-`locales_url`_
+The translations for that locale must be served in JSON format at `/dist/locales/${i18n}-LC_MESSAGES-converse-po.js`.
+The default webpack configuration for Converse.js ensures that these files are
+generated and placed in the right location.
 
 If an explicit locale is specified via the ``i18n`` setting and the
-translations for that locale are not found at the `locales_url``, then
-then Converse will fall back to trying to determine the browser's language
-and fetching those translations, or if that fails the default English texts
-will be used.
+translations for that locale are not found, then Converse will fall back to trying to determine the browser's language
+and fetching those translations, or if that fails the default English strings will be used.
 
 idle_presence_timeout
 ---------------------
@@ -810,34 +811,6 @@ Any other locales will be ignored.
 When self-hosting, also make sure that the locales are served and therefore
 fetchable (via ``XMLHttpRequest``) at the URL specified by :ref:`locales-url`.
 
-.. _`locales-url`:
-
-locales_url
------------
-
-* Default: ``/locale/{{{locale}}}/LC_MESSAGES/converse.json``,
-
-The URL from where Converse should fetch translation JSON.
-
-The three curly braces ``{{{ }}}`` are
-`Mustache <https://github.com/janl/mustache.js#readme>`_-style
-variable interpolation which HTML-escapes the value being inserted. It's
-important that the inserted value is HTML-escaped, otherwise a malicious script
-injection attack could be attempted.
-
-The variable being interpolated via the curly braces is ``locale``, which is
-the value passed in to the `i18n`_ setting, or the browser's locale or the
-default local or ``en`` (resolved in that order).
-
-From version 3.3.0, Converse no longer bundles all translations into its
-final build file. Instead, only the relevant translations are fetched at
-runtime.
-
-This change also means that it's no longer possible to pass in the translation
-JSON data directly into ``_converse.initialize`` via the `i18n`_ setting.
-Instead, you only specify the language code (e.g. `de`) and that language's
-JSON translations will automatically be fetched via XMLHTTPRequest at
-``locales_url``.
 
 locked_domain
 -------------

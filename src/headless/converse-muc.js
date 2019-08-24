@@ -10,7 +10,7 @@
  * Implements the non-view logic for XEP-0045 Multi-User Chat
  */
 import "./converse-disco";
-import "./utils/emoji";
+import "./converse-emoji";
 import "./utils/muc";
 import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
@@ -23,7 +23,7 @@ const MUC_ROLE_WEIGHTS = {
     'none':         2,
 };
 
-const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, _ } = converse.env;
+const { Strophe, Backbone, $iq, $build, $msg, $pres, sizzle, _ } = converse.env;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");

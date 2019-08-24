@@ -43,7 +43,7 @@ import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
 
-const { Backbone, Promise, Strophe, dayjs, sizzle, _, $iq, $msg, $pres } = converse.env;
+const { Backbone, Strophe, dayjs, sizzle, _, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 
 const ROLES = ['moderator', 'participant', 'visitor'];
@@ -624,8 +624,6 @@ converse.plugins.add('converse-muc-views', {
                 'click .show-room-details-modal': 'showRoomDetailsModal',
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-occupants': 'toggleOccupants',
-                'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
-                'click .toggle-smiley': 'toggleEmojiMenu',
                 'click .upload-file': 'toggleFileUpload',
                 'keydown .chat-textarea': 'onKeyDown',
                 'keyup .chat-textarea': 'onKeyUp',
@@ -661,7 +659,6 @@ converse.plugins.add('converse-muc-views', {
                 this.model.occupants.on('change:role', this.onOccupantRoleChanged, this);
                 this.model.occupants.on('change:affiliation', this.onOccupantAffiliationChanged, this);
 
-                this.createEmojiPicker();
                 this.render();
                 this.updateAfterMessagesFetched();
                 this.createOccupantsView();
@@ -875,7 +872,6 @@ converse.plugins.add('converse-muc-views', {
                     this.model.save();
                 }
                 this.scrollDown();
-                this.renderEmojiPicker();
             },
 
             onConnectionStatusChanged () {

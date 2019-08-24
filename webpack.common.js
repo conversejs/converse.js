@@ -1,21 +1,14 @@
-/*global path, __dirname, module, process */
-'use strict'
+/* global __dirname, module, process */
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 const minimist = require('minimist');
 const path = require('path');
 const webpack = require('webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
     entry: path.resolve(__dirname, 'src/converse.js'),
     externals: [{
         "window": "window"
     }],
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'converse.js'
-    },
-    devtool: 'source-map',
-    plugins: [new MiniCssExtractPlugin({filename: '../dist/converse.css'})],
     module: {
         rules: [
         {
@@ -27,7 +20,7 @@ const config = {
             use: "exports-loader?filterXSS,filterCSS"
         },
         {
-            test: /templates\/.*\.(html|svg)$/,
+            test: /\.(html|svg)$/,
             exclude: /node_modules/,
             use: [{
                 loader: 'lodash-template-webpack-loader',
@@ -45,6 +38,19 @@ const config = {
                 }
             }]
         }, {
+            test: /LC_MESSAGES\/converse.po$/,
+            type: "json",
+            use: [
+            {
+                loader: 'po-loader',
+                options: {
+                    'format': 'jed',
+                    'domain': 'converse'
+                }
+            }
+            ]
+        }, {
+        }, {
             test: /webfonts\/.*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
             use: [
             {
@@ -59,7 +65,7 @@ const config = {
             test: /\.scss$/,
             use: [
                 'style-loader',
-                MiniCssExtractPlugin.loader, {
+                {
                     loader: 'css-loader',
                     options: {
                         sourceMap: true
@@ -67,12 +73,13 @@ const config = {
                 }, {
                     loader: 'sass-loader',
                     options: {
-                    includePaths: [
-                        path.resolve(__dirname, 'node_modules/')
-                    ],
-                    sourceMap: true
+                        includePaths: [
+                            path.resolve(__dirname, 'node_modules/'),
+                        ],
+                        sourceMap: true
+                    }
                 }
-            }]
+            ]
         }, {
             test: /\.js$/,
             exclude: /(node_modules|spec|mockup)/,
@@ -139,46 +146,26 @@ function parameterize () {
 
     if (type === 'headless') {
         console.log("Making a headless build");
-        extend(config, {
-            entry: "@converse/headless/headless.js",
-            output: {
-                path: path.resolve(__dirname, 'dist'),
-                filename: 'converse-headless.js'
-            },
-        });
+        config.entry = "@converse/headless/headless.js";
+        config.output.filename = 'converse-headless.js';
     }
 
     if (type === 'nodeps') {
         console.log("Making a build without 3rd party dependencies");
-        extend(config, {
-            entry: path.resolve(__dirname, 'src/converse.js'),
-            externals: [{
-                "backbone": "backbone",
-                "backbone.nativeview": "backbone.nativeview",
-                "backbone.vdomview": "backbone.vdomview",
-                "backbone.browserStorage": "backbone.browserStorage",
-                "backbone.overview": "backbone.overview",
-                "es6-promise": "es6-promise",
-                "lodash": "lodash",
-                "lodash.converter": "lodash.converter",
-                "lodash.noconflict": "lodash.noconflict",
-                "strophe": "strophe",
-                "window": "window"
-            }],
-            output: {
-                path: path.resolve(__dirname, 'dist'),
-                filename: 'converse-no-dependencies.js'
-            },
-        });
-    }
-
-    if (type === 'css') {
-        console.log("Building only CSS");
-        config.entry = path.resolve(__dirname, 'sass/converse.scss');
-        config.output = {
-            path: path.resolve(__dirname, 'tmp'),
-            filename: 'css-builder.js'
-        }
+        config.output.filename = 'converse-no-dependencies.js';
+        config.externals = [{
+            "backbone": "backbone",
+            "backbone.nativeview": "backbone.nativeview",
+            "backbone.vdomview": "backbone.vdomview",
+            "backbone.browserStorage": "backbone.browserStorage",
+            "backbone.overview": "backbone.overview",
+            "es6-promise": "es6-promise",
+            "lodash": "lodash",
+            "lodash.converter": "lodash.converter",
+            "lodash.noconflict": "lodash.noconflict",
+            "strophe": "strophe",
+            "window": "window"
+        }];
     }
 
     if (mode === 'production') {

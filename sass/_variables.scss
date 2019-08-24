@@ -43,8 +43,8 @@ $mobile_portrait_length: 480px !default;
     --send-button-height: 27px;
     --send-button-margin: 3px;
 
-	--controlbox-heading-top-margin: 0.75em;
-	--inline-action-margin: 0.75em;
+    --controlbox-heading-top-margin: 0.75em;
+    --inline-action-margin: 0.75em;
 
     --roster-height: 194px;
 
@@ -153,7 +153,7 @@ $mobile_portrait_length: 480px !default;
     --occupants-border-bottom: 1px solid lightgrey;
     --occupants-features-display: block;
 
-    --embedded-emoji-picker-height: 200px;
+    --embedded-emoji-picker-height: 300px;
 
     --avatar-border-radius: 10%;
     --avatar-border: 1px solid lightgrey;
@@ -162,14 +162,14 @@ $mobile_portrait_length: 480px !default;
     --fullpage-chat-head-height: 62px;
     --fullpage-chat-height: calc(var(--vh, 1vh) * 100);
     --fullpage-chat-width: 100%;
-    --fullpage-emoji-picker-height: 200px;
+    --fullpage-emoji-picker-height: 300px;
     --fullpage-max-chat-textarea-height: 15em;
 
     --overlayed-chat-head-height: 55px;
     --overlayed-chat-height: 450px;
     --overlayed-chat-width: 250px;
     --overlayed-chatbox-hover-height: 1em;
-    --overlayed-emoji-picker-height: 100px;
+    --overlayed-emoji-picker-height: 150px;
     --overlayed-max-chat-textarea-height: 200px;
     --overlayed-badge-color: #818479; // $gray-color
 

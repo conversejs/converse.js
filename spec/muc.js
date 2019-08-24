@@ -264,7 +264,7 @@
 
             it("will be created when muc_instant_rooms is set to true",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
@@ -555,7 +555,7 @@
 
             it("is opened when an xmpp: URI is clicked inside another groupchat",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
@@ -584,7 +584,7 @@
 
             it("shows a notification if it's not anonymous",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 const sent_IQs = _converse.connection.IQ_stanzas;
@@ -1705,7 +1705,7 @@
 
             it("shows users currently present in the groupchat",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -2242,7 +2242,7 @@
 
             it("escapes the subject before rendering it, to avoid JS-injection attacks",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
@@ -2766,7 +2766,7 @@
 
             it("informs users if they have been kicked out of the groupchat",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 /*  <presence
@@ -3491,7 +3491,7 @@
 
             it("takes a /kick command to kick a user",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 let sent_IQ, IQ_id;
@@ -3933,7 +3933,7 @@
 
             it("will show an error message if the groupchat requires a password",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'protected';
@@ -3955,7 +3955,7 @@
                 const chat_body = view.el.querySelector('.chatroom-body');
                 expect(view.renderPasswordForm).toHaveBeenCalled();
                 expect(chat_body.querySelectorAll('form.chatroom-form').length).toBe(1);
-                expect(chat_body.querySelector('label').textContent.trim())
+                expect(chat_body.querySelector('.chatroom-form label').textContent.trim())
                     .toBe('This groupchat requires a password');
 
                 // Let's submit the form
@@ -4723,7 +4723,7 @@
 
             it("can be opened from a link in the \"Groupchats\" section of the controlbox",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -4867,7 +4867,7 @@
 
             it("shows the number of unread mentions received",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {'allow_bookmarks': false},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {'allow_bookmarks': false},
                     async function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -4878,6 +4878,7 @@
                 const message = 'fires: Your attention is required';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'fires');
                 const view = _converse.api.chatviews.get(muc_jid);
+                await u.waitUntil(() => roomspanel.el.querySelectorAll('.available-room').length);
                 expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                 expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(0);
 

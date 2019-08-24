@@ -1,5 +1,17 @@
 # Changelog
 
+## 5.0.2 (Unreleased)
+
+- `po` translations files are now loaded via Webpack. As a result the `locales_url`
+  config option is now removed given that the path to the locale JSON files is now
+  determined by the webpack config and can't be changed at runtime.
+- The JSON representing emojis is now fetched asynchronously as a separate file `converse.emojis.js`.
+- Webpack is now configured with a `publicPath` set to `/dist/`. This is necessary
+  so that chunks (such as the emojis and locales JSON files) can be fetched asynchronously.
+  This means that all your assets need to be served at `/dist`. If you need to set a
+  different path, you'll need to set `publicPath` in `webpack.config.js` to
+  your preferred path and then rebuild all assets (e.g. `make dist`).
+
 ## 5.0.1 (2019-08-14)
 
 - Add a new GUI for moderator actions. You can trigger it by entering `/modtools` in a MUC.

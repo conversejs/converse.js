@@ -1,9 +1,9 @@
 @mixin fade-in {
     opacity: 0;  /* make things invisible upon start */
-    @include animation-name(fadein);
-    @include animation-fill-mode(forwards);
-    @include animation-duration(0.75s);
-    @include animation-timing-function(ease);
+    animation-name: fadein;
+    animation-fill-mode: forwards;
+    animation-duration: 0.75s;
+    animation-timing-function: ease;
 }
 
 body.converse-fullscreen {
@@ -16,10 +16,10 @@ body.converse-fullscreen {
         display: flex;
         justify-content: space-between;
         margin-top: 15vh;
-        @include animation-name(fadein);
-        @include animation-fill-mode(forwards);
-        @include animation-duration(5s);
-        @include animation-timing-function(ease);
+        animation-name: fadein;
+        animation-fill-mode: forwards;
+        animation-duration: 5s;
+        animation-timing-function: ease;
     }
 
     .converse-brand__padding {
@@ -121,9 +121,9 @@ body.converse-fullscreen {
         height: 3em;
     }
     &.converse-embedded {
-        @include box-sizing(border-box);
+        box-sizing: border-box;
         *, *:before, *:after {
-            @include box-sizing(border-box);
+            box-sizing: border-box;
         }
         bottom: auto;
         height: 100%; // When embedded, it fills the containing element
@@ -283,6 +283,10 @@ body.converse-fullscreen {
         margin: 0;
     }
 
+    a {
+      cursor: pointer;
+    }
+
     a, a:visited, a:not([href]):not([tabindex]) {
         text-decoration: none;
         color: var(--link-color);
@@ -352,7 +356,7 @@ body.converse-fullscreen {
 
     .no-text-select {
         -webkit-touch-callout: none;
-        @include user-select(none);
+        user-select: none;
     }
 
     @keyframes colorchange-chatmessage {
@@ -407,10 +411,10 @@ body.converse-fullscreen {
 
     .visible {
         opacity:0;  /* make things invisible upon start */
-        @include animation-name(fadein);
-        @include animation-fill-mode(forwards);
-        @include animation-duration(500ms);
-        @include animation-timing-function(ease);
+        animation-name: fadein;
+        animation-fill-mode: forwards;
+        animation-duration: 500ms;
+        animation-timing-function: ease;
     }
 
     .hidden {
@@ -436,17 +440,17 @@ body.converse-fullscreen {
     }
 
 
-    @include keyframes(spin) {
+    @keyframes spin  {
         from {
-            @include transform(rotate(0deg));
+            transform: rotate(0deg);
         }
         to {
-            @include transform(rotate(359deg));
+            transform: rotate(359deg);
         }
     }
 
     .spinner {
-        @include animation(spin 2s infinite, linear);
+        animation: spin 2s infinite, linear;
         width: 1em;
         display: block;
         text-align: center;

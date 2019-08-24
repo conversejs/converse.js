@@ -6,13 +6,13 @@
 /**
  * @module converse-chatboxes
  */
-import "./utils/emoji";
+import "./converse-emoji";
 import "./utils/form";
 import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import filesize from "filesize";
 
-const { $msg, Backbone, Promise, Strophe, dayjs, sizzle, utils, _ } = converse.env;
+const { $msg, Backbone, Strophe, dayjs, sizzle, utils, _ } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
@@ -23,7 +23,7 @@ Strophe.addNamespace('MARKERS', 'urn:xmpp:chat-markers:0');
 
 converse.plugins.add('converse-chatboxes', {
 
-    dependencies: ["converse-roster", "converse-vcard"],
+    dependencies: ["converse-emoji", "converse-roster", "converse-vcard"],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -946,7 +946,7 @@ converse.plugins.add('converse-chatboxes', {
              * @param { XMLElement } original_stanza - The original stanza, that contains the
              *  message stanza, if it was contained, otherwise it's the message stanza itself.
              */
-            getMessageAttributesFromStanza (stanza, original_stanza) {
+            async getMessageAttributesFromStanza (stanza, original_stanza) {
                 const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop();
                 const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
                 const text = this.getMessageBody(stanza) || undefined;
@@ -956,6 +956,7 @@ converse.plugins.add('converse-chatboxes', {
                             stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                             stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
+                const is_single_emoji = text ? await u.isSingleEmoji(text) : false;
                 const replaced_id = this.getReplaceId(stanza)
                 const msgid = replaced_id || stanza.getAttribute('id') || original_stanza.getAttribute('id');
                 const attrs = Object.assign({
@@ -963,7 +964,7 @@ converse.plugins.add('converse-chatboxes', {
                     'is_archived': this.isArchived(original_stanza),
                     'is_delayed': !!delay,
                     'is_spoiler': !!spoiler,
-                    'is_single_emoji': text ? u.isSingleEmoji(text) : false,
+                    'is_single_emoji': is_single_emoji,
                     'message': text,
                     'msgid': msgid,
                     'references': this.getReferencesFromStanza(stanza),
@@ -1087,7 +1088,7 @@ converse.plugins.add('converse-chatboxes', {
                 collection.forEach(c => c.maybeShow());
                 /**
                  * Triggered when a message stanza is been received and processed.
-                 * @event _converse#message
+                 * @event _converse#chatBoxesFetched
                  * @type { object }
                  * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
                  * @property { XMLElement } stanza

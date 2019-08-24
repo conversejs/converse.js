@@ -112,15 +112,6 @@
         text-align: left;
         margin: 0 var(--chat-gutter);
 
-        img {
-            &.emoji {
-                height: 1.2em;
-                width: 1.2em;
-                margin: 0 .05em 0 .1em;
-                vertical-align: -0.1em;
-            }
-        }
-
         @media screen and (max-height: $mobile-landscape-height) {
             margin: 0;
             width: var(--mobile-chat-width);
@@ -341,7 +332,7 @@
                     }
                     .toolbar-menu {
                         background-color: #fff;
-                        bottom: 2rem;
+                        bottom: 1.7rem;
                         box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
                         height: auto;
                         margin-bottom: 0;
@@ -363,64 +354,6 @@
 
                         a {
                             color: var(--link-color);
-                        }
-                        .emoji-picker-container {
-                            background: white;
-                        }
-                        ul {
-                            &.emoji-picker {
-                                overflow-y: scroll;
-                                overflow-x: hidden;
-                                padding: 0.5em;
-                            }
-                            li {
-                                margin-left: 0;
-                                cursor: pointer;
-                                list-style: none;
-                                position: relative;
-                                &.insert-emoji {
-                                    padding: 0.2em;
-                                    &.picked {
-                                        background-color: var(--highlight-color);
-                                    }
-                                    &:hover {
-                                        background-color: var(--highlight-color);
-                                    }
-                                    a {
-                                        font-size: var(--font-size-huge);
-                                        &:hover {
-                                            color: #8f2831;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    &.toggle-smiley {
-                        a.toggle-smiley {
-                            padding: 0;
-                        }
-                        .emoji-toolbar {
-                            box-shadow: 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
-                            .emoji-category-picker {
-                                padding-top: 0.5em;
-                                ul {
-                                    display: flex;
-                                    flex-direction: row;
-                                    justify-content: space-between;
-                                }
-                            }
-
-                            .emoji-category-picker,
-                            .emoji-skintone-picker {
-                                li {
-                                    padding: 0.25em;
-                                    font-size: var(--font-size-huge);
-                                    &:hover {
-                                        background-color: var(--highlight-color);
-                                    }
-                                }
-                            }
                         }
                     }
                     &.toggle-otr {
@@ -492,11 +425,6 @@
             @include make-col(4);
         }
     }
-
-    .emoji-picker {
-        height: var(--embedded-emoji-picker-height);
-    }
-    
     .chatbox {
         min-width: var(--overlayed-chat-width) !important;
         width: var(--overlayed-chat-width);
@@ -526,33 +454,12 @@
     .chat-textarea {
         max-height: var(--overlayed-max-chat-textarea-height);
     }
-    .emoji-picker {
-        height: var(--overlayed-emoji-picker-height);
-    }
     .chatbox {
         .sendXMPPMessage {
             .chat-toolbar {
                 li {
                     .toolbar-menu {
                         min-width: 235px;
-                        ul {
-                            &.emoji-toolbar {
-                                width: 100%;
-                                .emoji-category {
-                                    float: left;
-                                }
-                            }
-                        }
-                    }
-                    &.toggle-smiley {
-                        .emoji-toolbar {
-                            .emoji-category-picker {
-                                ul {
-                                    flex-wrap: wrap;
-                                    justify-content: flex-start;
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -561,15 +468,14 @@
 }
 
 @include media-breakpoint-down(sm) {
-	#conversejs.converse-overlayed {
-		> .row {
-			flex-direction: column;
-
+    #conversejs.converse-overlayed {
+        > .row {
+            flex-direction: column;
             &.no-gutters {
                 margin: -1em;
             }
-		}
-	}
+        }
+    }
 }
 
 
@@ -684,9 +590,6 @@
     .chat-textarea {
         max-height: var(--fullpage-max-chat-textarea-height);
     }
-    .emoji-picker {
-        height: var(--fullpage-emoji-picker-height);
-    }
     .chatbox {
         .box-flyout {
             background-color: var(--chat-head-color);
@@ -713,19 +616,6 @@
         .sendXMPPMessage {
             ul {
                 width: 100%;
-            }
-            .toggle-smiley {
-                ul {
-                    &.emoji-toolbar {
-                        .emoji-category-picker {
-                            margin-right: 5em;
-                        }
-                        .emoji-category {
-                            padding-left: 10px;
-                            padding-right: 10px;
-                        }
-                    }
-                }
             }
         }
     }

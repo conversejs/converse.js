@@ -117,11 +117,8 @@
                 let el = online_contacts[0];
                 const jid = el.textContent.trim().replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 el.click();
-                await u.waitUntil(() => _converse.chatboxes.length == 2);
+                await u.waitUntil(() => document.querySelectorAll("#conversejs .chatbox").length == 2);
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
-                // Check that new chat boxes are created to the left of the
-                // controlbox (but to the right of all existing chat boxes)
-                expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(2);
                 online_contacts[1].click();
                 await u.waitUntil(() => _converse.chatboxes.length == 3);
                 el = online_contacts[1];
@@ -174,7 +171,7 @@
             }));
 
             it("can be trimmed to conserve space",
-                mock.initConverse(null, ['rosterGroupsFetched'], {},
+                mock.initConverse(null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
                 spyOn(_converse.chatboxviews, 'trimChats');
@@ -441,36 +438,6 @@
                     done();
                 }));
 
-                it("contains a button for inserting emojis",
-                    mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
-
-                    await test_utils.waitForRoster(_converse, 'current');
-                    test_utils.openControlBox();
-
-                    const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    await test_utils.openChatBoxFor(_converse, contact_jid);
-                    const view = _converse.chatboxviews.get(contact_jid);
-                    const toolbar = view.el.querySelector('ul.chat-toolbar');
-                    expect(toolbar.querySelectorAll('li.toggle-smiley').length).toBe(1);
-                    // Register spies
-                    spyOn(view, 'toggleEmojiMenu').and.callThrough();
-                    spyOn(view, 'insertEmoji').and.callThrough();
-
-                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    toolbar.querySelector('li.toggle-smiley').click();
-
-                    await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container')));
-                    var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
-                    var items = picker.querySelectorAll('.emoji-picker li');
-                    items[0].click()
-                    expect(view.insertEmoji).toHaveBeenCalled();
-                    expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':grinning: ');
-                    toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
-                    done();
-                }));
-
                 it("shows the remaining character count if a message_limit is configured",
                     mock.initConverse(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 200},
@@ -488,11 +455,10 @@
                     expect(counter.textContent).toBe('188');
 
                     toolbar.querySelector('li.toggle-smiley').click();
-                    await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container')));
-                    var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
-                    var items = picker.querySelectorAll('.emoji-picker li');
-                    items[0].click()
-                    expect(counter.textContent).toBe('177');
+                    const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                    const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
+                    item.click()
+                    expect(counter.textContent).toBe('179');
 
                     const textarea = view.el.querySelector('.chat-textarea');
                     const ev = {
@@ -960,7 +926,7 @@
 
                     it("is sent if the user has stopped typing since 2 minutes",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                             async function (done, _converse) {
 
                         const sent_stanzas = _converse.connection.sent_stanzas;
@@ -1264,7 +1230,7 @@
 
             it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1347,7 +1313,7 @@
             }));
 
             it("is incremeted when message is received, chatbox is scrolled down and the window is not focused",
-                mock.initConverse(null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                mock.initConverse(null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1367,7 +1333,7 @@
 
             it("is incremeted when message is received, chatbox is scrolled up and the window is not focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1385,7 +1351,7 @@
 
             it("is cleared when ChatBoxView was scrolled down and the window become focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1404,7 +1370,7 @@
 
             it("is not cleared when ChatBoxView was scrolled up and the windows become focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1509,20 +1475,21 @@
 
             it("is cleared when unread messages are viewed which were received in scrolled-up chatbox",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
+                test_utils.openControlBox();
                 await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 const chatbox = _converse.chatboxes.get(sender_jid);
-                const view = _converse.chatboxviews.get(sender_jid);
                 const msgFactory = () => test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
-                const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
+                const selector = `a.open-chat:contains("${chatbox.get('nickname')}") .msgs-indicator`;
                 const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
                 chatbox.save('scrolled', true);
                 _converse.chatboxes.onMessage(msgFactory());
+                const view = _converse.chatboxviews.get(sender_jid);
                 await u.waitUntil(() => view.model.messages.length);
                 expect(select_msgs_indicator().textContent).toBe('1');
                 view.viewUnreadMessages();
@@ -1533,7 +1500,7 @@
 
             it("is not cleared after user clicks on roster view when chatbox is already opened and scrolled up",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1560,7 +1527,7 @@
 
             it("is displayed when scrolled up chatbox is minimized after receiving unread messages",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1588,7 +1555,7 @@
 
             it("is incremented when message is received and windows is not focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1638,3 +1605,4 @@
         });
     });
 }));
+

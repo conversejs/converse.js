@@ -19,7 +19,7 @@
     describe("A chat room", function () {
 
         it("can be bookmarked", mock.initConverse(
-            null, ['rosterGroupsFetched'], {},
+            null, ['rosterGroupsFetched', 'emojisInitialized'], {},
             async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(

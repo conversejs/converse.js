@@ -6,39 +6,11 @@
 // Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-import 'dayjs/locale/af';
-import 'dayjs/locale/ar';
-import 'dayjs/locale/bg';
-import 'dayjs/locale/ca';
-import 'dayjs/locale/cs';
-import 'dayjs/locale/de';
-import 'dayjs/locale/eo';
-import 'dayjs/locale/es';
-import 'dayjs/locale/eu';
-import 'dayjs/locale/fr';
-import 'dayjs/locale/gl';
-import 'dayjs/locale/he';
-import 'dayjs/locale/hi';
-import 'dayjs/locale/hu';
-import 'dayjs/locale/id';
-import 'dayjs/locale/it';
-import 'dayjs/locale/ja';
-import 'dayjs/locale/nb';
-import 'dayjs/locale/nl';
-import 'dayjs/locale/oc-lnc';
-import 'dayjs/locale/pl';
-import 'dayjs/locale/pt';
-import 'dayjs/locale/pt-br';
-import 'dayjs/locale/ro';
-import 'dayjs/locale/ru';
-import 'dayjs/locale/tr';
-import 'dayjs/locale/uk';
-import 'dayjs/locale/zh-cn';
-import 'dayjs/locale/zh-tw';
+import * as strophe from 'strophe.js/src/core';
 import Jed from "jed";
-import Promise from "es6-promise/dist/es6-promise.auto";
-import _ from "./lodash.noconflict";
 import dayjs from "dayjs";
+
+const Strophe = strophe.default.Strophe;
 
 
 function detectLocale (library_check) {
@@ -69,11 +41,11 @@ function detectLocale (library_check) {
 }
 
 function isConverseLocale (locale, supported_locales) {
-    return _.isString(locale) && _.includes(supported_locales, locale);
+    return typeof locale === 'string' && supported_locales.includes(locale);
 }
 
 function getLocale (preferred_locale, isSupportedByLibrary) {
-    if (_.isString(preferred_locale)) {
+    if (typeof preferred_locale === 'string') {
         if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
             return preferred_locale;
         }
@@ -103,12 +75,8 @@ let jed_instance;
  */
 export default {
 
-    setLocales (preferred_locale, _converse) {
-        _converse.locale = getLocale(
-            preferred_locale,
-            _.partial(isConverseLocale, _, _converse.locales)
-        );
-        dayjs.locale(getLocale(preferred_locale, l => dayjs.locale(l)));
+    getLocale (preferred_locale, available_locales) {
+        return getLocale(preferred_locale, preferred => isConverseLocale(preferred, available_locales));
     },
 
     translate (str) {
@@ -127,39 +95,16 @@ export default {
      * Fetch the translations for the given local at the given URL.
      * @private
      * @method i18n#fetchTranslations
-     * @param { String } locale -The given i18n locale
-     * @param { Array } supported_locales -  List of locales supported
-     * @param { String } locale_url - The URL from which the translations should be fetched
+     * @param { _converse }
      */
-    fetchTranslations (locale, supported_locales, locale_url) {
-        return new Promise((resolve, reject) => {
-            if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
-                return resolve();
-            }
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', locale_url, true);
-            xhr.setRequestHeader(
-                'Accept',
-                "application/json, text/javascript"
-            );
-            xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 400) {
-                    try {
-                        const data = window.JSON.parse(xhr.responseText);
-                        jed_instance = new Jed(data);
-                        resolve();
-                    } catch (e) {
-                        xhr.onerror(e);
-                    }
-                } else {
-                    xhr.onerror();
-                }
-            };
-            xhr.onerror = (e) => {
-                const err_message = e ? ` Error: ${e.message}` : '';
-                reject(new Error(`Could not fetch translations. Status: ${xhr.statusText}. ${err_message}`));
-            }
-            xhr.send();
-        });
+    async fetchTranslations (_converse) {
+        const locale = _converse.locale;
+        if (!isConverseLocale(locale, _converse.locales) || locale === 'en') {
+            return;
+        }
+        const { default: data } = await import(/*webpackChunkName: "locales/[request]" */ `../../locale/${locale}/LC_MESSAGES/converse.po`);
+        await import(/*webpackChunkName: "locales/dayjs/[request]" */ `dayjs/locale/${locale.toLowerCase().replace('_', '-')}`);
+        dayjs.locale(getLocale(_converse.locale, l => dayjs.locale(l)));
+        jed_instance = new Jed(data);
     }
 };

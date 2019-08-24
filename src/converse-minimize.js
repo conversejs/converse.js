@@ -16,7 +16,7 @@ import tpl_toggle_chats from "templates/toggle_chats.html";
 import tpl_trimmed_chat from "templates/trimmed_chat.html";
 
 
-const { _ , Backbone, Promise, Strophe, dayjs } = converse.env;
+const { _ , Backbone, Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
 
 converse.plugins.add('converse-minimize', {

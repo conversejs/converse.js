@@ -6,6 +6,7 @@
 /**
  * @module converse-message-view
  */
+import "@converse/headless/converse-emoji";
 import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
 import { debounce } from 'lodash'
@@ -17,10 +18,10 @@ import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
 import tpl_message_versions_modal from "templates/message_versions_modal.html";
 import tpl_spinner from "templates/spinner.html";
-import u from "@converse/headless/utils/emoji";
 import xss from "xss/dist/xss";
 
 const { Backbone, dayjs } = converse.env;
+const u = converse.env.utils;
 
 
 converse.plugins.add('converse-message-view', {
@@ -223,7 +224,7 @@ converse.plugins.add('converse-message-view', {
                 text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
                 text = u.addHyperlinks(text);
                 text = u.renderNewLines(text);
-                text = u.addEmoji(_converse, text);
+                text = u.addEmoji(text);
                 /**
                  * Synchronous event which provides a hook for transforming a chat message's body text
                  * after the default transformations have been applied.
@@ -237,7 +238,7 @@ converse.plugins.add('converse-message-view', {
             },
 
             async renderChatMessage () {
-                const is_me_message = this.model.isMeCommand();
+                await _converse.api.waitUntil('emojisInitialized');
                 const time = dayjs(this.model.get('time'));
                 const role = this.model.vcard ? this.model.vcard.get('role') : null;
                 const roles = role ? role.split(',') : [];
@@ -248,7 +249,7 @@ converse.plugins.add('converse-message-view', {
                         '__': __,
                         'is_groupchat_message': this.model.get('type') === 'groupchat',
                         'occupant': this.model.occupant,
-                        'is_me_message': is_me_message,
+                        'is_me_message': this.model.isMeCommand(),
                         'roles': roles,
                         'pretty_time': time.format(_converse.time_format),
                         'time': time.toISOString(),

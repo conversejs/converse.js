@@ -18,8 +18,7 @@ import tpl_profile_modal from "templates/profile_modal.html";
 import tpl_profile_view from "templates/profile_view.html";
 import tpl_status_option from "templates/status_option.html";
 
-
-const { Strophe, Backbone, Promise, utils, _, dayjs, sizzle } = converse.env;
+const { Strophe, Backbone, utils, _, dayjs, sizzle } = converse.env;
 const u = converse.env.utils;
 
 

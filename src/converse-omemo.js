@@ -13,7 +13,7 @@ import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
 
-const { Backbone, Promise, Strophe, dayjs, sizzle, $build, $iq, $msg, _ } = converse.env;
+const { Backbone, Strophe, dayjs, sizzle, $build, $iq, $msg, _ } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO+".devicelist");

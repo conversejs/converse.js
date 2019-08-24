@@ -14,7 +14,6 @@ JSDOC			?=  ./node_modules/.bin/jsdoc
 LERNA			?= ./node_modules/.bin/lerna
 OXIPNG			?= oxipng
 PAPER		   	=
-PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS				?= ./node_modules/.bin/r.js
 NPX				?= ./node_modules/.bin/npx
 SASS			?= ./node_modules/.bin/node-sass
@@ -22,6 +21,7 @@ SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS	  	=
 UGLIFYJS		?= node_modules/.bin/uglifyjs
+XGETTEXT		= xgettext
 
 
 # Internal variables.
@@ -43,7 +43,6 @@ help:
 	@echo " dev             Set up the development environment. To force a fresh start, run 'make clean' first."
 	@echo " html            Make standalone HTML files of the documentation."
 	@echo " po              Generate gettext PO files for each i18n language."
-	@echo " po2json         Generate JSON files from the language PO files."
 	@echo " pot             Generate a gettext POT file to be used for translations."
 	@echo " release         Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
 	@echo " serve           Serve this directory via a webserver on port 8000."
@@ -67,19 +66,18 @@ serve_bg: stamp-npm
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=5.0.1 -c
+dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js stamp-npm @converse/headless
+	npm run nodeps
+
+GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ -keyword=___ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=5.0.1 dist/converse-no-dependencies.js -c
 
 .PHONY: pot
-pot: dist/converse-no-dependencies-es2015.js
+pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 
 .PHONY: po
 po:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./locale/converse.pot -U \;
-
-.PHONY: po2json
-po2json:
-	find ./locale -maxdepth 1 -mindepth 1 -type d -exec $(PO2JSON) -f jed1.x -d converse {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
 
 ########################################################################
 ## Release management
@@ -99,7 +97,6 @@ release:
 	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' demo/*.html
 	make pot
 	make po
-	make po2json
 	make build
 	npm pack
 
@@ -129,7 +126,7 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss dist/converse.css dist/converse.min.css dist/website.css dist/website.min.css
+css: sass/*.scss dist/website.css dist/website.min.css
 
 dist/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
@@ -137,27 +134,9 @@ dist/website.css:: stamp-npm sass
 dist/website.min.css:: stamp-npm dist/website.css
 	$(CLEANCSS) dist/website.css > $@
 
-dist/converse.css:: stamp-npm webpack.config.js sass
-	npm run converse.css
-
-dist/converse.min.css:: stamp-npm dist/converse.css
-	npm run converse.min.css
-
-.PHONY: watchcss
-watchcss: stamp-npm
-	$(NPX)  webpack --type=css --mode=development --watch
-
-.PHONY: watchjs
-watchjs: stamp-npm src/headless/dist/converse-headless.js
-	$(NPX)  webpack --mode=development  --watch
-
-.PHONY: watchjsheadless
-watchjsheadless: stamp-npm
-	$(NPX)  webpack --mode=development  --watch --type=headless
-
 .PHONY: watch
 watch: stamp-npm
-	make -j 3 watchcss  watchjsheadless watchjs
+	npm start
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \
@@ -179,28 +158,14 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 	$(INKSCAPE) -e $@ -w $* $<
 	$(OXIPNG) $@
 
-BUILDS = dist/converse.js \
-	dist/converse.min.js \
-	src/headless/dist/converse-headless.js \
-	src/headless/dist/converse-headless.min.js \
-	dist/converse-no-dependencies.min.js \
-	dist/converse-no-dependencies.js \
-	dist/converse-no-dependencies-es2015.js
+BUILDS = src/headless/dist/converse-headless.js \
+		 src/headless/dist/converse-headless.min.js
 
-dist/converse.js: src webpack.config.js stamp-npm @converse/headless
-	npm run converse.js
-dist/converse.min.js: src webpack.config.js stamp-npm @converse/headless
-	npm run converse.min.js
-src/headless/dist/converse-headless.js: src webpack.config.js stamp-npm @converse/headless
+src/headless/dist/converse-headless.js: src webpack.common.js stamp-npm @converse/headless
 	npm run converse-headless.js
-src/headless/dist/converse-headless.min.js: src webpack.config.js stamp-npm @converse/headless
+src/headless/dist/converse-headless.min.js: src webpack.common.js stamp-npm @converse/headless
 	npm run converse-headless.min.js
-dist/converse-no-dependencies.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=development --type=nodeps
-dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=production --type=nodeps
-dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=development --type=nodeps --lang=es2015
+
 
 @converse/headless: src/headless
 
@@ -208,7 +173,8 @@ dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @conver
 dist:: build
 
 .PHONY: build
-build:: stamp-npm css $(BUILDS)
+build:: stamp-npm css
+	npm run build
 
 ########################################################################
 ## Tests
@@ -222,7 +188,7 @@ eslint: stamp-npm
 	$(ESLINT) spec/
 
 .PHONY: check
-check: eslint dist/converse.js
+check: eslint build
 	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --disable-gpu --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################

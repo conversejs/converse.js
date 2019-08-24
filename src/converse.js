@@ -8,6 +8,7 @@ import "converse-bookmark-views";  // Views for XEP-0048 Bookmarks
 import "converse-chatview";        // Renders standalone chat boxes for single user chat
 import "converse-controlbox";      // The control box
 import "converse-dragresize";      // Allows chat boxes to be resized by dragging them
+import "converse-emoji-views";
 import "converse-fullscreen";
 import "converse-headline";        // Support for headline messages
 import "converse-mam-views";
@@ -15,14 +16,16 @@ import "converse-minimize";        // Allows chat boxes to be minimized
 import "converse-muc-views";       // Views related to MUC
 import "converse-notification";    // HTML5 Notifications
 import "converse-omemo";
-import "converse-push";            // XEP-0357 Push Notifications
 import "converse-profile";
+import "converse-push";            // XEP-0357 Push Notifications
 import "converse-register";        // XEP-0077 In-band registration
 import "converse-roomslist";       // Show currently open chat rooms
 import "converse-rosterview";
 import "converse-singleton";
 import "converse-uniview";
 /* END: Removable components */
+
+import "../sass/converse.scss";
 
 import converse from "@converse/headless/converse-core";
 
@@ -33,6 +36,7 @@ const WHITELISTED_PLUGINS = [
     'converse-chatview',
     'converse-controlbox',
     'converse-dragresize',
+    'converse-emoji-views',
     'converse-fullscreen',
     'converse-headline',
     'converse-mam-views',

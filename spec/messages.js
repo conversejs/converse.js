@@ -925,30 +925,6 @@
             done();
         }));
 
-        it("will display larger if it's a single emoji",
-            mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
-            await test_utils.waitForRoster(_converse, 'current');
-            const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            _converse.chatboxes.onMessage($msg({
-                    'from': sender_jid,
-                    'to': _converse.connection.jid,
-                    'type': 'chat',
-                    'id': (new Date()).getTime()
-                }).c('body').t('😇').up()
-                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise(resolve => _converse.on('chatBoxInitialized', resolve));
-            const view = _converse.api.chatviews.get(sender_jid);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-
-            const chat_content = view.el.querySelector('.chat-content');
-            const message = chat_content.querySelector('.chat-msg__text');
-            expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
-            done();
-        }));
-
         it("will render newlines",
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -990,7 +966,7 @@
 
         it("will render images from their URLs",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -1038,7 +1014,7 @@
 
         it("will render the message time as configured",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -1064,7 +1040,7 @@
 
         it("will be correctly identified and rendered as a followup message",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -1422,7 +1398,7 @@
 
             it("will open a chatbox and be displayed inside it",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 const include_nick = false;
@@ -1468,7 +1444,7 @@
 
             it("will be trimmed of leading and trailing whitespace",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1, false);
@@ -1683,7 +1659,7 @@
 
                 it("will have the error message displayed after itself",
                     mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1736,7 +1712,7 @@
                         'message': msg_text
                     });
                     view.model.sendMessage(msg_text);
-                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                    await u.waitUntil(() => sizzle('.chat-msg .chat-msg__text', chat_content).length === 5);
                     msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
                     expect(msg_txt).toEqual(msg_text);
 
@@ -1921,7 +1897,7 @@
 
             it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1959,8 +1935,8 @@
                 const view = _converse.chatboxviews.get(sender_jid);
                 await u.waitUntil(() => view.model.messages.length);
                 expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
-                const chat_content = sizzle('.chat-content:last', view.el).pop();
-                const msg_txt = chat_content.querySelector('.chat-msg .chat-msg__text').textContent;
+                const last_message = await u.waitUntil(() => sizzle('.chat-content:last .chat-msg__text', view.el).pop());
+                const msg_txt = last_message.textContent;
                 expect(msg_txt).toEqual(message);
                 done();
             }));
@@ -2174,7 +2150,7 @@
 
         it("is not sent when a markable message is received from someone not on the roster",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
+                null, ['rosterGroupsFetched', 'emojisInitialized'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
             _converse.api.trigger('rosterContactsFetched');

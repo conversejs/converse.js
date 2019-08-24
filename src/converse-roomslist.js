@@ -16,7 +16,7 @@ import muc from "@converse/headless/converse-muc";
 import tpl_rooms_list from "templates/rooms_list.html";
 import tpl_rooms_list_item from "templates/rooms_list_item.html"
 
-const { Backbone, Promise, Strophe, sizzle, _ } = converse.env;
+const { Backbone, Strophe, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 

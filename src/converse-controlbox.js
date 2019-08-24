@@ -17,7 +17,7 @@ import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
 import tpl_login_panel from "templates/login_panel.html";
 
 const CHATBOX_TYPE = 'chatbox';
-const { Strophe, Backbone, Promise, _, dayjs } = converse.env;
+const { Strophe, Backbone, _, dayjs } = converse.env;
 const u = converse.env.utils;
 
 const CONNECTION_STATUS_CSS_CLASS = {

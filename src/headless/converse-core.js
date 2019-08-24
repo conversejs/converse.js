@@ -11,7 +11,6 @@ import 'strophe.js/src/websocket';
 import * as strophe from 'strophe.js/src/core';
 import Backbone from 'backbone';
 import BrowserStorage from 'backbone.browserStorage';
-import Promise from 'es6-promise/dist/es6-promise.auto';
 import _ from './lodash.noconflict';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
@@ -80,6 +79,7 @@ const CORE_PLUGINS = [
     'converse-caps',
     'converse-chatboxes',
     'converse-disco',
+    'converse-emoji',
     'converse-mam',
     'converse-muc',
     'converse-ping',
@@ -236,7 +236,6 @@ _converse.default_settings = {
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
     keepalive: true,
-    locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
         'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'oc',
@@ -832,10 +831,15 @@ _converse.initialize = async function (settings, callback) {
     });
 
     /* Localisation */
-    if (i18n !== undefined) {
-        i18n.setLocales(settings.i18n, _converse);
-    } else {
+    if (i18n === undefined || _converse.isTestEnv()) {
         _converse.locale = 'en';
+    } else {
+        try {
+            _converse.locale = i18n.getLocale(settings.i18n, _converse.locales);
+            await i18n.fetchTranslations(_converse);
+        } catch (e) {
+            _converse.log(e.message, Strophe.LogLevel.FATAL);
+        }
     }
 
     // Module-level variables
@@ -1331,19 +1335,12 @@ _converse.initialize = async function (settings, callback) {
         this.connection = settings.connection;
     }
 
-    if (_converse.isTestEnv()) {
-        await finishInitialization();
-        return _converse;
-    } else if (i18n !== undefined) {
-        const url = u.interpolate(_converse.locales_url, {'locale': _converse.locale});
-        try {
-            await i18n.fetchTranslations(_converse.locale, _converse.locales, url);
-        } catch (e) {
-            _converse.log(e.message, Strophe.LogLevel.FATAL);
-        }
-    }
     await finishInitialization();
-    return init_promise;
+    if (_converse.isTestEnv()) {
+        return _converse;
+    } else {
+        return init_promise;
+    }
 };
 
 /**

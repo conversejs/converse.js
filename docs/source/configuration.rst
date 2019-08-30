@@ -950,7 +950,7 @@ and don't have to add the whole address (i.e. including the domain part).
 Users can however still enter the domain and they can still open MUCs with
 other domains.
 
-If you want to restrict MUCs to only this domain, then set `locked_domain`_ to
+If you want to restrict MUCs to only this domain, then set `locked_muc_domain`_ to
 ``true``.
 
 

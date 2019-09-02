@@ -50,7 +50,6 @@ const config = {
             }
             ]
         }, {
-        }, {
             test: /webfonts\/.*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
             use: [
             {
@@ -70,7 +69,9 @@ const config = {
                     options: {
                         sourceMap: true
                     }
-                }, {
+                },
+                'postcss-loader',
+                {
                     loader: 'sass-loader',
                     options: {
                         includePaths: [
@@ -92,7 +93,8 @@ const config = {
                                 "browsers": [">1%", "not ie 11", "not op_mini all"]
                             }
                         }]
-                    ]
+                    ],
+                    plugins: ['@babel/plugin-syntax-dynamic-import']
                 }
             }
         }, {

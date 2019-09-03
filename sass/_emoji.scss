@@ -59,14 +59,13 @@
                         list-style: none;
                         position: relative;
                         &.insert-emoji {
-                            padding: 0.2em;
                             &.picked {
                                 background-color: var(--highlight-color);
                             }
-                            &:hover {
-                                background-color: var(--highlight-color);
-                            }
                             a {
+                                &:hover {
+                                    background-color: var(--highlight-color);
+                                }
                                 font-size: var(--font-size-huge);
                             }
                         }

@@ -1,31 +1,30 @@
 # You can set these variables from the command line.
 BABEL			?= node_modules/.bin/babel
 BOOTSTRAP		= ./node_modules/
-BOURBON 		= ./node_modules/bourbon/app/assets/stylesheets/
 BUILDDIR		= ./docs
 CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
-ESLINT		  	?= ./node_modules/.bin/eslint
-HTTPSERVE	   	?= ./node_modules/.bin/http-server
+ESLINT			?= ./node_modules/.bin/eslint
+HTTPSERVE	 	?= ./node_modules/.bin/http-server
 HTTPSERVE_PORT	?= 8000
 INKSCAPE		?= inkscape
-INSTALL		?= install
-JSDOC			?=  ./node_modules/.bin/jsdoc
+INSTALL			?= install
+JSDOC			?=	./node_modules/.bin/jsdoc
 LERNA			?= ./node_modules/.bin/lerna
 OXIPNG			?= oxipng
-PAPER		   	=
+PAPER		 	=
 RJS				?= ./node_modules/.bin/r.js
 NPX				?= ./node_modules/.bin/npx
 SASS			?= ./node_modules/.bin/node-sass
 SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
-SPHINXOPTS	  	=
+SPHINXOPTS		=
 UGLIFYJS		?= node_modules/.bin/uglifyjs
 XGETTEXT		= xgettext
 
 
 # Internal variables.
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
+ALLSPHINXOPTS	= -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 VERSION_FORMAT	= [0-9]+\.[0-9]+\.[0-9]+
 
 .PHONY: all
@@ -35,21 +34,21 @@ all: dev dist
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
 	@echo ""
-	@echo " all             Set up dev environment and create all builds"
-	@echo " build           Create minified builds of converse.js and all its dependencies."
-	@echo " clean           Remove all NPM packages."
-	@echo " check           Run all tests."
-	@echo " css             Generate CSS from the Sass files."
-	@echo " dev             Set up the development environment. To force a fresh start, run 'make clean' first."
-	@echo " html            Make standalone HTML files of the documentation."
-	@echo " po              Generate gettext PO files for each i18n language."
-	@echo " pot             Generate a gettext POT file to be used for translations."
-	@echo " release         Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
-	@echo " serve           Serve this directory via a webserver on port 8000."
-	@echo " serve_bg        Same as \"serve\", but do it in the background"
-	@echo " stamp-npm       Install NPM dependencies"
-	@echo " watch           Watch for changes on JS and scss files and automatically update the generated files."
-	@echo " logo            Generate PNG logos of multiple sizes."
+	@echo " all			Set up dev environment and create all builds"
+	@echo " build		Create minified builds of converse.js and all its dependencies."
+	@echo " clean		Remove all NPM packages."
+	@echo " check		Run all tests."
+	@echo " css			Generate CSS from the Sass files."
+	@echo " dev			Set up the development environment. To force a fresh start, run 'make clean' first."
+	@echo " html		Make standalone HTML files of the documentation."
+	@echo " po			Generate gettext PO files for each i18n language."
+	@echo " pot			Generate a gettext POT file to be used for translations."
+	@echo " release		Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
+	@echo " serve		Serve this directory via a webserver on port 8000."
+	@echo " serve_bg	Same as \"serve\", but do it in the background"
+	@echo " stamp-npm	Install NPM dependencies"
+	@echo " watch		Watch for changes on JS and scss files and automatically update the generated files."
+	@echo " logo		Generate PNG logos of multiple sizes."
 
 
 ########################################################################
@@ -129,7 +128,7 @@ dev: stamp-npm
 css: sass/*.scss dist/website.css dist/website.min.css
 
 dist/website.css:: stamp-npm sass
-	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
+	$(SASS) --source-map true --include-path $(BOOTSTRAP) sass/website.scss $@
 
 dist/website.min.css:: stamp-npm dist/website.css
 	$(CLEANCSS) dist/website.css > $@
@@ -140,15 +139,15 @@ watch: stamp-npm
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \
-	  logo/conversejs-transparent19.png \
-	  logo/conversejs-transparent48.png \
-	  logo/conversejs-transparent128.png \
-	  logo/conversejs-transparent512.png \
-	  logo/conversejs-filled16.png \
-	  logo/conversejs-filled19.png \
-	  logo/conversejs-filled48.png \
-	  logo/conversejs-filled128.png \
-	  logo/conversejs-filled512.png \
+		logo/conversejs-transparent19.png \
+		logo/conversejs-transparent48.png \
+		logo/conversejs-transparent128.png \
+		logo/conversejs-transparent512.png \
+		logo/conversejs-filled16.png \
+		logo/conversejs-filled19.png \
+		logo/conversejs-filled48.png \
+		logo/conversejs-filled128.png \
+		logo/conversejs-filled512.png \
 
 logo/conversejs-transparent%.png:: logo/conversejs-transparent.svg
 	$(INKSCAPE) -e $@ -w $* $<

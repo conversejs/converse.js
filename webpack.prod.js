@@ -8,11 +8,11 @@ module.exports = merge(common, {
     output: {
         path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
         publicPath: '/dist/', // URL base path for all assets
-        filename: 'converse.js',
+        filename: 'converse.min.js',
         chunkFilename: '[name].js'
     },
     plugins: [
-        new MiniCssExtractPlugin({filename: '../dist/converse.css'})
+        new MiniCssExtractPlugin({filename: '../dist/converse.min.css'})
     ],
     mode: "production",
     devtool: "source-map",

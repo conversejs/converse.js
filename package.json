@@ -15,12 +15,13 @@
     "src/"
   ],
   "scripts": {
-    "start": "webpack-dev-server --config webpack.dev.js",
+    "dev": "webpack-dev-server --config webpack.serve.js",
     "clean": "rm -rf node_modules stamp-npm dist *.zip",
     "converse-headless.js": "webpack --mode=development --type=headless",
     "converse-headless.min.js": "npm run converse-headless.js && webpack --mode=production --type=headless",
     "nodeps": "webpack --config webpack.nodeps.js",
     "build": "webpack --config webpack.prod.js",
+    "watch": "webpack --watch --config webpack.dev.js",
     "lerna": "lerna bootstrap --hoist --ignore-scripts",
     "prepare": "npm run lerna && npm run build"
   },

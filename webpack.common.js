@@ -9,6 +9,9 @@ const config = {
     externals: [{
         "window": "window"
     }],
+    watchOptions: {
+        ignored: [/dist/, /spec/, /.*\~/]
+    },
     module: {
         rules: [
         {

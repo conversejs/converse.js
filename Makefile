@@ -28,7 +28,7 @@ ALLSPHINXOPTS	= -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./doc
 VERSION_FORMAT	= [0-9]+\.[0-9]+\.[0-9]+
 
 .PHONY: all
-all: dev dist
+all: stamp-npm dist
 
 .PHONY: help
 help:
@@ -39,7 +39,7 @@ help:
 	@echo " clean		Remove all NPM packages."
 	@echo " check		Run all tests."
 	@echo " css			Generate CSS from the Sass files."
-	@echo " dev			Set up the development environment. To force a fresh start, run 'make clean' first."
+	@echo " dev			Set up the development environment and start the webpack dev server. To force a fresh start, run 'make clean' first."
 	@echo " html		Make standalone HTML files of the documentation."
 	@echo " po			Generate gettext PO files for each i18n language."
 	@echo " pot			Generate a gettext POT file to be used for translations."
@@ -120,6 +120,7 @@ clean:
 
 .PHONY: dev
 dev: stamp-npm
+	npm dev
 
 ########################################################################
 ## Builds
@@ -135,7 +136,7 @@ dist/website.min.css:: stamp-npm dist/website.css
 
 .PHONY: watch
 watch: stamp-npm
-	npm start
+	npm run watch
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \

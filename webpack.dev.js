@@ -1,18 +1,15 @@
 /* global module */
 const merge = require("webpack-merge");
-const common = require("./webpack.common.js");
-const HTMLWebpackPlugin = require('html-webpack-plugin');
+const prod = require("./webpack.prod.js");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = merge(common, {
-    mode: "development",
-    devtool: "inline-source-map",
-    devServer: {
-        contentBase: "./dist"
+module.exports = merge(prod, {
+    output: {
+        filename: 'converse.js',
     },
-    plugins: [
-        new HTMLWebpackPlugin({
-            title: 'Production',
-            template: 'webpack.html'
-        })
-    ],
+    optimization: {
+        minimize: false,
+    },
+    devtool: 'source-map',
+    plugins: [new MiniCssExtractPlugin({filename: '../dist/converse.css'})]
 });

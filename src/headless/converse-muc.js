@@ -385,7 +385,6 @@ converse.plugins.add('converse-muc', {
                     'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
                     'message_type': 'groupchat',
                     'name': '',
-                    'nick': _converse.getDefaultMUCNickname(),
                     'num_unread': 0,
                     'roomconfig': {},
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
@@ -1194,34 +1193,26 @@ converse.plugins.add('converse-muc', {
              * @returns { Promise<string> } A promise which resolves with the reserved nick or null
              */
             async getReservedNick () {
-                let iq;
-                try {
-                    iq = await _converse.api.sendIQ(
-                        $iq({
-                            'to': this.get('jid'),
-                            'from': _converse.connection.jid,
-                            'type': "get"
-                        }).c("query", {
-                            'xmlns': Strophe.NS.DISCO_INFO,
-                            'node': 'x-roomuser-item'
-                        })
-                    );
-                } catch (e) {
-                    if (_.isElement(e)) {
-                        // IQ stanza of type 'error'
-                        return;
-                    } else {
-                        throw e;
-                    }
+                const stanza = $iq({
+                    'to': this.get('jid'),
+                    'from': _converse.connection.jid,
+                    'type': "get"
+                }).c("query", {
+                    'xmlns': Strophe.NS.DISCO_INFO,
+                    'node': 'x-roomuser-item'
+                })
+                const result = await _converse.api.sendIQ(stanza, null, true);
+                if (u.isErrorObject(result)) {
+                    throw result;
                 }
-                const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity');
+                const identity_el = result.querySelector('query[node="x-roomuser-item"] identity');
                 return identity_el ? identity_el.getAttribute('name') : null;
             },
 
             async registerNickname () {
                 // See https://xmpp.org/extensions/xep-0045.html#register
-                const nick = this.get('nick'),
-                      jid = this.get('jid');
+                const nick = this.get('nick');
+                const jid = this.get('jid');
                 let iq, err_msg;
                 try {
                     iq = await _converse.api.sendIQ(

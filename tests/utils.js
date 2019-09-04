@@ -192,10 +192,9 @@
     utils.waitForReservedNick = async function (_converse, muc_jid, nick) {
         const view = _converse.chatboxviews.get(muc_jid);
         const stanzas = _converse.connection.IQ_stanzas;
-        const iq = await u.waitUntil(() => _.filter(
-            stanzas,
-            s => sizzle(`iq[to="${muc_jid.toLowerCase()}"] query[node="x-roomuser-item"]`, s).length
-        ).pop());
+        const selector = `iq[to="${muc_jid.toLowerCase()}"] query[node="x-roomuser-item"]`;
+        const iq = await u.waitUntil(() => stanzas.filter(s => sizzle(selector, s).length).pop());
+
         // We remove the stanza, otherwise we might get stale stanzas returned in our filter above.
         stanzas.splice(stanzas.indexOf(iq), 1)
 

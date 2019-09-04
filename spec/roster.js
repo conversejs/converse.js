@@ -484,10 +484,10 @@
 
         describe("Pending Contacts", function () {
 
-            function _addContacts (_converse) {
+            async function _addContacts (_converse) {
                 // Must be initialized, so that render is called and documentFragment set up.
-                test_utils.createContacts(_converse, 'pending');
-                test_utils.openControlBox();
+                test_utils.createContacts(_converse, 'pending').openControlBox()
+                await Promise.all(_converse.roster.forEach(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
             }
 
             it("can be collapsed under their own header",
@@ -495,7 +495,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => sizzle('.roster-group', _converse.rosterview.el).filter(u.isVisible).map(e => e.querySelector('li')).length, 1000);
                 await checkHeaderToggling.apply(
                     _converse,
@@ -667,8 +667,9 @@
         });
 
         describe("Existing Contacts", function () {
-            function _addContacts (_converse) {
+            async function _addContacts (_converse) {
                 test_utils.createContacts(_converse, 'current').openControlBox()
+                await Promise.all(_converse.roster.forEach(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
             }
 
             it("can be collapsed under their own header",
@@ -676,7 +677,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500);
                 await checkHeaderToggling.apply(_converse, [_converse.rosterview.el.querySelector('.roster-group')]);
                 done();
@@ -688,7 +689,7 @@
                     async function (done, _converse) {
 
                 _converse.roster_groups = false;
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500);
                 _converse.rosterview.el.querySelector('.roster-group a.group-toggle').click();
                 const name = "Romeo Montague";
@@ -710,25 +711,22 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                let i;
                 test_utils.openControlBox();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
-                for (i=0; i<mock.cur_names.length; i++) {
-                    _converse.roster.create({
-                        jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
+                await Promise.all(mock.cur_names.map(name => {
+                    const contact = _converse.roster.create({
+                        jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                         subscription: 'both',
                         ask: null,
-                        fullname: mock.cur_names[i]
+                        fullname: name
                     });
-                    expect(_converse.rosterview.update).toHaveBeenCalled();
-                }
+                    return u.waitUntil(() => contact.vcard.get('fullname'));
+                }));
                 await u.waitUntil(() => sizzle('li', _converse.rosterview.el).length, 600);
                 // Check that they are sorted alphabetically
-                const t = _.reduce(
-                    _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact.offline a.open-chat'),
-                    (result, value) => (result + value.textContent.trim()), '');
-
-                expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
+                const els = sizzle('.roster-group .current-xmpp-contact.offline a.open-chat', _converse.rosterview.el)
+                const t = els.reduce((result, value) => (result + value.textContent.trim()), '');
+                expect(t).toEqual(mock.cur_names.slice(0,mock.cur_names.length).sort().join(''));
                 done();
             }));
 
@@ -737,7 +735,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('li').length);
                 const name = mock.cur_names[0];
                 const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -796,7 +794,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700);
                 let jid, t;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -818,7 +816,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
                 let jid, t;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -840,7 +838,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
                 let jid, t;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -862,7 +860,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
                 var jid, t;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -886,7 +884,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 500)
                 var jid, t;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -910,7 +908,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                _addContacts(_converse);
+                await _addContacts(_converse);
                 await u.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
                 let i, jid;
                 for (i=0; i<3; i++) {
@@ -1009,15 +1007,16 @@
                     }
                 };
                 spyOn(_converse.rosterview, 'update').and.callThrough();
-                for (let i=0; i<mock.req_names.length; i++) {
-                    _converse.roster.create({
-                        jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
+                await Promise.all(mock.req_names.map(name => {
+                    const contact = _converse.roster.create({
+                        jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                         subscription: 'none',
                         ask: null,
                         requesting: true,
-                        nickname: mock.req_names[i]
+                        nickname: name
                     });
-                }
+                    return u.waitUntil(() => contact.vcard.get('fullname'));
+                }));
                 await u.waitUntil(() => _converse.rosterview.get('Contact requests').el.querySelectorAll('li').length, 700);
                 expect(_converse.rosterview.update).toHaveBeenCalled();
                 // Check that they are sorted alphabetically
@@ -1103,7 +1102,7 @@
                 const contact = _converse.roster.get(jid);
                 spyOn(window, 'confirm').and.returnValue(true);
                 spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
-                const req_contact = sizzle(".req-contact-name:contains('"+name+"')", _converse.rosterview.el).pop();
+                const req_contact = await u.waitUntil(() => sizzle(".req-contact-name:contains('"+name+"')", _converse.rosterview.el).pop());
                 req_contact.parentElement.parentElement.querySelector('.decline-xmpp-request').click();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(contact.unauthorize).toHaveBeenCalled();
@@ -1202,14 +1201,14 @@
 
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 await u.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
-                for (let i=0; i<mock.cur_names.length; i++) {
-                    const name = mock.cur_names[i];
+                await Promise.all(mock.cur_names.map(async name => {
                     const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    const child = sizzle("li:contains('"+name+"')", _converse.rosterview.el).pop().firstElementChild;
+                    const el = await u.waitUntil(() => sizzle("li:contains('"+name+"')", _converse.rosterview.el).pop());
+                    const child = el.firstElementChild;
                     expect(child.textContent.trim()).toBe(name);
                     expect(child.getAttribute('title')).toContain(name);
                     expect(child.getAttribute('title')).toContain(jid);
-                }
+                }));
                 done();
             }));
         });

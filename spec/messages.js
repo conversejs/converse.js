@@ -1712,7 +1712,7 @@
                         'message': msg_text
                     });
                     view.model.sendMessage(msg_text);
-                    await u.waitUntil(() => sizzle('.chat-msg .chat-msg__text', chat_content).length === 5);
+                    await u.waitUntil(() => sizzle('.chat-msg .chat-msg__text', chat_content).length === 4, 1000);
                     msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
                     expect(msg_txt).toEqual(msg_text);
 

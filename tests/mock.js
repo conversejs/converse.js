@@ -71,7 +71,7 @@
 
     // Names from http://www.fakenamegenerator.com/
     mock.req_names = [
-        'Escalus, Prince of Verona', 'The Nurse', 'Paris'
+        'Escalus, prince of Verona', 'The Nurse', 'Paris'
     ];
     mock.pend_names = [
         'Lord Capulet', 'Lady Capulet', 'Servant'

@@ -1288,6 +1288,10 @@ _converse.initialize = async function (settings, callback) {
             });
         },
 
+        getNickname () {
+            return _converse.nickname;
+        },
+
         constructPresence (type, status_message) {
             let presence;
             type = _.isString(type) ? type : (this.get('status') || _converse.default_state);

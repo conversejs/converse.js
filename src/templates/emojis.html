@@ -15,7 +15,7 @@
         {[ if (o.query) { ]}
             <a id="emoji-picker-search-results" class="emoji-category__heading">{{{o.__('Search results')}}}</a>
             <ul class="emoji-picker">
-                {[ o._converse.emojis_list.forEach(function (emoji) { ]}
+                {[ o.search_results.forEach(function (emoji) { ]}
                 <li class="emoji insert-emoji {[ if (o.shouldBeHidden(emoji.sn)) { ]} hidden {[ }; ]}"
                     data-emoji="{{{emoji.sn}}}" title="{{{emoji.sn}}}">
                         <a href="#" data-emoji="{{{emoji.sn}}}"> {{ o.transform(emoji.sn) }}  </a>

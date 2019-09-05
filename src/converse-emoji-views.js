@@ -147,6 +147,7 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             async initialize () {
+                this.search_results = [];
                 this.debouncedFilter = debounce(input => this.filter(input.value), 150);
                 this.model.on('change:query', this.render, this);
                 this.model.on('change:current_skintone', this.render, this);
@@ -168,7 +169,8 @@ converse.plugins.add('converse-emoji-views', {
                             'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                             'toned_emojis': _converse.emojis.toned,
                             'transform': u.getEmojiRenderer(),
-                            'transformCategory': shortname => u.getEmojiRenderer()(this.getTonedShortname(shortname))
+                            'transformCategory': shortname => u.getEmojiRenderer()(this.getTonedShortname(shortname)),
+                            'search_results': this.search_results
                         }
                     )
                 );
@@ -180,6 +182,14 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             filter (value, set_property) {
+                const old_query = this.model.get('query');
+                if (!value) {
+                    this.search_results = [];
+                } else if (old_query && value.includes(old_query)) {
+                    this.search_results = this.search_results.filter(e => _converse.FILTER_CONTAINS(e.sn, value));
+                } else {
+                    this.search_results = _converse.emojis_list.filter(e => _converse.FILTER_CONTAINS(e.sn, value));
+                }
                 this.model.set({'query': value});
                 if (set_property) {
                     // XXX: Ideally we would set `query` on the model and

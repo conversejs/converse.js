@@ -5064,7 +5064,8 @@
                     expect(notifications.length).toBe(1);
                     expect(notifications[0].textContent.trim()).toEqual('nomorenicks is typing');
 
-                    timeout_functions[1]();
+                    timeout_functions.filter(f => f.name === 'bound safeDestroy').pop()();
+
                     events = view.el.querySelectorAll('.chat-event');
                     expect(events.length).toBe(3);
                     expect(events[0].textContent.trim()).toEqual('some1 has entered the groupchat');

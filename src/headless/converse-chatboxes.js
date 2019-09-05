@@ -107,13 +107,15 @@ converse.plugins.add('converse-chatboxes', {
                     this.on('change:put', this.uploadFile, this);
                 }
                 if (this.isEphemeral()) {
-                    window.setTimeout(() => {
-                        try {
-                            this.destroy()
-                        } catch (e) {
-                            _converse.log(e, Strophe.LogLevel.ERROR);
-                        }
-                    }, 10000);
+                    window.setTimeout(this.safeDestroy.bind(this), 10000);
+                }
+            },
+
+            safeDestroy () {
+                try {
+                    this.destroy()
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
                 }
             },
 

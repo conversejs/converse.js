@@ -59,6 +59,10 @@
                         list-style: none;
                         position: relative;
                         &.insert-emoji {
+                            margin: 0;
+                            height: 32px;
+                            width: 32px;
+
                             &.picked {
                                 background-color: var(--highlight-color);
                             }

@@ -205,10 +205,14 @@
             'id': IQ_id,
             'from': view.model.get('jid'),
             'to': _converse.connection.jid
-        }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
-            .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
+        }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'});
+        if (nick) {
+            stanza.c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
+        }
         _converse.connection._dataRecv(utils.createRequest(stanza));
-        return u.waitUntil(() => view.model.get('nick'));
+        if (nick) {
+            return u.waitUntil(() => view.model.get('nick'));
+        }
     };
 
 

@@ -1292,6 +1292,11 @@ _converse.initialize = async function (settings, callback) {
             return _converse.nickname;
         },
 
+        getFullname () {
+            // Gets overridden in converse-vcard
+            return '';
+        },
+
         constructPresence (type, status_message) {
             let presence;
             type = _.isString(type) ? type : (this.get('status') || _converse.default_state);

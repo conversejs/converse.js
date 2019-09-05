@@ -294,7 +294,7 @@ converse.plugins.add('converse-roster', {
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
                 }
-                const nick = _converse.xmppstatus.getNickname();
+                const nick = _converse.xmppstatus.getNickname() || _converse.xmppstatus.getFullname();
                 if (nick) {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
@@ -473,7 +473,7 @@ converse.plugins.add('converse-roster', {
                     if (item.getAttribute('action') === 'add') {
                         _converse.roster.addAndSubscribe(
                             item.getAttribute('jid'),
-                            _converse.xmppstatus.getNickname()
+                            _converse.xmppstatus.getNickname() || _converse.xmppstatus.getFullname()
                         );
                     }
                 });

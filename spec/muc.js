@@ -280,22 +280,10 @@
                     }
                 });
                 await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-                let stanza = await u.waitUntil(() => _.filter(
-                    IQ_stanzas,
-                    iq => iq.querySelector(
-                        `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                    )).pop());
-                // We pretend this is a new room, so no disco info is returned.
 
-                /* <iq from="jordie.langen@chat.example.org/converse.js-11659299" to="myroom@conference.chat.example.org" type="get">
-                 *     <query xmlns="http://jabber.org/protocol/disco#info"/>
-                 * </iq>
-                 * <iq xmlns="jabber:client" type="error" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org">
-                 *     <error type="cancel">
-                 *         <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                 *     </error>
-                 * </iq>
-                 */
+                const disco_selector = `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
+                const stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(disco_selector)).pop());
+                // We pretend this is a new room, so no disco info is returned.
                 const features_stanza = $iq({
                         'from': 'lounge@montague.lit',
                         'id': stanza.getAttribute('id'),
@@ -307,40 +295,8 @@
 
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 spyOn(view.model, 'join').and.callThrough();
-
-                /* <iq to="myroom@conference.chat.example.org"
-                 *     from="jordie.langen@chat.example.org/converse.js-11659299"
-                 *     type="get">
-                 *   <query xmlns="http://jabber.org/protocol/disco#info"
-                 *          node="x-roomuser-item"/>
-                 * </iq>
-                 */
-                stanza = await u.waitUntil(() => _.filter(
-                        IQ_stanzas,
-                        s => sizzle(`iq[to="${muc_jid}"] query[node="x-roomuser-item"]`, s).length
-                    ).pop()
-                );
-                expect(Strophe.serialize(stanza)).toBe(
-                    `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute("id")}" to="lounge@montague.lit" `+
-                        `type="get" xmlns="jabber:client">`+
-                            `<query node="x-roomuser-item" xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
-
-                /* <iq xmlns="jabber:client" type="error" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org">
-                 *      <error type="cancel">
-                 *          <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                 *      </error>
-                 *  </iq>
-                 */
-                const result_stanza = $iq({
-                    'type': 'error',
-                    'id': stanza.getAttribute('id'),
-                    'from': view.model.get('jid'),
-                    'to': _converse.connection.jid
-                }).c('error', {'type': 'cancel'})
-                    .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-                _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
-
-                const input = await u.waitUntil(() => view.el.querySelector('input[name="nick"]'));
+                await test_utils.waitForReservedNick(_converse, muc_jid, '');
+                const input = await u.waitUntil(() => view.el.querySelector('input[name="nick"]'), 1000);
                 expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.NICKNAME_REQUIRED);
                 input.value = 'nicky';
                 view.el.querySelector('input[type=submit]').click();

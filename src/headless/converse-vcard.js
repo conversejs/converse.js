@@ -24,9 +24,19 @@ converse.plugins.add('converse-vcard', {
                 const { _converse } = this.__super__;
                 const nick = this.__super__.getNickname.apply(this);
                 if (!nick && _converse.xmppstatus.vcard) {
-                    return _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname');
+                    return _converse.xmppstatus.vcard.get('nickname');
                 } else {
                     return nick;
+                }
+            },
+
+            getFullname (){
+                const { _converse } = this.__super__;
+                const fullname = this.__super__.getFullname.apply(this);
+                if (!fullname && _converse.xmppstatus.vcard) {
+                    return _converse.xmppstatus.vcard.get('fullname');
+                } else {
+                    return fullname;
                 }
             }
         },

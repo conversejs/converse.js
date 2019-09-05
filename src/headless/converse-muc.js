@@ -1201,7 +1201,7 @@ converse.plugins.add('converse-muc', {
                     'xmlns': Strophe.NS.DISCO_INFO,
                     'node': 'x-roomuser-item'
                 })
-                const result = await _converse.api.sendIQ(stanza, null, true);
+                const result = await _converse.api.sendIQ(stanza, null, false);
                 if (u.isErrorObject(result)) {
                     throw result;
                 }

@@ -39,7 +39,8 @@ help:
 	@echo " clean		Remove all NPM packages."
 	@echo " check		Run all tests."
 	@echo " css			Generate CSS from the Sass files."
-	@echo " dev			Set up the development environment and start the webpack dev server. To force a fresh start, run 'make clean' first."
+	@echo " dev			Set up the development environment and build unminified resources. To force a fresh start, run 'make clean' first."
+	@echo " devserver	Set up the development environment and start the webpack dev server."
 	@echo " html		Make standalone HTML files of the documentation."
 	@echo " po			Generate gettext PO files for each i18n language."
 	@echo " pot			Generate a gettext POT file to be used for translations."
@@ -122,11 +123,19 @@ clean:
 dev: stamp-npm
 	npm run dev
 
+.PHONY: devserver
+devserver: stamp-npm
+	npm run serve
+
 ########################################################################
 ## Builds
 
 .PHONY: css
 css: sass/*.scss dist/website.css dist/website.min.css
+
+dist/converse.js:: stamp-npm dev
+
+dist/converse.css:: stamp-npm dev
 
 dist/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOOTSTRAP) sass/website.scss $@
@@ -188,7 +197,7 @@ eslint: stamp-npm
 	$(ESLINT) spec/
 
 .PHONY: check
-check: eslint build
+check: eslint dev
 	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --disable-gpu --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################

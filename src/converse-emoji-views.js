@@ -239,6 +239,15 @@ converse.plugins.add('converse-emoji-views', {
                 sizzle('.emoji-picker', this.el).forEach(a => this.observer.observe(a));
             },
 
+            insertIntoTextArea (value) {
+                const replace = this.model.get('autocompleting');
+                const position = this.model.get('position');
+                this.model.set({'autocompleting': null, 'position': null});
+                this.chatview.insertIntoTextArea(value, replace, false, position);
+                this.chatview.emoji_dropdown.toggle();
+                this.filter('', true);
+            },
+
             onKeyDown (ev) {
                 if (ev.keyCode === _converse.keycodes.TAB) {
                     ev.preventDefault();
@@ -250,12 +259,9 @@ converse.plugins.add('converse-emoji-views', {
                     ev.preventDefault();
                     ev.stopPropagation();
                     if (_converse.emoji_shortnames.includes(ev.target.value)) {
-                        const replace = this.model.get('autocompleting');
-                        const position = this.model.get('position');
-                        this.model.set({'autocompleting': null, 'position': null});
-                        this.chatview.insertIntoTextArea(ev.target.value, replace, false, position);
-                        this.chatview.emoji_dropdown.toggle();
-                        this.filter('', true);
+                        this.insertIntoTextArea(ev.target.value);
+                    } else if (this.search_results.length === 1) {
+                        this.insertIntoTextArea(this.search_results[0].sn);
                     }
                 } else {
                     this.debouncedFilter(ev.target);

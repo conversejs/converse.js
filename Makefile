@@ -120,7 +120,7 @@ clean:
 
 .PHONY: dev
 dev: stamp-npm
-	npm dev
+	npm run dev
 
 ########################################################################
 ## Builds

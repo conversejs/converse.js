@@ -9,10 +9,12 @@
  */
 
 import "@converse/headless/converse-emoji";
+import { debounce, find } from "lodash";
 import BrowserStorage from "backbone.browserStorage";
 import bootstrap from "bootstrap.native";
 import tpl_emoji_button from "templates/emoji_button.html";
 import tpl_emojis from "templates/emojis.html";
+
 const { Backbone, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
@@ -145,7 +147,7 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             async initialize () {
-                this.debouncedFilter = _.debounce(input => this.filter(input.value), 150);
+                this.debouncedFilter = debounce(input => this.filter(input.value), 150);
                 this.model.on('change:query', this.render, this);
                 this.model.on('change:current_skintone', this.render, this);
                 this.model.on('change:current_category', this.render, this);
@@ -186,34 +188,36 @@ converse.plugins.add('converse-emoji-views', {
                 }
             },
 
+            setCategoryOnVisibilityChange (ev) {
+                const current = ev.filter(e => e.isIntersecting).pop();
+                if (current) {
+                    const category = current.target.getAttribute('data-category');
+                    const old_category = this.model.get('current_category');
+                    if (old_category !== category) {
+                        // XXX: Manually set the classes, it's quicker than using the VDOM
+                        this.model.set(
+                            {'current_category': category},
+                            {'silent': true}
+                        );
+                        const categories = sizzle('.emoji-picker__header .emoji-category', this.el);
+                        const new_el = categories.filter(el => el.getAttribute('data-category') === category).pop();
+                        const old_el = categories.filter(el => el.getAttribute('data-category') === old_category).pop();
+                        new_el && u.addClass('picked', new_el);
+                        old_el && u.removeClass('picked', old_el);
+                    }
+                }
+            },
+
             initIntersectionObserver () {
                 if (!window.IntersectionObserver) {
                     return;
                 }
-                const categories = sizzle('.emoji-picker__header .emoji-category', this.el);
                 const options = {
                     root: this.el.querySelector('.emoji-picker__lists'),
                     rootMargin: '0px',
-                    threshold: [0.1, 0.2, 0.3]
+                    threshold: [0.1, 0.2, 0.3, 0.4, 0.5]
                 }
-                const handler = _.debounce(ev => {
-                    const current = ev.filter(e => e.isIntersecting).pop();
-                    if (current) {
-                        const category = current.target.getAttribute('data-category');
-                        const old_category = this.model.get('current_category');
-                        if (old_category !== category) {
-                            // XXX: Manually set the classes, it's quicker than using the VDOM
-                            this.model.set(
-                                {'current_category': category},
-                                {'silent': true}
-                            );
-                            const new_el = categories.filter(el => el.getAttribute('data-category') === category).pop();
-                            const old_el = categories.filter(el => el.getAttribute('data-category') === old_category).pop();
-                            new_el && u.addClass('picked', new_el);
-                            old_el && u.removeClass('picked', old_el);
-                        }
-                    }
-                }, 100);
+                const handler = debounce((ev) => this.setCategoryOnVisibilityChange(ev), 200);
                 const observer = new IntersectionObserver(handler, options);
                 sizzle('.emoji-picker', this.el).forEach(a => observer.observe(a));
             },
@@ -221,7 +225,7 @@ converse.plugins.add('converse-emoji-views', {
             onKeyDown (ev) {
                 if (ev.keyCode === _converse.keycodes.TAB) {
                     ev.preventDefault();
-                    const match = _.find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
+                    const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
                     if (match) {
                         this.filter(match, true);
                     }

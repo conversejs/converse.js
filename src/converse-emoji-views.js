@@ -153,7 +153,6 @@ converse.plugins.add('converse-emoji-views', {
                 this.model.on('change:current_category', this.render, this);
                 await _converse.api.waitUntil('emojisInitialized');
                 this.render();
-                this.initIntersectionObserver();
                 _converse.api.trigger('emojiPickerViewInitialized');
             },
 
@@ -174,6 +173,10 @@ converse.plugins.add('converse-emoji-views', {
                     )
                 );
                 return html;
+            },
+
+            afterRender () {
+                this.initIntersectionObserver();
             },
 
             filter (value, set_property) {
@@ -212,14 +215,18 @@ converse.plugins.add('converse-emoji-views', {
                 if (!window.IntersectionObserver) {
                     return;
                 }
-                const options = {
-                    root: this.el.querySelector('.emoji-picker__lists'),
-                    rootMargin: '0px',
-                    threshold: [0.1, 0.2, 0.3, 0.4, 0.5]
+                if (this.observer) {
+                    this.observer.disconnect();
+                } else {
+                    const options = {
+                        root: this.el.querySelector('.emoji-picker__lists'),
+                        rootMargin: '0px',
+                        threshold: [0.1, 0.2, 0.3, 0.4, 0.5]
+                    }
+                    const handler = debounce((ev) => this.setCategoryOnVisibilityChange(ev), 200);
+                    this.observer = new IntersectionObserver(handler, options);
                 }
-                const handler = debounce((ev) => this.setCategoryOnVisibilityChange(ev), 200);
-                const observer = new IntersectionObserver(handler, options);
-                sizzle('.emoji-picker', this.el).forEach(a => observer.observe(a));
+                sizzle('.emoji-picker', this.el).forEach(a => this.observer.observe(a));
             },
 
             onKeyDown (ev) {

@@ -65,9 +65,9 @@
                 expect(input.value).toBe(':gri');
                 let visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
                 expect(visible_emojis.length).toBe(3);
-                expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grin:');
-                expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':grinning:');
-                expect(visible_emojis[2].getAttribute('data-emoji')).toBe(':grimacing:');
+                expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
+                expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':grin:');
+                expect(visible_emojis[2].getAttribute('data-emoji')).toBe(':grinning:');
 
                 // Test that TAB autocompletes the to first match
                 view.emoji_picker_view.onKeyDown(tab_event);

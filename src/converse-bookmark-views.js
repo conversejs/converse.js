@@ -246,11 +246,11 @@ converse.plugins.add('converse-bookmark-views', {
             initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
-                this.model.on('add', this.showOrHide, this);
-                this.model.on('remove', this.showOrHide, this);
+                this.listenTo(this.model, 'add', this.showOrHide);
+                this.listenTo(this.model, 'remove', this.showOrHide);
 
-                _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
-                _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
+                this.listenTo(_converse.chatboxes, 'add', this.renderBookmarkListElement);
+                this.listenTo(_converse.chatboxes, 'remove', this.renderBookmarkListElement);
 
                 const storage = _converse.config.get('storage'),
                       id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;

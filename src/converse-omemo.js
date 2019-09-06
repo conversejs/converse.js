@@ -89,11 +89,11 @@ converse.plugins.add('converse-omemo', {
                 const { _converse } = this.__super__;
                 this.debouncedRender = _.debounce(this.render, 50);
                 this.devicelist = _converse.devicelists.get(_converse.bare_jid);
-                this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
-                this.devicelist.devices.on('reset', this.debouncedRender, this);
-                this.devicelist.devices.on('reset', this.debouncedRender, this);
-                this.devicelist.devices.on('remove', this.debouncedRender, this);
-                this.devicelist.devices.on('add', this.debouncedRender, this);
+                this.listenTo(this.devicelist.devices, 'change:bundle', this.debouncedRender);
+                this.listenTo(this.devicelist.devices, 'reset', this.debouncedRender);
+                this.listenTo(this.devicelist.devices, 'reset', this.debouncedRender);
+                this.listenTo(this.devicelist.devices, 'remove', this.debouncedRender);
+                this.listenTo(this.devicelist.devices, 'add', this.debouncedRender);
                 return this.__super__.initialize.apply(this, arguments);
             },
 
@@ -159,11 +159,11 @@ converse.plugins.add('converse-omemo', {
                 const { _converse } = this.__super__;
                 const jid = this.model.get('jid');
                 this.devicelist = _converse.devicelists.getDeviceList(jid);
-                this.devicelist.devices.on('change:bundle', this.render, this);
-                this.devicelist.devices.on('change:trusted', this.render, this);
-                this.devicelist.devices.on('remove', this.render, this);
-                this.devicelist.devices.on('add', this.render, this);
-                this.devicelist.devices.on('reset', this.render, this);
+                this.listenTo(this.devicelist.devices, 'change:bundle', this.render);
+                this.listenTo(this.devicelist.devices, 'change:trusted', this.render);
+                this.listenTo(this.devicelist.devices, 'remove', this.render);
+                this.listenTo(this.devicelist.devices, 'add', this.render);
+                this.listenTo(this.devicelist.devices, 'reset', this.render);
                 return this.__super__.initialize.apply(this, arguments);
             },
 
@@ -217,8 +217,8 @@ converse.plugins.add('converse-omemo', {
 
             initialize () {
                 this.__super__.initialize.apply(this, arguments);
-                this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
-                this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
+                this.listenTo(this.model, 'change:omemo_active', this.renderOMEMOToolbarButton);
+                this.listenTo(this.model, 'change:omemo_supported', this.onOMEMOSupportedDetermined);
             },
 
             showMessage (message) {
@@ -236,8 +236,8 @@ converse.plugins.add('converse-omemo', {
 
             initialize () {
                 this.__super__.initialize.apply(this, arguments);
-                this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
-                this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
+                this.listenTo(this.model, 'change:omemo_active', this.renderOMEMOToolbarButton);
+                this.listenTo(this.model, 'change:omemo_supported', this.onOMEMOSupportedDetermined);
             }
         }
     },

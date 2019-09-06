@@ -68,7 +68,7 @@ converse.plugins.add('converse-rosterview', {
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.model.on('change', this.render, this);
+                this.listenTo(this.model, 'change', this.render);
             },
 
             toHTML () {
@@ -220,8 +220,8 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initialize () {
-                this.model.on('change:filter_type', this.render, this);
-                this.model.on('change:filter_text', this.render, this);
+                this.listenTo(this.model, 'change:filter_type', this.render);
+                this.listenTo(this.model, 'change:filter_text', this.render);
             },
 
             toHTML () {
@@ -341,14 +341,14 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initialize () {
-                this.model.on("change", this.render, this);
-                this.model.on("highlight", this.highlight, this);
-                this.model.on("destroy", this.remove, this);
-                this.model.on("open", this.openChat, this);
-                this.model.on("remove", this.remove, this);
+                this.listenTo(this.model, "change", this.render);
+                this.listenTo(this.model, "highlight", this.highlight);
+                this.listenTo(this.model, "destroy", this.remove);
+                this.listenTo(this.model, "open", this.openChat);
+                this.listenTo(this.model, "remove", this.remove);
 
-                this.model.presence.on("change:show", this.render, this);
-                this.model.vcard.on('change:fullname', this.render, this);
+                this.listenTo(this.model.presence, "change:show", this.render);
+                this.listenTo(this.model.vcard, 'change:fullname', this.render);
             },
 
             render () {
@@ -551,10 +551,10 @@ converse.plugins.add('converse-rosterview', {
 
             initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
-                this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
-                this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
-                this.model.contacts.on("remove", this.onRemove, this);
-                _converse.roster.on('change:groups', this.onContactGroupChange, this);
+                this.listenTo(this.model.contacts, "change:subscription", this.onContactSubscriptionChange);
+                this.listenTo(this.model.contacts, "change:requesting", this.onContactRequestChange);
+                this.listenTo(this.model.contacts, "remove", this.onRemove);
+                this.listenTo(_converse.roster, 'change:groups', this.onContactGroupChange);
 
                 // This event gets triggered once *all* contacts (i.e. not
                 // just this group's) have been fetched from browser
@@ -748,17 +748,17 @@ converse.plugins.add('converse-rosterview', {
             initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
-                _converse.roster.on("add", this.onContactAdded, this);
-                _converse.roster.on('change:groups', this.onContactAdded, this);
-                _converse.roster.on('change', this.onContactChange, this);
-                _converse.roster.on("destroy", this.update, this);
-                _converse.roster.on("remove", this.update, this);
+                this.listenTo(_converse.roster, "add", this.onContactAdded);
+                this.listenTo(_converse.roster, 'change:groups', this.onContactAdded);
+                this.listenTo(_converse.roster, 'change', this.onContactChange);
+                this.listenTo(_converse.roster, "destroy", this.update);
+                this.listenTo(_converse.roster, "remove", this.update);
                 _converse.presences.on('change:show', () => {
                     this.update();
                     this.updateFilter();
                 });
 
-                this.model.on("reset", this.reset, this);
+                this.listenTo(this.model, "reset", this.reset);
 
                 // This event gets triggered once *all* contacts (i.e. not
                 // just this group's) have been fetched from browser
@@ -801,7 +801,7 @@ converse.plugins.add('converse-rosterview', {
                 model.id = `_converse.rosterfilter${_converse.bare_jid}`;
                 model.browserStorage = new BrowserStorage.local(this.filter.id);
                 this.filter_view = new _converse.RosterFilterView({'model': model});
-                this.filter_view.model.on('change', this.updateFilter, this);
+                this.listenTo(this.filter_view.model, 'change', this.updateFilter);
                 this.filter_view.model.fetch();
             },
 

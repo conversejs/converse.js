@@ -102,24 +102,24 @@ converse.plugins.add('converse-message-view', {
                 }, 50);
 
                 if (this.model.vcard) {
-                    this.model.vcard.on('change', this.debouncedRender, this);
+                    this.listenTo(this.model.vcard, 'change', this.debouncedRender);
                 }
 
                 if (this.model.rosterContactAdded) {
                     this.model.rosterContactAdded.then(() => {
-                        this.model.contact.on('change:nickname', this.debouncedRender, this);
+                        this.listenTo(this.model.contact, 'change:nickname', this.debouncedRender);
                         this.debouncedRender();
                     });
                 }
 
                 if (this.model.occupant) {
-                    this.model.occupant.on('change:role', this.debouncedRender, this);
-                    this.model.occupant.on('change:affiliation', this.debouncedRender, this);
+                    this.listenTo(this.model.occupant, 'change:role', this.debouncedRender);
+                    this.listenTo(this.model.occupant, 'change:affiliation', this.debouncedRender);
                     this.debouncedRender();
                 }
 
-                this.model.on('change', this.onChanged, this);
-                this.model.on('destroy', this.fadeOut, this);
+                this.listenTo(this.model, 'change', this.onChanged);
+                this.listenTo(this.model, 'destroy', this.fadeOut);
             },
 
             async render () {

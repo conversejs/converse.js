@@ -74,7 +74,7 @@ converse.plugins.add('converse-minimize', {
             },
 
             initialize () {
-                this.model.on('change:minimized', this.onMinimizedChanged, this);
+                this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
                 return this.__super__.initialize.apply(this, arguments);
             },
 
@@ -135,7 +135,7 @@ converse.plugins.add('converse-minimize', {
             },
 
             initialize () {
-                this.model.on('change:minimized', this.onMinimizedChanged, this);
+                this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
                 const result = this.__super__.initialize.apply(this, arguments);
                 if (this.model.get('minimized')) {
                     this.hide();
@@ -384,11 +384,11 @@ converse.plugins.add('converse-minimize', {
             },
 
             initialize () {
-                this.model.on('change:num_unread', this.render, this);
-                this.model.on('change:name', this.render, this);
-                this.model.on('change:fullname', this.render, this);
-                this.model.on('change:jid', this.render, this);
-                this.model.on('destroy', this.remove, this);
+                this.listenTo(this.model, 'change:num_unread', this.render)
+                this.listenTo(this.model, 'change:name', this.render)
+                this.listenTo(this.model, 'change:fullname', this.render)
+                this.listenTo(this.model, 'change:jid', this.render)
+                this.listenTo(this.model, 'destroy', this.remove)
             },
 
             render () {
@@ -438,10 +438,10 @@ converse.plugins.add('converse-minimize', {
                 this.render();
                 this.initToggle();
                 this.addMultipleChats(this.model.where({'minimized': true}));
-                this.model.on("add", this.onChanged, this);
-                this.model.on("destroy", this.removeChat, this);
-                this.model.on("change:minimized", this.onChanged, this);
-                this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
+                this.listenTo(this.model, "add", this.onChanged)
+                this.listenTo(this.model, "destroy", this.removeChat)
+                this.listenTo(this.model, "change:minimized", this.onChanged)
+                this.listenTo(this.model, 'change:num_unread', this.updateUnreadMessagesCounter)
             },
 
             render () {
@@ -535,8 +535,8 @@ converse.plugins.add('converse-minimize', {
             },
 
             initialize () {
-                this.model.on('change:num_minimized', this.render, this);
-                this.model.on('change:num_unread', this.render, this);
+                this.listenTo(this.model, 'change:num_minimized', this.render)
+                this.listenTo(this.model, 'change:num_unread', this.render)
                 this.flyout = this.el.parentElement.querySelector('.minimized-chats-flyout');
             },
 

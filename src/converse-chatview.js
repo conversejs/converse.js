@@ -85,15 +85,15 @@ converse.plugins.add('converse-chatview', {
 
         _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
             initialize () {
-                this.model.on('change:status', this.onStatusMessageChanged, this);
+                this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
 
                 this.debouncedRender = _.debounce(this.render, 50);
                 if (this.model.vcard) {
-                    this.model.vcard.on('change', this.debouncedRender, this);
+                    this.listenTo(this.model.vcard, 'change', this.debouncedRender);
                 }
                 if (this.model.rosterContactAdded) {
                     this.model.rosterContactAdded.then(() => {
-                        this.model.contact.on('change:nickname', this.debouncedRender, this);
+                        this.listenTo(this.model.contact, 'change:nickname', this.debouncedRender);
                         this.debouncedRender();
                     });
                 }
@@ -145,7 +145,7 @@ converse.plugins.add('converse-chatview', {
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.model.rosterContactAdded.then(() => this.registerContactEventHandlers());
-                this.model.on('change', this.render, this);
+                this.listenTo(this.model, 'change', this.render);
                 this.registerContactEventHandlers();
                 /**
                  * Triggered once the _converse.UserDetailsModal has been initialized
@@ -175,8 +175,8 @@ converse.plugins.add('converse-chatview', {
 
             registerContactEventHandlers () {
                 if (this.model.contact !== undefined) {
-                    this.model.contact.on('change', this.render, this);
-                    this.model.contact.vcard.on('change', this.render, this);
+                    this.listenTo(this.model.contact, 'change', this.render);
+                    this.listenTo(this.model.contact.vcard, 'change', this.render);
                     this.model.contact.on('destroy', () => {
                         delete this.model.contact;
                         this.render();
@@ -257,17 +257,17 @@ converse.plugins.add('converse-chatview', {
 
             async initialize () {
                 this.initDebounced();
-                this.model.messages.on('add', this.onMessageAdded, this);
-                this.model.messages.on('rendered', this.scrollDown, this);
+                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
                     this.content.innerHTML = '';
                     this.removeAll();
                 });
 
-                this.model.on('show', this.show, this);
-                this.model.on('destroy', this.remove, this);
+                this.listenTo(this.model, 'show', this.show);
+                this.listenTo(this.model, 'destroy', this.remove);
 
-                this.model.presence.on('change:show', this.onPresenceChanged, this);
+                this.listenTo(this.model.presence, 'change:show', this.onPresenceChanged);
                 this.render();
                 await this.updateAfterMessagesFetched();
 
@@ -429,7 +429,7 @@ converse.plugins.add('converse-chatview', {
                 this.heading.chatview = this;
 
                 if (this.model.contact !== undefined) {
-                    this.model.contact.on('destroy', this.heading.render, this);
+                    this.listenTo(this.model.contact, 'destroy', this.heading.render);
                 }
                 const flyout = this.el.querySelector('.flyout');
                 flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));

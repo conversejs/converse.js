@@ -11,6 +11,7 @@
   This means that all your assets need to be served at `/dist`. If you need to set a
   different path, you'll need to set `publicPath` in `webpack.config.js` to
   your preferred path and then rebuild all assets (e.g. `make dist`).
+- Use `listenTo` to avoid memory leaks when views get removed.
 
 ## 5.0.1 (2019-08-14)
 

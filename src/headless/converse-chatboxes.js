@@ -326,7 +326,7 @@ converse.plugins.add('converse-chatboxes', {
                 const storage = _converse.config.get('storage');
                 this.messages.browserStorage = new BrowserStorage[storage](this.getMessagesCacheKey());
                 this.messages.chatbox = this;
-                this.messages.on('change:upload', (message) => {
+                this.listenTo(this.messages, 'change:upload', message => {
                     if (message.get('upload') === _converse.SUCCESS) {
                         _converse.api.send(this.createMessageStanza(message));
                     }

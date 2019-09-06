@@ -61,10 +61,10 @@ var specs = [
     "spec/autocomplete",
     "spec/minchats",
     "spec/notification",
-    "spec/emojis",
     "spec/login",
     "spec/register",
-    "spec/http-file-upload"
+    "spec/http-file-upload",
+    "spec/emojis"
 ];
 
 require(['console-reporter', 'mock', 'sinon'], (ConsoleReporter, mock, sinon) => {

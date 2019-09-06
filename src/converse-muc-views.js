@@ -223,11 +223,11 @@ converse.plugins.add('converse-muc-views', {
                 this.chatroomview = attrs.chatroomview;
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
 
-                this.model.on('change:role', () => {
+                this.listenTo(this.model, 'change:role', () => {
                     this.users_with_role = this.getUsersWithRole();
                     this.render();
                 });
-                this.model.on('change:affiliation', async () => {
+                this.listenTo(this.model, 'change:affiliation', async () => {
                     this.loading_users_with_affiliation = true;
                     this.users_with_affiliation = null;
                     this.render();
@@ -384,7 +384,7 @@ converse.plugins.add('converse-muc-views', {
                 if (_converse.muc_domain && !this.model.get('muc_domain')) {
                     this.model.save('muc_domain', _converse.muc_domain);
                 }
-                this.model.on('change:muc_domain', this.onDomainChange, this);
+                this.listenTo(this.model, 'change:muc_domain', this.onDomainChange);
             },
 
             toHTML () {
@@ -511,7 +511,7 @@ converse.plugins.add('converse-muc-views', {
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.model.on('change:muc_domain', this.render, this);
+                this.listenTo(this.model, 'change:muc_domain', this.render);
             },
 
             toHTML () {
@@ -577,9 +577,9 @@ converse.plugins.add('converse-muc-views', {
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.model.on('change', this.render, this);
-                this.model.occupants.on('add', this.render, this);
-                this.model.occupants.on('change', this.render, this);
+                this.listenTo(this.model, 'change', this.render);
+                this.listenTo(this.model.occupants, 'add', this.render);
+                this.listenTo(this.model.occupants, 'change', this.render);
             },
 
             toHTML () {
@@ -636,28 +636,28 @@ converse.plugins.add('converse-muc-views', {
             initialize () {
                 this.initDebounced();
 
-                this.model.messages.on('add', this.onMessageAdded, this);
-                this.model.messages.on('rendered', this.scrollDown, this);
+                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
                     this.content.innerHTML = '';
                     this.removeAll();
                 });
 
-                this.model.on('change', this.renderHeading, this);
-                this.model.on('change:connection_status', this.onConnectionStatusChanged, this);
-                this.model.on('change:hidden_occupants', this.updateOccupantsToggle, this);
-                this.model.on('change:subject', this.setChatRoomSubject, this);
-                this.model.on('configurationNeeded', this.getAndRenderConfigurationForm, this);
-                this.model.on('destroy', this.hide, this);
-                this.model.on('show', this.show, this);
+                this.listenTo(this.model, 'change', this.renderHeading);
+                this.listenTo(this.model, 'change:connection_status', this.onConnectionStatusChanged);
+                this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
+                this.listenTo(this.model, 'change:subject', this.setChatRoomSubject);
+                this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
+                this.listenTo(this.model, 'destroy', this.hide);
+                this.listenTo(this.model, 'show', this.show);
 
-                this.model.features.on('change:moderated', this.renderBottomPanel, this);
+                this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
 
-                this.model.occupants.on('add', this.onOccupantAdded, this);
-                this.model.occupants.on('remove', this.onOccupantRemoved, this);
-                this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
-                this.model.occupants.on('change:role', this.onOccupantRoleChanged, this);
-                this.model.occupants.on('change:affiliation', this.onOccupantAffiliationChanged, this);
+                this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
+                this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
+                this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
+                this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
+                this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
 
                 this.render();
                 this.updateAfterMessagesFetched();
@@ -1734,8 +1734,8 @@ converse.plugins.add('converse-muc-views', {
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
-                this.chatroomview.model.features.on('change:passwordprotected', this.render, this);
-                this.chatroomview.model.features.on('change:config_stanza', this.render, this);
+                this.listenTo(this.chatroomview.model.features, 'change:passwordprotected', this.render);
+                this.listenTo(this.chatroomview.model.features, 'change:config_stanza', this.render);
                 this.render();
             },
 
@@ -1780,7 +1780,7 @@ converse.plugins.add('converse-muc-views', {
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
-                this.model.on('change:validation_message', this.render, this);
+                this.listenTo(this.model, 'change:validation_message', this.render);
                 this.render();
             },
 
@@ -1813,7 +1813,7 @@ converse.plugins.add('converse-muc-views', {
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
-                this.model.on('change:validation_message', this.render, this);
+                this.listenTo(this.model, 'change:validation_message', this.render);
                 this.render();
             },
 
@@ -1853,7 +1853,7 @@ converse.plugins.add('converse-muc-views', {
         _converse.ChatRoomOccupantView = Backbone.VDOMView.extend({
             tagName: 'li',
             initialize () {
-                this.model.on('change', this.render, this);
+                this.listenTo(this.model, 'change', this.render);
             },
 
             toHTML () {
@@ -1895,13 +1895,13 @@ converse.plugins.add('converse-muc-views', {
             async initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
-                this.model.on('add', this.maybeRenderInviteWidget, this);
-                this.model.on('change:affiliation', this.maybeRenderInviteWidget, this);
+                this.listenTo(this.model, 'add', this.maybeRenderInviteWidget);
+                this.listenTo(this.model, 'change:affiliation', this.maybeRenderInviteWidget);
 
                 this.chatroomview = this.model.chatroomview;
-                this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
-                this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
-                this.chatroomview.model.on('change:hidden_occupants', this.setVisibility, this);
+                this.listenTo(this.chatroomview.model.features, 'change', this.renderRoomFeatures);
+                this.listenTo(this.chatroomview.model.features, 'change:open', this.renderInviteWidget);
+                this.listenTo(this.chatroomview.model, 'change:hidden_occupants', this.setVisibility);
                 this.render();
                 await this.model.fetched;
                 this.sortAndPositionAllItems();

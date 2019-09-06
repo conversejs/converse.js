@@ -189,11 +189,11 @@ converse.plugins.add('converse-controlbox', {
                 }
                 _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
 
-                this.model.on('change:connected', this.onConnected, this);
-                this.model.on('destroy', this.hide, this);
-                this.model.on('hide', this.hide, this);
-                this.model.on('show', this.show, this);
-                this.model.on('change:closed', this.ensureClosedState, this);
+                this.listenTo(this.model, 'change:connected', this.onConnected)
+                this.listenTo(this.model, 'destroy', this.hide)
+                this.listenTo(this.model, 'hide', this.hide)
+                this.listenTo(this.model, 'show', this.show)
+                this.listenTo(this.model, 'change:closed', this.ensureClosedState)
                 this.render();
                 /**
                  * Triggered when the _converse.ControlBoxView has been initialized and therefore
@@ -366,7 +366,7 @@ converse.plugins.add('converse-controlbox', {
             },
 
             initialize (cfg) {
-                this.model.on('change', this.render, this);
+                this.listenTo(this.model, 'change', this.render)
                 this.listenTo(_converse.connfeedback, 'change', this.render);
                 this.render();
             },

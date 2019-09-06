@@ -111,7 +111,7 @@ converse.plugins.add('converse-chatboxviews', {
             },
 
             initialize () {
-                this.model.on("destroy", this.removeChat, this);
+                this.listenTo(this.model, "destroy", this.removeChat)
                 const bg = document.getElementById('conversejs-bg');
                 if (bg && !bg.innerHTML.trim()) {
                     bg.innerHTML = tpl_background_logo();

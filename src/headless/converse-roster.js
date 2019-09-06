@@ -153,8 +153,8 @@ converse.plugins.add('converse-roster', {
                 this.resources = new Resources();
                 const id = `converse.identities-${this.get('jid')}`;
                 this.resources.browserStorage = new BrowserStorage.session(id);
-                this.resources.on('update', this.onResourcesChanged, this);
-                this.resources.on('change', this.onResourcesChanged, this);
+                this.listenTo(this.resources, 'update', this.onResourcesChanged);
+                this.listenTo(this.resources, 'change', this.onResourcesChanged);
             },
 
             onResourcesChanged () {
@@ -253,8 +253,8 @@ converse.plugins.add('converse-roster', {
                  * @type { _converse.RosterContact }
                  * @example _converse.api.listen.on('contactPresenceChanged', contact => { ... });
                  */
-                this.presence.on('change:show', () => _converse.api.trigger('contactPresenceChanged', this));
-                this.presence.on('change:show', () => this.trigger('presenceChanged'));
+                this.listenTo(this.presence, 'change:show', () => _converse.api.trigger('contactPresenceChanged', this));
+                this.listenTo(this.presence, 'change:show', () => this.trigger('presenceChanged'));
                 /**
                  * Synchronous event which provides a hook for further initializing a RosterContact
                  * @event _converse#rosterContactInitialized

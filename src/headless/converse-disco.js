@@ -52,13 +52,13 @@ converse.plugins.add('converse-disco', {
                 this.features.browserStorage = new BrowserStorage.session(
                     `converse.features-${this.get('jid')}`
                 );
-                this.features.on('add', this.onFeatureAdded, this);
+                this.listenTo(this.features, 'add', this.onFeatureAdded)
 
                 this.fields = new _converse.Collection();
                 this.fields.browserStorage = new BrowserStorage.session(
                     `converse.fields-${this.get('jid')}`
                 );
-                this.fields.on('add', this.onFieldAdded, this);
+                this.listenTo(this.fields, 'add', this.onFieldAdded)
 
                 this.identities = new _converse.Collection();
                 this.identities.browserStorage = new BrowserStorage.session(

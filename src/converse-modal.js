@@ -82,7 +82,7 @@ converse.plugins.add('converse-modal', {
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.model.on('change', this.render, this);
+                this.listenTo(this.model, 'change', this.render)
             },
 
             toHTML () {

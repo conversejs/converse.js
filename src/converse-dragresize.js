@@ -150,7 +150,7 @@ converse.plugins.add('converse-dragresize', {
                 const view = this;
                 const debouncedSetDimensions = _.debounce(() => view.setDimensions());
                 window.addEventListener('resize', view.debouncedSetDimensions)
-                this.model.on('destroy', () => window.removeEventListener('resize', debouncedSetDimensions));
+                this.listenTo(this.model, 'destroy', () => window.removeEventListener('resize', debouncedSetDimensions));
 
                 // Determine and store the default box size.
                 // We need this information for the drag-resizing feature.

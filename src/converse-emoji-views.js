@@ -149,9 +149,9 @@ converse.plugins.add('converse-emoji-views', {
             async initialize () {
                 this.search_results = [];
                 this.debouncedFilter = debounce(input => this.filter(input.value), 150);
-                this.model.on('change:query', this.render, this);
-                this.model.on('change:current_skintone', this.render, this);
-                this.model.on('change:current_category', this.render, this);
+                this.listenTo(this.model, 'change:query', this.render)
+                this.listenTo(this.model, 'change:current_skintone', this.render)
+                this.listenTo(this.model, 'change:current_category', this.render)
                 await _converse.api.waitUntil('emojisInitialized');
                 this.render();
                 _converse.api.trigger('emojiPickerViewInitialized');

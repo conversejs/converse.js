@@ -103,13 +103,13 @@ converse.plugins.add('converse-roomslist', {
             },
 
             initialize () {
-                this.model.on('destroy', this.remove, this);
-                this.model.on('remove', this.remove, this);
-                this.model.on('change:bookmarked', this.render, this);
-                this.model.on('change:hidden', this.render, this);
-                this.model.on('change:name', this.render, this);
-                this.model.on('change:num_unread', this.render, this);
-                this.model.on('change:num_unread_general', this.render, this);
+                this.listenTo(this.model, 'destroy', this.remove)
+                this.listenTo(this.model, 'remove', this.remove)
+                this.listenTo(this.model, 'change:bookmarked', this.render)
+                this.listenTo(this.model, 'change:hidden', this.render)
+                this.listenTo(this.model, 'change:name', this.render)
+                this.listenTo(this.model, 'change:num_unread', this.render)
+                this.listenTo(this.model, 'change:num_unread_general', this.render)
             },
 
             toHTML () {
@@ -168,8 +168,8 @@ converse.plugins.add('converse-roomslist', {
             initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
-                this.model.on('add', this.showOrHide, this);
-                this.model.on('remove', this.showOrHide, this);
+                this.listenTo(this.model, 'add', this.showOrHide)
+                this.listenTo(this.model, 'remove', this.showOrHide)
 
                 const storage = _converse.config.get('storage'),
                       id = `converse.roomslist${_converse.bare_jid}`;

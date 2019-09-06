@@ -264,30 +264,48 @@ converse.plugins.add('converse-muc', {
             },
 
             onOccupantRemoved (occupant) {
+                this.stopListening(this.occupant);
                 delete this.occupant;
                 const chatbox = _.get(this, 'collection.chatbox');
-                chatbox.occupants.on('add', this.onOccupantAdded, this);
+                if (!chatbox) {
+                    return _converse.log(
+                        `Could not get collection.chatbox for message: ${this.get('id')}`,
+                        Strophe.LogLevel.ERROR
+                    );
+                }
+                this.listenTo(chatbox.occupants, 'add', this.onOccupantAdded);
             },
 
             onOccupantAdded (occupant) {
                 if (occupant.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
                     this.occupant = occupant;
-                    this.occupant.on('destroy', this.onOccupantRemoved, this);
+                    this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
                     const chatbox = _.get(this, 'collection.chatbox');
-                    chatbox.occupants.off('add', this.onOccupantAdded, this);
+                    if (!chatbox) {
+                        return _converse.log(
+                            `Could not get collection.chatbox for message: ${this.get('id')}`,
+                            Strophe.LogLevel.ERROR
+                        );
+                    }
+                    this.stopListening(chatbox.occupants, 'add', this.onOccupantAdded);
                 }
             },
 
             setOccupant () {
                 if (this.get('type') !== 'groupchat') { return; }
                 const chatbox = _.get(this, 'collection.chatbox');
-                if (!chatbox) { return; }
+                if (!chatbox) {
+                    return _converse.log(
+                        `Could not get collection.chatbox for message: ${this.get('id')}`,
+                        Strophe.LogLevel.ERROR
+                    );
+                }
                 const nick = Strophe.getResourceFromJid(this.get('from'));
                 this.occupant = chatbox.occupants.findWhere({'nick': nick});
                 if (this.occupant) {
-                    this.occupant.on('destroy', this.onOccupantRemoved, this);
+                    this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
                 } else {
-                    chatbox.occupants.on('add', this.onOccupantAdded, this);
+                    this.listenTo(chatbox.occupants, 'add', this.onOccupantAdded);
                 }
 
             },

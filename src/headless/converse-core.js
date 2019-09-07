@@ -1127,8 +1127,8 @@ _converse.initialize = async function (settings, callback) {
             _converse.xmppstatus = new this.XMPPStatus({'id': id});
             _converse.xmppstatus.browserStorage = new BrowserStorage.session(id);
             _converse.xmppstatus.fetch({
-                'success': _.partial(_converse.onStatusInitialized, reconnecting),
-                'error': _.partial(_converse.onStatusInitialized, reconnecting),
+                'success': () => _converse.onStatusInitialized(reconnecting),
+                'error': () => _converse.onStatusInitialized(reconnecting),
                 'silent': true
             });
         }

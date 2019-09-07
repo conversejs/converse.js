@@ -290,7 +290,7 @@ converse.plugins.add('converse-bookmarks', {
                 if (sizzle('event[xmlns="'+Strophe.NS.PUBSUB+'#event"] items[node="storage:bookmarks"]', message).length) {
                     _converse.api.waitUntil('bookmarksInitialized')
                         .then(() => _converse.bookmarks.createBookmarksFromStanza(message))
-                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        .catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
                 }
             }, null, 'message', 'headline', null, _converse.bare_jid);
 

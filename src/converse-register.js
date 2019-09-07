@@ -142,10 +142,10 @@ converse.plugins.add('converse-register', {
             _converse.api.waitUntil('controlBoxInitialized').then(() => {
                 const controlbox = _converse.chatboxes.get('controlbox')
                 controlbox.set({'active-form': value});
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            }).catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
         }
-        _converse.router.route('converse/login', _.partial(setActiveForm, 'login'));
-        _converse.router.route('converse/register', _.partial(setActiveForm, 'register'));
+        _converse.router.route('converse/login', () => setActiveForm('login'));
+        _converse.router.route('converse/register', () => setActiveForm('register'));
 
 
         _converse.RegisterLinkView = Backbone.VDOMView.extend({

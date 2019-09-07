@@ -1022,8 +1022,8 @@ converse.plugins.add('converse-omemo', {
                 if (this._devices_promise === undefined) {
                     this._devices_promise = new Promise(resolve => {
                         this.devices.fetch({
-                            'success': _.flow(c => this.onDevicesFound(c), resolve),
-                            'error': _.flow(_.partial(_converse.log, _, Strophe.LogLevel.ERROR), resolve)
+                            'success': c => resolve(this.onDevicesFound(c)),
+                            'error': e => { _converse.log(e, Strophe.LogLevel.ERROR); resolve(); }
                         });
                     });
                 }
@@ -1265,11 +1265,11 @@ converse.plugins.add('converse-omemo', {
 
         _converse.api.listen.on('userDetailsModalInitialized', (contact) => {
             const jid = contact.get('jid');
-            _converse.generateFingerprints(jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            _converse.generateFingerprints(jid).catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
         });
 
         _converse.api.listen.on('profileModalInitialized', (contact) => {
-            _converse.generateFingerprints(_converse.bare_jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            _converse.generateFingerprints(_converse.bare_jid).catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
         });
 
         _converse.api.listen.on('afterTearDown', () => (delete _converse.omemo_store));

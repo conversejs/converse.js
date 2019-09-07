@@ -81,7 +81,7 @@ converse.plugins.add("converse-oauth", {
             'sync': function sync () {},
 
             initialize () {
-                _.each(_converse.user_settings.oauth_providers, (provider) => {
+                _converse.user_settings.oauth_providers.forEach(provider => {
                     const item = new Backbone.Model(Object.assign(provider, {
                         'login_text': __('Log in with %1$s', provider.name)
                     }));

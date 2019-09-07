@@ -192,10 +192,14 @@ converse.plugins.add('converse-muc-views', {
                 }));
         }
 
+        /**
+         * Show/hide extra information about a groupchat in a listing.
+         * @function toggleRoomInfo
+         * @param { Event }
+         */
         function toggleRoomInfo (ev) {
-            /* Show/hide extra information about a groupchat in a listing. */
-            const parent_el = u.ancestor(ev.target, '.room-item'),
-                  div_el = parent_el.querySelector('div.room-info');
+            const parent_el = u.ancestor(ev.target, '.room-item');
+            const div_el = parent_el.querySelector('div.room-info');
             if (div_el) {
                 u.slideIn(div_el).then(u.removeElement)
                 parent_el.querySelector('a.room-info').classList.remove('selected');
@@ -203,7 +207,7 @@ converse.plugins.add('converse-muc-views', {
                 parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
                 _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null)
                     .then(stanza => insertRoomInfo(parent_el, stanza))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                    .catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
             }
         }
 
@@ -1312,7 +1316,7 @@ converse.plugins.add('converse-muc-views', {
                     this.showSpinner();
                     this.model.fetchRoomConfiguration()
                         .then(iq => this.renderConfigurationForm(iq))
-                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                        .catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
                 } else {
                     this.closeForm();
                 }
@@ -2072,7 +2076,7 @@ converse.plugins.add('converse-muc-views', {
                 // Features could have been added before the controlbox was
                 // initialized. We're only interested in MUC
                 _converse.disco_entities.each(entity => featureAdded(entity.features.findWhere({'var': Strophe.NS.MUC })));
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            }).catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
         }
 
         function fetchAndSetMUCDomain (controlboxview) {
@@ -2124,7 +2128,7 @@ converse.plugins.add('converse-muc-views', {
                 return;
             }
             fetchAndSetMUCDomain(view);
-            view.model.on('change:connected', _.partial(fetchAndSetMUCDomain, view));
+            view.model.on('change:connected', () => fetchAndSetMUCDomain(view));
         });
         /************************ END Event Handlers ************************/
 

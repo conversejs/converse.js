@@ -496,7 +496,7 @@ converse.plugins.add('converse-minimize', {
             },
 
             addMultipleChats (items) {
-                _.each(items, this.addChatView.bind(this));
+                items.forEach(item => this.addChatView(item));
                 this.toggleview.model.set({'num_minimized': this.keys().length});
                 this.render();
             },

@@ -519,7 +519,7 @@ converse.plugins.add('converse-roster', {
                 const iq = $iq({'type': 'set'})
                     .c('query', {'xmlns': Strophe.NS.ROSTER})
                     .c('item', { jid, name });
-                _.each(groups, group => iq.c('group').t(group).up());
+                groups.forEach(g => iq.c('group').t(g).up());
                 return _converse.api.sendIQ(iq);
             },
 

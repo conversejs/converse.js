@@ -486,7 +486,7 @@ converse.plugins.add('converse-muc', {
                 const storage = _converse.config.get('storage');
                 const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
                 this.features = new Backbone.Model(
-                    _.assign({id}, _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)))
+                    _.assign({id}, _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)))
                 );
                 this.features.browserStorage = new BrowserStorage.session(id);
             },
@@ -848,7 +848,7 @@ converse.plugins.add('converse-muc', {
 
                 const features = await _converse.api.disco.getFeatures(this.get('jid'));
                 const attrs = Object.assign(
-                    _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)),
+                    _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)),
                     {'fetched': (new Date()).toISOString()}
                 );
                 features.each(feature => {
@@ -900,8 +900,8 @@ converse.plugins.add('converse-muc', {
              * has return a response IQ.
              */
             saveConfiguration (form) {
-                const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
-                        configArray = _.map(inputs, u.webForm2xForm);
+                const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [];
+                const configArray = inputs.map(u.webForm2xForm);
                 return this.sendConfiguration(configArray);
             },
 
@@ -1283,7 +1283,7 @@ converse.plugins.add('converse-muc', {
                 }
                 const occupant = this.occupants.findOccupant(data);
                 if (data.type === 'unavailable' && occupant) {
-                    if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
+                    if (!data.states.includes(converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
                         // We only destroy the occupant if this is not a nickname change operation.
                         // and if they're not on the member lists.
                         // Before destroying we set the new data, so
@@ -1575,7 +1575,7 @@ converse.plugins.add('converse-muc', {
             },
 
             handleDisconnection (stanza) {
-                const is_self = !_.isNull(stanza.querySelector("status[code='110']"));
+                const is_self = stanza.querySelector("status[code='110']") !== null;
                 const x = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza).pop();
                 if (!x) {
                     return;
@@ -1831,7 +1831,7 @@ converse.plugins.add('converse-muc', {
                 const nick = this.get('nick');
                 if (message.get('references').length) {
                     const mentions = message.get('references').filter(ref => (ref.type === 'mention')).map(ref => ref.value);
-                    return _.includes(mentions, nick);
+                    return mentions.includes(nick);
                 } else {
                     return (new RegExp(`\\b${nick}\\b`)).test(message.get('message'));
                 }
@@ -1894,7 +1894,7 @@ converse.plugins.add('converse-muc', {
                 }
                 vcards.push(_converse.vcards.findWhere({'jid': this.get('from')}));
 
-                _.forEach(_.filter(vcards, undefined), (vcard) => {
+                vcards.filter(v => v).forEach(vcard => {
                     if (hash && vcard.get('image_hash') !== hash) {
                         _converse.api.vcard.update(vcard, true);
                     }
@@ -2175,7 +2175,7 @@ converse.plugins.add('converse-muc', {
                     } else if (_.isString(jids)) {
                         return createChatRoom(jids, attrs);
                     }
-                    return _.map(jids, _.partial(createChatRoom, _, attrs));
+                    return jids.map(jid => createChatRoom(jid, attrs));
                 },
 
                 /**
@@ -2249,7 +2249,7 @@ converse.plugins.add('converse-muc', {
                         }
                         return room;
                     } else {
-                        return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
+                        return jids.map(jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
                     }
                 },
 
@@ -2297,7 +2297,7 @@ converse.plugins.add('converse-muc', {
                     if (_.isString(jids)) {
                         return getChatRoom(jids, attrs);
                     }
-                    return _.map(jids, _.partial(getChatRoom, _, attrs));
+                    return jids.map(jid => getChatRoom(jid, attrs));
                 }
             }
         });

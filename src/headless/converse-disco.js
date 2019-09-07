@@ -154,9 +154,9 @@ converse.plugins.add('converse-disco', {
             },
 
             onDiscoItems (stanza) {
-                _.each(sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza), (item) => {
+                sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza).forEach(item => {
                     if (item.getAttribute("node")) {
-                        // XXX: ignore nodes for now.
+                        // XXX: Ignore nodes for now.
                         // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
                         return;
                     }
@@ -191,9 +191,9 @@ converse.plugins.add('converse-disco', {
                     });
                 });
 
-                _.each(sizzle(`x[type="result"][xmlns="${Strophe.NS.XFORM}"]`, stanza), (form) => {
+                sizzle(`x[type="result"][xmlns="${Strophe.NS.XFORM}"]`, stanza).forEach(form => {
                     const data = {};
-                    _.each(form.querySelectorAll('field'), (field) => {
+                    sizzle('field', form).forEach(field => {
                         data[field.getAttribute('var')] = {
                             'value': _.get(field.querySelector('value'), 'textContent'),
                             'type': field.getAttribute('type')
@@ -308,7 +308,7 @@ converse.plugins.add('converse-disco', {
                 iqresult.attrs({'to': from});
             }
             iqresult.c('query', attrs);
-            _.each(plugin._identities, (identity) => {
+            plugin._identities.forEach(identity => {
                 const attrs = {
                     'category': identity.category,
                     'type': identity.type
@@ -321,9 +321,7 @@ converse.plugins.add('converse-disco', {
                 }
                 iqresult.c('identity', attrs).up();
             });
-            _.each(plugin._features, (feature) => {
-                iqresult.c('feature', {'var': feature}).up();
-            });
+            plugin._features(feature => iqresult.c('feature', {'var': feature}).up());
             _converse.api.send(iqresult.tree());
             return true;
         }
@@ -771,7 +769,7 @@ converse.plugins.add('converse-disco', {
                  *             // The entity DOES NOT have this identity
                  *         }
                  *     }
-                 * ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                 * ).catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
                  */
                 async getIdentity (category, type, jid) {
                     const e = await _converse.api.disco.entities.get(jid, true);

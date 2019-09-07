@@ -2987,9 +2987,9 @@
                 textarea.value = '/help';
                 view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);
-                expect(info_messages.length).toBe(10);
+                expect(info_messages.length).toBe(11);
                 commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
-                expect(commands).toEqual(["/clear", "/help", "/kick", "/me", "/mute", "/nick", "/register", "/subject", "/topic", "/voice"]);
+                expect(commands).toEqual(["/clear", "/help", "/kick", "/me", "/modtools", "/mute", "/nick", "/register", "/subject", "/topic", "/voice"]);
 
                 occupant.set('role', 'participant');
                 textarea.value = '/clear';

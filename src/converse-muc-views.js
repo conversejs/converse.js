@@ -50,8 +50,8 @@ const ROLES = ['moderator', 'participant', 'visitor'];
 const AFFILIATIONS = ['admin', 'member', 'outcast', 'owner'];
 const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 const OWNER_COMMANDS = ['owner'];
-const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'modtools', 'member', 'op', 'revoke'];
-const MODERATOR_COMMANDS = ['kick', 'mute', 'voice'];
+const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
+const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
 const VISITOR_COMMANDS = ['nick'];
 
 const COMMAND_TO_ROLE = {
@@ -349,8 +349,7 @@ converse.plugins.add('converse-muc-views', {
                 ev.stopPropagation();
                 ev.preventDefault();
                 const data = new FormData(ev.target);
-                const jid = data.get('jid');
-                const occupant = this.chatroomview.model.getOccupant(jid);
+                const occupant = this.chatroomview.model.getOccupant(data.get('jid') || data.get('nick'));
                 const role = data.get('role');
                 const reason = data.get('reason');
                 const current_role = this.model.get('role');
@@ -365,8 +364,10 @@ converse.plugins.add('converse-muc-views', {
                             this.alert(__('You\'re not allowed to make that change'), 'danger');
                         } else {
                             this.alert(__('Sorry, something went wrong while trying to set the role'), 'danger');
+                            if (u.isErrorObject(e)) {
+                                _converse.log(e, Strophe.LogLevel.ERROR);
+                            }
                         }
-                        _converse.log(e, Strophe.LogLevel.ERROR);
                     }
                 );
             }
@@ -762,6 +763,9 @@ converse.plugins.add('converse-muc-views', {
             },
 
             showModeratorToolsModal (affiliation) {
+                if (!this.verifyRoles(['moderator'])) {
+                    return;
+                }
                 if (_.isUndefined(this.model.modtools_modal)) {
                     const model = new Backbone.Model({'affiliation': affiliation});
                     this.modtools_modal = new _converse.ModeratorToolsModal({'model': model, 'chatroomview': this});

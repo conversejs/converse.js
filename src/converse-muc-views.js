@@ -258,7 +258,7 @@ converse.plugins.add('converse-muc-views', {
 
                 return tpl_moderator_tools_modal(Object.assign(this.model.toJSON(), {
                     '__': __,
-                    'affiliations': AFFILIATIONS,
+                    'affiliations': [...AFFILIATIONS, 'none'],
                     'allowed_affiliations': allowed_affiliations,
                     'allowed_roles': allowed_roles,
                     'loading_users_with_affiliation': this.loading_users_with_affiliation,

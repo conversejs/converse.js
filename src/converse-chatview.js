@@ -1310,10 +1310,8 @@ converse.plugins.add('converse-chatview', {
             });
         });
 
-        _converse.api.listen.on('connected', () => {
-            // Advertise that we support XEP-0382 Message Spoilers
-            _converse.api.disco.own.features.add(Strophe.NS.SPOILER);
-        });
+        // Advertise that we support XEP-0382 Message Spoilers
+        _converse.api.listen.on('connected', () => _converse.api.disco.own.features.add(Strophe.NS.SPOILER));
 
         /************************ BEGIN API ************************/
         Object.assign(_converse.api, {
@@ -1327,15 +1325,13 @@ converse.plugins.add('converse-chatview', {
             'chatviews': {
                  /**
                   * Get the view of an already open chat.
-                  *
                   * @method _converse.api.chatviews.get
+                  * @param { Array.string | string } jids
                   * @returns {ChatBoxView} A [Backbone.View](http://backbonejs.org/#View) instance.
                   *     The chat should already be open, otherwise `undefined` will be returned.
-                  *
                   * @example
                   * // To return a single view, provide the JID of the contact:
                   * _converse.api.chatviews.get('buddy@example.com')
-                  *
                   * @example
                   * // To return an array of views, provide an array of JIDs:
                   * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
@@ -1351,7 +1347,7 @@ converse.plugins.add('converse-chatview', {
                     if (_.isString(jids)) {
                         return _converse.chatboxviews.get(jids);
                     }
-                    return _.map(jids, (jid) => _converse.chatboxviews.get(jids));
+                    return jids.map(jid => _converse.chatboxviews.get(jids));
                 }
             }
         });

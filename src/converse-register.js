@@ -626,7 +626,7 @@ converse.plugins.add('converse-register', {
                         return;
                     } else if (field.tagName.toLowerCase() === 'x') {
                         if (field.getAttribute('xmlns') === 'jabber:x:oob') {
-                            this.urls.concat(_.map(field.querySelectorAll('url'), 'textContent'));
+                            this.urls.concat(sizzle('url', field).map(u => u.textContent));
                         }
                         return;
                     }

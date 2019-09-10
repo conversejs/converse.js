@@ -66,7 +66,7 @@ converse.plugins.add('converse-roomslist', {
                 _converse.chatboxes.on('change:num_unread', this.onChatBoxChanged, this);
                 _converse.chatboxes.on('change:num_unread_general', this.onChatBoxChanged, this);
                 _converse.chatboxes.on('remove', this.onChatBoxRemoved, this);
-                this.reset(_.map(_converse.chatboxes.where({'type': _converse.CHATROOMS_TYPE}), 'attributes'));
+                this.reset(_converse.chatboxes.where({'type': _converse.CHATROOMS_TYPE}).map(cb => cb.attributes));
             },
 
             onChatBoxAdded (item) {

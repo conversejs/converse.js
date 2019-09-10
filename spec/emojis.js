@@ -159,9 +159,9 @@
         });
 
         describe("A Chat Message", function () {
-            it("will display larger if it's a single emoji",
+            it("will display larger if it's only emojis",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {'use_system_emojis': false},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {'use_system_emojis': true},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -176,7 +176,6 @@
                 await new Promise(resolve => _converse.on('chatBoxInitialized', resolve));
                 const view = _converse.api.chatviews.get(sender_jid);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-
                 const chat_content = view.el.querySelector('.chat-content');
                 let message = chat_content.querySelector('.chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
@@ -191,7 +190,38 @@
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 message = chat_content.querySelector('.message:last-child .chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
-                done();
+
+                // Test that a modified message that no longer contains only
+                // emojis now renders normally again.
+                const textarea = view.el.querySelector('textarea.chat-textarea');
+                textarea.value = ':poop: :innocent:';
+                view.onKeyDown({
+                    target: textarea,
+                    preventDefault: function preventDefault () {},
+                    keyCode: 13 // Enter
+                });
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
+                expect(chat_content.querySelector('.message:last-child .chat-msg__text').textContent).toBe('💩 😇');
+                expect(textarea.value).toBe('');
+                view.onKeyDown({
+                    target: textarea,
+                    keyCode: 38 // Up arrow
+                });
+                expect(textarea.value).toBe('💩 😇');
+                expect(view.model.messages.at(2).get('correcting')).toBe(true);
+                await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg:last-child')), 500);
+                textarea.value = textarea.value += 'This is no longer an emoji-only message';
+                view.onKeyDown({
+                    target: textarea,
+                    preventDefault: function preventDefault () {},
+                    keyCode: 13 // Enter
+                });
+                await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+                expect(view.model.messages.models.length).toBe(3);
+                message = chat_content.querySelector('.message:last-child .chat-msg__text');
+                expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
+                done()
             }));
         });
     });

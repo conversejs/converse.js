@@ -9,7 +9,7 @@
     "LICENSE.txt",
     "README.md",
     "dist/",
-    "locale/**/*.json",
+    "locale/",
     "sass/",
     "sounds/",
     "src/"

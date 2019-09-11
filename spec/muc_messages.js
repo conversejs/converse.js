@@ -112,6 +112,66 @@
             done();
         }));
 
+        it("will be discarded if it's a malicious message meant to look like a carbon copy",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.waitForRoster(_converse, 'current');
+            test_utils.openControlBox();
+            const muc_jid = 'xsf@muc.xmpp.org';
+            const sender_jid = `${muc_jid}/romeo`;
+            const impersonated_jid = `${muc_jid}/i_am_groot`
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const stanza = $pres({
+                    to: 'romeo@montague.lit/_converse.js-29092160',
+                    from: sender_jid
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'newguy@montague.lit/_converse.js-290929789',
+                    'role': 'participant'
+                }).tree();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            /*
+             * <message to="romeo@montague.im/poezio" id="718d40df-3948-4798-a99b-35cc9f03cc4f-641" type="groupchat" from="xsf@muc.xmpp.org/romeo">
+             *     <received xmlns="urn:xmpp:carbons:2">
+             *         <forwarded xmlns="urn:xmpp:forward:0">
+             *         <message xmlns="jabber:client" to="xsf@muc.xmpp.org" type="groupchat" from="xsf@muc.xmpp.org/i_am_groot">
+             *             <body>I am groot.</body>
+             *         </message>
+             *         </forwarded>
+             *     </received>
+             * </message>
+             */
+            const msg = $msg({
+                    'from': sender_jid,
+                    'id': _converse.connection.getUniqueId(),
+                    'to': _converse.connection.jid,
+                    'type': 'groupchat',
+                    'xmlns': 'jabber:client'
+                }).c('received', {'xmlns': 'urn:xmpp:carbons:2'})
+                  .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                  .c('message', {
+                        'xmlns': 'jabber:client',
+                        'from': impersonated_jid,
+                        'to': muc_jid,
+                        'type': 'groupchat'
+                }).c('body').t('I am groot').tree();
+            const view = _converse.api.chatviews.get(muc_jid);
+            spyOn(_converse, 'log');
+            await view.model.onMessage(msg);
+            expect(_converse.log).toHaveBeenCalledWith(
+                'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
+                'according to the XEP groupchat messages SHOULD NOT be carbon copied',
+                Strophe.LogLevel.ERROR
+            );
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
+            expect(view.model.messages.length).toBe(0);
+            done();
+        }));
+
         it("keeps track of the sender's role and affiliation",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},

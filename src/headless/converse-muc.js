@@ -520,6 +520,13 @@ converse.plugins.add('converse-muc', {
                     {'ignoreNamespaceFragment': true, 'matchBareFromJid': true}
                 );
                 this.message_handler = _converse.connection.addHandler(stanza => {
+                        if (sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop()) {
+                            // MAM messages are handled in converse-mam.
+                            // We shouldn't get MAM messages here because
+                            // they shouldn't have a `type` attribute.
+                            _converse.log(`Received a MAM message with type "chat".`, Strophe.LogLevel.WARN);
+                            return true;
+                        }
                         this.onMessage(stanza);
                         return true;
                     }, null, 'message', 'groupchat', null, room_jid,
@@ -1528,10 +1535,20 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza - The message stanza.
              */
             async onMessage (stanza) {
+                const original_stanza = stanza;
+                const is_carbon = sizzle(`received[xmlns="${Strophe.NS.CARBONS}"]`, original_stanza).length > 0;
+                if (is_carbon) {
+                    // XEP-280: groupchat messages SHOULD NOT be carbon copied, so we're discarding it.
+                    _converse.log(
+                        'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
+                        'according to the XEP groupchat messages SHOULD NOT be carbon copied',
+                        Strophe.LogLevel.ERROR);
+                    return;
+                }
                 this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
-                const original_stanza = stanza;
                 const forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
+
                 if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }

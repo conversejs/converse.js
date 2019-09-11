@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.2 (Unreleased)
+## 5.0.2 (2019-09-11)
 
 - `po` translations files are now loaded via Webpack. As a result the `locales_url`
   config option is now removed given that the path to the locale JSON files is now

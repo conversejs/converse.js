@@ -1,10 +1,8 @@
 /* global __dirname, module, process */
-const HTMLWebpackPlugin = require('html-webpack-plugin');
-const minimist = require('minimist');
 const path = require('path');
 const webpack = require('webpack');
 
-const config = {
+module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
         publicPath: '/dist/', // URL base path for all assets
@@ -140,26 +138,3 @@ const config = {
         }
     }
 }
-
-function extend (o1, o2) {
-    for (var i in o2) {
-        if (Object.prototype.hasOwnProperty.call(o2, i)) {
-            o1[i] = o2[i];
-        }
-    }
-}
-
-function parameterize () {
-    const type = minimist(process.argv.slice(2)).type;
-    const mode = minimist(process.argv.slice(2)).mode;
-    const lang = minimist(process.argv.slice(2)).lang;
-    if (type === 'headless') {
-        console.log("Making a headless build");
-        config.entry = "@converse/headless/headless.js";
-        config.output.filename = 'converse-headless.js';
-    }
-}
-
-parameterize();
-
-module.exports = config;

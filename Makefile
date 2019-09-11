@@ -167,16 +167,13 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 	$(INKSCAPE) -e $@ -w $* $<
 	$(OXIPNG) $@
 
-BUILDS = src/headless/dist/converse-headless.js \
-		 src/headless/dist/converse-headless.min.js
+BUILDS = src/headless/dist/converse-headless.min.js
 
-src/headless/dist/converse-headless.js: src webpack.common.js stamp-npm @converse/headless
-	npm run converse-headless.js
+@converse/headless: src/headless
+
 src/headless/dist/converse-headless.min.js: src webpack.common.js stamp-npm @converse/headless
 	npm run converse-headless.min.js
 
-
-@converse/headless: src/headless
 
 .PHONY: dist
 dist:: build

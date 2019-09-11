@@ -17,8 +17,7 @@
   "scripts": {
     "serve": "webpack-dev-server --config webpack.serve.js",
     "clean": "rm -rf node_modules stamp-npm dist *.zip",
-    "converse-headless.js": "webpack --mode=development --type=headless",
-    "converse-headless.min.js": "npm run converse-headless.js && webpack --mode=production --type=headless",
+    "converse-headless.min.js": "webpack --config webpack.headless.js",
     "nodeps": "webpack --config webpack.nodeps.js",
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack --config webpack.dev.js",

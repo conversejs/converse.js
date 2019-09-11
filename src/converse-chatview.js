@@ -869,29 +869,29 @@ converse.plugins.add('converse-chatview', {
                     return;
                 }
                 if (!ev.shiftKey && !ev.altKey && !ev.metaKey) {
-                    if (ev.keyCode === _converse.keycodes.FORWARD_SLASH) {
+                    if (ev.keyCode === converse.keycodes.FORWARD_SLASH) {
                         // Forward slash is used to run commands. Nothing to do here.
                         return;
-                    } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
+                    } else if (ev.keyCode === converse.keycodes.ESCAPE) {
                         return this.onEscapePressed(ev);
-                    } else if (ev.keyCode === _converse.keycodes.ENTER) {
+                    } else if (ev.keyCode === converse.keycodes.ENTER) {
                         return this.onEnterPressed(ev);
-                    } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
+                    } else if (ev.keyCode === converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
                         const textarea = this.el.querySelector('.chat-textarea');
                         if (!textarea.value || u.hasClass('correcting', textarea)) {
                             return this.editEarlierMessage();
                         }
-                    } else if (ev.keyCode === _converse.keycodes.DOWN_ARROW &&
+                    } else if (ev.keyCode === converse.keycodes.DOWN_ARROW &&
                             ev.target.selectionEnd === ev.target.value.length &&
                             u.hasClass('correcting', this.el.querySelector('.chat-textarea'))) {
                         return this.editLaterMessage();
                     }
                 }
-                if ([_converse.keycodes.SHIFT,
-                        _converse.keycodes.META,
-                        _converse.keycodes.META_RIGHT,
-                        _converse.keycodes.ESCAPE,
-                        _converse.keycodes.ALT].includes(ev.keyCode)) {
+                if ([converse.keycodes.SHIFT,
+                        converse.keycodes.META,
+                        converse.keycodes.META_RIGHT,
+                        converse.keycodes.ESCAPE,
+                        converse.keycodes.ALT].includes(ev.keyCode)) {
                     return;
                 }
                 if (this.model.get('chat_state') !== _converse.COMPOSING) {

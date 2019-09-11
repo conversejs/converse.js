@@ -75,9 +75,13 @@
                     position: relative;
                     &.insert-emoji {
                         margin: 0;
-                        height: 32px;
+                        padding: 3px;
+                        height: 30px;
                         width: 32px;
 
+                        &.selected {
+                            background-color: var(--highlight-color);
+                        }
                         &.picked {
                             background-color: var(--highlight-color);
                         }
@@ -111,6 +115,9 @@
                             background-color: white;
                             border: 1px var(--chat-head-color) solid;
                             border-bottom: none;
+                        }
+                        &.selected {
+                            background-color: var(--highlight-color);
                         }
                         padding: 0.25em;
                         font-size: var(--font-size-huge);

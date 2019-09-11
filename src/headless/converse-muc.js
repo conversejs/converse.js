@@ -1,13 +1,8 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-muc
- * @description
- * Implements the non-view logic for XEP-0045 Multi-User Chat
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
+ * @description Implements the non-view logic for XEP-0045 Multi-User Chat
  */
 import "./converse-chat";
 import "./converse-disco";

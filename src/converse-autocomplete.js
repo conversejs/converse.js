@@ -282,28 +282,28 @@ converse.plugins.add("converse-autocomplete", {
 
             onKeyDown (ev) {
                 if (this.opened) {
-                    if (_.includes([_converse.keycodes.ENTER, _converse.keycodes.TAB], ev.keyCode) && this.selected) {
+                    if (_.includes([converse.keycodes.ENTER, converse.keycodes.TAB], ev.keyCode) && this.selected) {
                         ev.preventDefault();
                         ev.stopPropagation();
                         this.select();
                         return true;
-                    } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
+                    } else if (ev.keyCode === converse.keycodes.ESCAPE) {
                         this.close({'reason': 'esc'});
                         return true;
-                    } else if (_.includes([_converse.keycodes.UP_ARROW, _converse.keycodes.DOWN_ARROW], ev.keyCode)) {
+                    } else if (_.includes([converse.keycodes.UP_ARROW, converse.keycodes.DOWN_ARROW], ev.keyCode)) {
                         ev.preventDefault();
                         ev.stopPropagation();
-                        this[ev.keyCode === _converse.keycodes.UP_ARROW ? "previous" : "next"]();
+                        this[ev.keyCode === converse.keycodes.UP_ARROW ? "previous" : "next"]();
                         return true;
                     }
                 }
 
                 if (_.includes([
-                            _converse.keycodes.SHIFT,
-                            _converse.keycodes.META,
-                            _converse.keycodes.META_RIGHT,
-                            _converse.keycodes.ESCAPE,
-                            _converse.keycodes.ALT]
+                            converse.keycodes.SHIFT,
+                            converse.keycodes.META,
+                            converse.keycodes.META_RIGHT,
+                            converse.keycodes.ESCAPE,
+                            converse.keycodes.ALT]
                         , ev.keyCode)) {
                     return;
                 }
@@ -323,8 +323,8 @@ converse.plugins.add("converse-autocomplete", {
 
             evaluate (ev) {
                 const selecting = this.selected && ev && (
-                    ev.keyCode === _converse.keycodes.UP_ARROW ||
-                    ev.keyCode === _converse.keycodes.DOWN_ARROW
+                    ev.keyCode === converse.keycodes.UP_ARROW ||
+                    ev.keyCode === converse.keycodes.DOWN_ARROW
                 );
 
                 if (!this.auto_evaluate && !this.auto_completing || selecting) {

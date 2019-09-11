@@ -149,21 +149,6 @@ _converse.IllegalMessage = IllegalMessage;
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');
 
-_converse.keycodes = {
-    TAB: 9,
-    ENTER: 13,
-    SHIFT: 16,
-    CTRL: 17,
-    ALT: 18,
-    ESCAPE: 27,
-    UP_ARROW: 38,
-    DOWN_ARROW: 40,
-    FORWARD_SLASH: 47,
-    AT: 50,
-    META: 91,
-    META_RIGHT: 93
-};
-
 // Module-level constants
 _converse.STATUS_WEIGHTS = {
     'offline':      6,
@@ -1732,6 +1717,23 @@ window.converse = window.converse || {};
  * @namespace converse
  */
 Object.assign(window.converse, {
+    keycodes: {
+        TAB: 9,
+        ENTER: 13,
+        SHIFT: 16,
+        CTRL: 17,
+        ALT: 18,
+        ESCAPE: 27,
+        LEFT_ARROW: 37,
+        UP_ARROW: 38,
+        RIGHT_ARROW: 39,
+        DOWN_ARROW: 40,
+        FORWARD_SLASH: 47,
+        AT: 50,
+        META: 91,
+        META_RIGHT: 93
+    },
+
     /**
      * Public API method which initializes Converse.
      * This method must always be called when using Converse.

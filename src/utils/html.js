@@ -279,11 +279,23 @@ u.hasClass = function (className, el) {
     return (el instanceof Element) && el.classList.contains(className);
 };
 
+/**
+ * Add a class to an element.
+ * @method u#addClass
+ * @param {string} className
+ * @param {Element} el
+ */
 u.addClass = function (className, el) {
     (el instanceof Element) && el.classList.add(className);
     return el;
 }
 
+/**
+ * Remove a class from an element.
+ * @method u#removeClass
+ * @param {string} className
+ * @param {Element} el
+ */
 u.removeClass = function (className, el) {
     (el instanceof Element) && el.classList.remove(className);
     return el;

@@ -1,13 +1,8 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-muc-views
- * @description
- * XEP-0045 Multi-User Chat Views
+ * @copyright 2013-2019, the Converse.js developers
+ * @description XEP-0045 Multi-User Chat Views
+ * @license Mozilla Public License (MPLv2)
  */
 import "converse-modal";
 import "backbone.vdomview";

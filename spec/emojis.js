@@ -74,7 +74,7 @@
 
                 // Check that ENTER now inserts the match
                 const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input});
-                view.emoji_picker_view.onKeyDown(enter_event);
+                view.emoji_picker_view._onGlobalKeyDown(enter_event);
                 expect(input.value).toBe('');
                 expect(textarea.value).toBe(':grimacing: ');
 
@@ -136,7 +136,7 @@
 
                 // Check that pressing enter without an unambiguous match does nothing
                 const enter_event = Object.assign({}, event, {'keyCode': 13});
-                view.emoji_picker_view.onKeyDown(enter_event);
+                view.emoji_picker_view._onGlobalKeyDown(enter_event);
                 expect(input.value).toBe('smiley');
 
                 // Test that TAB autocompletes the to first match
@@ -148,7 +148,7 @@
                 expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':smiley:');
 
                 // Check that ENTER now inserts the match
-                view.emoji_picker_view.onKeyDown(enter_event);
+                view.emoji_picker_view._onGlobalKeyDown(enter_event);
                 expect(input.value).toBe('');
                 expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':smiley: ');
                 done();

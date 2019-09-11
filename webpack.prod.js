@@ -6,10 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = merge(common, {
     output: {
-        path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
-        publicPath: '/dist/', // URL base path for all assets
         filename: 'converse.min.js',
-        chunkFilename: '[name].js'
     },
     plugins: [
         new MiniCssExtractPlugin({filename: '../dist/converse.min.css'})

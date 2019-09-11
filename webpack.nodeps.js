@@ -55,7 +55,6 @@ module.exports = merge(common, {
         "es6-promise": "es6-promise",
         "formdata-polyfill": "formdata-polyfill",
         "lodash": "lodash",
-        "lodash.converter": "lodash.converter",
         "lodash.noconflict": "lodash.noconflict",
         "strophe": "strophe",
         "window": "window",

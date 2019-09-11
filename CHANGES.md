@@ -12,10 +12,10 @@
   different path, you'll need to set `publicPath` in `webpack.config.js` to
   your preferred path and then rebuild all assets (e.g. `make dist`).
 - Use `listenTo` to avoid memory leaks when views get removed.
+- SECURITY FIX: Ignore MAM `chat` messages not sent from yourself
 - #1692 Bugfix: `TypeError: oldest_message is undefined`
 - #1704 SECURITY FIX: Impersonation by misusage of groupchat carbons
 - #1705 Bugfix: `this.roomspanel` is `undefined` after hibernating
-
 
 ## 5.0.1 (2019-08-14)
 

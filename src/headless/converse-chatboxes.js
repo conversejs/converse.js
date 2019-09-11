@@ -1062,6 +1062,13 @@ converse.plugins.add('converse-chatboxes', {
 
             registerMessageHandler () {
                 _converse.connection.addHandler(stanza => {
+                    if (sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop()) {
+                        // MAM messages are handled in converse-mam.
+                        // We shouldn't get MAM messages here because
+                        // they shouldn't have a `type` attribute.
+                        _converse.log(`Received a MAM message with type "chat".`, Strophe.LogLevel.WARN);
+                        return true;
+                    }
                     this.onMessage(stanza);
                     return true;
                 }, null, 'message', 'chat');

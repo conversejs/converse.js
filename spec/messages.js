@@ -310,7 +310,6 @@
             let message, msg;
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
-            spyOn(_converse, 'log');
             spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
             _converse.filter_by_resource = true;
 
@@ -531,7 +530,6 @@
             test_utils.openControlBox();
 
             // Send a message from a different resource
-            spyOn(_converse, 'log');
             const msgtext = 'This is a carbon message';
             const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg = $msg({
@@ -584,7 +582,6 @@
             test_utils.openControlBox();
 
             // Send a message from a different resource
-            spyOn(_converse, 'log');
             const msgtext = 'This is a sent carbon message';
             const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg = $msg({
@@ -622,9 +619,9 @@
         }));
 
         it("will be discarded if it's a malicious message meant to look like a carbon copy",
-        mock.initConverse(
-            null, ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
@@ -638,7 +635,6 @@
              *    </received>
              * </message>
              */
-            spyOn(_converse, 'log');
             const msgtext = 'Please come to Creepy Valley tonight, alone!';
             const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const impersonated_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';

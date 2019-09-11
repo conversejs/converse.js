@@ -498,6 +498,10 @@ function afterAnimationEnds (el, callback) {
     }
 }
 
+u.isInDOM = function (el) {
+    return document.querySelector('body').contains(el);
+}
+
 u.isVisible = function (el) {
     if (u.hasClass('hidden', el)) {
         return false;

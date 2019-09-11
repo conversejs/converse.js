@@ -121,31 +121,43 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        function renderRoomsPanel () {
-            if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
-                return;
-            }
-            this.roomspanel = new _converse.RoomsPanel({
-                'model': new (_converse.RoomsPanelModel.extend({
-                    'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage
-                    'browserStorage': new BrowserStorage[_converse.config.get('storage')](
-                        `converse.roomspanel${_converse.bare_jid}`)
-                }))()
-            });
-            this.roomspanel.model.fetch();
-            this.el.querySelector('.controlbox-pane').insertAdjacentElement(
-                'beforeEnd', this.roomspanel.render().el);
+        const viewWithRoomsPanel = {
+            renderRoomsPanel () {
+                if (this.roomspanel && u.isInDOM(this.roomspanel.el)) {
+                    return this.roomspanel;
+                }
+                this.roomspanel = new _converse.RoomsPanel({
+                    'model': new (_converse.RoomsPanelModel.extend({
+                        'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage
+                        'browserStorage': new BrowserStorage[_converse.config.get('storage')](
+                            `converse.roomspanel${_converse.bare_jid}`)
+                    }))()
+                });
+                this.roomspanel.model.fetch();
+                this.el.querySelector('.controlbox-pane').insertAdjacentElement(
+                    'beforeEnd', this.roomspanel.render().el);
 
-            /**
-             * Triggered once the section of the _converse.ControlBoxView
-             * which shows gropuchats has been rendered.
-             * @event _converse#roomsPanelRendered
-             * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
-             */
-            _converse.api.trigger('roomsPanelRendered');
+                /**
+                 * Triggered once the section of the _converse.ControlBoxView
+                 * which shows gropuchats has been rendered.
+                 * @event _converse#roomsPanelRendered
+                 * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
+                 */
+                _converse.api.trigger('roomsPanelRendered');
+                return this.roomspanel;
+            },
+
+            getRoomsPanel () {
+                if (this.roomspanel && u.isInDOM(this.roomspanel.el)) {
+                    return this.roomspanel;
+                } else {
+                    return this.renderRoomsPanel();
+                }
+            }
         }
+
         if (_converse.ControlBoxView) {
-            Object.assign(_converse.ControlBoxView.prototype, { renderRoomsPanel });
+            Object.assign(_converse.ControlBoxView.prototype, viewWithRoomsPanel);
         }
 
         /* Insert groupchat info (based on returned #disco IQ stanza)
@@ -2057,7 +2069,7 @@ converse.plugins.add('converse-muc-views', {
 
 
         function setMUCDomain (domain, controlboxview) {
-            controlboxview.roomspanel.model.save('muc_domain', Strophe.getDomainFromJid(domain));
+            controlboxview.getRoomsPanel().model.save('muc_domain', Strophe.getDomainFromJid(domain));
         }
 
         function setMUCDomainFromDisco (controlboxview) {
@@ -2085,7 +2097,7 @@ converse.plugins.add('converse-muc-views', {
 
         function fetchAndSetMUCDomain (controlboxview) {
             if (controlboxview.model.get('connected')) {
-                if (!controlboxview.roomspanel.model.get('muc_domain')) {
+                if (!controlboxview.getRoomsPanel().model.get('muc_domain')) {
                     if (_converse.muc_domain === undefined) {
                         setMUCDomainFromDisco(controlboxview);
                     } else {

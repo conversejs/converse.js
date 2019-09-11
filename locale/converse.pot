@@ -489,11 +489,11 @@ msgid "The groupchat configuration has changed"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:28715
-msgid "groupchat logging is now enabled"
+msgid "Groupchat logging is now enabled"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:28716
-msgid "groupchat logging is now disabled"
+msgid "Groupchat logging is now disabled"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:28717

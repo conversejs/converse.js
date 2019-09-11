@@ -2293,7 +2293,7 @@
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 2);
                 const info_messages = view.el.querySelectorAll('.chat-content .chat-info');
                 expect(info_messages[0].textContent.trim()).toBe('romeo has entered the groupchat');
-                expect(info_messages[1].textContent.trim()).toBe('groupchat logging is now enabled');
+                expect(info_messages[1].textContent.trim()).toBe('Groupchat logging is now enabled');
                 done();
             }));
 

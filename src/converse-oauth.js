@@ -109,10 +109,10 @@ converse.plugins.add("converse-oauth", {
             async fetchOAuthProfileDataAndLogin () {
                 const profile = await this.oauth_service.api('me');
                 const response = this.oauth_service.getAuthResponse();
-                _converse.api.user.login({
-                    'jid': `${profile.name}@${this.provider.get('host')}`,
-                    'password': response.access_token
-                });
+                _converse.api.user.login(
+                    `${profile.name}@${this.provider.get('host')}`,
+                    response.access_token
+                );
             },
 
             async oauthLogin (ev) {

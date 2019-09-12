@@ -250,11 +250,11 @@
         return _converse;
     }
 
-    mock.initConverse = function (spies, promise_names=null, settings=null, func) {
+    mock.initConverse = function (spies, promise_names=[], settings=null, func) {
         if (_.isFunction(spies)) {
             func = spies;
             spies = null;
-            promise_names = null
+            promise_names = []
             settings = null;
         }
         return async done => {
@@ -263,9 +263,8 @@
                 _converse.api.user.logout();
                 done();
             }
-            const promises = _.map(promise_names, _converse.api.waitUntil);
-            await Promise.all(promises);
-            func(_done, _converse);
+            await Promise.all(promise_names.map(_converse.api.waitUntil));
+            func(_done, _converse).catch(e => { fail(e); _done(); });
         }
     };
     return mock;

@@ -11,5 +11,5 @@ module.exports = merge(prod, {
         minimize: false,
     },
     devtool: 'source-map',
-    plugins: [new MiniCssExtractPlugin({filename: '../dist/converse.css'})]
+    plugins: [new MiniCssExtractPlugin({filename: 'converse.css'})]
 });

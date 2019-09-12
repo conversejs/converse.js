@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-11 17:40+0200\n"
-"PO-Revision-Date: 2019-08-07 10:16+0200\n"
-"Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
+"POT-Creation-Date: 2019-08-14 12:46+0200\n"
+"PO-Revision-Date: 2019-09-13 14:56+0200\n"
+"Last-Translator: 52871299hzy <bc3104hzy@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,11 +17,78 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 
-#: dist/converse-no-dependencies.js:7905
-msgid "Uploading file:"
-msgstr ""
+#: dist/converse-no-dependencies.js:26952
+#, javascript-format
+msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
+msgstr "确实要删除书签 \"%1$s\" 吗？"
+
+#: dist/converse-no-dependencies.js:26987
+#: dist/converse-no-dependencies.js:27103
+#: dist/converse-no-dependencies.js:37800
+msgid "Unbookmark this groupchat"
+msgstr "取消此群聊的书签"
+
+#: dist/converse-no-dependencies.js:26987
+#: dist/converse-no-dependencies.js:27065
+#: dist/converse-no-dependencies.js:37801
+msgid "Bookmark this groupchat"
+msgstr "将此群聊添加书签"
+
+#: dist/converse-no-dependencies.js:27066
+msgid "Would you like this groupchat to be automatically joined upon startup?"
+msgstr "您是否想在程序启动时自动加入这个群聊?"
+
+#: dist/converse-no-dependencies.js:27067
+#: dist/converse-no-dependencies.js:36531
+#: dist/converse-no-dependencies.js:74070
+#: dist/converse-no-dependencies.js:75714
+msgid "Cancel"
+msgstr "取消"
+
+#: dist/converse-no-dependencies.js:27068
+msgid "The name for this bookmark:"
+msgstr "此书签的名称:"
+
+#: dist/converse-no-dependencies.js:27069
+msgid "What should your nickname for this groupchat be?"
+msgstr "您的群昵称是什么？"
+
+#: dist/converse-no-dependencies.js:27070
+#: dist/converse-no-dependencies.js:36535
+#: dist/converse-no-dependencies.js:74068
+msgid "Save"
+msgstr "保存"
+
+#: dist/converse-no-dependencies.js:27101
+#: dist/converse-no-dependencies.js:37799
+msgid "Leave this groupchat"
+msgstr "离开此群聊"
+
+#: dist/converse-no-dependencies.js:27102
+msgid "Remove this bookmark"
+msgstr "删除此书签"
+
+#: dist/converse-no-dependencies.js:27104
+#: dist/converse-no-dependencies.js:32500
+#: dist/converse-no-dependencies.js:37802
+msgid "Show more information on this groupchat"
+msgstr "更多群信息"
+
+#: dist/converse-no-dependencies.js:27107
+#: dist/converse-no-dependencies.js:32499
+#: dist/converse-no-dependencies.js:37804
+msgid "Click to open this groupchat"
+msgstr "点击打开此群聊"
+
+#: dist/converse-no-dependencies.js:27156
+msgid "Click to toggle the bookmarks list"
+msgstr "单击以显示书签列表"
+
+#: dist/converse-no-dependencies.js:27157
+msgid "Bookmarks"
+msgstr "书签"
 
 #: dist/converse-no-dependencies.js:8014
 msgid "This message has been edited"
@@ -31,6 +98,10 @@ msgstr ""
 #, fuzzy
 msgid "Edit this message"
 msgstr "显示此菜单"
+
+#: dist/converse-no-dependencies.js:27828
+msgid "Sorry, something went wrong while trying to refresh"
+msgstr "抱歉，尝试刷新时出错"
 
 #: dist/converse-no-dependencies.js:8036
 msgid "Message versions"
@@ -49,8 +120,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8341
 #, fuzzy
-msgid "Full Name:"
-msgstr "名称"
+msgid "Hidden message"
+msgstr "隐藏的信息"
 
 #: dist/converse-no-dependencies.js:8347 dist/converse-no-dependencies.js:8523
 msgid "XMPP Address:"
@@ -318,17 +389,6 @@ msgstr ""
 #: dist/converse-no-dependencies.js:9077
 msgid "this groupchat is restricted to members only"
 msgstr ""
-
-#: dist/converse-no-dependencies.js:9173 dist/converse-no-dependencies.js:39594
-#: dist/converse-no-dependencies.js:49266
-msgid "Save"
-msgstr "保存"
-
-#: dist/converse-no-dependencies.js:9175 dist/converse-no-dependencies.js:10099
-#: dist/converse-no-dependencies.js:39591
-#: dist/converse-no-dependencies.js:49262
-msgid "Cancel"
-msgstr "取消"
 
 #: dist/converse-no-dependencies.js:9310
 msgid "Moderator Tools"
@@ -800,66 +860,6 @@ msgstr ""
 msgid "Click to hide these contacts"
 msgstr "按此隐藏联系人"
 
-#: dist/converse-no-dependencies.js:39486
-#, javascript-format
-msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "确实要删除书签 \"%1$s\" 吗？"
-
-#: dist/converse-no-dependencies.js:39515
-#: dist/converse-no-dependencies.js:39624
-#: dist/converse-no-dependencies.js:53148
-msgid "Unbookmark this groupchat"
-msgstr "取消此群聊的书签"
-
-#: dist/converse-no-dependencies.js:39515
-#: dist/converse-no-dependencies.js:39589
-#: dist/converse-no-dependencies.js:53149
-msgid "Bookmark this groupchat"
-msgstr "将此群聊添加书签"
-
-#: dist/converse-no-dependencies.js:39590
-msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr "您是否想在程序启动时自动加入这个群聊?"
-
-#: dist/converse-no-dependencies.js:39592
-#, fuzzy
-msgid "The name for this bookmark:"
-msgstr "此书签的名称:"
-
-#: dist/converse-no-dependencies.js:39593
-msgid "What should your nickname for this groupchat be?"
-msgstr "您的群昵称是什么？"
-
-#: dist/converse-no-dependencies.js:39622
-#: dist/converse-no-dependencies.js:53147
-msgid "Leave this groupchat"
-msgstr "离开此群聊"
-
-#: dist/converse-no-dependencies.js:39623
-msgid "Remove this bookmark"
-msgstr "删除此书签"
-
-#: dist/converse-no-dependencies.js:39625
-#: dist/converse-no-dependencies.js:46750
-#: dist/converse-no-dependencies.js:53150
-msgid "Show more information on this groupchat"
-msgstr "更多群信息"
-
-#: dist/converse-no-dependencies.js:39628
-#: dist/converse-no-dependencies.js:46749
-#: dist/converse-no-dependencies.js:53152
-#, fuzzy
-msgid "Click to open this groupchat"
-msgstr "点击打开此群聊"
-
-#: dist/converse-no-dependencies.js:39675
-msgid "Click to toggle the bookmarks list"
-msgstr "单击以显示书签列表"
-
-#: dist/converse-no-dependencies.js:39676
-msgid "Bookmarks"
-msgstr "书签"
-
 #: dist/converse-no-dependencies.js:40190
 #, fuzzy, javascript-format
 msgid "Download audio file \"%1$s\""
@@ -917,11 +917,6 @@ msgstr "%1$s已经离开"
 msgid "Close this chat box"
 msgstr "关闭此聊天对话窗口"
 
-#: dist/converse-no-dependencies.js:41788
-#, fuzzy
-msgid "Sorry, something went wrong while trying to refresh"
-msgstr "抱歉，尝试刷新时出错"
-
 #: dist/converse-no-dependencies.js:41818
 #: dist/converse-no-dependencies.js:53995
 msgid "Are you sure you want to remove this contact?"
@@ -937,11 +932,6 @@ msgstr "抱歉，删除%1$s为联系人时出现了问题。"
 #: dist/converse-no-dependencies.js:41959
 msgid "You have unread messages"
 msgstr "你有未读信息"
-
-#: dist/converse-no-dependencies.js:41953
-#, fuzzy
-msgid "Hidden message"
-msgstr "隐藏信息"
 
 #: dist/converse-no-dependencies.js:41953
 msgid "Message"

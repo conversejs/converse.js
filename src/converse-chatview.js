@@ -1147,9 +1147,6 @@ converse.plugins.add('converse-chatview', {
                 /**
                  * Triggered once a chatbox has been closed.
                  * @event _converse#chatBoxClosed
-                 * @type {object}
-                 * @property { _converse.Message } message - The message instance
-                 * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
                  * @type { _converse.ChatBoxView | _converse.ChatRoomView }
                  * @example _converse.api.listen.on('chatBoxClosed', view => { ... });
                  */

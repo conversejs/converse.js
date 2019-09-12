@@ -29,6 +29,47 @@
 
     describe("The Contacts Roster", function () {
 
+        it("verifies the origin of roster pushes",
+            mock.initConverse(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            // See: https://gultsch.de/gajim_roster_push_and_message_interception.html
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await test_utils.waitForRoster(_converse, 'current', 1);
+            expect(_converse.roster.models.length).toBe(1);
+            expect(_converse.roster.at(0).get('jid')).toBe(contact_jid);
+
+            spyOn(_converse, 'log');
+            let roster_push = u.toStanza(`
+                <iq type="set" to="${_converse.jid}" from="eve@siacs.eu">
+                    <query xmlns='jabber:iq:roster'>
+                        <item subscription="remove" jid="${contact_jid}"/>
+                    </query>
+                </iq>`);
+            _converse.connection._dataRecv(test_utils.createRequest(roster_push));
+            expect(_converse.log.calls.count()).toBe(2);
+            expect(_converse.log).toHaveBeenCalledWith(
+                `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`,
+                Strophe.LogLevel.WARN
+            );
+            roster_push = u.toStanza(`
+                <iq type="set" to="${_converse.jid}" from="eve@siacs.eu">
+                    <query xmlns='jabber:iq:roster'>
+                        <item subscription="both" jid="eve@siacs.eu" name="${mock.cur_names[0]}" />
+                    </query>
+                </iq>`);
+            _converse.connection._dataRecv(test_utils.createRequest(roster_push));
+            expect(_converse.log.calls.count()).toBe(4);
+            expect(_converse.log).toHaveBeenCalledWith(
+                `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`,
+                Strophe.LogLevel.WARN
+            );
+            expect(_converse.roster.models.length).toBe(1);
+            expect(_converse.roster.at(0).get('jid')).toBe(contact_jid);
+            done();
+        }));
+
         it("is populated once we have registered a presence handler",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},

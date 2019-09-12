@@ -263,7 +263,7 @@
                 _converse.api.user.logout();
                 done();
             }
-            await Promise.all(promise_names.map(_converse.api.waitUntil));
+            await Promise.all((promise_names || []).map(_converse.api.waitUntil));
             func(_done, _converse).catch(e => { fail(e); _done(); });
         }
     };

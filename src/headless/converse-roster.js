@@ -594,6 +594,10 @@ converse.plugins.add('converse-roster', {
                     // attribute (i.e., implicitly from the bare JID of the user's
                     // account) or it has a 'from' attribute whose value matches the
                     // user's bare JID <user@domainpart>.
+                    _converse.log(
+                        `Ignoring roster illegitimate roster push message from ${iq.getAttribute('from')}`,
+                        Strophe.LogLevel.WARN
+                    );
                     return;
                 }
                 _converse.api.send($iq({type: 'result', id, from: _converse.connection.jid}));

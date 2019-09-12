@@ -269,7 +269,7 @@ converse.plugins.add('converse-muc', {
                 const chatbox = _.get(this, 'collection.chatbox');
                 if (!chatbox) {
                     return _converse.log(
-                        `Could not get collection.chatbox for message: ${this.get('id')}`,
+                        `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
                         Strophe.LogLevel.ERROR
                     );
                 }
@@ -283,7 +283,7 @@ converse.plugins.add('converse-muc', {
                     const chatbox = _.get(this, 'collection.chatbox');
                     if (!chatbox) {
                         return _converse.log(
-                            `Could not get collection.chatbox for message: ${this.get('id')}`,
+                            `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
                             Strophe.LogLevel.ERROR
                         );
                     }
@@ -296,7 +296,7 @@ converse.plugins.add('converse-muc', {
                 const chatbox = _.get(this, 'collection.chatbox');
                 if (!chatbox) {
                     return _converse.log(
-                        `Could not get collection.chatbox for message: ${this.get('id')}`,
+                        `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
                         Strophe.LogLevel.ERROR
                     );
                 }

@@ -5,7 +5,6 @@ const webpack = require('webpack');
 module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
-        publicPath: '/dist/', // URL base path for all assets
         chunkFilename: '[name].js'
     },
     entry: path.resolve(__dirname, 'src/converse.js'),

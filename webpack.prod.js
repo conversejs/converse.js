@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = merge(common, {
     output: {
+        publicPath: '/dist/', // URL base path for all assets
         filename: 'converse.min.js',
     },
     plugins: [

@@ -558,7 +558,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 const older_versions = message.get('older_versions') || {};
                 if ((attrs.time < message.get('time')) && message.get('edited')) {
-                    // This is an older message which has been corrected afterwards 
+                    // This is an older message which has been corrected afterwards
                     older_versions[attrs.time] = attrs['message'];
                     message.save({'older_versions': older_versions});
                 } else {

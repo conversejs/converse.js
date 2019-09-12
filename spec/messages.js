@@ -1658,14 +1658,12 @@
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 1);
-                    test_utils.openControlBox();
 
                     // TODO: what could still be done for error
                     // messages... if the <error> element has type
                     // "cancel", then we know the messages wasn't sent,
                     // and can give the user a nicer indication of
                     // that.
-
                     /* <message from="scotty@enterprise.com/_converse.js-84843526"
                      *          to="kirk@enterprise.com.com"
                      *          type="chat"
@@ -1682,14 +1680,7 @@
                     await _converse.api.chats.open(sender_jid)
                     let msg_text = 'This message will not be sent, due to an error';
                     const view = _converse.api.chatviews.get(sender_jid);
-                    view.model.messages.create({
-                        'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
-                        'fullname': fullname,
-                        'sender': 'me',
-                        'time': (new Date()).toISOString(),
-                        'message': msg_text
-                    });
-                    view.model.sendMessage(msg_text);
+                    const message = await view.model.sendMessage(msg_text);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     const chat_content = view.el.querySelector('.chat-content');
                     let msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
@@ -1699,15 +1690,8 @@
                     // not be received, to test that errors appear
                     // after the relevant message.
                     msg_text = 'This message will be sent, and also receive an error';
-                    view.model.messages.create({
-                        'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
-                        'fullname': fullname,
-                        'sender': 'me',
-                        'time': (new Date()).toISOString(),
-                        'message': msg_text
-                    });
-                    view.model.sendMessage(msg_text);
-                    await u.waitUntil(() => sizzle('.chat-msg .chat-msg__text', chat_content).length === 4, 1000);
+                    const second_message = await view.model.sendMessage(msg_text);
+                    await u.waitUntil(() => sizzle('.chat-msg .chat-msg__text', chat_content).length === 2, 1000);
                     msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
                     expect(msg_txt).toEqual(msg_text);
 
@@ -1725,7 +1709,7 @@
                     let stanza = $msg({
                             'to': _converse.connection.jid,
                             'type': 'error',
-                            'id': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
+                            'id': message.get('msgid'),
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1738,7 +1722,7 @@
                     stanza = $msg({
                             'to': _converse.connection.jid,
                             'type': 'error',
-                            'id': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
+                            'id': second_message.get('id'),
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1763,18 +1747,8 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(2);
 
-                    // We send another message, for which an error will
-                    // not be received, to test that errors appear
-                    // after the relevant message.
                     msg_text = 'This message will be sent, and also receive an error';
-                    view.model.messages.create({
-                        'msgid': 'another-id',
-                        'fullname': fullname,
-                        'sender': 'me',
-                        'time': (new Date()).toISOString(),
-                        'message': msg_text
-                    });
-                    view.model.sendMessage(msg_text);
+                    const third_message = await view.model.sendMessage(msg_text);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
                     expect(msg_txt).toEqual(msg_text);
@@ -1783,11 +1757,11 @@
                     stanza = $msg({
                             'to': _converse.connection.jid,
                             'type':'error',
-                            'id': 'another-id',
+                            'id': third_message.get('id'),
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
-                        .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                        .c('not-allowed', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
                         .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                             .t('Something else went wrong as well');
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));

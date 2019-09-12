@@ -1358,7 +1358,6 @@
                 spyOn(_converse.api, "trigger").and.callThrough();
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, contact_jid)
-                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
                 const view = _converse.chatboxviews.get(contact_jid);
                 const message = 'This message is sent from this chatbox';
                 spyOn(view.model, 'sendMessage').and.callThrough();

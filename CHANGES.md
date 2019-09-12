@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.3 (Unreleased)
+
+- Emit `chatBoxFocused` and `chatBoxBlurred` events for emoji picker input
+
 ## 5.0.2 (2019-09-11)
 
 - `po` translations files are now loaded via Webpack. As a result the `locales_url`

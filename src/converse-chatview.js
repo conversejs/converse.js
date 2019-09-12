@@ -333,17 +333,9 @@ converse.plugins.add('converse-chatview', {
                         'show_toolbar': _converse.show_toolbar,
                         'unread_msgs': __('You have unread messages')
                     }));
-                const textarea_el = this.el.querySelector('.chat-textarea');
-                textarea_el.addEventListener('focus', () => this.emitFocused());
-                textarea_el.addEventListener('blur', () => {
-                    /**
-                     * Triggered when the focus has been removed from a particular chat.
-                     * @event _converse#chatBoxBlurred
-                     * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-                     * @example _converse.api.listen.on('chatBoxBlurred', view => { ... });
-                     */
-                    _converse.api.trigger('chatBoxBlurred', this);
-                });
+                const textarea = this.el.querySelector('.chat-textarea');
+                textarea.addEventListener('focus', ev => this.emitFocused(ev));
+                textarea.addEventListener('blur', ev => this.emitBlurred(ev));
                 this.renderToolbar();
             },
 
@@ -1155,6 +1147,9 @@ converse.plugins.add('converse-chatview', {
                 /**
                  * Triggered once a chatbox has been closed.
                  * @event _converse#chatBoxClosed
+                 * @type {object}
+                 * @property { _converse.Message } message - The message instance
+                 * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
                  * @type { _converse.ChatBoxView | _converse.ChatRoomView }
                  * @example _converse.api.listen.on('chatBoxClosed', view => { ... });
                  */
@@ -1162,21 +1157,34 @@ converse.plugins.add('converse-chatview', {
                 return this;
             },
 
-            emitFocused () {
+            emitBlurred (ev) {
+                if (this.el.contains(document.activeElement)) {
+                    // Something else in this chatbox is still focused
+                    return;
+                }
+                /**
+                 * Triggered when the focus has been removed from a particular chat.
+                 * @event _converse#chatBoxBlurred
+                 * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+                 * @example _converse.api.listen.on('chatBoxBlurred', (view, event) => { ... });
+                 */
+                _converse.api.trigger('chatBoxBlurred', this, ev);
+            },
+
+            emitFocused (ev) {
                 /**
                  * Triggered when the focus has been moved to a particular chat.
                  * @event _converse#chatBoxFocused
                  * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-                 * @example _converse.api.listen.on('chatBoxFocused', view => { ... });
+                 * @example _converse.api.listen.on('chatBoxFocused', (view, event) => { ... });
                  */
-                _converse.api.trigger('chatBoxFocused', this);
+                _converse.api.trigger('chatBoxFocused', this, ev);
             },
 
             focus () {
                 const textarea_el = this.el.getElementsByClassName('chat-textarea')[0];
                 if (textarea_el && document.activeElement !== textarea_el) {
                     textarea_el.focus();
-                    this.emitFocused();
                 }
                 return this;
             },

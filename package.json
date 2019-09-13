@@ -17,8 +17,9 @@
   "scripts": {
     "serve": "webpack-dev-server --config webpack.serve.js",
     "clean": "rm -rf node_modules stamp-npm dist *.zip",
-    "converse-headless.min.js": "webpack --config webpack.headless.js",
+    "headless": "webpack --config webpack.headless.js",
     "nodeps": "webpack --config webpack.nodeps.js",
+    "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist npm run dev && ASSET_PATH=https://cdn.conversejs.org/dist npm run build",
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack --config webpack.dev.js",
     "watch": "webpack --watch --config webpack.dev.js",

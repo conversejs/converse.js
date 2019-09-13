@@ -38,7 +38,6 @@ help:
 	@echo " build		Create minified builds of converse.js and all its dependencies."
 	@echo " clean		Remove all NPM packages."
 	@echo " check		Run all tests."
-	@echo " css			Generate CSS from the Sass files."
 	@echo " dev			Set up the development environment and build unminified resources. To force a fresh start, run 'make clean' first."
 	@echo " devserver	Set up the development environment and start the webpack dev server."
 	@echo " html		Make standalone HTML files of the documentation."
@@ -131,9 +130,6 @@ devserver: stamp-npm
 ########################################################################
 ## Builds
 
-.PHONY: css
-css: sass/*.scss dist/website.css dist/website.min.css
-
 dist/converse.js:: stamp-npm dev
 
 dist/converse.css:: stamp-npm dev
@@ -173,15 +169,19 @@ BUILDS = src/headless/dist/converse-headless.min.js
 @converse/headless: src/headless
 
 src/headless/dist/converse-headless.min.js: src webpack.common.js stamp-npm @converse/headless
-	npm run converse-headless.min.js
+	npm run headless
 
 
 .PHONY: dist
 dist:: build
 
 .PHONY: build
-build:: stamp-npm css
-	npm run build
+build:: stamp-npm
+	npm run dev && npm run build
+
+.PHONY: cdn
+cdn:: stamp-npm
+	npm run cdn
 
 ########################################################################
 ## Tests

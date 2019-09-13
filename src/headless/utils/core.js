@@ -50,6 +50,16 @@ u.toStanza = function (string) {
     return node.firstElementChild;
 }
 
+u.isMAMMessage = function (stanza) {
+    return sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
+}
+
+u.isCarbonMessage = function (stanza) {
+    const xmlns = Strophe.NS.CARBONS;
+    return sizzle(`message > received[xmlns="${xmlns}"]`, stanza).length > 0 ||
+            sizzle(`message > sent[xmlns="${xmlns}"]`, stanza).length > 0;
+}
+
 u.getLongestSubstring = function (string, candidates) {
     function reducer (accumulator, current_value) {
         if (string.startsWith(current_value)) {

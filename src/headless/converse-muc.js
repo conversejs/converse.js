@@ -1536,22 +1536,37 @@ converse.plugins.add('converse-muc', {
              */
             async onMessage (stanza) {
                 const original_stanza = stanza;
-                const is_carbon = sizzle(`received[xmlns="${Strophe.NS.CARBONS}"]`, original_stanza).length > 0;
+                const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
+                if (bare_forward) {
+                    return _converse.log(
+                        'onMessage: Ignoring unencapsulated forwarded groupchat message',
+                        Strophe.LogLevel.WARN
+                    );
+                }
+                const is_carbon = u.isCarbonMessage(stanza);
                 if (is_carbon) {
                     // XEP-280: groupchat messages SHOULD NOT be carbon copied, so we're discarding it.
-                    _converse.log(
+                    return _converse.log(
                         'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
                         'according to the XEP groupchat messages SHOULD NOT be carbon copied',
-                        Strophe.LogLevel.ERROR);
-                    return;
+                        Strophe.LogLevel.WARN
+                    );
                 }
+                const is_mam = u.isMAMMessage(stanza);
+                if (is_mam) {
+                    if (original_stanza.getAttribute('from') === this.get('jid')) {
+                        const selector = `[xmlns="${Strophe.NS.MAM}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
+                        stanza = sizzle(selector, stanza).pop();
+                    } else {
+                        return _converse.log(
+                            `onMessage: Ignoring alleged MAM groupchat message from ${stanza.getAttribute('from')}`,
+                            Strophe.LogLevel.WARN
+                        );
+                    }
+                }
+
                 this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
-                const forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
-
-                if (forwarded) {
-                    stanza = forwarded.querySelector('message');
-                }
 
                 const message = await this.getDuplicateMessage(original_stanza);
                 if (message) {

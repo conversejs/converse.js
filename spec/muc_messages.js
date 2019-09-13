@@ -11,6 +11,42 @@
 
     describe("A Groupchat Message", function () {
 
+        it("is rejected if it's an unencapsulated forwarded message",
+            mock.initConverse(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const impersonated_jid = `${muc_jid}/alice`;
+            const received_stanza = u.toStanza(`
+                <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                    <forwarded xmlns='urn:xmpp:forward:0'>
+                        <delay xmlns='urn:xmpp:delay' stamp='2019-07-10T23:08:25Z'/>
+                        <message from='${impersonated_jid}'
+                                id='0202197'
+                                to='${_converse.bare_jid}'
+                                type='groupchat'
+                                xmlns='jabber:client'>
+                            <body>Yet I should kill thee with much cherishing.</body>
+                        </message>
+                    </forwarded>
+                </message>
+            `);
+            const view = _converse.api.chatviews.get(muc_jid);
+            await view.model.onMessage(received_stanza);
+            spyOn(_converse, 'log');
+            _converse.connection._dataRecv(test_utils.createRequest(received_stanza));
+            expect(_converse.log).toHaveBeenCalledWith(
+                'onMessage: Ignoring unencapsulated forwarded groupchat message',
+                Strophe.LogLevel.WARN
+            );
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
+            expect(view.model.messages.length).toBe(0);
+            done();
+        }));
+
+
         it("is specially marked when you are mentioned in it",
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -165,7 +201,7 @@
             expect(_converse.log).toHaveBeenCalledWith(
                 'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
                 'according to the XEP groupchat messages SHOULD NOT be carbon copied',
-                Strophe.LogLevel.ERROR
+                Strophe.LogLevel.WARN
             );
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
             expect(view.model.messages.length).toBe(0);

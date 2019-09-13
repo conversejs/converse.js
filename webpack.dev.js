@@ -16,7 +16,7 @@ module.exports = merge(prod, {
     },
     devtool: 'source-map',
     plugins: [
-        new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
+        new MiniCssExtractPlugin({filename: '../dist/converse.css'}),
         new webpack.DefinePlugin({ // This makes it possible for us to safely use env vars on our code
             'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
         })

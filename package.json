@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "Browser based XMPP chat client",
   "browser": "dist/converse.js",
   "module": "src/converse.js",
@@ -67,6 +67,7 @@
     "bootstrap.native-loader": "2.0.0",
     "clean-css-cli": "^4.3.0",
     "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^5.0.4",
     "css-loader": "^3.0.0",
     "dayjs": "^1.8.15",
     "eslint": "^6.3.0",

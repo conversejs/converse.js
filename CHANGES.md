@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.3 (Unreleased)
+## 5.0.3 (2019-09-13)
 
 - Emit `chatBoxFocused` and `chatBoxBlurred` events for emoji picker input
 - SECURITY FIX: Reject unencapsulated forwarded messages, since we don't support XEP-0297 on its own

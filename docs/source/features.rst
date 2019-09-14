@@ -27,7 +27,7 @@ Converse.
 
 .. _`feature-omemo`:
 
-End to end message encryption (`XEP-0384 OMEMO <https://xmpp.org/extensions/xep-0363.html>`_)
+End to end message encryption (`XEP-0384 OMEMO <https://xmpp.org/extensions/xep-0384.html>`_)
 =============================================================================================
 
 .. note::

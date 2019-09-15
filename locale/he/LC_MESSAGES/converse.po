@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
-"PO-Revision-Date: 2019-08-08 13:23+0000\n"
+"PO-Revision-Date: 2019-09-16 11:24+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -130,9 +130,8 @@ msgid "Search"
 msgstr "חיפוש"
 
 #: dist/converse-no-dependencies.js:8629
-#, fuzzy
 msgid "Search results"
-msgstr "חיפוש"
+msgstr "תוצאות חיפוש"
 
 #: dist/converse-no-dependencies.js:8775
 msgid "Enter a new Groupchat"
@@ -153,9 +152,8 @@ msgstr "הצטרפות"
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:8831
-#, fuzzy
 msgid "You're not allowed to send messages in this room"
-msgstr "אין לך הרשאה להירשם עצמאית להתכתבות קבוצתית זו."
+msgstr "אין לך הרשאה לשלוח הודעות בחדר זה"
 
 # חדר זה אינו עלום
 #: dist/converse-no-dependencies.js:8845
@@ -329,9 +327,8 @@ msgid "Cancel"
 msgstr "ביטול"
 
 #: dist/converse-no-dependencies.js:9310
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "מפקח"
+msgstr "כלי פיקוח"
 
 #: dist/converse-no-dependencies.js:9312
 msgid ""

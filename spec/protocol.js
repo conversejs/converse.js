@@ -271,6 +271,7 @@
                         'jid': 'contact@example.org',
                         'subscription': 'to',
                         'name': 'Nicky'});
+
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 // Check that the IQ set was acknowledged.
                 expect(Strophe.serialize(sent_stanza)).toBe( // Strophe adds the xmlns attr (although not in spec)

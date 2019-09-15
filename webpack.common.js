@@ -1,14 +1,19 @@
 /* global __dirname, module, process */
-const HTMLWebpackPlugin = require('html-webpack-plugin');
-const minimist = require('minimist');
 const path = require('path');
 const webpack = require('webpack');
 
-const config = {
+module.exports = {
+    output: {
+        path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
+        chunkFilename: '[name].js'
+    },
     entry: path.resolve(__dirname, 'src/converse.js'),
     externals: [{
         "window": "window"
     }],
+    watchOptions: {
+        ignored: [/dist/, /spec/, /.*\~/]
+    },
     module: {
         rules: [
         {
@@ -50,7 +55,6 @@ const config = {
             }
             ]
         }, {
-        }, {
             test: /webfonts\/.*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
             use: [
             {
@@ -70,7 +74,9 @@ const config = {
                     options: {
                         sourceMap: true
                     }
-                }, {
+                },
+                'postcss-loader',
+                {
                     loader: 'sass-loader',
                     options: {
                         includePaths: [
@@ -92,7 +98,8 @@ const config = {
                                 "browsers": [">1%", "not ie 11", "not op_mini all"]
                             }
                         }]
-                    ]
+                    ],
+                    plugins: ['@babel/plugin-syntax-dynamic-import']
                 }
             }
         }, {
@@ -130,51 +137,3 @@ const config = {
         }
     }
 }
-
-function extend (o1, o2) {
-    for (var i in o2) {
-        if (Object.prototype.hasOwnProperty.call(o2, i)) {
-            o1[i] = o2[i];
-        }
-    }
-}
-
-function parameterize () {
-    const type = minimist(process.argv.slice(2)).type;
-    const mode = minimist(process.argv.slice(2)).mode;
-    const lang = minimist(process.argv.slice(2)).lang;
-
-    if (type === 'headless') {
-        console.log("Making a headless build");
-        config.entry = "@converse/headless/headless.js";
-        config.output.filename = 'converse-headless.js';
-    }
-
-    if (type === 'nodeps') {
-        console.log("Making a build without 3rd party dependencies");
-        config.output.filename = 'converse-no-dependencies.js';
-        config.externals = [{
-            "backbone": "backbone",
-            "backbone.nativeview": "backbone.nativeview",
-            "backbone.vdomview": "backbone.vdomview",
-            "backbone.browserStorage": "backbone.browserStorage",
-            "backbone.overview": "backbone.overview",
-            "es6-promise": "es6-promise",
-            "lodash": "lodash",
-            "lodash.converter": "lodash.converter",
-            "lodash.noconflict": "lodash.noconflict",
-            "strophe": "strophe",
-            "window": "window"
-        }];
-    }
-
-    if (mode === 'production') {
-        console.log("Making a production build");
-        const fn = config.output.filename;
-        config.output.filename = `${fn.replace(/\.js$/, '')}.min.js`;
-    }
-}
-
-parameterize();
-
-module.exports = config;

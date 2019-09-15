@@ -46,7 +46,7 @@ converse.plugins.add('converse-profile', {
             },
 
             initialize () {
-                this.model.on('change', this.render, this);
+                this.listenTo(this.model, 'change', this.render);
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                 /**
                  * Triggered when the _converse.ProfileModal has been created and initialized.
@@ -234,8 +234,8 @@ converse.plugins.add('converse-profile', {
             },
 
             initialize () {
-                this.model.on("change", this.render, this);
-                this.model.vcard.on("change", this.render, this);
+                this.listenTo(this.model, "change", this.render);
+                this.listenTo(this.model.vcard, "change", this.render);
             },
 
             toHTML () {
@@ -310,7 +310,8 @@ converse.plugins.add('converse-profile', {
 
         /******************** Event Handlers ********************/
 
-        _converse.api.listen.on('controlBoxPaneInitialized', (view) => {
+        _converse.api.listen.on('controlBoxPaneInitialized', async view => {
+            await _converse.api.waitUntil('statusInitialized');
             _converse.xmppstatusview = new _converse.XMPPStatusView({'model': _converse.xmppstatus});
             view.el.insertAdjacentElement('afterBegin', _converse.xmppstatusview.render().el);
         });

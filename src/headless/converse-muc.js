@@ -166,8 +166,8 @@ converse.plugins.add('converse-muc', {
                 102: __('This groupchat now shows unavailable members'),
                 103: __('This groupchat does not show unavailable members'),
                 104: __('The groupchat configuration has changed'),
-                170: __('groupchat logging is now enabled'),
-                171: __('groupchat logging is now disabled'),
+                170: __('Groupchat logging is now enabled'),
+                171: __('Groupchat logging is now disabled'),
                 172: __('This groupchat is now no longer anonymous'),
                 173: __('This groupchat is now semi-anonymous'),
                 174: __('This groupchat is now fully-anonymous'),
@@ -222,7 +222,7 @@ converse.plugins.add('converse-muc', {
                 throw new Error(
                     "Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired.");
             }
-            const nick = _converse.nickname || (_converse.vcards ? _converse.xmppstatus.vcard.get('nickname') : undefined);
+            const nick = _converse.xmppstatus.getNickname();
             if (nick) {
                 return nick;
             } else if (_converse.muc_nickname_from_jid) {
@@ -256,13 +256,7 @@ converse.plugins.add('converse-muc', {
                     this.on('change:put', this.uploadFile, this);
                 }
                 if (this.isEphemeral()) {
-                    window.setTimeout(() => {
-                        try {
-                            this.destroy()
-                        } catch (e) {
-                            _converse.log(e, Strophe.LogLevel.ERROR);
-                        }
-                    }, 10000);
+                    window.setTimeout(this.safeDestroy.bind(this), 10000);
                 } else {
                     this.setOccupant();
                     this.setVCard();
@@ -270,30 +264,48 @@ converse.plugins.add('converse-muc', {
             },
 
             onOccupantRemoved (occupant) {
+                this.stopListening(this.occupant);
                 delete this.occupant;
                 const chatbox = _.get(this, 'collection.chatbox');
-                chatbox.occupants.on('add', this.onOccupantAdded, this);
+                if (!chatbox) {
+                    return _converse.log(
+                        `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
+                        Strophe.LogLevel.ERROR
+                    );
+                }
+                this.listenTo(chatbox.occupants, 'add', this.onOccupantAdded);
             },
 
             onOccupantAdded (occupant) {
                 if (occupant.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
                     this.occupant = occupant;
-                    this.occupant.on('destroy', this.onOccupantRemoved, this);
+                    this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
                     const chatbox = _.get(this, 'collection.chatbox');
-                    chatbox.occupants.off('add', this.onOccupantAdded, this);
+                    if (!chatbox) {
+                        return _converse.log(
+                            `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
+                            Strophe.LogLevel.ERROR
+                        );
+                    }
+                    this.stopListening(chatbox.occupants, 'add', this.onOccupantAdded);
                 }
             },
 
             setOccupant () {
                 if (this.get('type') !== 'groupchat') { return; }
                 const chatbox = _.get(this, 'collection.chatbox');
-                if (!chatbox) { return; }
+                if (!chatbox) {
+                    return _converse.log(
+                        `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
+                        Strophe.LogLevel.ERROR
+                    );
+                }
                 const nick = Strophe.getResourceFromJid(this.get('from'));
                 this.occupant = chatbox.occupants.findWhere({'nick': nick});
                 if (this.occupant) {
-                    this.occupant.on('destroy', this.onOccupantRemoved, this);
+                    this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
                 } else {
-                    chatbox.occupants.on('add', this.onOccupantAdded, this);
+                    this.listenTo(chatbox.occupants, 'add', this.onOccupantAdded);
                 }
 
             },
@@ -385,7 +397,6 @@ converse.plugins.add('converse-muc', {
                     'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
                     'message_type': 'groupchat',
                     'name': '',
-                    'nick': _converse.getDefaultMUCNickname(),
                     'num_unread': 0,
                     'roomconfig': {},
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
@@ -475,7 +486,7 @@ converse.plugins.add('converse-muc', {
                 const storage = _converse.config.get('storage');
                 const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
                 this.features = new Backbone.Model(
-                    _.assign({id}, _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)))
+                    _.assign({id}, _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)))
                 );
                 this.features.browserStorage = new BrowserStorage.session(id);
             },
@@ -509,6 +520,13 @@ converse.plugins.add('converse-muc', {
                     {'ignoreNamespaceFragment': true, 'matchBareFromJid': true}
                 );
                 this.message_handler = _converse.connection.addHandler(stanza => {
+                        if (sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop()) {
+                            // MAM messages are handled in converse-mam.
+                            // We shouldn't get MAM messages here because
+                            // they shouldn't have a `type` attribute.
+                            _converse.log(`Received a MAM message with type "chat".`, Strophe.LogLevel.WARN);
+                            return true;
+                        }
                         this.onMessage(stanza);
                         return true;
                     }, null, 'message', 'groupchat', null, room_jid,
@@ -837,7 +855,7 @@ converse.plugins.add('converse-muc', {
 
                 const features = await _converse.api.disco.getFeatures(this.get('jid'));
                 const attrs = Object.assign(
-                    _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)),
+                    _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)),
                     {'fetched': (new Date()).toISOString()}
                 );
                 features.each(feature => {
@@ -889,8 +907,8 @@ converse.plugins.add('converse-muc', {
              * has return a response IQ.
              */
             saveConfiguration (form) {
-                const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
-                        configArray = _.map(inputs, u.webForm2xForm);
+                const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [];
+                const configArray = inputs.map(u.webForm2xForm);
                 return this.sendConfiguration(configArray);
             },
 
@@ -1194,34 +1212,26 @@ converse.plugins.add('converse-muc', {
              * @returns { Promise<string> } A promise which resolves with the reserved nick or null
              */
             async getReservedNick () {
-                let iq;
-                try {
-                    iq = await _converse.api.sendIQ(
-                        $iq({
-                            'to': this.get('jid'),
-                            'from': _converse.connection.jid,
-                            'type': "get"
-                        }).c("query", {
-                            'xmlns': Strophe.NS.DISCO_INFO,
-                            'node': 'x-roomuser-item'
-                        })
-                    );
-                } catch (e) {
-                    if (_.isElement(e)) {
-                        // IQ stanza of type 'error'
-                        return;
-                    } else {
-                        throw e;
-                    }
+                const stanza = $iq({
+                    'to': this.get('jid'),
+                    'from': _converse.connection.jid,
+                    'type': "get"
+                }).c("query", {
+                    'xmlns': Strophe.NS.DISCO_INFO,
+                    'node': 'x-roomuser-item'
+                })
+                const result = await _converse.api.sendIQ(stanza, null, false);
+                if (u.isErrorObject(result)) {
+                    throw result;
                 }
-                const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity');
+                const identity_el = result.querySelector('query[node="x-roomuser-item"] identity');
                 return identity_el ? identity_el.getAttribute('name') : null;
             },
 
             async registerNickname () {
                 // See https://xmpp.org/extensions/xep-0045.html#register
-                const nick = this.get('nick'),
-                      jid = this.get('jid');
+                const nick = this.get('nick');
+                const jid = this.get('jid');
                 let iq, err_msg;
                 try {
                     iq = await _converse.api.sendIQ(
@@ -1280,7 +1290,7 @@ converse.plugins.add('converse-muc', {
                 }
                 const occupant = this.occupants.findOccupant(data);
                 if (data.type === 'unavailable' && occupant) {
-                    if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
+                    if (!data.states.includes(converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
                         // We only destroy the occupant if this is not a nickname change operation.
                         // and if they're not on the member lists.
                         // Before destroying we set the new data, so
@@ -1525,13 +1535,38 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza - The message stanza.
              */
             async onMessage (stanza) {
+                const original_stanza = stanza;
+                const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
+                if (bare_forward) {
+                    return _converse.log(
+                        'onMessage: Ignoring unencapsulated forwarded groupchat message',
+                        Strophe.LogLevel.WARN
+                    );
+                }
+                const is_carbon = u.isCarbonMessage(stanza);
+                if (is_carbon) {
+                    // XEP-280: groupchat messages SHOULD NOT be carbon copied, so we're discarding it.
+                    return _converse.log(
+                        'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
+                        'according to the XEP groupchat messages SHOULD NOT be carbon copied',
+                        Strophe.LogLevel.WARN
+                    );
+                }
+                const is_mam = u.isMAMMessage(stanza);
+                if (is_mam) {
+                    if (original_stanza.getAttribute('from') === this.get('jid')) {
+                        const selector = `[xmlns="${Strophe.NS.MAM}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
+                        stanza = sizzle(selector, stanza).pop();
+                    } else {
+                        return _converse.log(
+                            `onMessage: Ignoring alleged MAM groupchat message from ${stanza.getAttribute('from')}`,
+                            Strophe.LogLevel.WARN
+                        );
+                    }
+                }
+
                 this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
-                const original_stanza = stanza;
-                const forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
-                if (forwarded) {
-                    stanza = forwarded.querySelector('message');
-                }
 
                 const message = await this.getDuplicateMessage(original_stanza);
                 if (message) {
@@ -1572,7 +1607,7 @@ converse.plugins.add('converse-muc', {
             },
 
             handleDisconnection (stanza) {
-                const is_self = !_.isNull(stanza.querySelector("status[code='110']"));
+                const is_self = stanza.querySelector("status[code='110']") !== null;
                 const x = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza).pop();
                 if (!x) {
                     return;
@@ -1828,7 +1863,7 @@ converse.plugins.add('converse-muc', {
                 const nick = this.get('nick');
                 if (message.get('references').length) {
                     const mentions = message.get('references').filter(ref => (ref.type === 'mention')).map(ref => ref.value);
-                    return _.includes(mentions, nick);
+                    return mentions.includes(nick);
                 } else {
                     return (new RegExp(`\\b${nick}\\b`)).test(message.get('message'));
                 }
@@ -1891,7 +1926,7 @@ converse.plugins.add('converse-muc', {
                 }
                 vcards.push(_converse.vcards.findWhere({'jid': this.get('from')}));
 
-                _.forEach(_.filter(vcards, undefined), (vcard) => {
+                vcards.filter(v => v).forEach(vcard => {
                     if (hash && vcard.get('image_hash') !== hash) {
                         _converse.api.vcard.update(vcard, true);
                     }
@@ -2172,7 +2207,7 @@ converse.plugins.add('converse-muc', {
                     } else if (_.isString(jids)) {
                         return createChatRoom(jids, attrs);
                     }
-                    return _.map(jids, _.partial(createChatRoom, _, attrs));
+                    return jids.map(jid => createChatRoom(jid, attrs));
                 },
 
                 /**
@@ -2246,7 +2281,7 @@ converse.plugins.add('converse-muc', {
                         }
                         return room;
                     } else {
-                        return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
+                        return jids.map(jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
                     }
                 },
 
@@ -2294,12 +2329,10 @@ converse.plugins.add('converse-muc', {
                     if (_.isString(jids)) {
                         return getChatRoom(jids, attrs);
                     }
-                    return _.map(jids, _.partial(getChatRoom, _, attrs));
+                    return jids.map(jid => getChatRoom(jid, attrs));
                 }
             }
         });
         /************************ END API ************************/
     }
 });
-
-

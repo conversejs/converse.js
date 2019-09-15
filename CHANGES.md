@@ -1,6 +1,11 @@
 # Changelog
 
-## 5.0.2 (Unreleased)
+## 5.0.3 (2019-09-13)
+
+- Emit `chatBoxFocused` and `chatBoxBlurred` events for emoji picker input
+- SECURITY FIX: Reject unencapsulated forwarded messages, since we don't support XEP-0297 on its own
+
+## 5.0.2 (2019-09-11)
 
 - `po` translations files are now loaded via Webpack. As a result the `locales_url`
   config option is now removed given that the path to the locale JSON files is now
@@ -11,6 +16,11 @@
   This means that all your assets need to be served at `/dist`. If you need to set a
   different path, you'll need to set `publicPath` in `webpack.config.js` to
   your preferred path and then rebuild all assets (e.g. `make dist`).
+- Use `listenTo` to avoid memory leaks when views get removed.
+- SECURITY FIX: Ignore MAM `chat` messages not sent from yourself
+- #1692 Bugfix: `TypeError: oldest_message is undefined`
+- #1704 SECURITY FIX: Impersonation by misusage of groupchat carbons
+- #1705 Bugfix: `this.roomspanel` is `undefined` after hibernating
 
 ## 5.0.1 (2019-08-14)
 

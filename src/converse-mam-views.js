@@ -37,19 +37,21 @@ converse.plugins.add('converse-mam-views', {
                 const { _converse } = this.__super__;
                 if (this.content.scrollTop === 0 && this.model.messages.length) {
                     const oldest_message = this.model.getOldestMessage();
-                    const by_jid = this.model.get('jid');
-                    const stanza_id = oldest_message && oldest_message.get(`stanza_id ${by_jid}`);
-                    this.addSpinner();
-                    if (stanza_id) {
-                        await this.model.fetchArchivedMessages({
-                            'before': stanza_id
-                        });
-                    } else {
-                        await this.model.fetchArchivedMessages({
-                            'end': oldest_message.get('time')
-                        });
+                    if (oldest_message) {
+                        const by_jid = this.model.get('jid');
+                        const stanza_id = oldest_message && oldest_message.get(`stanza_id ${by_jid}`);
+                        this.addSpinner();
+                        if (stanza_id) {
+                            await this.model.fetchArchivedMessages({
+                                'before': stanza_id
+                            });
+                        } else {
+                            await this.model.fetchArchivedMessages({
+                                'end': oldest_message.get('time')
+                            });
+                        }
+                        this.clearSpinner();
                     }
-                    this.clearSpinner();
                 }
             }
         },

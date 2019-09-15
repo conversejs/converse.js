@@ -15,7 +15,7 @@ const u = converse.env.utils;
 
 converse.plugins.add('converse-roster', {
 
-    dependencies: ["converse-vcard"],
+    dependencies: [],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -153,8 +153,8 @@ converse.plugins.add('converse-roster', {
                 this.resources = new Resources();
                 const id = `converse.identities-${this.get('jid')}`;
                 this.resources.browserStorage = new BrowserStorage.session(id);
-                this.resources.on('update', this.onResourcesChanged, this);
-                this.resources.on('change', this.onResourcesChanged, this);
+                this.listenTo(this.resources, 'update', this.onResourcesChanged);
+                this.listenTo(this.resources, 'change', this.onResourcesChanged);
             },
 
             onResourcesChanged () {
@@ -221,30 +221,12 @@ converse.plugins.add('converse-roster', {
         });
 
 
-        _converse.ModelWithVCardAndPresence = Backbone.Model.extend({
-            initialize () {
-                this.setVCard();
-                this.setPresence();
-            },
-
-            setVCard () {
-                if (!_converse.vcards) {
-                    // VCards aren't supported
-                    return;
-                }
-                const jid = this.get('jid');
-                this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
-            },
-
-            setPresence () {
-                const jid = this.get('jid');
-                this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
-            }
-        });
-
-
-        _converse.RosterContact = _converse.ModelWithVCardAndPresence.extend({
-
+        /**
+         * @class
+         * @namespace _converse.RosterContact
+         * @memberOf _converse
+         */
+        _converse.RosterContact = Backbone.Model.extend({
             defaults: {
                 'chat_state': undefined,
                 'image': _converse.DEFAULT_IMAGE,
@@ -253,13 +235,10 @@ converse.plugins.add('converse-roster', {
                 'status': undefined,
             },
 
-            initialize (attributes) {
-                _converse.ModelWithVCardAndPresence.prototype.initialize.apply(this, arguments);
-
-                const { jid } = attributes,
-                    bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase(),
-                    resource = Strophe.getResourceFromJid(jid);
-
+            async initialize (attributes) {
+                this.setPresence();
+                const { jid } = attributes;
+                const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
                     'groups': [],
@@ -274,26 +253,33 @@ converse.plugins.add('converse-roster', {
                  * @type { _converse.RosterContact }
                  * @example _converse.api.listen.on('contactPresenceChanged', contact => { ... });
                  */
-                this.presence.on('change:show', () => _converse.api.trigger('contactPresenceChanged', this));
-                this.presence.on('change:show', () => this.trigger('presenceChanged'));
+                this.listenTo(this.presence, 'change:show', () => _converse.api.trigger('contactPresenceChanged', this));
+                this.listenTo(this.presence, 'change:show', () => this.trigger('presenceChanged'));
+                /**
+                 * Synchronous event which provides a hook for further initializing a RosterContact
+                 * @event _converse#rosterContactInitialized
+                 * @param { _converse.RosterContact } contact
+                 */
+                await _converse.api.trigger('rosterContactInitialized', this, {'Synchronous': true});
+            },
+
+            setPresence () {
+                const jid = this.get('jid');
+                this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
             },
 
             getDisplayName () {
+                // Gets overridden in converse-vcard where the fullname is may be returned
                 if (this.get('nickname')) {
                     return this.get('nickname');
-                } else if (this.vcard) {
-                    return this.vcard.getDisplayName();
                 } else {
                     return this.get('jid');
                 }
             },
 
             getFullname () {
-                if (this.vcard) {
-                    return this.vcard.get('fullname');
-                } else {
-                    return this.get('jid');
-                }
+                // Gets overridden in converse-vcard where the fullname may be returned
+                return this.get('jid');
             },
 
             /**
@@ -308,7 +294,7 @@ converse.plugins.add('converse-roster', {
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
                 }
-                const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname');
+                const nick = _converse.xmppstatus.getNickname() || _converse.xmppstatus.getFullname();
                 if (nick) {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
@@ -483,11 +469,11 @@ converse.plugins.add('converse-roster', {
             },
 
             subscribeToSuggestedItems (msg) {
-                _.each(msg.querySelectorAll('item'), function (item) {
+                Array.from(msg.querySelectorAll('item')).forEach(item => {
                     if (item.getAttribute('action') === 'add') {
                         _converse.roster.addAndSubscribe(
                             item.getAttribute('jid'),
-                            _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname')
+                            _converse.xmppstatus.getNickname() || _converse.xmppstatus.getFullname()
                         );
                     }
                 });
@@ -533,7 +519,7 @@ converse.plugins.add('converse-roster', {
                 const iq = $iq({'type': 'set'})
                     .c('query', {'xmlns': Strophe.NS.ROSTER})
                     .c('item', { jid, name });
-                _.each(groups, group => iq.c('group').t(group).up());
+                groups.forEach(g => iq.c('group').t(g).up());
                 return _converse.api.sendIQ(iq);
             },
 
@@ -608,6 +594,10 @@ converse.plugins.add('converse-roster', {
                     // attribute (i.e., implicitly from the bare JID of the user's
                     // account) or it has a 'from' attribute whose value matches the
                     // user's bare JID <user@domainpart>.
+                    _converse.log(
+                        `Ignoring roster illegitimate roster push message from ${iq.getAttribute('from')}`,
+                        Strophe.LogLevel.WARN
+                    );
                     return;
                 }
                 _converse.api.send($iq({type: 'result', id, from: _converse.connection.jid}));

@@ -331,6 +331,11 @@ body.converse-fullscreen {
         }
     }
 
+    .helptext {
+        font-size: var(--font-size-tiny);
+        color: var(--text-color-lighten-15-percent);
+    }
+
     .selected {
         color: var(--link-color) !important;
     }

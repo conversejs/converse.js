@@ -1,18 +1,24 @@
-/* global module */
+/* global module, process */
 const merge = require("webpack-merge");
-const common = require("./webpack.common.js");
-const HTMLWebpackPlugin = require('html-webpack-plugin');
+const prod = require("./webpack.prod.js");
+const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = merge(common, {
-    mode: "development",
-    devtool: "inline-source-map",
-    devServer: {
-        contentBase: "./dist"
+const ASSET_PATH = process.env.ASSET_PATH || '/dist/'; // eslint-disable-line no-process-env
+
+module.exports = merge(prod, {
+    output: {
+        publicPath: ASSET_PATH,
+        filename: 'converse.js',
     },
+    optimization: {
+        minimize: false,
+    },
+    devtool: 'source-map',
     plugins: [
-        new HTMLWebpackPlugin({
-            title: 'Production',
-            template: 'webpack.html'
+        new MiniCssExtractPlugin({filename: '../dist/converse.css'}),
+        new webpack.DefinePlugin({ // This makes it possible for us to safely use env vars on our code
+            'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
         })
     ],
 });

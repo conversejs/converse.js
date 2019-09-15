@@ -50,6 +50,16 @@ u.toStanza = function (string) {
     return node.firstElementChild;
 }
 
+u.isMAMMessage = function (stanza) {
+    return sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
+}
+
+u.isCarbonMessage = function (stanza) {
+    const xmlns = Strophe.NS.CARBONS;
+    return sizzle(`message > received[xmlns="${xmlns}"]`, stanza).length > 0 ||
+            sizzle(`message > sent[xmlns="${xmlns}"]`, stanza).length > 0;
+}
+
 u.getLongestSubstring = function (string, candidates) {
     function reducer (accumulator, current_value) {
         if (string.startsWith(current_value)) {
@@ -276,7 +286,7 @@ u.matchesSelector = function (el, selector) {
  * @param { String } selector - the selector they should be matched against
  */
 u.queryChildren = function (el, selector) {
-    return _.filter(el.childNodes, _.partial(u.matchesSelector, _, selector));
+    return Array.from(el.childNodes).filter(el => u.matchesSelector(el, selector));
 };
 
 u.contains = function (attr, query) {
@@ -385,8 +395,7 @@ u.interpolate = function (string, o) {
  * @private
  * @method u#onMultipleEvents
  * @param { Array } events: An array of objects, with keys `object` and
- *   `event`, representing the event name and the object it's
- *    triggered upon.
+ *   `event`, representing the event name and the object it's triggered upon.
  * @param { Function } callback: The function to call once all events have
  *    been triggered.
  */
@@ -400,7 +409,7 @@ u.onMultipleEvents = function (events=[], callback) {
             triggered = [];
         }
     }
-    _.each(events, (map) => map.object.on(map.event, handler));
+    events.forEach(e => e.object.on(e.event, handler));
 };
 
 u.safeSave = function (model, attributes) {

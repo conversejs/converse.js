@@ -68,7 +68,7 @@ converse.plugins.add('converse-rosterview', {
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.model.on('change', this.render, this);
+                this.listenTo(this.model, 'change', this.render);
             },
 
             toHTML () {
@@ -220,8 +220,8 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initialize () {
-                this.model.on('change:filter_type', this.render, this);
-                this.model.on('change:filter_text', this.render, this);
+                this.listenTo(this.model, 'change:filter_type', this.render);
+                this.listenTo(this.model, 'change:filter_text', this.render);
             },
 
             toHTML () {
@@ -341,14 +341,14 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initialize () {
-                this.model.on("change", this.render, this);
-                this.model.on("highlight", this.highlight, this);
-                this.model.on("destroy", this.remove, this);
-                this.model.on("open", this.openChat, this);
-                this.model.on("remove", this.remove, this);
+                this.listenTo(this.model, "change", this.render);
+                this.listenTo(this.model, "highlight", this.highlight);
+                this.listenTo(this.model, "destroy", this.remove);
+                this.listenTo(this.model, "open", this.openChat);
+                this.listenTo(this.model, "remove", this.remove);
 
-                this.model.presence.on("change:show", this.render, this);
-                this.model.vcard.on('change:fullname', this.render, this);
+                this.listenTo(this.model.presence, "change:show", this.render);
+                this.listenTo(this.model.vcard, 'change:fullname', this.render);
             },
 
             render () {
@@ -536,6 +536,11 @@ converse.plugins.add('converse-rosterview', {
             }
         });
 
+        /**
+         * @class
+         * @namespace _converse.RosterGroupView
+         * @memberOf _converse
+         */
         _converse.RosterGroupView = OrderedListView.extend({
             tagName: 'div',
             className: 'roster-group hidden',
@@ -551,10 +556,10 @@ converse.plugins.add('converse-rosterview', {
 
             initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
-                this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
-                this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
-                this.model.contacts.on("remove", this.onRemove, this);
-                _converse.roster.on('change:groups', this.onContactGroupChange, this);
+                this.listenTo(this.model.contacts, "change:subscription", this.onContactSubscriptionChange);
+                this.listenTo(this.model.contacts, "change:requesting", this.onContactRequestChange);
+                this.listenTo(this.model.contacts, "remove", this.onRemove);
+                this.listenTo(_converse.roster, 'change:groups', this.onContactGroupChange);
 
                 // This event gets triggered once *all* contacts (i.e. not
                 // just this group's) have been fetched from browser
@@ -655,6 +660,7 @@ converse.plugins.add('converse-rosterview', {
              * If all contacts are filtered out (i.e. hidden), then the
              * group must be filtered out as well.
              * @private
+             * @method _converse.RosterGroupView#filter
              * @param { string } q - The query to filter against
              * @param { string } type
              */
@@ -728,6 +734,11 @@ converse.plugins.add('converse-rosterview', {
         });
 
 
+        /**
+         * @class
+         * @namespace _converse.RosterView
+         * @memberOf _converse
+         */
         _converse.RosterView = OrderedListView.extend({
             tagName: 'div',
             id: 'converse-roster',
@@ -748,17 +759,17 @@ converse.plugins.add('converse-rosterview', {
             initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
-                _converse.roster.on("add", this.onContactAdded, this);
-                _converse.roster.on('change:groups', this.onContactAdded, this);
-                _converse.roster.on('change', this.onContactChange, this);
-                _converse.roster.on("destroy", this.update, this);
-                _converse.roster.on("remove", this.update, this);
+                this.listenTo(_converse.roster, "add", this.onContactAdded);
+                this.listenTo(_converse.roster, 'change:groups', this.onContactAdded);
+                this.listenTo(_converse.roster, 'change', this.onContactChange);
+                this.listenTo(_converse.roster, "destroy", this.update);
+                this.listenTo(_converse.roster, "remove", this.update);
                 _converse.presences.on('change:show', () => {
                     this.update();
                     this.updateFilter();
                 });
 
-                this.model.on("reset", this.reset, this);
+                this.listenTo(this.model, "reset", this.reset);
 
                 // This event gets triggered once *all* contacts (i.e. not
                 // just this group's) have been fetched from browser
@@ -801,7 +812,7 @@ converse.plugins.add('converse-rosterview', {
                 model.id = `_converse.rosterfilter${_converse.bare_jid}`;
                 model.browserStorage = new BrowserStorage.local(this.filter.id);
                 this.filter_view = new _converse.RosterFilterView({'model': model});
-                this.filter_view.model.on('change', this.updateFilter, this);
+                this.listenTo(this.filter_view.model, 'change', this.updateFilter);
                 this.filter_view.model.fetch();
             },
 
@@ -830,27 +841,21 @@ converse.plugins.add('converse-rosterview', {
             },
 
             filter (query, type) {
-                // First we make sure the filter is restored to its
-                // original state
-                _.each(this.getAll(), function (view) {
-                    if (view.model.contacts.length > 0) {
-                        view.show().filter('');
-                    }
-                });
+                const views = Object.values(this.getAll());
+                // First ensure the filter is restored to its original state
+                views.forEach(v => (v.model.contacts.length > 0) && v.show().filter(''));
                 // Now we can filter
                 query = query.toLowerCase();
                 if (type === 'groups') {
-                    _.each(this.getAll(), function (view, idx) {
-                        if (!_.includes(view.model.get('name').toLowerCase(), query.toLowerCase())) {
+                    views.forEach(view => {
+                        if (!view.model.get('name').toLowerCase().includes(query)) {
                             u.slideIn(view.el);
                         } else if (view.model.contacts.length > 0) {
                             u.slideOut(view.el);
                         }
                     });
                 } else {
-                    _.each(this.getAll(), function (view) {
-                        view.filter(query, type);
-                    });
+                    views.forEach(v => v.filter(query, type));
                 }
             },
 
@@ -893,10 +898,14 @@ converse.plugins.add('converse-rosterview', {
                 this.updateFilter();
             },
 
+            /**
+             * Returns the group as specified by name.
+             * Creates the group if it doesn't exist.
+             * @method _converse.RosterView#getGroup
+             * @private
+             * @param {string} name
+             */
             getGroup (name) {
-                /* Returns the group as specified by name.
-                 * Creates the group if it doesn't exist.
-                 */
                 const view =  this.get(name);
                 if (view) {
                     return view.model;
@@ -913,13 +922,11 @@ converse.plugins.add('converse-rosterview', {
                 let groups;
                 if (_converse.roster_groups) {
                     groups = contact.get('groups');
-                    if (groups.length === 0) {
-                        groups = [_converse.HEADER_UNGROUPED];
-                    }
+                    groups = (groups.length === 0) ? [_converse.HEADER_UNGROUPED] : groups;
                 } else {
                     groups = [_converse.HEADER_CURRENT_CONTACTS];
                 }
-                _.each(groups, _.bind(this.addContactToGroup, this, contact, _, options));
+                groups.forEach(g => this.addContactToGroup(contact, g, options));
             },
 
             addRosterContact (contact, options) {
@@ -965,7 +972,7 @@ converse.plugins.add('converse-rosterview', {
                 /* Place the rosterview inside the "Contacts" panel. */
                 _converse.api.waitUntil('rosterViewInitialized')
                     .then(() => view.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    .catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
             }
             insertRoster();
             view.model.on('change:connected', insertRoster);

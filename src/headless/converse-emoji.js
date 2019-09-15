@@ -332,19 +332,15 @@ converse.plugins.add('converse-emoji', {
 
         const { default: json } = await import(/*webpackChunkName: "emojis" */ './emojis.json');
         _converse.emojis.json = json;
-        _converse.emojis_map = Object.keys(_converse.emojis.json).reduce((result, cat) => Object.assign(result, _converse.emojis.json[cat]), {});
+        _converse.emojis.categories = Object.keys(_converse.emojis.json);
+        _converse.emojis_map = _converse.emojis.categories.reduce((result, cat) => Object.assign(result, _converse.emojis.json[cat]), {});
         _converse.emojis_list = Object.values(_converse.emojis_map);
+        _converse.emojis_list.sort((a, b) => a.sn < b.sn ? -1 : (a.sn > b.sn ? 1 : 0));
         _converse.emoji_shortnames = _converse.emojis_list.map(m => m.sn);
-        _converse.emoji_shortnames.sort();
 
         const getShortNames = () => _converse.emoji_shortnames.map(s => s.replace(/[+]/g, "\\$&")).join('|');
         _converse.emojis.shortnames_regex = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+getShortNames()+")", "gi");
 
-        const excluded_categories = ['modifier', 'regional'];
-        _converse.emojis.all_categories = _converse.emojis_list
-            .map(e => e.c)
-            .filter((c, i, arr) => arr.indexOf(c) == i)
-            .filter(c => !excluded_categories.includes(c));
 
         _converse.emojis.toned = getTonedEmojis();
 

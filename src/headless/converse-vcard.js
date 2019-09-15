@@ -16,11 +16,55 @@ const u = converse.env.utils;
 
 converse.plugins.add('converse-vcard', {
 
+    dependencies: ["converse-roster"],
+
+    overrides: {
+        XMPPStatus: {
+            getNickname () {
+                const { _converse } = this.__super__;
+                const nick = this.__super__.getNickname.apply(this);
+                if (!nick && _converse.xmppstatus.vcard) {
+                    return _converse.xmppstatus.vcard.get('nickname');
+                } else {
+                    return nick;
+                }
+            },
+
+            getFullname (){
+                const { _converse } = this.__super__;
+                const fullname = this.__super__.getFullname.apply(this);
+                if (!fullname && _converse.xmppstatus.vcard) {
+                    return _converse.xmppstatus.vcard.get('fullname');
+                } else {
+                    return fullname;
+                }
+            }
+        },
+
+        RosterContact: {
+            getDisplayName () {
+                if (!this.get('nickname') && this.vcard) {
+                    return this.vcard.getDisplayName();
+                } else {
+                    return this.__super__.getDisplayName.apply(this);
+                }
+            },
+            getFullname () {
+                if (this.vcard) {
+                    return this.vcard.get('fullname');
+                } else {
+                    return this.__super__.getFullname.apply(this);
+                }
+            }
+        }
+    },
+
     initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+
 
         _converse.VCard = Backbone.Model.extend({
             defaults: {
@@ -97,14 +141,6 @@ converse.plugins.add('converse-vcard', {
             return iq;
         }
 
-        function setVCard (jid, data) {
-            if (!jid) {
-                throw Error("No jid provided for the VCard data");
-            }
-            const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
-            return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
-        }
-
         async function getVCard (_converse, jid) {
             const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
             let iq;
@@ -148,6 +184,19 @@ converse.plugins.add('converse-vcard', {
 
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.VCARD));
 
+
+        function setVCardOnModel (model) {
+            // TODO: if we can make this method async and wait for the VCard to
+            // be updated, then we'll avoid unnecessary re-rendering of roster contacts.
+            const jid = model.get('jid');
+            model.vcard = _converse.vcards.findWhere({'jid': jid});
+            if (!model.vcard) {
+                model.vcard = _converse.vcards.create({'jid': jid});
+            }
+        }
+        _converse.api.listen.on('rosterContactInitialized', contact => setVCardOnModel(contact));
+
+
         /************************ BEGIN API ************************/
         Object.assign(_converse.api, {
             /**
@@ -177,7 +226,11 @@ converse.plugins.add('converse-vcard', {
                  * }).
                  */
                 set (jid, data) {
-                    return setVCard(jid, data);
+                    if (!jid) {
+                        throw Error("No jid provided for the VCard data");
+                    }
+                    const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+                    return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
                 },
 
                 /**
@@ -233,12 +286,10 @@ converse.plugins.add('converse-vcard', {
                  *     _converse.api.vcard.update(chatbox);
                  * });
                  */
-                update (model, force) {
-                    return this.get(model, force)
-                        .then(vcard => {
-                            delete vcard['stanza']
-                            model.save(vcard);
-                        });
+                async update (model, force) {
+                    const vcard = await this.get(model, force);
+                    delete vcard['stanza']
+                    model.save(vcard);
                 }
             }
         });

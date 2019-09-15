@@ -160,16 +160,13 @@
             const room_jid = 'coven@chat.shakespeare.lit';
             test_utils.openControlBox();
             await _converse.api.rooms.open(room_jid, {'nick': 'some1'});
-            const last_stanza = await u.waitUntil(() => _.filter(
-                IQ_stanzas,
-                iq => iq.querySelector(
-                    `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                )).pop());
             const view = _converse.chatboxviews.get(room_jid);
-            const IQ_id = last_stanza.getAttribute('id');
+
+            const selector = `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
+            const features_query = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).pop());
             const features_stanza = $iq({
                     'from': 'coven@chat.shakespeare.lit',
-                    'id': IQ_id,
+                    'id': features_query.getAttribute('id'),
                     'to': 'romeo@montague.lit/desktop',
                     'type': 'result'
                 })

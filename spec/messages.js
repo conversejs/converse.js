@@ -12,6 +12,50 @@
 
     describe("A Chat Message", function () {
 
+        it("is rejected if it's an unencapsulated forwarded message",
+            mock.initConverse(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.waitForRoster(_converse, 'current', 2);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const forwarded_contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await test_utils.openChatBoxFor(_converse, contact_jid);
+            expect(_converse.api.chats.get().length).toBe(2);
+            const received_stanza = u.toStanza(`
+                <message to='${_converse.jid}' from='${contact_jid}' type='chat' id='${_converse.connection.getUniqueId()}'>
+                    <body>A most courteous exposition!</body>
+                    <forwarded xmlns='urn:xmpp:forward:0'>
+                        <delay xmlns='urn:xmpp:delay' stamp='2019-07-10T23:08:25Z'/>
+                        <message from='${forwarded_contact_jid}'
+                                id='0202197'
+                                to='${_converse.bare_jid}'
+                                type='chat'
+                                xmlns='jabber:client'>
+                        <body>Yet I should kill thee with much cherishing.</body>
+                        <mood xmlns='http://jabber.org/protocol/mood'>
+                            <amorous/>
+                        </mood>
+                        </message>
+                    </forwarded>
+                </message>
+            `);
+            _converse.connection._dataRecv(test_utils.createRequest(received_stanza));
+            const view = _converse.api.chatviews.get(contact_jid);
+            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanza = await u.waitUntil(() => sent_stanzas.filter(s => s.querySelector('error')).pop());
+            expect(Strophe.serialize(sent_stanza)).toBe(
+                `<message id="${received_stanza.getAttribute('id')}" to="${contact_jid}" type="error" xmlns="jabber:client">`+
+                    '<error type="cancel">'+
+                        '<not-allowed xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>'+
+                        '<text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">'+
+                            'Forwarded messages not part of an encapsulating protocol are not supported</text>'+
+                    '</error>'+
+                '</message>');
+            expect(_converse.api.chats.get().length).toBe(2);
+            done();
+        }));
+
         it("can be sent as a correction by clicking the pencil icon",
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -307,101 +351,82 @@
             await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
-            let message, msg;
+            let message;
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
-            spyOn(_converse, 'log');
             spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
             _converse.filter_by_resource = true;
 
-            /*  <message id='aeb213' to='juliet@capulet.lit/chamber'>
-             *    <forwarded xmlns='urn:xmpp:forward:0'>
-             *      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
-             *      <message xmlns='jabber:client'
-             *          to='juliet@capulet.lit/balcony'
-             *          from='romeo@montague.lit/orchard'
-             *          type='chat'>
-             *          <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
-             *      </message>
-             *    </forwarded>
-             *  </message>
-             */
-            msg = $msg({'id': 'aeb213', 'to': _converse.bare_jid})
-                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T13:08:25Z'}).up()
-                    .c('message', {
-                        'xmlns': 'jabber:client',
-                        'to': _converse.bare_jid,
-                        'from': sender_jid,
-                        'type': 'chat'})
-                    .c('body').t("message")
-                    .tree();
+            let msg = $msg({
+                    'xmlns': 'jabber:client',
+                    'id': _converse.connection.getUniqueId(),
+                    'to': _converse.bare_jid,
+                    'from': sender_jid,
+                    'type': 'chat'})
+                .c('body').t("message").up()
+                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T13:08:25Z'})
+                .tree();
             await _converse.chatboxes.onMessage(msg);
             await u.waitUntil(() => _converse.api.chats.get().length);
             const view = _converse.api.chatviews.get(sender_jid);
 
-            msg = $msg({'id': 'aeb214', 'to': _converse.bare_jid})
-                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T22:08:25Z'}).up()
-                    .c('message', {
-                        'xmlns': 'jabber:client',
-                        'to': _converse.bare_jid,
-                        'from': sender_jid,
-                        'type': 'chat'})
-                    .c('body').t("Older message")
-                    .tree();
+            msg = $msg({
+                    'xmlns': 'jabber:client',
+                    'id': _converse.connection.getUniqueId(),
+                    'to': _converse.bare_jid,
+                    'from': sender_jid,
+                    'type': 'chat'})
+                .c('body').t("Older message").up()
+                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T22:08:25Z'})
+                .tree();
             await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            msg = $msg({'id': 'aeb215', 'to': _converse.bare_jid})
-                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'}).up()
-                    .c('message', {
-                        'xmlns': 'jabber:client',
-                        'to': _converse.bare_jid,
-                        'from': sender_jid,
-                        'type': 'chat'})
-                    .c('body').t("Inbetween message").up()
-                    .tree();
+            msg = $msg({
+                    'xmlns': 'jabber:client',
+                    'id': _converse.connection.getUniqueId(),
+                    'to': _converse.bare_jid,
+                    'from': sender_jid,
+                    'type': 'chat'})
+                .c('body').t("Inbetween message").up()
+                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'})
+                .tree();
             await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            msg = $msg({'id': 'aeb216', 'to': _converse.bare_jid})
-                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'}).up()
-                    .c('message', {
-                        'xmlns': 'jabber:client',
-                        'to': _converse.bare_jid,
-                        'from': sender_jid,
-                        'type': 'chat'})
-                    .c('body').t("another inbetween message")
-                    .tree();
+            msg = $msg({
+                    'xmlns': 'jabber:client',
+                    'id': _converse.connection.getUniqueId(),
+                    'to': _converse.bare_jid,
+                    'from': sender_jid,
+                    'type': 'chat'})
+                .c('body').t("another inbetween message").up()
+                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'})
+                .tree();
             await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            msg = $msg({'id': 'aeb217', 'to': _converse.bare_jid})
-                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T12:18:23Z'}).up()
-                    .c('message', {
-                        'xmlns': 'jabber:client',
-                        'to': _converse.bare_jid,
-                        'from': sender_jid,
-                        'type': 'chat'})
-                    .c('body').t("An earlier message on the next day")
-                    .tree();
+            msg = $msg({
+                    'xmlns': 'jabber:client',
+                    'id': _converse.connection.getUniqueId(),
+                    'to': _converse.bare_jid,
+                    'from': sender_jid,
+                    'type': 'chat'})
+                .c('body').t("An earlier message on the next day").up()
+                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T12:18:23Z'})
+                .tree();
             await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            msg = $msg({'id': 'aeb218', 'to': _converse.bare_jid})
-                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T22:28:23Z'}).up()
-                    .c('message', {
-                        'xmlns': 'jabber:client',
-                        'to': _converse.bare_jid,
-                        'from': sender_jid,
-                        'type': 'chat'})
-                    .c('body').t("newer message from the next day")
-                    .tree();
+            msg = $msg({
+                    'xmlns': 'jabber:client',
+                    'id': _converse.connection.getUniqueId(),
+                    'to': _converse.bare_jid,
+                    'from': sender_jid,
+                    'type': 'chat'})
+                .c('body').t("newer message from the next day").up()
+                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T22:28:23Z'})
+                .tree();
             await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
@@ -409,7 +434,7 @@
             // text messages are inserted correctly with
             // temporary chat events in the chat contents.
             msg = $msg({
-                    'id': 'aeb219',
+                    'id': _converse.connection.getUniqueId(),
                     'to': _converse.bare_jid,
                     'xmlns': 'jabber:client',
                     'from': sender_jid,
@@ -419,7 +444,7 @@
             await _converse.chatboxes.onMessage(msg);
 
             msg = $msg({
-                    'id': 'aeb220',
+                    'id': _converse.connection.getUniqueId(),
                     'to': _converse.bare_jid,
                     'xmlns': 'jabber:client',
                     'from': sender_jid,
@@ -531,7 +556,6 @@
             test_utils.openControlBox();
 
             // Send a message from a different resource
-            spyOn(_converse, 'log');
             const msgtext = 'This is a carbon message';
             const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg = $msg({
@@ -584,7 +608,6 @@
             test_utils.openControlBox();
 
             // Send a message from a different resource
-            spyOn(_converse, 'log');
             const msgtext = 'This is a sent carbon message';
             const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg = $msg({
@@ -622,9 +645,9 @@
         }));
 
         it("will be discarded if it's a malicious message meant to look like a carbon copy",
-        mock.initConverse(
-            null, ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
@@ -638,7 +661,6 @@
              *    </received>
              * </message>
              */
-            spyOn(_converse, 'log');
             const msgtext = 'Please come to Creepy Valley tonight, alone!';
             const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const impersonated_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1107,7 +1129,7 @@
                     'from': sender_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
-                    'id': (new Date()).getTime()
+                    'id': _converse.connection.getUniqueId()
                 }).c('body').t("Another message 1 minute and 1 second since the previous one").up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -1134,18 +1156,16 @@
                 "Another message within 10 minutes, but from a different person");
 
             // Let's add a delayed, inbetween message
-            _converse.chatboxes.onMessage($msg({'id': 'aeb218', 'to': _converse.bare_jid})
-                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay',
-                                    'stamp': dayjs(base_time).add(5, 'minutes').toISOString()
-                                }).up()
-                    .c('message', {
-                        'xmlns': 'jabber:client',
-                        'to': _converse.bare_jid,
-                        'from': sender_jid,
-                        'type': 'chat'})
-                    .c('body').t("A delayed message, sent 5 minutes since we started")
-                    .tree());
+            _converse.chatboxes.onMessage(
+                $msg({
+                    'xmlns': 'jabber:client',
+                    'id': _converse.connection.getUniqueId(),
+                    'to': _converse.bare_jid,
+                    'from': sender_jid,
+                    'type': 'chat'
+                }).c('body').t("A delayed message, sent 5 minutes since we started").up()
+                  .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp': dayjs(base_time).add(5, 'minutes').toISOString()})
+                  .tree());
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             expect(chat_content.querySelectorAll('.message').length).toBe(7);
@@ -1166,16 +1186,16 @@
                 "Another message 1 minute and 1 second since the previous one");
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(7)'))).toBe(false);
 
-            _converse.chatboxes.onMessage($msg({'id': 'aeb213', 'to': _converse.bare_jid})
-                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':dayjs(base_time).add(4, 'minutes').toISOString()}).up()
-                    .c('message', {
-                        'xmlns': 'jabber:client',
-                        'to': sender_jid,
-                        'from': _converse.bare_jid+"/some-other-resource",
-                        'type': 'chat'})
-                    .c('body').t("A carbon message 4 minutes later")
-                    .tree());
+            _converse.chatboxes.onMessage(
+                $msg({
+                    'xmlns': 'jabber:client',
+                    'id': _converse.connection.getUniqueId(),
+                    'to': sender_jid,
+                    'from': _converse.bare_jid+"/some-other-resource",
+                    'type': 'chat'})
+                .c('body').t("A carbon message 4 minutes later").up()
+                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':dayjs(base_time).add(4, 'minutes').toISOString()})
+                .tree());
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             expect(chat_content.querySelectorAll('.message').length).toBe(8);
@@ -1263,36 +1283,6 @@
             done();
         }));
 
-        it("forwarded does not emit a message delivery receipt if it's mine",
-            mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-            await test_utils.waitForRoster(_converse, 'current', 1);
-            const recipient_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const msg_id = u.getUniqueId();
-            const sent_stanzas = [];
-            const view = await test_utils.openChatBoxFor(_converse, recipient_jid);
-            spyOn(view.model, 'sendReceiptStanza').and.callThrough();
-            const msg = $msg({
-                    'from': converse.bare_jid,
-                    'to': _converse.connection.jid,
-                    'type': 'chat',
-                    'id': u.getUniqueId(),
-                }).c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                .c('message', {
-                        'xmlns': 'jabber:client',
-                        'from': _converse.bare_jid+'/another-resource',
-                        'to': recipient_jid,
-                        'type': 'chat',
-                        'id': msg_id
-                }).c('body').t('Message!').up()
-                .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
-            await _converse.chatboxes.onMessage(msg);
-            await u.waitUntil(() => _converse.api.chats.get().length);
-            expect(view.model.sendReceiptStanza).not.toHaveBeenCalled();
-            done();
-        }));
-
         describe("when sent", function () {
 
             it("can have its delivery acknowledged by a receipt",
@@ -1362,7 +1352,6 @@
                 spyOn(_converse.api, "trigger").and.callThrough();
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, contact_jid)
-                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
                 const view = _converse.chatboxviews.get(contact_jid);
                 const message = 'This message is sent from this chatbox';
                 spyOn(view.model, 'sendMessage').and.callThrough();
@@ -1663,14 +1652,12 @@
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 1);
-                    test_utils.openControlBox();
 
                     // TODO: what could still be done for error
                     // messages... if the <error> element has type
                     // "cancel", then we know the messages wasn't sent,
                     // and can give the user a nicer indication of
                     // that.
-
                     /* <message from="scotty@enterprise.com/_converse.js-84843526"
                      *          to="kirk@enterprise.com.com"
                      *          type="chat"
@@ -1687,14 +1674,7 @@
                     await _converse.api.chats.open(sender_jid)
                     let msg_text = 'This message will not be sent, due to an error';
                     const view = _converse.api.chatviews.get(sender_jid);
-                    view.model.messages.create({
-                        'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
-                        'fullname': fullname,
-                        'sender': 'me',
-                        'time': (new Date()).toISOString(),
-                        'message': msg_text
-                    });
-                    view.model.sendMessage(msg_text);
+                    const message = await view.model.sendMessage(msg_text);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     const chat_content = view.el.querySelector('.chat-content');
                     let msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
@@ -1704,15 +1684,8 @@
                     // not be received, to test that errors appear
                     // after the relevant message.
                     msg_text = 'This message will be sent, and also receive an error';
-                    view.model.messages.create({
-                        'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
-                        'fullname': fullname,
-                        'sender': 'me',
-                        'time': (new Date()).toISOString(),
-                        'message': msg_text
-                    });
-                    view.model.sendMessage(msg_text);
-                    await u.waitUntil(() => sizzle('.chat-msg .chat-msg__text', chat_content).length === 5);
+                    const second_message = await view.model.sendMessage(msg_text);
+                    await u.waitUntil(() => sizzle('.chat-msg .chat-msg__text', chat_content).length === 2, 1000);
                     msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
                     expect(msg_txt).toEqual(msg_text);
 
@@ -1730,7 +1703,7 @@
                     let stanza = $msg({
                             'to': _converse.connection.jid,
                             'type': 'error',
-                            'id': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
+                            'id': message.get('msgid'),
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1743,7 +1716,7 @@
                     stanza = $msg({
                             'to': _converse.connection.jid,
                             'type': 'error',
-                            'id': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
+                            'id': second_message.get('id'),
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1768,18 +1741,8 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(2);
 
-                    // We send another message, for which an error will
-                    // not be received, to test that errors appear
-                    // after the relevant message.
                     msg_text = 'This message will be sent, and also receive an error';
-                    view.model.messages.create({
-                        'msgid': 'another-id',
-                        'fullname': fullname,
-                        'sender': 'me',
-                        'time': (new Date()).toISOString(),
-                        'message': msg_text
-                    });
-                    view.model.sendMessage(msg_text);
+                    const third_message = await view.model.sendMessage(msg_text);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
                     expect(msg_txt).toEqual(msg_text);
@@ -1788,11 +1751,11 @@
                     stanza = $msg({
                             'to': _converse.connection.jid,
                             'type':'error',
-                            'id': 'another-id',
+                            'id': third_message.get('id'),
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
-                        .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                        .c('not-allowed', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
                         .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                             .t('Something else went wrong as well');
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));

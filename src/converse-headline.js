@@ -85,10 +85,10 @@ converse.plugins.add('converse-headline', {
                 this.initDebounced();
 
                 this.model.disable_mam = true; // Don't do MAM queries for this box
-                this.model.messages.on('add', this.onMessageAdded, this);
-                this.model.on('show', this.show, this);
-                this.model.on('destroy', this.hide, this);
-                this.model.on('change:minimized', this.onMinimizedChanged, this);
+                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model, 'show', this.show);
+                this.listenTo(this.model, 'destroy', this.hide);
+                this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged);
 
                 this.render().insertHeading()
                 this.updateAfterMessagesFetched();

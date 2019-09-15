@@ -85,15 +85,15 @@ converse.plugins.add('converse-chatview', {
 
         _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
             initialize () {
-                this.model.on('change:status', this.onStatusMessageChanged, this);
+                this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
 
                 this.debouncedRender = _.debounce(this.render, 50);
                 if (this.model.vcard) {
-                    this.model.vcard.on('change', this.debouncedRender, this);
+                    this.listenTo(this.model.vcard, 'change', this.debouncedRender);
                 }
                 if (this.model.rosterContactAdded) {
                     this.model.rosterContactAdded.then(() => {
-                        this.model.contact.on('change:nickname', this.debouncedRender, this);
+                        this.listenTo(this.model.contact, 'change:nickname', this.debouncedRender);
                         this.debouncedRender();
                     });
                 }
@@ -145,7 +145,7 @@ converse.plugins.add('converse-chatview', {
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.model.rosterContactAdded.then(() => this.registerContactEventHandlers());
-                this.model.on('change', this.render, this);
+                this.listenTo(this.model, 'change', this.render);
                 this.registerContactEventHandlers();
                 /**
                  * Triggered once the _converse.UserDetailsModal has been initialized
@@ -175,8 +175,8 @@ converse.plugins.add('converse-chatview', {
 
             registerContactEventHandlers () {
                 if (this.model.contact !== undefined) {
-                    this.model.contact.on('change', this.render, this);
-                    this.model.contact.vcard.on('change', this.render, this);
+                    this.listenTo(this.model.contact, 'change', this.render);
+                    this.listenTo(this.model.contact.vcard, 'change', this.render);
                     this.model.contact.on('destroy', () => {
                         delete this.model.contact;
                         this.render();
@@ -257,17 +257,17 @@ converse.plugins.add('converse-chatview', {
 
             async initialize () {
                 this.initDebounced();
-                this.model.messages.on('add', this.onMessageAdded, this);
-                this.model.messages.on('rendered', this.scrollDown, this);
+                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
                     this.content.innerHTML = '';
                     this.removeAll();
                 });
 
-                this.model.on('show', this.show, this);
-                this.model.on('destroy', this.remove, this);
+                this.listenTo(this.model, 'show', this.show);
+                this.listenTo(this.model, 'destroy', this.remove);
 
-                this.model.presence.on('change:show', this.onPresenceChanged, this);
+                this.listenTo(this.model.presence, 'change:show', this.onPresenceChanged);
                 this.render();
                 await this.updateAfterMessagesFetched();
 
@@ -333,17 +333,9 @@ converse.plugins.add('converse-chatview', {
                         'show_toolbar': _converse.show_toolbar,
                         'unread_msgs': __('You have unread messages')
                     }));
-                const textarea_el = this.el.querySelector('.chat-textarea');
-                textarea_el.addEventListener('focus', () => this.emitFocused());
-                textarea_el.addEventListener('blur', () => {
-                    /**
-                     * Triggered when the focus has been removed from a particular chat.
-                     * @event _converse#chatBoxBlurred
-                     * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-                     * @example _converse.api.listen.on('chatBoxBlurred', view => { ... });
-                     */
-                    _converse.api.trigger('chatBoxBlurred', this);
-                });
+                const textarea = this.el.querySelector('.chat-textarea');
+                textarea.addEventListener('focus', ev => this.emitFocused(ev));
+                textarea.addEventListener('blur', ev => this.emitBlurred(ev));
                 this.renderToolbar();
             },
 
@@ -429,7 +421,7 @@ converse.plugins.add('converse-chatview', {
                 this.heading.chatview = this;
 
                 if (this.model.contact !== undefined) {
-                    this.model.contact.on('destroy', this.heading.render, this);
+                    this.listenTo(this.model.contact, 'destroy', this.heading.render);
                 }
                 const flyout = this.el.querySelector('.flyout');
                 flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
@@ -1162,21 +1154,34 @@ converse.plugins.add('converse-chatview', {
                 return this;
             },
 
-            emitFocused () {
+            emitBlurred (ev) {
+                if (this.el.contains(document.activeElement)) {
+                    // Something else in this chatbox is still focused
+                    return;
+                }
+                /**
+                 * Triggered when the focus has been removed from a particular chat.
+                 * @event _converse#chatBoxBlurred
+                 * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+                 * @example _converse.api.listen.on('chatBoxBlurred', (view, event) => { ... });
+                 */
+                _converse.api.trigger('chatBoxBlurred', this, ev);
+            },
+
+            emitFocused (ev) {
                 /**
                  * Triggered when the focus has been moved to a particular chat.
                  * @event _converse#chatBoxFocused
                  * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-                 * @example _converse.api.listen.on('chatBoxFocused', view => { ... });
+                 * @example _converse.api.listen.on('chatBoxFocused', (view, event) => { ... });
                  */
-                _converse.api.trigger('chatBoxFocused', this);
+                _converse.api.trigger('chatBoxFocused', this, ev);
             },
 
             focus () {
                 const textarea_el = this.el.getElementsByClassName('chat-textarea')[0];
                 if (textarea_el && document.activeElement !== textarea_el) {
                     textarea_el.focus();
-                    this.emitFocused();
                 }
                 return this;
             },
@@ -1310,10 +1315,8 @@ converse.plugins.add('converse-chatview', {
             });
         });
 
-        _converse.api.listen.on('connected', () => {
-            // Advertise that we support XEP-0382 Message Spoilers
-            _converse.api.disco.own.features.add(Strophe.NS.SPOILER);
-        });
+        // Advertise that we support XEP-0382 Message Spoilers
+        _converse.api.listen.on('connected', () => _converse.api.disco.own.features.add(Strophe.NS.SPOILER));
 
         /************************ BEGIN API ************************/
         Object.assign(_converse.api, {
@@ -1327,15 +1330,13 @@ converse.plugins.add('converse-chatview', {
             'chatviews': {
                  /**
                   * Get the view of an already open chat.
-                  *
                   * @method _converse.api.chatviews.get
+                  * @param { Array.string | string } jids
                   * @returns {ChatBoxView} A [Backbone.View](http://backbonejs.org/#View) instance.
                   *     The chat should already be open, otherwise `undefined` will be returned.
-                  *
                   * @example
                   * // To return a single view, provide the JID of the contact:
                   * _converse.api.chatviews.get('buddy@example.com')
-                  *
                   * @example
                   * // To return an array of views, provide an array of JIDs:
                   * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
@@ -1351,7 +1352,7 @@ converse.plugins.add('converse-chatview', {
                     if (_.isString(jids)) {
                         return _converse.chatboxviews.get(jids);
                     }
-                    return _.map(jids, (jid) => _converse.chatboxviews.get(jids));
+                    return jids.map(jid => _converse.chatboxviews.get(jids));
                 }
             }
         });

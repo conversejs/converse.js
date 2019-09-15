@@ -657,10 +657,6 @@ emoji_image_path
 When `use_system_emojis`_ is set to ``false``, then this is the URL from where image files for
 displaying emojis will be fetched.
 
-If you've run ``make dev``, then these files are also available in ``./node_modules/twemoji/2/``,
-which means you can avoid the CDN and host them yourself if you wish.
-
-
 enable_muc_push
 ---------------
 
@@ -1367,7 +1363,7 @@ use_system_emojis
 Determines whether emojis should be rendered by the user's system.
 
 Not all operating systems support (all) emojis. So alternatively you can let
-Converse render the emojis with [Twemoji](https://twemoji.twitter.com/).
+Converse render the emojis with `Twemoji <https://twemoji.twitter.com/>`_.
 
 See also `emoji_image_path`_.
 

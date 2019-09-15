@@ -251,20 +251,23 @@
 
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
-
-                const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                // openControlBox was called earlier, so the controlbox is
-                // visible, but no other chat boxes have been created.
                 expect(_converse.chatboxes.length).toEqual(1);
 
+                const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const view = await test_utils.openChatBoxFor(_converse, contact_jid);
                 const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', _converse.rosterview.el).pop();
+                await u.waitUntil(() => u.isVisible(el));
                 const jid = el.textContent.replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                spyOn(_converse.api, "trigger").and.callThrough();
+                const textarea = view.el.querySelector('.chat-textarea');
+                await u.waitUntil(() => u.isVisible(textarea));
+                textarea.blur();
+                spyOn(view.model, 'maybeShow').and.callThrough();
+                spyOn(view, 'focus').and.callThrough();
                 el.click();
-                await u.waitUntil(() => _converse.api.trigger.calls.count(), 500);
+                await u.waitUntil(() => view.model.maybeShow.calls.count(), 1000);
+                expect(view.model.maybeShow).toHaveBeenCalled();
+                expect(view.focus).toHaveBeenCalled();
                 expect(_converse.chatboxes.length).toEqual(2);
-                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
                 done();
             }));
 

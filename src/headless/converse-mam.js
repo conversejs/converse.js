@@ -500,14 +500,22 @@ converse.plugins.add('converse-mam', {
                     }
 
                     const messages = [];
-                    const message_handler = _converse.connection.addHandler(message => {
-                        if (options.groupchat && message.getAttribute('from') !== options['with']) {
+                    const message_handler = _converse.connection.addHandler(stanza => {
+                        const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+                        if (result === undefined || result.getAttribute('queryid') !== queryid) {
                             return true;
                         }
-                        const result = message.querySelector('result');
-                        if (result !== null && result.getAttribute('queryid') === queryid) {
-                            messages.push(message);
+                        const from = stanza.getAttribute('from') || _converse.bare_jid;
+                        if (options.groupchat) {
+                            if (from !== options['with']) {
+                                _converse.log(`Ignoring alleged groupchat MAM message from ${stanza.getAttribute('from')}`, Strophe.LogLevel.WARN);
+                                return true;
+                            }
+                        } else if (from !== _converse.bare_jid) {
+                            _converse.log(`Ignoring alleged MAM message from ${stanza.getAttribute('from')}`, Strophe.LogLevel.WARN);
+                            return true;
                         }
+                        messages.push(stanza);
                         return true;
                     }, Strophe.NS.MAM);
 

@@ -107,13 +107,15 @@ converse.plugins.add('converse-chatboxes', {
                     this.on('change:put', this.uploadFile, this);
                 }
                 if (this.isEphemeral()) {
-                    window.setTimeout(() => {
-                        try {
-                            this.destroy()
-                        } catch (e) {
-                            _converse.log(e, Strophe.LogLevel.ERROR);
-                        }
-                    }, 10000);
+                    window.setTimeout(this.safeDestroy.bind(this), 10000);
+                }
+            },
+
+            safeDestroy () {
+                try {
+                    this.destroy()
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
                 }
             },
 
@@ -324,7 +326,7 @@ converse.plugins.add('converse-chatboxes', {
                 const storage = _converse.config.get('storage');
                 this.messages.browserStorage = new BrowserStorage[storage](this.getMessagesCacheKey());
                 this.messages.chatbox = this;
-                this.messages.on('change:upload', (message) => {
+                this.listenTo(this.messages, 'change:upload', message => {
                     if (message.get('upload') === _converse.SUCCESS) {
                         _converse.api.send(this.createMessageStanza(message));
                     }
@@ -556,7 +558,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 const older_versions = message.get('older_versions') || {};
                 if ((attrs.time < message.get('time')) && message.get('edited')) {
-                    // This is an older message which has been corrected already
+                    // This is an older message which has been corrected afterwards
                     older_versions[attrs.time] = attrs['message'];
                     message.save({'older_versions': older_versions});
                 } else {
@@ -785,6 +787,7 @@ converse.plugins.add('converse-chatboxes', {
                         'message': attrs.message,
                         'older_versions': older_versions,
                         'references': attrs.references,
+                        'is_single_emoji':  attrs.message ? u.isSingleEmoji(attrs.message) : false,
                         'origin_id': _converse.connection.getUniqueId(),
                         'received': undefined
                     });
@@ -956,15 +959,14 @@ converse.plugins.add('converse-chatboxes', {
                             stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                             stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-                const is_single_emoji = text ? await u.isSingleEmoji(text) : false;
                 const replaced_id = this.getReplaceId(stanza)
                 const msgid = replaced_id || stanza.getAttribute('id') || original_stanza.getAttribute('id');
                 const attrs = Object.assign({
                     'chat_state': chat_state,
                     'is_archived': this.isArchived(original_stanza),
                     'is_delayed': !!delay,
+                    'is_single_emoji': text ? await u.isSingleEmoji(text) : false,
                     'is_spoiler': !!spoiler,
-                    'is_single_emoji': is_single_emoji,
                     'message': text,
                     'msgid': msgid,
                     'references': this.getReferencesFromStanza(stanza),
@@ -1059,6 +1061,13 @@ converse.plugins.add('converse-chatboxes', {
 
             registerMessageHandler () {
                 _converse.connection.addHandler(stanza => {
+                    if (sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop()) {
+                        // MAM messages are handled in converse-mam.
+                        // We shouldn't get MAM messages here because
+                        // they shouldn't have a `type` attribute.
+                        _converse.log(`Received a MAM message with type "chat".`, Strophe.LogLevel.WARN);
+                        return true;
+                    }
                     this.onMessage(stanza);
                     return true;
                 }, null, 'message', 'chat');
@@ -1136,52 +1145,89 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             /**
+             * Reject an incoming message by replying with an error message of type "cancel".
+             * @private
+             * @method _converse.ChatBox#rejectMessage
+             * @param { XMLElement } stanza - The incoming message stanza
+             * @param { XMLElement } text - Text explaining why the message was rejected
+             */
+            rejectMessage (stanza, text) {
+                _converse.api.send(
+                    $msg({
+                        'to': stanza.getAttribute('from'),
+                        'type': 'error',
+                        'id': stanza.getAttribute('id')
+                    }).c('error', {'type': 'cancel'})
+                        .c('not-allowed', {xmlns:"urn:ietf:params:xml:ns:xmpp-stanzas"}).up()
+                        .c('text', {xmlns:"urn:ietf:params:xml:ns:xmpp-stanzas"}).t(text)
+                );
+                _converse.log(`Rejecting message stanza with the following reason: ${text}`, Strophe.LogLevel.WARN);
+                _converse.log(stanza, Strophe.LogLevel.WARN);
+            },
+
+            /**
              * Handler method for all incoming single-user chat "message" stanzas.
              * @private
              * @method _converse.ChatBox#onMessage
              * @param { XMLElement } stanza - The incoming message stanza
              */
             async onMessage (stanza) {
+                const original_stanza = stanza;
                 let to_jid = stanza.getAttribute('to');
                 const to_resource = Strophe.getResourceFromJid(to_jid);
 
                 if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
-                    _converse.log(
+                    return _converse.log(
                         `onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`,
                         Strophe.LogLevel.INFO
                     );
-                    return true;
                 } else if (utils.isHeadlineMessage(_converse, stanza)) {
-                    // XXX: Ideally we wouldn't have to check for headline
-                    // messages, but Prosody sends headline messages with the
+                    // XXX: Prosody sends headline messages with the
                     // wrong type ('chat'), so we need to filter them out here.
-                    _converse.log(
+                    return _converse.log(
                         `onMessage: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`,
                         Strophe.LogLevel.INFO
                     );
-                    return true;
                 }
 
-                let is_carbon = false;
-                const forwarded = stanza.querySelector('forwarded');
-                const original_stanza = stanza;
-
-                if (forwarded !== null) {
-                    const xmlns = Strophe.NS.CARBONS;
-                    is_carbon = sizzle(`received[xmlns="${xmlns}"]`, original_stanza).length > 0;
-                    if (is_carbon && original_stanza.getAttribute('from') !== _converse.bare_jid) {
-                        // Prevent message forging via carbons
-                        // https://xmpp.org/extensions/xep-0280.html#security
-                        return true;
+                const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
+                if (bare_forward) {
+                    return this.rejectMessage(
+                        stanza,
+                        'Forwarded messages not part of an encapsulating protocol are not supported'
+                    );
+                }
+                let from_jid = stanza.getAttribute('from') || _converse.bare_jid;
+                const is_carbon = u.isCarbonMessage(stanza);
+                if (is_carbon) {
+                    if (from_jid === _converse.bare_jid) {
+                        const selector = `[xmlns="${Strophe.NS.CARBONS}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
+                        stanza = sizzle(selector, stanza).pop();
+                        to_jid = stanza.getAttribute('to');
+                        from_jid = stanza.getAttribute('from');
+                    } else {
+                        // Prevent message forging via carbons: https://xmpp.org/extensions/xep-0280.html#security
+                        return this.rejectMessage(stanza, 'Rejecting carbon from invalid JID');
                     }
-                    stanza = forwarded.querySelector('message');
-                    to_jid = stanza.getAttribute('to');
                 }
 
-                const from_jid = stanza.getAttribute('from');
+                const is_mam = u.isMAMMessage(stanza);
+                if (is_mam) {
+                    if (from_jid === _converse.bare_jid) {
+                        const selector = `[xmlns="${Strophe.NS.MAM}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
+                        stanza = sizzle(selector, stanza).pop();
+                        to_jid = stanza.getAttribute('to');
+                        from_jid = stanza.getAttribute('from');
+                    } else {
+                        return _converse.log(
+                            `onMessage: Ignoring alleged MAM message from ${stanza.getAttribute('from')}`,
+                            Strophe.LogLevel.WARN
+                        );
+                    }
+                }
+
                 const from_bare_jid = Strophe.getBareJidFromJid(from_jid);
                 const is_me = from_bare_jid === _converse.bare_jid;
-
                 if (is_me && to_jid === null) {
                     return _converse.log(
                         `Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`,
@@ -1201,7 +1247,6 @@ converse.plugins.add('converse-chatboxes', {
                 const chatbox = this.getChatBox(contact_jid, {'nickname': roster_nick}, has_body);
 
                 if (chatbox) {
-                    const is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).length > 0;
                     const message = await chatbox.getDuplicateMessage(stanza);
                     if (message) {
                         chatbox.updateMessage(message, original_stanza);
@@ -1459,7 +1504,7 @@ converse.plugins.add('converse-chatboxes', {
                     } else if (_.isString(jids)) {
                         return _converse.chatboxes.getChatBox(jids);
                     }
-                    return jids.map(_.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
+                    return jids.map(jid => _converse.chatboxes.getChatBox(jid, {}, true));
                 }
             }
         });

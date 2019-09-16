@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.4
+
+- Bugfix: Don't treat every duplicate message ID as a message correction; since some
+  clients don't use globally unique ID's this causes false positives.
+
 ## 5.0.3 (2019-09-13)
 
 - Emit `chatBoxFocused` and `chatBoxBlurred` events for emoji picker input

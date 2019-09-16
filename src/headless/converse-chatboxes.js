@@ -549,10 +549,10 @@ converse.plugins.add('converse-chatboxes', {
              *     {@link _converse.ChatBox.getMessageAttributesFromStanza}
              */
             correctMessage (attrs) {
-                if (!attrs.msgid || !attrs.from) {
+                if (!attrs.replaced_id || !attrs.from) {
                     return;
                 }
-                const message = this.messages.findWhere({'msgid': attrs.msgid, 'from': attrs.from});
+                const message = this.messages.findWhere({'msgid': attrs.replaced_id, 'from': attrs.from});
                 if (!message) {
                     return;
                 }
@@ -969,6 +969,7 @@ converse.plugins.add('converse-chatboxes', {
                     'is_spoiler': !!spoiler,
                     'message': text,
                     'msgid': msgid,
+                    'replaced_id': replaced_id,
                     'references': this.getReferencesFromStanza(stanza),
                     'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
                     'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),

@@ -321,7 +321,7 @@ converse.plugins.add('converse-disco', {
                 }
                 iqresult.c('identity', attrs).up();
             });
-            plugin._features(feature => iqresult.c('feature', {'var': feature}).up());
+            plugin._features.forEach(feature => iqresult.c('feature', {'var': feature}).up());
             _converse.api.send(iqresult.tree());
             return true;
         }

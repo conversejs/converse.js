@@ -810,7 +810,8 @@ converse.plugins.add('converse-rosterview', {
                 // Create a model on which we can store filter properties
                 const model = new _converse.RosterFilter();
                 model.id = `_converse.rosterfilter${_converse.bare_jid}`;
-                model.browserStorage = new BrowserStorage.local(this.filter.id);
+                const storage = _converse.config.get('storage');
+                model.browserStorage = new BrowserStorage[storage](this.filter.id);
                 this.filter_view = new _converse.RosterFilterView({'model': model});
                 this.listenTo(this.filter_view.model, 'change', this.updateFilter);
                 this.filter_view.model.fetch();

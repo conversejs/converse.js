@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
-"PO-Revision-Date: 2019-09-13 14:56+0200\n"
-"Last-Translator: 52871299hzy <bc3104hzy@126.com>\n"
+"PO-Revision-Date: 2019-09-19 14:21+0000\n"
+"Last-Translator: yc <iyanchuan@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -21,20 +21,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:7905
 msgid "Uploading file:"
-msgstr ""
+msgstr "正在上传文件："
 
 #: dist/converse-no-dependencies.js:8014
 msgid "This message has been edited"
-msgstr ""
+msgstr "这条消息已被编辑"
 
 #: dist/converse-no-dependencies.js:8020
-#, fuzzy
 msgid "Edit this message"
-msgstr "显示此菜单"
+msgstr "编辑此消息"
 
 #: dist/converse-no-dependencies.js:8036
 msgid "Message versions"
-msgstr ""
+msgstr "消息版本"
 
 #: dist/converse-no-dependencies.js:8050 dist/converse-no-dependencies.js:8327
 #: dist/converse-no-dependencies.js:8441 dist/converse-no-dependencies.js:9007
@@ -45,48 +44,47 @@ msgstr "关闭"
 
 #: dist/converse-no-dependencies.js:8331
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "用户头像"
 
 #: dist/converse-no-dependencies.js:8341
-#, fuzzy
 msgid "Full Name:"
 msgstr "名称"
 
 #: dist/converse-no-dependencies.js:8347 dist/converse-no-dependencies.js:8523
 msgid "XMPP Address:"
-msgstr ""
+msgstr "XMPP 地址："
 
 #: dist/converse-no-dependencies.js:8355
 msgid "Nickname:"
-msgstr ""
+msgstr "昵称："
 
 #: dist/converse-no-dependencies.js:8363
 msgid "URL:"
-msgstr ""
+msgstr "URL："
 
 #: dist/converse-no-dependencies.js:8373
 msgid "Email:"
-msgstr ""
+msgstr "电子邮件："
 
 #: dist/converse-no-dependencies.js:8383
 msgid "Role:"
-msgstr ""
+msgstr "角色："
 
 #: dist/converse-no-dependencies.js:8391
 msgid "OMEMO Fingerprints"
-msgstr ""
+msgstr "OMEMO 指纹"
 
 #: dist/converse-no-dependencies.js:8415
 msgid "Trusted"
-msgstr ""
+msgstr "已信任"
 
 #: dist/converse-no-dependencies.js:8429
 msgid "Untrusted"
-msgstr ""
+msgstr "未信任"
 
 #: dist/converse-no-dependencies.js:8443
 msgid "Refresh"
-msgstr ""
+msgstr "刷新"
 
 #: dist/converse-no-dependencies.js:8447
 msgid "Remove as contact"
@@ -102,7 +100,7 @@ msgstr "密码"
 
 #: dist/converse-no-dependencies.js:8541
 msgid "This is a trusted device"
-msgstr ""
+msgstr "这是一个受信任的设备"
 
 #: dist/converse-no-dependencies.js:8543
 msgid ""
@@ -112,6 +110,8 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
+"为提高性能，我们在浏览器里缓存你的数据。如果这是个公共电脑，或者你想退出登录时自动删除你的数据，请取消勾选此复选框。很重要的一点是如果你不明确点击退出登录"
+"，一些数据还会留在缓存里。当使用一个不受信任的设备时，OMEMO 加密将不可用。"
 
 #: dist/converse-no-dependencies.js:8547
 msgid "Log in"
@@ -126,9 +126,8 @@ msgid "Search"
 msgstr "搜索"
 
 #: dist/converse-no-dependencies.js:8629
-#, fuzzy
 msgid "Search results"
-msgstr "搜索"
+msgstr "搜索结果"
 
 #: dist/converse-no-dependencies.js:8775
 msgid "Enter a new Groupchat"
@@ -141,183 +140,170 @@ msgstr "昵称"
 
 #: dist/converse-no-dependencies.js:8785
 msgid "This field is required"
-msgstr ""
+msgstr "这个字段是必填的"
 
 #: dist/converse-no-dependencies.js:8791
-#, fuzzy
 msgid "Join"
 msgstr "加入"
 
 #: dist/converse-no-dependencies.js:8831
-#, fuzzy
 msgid "You're not allowed to send messages in this room"
-msgstr "你确定要删除此联系人吗？"
+msgstr "你被禁止在此聊天室发言"
 
 #: dist/converse-no-dependencies.js:8845
-#, fuzzy
 msgid "This groupchat no longer exists"
-msgstr "这个聊天室现在不再匿名"
+msgstr "这个聊天室已被删除"
 
 #: dist/converse-no-dependencies.js:8851
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "聊天已转移，点击前往。"
 
 #: dist/converse-no-dependencies.js:8873
 msgid "Name"
 msgstr "名称"
 
 #: dist/converse-no-dependencies.js:8877
-#, fuzzy
 msgid "Groupchat address (JID)"
-msgstr "群组"
+msgstr "群聊地址（JID）"
 
 #: dist/converse-no-dependencies.js:8881
 msgid "Description"
-msgstr ""
+msgstr "描述"
 
 #: dist/converse-no-dependencies.js:8887
 msgid "Topic"
-msgstr ""
+msgstr "话题"
 
 #: dist/converse-no-dependencies.js:8891
 msgid "Topic author"
-msgstr ""
+msgstr "话题作者"
 
 #: dist/converse-no-dependencies.js:8897
-#, fuzzy
 msgid "Online users"
-msgstr "在线"
+msgstr "在线用户"
 
 #: dist/converse-no-dependencies.js:8901 dist/converse-no-dependencies.js:9041
 msgid "Features"
-msgstr ""
+msgstr "功能"
 
 #: dist/converse-no-dependencies.js:8905 dist/converse-no-dependencies.js:9047
 msgid "Password protected"
-msgstr ""
+msgstr "密码保护"
 
 #: dist/converse-no-dependencies.js:8907 dist/converse-no-dependencies.js:9045
 msgid "This groupchat requires a password before entry"
-msgstr ""
+msgstr "加入此群聊需要输入一个密码"
 
 #: dist/converse-no-dependencies.js:8913
 msgid "No password required"
-msgstr ""
+msgstr "不需要密码"
 
 #: dist/converse-no-dependencies.js:8915 dist/converse-no-dependencies.js:9053
 msgid "This groupchat does not require a password upon entry"
-msgstr ""
+msgstr "加入此群聊无需密码"
 
 #: dist/converse-no-dependencies.js:8921 dist/converse-no-dependencies.js:9063
 #: dist/converse-no-dependencies.js:46522
-#, fuzzy
 msgid "Hidden"
 msgstr "隐藏"
 
 #: dist/converse-no-dependencies.js:8923 dist/converse-no-dependencies.js:9061
 msgid "This groupchat is not publicly searchable"
-msgstr ""
+msgstr "此群聊已无法被公开搜索到"
 
 #: dist/converse-no-dependencies.js:8929 dist/converse-no-dependencies.js:9071
 #: dist/converse-no-dependencies.js:46528
-#, fuzzy
 msgid "Public"
 msgstr "公开"
 
 #: dist/converse-no-dependencies.js:8931 dist/converse-no-dependencies.js:9069
 msgid "This groupchat is publicly searchable"
-msgstr ""
+msgstr "此群聊可被公开搜索到"
 
 #: dist/converse-no-dependencies.js:8937 dist/converse-no-dependencies.js:9079
 msgid "Members only"
-msgstr ""
+msgstr "仅限成员"
 
 #: dist/converse-no-dependencies.js:8939
-#, fuzzy
 msgid "This groupchat is restricted to members only"
-msgstr "这个聊天室现在不再匿名"
+msgstr "此群聊仅限特定成员"
 
 #: dist/converse-no-dependencies.js:8945 dist/converse-no-dependencies.js:9087
 #: dist/converse-no-dependencies.js:46526
-#, fuzzy
 msgid "Open"
-msgstr "打开"
+msgstr "公开"
 
 #: dist/converse-no-dependencies.js:8947 dist/converse-no-dependencies.js:9085
 msgid "Anyone can join this groupchat"
-msgstr ""
+msgstr "任何人可加入此群聊"
 
 #: dist/converse-no-dependencies.js:8953 dist/converse-no-dependencies.js:9095
 msgid "Persistent"
-msgstr ""
+msgstr "永久保存"
 
 #: dist/converse-no-dependencies.js:8955 dist/converse-no-dependencies.js:9093
 msgid "This groupchat persists even if it's unoccupied"
-msgstr ""
+msgstr "即使没人加入，此群聊依旧一直存在"
 
 #: dist/converse-no-dependencies.js:8961 dist/converse-no-dependencies.js:9103
 #: dist/converse-no-dependencies.js:46530
-#, fuzzy
 msgid "Temporary"
 msgstr "临时"
 
 #: dist/converse-no-dependencies.js:8963 dist/converse-no-dependencies.js:9101
 msgid "This groupchat will disappear once the last person leaves"
-msgstr ""
+msgstr "当所有人都退出时，此群聊将被删除"
 
 #: dist/converse-no-dependencies.js:8969 dist/converse-no-dependencies.js:9111
-#, fuzzy
 msgid "Not anonymous"
-msgstr "此聊天室不是匿名的"
+msgstr "非匿名"
 
 #: dist/converse-no-dependencies.js:8971 dist/converse-no-dependencies.js:9109
 msgid "All other groupchat participants can see your XMPP address"
-msgstr ""
+msgstr "所有此群聊成员均可看到你的 XMPP 地址"
 
 #: dist/converse-no-dependencies.js:8977 dist/converse-no-dependencies.js:9119
 #: dist/converse-no-dependencies.js:46529
-#, fuzzy
 msgid "Semi-anonymous"
 msgstr "半匿名"
 
 #: dist/converse-no-dependencies.js:8979 dist/converse-no-dependencies.js:9117
 msgid "Only moderators can see your XMPP address"
-msgstr ""
+msgstr "仅群聊的管理员可看到你的 XMPP 地址"
 
 #: dist/converse-no-dependencies.js:8985 dist/converse-no-dependencies.js:9127
 #: dist/converse-no-dependencies.js:46524
-#, fuzzy
 msgid "Moderated"
-msgstr "适度"
+msgstr "受监管"
 
 #: dist/converse-no-dependencies.js:8987 dist/converse-no-dependencies.js:9125
 msgid ""
 "Participants entering this groupchat need to request permission to write"
-msgstr ""
+msgstr "加入此群聊的成员在发言前需要先获得发言权限"
 
 #: dist/converse-no-dependencies.js:8993 dist/converse-no-dependencies.js:9135
 msgid "Not moderated"
-msgstr ""
+msgstr "无监管"
 
 #: dist/converse-no-dependencies.js:8995 dist/converse-no-dependencies.js:9133
 msgid "Participants entering this groupchat can write right away"
-msgstr ""
+msgstr "加入此群聊的成员可自由自在地发言"
 
 #: dist/converse-no-dependencies.js:9001 dist/converse-no-dependencies.js:9143
 msgid "Message archiving"
-msgstr ""
+msgstr "消息存档"
 
 #: dist/converse-no-dependencies.js:9003 dist/converse-no-dependencies.js:9141
 msgid "Messages are archived on the server"
-msgstr ""
+msgstr "消息在服务器上存档"
 
 #: dist/converse-no-dependencies.js:9055
 msgid "No password"
-msgstr ""
+msgstr "没有密码"
 
 #: dist/converse-no-dependencies.js:9077
 msgid "this groupchat is restricted to members only"
-msgstr ""
+msgstr "此群聊仅限特定成员"
 
 #: dist/converse-no-dependencies.js:9173 dist/converse-no-dependencies.js:39692
 #: dist/converse-no-dependencies.js:49381
@@ -332,7 +318,7 @@ msgstr "取消"
 
 #: dist/converse-no-dependencies.js:9310
 msgid "Moderator Tools"
-msgstr ""
+msgstr "管理工具"
 
 #: dist/converse-no-dependencies.js:9312
 msgid ""

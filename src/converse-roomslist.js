@@ -10,6 +10,7 @@
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 import "@converse/headless/converse-muc";
+import { Model } from 'skeletor.js/src/model.js';
 import converse from "@converse/headless/converse-core";
 import tpl_rooms_list from "templates/rooms_list.html";
 
@@ -44,7 +45,7 @@ converse.plugins.add('converse-roomslist', {
         _converse.api.promises.add('roomsListInitialized');
 
 
-        _converse.RoomsList = Backbone.Model.extend({
+        _converse.RoomsList = Model.extend({
             defaults: {
                 "toggle-state":  _converse.OPENED
             }

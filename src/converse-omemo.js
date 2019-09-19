@@ -1,19 +1,17 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-
 /* global libsignal, ArrayBuffer */
 /**
  * @module converse-omemo
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
  */
 import "converse-profile";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
 
-const { Backbone, Strophe, sizzle, $build, $iq, $msg, _ } = converse.env;
+const { Strophe, sizzle, $build, $iq, $msg, _ } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO+".devicelist");
@@ -668,7 +666,7 @@ converse.plugins.add('converse-omemo', {
         }
 
 
-        _converse.OMEMOStore = Backbone.Model.extend({
+        _converse.OMEMOStore = Model.extend({
 
             Direction: {
                 SENDING: 1,
@@ -917,7 +915,7 @@ converse.plugins.add('converse-omemo', {
             }
         });
 
-        _converse.Device = Backbone.Model.extend({
+        _converse.Device = Model.extend({
             defaults: {
                 'trusted': UNDECIDED,
                 'active': true
@@ -965,7 +963,7 @@ converse.plugins.add('converse-omemo', {
             }
         });
 
-        _converse.Devices = _converse.Collection.extend({
+        _converse.Devices = Collection.extend({
             model: _converse.Device,
         });
 
@@ -974,7 +972,7 @@ converse.plugins.add('converse-omemo', {
          * @namespace _converse.DeviceList
          * @memberOf _converse
          */
-        _converse.DeviceList = Backbone.Model.extend({
+        _converse.DeviceList = Model.extend({
             idAttribute: 'jid',
 
             initialize () {
@@ -1073,7 +1071,7 @@ converse.plugins.add('converse-omemo', {
          * @namespace _converse.DeviceLists
          * @memberOf _converse
          */
-        _converse.DeviceLists = _converse.Collection.extend({
+        _converse.DeviceLists = Collection.extend({
             model: _converse.DeviceList,
             /**
              * Returns the {@link _converse.DeviceList} for a particular JID.
@@ -1258,7 +1256,7 @@ converse.plugins.add('converse-omemo', {
 
         _converse.api.listen.on('clearSession', () => {
             if (_converse.shouldClearCache() && _converse.devicelists) {
-                _converse.devicelists.clearSession();
+                _converse.devicelists.clearStore();
                 delete _converse.devicelists;
             }
         });

@@ -1,18 +1,16 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-headlines
+ * @copyright 2013-2019, the Converse.js developers
+ * @description XEP-0045 Multi-User Chat Views
  */
 import "converse-chatview";
 import converse from "@converse/headless/converse-core";
+import { View } from "skeletor.js/src/view";
 import { isString } from "lodash";
 import tpl_headline_list from "templates/headline_list.html";
 import tpl_headline_panel from "templates/headline_panel.html";
 
-const { Backbone, utils } = converse.env;
+const u = converse.env.utils;
 
 
 converse.plugins.add('converse-headlines', {
@@ -63,7 +61,7 @@ converse.plugins.add('converse-headlines', {
 
         const viewWithHeadlinePanel = {
             renderHeadlinePanel () {
-                if (this.headlinepanel && utils.isInDOM(this.headlinepanel.el)) {
+                if (this.headlinepanel && u.isInDOM(this.headlinepanel.el)) {
                     return this.headlinepanel;
                 }
                 this.headlinepanel = new _converse.HeadlinePanel();
@@ -74,7 +72,7 @@ converse.plugins.add('converse-headlines', {
             },
 
             getHeadlinePanel () {
-                if (this.headlinepanel && utils.isInDOM(this.headlinepanel.el)) {
+                if (this.headlinepanel && u.isInDOM(this.headlinepanel.el)) {
                     return this.headlinepanel;
                 } else {
                     return this.renderHeadlinePanel();
@@ -140,7 +138,7 @@ converse.plugins.add('converse-headlines', {
 
         async function onHeadlineMessage (message) {
             // Handler method for all incoming messages of type "headline".
-            if (utils.isHeadlineMessage(_converse, message)) {
+            if (u.isHeadlineMessage(_converse, message)) {
                 const from_jid = message.getAttribute('from');
                 if (from_jid.includes('@') &&
                         !_converse.roster.get(from_jid) &&
@@ -170,12 +168,12 @@ converse.plugins.add('converse-headlines', {
         }
 
         /**
-         * Backbone.NativeView which renders headlines section of the control box.
+         * View which renders headlines section of the control box.
          * @class
          * @namespace _converse.HeadlinePanel
          * @memberOf _converse
          */
-        _converse.HeadlinePanel = Backbone.NativeView.extend({
+        _converse.HeadlinePanel = View.extend({
             tagName: 'div',
             className: 'controlbox-section',
             id: 'headline',
@@ -193,7 +191,7 @@ converse.plugins.add('converse-headlines', {
 
             render () {
                 this.el.innerHTML = tpl_headline_panel({
-                    'heading_headline': __('Server Messages')
+                    'heading_headline': __('Announcements')
                 });
                 return this;
             }

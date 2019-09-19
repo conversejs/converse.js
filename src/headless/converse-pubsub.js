@@ -1,10 +1,7 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-pubsub
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
  */
 import "./converse-disco";
 import converse from "./converse-core";

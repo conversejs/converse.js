@@ -1,16 +1,10 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// Copyright (c) Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-// Some code taken from the Strophe RSM plugin, licensed under the MIT License
-// Copyright 2006-2017 Strophe (https://github.com/strophe/strophejs)
-//
 /**
  * @module converse-rsm
- * @description
- * XEP-0059 Result Set Management
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
+ * @description XEP-0059 Result Set Management
+ *   Some code taken from the Strophe RSM plugin, licensed under the MIT License
+ *   Copyright 2006-2017 Strophe (https://github.com/strophe/strophejs)
  */
 import converse from "./converse-core";
 

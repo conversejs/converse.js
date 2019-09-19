@@ -1,10 +1,12 @@
 import { get, isObject, isString, pick } from "lodash";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
 import converse from "./converse-core";
 import filesize from "filesize";
 import log from "./log";
 import stanza_utils from "./utils/stanza";
 
-const { $msg, Backbone, Strophe, sizzle, utils } = converse.env;
+const { $msg, Strophe, sizzle, utils } = converse.env;
 const u = converse.env.utils;
 
 
@@ -43,7 +45,7 @@ converse.plugins.add('converse-chat', {
         });
 
 
-        const ModelWithContact = Backbone.Model.extend({
+        const ModelWithContact = Model.extend({
 
             initialize () {
                 this.rosterContactAdded = u.getResolveablePromise();
@@ -257,7 +259,7 @@ converse.plugins.add('converse-chat', {
         });
 
 
-        _converse.Messages = _converse.Collection.extend({
+        _converse.Messages = Collection.extend({
             model: _converse.Message,
             comparator: 'time'
         });
@@ -387,7 +389,7 @@ converse.plugins.add('converse-chat', {
 
             async clearMessages () {
                 try {
-                    await this.messages.clearSession();
+                    await this.messages.clearStore();
                 } catch (e) {
                     this.messages.trigger('reset');
                     log.error(e);
@@ -1253,7 +1255,7 @@ converse.plugins.add('converse-chat', {
 
         _converse.api.listen.on('clearSession', () => {
             if (_converse.shouldClearCache()) {
-                _converse.chatboxes.filter(c => c.messages && c.messages.clearSession({'silent': true}));
+                _converse.chatboxes.filter(c => c.messages && c.messages.clearStore({'silent': true}));
             }
         });
         /************************ END Event Handlers ************************/

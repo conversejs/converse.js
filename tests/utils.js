@@ -311,7 +311,7 @@
     utils.clearChatBoxMessages = function (converse, jid) {
         const view = converse.chatboxviews.get(jid);
         view.el.querySelector('.chat-content').innerHTML = '';
-        return view.model.messages.clearSession();
+        return view.model.messages.clearStore();
     };
 
     utils.createContact = async function (_converse, name, ask, requesting, subscription) {

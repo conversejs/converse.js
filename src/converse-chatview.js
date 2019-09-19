@@ -7,12 +7,12 @@
 /**
  * @module converse-chatview
  */
-import "backbone.nativeview";
 import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
 import { debounce, get, isString } from "lodash";
-import { Overview } from "backbone.overview";
+import { Overview } from "skeletor.js/src/overview";
+import { View } from "skeletor.js/src/view";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.html";
@@ -1173,7 +1173,7 @@ converse.plugins.add('converse-chatview', {
 
             async close (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (Backbone.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
+                if (_converse.router.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
                 }
                 if (_converse.api.connection.connected()) {

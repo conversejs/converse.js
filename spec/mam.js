@@ -2,7 +2,7 @@
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const Backbone = converse.env.Backbone;
+    const Model = converse.env.Model;
     const Strophe = converse.env.Strophe;
     const $iq = converse.env.$iq;
     const $msg = converse.env.$msg;
@@ -865,7 +865,7 @@
                 spyOn(_converse, 'onMAMPreferences').and.callThrough();
                 _converse.message_archiving = 'never';
 
-                const feature = new Backbone.Model({
+                const feature = new Model({
                     'var': Strophe.NS.MAM
                 });
                 spyOn(feature, 'save').and.callFake(feature.set); // Save will complain about a url not being set

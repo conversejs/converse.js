@@ -9,8 +9,8 @@
  * @description
  * Converse.js plugin which adds views for XEP-0048 bookmarks
  */
-import "backbone.nativeview";
 import "@converse/headless/converse-muc";
+import { Model } from 'skeletor.js/src/model.js';
 import converse from "@converse/headless/converse-core";
 import tpl_bookmarks_list from "templates/bookmarks_list.html"
 import tpl_chatroom_bookmark_form from "templates/chatroom_bookmark_form.html";
@@ -82,7 +82,7 @@ converse.plugins.add('converse-bookmark-views', {
                 const name = ev.target.getAttribute('data-bookmark-name');
                 const jid = ev.target.getAttribute('data-room-jid');
                 if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
-                    _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
+                    _.invokeMap(_converse.bookmarks.where({'jid': jid}), Model.prototype.destroy);
                 }
             },
 

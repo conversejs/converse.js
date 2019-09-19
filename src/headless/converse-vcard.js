@@ -1,18 +1,17 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-vcard
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
  */
 import "./converse-status";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
 import { get, has, isString } from "lodash";
 import converse from "./converse-core";
 import log from "@converse/headless/log";
 import tpl_vcard from "./templates/vcard.html";
 
-const { Backbone, Strophe, $iq, dayjs } = converse.env;
+const { Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -70,14 +69,14 @@ converse.plugins.add('converse-vcard', {
         _converse.api.promises.add('VCardsInitialized');
 
 
-        _converse.VCard = Backbone.Model.extend({
+        _converse.VCard = Model.extend({
             defaults: {
                 'image': _converse.DEFAULT_IMAGE,
                 'image_type': _converse.DEFAULT_IMAGE_TYPE
             },
 
             set (key, val, options) {
-                // Override Backbone.Model.prototype.set to make sure that the
+                // Override Model.prototype.set to make sure that the
                 // default `image` and `image_type` values are maintained.
                 let attrs;
                 if (typeof key === 'object') {
@@ -89,9 +88,9 @@ converse.plugins.add('converse-vcard', {
                 if (has(attrs, 'image') && !attrs['image']) {
                     attrs['image'] = _converse.DEFAULT_IMAGE;
                     attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
-                    return Backbone.Model.prototype.set.call(this, attrs, options);
+                    return Model.prototype.set.call(this, attrs, options);
                 } else {
-                    return Backbone.Model.prototype.set.apply(this, arguments);
+                    return Model.prototype.set.apply(this, arguments);
                 }
             },
 
@@ -101,7 +100,7 @@ converse.plugins.add('converse-vcard', {
         });
 
 
-        _converse.VCards = _converse.Collection.extend({
+        _converse.VCards = Collection.extend({
             model: _converse.VCard,
 
             initialize () {
@@ -238,7 +237,7 @@ converse.plugins.add('converse-vcard', {
             if (_converse.shouldClearCache()) {
                 _converse.api.promises.add('VCardsInitialized');
                 if (_converse.vcards) {
-                    _converse.vcards.clearSession();
+                    _converse.vcards.clearStore();
                     delete _converse.vcards;
                 }
             }
@@ -295,13 +294,13 @@ converse.plugins.add('converse-vcard', {
 
                 /**
                  * @method _converse.api.vcard.get
-                 * @param {Backbone.Model|string} model Either a `Backbone.Model` instance, or a string JID.
-                 *     If a `Backbone.Model` instance is passed in, then it must have either a `jid`
+                 * @param {Model|string} model Either a `Model` instance, or a string JID.
+                 *     If a `Model` instance is passed in, then it must have either a `jid`
                  *     attribute or a `muc_jid` attribute.
                  * @param {boolean} [force] A boolean indicating whether the vcard should be
                  *     fetched even if it's been fetched before.
                  * @returns {promise} A Promise which resolves with the VCard data for a particular JID or for
-                 *     a `Backbone.Model` instance which represents an entity with a JID (such as a roster contact,
+                 *     a `Model` instance which represents an entity with a JID (such as a roster contact,
                  *     chat or chatroom occupant).
                  *
                  * @example
@@ -331,12 +330,12 @@ converse.plugins.add('converse-vcard', {
                 },
 
                 /**
-                 * Fetches the VCard associated with a particular `Backbone.Model` instance
+                 * Fetches the VCard associated with a particular `Model` instance
                  * (by using its `jid` or `muc_jid` attribute) and then updates the model with the
                  * returned VCard data.
                  *
                  * @method _converse.api.vcard.update
-                 * @param {Backbone.Model} model A `Backbone.Model` instance
+                 * @param {Model} model A `Model` instance
                  * @param {boolean} [force] A boolean indicating whether the vcard should be
                  *     fetched again even if it's been fetched before.
                  * @returns {promise} A promise which resolves once the update has completed.

@@ -1,18 +1,18 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-core
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
  */
+import { assignIn, debounce, get, invoke, isFunction, isObject, isString, pick } from 'lodash';
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
+import { Router } from 'skeletor.js/src/router.js';
 import 'strophe.js/src/websocket';
 import './polyfill';
 import * as strophe from 'strophe.js/src/core';
-import { assignIn, debounce, get, invoke, isFunction, isObject, isString, pick } from 'lodash';
-import Backbone from 'backbone';
-import BrowserStorage from 'backbone.browserStorage';
 import _ from './lodash.noconflict';
+import Backbone from 'backbone';
+import Storage from 'skeletor.js/src/storage.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
 import i18n from './i18n';
@@ -29,7 +29,6 @@ const $msg = strophe.default.$msg;
 const $pres = strophe.default.$pres;
 
 Backbone = Backbone.noConflict();
-BrowserStorage.patch(Backbone);
 
 dayjs.extend(advancedFormat);
 
@@ -117,22 +116,7 @@ _converse.VERSION_NAME = "v6.0.1dev";
 
 Object.assign(_converse, Backbone.Events);
 
-_converse.Collection = Backbone.Collection.extend({
-    async clearSession (options={}) {
-        await Promise.all(Array.from(this.models).map(m => {
-            return new Promise(
-                resolve => {
-                    m.destroy(Object.assign(options, {
-                        'success': resolve,
-                        'error': (m, e) => { log.error(e); resolve() }
-                    }));
-                }
-            );
-        }));
-        await this.browserStorage.clear();
-        this.reset();
-    }
-});
+_converse.router = new Router();
 
 
 /**
@@ -354,9 +338,9 @@ _converse.isUniView = function () {
 
 
 async function initSessionStorage () {
-    await BrowserStorage.sessionStorageInitialized;
+    await Storage.sessionStorageInitialized;
     _converse.storage = {
-        'session': BrowserStorage.localForage.createInstance({
+        'session': Storage.localForage.createInstance({
             'name': _converse.isTestEnv() ? 'converse-test-session' : 'converse-session',
             'description': 'sessionStorage instance',
             'driver': ['sessionStorageWrapper']
@@ -375,22 +359,21 @@ function initPersistentStorage () {
     }
     if (_converse.persistent_store === 'localStorage') {
         config['description'] = 'localStorage instance';
-        config['driver'] = [BrowserStorage.localForage.LOCALSTORAGE];
+        config['driver'] = [Storage.localForage.LOCALSTORAGE];
     } else if (_converse.persistent_store === 'IndexedDB') {
         config['description'] = 'indexedDB instance';
-        config['driver'] = [BrowserStorage.localForage.INDEXEDDB];
+        config['driver'] = [Storage.localForage.INDEXEDDB];
     }
-    _converse.storage['persistent'] = BrowserStorage.localForage.createInstance(config);
+    _converse.storage['persistent'] = Storage.localForage.createInstance(config);
 }
 
 
 _converse.createStore = function (id, storage) {
     const s = _converse.storage[storage ? storage : _converse.config.get('storage')];
-    return new Backbone.BrowserStorage(id, s);
+    return new Storage(id, s);
 }
 
 
-_converse.router = new Backbone.Router();
 
 function initPlugins () {
     // If initialize gets called a second time (e.g. during tests), then we
@@ -442,7 +425,7 @@ function initClientConfig () {
      * user sessions.
      */
     const id = 'converse.client-config';
-    _converse.config = new Backbone.Model({
+    _converse.config = new Model({
         'id': id,
         'trusted': _converse.trusted && true || false,
         'storage': _converse.trusted ? 'persistent' : 'session'
@@ -670,7 +653,7 @@ async function initSession (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (!_converse.session || _converse.session.get('id') !== id) {
-        _converse.session = new Backbone.Model({id});
+        _converse.session = new Model({id});
         _converse.session.browserStorage = _converse.createStore(id, "session");
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
         if (_converse.session.get('active')) {
@@ -832,8 +815,9 @@ async function finishInitialization () {
     initPlugins();
     registerGlobalEventHandlers();
 
-    if (!Backbone.History.started) {
-        Backbone.history.start();
+
+    if (!History.started) {
+        _converse.router.history.start();
     }
     if (_converse.idle_presence_timeout > 0) {
         _converse.api.listen.on('addClientFeatures', () => {
@@ -980,7 +964,7 @@ function unregisterGlobalEventHandlers () {
 function cleanup () {
     // Make sure everything is reset in case this is a subsequent call to
     // convesre.initialize (happens during tests).
-    Backbone.history.stop();
+    _converse.router.history.stop();
     unregisterGlobalEventHandlers();
     delete _converse.controlboxtoggle;
     if (_converse.chatboxviews) {
@@ -1192,7 +1176,7 @@ _converse.initialize = async function (settings, callback) {
         _converse.connection.bind();
     };
 
-    this.ConnectionFeedback = Backbone.Model.extend({
+    this.ConnectionFeedback = Model.extend({
         defaults: {
             'connection_status': Strophe.Status.DISCONNECTED,
             'message': ''
@@ -1820,7 +1804,7 @@ Object.assign(window.converse, {
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
      */
-    'env': { $build, $iq, $msg, $pres, Backbone, BrowserStorage, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
+    'env': { $build, $iq, $msg, $pres, Backbone, Model, Collection, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
 });
 
 /**

@@ -6,11 +6,11 @@
 /**
  * @module converse-emoji
  */
+import { Model } from 'skeletor.js/src/model.js';
 import * as twemoji from "twemoji";
 import _ from "./lodash.noconflict";
 import converse from "./converse-core";
 
-const { Backbone } = converse.env;
 const u = converse.env.utils;
 
 const ASCII_LIST = {
@@ -111,7 +111,7 @@ converse.plugins.add('converse-emoji', {
          * @namespace _converse.EmojiPicker
          * @memberOf _converse
          */
-        _converse.EmojiPicker = Backbone.Model.extend({
+        _converse.EmojiPicker = Model.extend({
             defaults: {
                 'current_category': 'smileys',
                 'current_skintone': '',

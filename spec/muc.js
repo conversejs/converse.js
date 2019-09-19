@@ -5,11 +5,11 @@
           $pres = converse.env.$pres,
           $iq = converse.env.$iq,
           $msg = converse.env.$msg,
+          Model = converse.env.Model,
           Strophe = converse.env.Strophe,
           Promise = converse.env.Promise,
           dayjs = converse.env.dayjs,
           sizzle = converse.env.sizzle,
-          Backbone = converse.env.Backbone,
           u = converse.env.utils;
 
     describe("Groupchats", function () {
@@ -115,14 +115,14 @@
 
                 let room = await _converse.api.rooms.open(jid);
                 // Test on groupchat that's not yet open
-                expect(room instanceof Backbone.Model).toBeTruthy();
+                expect(room instanceof Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid);
                 expect(chatroomview.is_chatroom).toBeTruthy();
                 await u.waitUntil(() => u.isVisible(chatroomview.el));
 
                 // Test again, now that the room exists.
                 room = await _converse.api.rooms.open(jid);
-                expect(room instanceof Backbone.Model).toBeTruthy();
+                expect(room instanceof Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid);
                 expect(chatroomview.is_chatroom).toBeTruthy();
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
@@ -131,19 +131,19 @@
                 // Test with mixed case in JID
                 jid = 'Leisure@montague.lit';
                 room = await _converse.api.rooms.open(jid);
-                expect(room instanceof Backbone.Model).toBeTruthy();
+                expect(room instanceof Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
                 await u.waitUntil(() => u.isVisible(chatroomview.el));
 
                 jid = 'leisure@montague.lit';
                 room = await _converse.api.rooms.open(jid);
-                expect(room instanceof Backbone.Model).toBeTruthy();
+                expect(room instanceof Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
                 await u.waitUntil(() => u.isVisible(chatroomview.el));
 
                 jid = 'leiSure@montague.lit';
                 room = await _converse.api.rooms.open(jid);
-                expect(room instanceof Backbone.Model).toBeTruthy();
+                expect(room instanceof Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
                 await u.waitUntil(() => u.isVisible(chatroomview.el));
                 chatroomview.close();
@@ -167,7 +167,7 @@
                         'whois': 'anyone'
                     }
                 });
-                expect(room instanceof Backbone.Model).toBeTruthy();
+                expect(room instanceof Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get('room@conference.example.org');
 
                 // We pretend this is a new room, so no disco info is returned.

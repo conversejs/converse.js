@@ -9,7 +9,9 @@ import "backbone.vdomview";
 import "formdata-polyfill";
 import "@converse/headless/utils/muc";
 import { get, head, isString, isUndefined, pick } from "lodash";
-import { OrderedListView } from "backbone.overview";
+import { Model } from 'skeletor.js/src/model.js';
+import { OrderedListView } from "skeletor.js/src/overview";
+import { View } from "skeletor.js/src/view";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.html";
@@ -638,7 +640,7 @@ converse.plugins.add('converse-muc-views', {
 
 
         /**
-         * Backbone.NativeView which renders a groupchat, based upon
+         * NativeView which renders a groupchat, based upon
          * { @link _converse.ChatBoxView } for normal one-on-one chat boxes.
          * @class
          * @namespace _converse.ChatRoomView
@@ -1032,7 +1034,7 @@ converse.plugins.add('converse-muc-views', {
                     return;
                 }
                 if (isUndefined(this.model.modtools_modal)) {
-                    const model = new Backbone.Model({'affiliation': affiliation});
+                    const model = new Model({'affiliation': affiliation});
                     this.modtools_modal = new _converse.ModeratorToolsModal({'model': model, 'chatroomview': this});
                 } else {
                     this.modtools_modal.set('affiliation', affiliation);
@@ -1188,7 +1190,7 @@ converse.plugins.add('converse-muc-views', {
              */
             async close () {
                 this.hide();
-                if (Backbone.history.getFragment() === "converse/room?jid="+this.model.get('jid')) {
+                if (_converse.router.history.getFragment() === "converse/room?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
                 }
                 await this.model.leave();
@@ -1642,7 +1644,7 @@ converse.plugins.add('converse-muc-views', {
 
                 if (!this.password_form) {
                     this.password_form = new _converse.MUCPasswordForm({
-                        'model': new Backbone.Model({
+                        'model': new Model({
                             'validation_message': message
                         }),
                         'chatroomview': this,
@@ -2003,12 +2005,12 @@ converse.plugins.add('converse-muc-views', {
 
 
         /**
-         * Backbone.NativeView which renders MUC section of the control box.
+         * View which renders MUC section of the control box.
          * @class
          * @namespace _converse.RoomsPanel
          * @memberOf _converse
          */
-        _converse.RoomsPanel = Backbone.NativeView.extend({
+        _converse.RoomsPanel = View.extend({
             tagName: 'div',
             className: 'controlbox-section',
             id: 'chatrooms',

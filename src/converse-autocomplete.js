@@ -1,18 +1,15 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-
 /**
  * @module converse-autocomplete
+ * @copyright Lea Verou and the Converse.js developers
  * @description
- * Converse.js plugin which started as a fork of Lea Verou's Awesomplete
- * https://leaverou.github.io/awesomplete/
+ *  Converse.js plugin which started as a fork of Lea Verou's Awesomplete
+ *  https://leaverou.github.io/awesomplete/
+ * @license Mozilla Public License (MPLv2)
  */
+import { Events } from 'skeletor.js/src/events.js';
 import converse from "@converse/headless/converse-core";
 
-const { _, Backbone } = converse.env,
+const { _ } = converse.env,
       u = converse.env.utils;
 
 converse.plugins.add("converse-autocomplete", {
@@ -375,7 +372,7 @@ converse.plugins.add("converse-autocomplete", {
         }
 
         // Make it an event emitter
-        Object.assign(AutoComplete.prototype, Backbone.Events);
+        Object.assign(AutoComplete.prototype, Events);
 
 
         const helpers = {

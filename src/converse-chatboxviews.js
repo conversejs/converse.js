@@ -9,7 +9,8 @@
  */
 import "@converse/headless/converse-chatboxes";
 import "backbone.nativeview";
-import { Overview } from "backbone.overview";
+import { Overview } from "skeletor.js/src/overview";
+import { View } from "skeletor.js/src/view";
 import converse from "@converse/headless/converse-core";
 import tpl_avatar from "templates/avatar.svg";
 import tpl_background_logo from "templates/background_logo.html";
@@ -63,7 +64,7 @@ converse.plugins.add('converse-chatboxviews', {
             'theme': 'default'
         });
 
-        _converse.ViewWithAvatar = Backbone.NativeView.extend(AvatarMixin);
+        _converse.ViewWithAvatar = View.extend(AvatarMixin);
         _converse.VDOMViewWithAvatar = Backbone.VDOMView.extend(AvatarMixin);
 
 

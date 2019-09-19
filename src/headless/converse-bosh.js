@@ -1,18 +1,15 @@
-// Converse.js
-// http://conversejs.org
-//
-// Copyright (c) The Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-bosh
- * @description
- * Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
+ * @description Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
  */
 import 'strophe.js/src/bosh';
+import { Model } from 'skeletor.js/src/model.js';
 import converse from "./converse-core";
 import log from "./log";
 
-const { Backbone, Strophe } = converse.env;
+const { Strophe } = converse.env;
 
 const BOSH_SESSION_ID = 'converse.bosh-session';
 
@@ -35,7 +32,7 @@ converse.plugins.add('converse-bosh', {
         async function initBOSHSession () {
             const id = BOSH_SESSION_ID;
             if (!_converse.bosh_session) {
-                _converse.bosh_session = new Backbone.Model({id});
+                _converse.bosh_session = new Model({id});
                 _converse.bosh_session.browserStorage = _converse.createStore(id, "session");
                 await new Promise(resolve => _converse.bosh_session.fetch({'success': resolve, 'error': resolve}));
             }

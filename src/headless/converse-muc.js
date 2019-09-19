@@ -7,6 +7,8 @@
 import "./converse-chat";
 import "./converse-disco";
 import "./converse-emoji";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
 import { clone, get, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
 import converse from "./converse-core";
 import log from "./log";
@@ -21,7 +23,7 @@ const MUC_ROLE_WEIGHTS = {
     'none':         2,
 };
 
-const { Strophe, Backbone, $iq, $build, $msg, $pres, sizzle } = converse.env;
+const { Strophe, $iq, $build, $msg, $pres, sizzle } = converse.env;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -293,7 +295,7 @@ converse.plugins.add('converse-muc', {
         });
 
 
-        const MUCSession = Backbone.Model.extend({
+        const MUCSession = Model.extend({
             defaults () {
                 return {
                     'connection_status': converse.ROOMSTATUS.DISCONNECTED
@@ -308,7 +310,7 @@ converse.plugins.add('converse-muc', {
          * @namespace _converse.ChatRoomMessages
          * @memberOf _converse
          */
-        _converse.ChatRoomMessages = _converse.Collection.extend({
+        _converse.ChatRoomMessages = Collection.extend({
             model: _converse.ChatRoomMessage,
             comparator: 'time'
         });
@@ -436,7 +438,7 @@ converse.plugins.add('converse-muc', {
                     this.occupants.filter(o => !o.isMember()).forEach(o => o.destroy());
                 } else {
                     // Looks like we haven't restored occupants from cache, so we clear it.
-                    this.occupants.clearSession();
+                    this.occupants.clearStore();
                 }
                 if (_converse.clear_messages_on_reconnection) {
                     await this.clearMessages();
@@ -489,13 +491,13 @@ converse.plugins.add('converse-muc', {
 
             initDiscoModels () {
                 let id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
-                this.features = new Backbone.Model(
+                this.features = new Model(
                     Object.assign({id}, zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(() => false)))
                 );
                 this.features.browserStorage = _converse.createStore(id, "session");
 
                 id = `converse.muc-config-{_converse.bare_jid}-${this.get('jid')}`;
-                this.config = new Backbone.Model();
+                this.config = new Model();
                 this.config.browserStorage = _converse.createStore(id, "session");
             },
 
@@ -716,7 +718,7 @@ converse.plugins.add('converse-muc', {
              */
             async leave (exit_msg) {
                 this.features.destroy();
-                this.occupants.clearSession();
+                this.occupants.clearStore();
                 if (_converse.disco_entities) {
                     const disco_entity = _converse.disco_entities.get(this.get('jid'));
                     if (disco_entity) {
@@ -2087,7 +2089,7 @@ converse.plugins.add('converse-muc', {
          * @namespace _converse.ChatRoomOccupant
          * @memberOf _converse
          */
-        _converse.ChatRoomOccupant = Backbone.Model.extend({
+        _converse.ChatRoomOccupant = Model.extend({
 
             defaults: {
                 'show': 'offline',
@@ -2132,7 +2134,7 @@ converse.plugins.add('converse-muc', {
         });
 
 
-        _converse.ChatRoomOccupants = _converse.Collection.extend({
+        _converse.ChatRoomOccupants = Collection.extend({
             model: _converse.ChatRoomOccupant,
 
             comparator (occupant1, occupant2) {
@@ -2204,7 +2206,7 @@ converse.plugins.add('converse-muc', {
         });
 
 
-        _converse.RoomsPanelModel = Backbone.Model.extend({
+        _converse.RoomsPanelModel = Model.extend({
             defaults: function () {
                 return {
                     'muc_domain': _converse.muc_domain,
@@ -2382,7 +2384,7 @@ converse.plugins.add('converse-muc', {
                  * @param {(string[]|string)} jid|jids The JID or array of
                  *     JIDs of the chatroom(s) to create
                  * @param {object} [attrs] attrs The room attributes
-                 * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+                 * @returns {Promise} Promise which resolves with the Model representing the chat.
                  */
                 create (jids, attrs={}) {
                     attrs = isString(attrs) ? {'nick': attrs} : (attrs || {});
@@ -2426,7 +2428,7 @@ converse.plugins.add('converse-muc', {
                  *   another chat already in the foreground.
                  *   Set `force` to `true` if you want to force the room to be
                  *   maximized or shown.
-                 * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+                 * @returns {Promise} Promise which resolves with the Model representing the chat.
                  *
                  * @example
                  * this._converse.api.rooms.open('group@muc.example.com')

@@ -1,15 +1,13 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-status
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
  */
 import { get, isNaN, isObject, isString } from "lodash";
+import { Model } from 'skeletor.js/src/model.js';
 import converse from "@converse/headless/converse-core";
 
-const { Backbone, Strophe, $build, $pres } = converse.env;
+const { Strophe, $build, $pres } = converse.env;
 
 
 converse.plugins.add('converse-status', {
@@ -17,7 +15,7 @@ converse.plugins.add('converse-status', {
     initialize () {
         const { _converse } = this;
 
-        _converse.XMPPStatus = Backbone.Model.extend({
+        _converse.XMPPStatus = Model.extend({
             defaults () {
                 return {"status":  _converse.default_state}
             },

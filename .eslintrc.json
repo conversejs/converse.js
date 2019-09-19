@@ -248,7 +248,7 @@
         "rest-spread-spacing": "error",
         "semi": "off",
         "semi-spacing": "off",
-        "sort-imports": "error",
+        "sort-imports": "off",
         "sort-keys": "off",
         "sort-vars": "off",
         "space-before-blocks": "off",

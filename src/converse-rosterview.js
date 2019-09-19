@@ -11,7 +11,8 @@ import "@converse/headless/converse-roster";
 import "converse-modal";
 import "formdata-polyfill";
 import { compact, debounce, has, isString, uniq, without } from "lodash";
-import { OrderedListView } from "backbone.overview";
+import { Model } from 'skeletor.js/src/model.js';
+import { OrderedListView } from "skeletor.js/src/overview";
 import SHA1 from 'strophe.js/src/sha1';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -196,7 +197,7 @@ converse.plugins.add('converse-rosterview', {
         });
 
 
-        _converse.RosterFilter = Backbone.Model.extend({
+        _converse.RosterFilter = Model.extend({
             initialize () {
                 this.set({
                     'filter_text': '',
@@ -814,7 +815,7 @@ converse.plugins.add('converse-rosterview', {
 
             showAddContactModal (ev) {
                 if (this.add_contact_modal === undefined) {
-                    this.add_contact_modal = new _converse.AddContactModal({'model': new Backbone.Model()});
+                    this.add_contact_modal = new _converse.AddContactModal({'model': new Model()});
                 }
                 this.add_contact_modal.show(ev);
             },

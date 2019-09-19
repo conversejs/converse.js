@@ -7,6 +7,7 @@
  * @module converse-chatboxes
  */
 import "./converse-emoji";
+import { Collection } from "skeletor.js/src/collection";
 import converse from "./converse-core";
 import { isString } from "lodash";
 import log from "./log";
@@ -62,7 +63,7 @@ converse.plugins.add('converse-chatboxes', {
         };
 
 
-        _converse.ChatBoxes = _converse.Collection.extend({
+        _converse.ChatBoxes = Collection.extend({
             comparator: 'time_opened',
 
             model (attrs, options) {
@@ -96,12 +97,12 @@ converse.plugins.add('converse-chatboxes', {
         });
 
 
-        async function createChatBox (jid, attrs, model) {
+        async function createChatBox (jid, attrs, Model) {
             jid = Strophe.getBareJidFromJid(jid.toLowerCase());
             Object.assign(attrs, {'jid': jid, 'id': jid});
             let chatbox;
             try {
-                chatbox = new model(attrs, {'collection': _converse.chatboxes});
+                chatbox = new Model(attrs, {'collection': _converse.chatboxes});
             } catch (e) {
                 log.error(e);
                 return null;
@@ -154,7 +155,7 @@ converse.plugins.add('converse-chatboxes', {
                  * @method _converse.api.chats.create
                  * @param { String|String[] } jids - A JID or array of JIDs
                  * @param { Object } [attrs] An object containing configuration attributes
-                 * @param { Backbone.Model } model - The type of chatbox that should be created
+                 * @param { Model } model - The type of chatbox that should be created
                  */
                 async create (jids=[], attrs={}, model) {
                     await _converse.api.waitUntil('chatBoxesFetched');

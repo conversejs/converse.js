@@ -1,13 +1,8 @@
-// Converse.js
-// http://conversejs.org
-//
-// Copyright (c) The Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-smacks
- * @description
- * Converse.js plugin which adds support for XEP-0198: Stream Management
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
+ * @description Converse.js plugin which adds support for XEP-0198: Stream Management
  */
 import converse from "./converse-core";
 import log from "./log";

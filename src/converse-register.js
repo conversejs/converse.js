@@ -11,6 +11,7 @@
  * as specified in XEP-0077.
  */
 import "converse-controlbox";
+import { View } from "skeletor.js/src/view";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_form_input from "templates/form_input.html";
@@ -165,7 +166,7 @@ converse.plugins.add('converse-register', {
          * @namespace _converse.RegisterPanel
          * @memberOf _converse
          */
-        _converse.RegisterPanel = Backbone.NativeView.extend({
+        _converse.RegisterPanel = View.extend({
             tagName: 'div',
             id: "converse-register-panel",
             className: 'controlbox-pane fade-in',
@@ -421,7 +422,7 @@ converse.plugins.add('converse-register', {
                     _converse.connection.reset();
                     this.showSpinner();
 
-                    if (_.includes(["converse/login", "converse/register"], Backbone.history.getFragment())) {
+                    if (["converse/login", "converse/register"].includes(_converse.router.history.getFragment())) {
                         _converse.router.navigate('', {'replace': true});
                     }
 

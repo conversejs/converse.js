@@ -9,6 +9,7 @@
 import "backbone.vdomview";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
+import { Model } from 'skeletor.js/src/model.js';
 import { isString } from "lodash";
 import tpl_alert from "templates/alert.html";
 import tpl_alert_modal from "templates/alert_modal.html";
@@ -170,7 +171,7 @@ converse.plugins.add('converse-modal', {
                     messages = [messages];
                 }
                 if (confirm === undefined) {
-                    const model = new Backbone.Model({
+                    const model = new Model({
                         'title': title,
                         'messages': messages,
                         'type': 'confirm'
@@ -206,7 +207,7 @@ converse.plugins.add('converse-modal', {
                     messages = [messages];
                 }
                 if (prompt === undefined) {
-                    const model = new Backbone.Model({
+                    const model = new Model({
                         'title': title,
                         'messages': messages,
                         'placeholder': placeholder,
@@ -250,7 +251,7 @@ converse.plugins.add('converse-modal', {
                 }
 
                 if (alert === undefined) {
-                    const model = new Backbone.Model({
+                    const model = new Model({
                         'title': title,
                         'messages': messages,
                         'level': level,

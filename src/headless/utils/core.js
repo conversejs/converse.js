@@ -7,7 +7,7 @@
 // Licensed under the Mozilla Public License (MPLv2)
 //
 import * as strophe from 'strophe.js/src/core';
-import Backbone from "backbone";
+import { Model } from 'skeletor.js/src/model.js';
 import _ from "../lodash.noconflict";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
@@ -120,14 +120,14 @@ u.isNewMessage = function (message) {
             sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length &&
             sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, message).length
         );
-    } else if (message instanceof Backbone.Model) {
+    } else if (message instanceof Model) {
         message = message.attributes;
     }
     return !(message['is_delayed'] && message['is_archived']);
 };
 
 u.isEmptyMessage = function (attrs) {
-    if (attrs instanceof Backbone.Model) {
+    if (attrs instanceof Model) {
         attrs = attrs.attributes;
     }
     return !attrs['oob_url'] &&
@@ -146,7 +146,7 @@ u.isOnlyChatStateNotification = function (msg) {
                     (msg.querySelector('paused') !== null) ||
                     (msg.querySelector('gone') !== null));
     }
-    if (msg instanceof Backbone.Model) {
+    if (msg instanceof Model) {
         msg = msg.attributes;
     }
     return msg['chat_state'] && u.isEmptyMessage(msg);
@@ -158,7 +158,7 @@ u.isOnlyMessageDeliveryReceipt = function (msg) {
         return (msg.querySelector('body') === null) &&
                     (msg.querySelector('received') !== null);
     }
-    if (msg instanceof Backbone.Model) {
+    if (msg instanceof Model) {
         msg = msg.attributes;
     }
     return msg['received'] && u.isEmptyMessage(msg);

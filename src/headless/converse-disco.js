@@ -1,19 +1,17 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-disco
- * @description
- * Converse plugin which add support for XEP-0030: Service Discovery
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
+ * @description Converse plugin which add support for XEP-0030: Service Discovery
  */
 import { get, isEmpty, isObject } from "lodash";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
 import converse from "./converse-core";
 import log from "./log";
 import sizzle from "sizzle";
 
-const { Backbone, Strophe, $iq, utils } = converse.env;
+const { Strophe, $iq, utils } = converse.env;
 
 converse.plugins.add('converse-disco', {
 
@@ -33,7 +31,7 @@ converse.plugins.add('converse-disco', {
          * @namespace _converse.DiscoEntity
          * @memberOf _converse
          */
-        _converse.DiscoEntity = Backbone.Model.extend({
+        _converse.DiscoEntity = Model.extend({
             /* A Disco Entity is a JID addressable entity that can be queried
              * for features.
              *
@@ -44,21 +42,21 @@ converse.plugins.add('converse-disco', {
             initialize (attrs, options) {
                 this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
 
-                this.dataforms = new _converse.Collection();
+                this.dataforms = new Collection();
                 let id = `converse.dataforms-${this.get('jid')}`;
                 this.dataforms.browserStorage = _converse.createStore(id, 'session');
 
-                this.features = new _converse.Collection();
+                this.features = new Collection();
                 id = `converse.features-${this.get('jid')}`;
                 this.features.browserStorage = _converse.createStore(id, 'session');
                 this.listenTo(this.features, 'add', this.onFeatureAdded)
 
-                this.fields = new _converse.Collection();
+                this.fields = new Collection();
                 id = `converse.fields-${this.get('jid')}`;
                 this.fields.browserStorage = _converse.createStore(id, 'session');
                 this.listenTo(this.fields, 'add', this.onFieldAdded)
 
-                this.identities = new _converse.Collection();
+                this.identities = new Collection();
                 id = `converse.identities-${this.get('jid')}`;
                 this.identities.browserStorage = _converse.createStore(id, 'session');
                 this.fetchFeatures(options);
@@ -105,7 +103,7 @@ converse.plugins.add('converse-disco', {
                  * Triggered when Converse has learned of a service provided by the XMPP server.
                  * See XEP-0030.
                  * @event _converse#serviceDiscovered
-                 * @type { Backbone.Model }
+                 * @type { Model }
                  * @example _converse.api.listen.on('featuresDiscovered', feature => { ... });
                  */
                 _converse.api.trigger('serviceDiscovered', feature);
@@ -228,7 +226,7 @@ converse.plugins.add('converse-disco', {
             }
         });
 
-        _converse.DiscoEntities = _converse.Collection.extend({
+        _converse.DiscoEntities = Collection.extend({
             model: _converse.DiscoEntity,
 
             fetchEntities () {
@@ -277,7 +275,7 @@ converse.plugins.add('converse-disco', {
                 const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
                 const id = `converse.stream-features-${bare_jid}`;
                 _converse.api.promises.add('streamFeaturesAdded');
-                _converse.stream_features = new _converse.Collection();
+                _converse.stream_features = new Collection();
                 _converse.stream_features.browserStorage = _converse.createStore(id, "session");
             }
         }
@@ -387,18 +385,18 @@ converse.plugins.add('converse-disco', {
         _converse.api.listen.on('beforeTearDown', async () => {
             _converse.api.promises.add('streamFeaturesAdded')
             if (_converse.stream_features) {
-                await _converse.stream_features.clearSession();
+                await _converse.stream_features.clearStore();
                 delete _converse.stream_features;
             }
         });
 
         _converse.api.listen.on('clearSession', () => {
             if (_converse.shouldClearCache() && _converse.disco_entities) {
-                Array.from(_converse.disco_entities.models).forEach(e => e.features.clearSession());
-                Array.from(_converse.disco_entities.models).forEach(e => e.identities.clearSession());
-                Array.from(_converse.disco_entities.models).forEach(e => e.dataforms.clearSession());
-                Array.from(_converse.disco_entities.models).forEach(e => e.fields.clearSession());
-                _converse.disco_entities.clearSession();
+                Array.from(_converse.disco_entities.models).forEach(e => e.features.clearStore());
+                Array.from(_converse.disco_entities.models).forEach(e => e.identities.clearStore());
+                Array.from(_converse.disco_entities.models).forEach(e => e.dataforms.clearStore());
+                Array.from(_converse.disco_entities.models).forEach(e => e.fields.clearStore());
+                _converse.disco_entities.clearStore();
                 delete _converse.disco_entities;
             }
         });

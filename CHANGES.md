@@ -5,6 +5,8 @@
 - Bugfix: Don't treat every duplicate message ID as a message correction; since some
   clients don't use globally unique ID's this causes false positives.
 - #1712: `TypeError: plugin._features is not a function`
+- Bugfix: process stanzas from mam one-by-one in order to correctly process message
+  receipts
 
 ## 5.0.3 (2019-09-13)
 

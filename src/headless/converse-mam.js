@@ -126,7 +126,14 @@ converse.plugins.add('converse-mam', {
                     }, options);
 
                 const result = await _converse.api.archive.query(query);
-                result.messages.forEach(message_handler);
+                /* eslint-disable no-await-in-loop */
+                for (const message of result.messages) {
+                    try {
+                        await message_handler(message);
+                    } catch (e) {
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                    }
+                }
 
                 if (result.error) {
                     result.error.retry = () => this.fetchArchivedMessages(options, page);

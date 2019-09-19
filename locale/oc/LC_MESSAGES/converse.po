@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
-"PO-Revision-Date: 2019-09-19 14:21+0000\n"
-"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
+"PO-Revision-Date: 2019-09-20 16:27+0000\n"
+"Last-Translator: Quentí <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
 "Language: oc\n"
@@ -120,12 +120,10 @@ msgid "Click here to log in anonymously"
 msgstr "Clicatz aquí per vos connectar anonimament"
 
 #: dist/converse-no-dependencies.js:8599
-#, fuzzy
 msgid "Search"
 msgstr "Cercar"
 
 #: dist/converse-no-dependencies.js:8629
-#, fuzzy
 msgid "Search results"
 msgstr "Resultats de recèrca"
 
@@ -156,7 +154,7 @@ msgstr "Aquesta sala existís pas mai"
 
 #: dist/converse-no-dependencies.js:8851
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "La conversacion a mudat. Clicatz çai-jos per dintrar."
 
 #: dist/converse-no-dependencies.js:8873
 msgid "Name"
@@ -209,7 +207,7 @@ msgstr "Rescondut"
 
 #: dist/converse-no-dependencies.js:8923 dist/converse-no-dependencies.js:9061
 msgid "This groupchat is not publicly searchable"
-msgstr ""
+msgstr "Aquesta sala es pas publica per la recèrca"
 
 #: dist/converse-no-dependencies.js:8929 dist/converse-no-dependencies.js:9071
 #: dist/converse-no-dependencies.js:46528
@@ -218,7 +216,7 @@ msgstr "Public"
 
 #: dist/converse-no-dependencies.js:8931 dist/converse-no-dependencies.js:9069
 msgid "This groupchat is publicly searchable"
-msgstr ""
+msgstr "Aquesta sala se pòt trobar amb la recèrca"
 
 #: dist/converse-no-dependencies.js:8937 dist/converse-no-dependencies.js:9079
 msgid "Members only"
@@ -226,7 +224,7 @@ msgstr "Membres solament"
 
 #: dist/converse-no-dependencies.js:8939
 msgid "This groupchat is restricted to members only"
-msgstr ""
+msgstr "Aquesta sala es solament pels membres"
 
 #: dist/converse-no-dependencies.js:8945 dist/converse-no-dependencies.js:9087
 #: dist/converse-no-dependencies.js:46526
@@ -235,15 +233,15 @@ msgstr "Dobèrt"
 
 #: dist/converse-no-dependencies.js:8947 dist/converse-no-dependencies.js:9085
 msgid "Anyone can join this groupchat"
-msgstr ""
+msgstr "Tot lo monde pòt participar a la sala"
 
 #: dist/converse-no-dependencies.js:8953 dist/converse-no-dependencies.js:9095
 msgid "Persistent"
-msgstr ""
+msgstr "Persistenta"
 
 #: dist/converse-no-dependencies.js:8955 dist/converse-no-dependencies.js:9093
 msgid "This groupchat persists even if it's unoccupied"
-msgstr ""
+msgstr "Aquesta sala demòra encara que siá pas ocupada"
 
 #: dist/converse-no-dependencies.js:8961 dist/converse-no-dependencies.js:9103
 #: dist/converse-no-dependencies.js:46530
@@ -252,7 +250,7 @@ msgstr "Temporari"
 
 #: dist/converse-no-dependencies.js:8963 dist/converse-no-dependencies.js:9101
 msgid "This groupchat will disappear once the last person leaves"
-msgstr ""
+msgstr "Aquesta sala desapareis quand la darrièra persona s’en va"
 
 #: dist/converse-no-dependencies.js:8969 dist/converse-no-dependencies.js:9111
 msgid "Not anonymous"
@@ -260,7 +258,7 @@ msgstr "Pas anonima"
 
 #: dist/converse-no-dependencies.js:8971 dist/converse-no-dependencies.js:9109
 msgid "All other groupchat participants can see your XMPP address"
-msgstr ""
+msgstr "Totes los autres ocupants d’aquesta sala pòdon veire vòstra adreça XMPP"
 
 #: dist/converse-no-dependencies.js:8977 dist/converse-no-dependencies.js:9119
 #: dist/converse-no-dependencies.js:46529
@@ -269,7 +267,7 @@ msgstr "Semianonima"
 
 #: dist/converse-no-dependencies.js:8979 dist/converse-no-dependencies.js:9117
 msgid "Only moderators can see your XMPP address"
-msgstr ""
+msgstr "Sols los moderators pòdon veire vòstra adreça XMPP"
 
 #: dist/converse-no-dependencies.js:8985 dist/converse-no-dependencies.js:9127
 #: dist/converse-no-dependencies.js:46524
@@ -317,9 +315,8 @@ msgid "Cancel"
 msgstr "Anullar"
 
 #: dist/converse-no-dependencies.js:9310
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "Moderador"
+msgstr "Aisinas de moderador"
 
 #: dist/converse-no-dependencies.js:9312
 msgid ""
@@ -341,7 +338,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9332 dist/converse-no-dependencies.js:9356
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "Lo ròtle per defaut significa que podètz legir e escriure de messatges."
 
 #: dist/converse-no-dependencies.js:9338 dist/converse-no-dependencies.js:9362
 msgid ""
@@ -349,27 +346,24 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:9346 dist/converse-no-dependencies.js:9442
-#, fuzzy
 msgid "Show users"
-msgstr "Ne veire mai"
+msgstr "Mostrar los utilizaires"
 
 #: dist/converse-no-dependencies.js:9372
 msgid "No users with that role found."
-msgstr ""
+msgstr "Cap d’utilizaire pas trobat amb aqueste ròtle."
 
 #: dist/converse-no-dependencies.js:9388
-#, fuzzy
 msgid "New Role"
-msgstr "Ròtle"
+msgstr "Ròtle novèl"
 
 #: dist/converse-no-dependencies.js:9402 dist/converse-no-dependencies.js:9502
 msgid "Reason"
-msgstr ""
+msgstr "Rason"
 
 #: dist/converse-no-dependencies.js:9404
-#, fuzzy
 msgid "Change role"
-msgstr "Cambiar las preferéncias"
+msgstr "Cambiar lo ròtle"
 
 #: dist/converse-no-dependencies.js:9408
 msgid ""
@@ -380,7 +374,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9410
 msgid "Affiliation"
-msgstr ""
+msgstr "Afiliacion"
 
 #: dist/converse-no-dependencies.js:9422 dist/converse-no-dependencies.js:9446
 msgid ""
@@ -400,16 +394,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9468
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "Cap d’utilizaire pas trobat amb aquesta afiliacion."
 
 #: dist/converse-no-dependencies.js:9488
 msgid "New affiliation"
-msgstr ""
+msgstr "Afiliacion novèla"
 
 #: dist/converse-no-dependencies.js:9504
-#, fuzzy
 msgid "Change affiliation"
-msgstr "Cambiar lo ròtle de l’utilizaire en administrator"
+msgstr "Cambiar l’afiliacion"
 
 #: dist/converse-no-dependencies.js:9863
 msgid "Save and close"
@@ -433,7 +426,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9885
 msgid "Other OMEMO-enabled devices"
-msgstr ""
+msgstr "Autres clients amb lo chiframent OMEMO activat"
 
 #: dist/converse-no-dependencies.js:9893 dist/converse-no-dependencies.js:9901
 msgid "Checkbox for selecting the following fingerprint"
@@ -445,7 +438,7 @@ msgstr "Periferic sens detada OMEMO"
 
 #: dist/converse-no-dependencies.js:9909
 msgid "Remove checked devices and close"
-msgstr ""
+msgstr "Suprimir los clients OMEMO seleccionats e tampar"
 
 #: dist/converse-no-dependencies.js:9991
 msgid "Messages are being sent in plaintext"
@@ -491,43 +484,43 @@ msgstr "Causir un autre provesidor"
 
 #: dist/converse-no-dependencies.js:10095
 msgid "Hold tight, we're fetching the registration form…"
-msgstr ""
+msgstr "Demoratz aquí, sèm a quèrre lo formulari d’inscripcion…"
 
 #: dist/converse-no-dependencies.js:28172
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Smileys e emocions"
 
 #: dist/converse-no-dependencies.js:28173
 msgid "People"
-msgstr ""
+msgstr "Gents"
 
 #: dist/converse-no-dependencies.js:28174
 msgid "Activities"
-msgstr ""
+msgstr "Activitats"
 
 #: dist/converse-no-dependencies.js:28175
 msgid "Travel"
-msgstr ""
+msgstr "Viatge"
 
 #: dist/converse-no-dependencies.js:28176
 msgid "Objects"
-msgstr ""
+msgstr "Objèctes"
 
 #: dist/converse-no-dependencies.js:28177
 msgid "Animals and nature"
-msgstr ""
+msgstr "Animals e natura"
 
 #: dist/converse-no-dependencies.js:28178
 msgid "Food and drink"
-msgstr ""
+msgstr "Beure e manjar"
 
 #: dist/converse-no-dependencies.js:28179
 msgid "Symbols"
-msgstr ""
+msgstr "Simbòls"
 
 #: dist/converse-no-dependencies.js:28180
 msgid "Flags"
-msgstr ""
+msgstr "Drapèus"
 
 #: dist/converse-no-dependencies.js:28810
 msgid "This groupchat is not anonymous"
@@ -546,14 +539,12 @@ msgid "The groupchat configuration has changed"
 msgstr "Los paramètres d’aquesta sala son estats cambiats"
 
 #: dist/converse-no-dependencies.js:28814
-#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr "L’enregistrament es ara activat a la sala"
+msgstr "L’enregistrament es ara activat per la sala"
 
 #: dist/converse-no-dependencies.js:28815
-#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr "L’enregistrament es ara desactivat a la sala"
+msgstr "L’enregistrament es ara desactivat per la sala"
 
 #: dist/converse-no-dependencies.js:28816
 msgid "This groupchat is now no longer anonymous"
@@ -582,7 +573,7 @@ msgstr "Sètz estat expulsat d’aquesta sala"
 #: dist/converse-no-dependencies.js:28829
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
-msgstr ""
+msgstr "Sètz estat tirat de la sala a causa d’un cambiament d’afiliacion"
 
 #: dist/converse-no-dependencies.js:28830
 msgid ""
@@ -697,6 +688,8 @@ msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
+"%1$s vos a convidat a rejónher la sala : %2$s, e a daissat lo messatge "
+"seguent : « %3$s »"
 
 #: dist/converse-no-dependencies.js:32217
 #: dist/converse-no-dependencies.js:41925
@@ -749,6 +742,8 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"La talha del fichièr, %1$s, subrepassa lo maximum autorizat per vòstre "
+"servidor, que es %2$s."
 
 #: dist/converse-no-dependencies.js:34012
 msgid "Sorry, an error occurred:"
@@ -768,7 +763,7 @@ msgstr "Demandas de contactes"
 
 #: dist/converse-no-dependencies.js:36419
 msgid "Ungrouped"
-msgstr ""
+msgstr "Sens grop"
 
 #: dist/converse-no-dependencies.js:37102
 #, javascript-format
@@ -945,19 +940,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:42166
 msgid "2222"
-msgstr ""
+msgstr "2222"
 
 #: dist/converse-no-dependencies.js:42178
 msgid "3333"
-msgstr ""
+msgstr "3333"
 
 #: dist/converse-no-dependencies.js:42188
 msgid "4444"
-msgstr ""
+msgstr "4444"
 
 #: dist/converse-no-dependencies.js:42199
 msgid "hello world"
-msgstr ""
+msgstr "adiu lo monde"
 
 #: dist/converse-no-dependencies.js:42234
 msgid "Click to write as a normal (non-spoiler) message"
@@ -1096,24 +1091,20 @@ msgid "Affiliation changed"
 msgstr "Afiliacion cambiada"
 
 #: dist/converse-no-dependencies.js:46759
-#, fuzzy
 msgid "Sorry, something went wrong while trying to set the affiliation"
-msgstr "Quicòm s’es pas passat coma caliá pendent l’ensag d’actualizacion"
+msgstr "Quicòm s’es pas passat coma caliá pendent la definicion de l’afiliacion"
 
 #: dist/converse-no-dependencies.js:46775
-#, fuzzy
 msgid "Role changed"
-msgstr "Dobrir la discussion"
+msgstr "Ròtle cambiat"
 
 #: dist/converse-no-dependencies.js:46788
-#, fuzzy
 msgid "You're not allowed to make that change"
-msgstr "Avètz pas lo drech de crear de salas."
+msgstr "Avètz pas lo drech de cambiar aquò"
 
 #: dist/converse-no-dependencies.js:46790
-#, fuzzy
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr "Quicòm s’es pas passat coma caliá pendent l’ensag d’actualizacion"
+msgstr "Quicòm s’es pas passat coma caliá pendent la definicion del ròtle"
 
 #: dist/converse-no-dependencies.js:46820
 msgid "Query for Groupchats"
@@ -1560,6 +1551,8 @@ msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
+"Utilizatz una virgula per dire de separar los ròtles. Vòstres ròtles son "
+"mostrats a costat de vòstre nom dins los messatges."
 
 #: dist/converse-no-dependencies.js:49293
 msgid "URL"

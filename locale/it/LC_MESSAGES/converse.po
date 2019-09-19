@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
-"PO-Revision-Date: 2019-09-19 14:21+0000\n"
+"PO-Revision-Date: 2019-09-20 16:27+0000\n"
 "Last-Translator: Sylke Vicious <silkevicious@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
@@ -156,7 +156,7 @@ msgstr "Unisciti"
 
 #: dist/converse-no-dependencies.js:8831
 msgid "You're not allowed to send messages in this room"
-msgstr "Non ti è permesso inviare messaggi in questa stanza"
+msgstr "Non ti è permesso inviare messaggi in questa conversazione di gruppo"
 
 #: dist/converse-no-dependencies.js:8845
 msgid "This groupchat no longer exists"
@@ -644,14 +644,14 @@ msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
-"Non ti è permesso registrare il tuo nickname in questa conversazione di "
+"Non ti è permesso registrare il tuo soprannome in questa conversazione di "
 "gruppo, non supporta la registrazione."
 
 #: dist/converse-no-dependencies.js:30563
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
-"Non ti è permesso registrare il tuo nickname in questa conversazione di "
+"Non ti è permesso registrare il tuo soprannome in questa conversazione di "
 "gruppo, è stato fornito un modulo di dati non valido."
 
 #: dist/converse-no-dependencies.js:30946
@@ -686,7 +686,7 @@ msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
-"Il nickname che hai scelto è riservato o attualmente in uso, per favore "
+"Il soprannome che hai scelto è riservato o attualmente in uso, per favore "
 "scegline uno diverso."
 
 #: dist/converse-no-dependencies.js:31217
@@ -708,7 +708,8 @@ msgstr "Non ti è permesso creare nuove conversazioni di gruppo."
 #: dist/converse-no-dependencies.js:31237
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr ""
-"Il tuo nickname non è conforme alle regole di questa conversazione di gruppo."
+"Il tuo soprannome non è conforme alle regole di questa conversazione di "
+"gruppo."
 
 #: dist/converse-no-dependencies.js:31251
 msgid "This groupchat does not (yet) exist."
@@ -862,7 +863,7 @@ msgstr "Nome per questo segnalibro:"
 
 #: dist/converse-no-dependencies.js:39691
 msgid "What should your nickname for this groupchat be?"
-msgstr "Quale dovrebbe essere il nickname per questa conversazione di gruppo?"
+msgstr "Quale dovrebbe essere il soprannome per questa conversazione di gruppo?"
 
 #: dist/converse-no-dependencies.js:39720
 #: dist/converse-no-dependencies.js:53262
@@ -1295,8 +1296,8 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
-"Errore: il comando \"%1$s\" richiede due argomenti, il nickname dell'utente "
-"e opzionalmente una motivazione."
+"Errore: il comando \"%1$s\" richiede due argomenti, il soprannome "
+"dell'utente e opzionalmente una motivazione."
 
 #: dist/converse-no-dependencies.js:47516
 #: dist/converse-no-dependencies.js:47529
@@ -1365,7 +1366,7 @@ msgstr "Rimuovi la possibilità di inviare messaggi dell'utente"
 
 #: dist/converse-no-dependencies.js:47715
 msgid "Change your nickname"
-msgstr "Cambia il tuo nickname"
+msgstr "Cambia il tuo soprannome"
 
 #: dist/converse-no-dependencies.js:47715
 msgid "Grant moderator role to user"
@@ -1377,7 +1378,7 @@ msgstr "Concedi la proprietà di questa conversazione di gruppo"
 
 #: dist/converse-no-dependencies.js:47715
 msgid "Register your nickname"
-msgstr "Registra il tuo nickname"
+msgstr "Registra il tuo soprannome"
 
 #: dist/converse-no-dependencies.js:47715
 msgid "Revoke the user's current affiliation"
@@ -1399,7 +1400,7 @@ msgstr "Consenti all'utente silenziato di inviare messaggi"
 #: dist/converse-no-dependencies.js:47751
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
-msgstr "Il tuo nickname è:\" %1$s\""
+msgstr "Il tuo soprannome è:\" %1$s\""
 
 #: dist/converse-no-dependencies.js:47778
 msgid "Error: invalid number of arguments"
@@ -1481,7 +1482,7 @@ msgstr "Invia"
 
 #: dist/converse-no-dependencies.js:48404
 msgid "Please choose your nickname"
-msgstr "Per favore scegli il tuo nickname"
+msgstr "Per favore scegli il tuo soprannome"
 
 #: dist/converse-no-dependencies.js:48406
 msgid "Enter groupchat"
@@ -1489,7 +1490,7 @@ msgstr "Entra nella conversazione di gruppo"
 
 #: dist/converse-no-dependencies.js:48428
 msgid "You need to provide a nickname"
-msgstr "Devi fornire un nickname"
+msgstr "Devi fornire un soprannome"
 
 #: dist/converse-no-dependencies.js:48445
 #, javascript-format
@@ -1854,7 +1855,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:52797
 msgid "Now logging you in"
-msgstr "Adesso stai entrando dentro"
+msgstr "Ora ti stiamo facendo accedere"
 
 #: dist/converse-no-dependencies.js:52801
 msgid "Registered successfully"
@@ -1865,23 +1866,22 @@ msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
-"Il provider ha respinto il tentativo di registrazione. Controlla i dati "
-"inseriti."
+"Il provider ha respinto il tentativo di registrazione. Per favore controlla "
+"che i dati inseriti siano corretti."
 
 #: dist/converse-no-dependencies.js:53329
-#, fuzzy
 msgid "Click to toggle the list of open groupchats"
-msgstr "Clicca per aprire/chiudere l'elenco delle stanze"
+msgstr "Clicca per aprire/chiudere l'elenco delle conversazioni di gruppo"
 
 #. Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
 #: dist/converse-no-dependencies.js:53331
 msgid "Open Groupchats"
-msgstr "Apri stanza"
+msgstr "Conversazioni di gruppo aperte"
 
 #: dist/converse-no-dependencies.js:53400
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
-msgstr "Sei sicuro di voler lasciare la stanza \"%1$s\"?"
+msgstr "Sei sicuro di voler lasciare la conversazione di gruppo \"%1$s\"?"
 
 #: dist/converse-no-dependencies.js:53625
 msgid "This contact is busy"
@@ -1889,11 +1889,11 @@ msgstr "Questo contatto è occupato"
 
 #: dist/converse-no-dependencies.js:53626
 msgid "This contact is online"
-msgstr "Questo contatto è online"
+msgstr "Questo contatto è in linea"
 
 #: dist/converse-no-dependencies.js:53627
 msgid "This contact is offline"
-msgstr "Questo contatto è offline"
+msgstr "Questo contatto non è in linea"
 
 #: dist/converse-no-dependencies.js:53628
 msgid "This contact is unavailable"
@@ -1901,11 +1901,11 @@ msgstr "Questo contatto non è disponibile"
 
 #: dist/converse-no-dependencies.js:53629
 msgid "This contact is away for an extended period"
-msgstr "Il contatto è away da un lungo periodo"
+msgstr "Questo contatto è lontano dal dispositivo da un lungo periodo"
 
 #: dist/converse-no-dependencies.js:53630
 msgid "This contact is away"
-msgstr "Questo contatto è away"
+msgstr "Questo contatto è lontano dal dispositivo"
 
 #: dist/converse-no-dependencies.js:53633
 msgid "Groups"
@@ -1917,7 +1917,7 @@ msgstr "Nome del contatto"
 
 #: dist/converse-no-dependencies.js:53645
 msgid "Optional nickname"
-msgstr "Nickname opzionale"
+msgstr "Soprannome opzionale"
 
 #: dist/converse-no-dependencies.js:53648
 msgid "Add a Contact"
@@ -1937,16 +1937,15 @@ msgstr "Aggiungi"
 
 #: dist/converse-no-dependencies.js:53742
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "Scusa, non è stato possibile trovare un contatto con quel nome"
 
 #: dist/converse-no-dependencies.js:53767
-#, fuzzy
 msgid "This contact has already been added"
-msgstr "Il contatto è away da un lungo periodo"
+msgstr "Questo contatto è già stato aggiunto"
 
 #: dist/converse-no-dependencies.js:53824
 msgid "Filter"
-msgstr "Filtri"
+msgstr "Filtra"
 
 #: dist/converse-no-dependencies.js:53825
 msgid "Filter by contact name"
@@ -1962,7 +1961,7 @@ msgstr "Filtra per stato"
 
 #: dist/converse-no-dependencies.js:53828
 msgid "Any"
-msgstr "Ogni"
+msgstr "Qualsiasi"
 
 #: dist/converse-no-dependencies.js:53829
 msgid "Unread"
@@ -1970,36 +1969,36 @@ msgstr "Non letto"
 
 #: dist/converse-no-dependencies.js:53831
 msgid "Chatty"
-msgstr "Chatty"
+msgstr "Chiaccherone"
 
 #: dist/converse-no-dependencies.js:53834
 msgid "Extended Away"
-msgstr "Away estesa"
+msgstr "Lontano da molto tempo"
 
 #: dist/converse-no-dependencies.js:53999
 #: dist/converse-no-dependencies.js:54054
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr "Clicca per rimuovere %1$s come contatto"
+msgstr "Clicca per rimuovere %1$s dai contatti"
 
 #: dist/converse-no-dependencies.js:54008
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
-msgstr "Clicca per accettare questa richiesta di contatto da %1$s"
+msgstr "Clicca per accettare la richiesta di contatto da %1$s"
 
 #: dist/converse-no-dependencies.js:54009
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
-msgstr "Clicca per rifiutare questa richiesta di contatto da %1$s"
+msgstr "Clicca per rifiutare la richiesta di contatto da %1$s"
 
 #: dist/converse-no-dependencies.js:54053
 #, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
-msgstr "Clicca per comunicare con %1$s (JID: %2$s)"
+msgstr "Clicca per conversare con %1$s (JID: %2$s)"
 
 #: dist/converse-no-dependencies.js:54194
 msgid "Are you sure you want to decline this contact request?"
-msgstr "Sei sicuro dirifiutare questa richiesta di contatto?"
+msgstr "Sei sicuro di voler rifiutare questa richiesta di contatto?"
 
 #: dist/converse-no-dependencies.js:54511
 msgid "Contacts"
@@ -2007,12 +2006,11 @@ msgstr "Contatti"
 
 #: dist/converse-no-dependencies.js:54512
 msgid "Add a contact"
-msgstr "Aggiungi contatti"
+msgstr "Aggiungi un contatto"
 
 #: dist/converse-no-dependencies.js:54513
-#, fuzzy
 msgid "Re-sync your contacts"
-msgstr "I miei contatti"
+msgstr "Ri-sincronizza i tuoi contatti"
 
 #~ msgid "The connection has dropped, attempting to reconnect."
 #~ msgstr "La connessione è caduta, attendi la riconnessione."

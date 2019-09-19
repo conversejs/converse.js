@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
 "PO-Revision-Date: 2019-09-19 14:21+0000\n"
-"Last-Translator: yc <iyanchuan@gmail.com>\n"
+"Last-Translator: 52871299hzy <bc3104hzy@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -339,13 +339,15 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:9332 dist/converse-no-dependencies.js:9356
+#, fuzzy
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "默认的角色，可以读/写消息。"
 
 #: dist/converse-no-dependencies.js:9338 dist/converse-no-dependencies.js:9362
+#, fuzzy
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
-msgstr ""
+msgstr "在受管理的群聊中不允许游客发言。"
 
 #: dist/converse-no-dependencies.js:9346 dist/converse-no-dependencies.js:9442
 #, fuzzy
@@ -358,16 +360,17 @@ msgid "No users with that role found."
 msgstr "找不到用户"
 
 #: dist/converse-no-dependencies.js:9388
+#, fuzzy
 msgid "New Role"
-msgstr ""
+msgstr "新角色"
 
 #: dist/converse-no-dependencies.js:9402 dist/converse-no-dependencies.js:9502
 msgid "Reason"
-msgstr ""
+msgstr "原因"
 
 #: dist/converse-no-dependencies.js:9404
 msgid "Change role"
-msgstr ""
+msgstr "更改角色"
 
 #: dist/converse-no-dependencies.js:9408
 msgid ""
@@ -922,7 +925,6 @@ msgid "You have unread messages"
 msgstr "你有未读信息"
 
 #: dist/converse-no-dependencies.js:42051
-#, fuzzy
 msgid "Hidden message"
 msgstr "隐藏的信息"
 
@@ -1105,7 +1107,7 @@ msgstr "未主持"
 
 #: dist/converse-no-dependencies.js:46736
 msgid "Affiliation changed"
-msgstr ""
+msgstr "从属关系已更改"
 
 #: dist/converse-no-dependencies.js:46759
 #, fuzzy

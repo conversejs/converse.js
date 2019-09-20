@@ -110,6 +110,9 @@ postrelease:
 $(LERNA):
 	npm install lerna
 
+package-lock.json: package.json
+	npm install
+
 stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 	npm run lerna
 	touch stamp-npm

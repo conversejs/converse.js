@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
-"PO-Revision-Date: 2019-08-23 10:16+0200\n"
+"PO-Revision-Date: 2019-09-20 12:05+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -1790,7 +1790,7 @@ msgstr " bv. conversejs.org"
 
 #: dist/converse-no-dependencies.js:52539
 msgid "Fetch registration form"
-msgstr "Haal tans die registrasie vorm"
+msgstr "Haal die registrasie vorm"
 
 #: dist/converse-no-dependencies.js:52540
 msgid "Tip: A list of public XMPP providers is available"

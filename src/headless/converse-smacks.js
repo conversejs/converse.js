@@ -32,6 +32,9 @@ converse.plugins.add('converse-smacks', {
         });
 
         function isStreamManagementSupported () {
+            if (_converse.api.connection.isType('bosh') && !_converse.isTestEnv()) {
+                return false;
+            }
             return _converse.api.disco.stream.getFeature('sm', Strophe.NS.SM);
         }
 
@@ -95,7 +98,7 @@ converse.plugins.add('converse-smacks', {
         }
 
         function resetSessionData () {
-            _converse.session.save({
+            _converse.session && _converse.session.save({
                 'smacks_enabled': false,
                 'num_stanzas_handled': 0,
                 'num_stanzas_handled_by_server': 0,
@@ -206,9 +209,7 @@ converse.plugins.add('converse-smacks', {
             _converse.connection.addHandler(stanzaHandler);
             _converse.connection.addHandler(sendAck, Strophe.NS.SM, 'r');
             _converse.connection.addHandler(handleAck, Strophe.NS.SM, 'a');
-
-            if ((_converse.api.connection.isType('websocket') || _converse.isTestEnv()) &&
-                    _converse.session.get('smacks_stream_id')) {
+            if (_converse.session.get('smacks_stream_id')) {
                 await sendResumeStanza();
             } else {
                 resetSessionData();

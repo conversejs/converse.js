@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
-"PO-Revision-Date: 2019-09-20 16:27+0000\n"
+"PO-Revision-Date: 2019-09-22 18:27+0000\n"
 "Last-Translator: Quentí <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
@@ -110,6 +110,12 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
+"Per melhorar las qualitats tecnicas, gardam vòstras donadas dins lo cache "
+"del navegador. Desmarcatz aquesta casa se sètz sus un ordenador public, o se "
+"volètz que vòstras donadas sián suprimidas quand vos desconnectatz. Es "
+"important que vos desconnectetz explicitament, autrament totas las donadas "
+"en cache seràn pas suprimidas. Remarcatz que quand l’ordenador utilizat es "
+"pas fisable, lo chiframent OMEMO es PAS disponible."
 
 #: dist/converse-no-dependencies.js:8547
 msgid "Log in"
@@ -278,6 +284,7 @@ msgstr "Moderat"
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr ""
+"Los participants d’aquesta conversacion devon aver la permission per escriure"
 
 #: dist/converse-no-dependencies.js:8993 dist/converse-no-dependencies.js:9135
 msgid "Not moderated"
@@ -285,7 +292,7 @@ msgstr "Pas moderat"
 
 #: dist/converse-no-dependencies.js:8995 dist/converse-no-dependencies.js:9133
 msgid "Participants entering this groupchat can write right away"
-msgstr ""
+msgstr "Los participants d’aquesta conversacion pòdon escriure dirèctament"
 
 #: dist/converse-no-dependencies.js:9001 dist/converse-no-dependencies.js:9143
 msgid "Message archiving"
@@ -325,6 +332,10 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Los ròtles son atribuits als utilizaires per lor donar o tirar unas "
+"capacitats dins una sala multi-utilizaires. Son atribuidas explicitament o "
+"implicitament amb una afiliacion. Un ròtle que ven pas d’una afiliacion, es "
+"pas que valid lo temps de la session de l’utilizaire."
 
 #: dist/converse-no-dependencies.js:9314 dist/converse-no-dependencies.js:49291
 msgid "Role"
@@ -335,6 +346,9 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Los moderators son d’utilizaires privilegiats que pòdon cambiar los ròtles "
+"dels autres utilizaires fòra los que son administrators o proprietaris "
+"d’afiliacions."
 
 #: dist/converse-no-dependencies.js:9332 dist/converse-no-dependencies.js:9356
 msgid "The default role, implies that you can read and write messages."
@@ -344,6 +358,8 @@ msgstr "Lo ròtle per defaut significa que podètz legir e escriure de messatges
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Los visitaires son pas autorizats a escriure de messatges dins una "
+"conversacion multi-utilizaires moderada."
 
 #: dist/converse-no-dependencies.js:9346 dist/converse-no-dependencies.js:9442
 msgid "Show users"
@@ -371,6 +387,9 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"Una afiliacion es un drech duradís qu’implica generalament a tal ròtle e que "
+"dòna de privilègis e de responsabilitats. Per exemple los administrators e "
+"los proprietaris an automaticament lo ròtle de moderator."
 
 #: dist/converse-no-dependencies.js:9410
 msgid "Affiliation"
@@ -381,16 +400,21 @@ msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Proprietari es l’afiliacion mai nauta. Los proprietaris pòdon modificar los "
+"ròtles e afiliacions de totes los autres utilizaires."
 
 #: dist/converse-no-dependencies.js:9428 dist/converse-no-dependencies.js:9452
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Admin es la segonda afiliacion mai nauta. Los administrators pòdon modificar "
+"los ròtles e afiliacions de totes los autres utilizaires fòra los "
+"proprietaris."
 
 #: dist/converse-no-dependencies.js:9434 dist/converse-no-dependencies.js:9458
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr ""
+msgstr "Per forabandir un utilizaire, donatz-li l’aficialicion d’ « exclús »."
 
 #: dist/converse-no-dependencies.js:9468
 msgid "No users with that affiliation found."
@@ -423,6 +447,8 @@ msgstr "O seleccionar tot"
 #: dist/converse-no-dependencies.js:9883
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
+"Casa de marcar per dire de seleccionar las detada OMEMA de totes los "
+"periferics"
 
 #: dist/converse-no-dependencies.js:9885
 msgid "Other OMEMO-enabled devices"
@@ -458,7 +484,7 @@ msgstr "Creatz vòstre compte"
 
 #: dist/converse-no-dependencies.js:10027
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "Volgatz picar lo provesidor XMPP ont se marcar :"
 
 #: dist/converse-no-dependencies.js:10045
 #: dist/converse-no-dependencies.js:10079
@@ -580,32 +606,42 @@ msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
 msgstr ""
+"Sètz estat levat d’aquesta sala perque aquesta sala es venguda reservada als "
+"membres e sètz pas membre"
 
 #: dist/converse-no-dependencies.js:28831
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
 msgstr ""
+"Sètz estat levat d’aquesta sala perque lo servici ont es albergat es a èsser "
+"arrestat"
 
 #: dist/converse-no-dependencies.js:30513
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr ""
+msgstr "Sètz pas autorizat a vos inscriure vos meteis a la sala."
 
 #: dist/converse-no-dependencies.js:30515
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
+"Sètz pas autorizat a vos inscriure a aquesta sala perque es reservada als "
+"membres."
 
 #: dist/converse-no-dependencies.js:30561
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
+"Inscripcion impossibla de vòstre escais-nom a la sala, gerís pas "
+"l’enregistrament."
 
 #: dist/converse-no-dependencies.js:30563
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"Inscripcion impossibla de vòstre escais-nom a la sala, un formulari invalid "
+"es estat enviat."
 
 #: dist/converse-no-dependencies.js:30946
 msgid ""
@@ -618,7 +654,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:30948
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr ""
+msgstr "Vòstre messatge es pas estat liurat perque sètz pas present a la sala."
 
 #: dist/converse-no-dependencies.js:31144
 #: dist/converse-no-dependencies.js:47981
@@ -726,15 +762,17 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
 msgstr ""
+"O planhèm, lo mandadís del fichièr a pas reüssit. Vòstre servidor a "
+"respondut : « %1$s »"
 
 #: dist/converse-no-dependencies.js:33117
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "O planhèm, lo mandadís del fichièr a pas reüssit."
 
 #: dist/converse-no-dependencies.js:33894
 #: dist/converse-no-dependencies.js:33914
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "O planhèm, lo servidor sembla pas gerir lo mandadís de fichièrs."
 
 #: dist/converse-no-dependencies.js:33924
 #, javascript-format
@@ -768,11 +806,11 @@ msgstr "Sens grop"
 #: dist/converse-no-dependencies.js:37102
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr ""
+msgstr "O planhèm, una error s’es producha en ajustar %1$s als contacts."
 
 #: dist/converse-no-dependencies.js:37396
 msgid "This client does not allow presence subscriptions"
-msgstr ""
+msgstr "Aqueste client permet pas las mesas a jorn de preséncia"
 
 #: dist/converse-no-dependencies.js:37506
 msgid "Click to hide these contacts"
@@ -991,6 +1029,8 @@ msgstr "Mostrar aqueste menú"
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
+"Avètz un messatge pas enviat que serà perdut se contunhatz. O volètz "
+"vertadièrament ?"
 
 #: dist/converse-no-dependencies.js:42970
 msgid "Are you sure you want to clear the messages from this conversation?"
@@ -1485,6 +1525,8 @@ msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
+"Sèm per convidar %1$s al grop de discussion « %2$s ». Avètz la possibilitat "
+"d’ inclure un messatge facultatiu per explicar la rason de l’invitacion."
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:48989
@@ -1560,11 +1602,13 @@ msgstr "URL"
 
 #: dist/converse-no-dependencies.js:49327
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr ""
+msgstr "O planhèm, quicòm a trucat pendent la salvagarda del perfil."
 
 #: dist/converse-no-dependencies.js:49327
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
+"Podètz verificar totas las errors dins la consòla de desvolopament del "
+"navegador."
 
 #: dist/converse-no-dependencies.js:49374
 #: dist/converse-no-dependencies.js:53833
@@ -1670,6 +1714,7 @@ msgstr "desconnectat"
 #: dist/converse-no-dependencies.js:49881
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr ""
+"O planhèm, una error s’es producha en ensajar de suprimir los clients OMEMO."
 
 #: dist/converse-no-dependencies.js:49890
 msgid ""
@@ -1677,6 +1722,9 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
+"Volètz vertadièrament generar de nòvas claus OMEMO ? Aquò tirarà las "
+"ancianas claus e totes los messatges ja deschifrats poiràn pas mai èsser "
+"deschifrats sus aqueste periferic."
 
 #: dist/converse-no-dependencies.js:50322
 #, javascript-format
@@ -1684,6 +1732,9 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"O planhèm, impossible d’enviar un messatge chifrat a %1$s perque requerís "
+"que siatz abonat a sas mesas a jorn de preséncia per dire de veire las "
+"informacions OMEMO"
 
 #: dist/converse-no-dependencies.js:50324
 #, javascript-format
@@ -1691,6 +1742,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"O planhèm, impossible d’enviar un messatge chifrat perque lo servidor "
+"alonhat de %1$s es pas disponible"
 
 #: dist/converse-no-dependencies.js:50326
 msgid "Unable to send an encrypted message due to an unexpected error."
@@ -1702,6 +1755,9 @@ msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
+"Utilizacion impossibla del chiframent del cap a la fin dins aquesta sala, "
+"siá lo grop de discussion permet l’anonimat siá almens un participant es pas "
+"compatible amb OMEMO."
 
 #: dist/converse-no-dependencies.js:50378
 #, javascript-format
@@ -1709,17 +1765,23 @@ msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
+"Utilizacion impossibla del chiframent del cap a la fin perque %1$s utiliza "
+"un client qu’es pas compatible amb OMEMO."
 
 #: dist/converse-no-dependencies.js:50674
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
+"O planhèm, impossible de trobat un periferic al qual enviar un messatge "
+"chifrat amb OMEMO."
 
 #: dist/converse-no-dependencies.js:50804
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
+"Aquò es un messatge chifrat amb OMEMO, que vòstre client sembla pas prendre "
+"en carga. Per mai d’informacions, anatz veire https://conversations.im/omemo"
 
 #: dist/converse-no-dependencies.js:51796
 #, javascript-format
@@ -1727,6 +1789,8 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"%1$s sembla pas aver un client que siá compatible amb OMEMO. Lo chiframent "
+"serà pas mai possible dins aqueste grop de discussion."
 
 #: dist/converse-no-dependencies.js:52426
 msgid " e.g. conversejs.org"
@@ -1753,6 +1817,8 @@ msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
+"O planhèm, lo provesidor es pas compatibla amb l’enregistrament  de compte "
+"en linha. Mercés d’ensajar amb un autre provesidor."
 
 #: dist/converse-no-dependencies.js:52634
 #, javascript-format
@@ -1760,6 +1826,8 @@ msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
+"Quicòm a trucat pendent l’establiment de la connexion amb « %1$s ». Es segur "
+"qu’existís ?"
 
 #: dist/converse-no-dependencies.js:52797
 msgid "Now logging you in"
@@ -1774,6 +1842,8 @@ msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
+"Lo provesidor a regetat vòstra demanda d’inscripcion. Mercés de verificar "
+"que las donadas qu’avètz picadas sián corrèctas."
 
 #: dist/converse-no-dependencies.js:53329
 msgid "Click to toggle the list of open groupchats"
@@ -1904,7 +1974,7 @@ msgstr "Clicatz per charrar amb %1$s (JID : %2$s)"
 
 #: dist/converse-no-dependencies.js:54194
 msgid "Are you sure you want to decline this contact request?"
-msgstr ""
+msgstr "Volètz vertadièrament regetar aquesta demanda d’apondon als contactes ?"
 
 #: dist/converse-no-dependencies.js:54511
 msgid "Contacts"

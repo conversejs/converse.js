@@ -7,6 +7,8 @@
 - #1712: `TypeError: plugin._features is not a function`
 - Bugfix: process stanzas from mam one-by-one in order to correctly process message
   receipts
+- added `/inject` command which allows you to inject message stanzas for debugging
+  purposes. (only available if `debug` enabled)
 
 ## 5.0.3 (2019-09-13)
 

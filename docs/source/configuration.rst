@@ -604,6 +604,11 @@ debug
 
 If set to ``true``, debugging output will be logged to the browser console.
 
+Additionally the ``/inject`` command will be enabled, which allows you to inject message
+stanzas for debugging purposes. The stanzas don't actually get sent out but receiving of
+these stanzas is mimicked. This allows for example for replaying message stanzas logged to
+the browser console before.
+
 You can also set this value by changing the URL fragment to `#converse?debug=true` or `#converse?debug=false`.
 
 

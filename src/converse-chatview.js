@@ -763,18 +763,26 @@ converse.plugins.add('converse-chatview', {
             },
 
             parseMessageForCommands (text) {
-                const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
-                if (match) {
-                    if (match[1] === "clear") {
+                text = text.replace(/^\s*/, "");
+                const command = (text.match(/^\/([a-zA-Z]*) ?/) || ['']).pop().toLowerCase();
+                if (command) {
+                    const args = text.slice(('/'+command).length+1).trim();
+                    if (command === "clear") {
                         this.clearMessages();
                         return true;
+                    } else if (command === "inject") {
+                        this.handleDebugTextAsReceivedMessages(args);
+                        return true;
                     }
-                    else if (match[1] === "help") {
+                    else if (command === "help") {
                         const msgs = [
                             `<strong>/clear</strong>: ${__('Remove messages')}`,
                             `<strong>/me</strong>: ${__('Write in the third person')}`,
                             `<strong>/help</strong>: ${__('Show this menu')}`
                             ];
+                        if (_converse.debug) {
+                            msgs.push(`<strong>/inject</strong>: ${__('Inject stanzas for debugging purposes')}`);
+                        }
                         this.showHelpMessages(msgs);
                         return true;
                     }
@@ -1014,6 +1022,25 @@ converse.plugins.add('converse-chatview', {
                 const result = confirm(__("Are you sure you want to clear the messages from this conversation?"));
                 if (result === true) {
                     this.model.clearMessages();
+                }
+                return this;
+            },
+
+            async handleDebugTextAsReceivedMessages (text) {
+                if (!_converse.debug) {
+                    this.showHelpMessages([__('Inject command not available because debugging turned off.')], 'error');
+                    return this;
+                }
+                const msgs = new DOMParser().parseFromString('<s>'+text+'</s>', 'text/xml').firstElementChild.children;
+                /* eslint-disable no-await-in-loop */
+                for (const msg of msgs) {
+                    try {
+                        await _converse.chatboxes.onMessage(msg);
+                   } catch (e) {
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        _converse.log('Message that lead to that error:', Strophe.LogLevel.ERROR);
+                        _converse.log(msg, Strophe.LogLevel.ERROR);
+                    }
                 }
                 return this;
             },

@@ -83,7 +83,7 @@
             expect(textarea.value).toBe('');
 
             const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
-            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
             let action = view.el.querySelector('.chat-msg .chat-msg__action');
             expect(action.getAttribute('title')).toBe('Edit this message');
 
@@ -160,7 +160,7 @@
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
             );
             await new Promise(resolve => view.once('messageInserted', resolve));
-            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
 
             // Test confirmation dialog
             spyOn(window, 'confirm').and.returnValue(true);

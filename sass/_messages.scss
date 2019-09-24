@@ -39,6 +39,12 @@
             }
         }
 
+        &.chat-msg--retracted {
+            .chat-msg__message {
+                color: var(--subdued-color);
+            }
+        }
+
         &.chat-info {
             color: var(--chat-head-color);
             font-size: var(--message-font-size);
@@ -46,6 +52,9 @@
             font-size: 90%;
             padding: 0.17rem 1rem;
 
+            &.chat-msg--followup {
+                margin-left: 2.75rem;
+            }
             &.badge {
                 color: var(--chat-head-text-color);
             }
@@ -59,6 +68,9 @@
             &.chat-error {
                 color: var(--error-color);
                 font-weight: bold;
+            }
+            .q {
+                font-style: italic;
             }
         }
 
@@ -225,7 +237,7 @@
                     height: var(--message-font-size);
                     font-size: var(--message-font-size);
                     padding: 0;
-                    padding-left: 0.5em;
+                    padding-left: 0.75em;
                     border: none;
                     opacity: 0;
                     background: transparent;
@@ -334,6 +346,11 @@
                 .chat-msg__content {
                     margin-left: 0;
                 }
+            }
+        }
+        &.chat-info {
+            &.chat-msg--followup {
+                margin-left: 0;
             }
         }
     }

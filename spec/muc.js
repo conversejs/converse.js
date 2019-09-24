@@ -5232,6 +5232,7 @@
                 const textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = 'Hello world';
                 view.onFormSubmitted(new Event('submit'));
+                await new Promise(resolve => view.once('messageInserted', resolve));
 
                 const stanza = u.toStanza(`
                     <message xmlns="jabber:client" type="error" to="troll@montague.lit/resource" from="trollbox@montague.lit">
@@ -5240,6 +5241,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 await new Promise(resolve => view.once('messageInserted', resolve));
+
                 expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
                     "Your message was not delivered because you're not allowed to send messages in this groupchat.");
                 done();

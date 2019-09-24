@@ -39,9 +39,9 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 ## Features
 -   Available as overlayed chat boxes or as a fullscreen application. See [inverse.chat](https://inverse.chat) for the fullscreen version.
+-   Custom status messages
+-   Desktop notifications
 -   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://conversejs.github.io/pluggable.js/)
--   Single-user and group chats
--   Contacts and groups
 -   Multi-user chat rooms [XEP 45](https://xmpp.org/extensions/xep-0045.html)
 -   Chatroom bookmarks [XEP 48](https://xmpp.org/extensions/xep-0048.html)
 -   Direct invitations to chat rooms [XEP 249](https://xmpp.org/extensions/xep-0249.html)
@@ -50,9 +50,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   In-band registration [XEP 77](https://xmpp.org/extensions/xep-0077.html)
 -   Roster item exchange [XEP 144](https://xmpp.org/extensions/tmp/xep-0144-1.1.html)
 -   Chat statuses (online, busy, away, offline)
--   Custom status messages
 -   Typing and state notifications [XEP 85](https://xmpp.org/extensions/xep-0085.html)
--   Desktop notifications
 -   File sharing / HTTP File Upload [XEP 363](https://xmpp.org/extensions/xep-0363.html)
 -   Messages appear in all connnected chat clients / Message Carbons [XEP 280](https://xmpp.org/extensions/xep-0280.html)
 -   Third person "/me" messages [XEP 245](https://xmpp.org/extensions/xep-0245.html)
@@ -62,8 +60,10 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   Client state indication [XEP 352](https://xmpp.org/extensions/xep-0352.html)
 -   Last Message Correction [XEP 308](https://xmpp.org/extensions/xep-0308.html)
 -   OMEMO encrypted messaging [XEP 384](https://xmpp.org/extensions/xep-0384.html")
--   Supports anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html).
--   Translated into 28 languages
+-   Anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html)
+-   Message Retractions [XEP-424](https://xmpp.org/extensions/xep-0424.html)
+-   Message Moderation [XEP-425](https://xmpp.org/extensions/xep-0425.html)
+-   Translated into over 30 languages
 
 ## Integration into other frameworks
 

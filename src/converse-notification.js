@@ -121,6 +121,7 @@ converse.plugins.add('converse-notification', {
 
         _converse.areDesktopNotificationsEnabled = function () {
             return _converse.supports_html5_notification &&
+
                 _converse.show_desktop_notifications &&
                 Notification.permission === "granted";
         };

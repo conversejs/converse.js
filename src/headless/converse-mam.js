@@ -55,7 +55,6 @@ converse.plugins.add('converse-mam', {
         });
 
         const MAMEnabledChat = {
-
             /**
              * Fetches messages that might have been archived *after*
              * the last archived message in our local cache.

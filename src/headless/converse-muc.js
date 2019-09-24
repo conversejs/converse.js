@@ -11,7 +11,7 @@
  */
 import "./converse-disco";
 import "./converse-emoji";
-import { clone, get, intersection, invoke, isElement, isObject, isString, uniq, zipObject } from "lodash";
+import { clone, get, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
 import converse from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
@@ -252,9 +252,7 @@ converse.plugins.add('converse-muc', {
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
                 }
-                if (this.isEphemeral()) {
-                    window.setTimeout(this.safeDestroy.bind(this), 10000);
-                } else {
+                if (!this.setTimerForEphemeralMessage()) {
                     this.setOccupant();
                     this.setVCard();
                 }
@@ -510,9 +508,8 @@ converse.plugins.add('converse-muc', {
             },
 
             removeHandlers () {
-                /* Remove the presence and message handlers that were
-                 * registered for this groupchat.
-                 */
+                // Remove the presence and message handlers that were
+                // registered for this groupchat.
                 if (this.message_handler) {
                     if (_converse.connection) {
                         _converse.connection.deleteHandler(this.message_handler);
@@ -572,14 +569,95 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
+             * Sends a message stanza to the XMPP server and expects a reflection
+             * or error message within a specific timeout period.
+             * @private
+             * @method _converse.ChatRoom#sendTimedMessage
+             * @param { _converse.Message|XMLElement } message
+             * @returns { Promise<XMLElement>|Promise<_converse.TimeoutError> } Returns a promise
+             *  which resolves with the reflected message stanza or rejects
+             *  with an error stanza or with a {@link _converse.TimeoutError}.
+             */
+            sendTimedMessage (el) {
+                if (typeof(el.tree) === "function") {
+                    el = el.tree();
+                }
+                let id = el.getAttribute('id');
+                if (!id) { // inject id if not found
+                    id = this.getUniqueId("sendIQ");
+                    el.setAttribute("id", id);
+                }
+                const promise = u.getResolveablePromise();
+                const timeoutHandler = _converse.connection.addTimedHandler(
+                    _converse.STANZA_TIMEOUT,
+                    () => {
+                        _converse.connection.deleteHandler(handler);
+                        promise.reject(new _converse.TimeoutError("Timeout Error: No response from server"));
+                        return false;
+                    }
+                );
+                const handler = _converse.connection.addHandler(stanza => {
+                    timeoutHandler && _converse.connection.deleteTimedHandler(timeoutHandler);
+                    if (stanza.getAttribute('type') === 'groupchat') {
+                        promise.resolve(stanza);
+                    } else {
+                        promise.reject(stanza);
+                    }
+                }, null, 'message', ['error', 'groupchat'], id);
+                _converse.api.send(el)
+                return promise;
+            },
+
+            /**
+             * Sends a message stanza to retract a message in this groupchat.
+             * @private
+             * @method _converse.ChatRoom#sendRetractionMessage
+             * @param { _converse.Message } message - The message which we're retracting.
+             */
+            sendRetractionMessage (message) {
+                const origin_id = message.get('origin_id');
+                if (!origin_id) {
+                    throw new Error("Can't retract message without a XEP-0359 Origin ID");
+                }
+                const msg = $msg({
+                        'id': u.getUniqueId(),
+                        'to': this.get('jid'),
+                        'type': "groupchat"
+                    })
+                    .c('store', {xmlns: Strophe.NS.HINTS}).up()
+                    .c("apply-to", {
+                        'id': origin_id,
+                        'xmlns': Strophe.NS.FASTEN
+                    }).c('retract', {xmlns: Strophe.NS.RETRACT});
+                return this.sendTimedMessage(msg);
+            },
+
+            /**
+             * Sends an IQ stanza to the XMPP server to retract a message in this groupchat.
+             * @private
+             * @method _converse.ChatRoom#sendRetractionIQ
+             * @param { _converse.Message } message - The message which we're retracting.
+             * @param { string } [reason] - The reason for retracting the message.
+             */
+            sendRetractionIQ (message, reason) {
+                const iq = $iq({'to': this.get('jid'), 'type': "set"})
+                    .c("apply-to", {
+                        'id': message.get(`stanza_id ${this.get('jid')}`),
+                        'xmlns': Strophe.NS.FASTEN
+                    }).c('moderate', {xmlns: Strophe.NS.MODERATE})
+                        .c('retract', {xmlns: Strophe.NS.RETRACT}).up()
+                        .c('reason').t(reason);
+                return _converse.api.sendIQ(iq, null, false);
+            },
+
+            /**
              * Sends an IQ stanza to the XMPP server to destroy this groupchat. Not
              * to be confused with the {@link _converse.ChatRoom#destroy}
              * method, which simply removes the room from the local browser storage cache.
              * @private
              * @method _converse.ChatRoom#sendDestroyIQ
-             * @param { string } [reason] - The reason for destroying the groupchat
-             * @param { string } [new_jid] - The JID of the new groupchat which
-             *      replaces this one.
+             * @param { string } [reason] - The reason for destroying the groupchat.
+             * @param { string } [new_jid] - The JID of the new groupchat which replaces this one.
              */
             sendDestroyIQ (reason, new_jid) {
                 const destroy = $build("destroy");
@@ -1320,6 +1398,38 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            /**
+             * Given two JIDs, which can be either user JIDs or MUC occupant JIDs,
+             * determine whether they belong to the same user.
+             * @private
+             * @method _converse.ChatRoom#isSameUser
+             * @param { String } jid1
+             * @param { String } jid2
+             * @returns { Boolean }
+             */
+            isSameUser (jid1, jid2) {
+                const bare_jid1 = Strophe.getBareJidFromJid(jid1);
+                const bare_jid2 = Strophe.getBareJidFromJid(jid2);
+                const resource1 = Strophe.getResourceFromJid(jid1);
+                const resource2 = Strophe.getResourceFromJid(jid2);
+                if (u.isSameBareJID(jid1, jid2)) {
+                    if (bare_jid1 === this.get('jid')) {
+                        // MUC JIDs
+                        return resource1 === resource2;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    const occupant1 = (bare_jid1 === this.get('jid')) ?
+                        this.occupants.findOccupant({'nick': resource1}) :
+                        this.occupants.findOccupant({'jid': bare_jid1});
+
+                    const occupant2 = (bare_jid2 === this.get('jid')) ?
+                        this.occupants.findOccupant({'nick': resource2}) :
+                        this.occupants.findOccupant({'jid': bare_jid2});
+                    return occupant1 === occupant2;
+                }
+            },
 
             /**
              * Handle a subject change and return `true` if so.
@@ -1460,14 +1570,89 @@ converse.plugins.add('converse-muc', {
                 return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, stanza);
             },
 
-            getErrorMessage (stanza) {
-                if (sizzle(`forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
-                    return __("Your message was not delivered because you're not allowed to send messages in this groupchat.");
-                } else if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
-                    return __("Your message was not delivered because you're not present in the groupchat.");
-                } else {
-                    return _converse.ChatBox.prototype.getErrorMessage.call(this, stanza);
+            /**
+             * Looks whether we already have a moderation message for this
+             * incoming message. If so, it's considered "dangling" because
+             * it probably hasn't been applied to anything yet, given that
+             * the relevant message is only coming in now.
+             * @private
+             * @method _converse.ChatRoom#findDanglingModeration
+             * @param { object } attrs - Attributes representing a received
+             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             * @returns { _converse.ChatRoomMessage }
+             */
+            findDanglingModeration (attrs) {
+                if (!this.messages.length) {
+                    return null;
                 }
+                // Only look for dangling moderation if there are newer
+                // messages than this one, since moderation come after.
+                if (this.messages.last().get('time') > attrs.time) {
+                    // Search from latest backwards
+                    const messages = Array.from(this.messages.models);
+                    const stanza_id = attrs[`stanza_id ${this.get('jid')}`];
+                    if (!stanza_id) {
+                        return null;
+                    }
+                    messages.reverse();
+                    return messages.find(
+                        ({attributes}) =>
+                            attributes.moderation === 'retraction' &&
+                            attributes.moderated_id === stanza_id &&
+                            attributes.moderated_by
+                    );
+                }
+            },
+
+            /**
+             * Handles message moderation based on the passed in attributes.
+             * @private
+             * @method _converse.ChatRoom#handleModeration
+             * @param { object } attrs - Attributes representing a received
+             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             * @returns { Boolean } Returns `true` or `false` depending on
+             *  whether a message was moderated or not.
+             */
+            handleModeration (attrs) {
+                const MODERATION_ATTRIBUTES = [
+                    'moderated',
+                    'moderated_by',
+                    'moderated_id',
+                    'moderation_reason'
+                ];
+                if (attrs.moderated === 'retracted') {
+                    const query = {};
+                    const key = `stanza_id ${this.get('jid')}`;
+                    query[key] = attrs.moderated_id;
+                    const message = this.messages.findWhere(query);
+                    if (!message) {
+                        attrs['dangling_moderation'] = true;
+                        this.messages.create(attrs);
+                        return true;
+                    }
+                    message.save(pick(attrs, MODERATION_ATTRIBUTES));
+                    return true;
+                } else {
+                    // Check if we have dangling moderation message
+                    const message = this.findDanglingModeration(attrs);
+                    if (message) {
+                        const moderation_attrs = pick(message.attributes, MODERATION_ATTRIBUTES);
+                        const new_attrs = Object.assign({'dangling_moderation': false}, attrs, moderation_attrs);
+                        delete new_attrs['id']; // Delete id, otherwise a new cache entry gets created
+                        message.save(new_attrs);
+                        return true;
+                    }
+                }
+                return false;
+            },
+
+            createMessageObject (attrs) {
+                return new Promise((success, reject) => {
+                    this.messages.create(
+                        attrs,
+                        { success, 'error': (m, e) => reject(e) }
+                    )
+                });
             },
 
             /**
@@ -1477,21 +1662,17 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza - The message stanza.
              */
             async onMessage (stanza) {
-                const original_stanza = stanza;
-                const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
-                if (bare_forward) {
+                if (sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length) {
                     return log.warn('onMessage: Ignoring unencapsulated forwarded groupchat message');
                 }
-                const is_carbon = u.isCarbonMessage(stanza);
-                if (is_carbon) {
-                    // XEP-280: groupchat messages SHOULD NOT be carbon copied, so we're discarding it.
+                if (u.isCarbonMessage(stanza)) {
                     return log.warn(
                         'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
                         'according to the XEP groupchat messages SHOULD NOT be carbon copied'
                     );
                 }
-                const is_mam = u.isMAMMessage(stanza);
-                if (is_mam) {
+                const original_stanza = stanza;
+                if (u.isMAMMessage(stanza)) {
                     if (original_stanza.getAttribute('from') === this.get('jid')) {
                         const selector = `[xmlns="${Strophe.NS.MAM}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
                         stanza = sizzle(selector, stanza).pop();
@@ -1499,7 +1680,6 @@ converse.plugins.add('converse-muc', {
                         return log.warn(`onMessage: Ignoring alleged MAM groupchat message from ${stanza.getAttribute('from')}`);
                     }
                 }
-
                 this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
@@ -1510,20 +1690,18 @@ converse.plugins.add('converse-muc', {
                 if (message || stanza_utils.isReceipt(stanza) || stanza_utils.isChatMarker(stanza)) {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
-                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
-                this.setEditable(attrs, attrs.time);
-                if (attrs.nick &&
-                        !this.subjectChangeHandled(attrs) &&
-                        !this.ignorableCSN(attrs) &&
-                        (attrs['chat_state'] || !u.isEmptyMessage(attrs))) {
 
-                    const msg = this.correctMessage(attrs) ||
-                        await new Promise((success, reject) => {
-                            this.messages.create(
-                                attrs,
-                                { success, 'erorr': (m, e) => reject(e) }
-                            )
-                        });
+                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                if (this.handleRetraction(attrs) ||
+                        this.handleModeration(attrs) ||
+                        this.subjectChangeHandled(attrs) ||
+                        this.ignorableCSN(attrs)) {
+                    return _converse.api.trigger('message', {'stanza': original_stanza});
+                }
+                this.setEditable(attrs, attrs.time);
+
+                if (attrs.nick && (attrs.is_tombstone || u.isNewMessage(attrs) || !u.isEmptyMessage(attrs))) {
+                    const msg = this.handleCorrection(attrs) || await this.createMessageObject(attrs);
                     this.incrementUnreadMsgCounter(msg);
                 }
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});
@@ -1539,7 +1717,7 @@ converse.plugins.add('converse-muc', {
                         const attrs = {
                             'type': 'error',
                             'message': text,
-                            'ephemeral': true
+                            'is_ephemeral': true
                         }
                         this.messages.create(attrs);
                     }
@@ -2121,7 +2299,7 @@ converse.plugins.add('converse-muc', {
              * @namespace _converse.api.rooms
              * @memberOf _converse.api
              */
-            'rooms': {
+            rooms: {
                 /**
                  * Creates a new MUC chatroom (aka groupchat)
                  *

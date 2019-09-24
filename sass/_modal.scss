@@ -1,8 +1,15 @@
 #conversejs {
     #converse-modals {
-
         .modal-body {
             margin-bottom: 2em;
+            .confirm {
+                .form-group {
+                    p:first-child {
+                        font-size: 110%;
+                        font-weight: bold;
+                    }
+                }
+            }
         }
 
         .scrollable-container {

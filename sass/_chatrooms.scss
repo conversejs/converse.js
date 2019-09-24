@@ -143,6 +143,9 @@
                     &.badge {
                         color: var(--chat-head-text-color);
                     }
+                    &.chat-msg--retracted {
+                        color: var(--subdued-color);
+                    }
                 }
                 .disconnect-container {
                     margin: 1em;

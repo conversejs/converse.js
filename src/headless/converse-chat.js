@@ -1,10 +1,10 @@
-import "./utils/stanza";
-import { get, isObject, isString, propertyOf } from "lodash";
+import { get, isObject, isString, pick } from "lodash";
 import converse from "./converse-core";
 import filesize from "filesize";
 import log from "./log";
+import stanza_utils from "./utils/stanza";
 
-const { $msg, Backbone, Strophe, dayjs, sizzle, utils } = converse.env;
+const { $msg, Backbone, Strophe, sizzle, utils } = converse.env;
 const u = converse.env.utils;
 
 
@@ -21,7 +21,7 @@ converse.plugins.add('converse-chat', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["stanza-utils", "converse-chatboxes", "converse-disco"],
+    dependencies: ["converse-chatboxes", "converse-disco"],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -29,7 +29,6 @@ converse.plugins.add('converse-chat', {
          */
         const { _converse } = this;
         const { __ } = _converse;
-        const { stanza_utils } = _converse;
 
         // Configuration values for this plugin
         // ====================================
@@ -75,7 +74,7 @@ converse.plugins.add('converse-chat', {
                 return {
                     'msgid': u.getUniqueId(),
                     'time': (new Date()).toISOString(),
-                    'ephemeral': false
+                    'is_ephemeral': false
                 };
             },
 
@@ -86,15 +85,34 @@ converse.plugins.add('converse-chat', {
                     ModelWithContact.prototype.initialize.apply(this, arguments);
                     this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
                 }
-
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
                 }
-                if (this.isEphemeral()) {
-                    window.setTimeout(this.safeDestroy.bind(this), 10000);
-                }
+                this.setTimerForEphemeralMessage();
                 await _converse.api.trigger('messageInitialized', this, {'Synchronous': true});
                 this.initialized.resolve();
+            },
+
+            /**
+             * Sets an auto-destruct timer for this message, if it's is_ephemeral.
+             * @private
+             * @method _converse.Message#setTimerForEphemeralMessage
+             * @returns { Boolean } - Indicates whether the message is
+             *   ephemeral or not, and therefore whether the timer was set or not.
+             */
+            setTimerForEphemeralMessage () {
+                const setTimer = () => {
+                    this.ephemeral_timer = window.setTimeout(this.safeDestroy.bind(this), 10000);
+                }
+                if (this.isEphemeral()) {
+                    setTimer();
+                    return true;
+                } else {
+                    this.on('change:is_ephemeral',
+                        () => this.isEphemeral() ? setTimer() : clearTimeout(this.ephemeral_timer)
+                    );
+                    return false;
+                }
             },
 
             safeDestroy () {
@@ -110,7 +128,7 @@ converse.plugins.add('converse-chat', {
             },
 
             isEphemeral () {
-                return this.isOnlyChatStateNotification() || this.get('ephemeral');
+                return this.get('is_ephemeral') || u.isOnlyChatStateNotification(this);
             },
 
             getDisplayName () {
@@ -171,7 +189,7 @@ converse.plugins.add('converse-chat', {
                     return this.save({
                         'type': 'error',
                         'message': __("Sorry, could not determine upload URL."),
-                        'ephemeral': true
+                        'is_ephemeral': true
                     });
                 }
                 const slot = stanza.querySelector('slot');
@@ -184,7 +202,7 @@ converse.plugins.add('converse-chat', {
                     return this.save({
                         'type': 'error',
                         'message': __("Sorry, could not determine file upload URL."),
-                        'ephemeral': true
+                        'is_ephemeral': true
                     });
                 }
             },
@@ -223,7 +241,7 @@ converse.plugins.add('converse-chat', {
                         'type': 'error',
                         'upload': _converse.FAILURE,
                         'message': message,
-                        'ephemeral': true
+                        'is_ephemeral': true
                     });
                 };
                 xhr.open('PUT', this.get('put'), true);
@@ -338,17 +356,21 @@ converse.plugins.add('converse-chat', {
                 const message = await this.getDuplicateMessage(stanza);
                 if (message) {
                     this.updateMessage(message, original_stanza);
-                } else {
-                    if (
-                        !this.handleReceipt (stanza, from_jid) &&
-                        !this.handleChatMarker(stanza, from_jid)
+                } else if (
+                    !this.handleReceipt (stanza, from_jid) &&
+                    !this.handleChatMarker(stanza, from_jid)
+                ) {
+                    const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                    if (this.handleRetraction(attrs)) {
+                        return;
+                    }
+                    this.setEditable(attrs, attrs.time, stanza);
+                    if (attrs['chat_state'] ||
+                        attrs['retracted'] || // Retraction received *before* the message
+                        !u.isEmptyMessage(attrs)
                     ) {
-                        const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
-                        this.setEditable(attrs, attrs.time, stanza);
-                        if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
-                            const msg = this.correctMessage(attrs) || this.messages.create(attrs);
-                            this.incrementUnreadMsgCounter(msg);
-                        }
+                        const msg = this.handleCorrection(attrs) || this.messages.create(attrs);
+                        this.incrementUnreadMsgCounter(msg);
                     }
                 }
             },
@@ -517,28 +539,90 @@ converse.plugins.add('converse-chat', {
                 return true;
             },
 
-            retractMessage (attrs) {
-                if (!attrs.moderated !== 'retracted' && !attrs.retracted) {
-                    return;
+            isSameUser (jid1, jid2) {
+                return u.isSameBareJID(jid1, jid2);
+            },
+
+            /**
+             * Looks whether we already have a retraction for this
+             * incoming message. If so, it's considered "dangling" because it
+             * probably hasn't been applied to anything yet, given that the
+             * relevant message is only coming in now.
+             * @private
+             * @method _converse.ChatBox#findDanglingRetraction
+             * @param { object } attrs - Attributes representing a received
+             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             * @returns { _converse.Message }
+             */
+            findDanglingRetraction (attrs) {
+                if (!attrs.origin_id || !this.messages.length) {
+                    return null;
                 }
-                const message = this.messages.findWhere({'msgid': attrs.replaced_id, 'from': attrs.from});
-                if (!message) {
-                    return;
+                // Only look for dangling retractions if there are newer
+                // messages than this one, since retractions come after.
+                if (this.messages.last().get('time') > attrs.time) {
+                    // Search from latest backwards
+                    const messages = Array.from(this.messages.models);
+                    messages.reverse();
+                    return messages.find(
+                        ({attributes}) =>
+                            attributes.retracted_id === attrs.origin_id &&
+                            attributes.from === attrs.from &&
+                            !attributes.moderated_by
+                    );
                 }
             },
 
             /**
-             * Determine whether the passed in message attributes represent a
+             * Handles message retraction based on the passed in attributes.
+             * @private
+             * @method _converse.ChatBox#handleRetraction
+             * @param { object } attrs - Attributes representing a received
+             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             * @returns { Boolean } Returns `true` or `false` depending on
+             *  whether a message was retracted or not.
+             */
+            handleRetraction (attrs) {
+                const RETRACTION_ATTRIBUTES = ['retracted', 'retracted_id'];
+                if (attrs.retracted) {
+                    if (attrs.is_tombstone) {
+                        return false;
+                    }
+                    const message = this.messages.findWhere({'origin_id': attrs.retracted_id, 'from': attrs.from});
+                    if (!message) {
+                        attrs['dangling_retraction'] = true;
+                        this.messages.create(attrs);
+                        return true;
+                    }
+                    message.save(pick(attrs, RETRACTION_ATTRIBUTES));
+                    return true;
+                } else {
+                    // Check if we have dangling retraction
+                    const message = this.findDanglingRetraction(attrs);
+                    if (message) {
+                        const retraction_attrs = pick(message.attributes, RETRACTION_ATTRIBUTES);
+                        const new_attrs = Object.assign({'dangling_retraction': false}, attrs, retraction_attrs);
+                        delete new_attrs['id']; // Delete id, otherwise a new cache entry gets created
+                        message.save(new_attrs);
+                        return true;
+                    }
+                }
+                return false;
+            },
+
+            /**
+             * Determines whether the passed in message attributes represent a
              * message which corrects a previously received message, or an
              * older message which has already been corrected.
              * In both cases, update the corrected message accordingly.
              * @private
-             * @method _converse.ChatBox#correctMessage
+             * @method _converse.ChatBox#handleCorrection
              * @param { object } attrs - Attributes representing a received
-             *     message, as returned by
-             *     {@link _converse.ChatBox.getMessageAttributesFromStanza}
+             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             * @returns { _converse.Message|undefined } Returns the corrected
+             *  message or `undefined` if not applicable.
              */
-            correctMessage (attrs) {
+            handleCorrection (attrs) {
                 if (!attrs.replaced_id || !attrs.from) {
                     return;
                 }
@@ -602,6 +686,30 @@ converse.plugins.add('converse-chat', {
                     'from': stanza.getAttribute('from'),
                     'msgid': id
                 });
+            },
+
+            /**
+             * Sends a message stanza to retract a message in this chat
+             * @private
+             * @method _converse.ChatBox#sendRetractionMessage
+             * @param { _converse.Message } message - The message which we're retracting.
+             */
+            sendRetractionMessage (message) {
+                const origin_id = message.get('origin_id');
+                if (!origin_id) {
+                    throw new Error("Can't retract message without a XEP-0359 Origin ID");
+                }
+                const msg = $msg({
+                        'id': u.getUniqueId(),
+                        'to': this.get('jid'),
+                        'type': "chat"
+                    })
+                    .c('store', {xmlns: Strophe.NS.HINTS}).up()
+                    .c("apply-to", {
+                        'id': origin_id,
+                        'xmlns': Strophe.NS.FASTEN
+                    }).c('retract', {xmlns: Strophe.NS.RETRACT})
+                return _converse.connection.send(msg);
             },
 
             sendMarker(to_jid, id, type) {
@@ -849,7 +957,7 @@ converse.plugins.add('converse-chat', {
                     this.messages.create({
                         'message': __("Sorry, looks like file upload is not supported by your server."),
                         'type': 'error',
-                        'ephemeral': true
+                        'is_ephemeral': true
                     });
                     return;
                 }
@@ -861,7 +969,7 @@ converse.plugins.add('converse-chat', {
                     this.messages.create({
                         'message': __("Sorry, looks like file upload is not supported by your server."),
                         'type': 'error',
-                        'ephemeral': true
+                        'is_ephemeral': true
                     });
                     return;
                 }
@@ -871,7 +979,7 @@ converse.plugins.add('converse-chat', {
                             'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
                                 file.name, filesize(max_file_size)),
                             'type': 'error',
-                            'ephemeral': true
+                            'is_ephemeral': true
                         });
                     } else {
                         const attrs = Object.assign(
@@ -890,46 +998,19 @@ converse.plugins.add('converse-chat', {
             },
 
             /**
-             * Parses a passed in message stanza and returns an object
-             * of attributes.
+             * Parses a passed in message stanza and returns an object of attributes.
              * @private
              * @method _converse.ChatBox#getMessageAttributesFromStanza
              * @param { XMLElement } stanza - The message stanza
-             * @param { XMLElement } delay - The <delay> node from the stanza, if there was one.
              * @param { XMLElement } original_stanza - The original stanza, that contains the
              *  message stanza, if it was contained, otherwise it's the message stanza itself.
              * @returns { Object }
              */
-            async getMessageAttributesFromStanza (stanza, original_stanza) {
-                const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
-                const text = stanza_utils.getMessageBody(stanza) || undefined;
-                const chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
-                            stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
-                            stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
-                            stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
-                            stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
-
-                return Object.assign(
-                    {
-                        'chat_state': chat_state,
-                        'is_archived': stanza_utils.isArchived(original_stanza),
-                        'is_delayed': !!delay,
-                        'is_single_emoji': text ? await u.isSingleEmoji(text) : false,
-                        'message': text,
-                        'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
-                        'references': stanza_utils.getReferences(stanza),
-                        'subject': propertyOf(stanza.querySelector('subject'))('textContent'),
-                        'thread': propertyOf(stanza.querySelector('thread'))('textContent'),
-                        'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString(),
-                        'type': stanza.getAttribute('type')
-                    },
-                    stanza_utils.getStanzaIDs(original_stanza),
-                    stanza_utils.getSenderAttributes(stanza, this),
-                    stanza_utils.getOutOfBandAttributes(stanza),
-                    stanza_utils.getMessageFasteningAttributes(stanza),
-                    stanza_utils.getSpoilerAttributes(stanza),
-                    stanza_utils.getCorrectionAttributes(stanza, original_stanza)
-                );
+            getMessageAttributesFromStanza (stanza, original_stanza) {
+                // XXX: Eventually we want to get rid of this pass-through
+                // method but currently we still need it because converse-omemo
+                // overrides it.
+                return stanza_utils.getMessageAttributesFromStanza(stanza, original_stanza, this, _converse);
             },
 
             maybeShow () {

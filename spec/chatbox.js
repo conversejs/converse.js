@@ -720,7 +720,6 @@
                         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
                         await test_utils.waitForRoster(_converse, 'current');
                         // Send a message from a different resource
-                        spyOn(_converse, 'log');
                         const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         const view = await test_utils.openChatBoxFor(_converse, recipient_jid);
                         const msg = $msg({
@@ -848,7 +847,6 @@
                         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
                         await test_utils.waitForRoster(_converse, 'current');
                         // Send a message from a different resource
-                        spyOn(_converse, 'log');
                         const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         const view = await test_utils.openChatBoxFor(_converse, recipient_jid);
                         const msg = $msg({

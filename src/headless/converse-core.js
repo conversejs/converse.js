@@ -37,16 +37,19 @@ Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
 Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
 Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
 Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+Strophe.addNamespace('FASTEN', 'urn:xmpp:fasten:0');
 Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
 Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
 Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
 Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
 Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+Strophe.addNamespace('MODERATE', 'urn:xmpp:message-moderate:0');
 Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
 Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');
 Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
+Strophe.addNamespace('RETRACT', 'urn:xmpp:message-retract:0');
 Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
 Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
@@ -92,8 +95,7 @@ const CORE_PLUGINS = [
     'converse-rsm',
     'converse-smacks',
     'converse-status',
-    'converse-vcard',
-    'stanza-utils'
+    'converse-vcard'
 ];
 
 
@@ -103,7 +105,7 @@ const CORE_PLUGINS = [
  * @global
  * @namespace _converse
  */
-// XXX: Strictly speaking _converse is not a global, but we need to set it as
+// Strictly speaking _converse is not a global, but we need to set it as
 // such to get JSDoc to create the correct document site strucure.
 const _converse = {
     'templates': {},
@@ -140,6 +142,10 @@ _converse.Collection = Backbone.Collection.extend({
  */
 class TimeoutError extends Error {}
 _converse.TimeoutError = TimeoutError;
+
+
+class IllegalMessage extends Error {}
+_converse.IllegalMessage = IllegalMessage;
 
 
 // Make converse pluggable
@@ -187,7 +193,7 @@ _converse.LOGOUT = 'logout';
 _converse.OPENED = 'opened';
 _converse.PREBIND = 'prebind';
 
-_converse.IQ_TIMEOUT = 20000;
+_converse.STANZA_TIMEOUT = 10000;
 
 _converse.CONNECTION_STATUS = {
     0: 'ERROR',
@@ -1694,7 +1700,7 @@ _converse.api = {
      * or is rejected when we receive an `error` stanza.
      */
     sendIQ (stanza, timeout, reject=true) {
-        timeout = timeout || _converse.IQ_TIMEOUT;
+        timeout = timeout || _converse.STANZA_TIMEOUT;
         let promise;
         if (reject) {
             promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));

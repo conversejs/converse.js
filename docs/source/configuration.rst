@@ -1475,6 +1475,26 @@ not fulfilled.
 
 Requires the `src/converse-notification.js` plugin.
 
+show_retraction_warning
+-----------------------
+
+* Default: ``true``
+
+From `XEP-0424: Message Retraction <https://xmpp.org/extensions/xep-0424.html>`_:
+
+::
+  Due to the federated and extensible nature of XMPP it's not possible to remove a message with
+  full certainty and a retraction can only be considered an unenforceable request for such removal.
+  Clients which don't support message retraction are not obligated to enforce the request and
+  people could have seen or copied the message contents already.
+
+By default Converse shows a warning to users when they retract a message, to
+inform them that they don't have a guarantee that the message will be removed
+everywhere.
+
+This warning isn't applicable to all deployments of Converse and can therefore
+be turned off by setting this config variable to ``false``.
+
 use_system_emojis
 -----------------
 * Default: ``true``

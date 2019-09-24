@@ -21,7 +21,7 @@ import tpl_message_versions_modal from "templates/message_versions_modal.html";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
-const { dayjs } = converse.env;
+const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -140,22 +140,20 @@ converse.plugins.add('converse-message-view', {
                 } else {
                     await this.renderChatMessage();
                 }
-                if (is_followup) {
-                    u.addClass('chat-msg--followup', this.el);
-                }
+                is_followup && u.addClass('chat-msg--followup', this.el);
                 return this.el;
             },
 
             async onChanged (item) {
                 // Jot down whether it was edited because the `changed`
-                // attr gets removed when this.render() gets called further
-                // down.
+                // attr gets removed when this.render() gets called further down.
                 const edited = item.changed.edited;
                 if (this.model.changed.progress) {
                     return this.renderFileUploadProgresBar();
                 }
                 const isValidChange = prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop);
-                if (['correcting', 'message', 'type', 'upload', 'received', 'editable'].filter(isValidChange).length) {
+                const props = ['moderated', 'retracted', 'correcting', 'message', 'type', 'upload', 'received', 'editable'];
+                if (props.filter(isValidChange).length) {
                     await this.debouncedRender();
                 }
                 if (edited) {
@@ -243,19 +241,22 @@ converse.plugins.add('converse-message-view', {
                 const time = dayjs(this.model.get('time'));
                 const role = this.model.vcard ? this.model.vcard.get('role') : null;
                 const roles = role ? role.split(',') : [];
+                const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
 
                 const msg = u.stringToElement(tpl_message(
                     Object.assign(
                         this.model.toJSON(), {
-                        '__': __,
-                        'is_groupchat_message': this.model.get('type') === 'groupchat',
-                        'occupant': this.model.occupant,
-                        'is_me_message': this.model.isMeCommand(),
-                        'roles': roles,
-                        'pretty_time': time.format(_converse.time_format),
-                        'time': time.toISOString(),
+                         __,
+                        is_retracted,
                         'extra_classes': this.getExtraMessageClasses(),
+                        'is_groupchat_message': this.model.get('type') === 'groupchat',
+                        'is_me_message': this.model.isMeCommand(),
                         'label_show': __('Show more'),
+                        'occupant': this.model.occupant,
+                        'pretty_time': time.format(_converse.time_format),
+                        'retraction_text': is_retracted ? this.getRetractionText() : null,
+                        'roles': roles,
+                        'time': time.toISOString(),
                         'username': this.model.getDisplayName()
                     })
                 ));
@@ -265,11 +266,13 @@ converse.plugins.add('converse-message-view', {
                     msg.querySelector('.chat-msg__media').innerHTML = this.transformOOBURL(url);
                 }
 
-                const text = this.model.getMessageText();
-                const msg_content = msg.querySelector('.chat-msg__text');
-                if (text && text !== url) {
-                    msg_content.innerHTML = await this.transformBodyText(text);
-                    await u.renderImageURLs(_converse, msg_content);
+                if (!is_retracted) {
+                    const text = this.model.getMessageText();
+                    const msg_content = msg.querySelector('.chat-msg__text');
+                    if (text && text !== url) {
+                        msg_content.innerHTML = await this.transformBodyText(text);
+                        await u.renderImageURLs(_converse, msg_content);
+                    }
                 }
                 if (this.model.get('type') !== 'headline') {
                     this.renderAvatar(msg);
@@ -292,6 +295,25 @@ converse.plugins.add('converse-message-view', {
                 return this.replaceElement(msg);
             },
 
+            getRetractionText () {
+                const username = this.model.getDisplayName();
+                let retraction_text = __('A message by %1$s has been retracted', username);
+                if (this.model.get('type') === 'groupchat') {
+                    const retracted_by_mod = this.model.get('moderated_by');
+                    if (retracted_by_mod) {
+                        const chatbox = this.model.collection.chatbox;
+                        if (!this.model.mod) {
+                            this.model.mod =
+                                chatbox.occupants.findOccupant({'jid': retracted_by_mod}) ||
+                                chatbox.occupants.findOccupant({'nick': Strophe.getResourceFromJid(retracted_by_mod)});
+                        }
+                        const modname = this.model.mod ? this.model.mod.getDisplayName() : 'A moderator';
+                        retraction_text = __('%1$s has retracted this message from %2$s', modname , username);
+                    }
+                }
+                return retraction_text;
+            },
+
             renderErrorMessage () {
                 const msg = u.stringToElement(
                     tpl_info(Object.assign(this.model.toJSON(), {
@@ -304,8 +326,8 @@ converse.plugins.add('converse-message-view', {
 
             renderChatStateNotification () {
                 let text;
-                const from = this.model.get('from'),
-                      name = this.model.getDisplayName();
+                const from = this.model.get('from');
+                const name = this.model.getDisplayName();
 
                 if (this.model.get('chat_state') === _converse.COMPOSING) {
                     if (this.model.get('sender') === 'me') {
@@ -354,8 +376,10 @@ converse.plugins.add('converse-message-view', {
             },
 
             getExtraMessageClasses () {
-                let extra_classes = this.model.get('is_delayed') && 'delayed' || '';
-
+                const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
+                const extra_classes = [
+                    ...(this.model.get('is_delayed') ? ['delayed'] : []), ...(is_retracted ? ['chat-msg--retracted'] : [])
+                ];
                 if (this.model.get('type') === 'groupchat') {
                     if (this.model.occupant) {
                         extra_classes += ` ${this.model.occupant.get('role') || ''} ${this.model.occupant.get('affiliation') || ''}`;

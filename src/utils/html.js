@@ -293,6 +293,8 @@ u.ancestor = function (el, selector) {
  * Return the element's siblings until one matches the selector.
  * @private
  * @method u#nextUntil
+ * @param { HTMLElement } el
+ * @param { String } selector
  */
 u.nextUntil = function (el, selector) {
     const matches = [];

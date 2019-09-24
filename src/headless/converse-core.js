@@ -6,7 +6,6 @@
 /**
  * @module converse-core
  */
-import 'strophe.js/src/bosh';
 import 'strophe.js/src/websocket';
 import * as strophe from 'strophe.js/src/core';
 import Backbone from 'backbone';

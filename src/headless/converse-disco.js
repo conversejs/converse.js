@@ -246,7 +246,6 @@ converse.plugins.add('converse-disco', {
             // See https://xmpp.org/registrar/disco-categories.html
             _converse.api.disco.own.identities.add('client', 'web', 'Converse');
 
-            _converse.api.disco.own.features.add(Strophe.NS.BOSH);
             _converse.api.disco.own.features.add(Strophe.NS.CHATSTATES);
             _converse.api.disco.own.features.add(Strophe.NS.DISCO_INFO);
             _converse.api.disco.own.features.add(Strophe.NS.ROSTERX); // Limited support

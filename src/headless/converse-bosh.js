@@ -8,6 +8,7 @@
  * @description
  * Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
  */
+import 'strophe.js/src/bosh';
 import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 
@@ -117,6 +118,11 @@ converse.plugins.add('converse-bosh', {
                 _converse.bosh_session.save({'jid': _converse.jid});
             }
         });
+
+        _converse.api.listen.on('addClientFeatures',
+            () => _converse.api.disco.own.features.add(Strophe.NS.BOSH)
+        );
+
         /************************ END Event Handlers ************************/
 
 

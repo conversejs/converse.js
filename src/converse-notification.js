@@ -87,6 +87,7 @@ converse.plugins.add('converse-notification', {
             }
             const is_me = Strophe.getBareJidFromJid(message.getAttribute('from')) === _converse.bare_jid;
             return !u.isOnlyChatStateNotification(message) &&
+                !u.isOnlyMessageDeliveryReceipt(message) &&
                 !is_me &&
                 (_converse.show_desktop_notifications === 'all' || _converse.isMessageToHiddenChat(message));
         };

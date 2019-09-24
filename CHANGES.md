@@ -7,6 +7,7 @@
 - #1712: `TypeError: plugin._features is not a function`
 - Bugfix: process stanzas from mam one-by-one in order to correctly process message
   receipts
+- #1714 Bugfix: Don't notify the user in case we're receiving a message delivery receipt only
 
 ## 5.0.3 (2019-09-13)
 

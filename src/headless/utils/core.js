@@ -148,6 +148,18 @@ u.isOnlyChatStateNotification = function (msg) {
     return msg['chat_state'] && u.isEmptyMessage(msg);
 };
 
+u.isOnlyMessageDeliveryReceipt = function (msg) {
+    if (msg instanceof Element) {
+        // See XEP-0184 Message Delivery Receipts
+        return (msg.querySelector('body') === null) &&
+                    (msg.querySelector('received') !== null);
+    }
+    if (msg instanceof Backbone.Model) {
+        msg = msg.attributes;
+    }
+    return msg['received'] && u.isEmptyMessage(msg);
+};
+
 u.isHeadlineMessage = function (_converse, message) {
     const from_jid = message.getAttribute('from');
     if (message.getAttribute('type') === 'headline') {

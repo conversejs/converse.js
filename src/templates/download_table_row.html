@@ -1,0 +1,28 @@
+<td class="download-checkbox-column" align="center"><input type="checkbox" class="checkbox-for-download" {{{o.checked}}}/></td>
+<td class="download-timestamp-column" align="center">{{{o.timestamp}}}</td> 
+<td class="download-author-column" align="center">{{{o.author}}}</td>
+
+{[ if (o.type === '.jpg' || o.type === '.jpeg' || o.type === '.png') { ]}
+    <td class="download-link-column" align="center">
+        <a target="_blank" rel="noopener" href="{{{o.link}}}" >
+            <img class="chat-image" src="{{{o.link}}}" alt="Image not found: {{{o.filename}}}{{{o.type}}}">
+        </a>        
+    </td>
+{[ } else if (o.type === '.mp3') { ]}
+    <td class="download-link-column" align="center">
+        <audio controls style="max-width: 90%; max-height: 90%px;">
+            <source src="{{{o.link}}}" type="audio/mpeg">
+        </audio>        
+    </td>
+{[ } else if (o.type === '.mp4') { ]}
+    <td class="download-link-column" align="center">
+        <video controls style="max-width: 90%; max-height: 90%px;">
+            <source src="{{{o.link}}}" type="video/mp4">
+        </video>        
+    </td>
+{[ } else { ]}
+    <td class="download-link-column" align="center">
+        <a target="_blank" rel="noopener" href="{{{o.link}}}">{{{o.filename}}}{{{o.type}}}</a>
+    </td>
+{[ } ]}
+<td class="download-filename-column"><input class="download-file-input" type="text" value="{{{o.filename}}}"><span style="display: block; margin-top: 5px; float: left;">{{{o.type}}}</span></td>

@@ -133,7 +133,10 @@ module.exports = {
             "snabbdom-props":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-props"),
             "snabbdom-style":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-style"),
             "tovnode":                  path.resolve(__dirname, "node_modules/snabbdom/dist/tovnode"),
-            "underscore":               path.resolve(__dirname, "src/underscore-shim")
+            "underscore":               path.resolve(__dirname, "src/underscore-shim"),
+            "jszip":                    path.resolve(__dirname, "node_modules/jszip/dist/jszip"),
+            "jszip_utils":              path.resolve(__dirname, "node_modules/jszip-utils/dist/jszip-utils"),
+            "FileSaver":                path.resolve(__dirname, "node_modules/file-saver")
         }
     }
 }

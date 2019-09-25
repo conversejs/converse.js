@@ -4,6 +4,7 @@
  */
 import "@converse/headless/headless";
 import "converse-autocomplete";
+import "converse-attachement-download";  // allows for a download of all attachements (pictures, files, soundfiles, etc.) from chat-history 
 import "converse-bookmark-views";  // Views for XEP-0048 Bookmarks
 import "converse-chatview";        // Renders standalone chat boxes for single user chat
 import "converse-controlbox";      // The control box
@@ -30,6 +31,7 @@ import "../sass/converse.scss";
 import converse from "@converse/headless/converse-core";
 
 const WHITELISTED_PLUGINS = [
+    'converse-attachement-download',
     'converse-autocomplete',
     'converse-bookmark-views',
     'converse-chatboxviews',

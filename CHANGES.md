@@ -2,6 +2,7 @@
 
 ## 5.0.4
 
+- Add Toolbar-Button to open dialog to download all files from the current chat-history
 - Bugfix: Don't treat every duplicate message ID as a message correction; since some
   clients don't use globally unique ID's this causes false positives.
 - #1712: `TypeError: plugin._features is not a function`

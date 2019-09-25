@@ -1,0 +1,29 @@
+<div class="download-table">
+    <a class="close-popup fa fa-times" style="float:right; font-size: 20px;"></a>
+    <div class="attachement-header">    
+        </br>
+        <span class="download-attachements-header">{{{o.chatCaption}}}</span> 
+        </br>
+    </div>
+    <div class="attachements-content" style="display: block">
+        <input class="zipfile-name-input" type="text" style="float: left;" value="{{{o.zipfileName}}}" placeholder="{{{o.zipfilePlaceholder}}}"><span style="display: block; margin-top: 15px; float: left;">.zip</span>
+        <div class="scrollbar-div">
+            <table style="width:100%" border="1">
+                <thead class="download-table-head">
+                    <tr>
+                        <th><input type="checkbox" id="download-select-all" checked></input></th>
+                        <th>{{{o.timestampCaption}}}</th>
+                        <th>{{{o.userCaption}}}</th> 
+                        <th>{{{o.fileCaption}}}</th>
+                        <th>{{{o.filenameCaption}}}</th>
+                    </tr>
+                </thead>
+                <tbody class="download-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="attachements-footer">
+        <input type="button" class="download-files-button" value="{{{o.downloadButtonCaption}}}"></button>
+    </div>
+</div>

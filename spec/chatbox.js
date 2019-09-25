@@ -437,7 +437,8 @@
                     expect(view).toBeDefined();
                     const toolbar = view.el.querySelector('ul.chat-toolbar');
                     expect(_.isElement(toolbar)).toBe(true);
-                    expect(toolbar.querySelectorAll(':scope > li').length).toBe(2);
+                    // changed expected number to be 3 bacause a new symbol was added to the toolbar for the download-dialog
+                    expect(toolbar.querySelectorAll(':scope > li').length).toBe(3);
                     done();
                 }));
 

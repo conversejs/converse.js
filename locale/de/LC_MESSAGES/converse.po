@@ -2081,6 +2081,44 @@ msgstr "Resynchronisieren Sie Ihre Kontakte"
 
 #~ msgid "Error: the groupchat %1$s does not exist."
 #~ msgstr "Fehler: Der Gruppenchat %1$s existiert nicht."
+msgid "There are no files to download."
+msgstr "Es sind keine Dateien zum Download verfügbar."
+
+msgid "The Filename "
+msgstr "Der Dateiname "
+
+msgid " is invalid. Recovering last valid Filename."
+msgstr " ist ungültig! Der letzte gültige Dateiname wurde wiederhergestellt"
+
+msgid "No Files for Download selected!"
+msgstr "Es wurden keine Dateien zum Download ausgewählt"
+
+msgid "Attachements from the Chat"
+msgstr "Anlagen aus dem Chatverlauf"
+
+msgid "Please enter the name of the zip file."
+msgstr "Bitte geben Sie den Namen der Zip-Datei an."
+
+msgid "Download attachements"
+msgstr "Anlagen speichern"
+
+msgid "Timestamp"
+msgstr "Zeitstempel"
+
+msgid "User"
+msgstr "Nutzer"
+
+msgid "File"
+msgstr "Datei"
+
+msgid "Filename"
+msgstr "Dateiname"
+
+msgid "Download in Progress..."
+msgstr "Dateien werden heruntergeladen"
+
+msgid "Start Download-Dialog"
+msgstr "Starte Download-Dialog"
 
 #~ msgid "Destroy groupchat"
 #~ msgstr "Gruppenchat löschen"

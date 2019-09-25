@@ -142,6 +142,16 @@ Allow users to resize chats by dragging the edges. The min-height and min-width
 CSS properties set on a chatboxes (specifically on the ``#converse.js .chatbox > .box-flyout`` element)
 will be honored, IF they are set in pixels.
 
+allowed_download_servers
+------------------------
+
+* Default: ``[]``
+
+Used to determine the files inside the chat-history. It can furthermore be used to prevent the download-
+dialog to show files from third-party sites etc. The parameter is simply an array of strings. If, for 
+example, the parameter is set to ['www.wikipedia.com'] only files from wikipedia will be displayed inside the 
+download-dialog.
+
 allow_logout
 ------------
 

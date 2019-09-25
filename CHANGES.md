@@ -2,6 +2,7 @@
 
 ## 6.0.0 (Unreleased)
 
+- Add: Resizing of the occupants-list in Multi-User-Chats
 - #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
 - #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
 - #1089: When filtering the roster for `online` users, show all non-offline users.

@@ -142,6 +142,9 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             sendBookmarkStanza () {
+                if (!_converse.connection.connected) {
+                    return;
+                }
                 const stanza = $iq({
                         'type': 'set',
                         'from': _converse.connection.jid,

@@ -108,8 +108,8 @@ _converse.VERSION_NAME = "v5.0.4dev";
 Object.assign(_converse, Backbone.Events);
 
 _converse.Collection = Backbone.Collection.extend({
-    clearSession () {
-        Array.from(this.models).forEach(m => m.destroy());
+    clearSession (options) {
+        Array.from(this.models).forEach(m => m.destroy(options));
         this.browserStorage._clear();
         this.reset();
     }

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
-"PO-Revision-Date: 2019-07-18 20:05+0000\n"
-"Last-Translator: evandrofisico <evandrofisico@gmail.com>\n"
+"PO-Revision-Date: 2019-09-28 05:54+0000\n"
+"Last-Translator: Abner Santana <abnssantana@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -27,19 +27,16 @@ msgid "Uploading file:"
 msgstr "Fazendo upload de arquivo:"
 
 #: dist/converse-no-dependencies.js:8014
-#, fuzzy
 msgid "This message has been edited"
-msgstr "Essa sala começou a ser moderada"
+msgstr "Esta mensagem foi editada"
 
 #: dist/converse-no-dependencies.js:8020
-#, fuzzy
 msgid "Edit this message"
-msgstr "Mostrar o menu"
+msgstr "Edite esta mensagem"
 
 #: dist/converse-no-dependencies.js:8036
-#, fuzzy
 msgid "Message versions"
-msgstr "Arquivando mensagem"
+msgstr "Versões de mensagem"
 
 #: dist/converse-no-dependencies.js:8050 dist/converse-no-dependencies.js:8327
 #: dist/converse-no-dependencies.js:8441 dist/converse-no-dependencies.js:9007
@@ -53,23 +50,20 @@ msgid "The User's Profile Image"
 msgstr "A imagem de perfil do usuário"
 
 #: dist/converse-no-dependencies.js:8341
-#, fuzzy
 msgid "Full Name:"
-msgstr "Nome"
+msgstr "Nome Completo:"
 
 #: dist/converse-no-dependencies.js:8347 dist/converse-no-dependencies.js:8523
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "Endereço da sala (JID):"
+msgstr "Endereço XMPP:"
 
 #: dist/converse-no-dependencies.js:8355
-#, fuzzy
 msgid "Nickname:"
-msgstr "Apelido"
+msgstr "Apelido:"
 
 #: dist/converse-no-dependencies.js:8363
 msgid "URL:"
-msgstr "Link:"
+msgstr "URL:"
 
 #: dist/converse-no-dependencies.js:8373
 msgid "Email:"
@@ -96,9 +90,8 @@ msgid "Refresh"
 msgstr "Atualizar"
 
 #: dist/converse-no-dependencies.js:8447
-#, fuzzy
 msgid "Remove as contact"
-msgstr "Adicionar contato"
+msgstr "Remover contato"
 
 #: dist/converse-no-dependencies.js:8529
 msgid "Password:"
@@ -168,9 +161,8 @@ msgid "You're not allowed to send messages in this room"
 msgstr "Você não tem permissão de criar novas salas."
 
 #: dist/converse-no-dependencies.js:8845
-#, fuzzy
 msgid "This groupchat no longer exists"
-msgstr "Essa sala não é moderada"
+msgstr "Este grupo de conversa não existe mais"
 
 #: dist/converse-no-dependencies.js:8851
 msgid "The conversation has moved. Click below to enter."
@@ -200,9 +192,8 @@ msgid "Topic author"
 msgstr "Autor do tópico"
 
 #: dist/converse-no-dependencies.js:8897
-#, fuzzy
 msgid "Online users"
-msgstr "Online"
+msgstr "Usuários Online"
 
 #: dist/converse-no-dependencies.js:8901 dist/converse-no-dependencies.js:9041
 msgid "Features"

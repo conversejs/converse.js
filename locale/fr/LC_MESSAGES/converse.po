@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
-"PO-Revision-Date: 2019-08-14 12:41+0200\n"
-"Last-Translator: Thierry <thierry.perpere@u-psud.fr>\n"
+"PO-Revision-Date: 2019-09-28 05:54+0000\n"
+"Last-Translator: Estébastien Robespi <estebastien@mailbox.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -136,9 +136,8 @@ msgid "Search"
 msgstr "Rechercher"
 
 #: dist/converse-no-dependencies.js:8629
-#, fuzzy
 msgid "Search results"
-msgstr "Rechercher"
+msgstr "Résultats de recherche"
 
 #: dist/converse-no-dependencies.js:8775
 msgid "Enter a new Groupchat"
@@ -331,9 +330,8 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: dist/converse-no-dependencies.js:9310
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "Modérateur"
+msgstr "Outils de modération"
 
 #: dist/converse-no-dependencies.js:9312
 msgid ""
@@ -342,6 +340,10 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Des rôles sont désignés pour autoriser ou non certaines actions dans une "
+"conversation à plusieurs. Les désignations peuvent être explicites, ou "
+"hérités implicitement d'une affiliation. Un rôle qui n'est pas hérité d'une "
+"affiliation est valable que pendant la session de l'utilisateur."
 
 #: dist/converse-no-dependencies.js:9314 dist/converse-no-dependencies.js:49291
 msgid "Role"
@@ -352,39 +354,40 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Les modérateurs sont des utilisateurs privilégiés qui peuvent changer les "
+"rôles d'autres utilisateurs (exceptés les administrateurs ou les "
+"propriétaires d'affiliation)."
 
 #: dist/converse-no-dependencies.js:9332 dist/converse-no-dependencies.js:9356
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "Le rôle par défaut donne le droit de lire et écrire des messages."
 
 #: dist/converse-no-dependencies.js:9338 dist/converse-no-dependencies.js:9362
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Les visiteurs ne sont pas autorisés à écrire dans une conversation à "
+"plusieurs sous modération."
 
 #: dist/converse-no-dependencies.js:9346 dist/converse-no-dependencies.js:9442
-#, fuzzy
 msgid "Show users"
-msgstr "Afficher plus"
+msgstr "Afficher les utilisateurs"
 
 #: dist/converse-no-dependencies.js:9372
-#, fuzzy
 msgid "No users with that role found."
-msgstr "Aucun utilisateur trouvé"
+msgstr "Aucun utilisateur trouvé avec ce rôle."
 
 #: dist/converse-no-dependencies.js:9388
-#, fuzzy
 msgid "New Role"
-msgstr "Rôle"
+msgstr "Nouveau rôle"
 
 #: dist/converse-no-dependencies.js:9402 dist/converse-no-dependencies.js:9502
 msgid "Reason"
-msgstr ""
+msgstr "Motif"
 
 #: dist/converse-no-dependencies.js:9404
-#, fuzzy
 msgid "Change role"
-msgstr "Changer les préférences"
+msgstr "Changer de rôle"
 
 #: dist/converse-no-dependencies.js:9408
 msgid ""
@@ -392,40 +395,45 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"Typiquement, une affiliation est un titre à vie qui donne un rôle "
+"particulier avec ses privilèges et ses responsabilités. Par exemple, les "
+"administrateurs et les propriétaires ont d'office le rôle de modérateur."
 
 #: dist/converse-no-dependencies.js:9410
 msgid "Affiliation"
-msgstr ""
+msgstr "Affiliation"
 
 #: dist/converse-no-dependencies.js:9422 dist/converse-no-dependencies.js:9446
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"L'affiliation la plus distinctive est celle de propriétaire. Un propriétaire "
+"peut changer les rôles et les affiliations de tout les utilisateurs."
 
 #: dist/converse-no-dependencies.js:9428 dist/converse-no-dependencies.js:9452
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"L'affiliation d'administrateur est la 2e plus haute. Un administrateur peut "
+"changer les rôles de tout les utilisateurs sauf le propriétaire."
 
 #: dist/converse-no-dependencies.js:9434 dist/converse-no-dependencies.js:9458
-#, fuzzy
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr "Bannir un utilisateur en changeant son affiliation"
+msgstr "Donner l'affiliation de « banni » exclue un utilisateur."
 
 #: dist/converse-no-dependencies.js:9468
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "Aucun utilisateur trouvé avec cette affiliation."
 
 #: dist/converse-no-dependencies.js:9488
 msgid "New affiliation"
-msgstr ""
+msgstr "Nouvelle affiliation"
 
 #: dist/converse-no-dependencies.js:9504
-#, fuzzy
 msgid "Change affiliation"
-msgstr "Changer le rôle  de l’utilisateur en administrateur"
+msgstr "Changer d'affiliation"
 
 #: dist/converse-no-dependencies.js:9863
 msgid "Save and close"
@@ -513,39 +521,39 @@ msgstr "Ne bougez pas, on va chercher le formulaire d’inscription…"
 
 #: dist/converse-no-dependencies.js:28172
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Émoticônes"
 
 #: dist/converse-no-dependencies.js:28173
 msgid "People"
-msgstr ""
+msgstr "Personnes"
 
 #: dist/converse-no-dependencies.js:28174
 msgid "Activities"
-msgstr ""
+msgstr "Activités"
 
 #: dist/converse-no-dependencies.js:28175
 msgid "Travel"
-msgstr ""
+msgstr "Voyage"
 
 #: dist/converse-no-dependencies.js:28176
 msgid "Objects"
-msgstr ""
+msgstr "Objets"
 
 #: dist/converse-no-dependencies.js:28177
 msgid "Animals and nature"
-msgstr ""
+msgstr "Animaux et nature"
 
 #: dist/converse-no-dependencies.js:28178
 msgid "Food and drink"
-msgstr ""
+msgstr "Cuisine et boissons"
 
 #: dist/converse-no-dependencies.js:28179
 msgid "Symbols"
-msgstr ""
+msgstr "Symboles"
 
 #: dist/converse-no-dependencies.js:28180
 msgid "Flags"
-msgstr ""
+msgstr "Drapeaux"
 
 #: dist/converse-no-dependencies.js:28810
 msgid "This groupchat is not anonymous"
@@ -564,14 +572,12 @@ msgid "The groupchat configuration has changed"
 msgstr "Les paramètres de ce salon ont été modifiés"
 
 #: dist/converse-no-dependencies.js:28814
-#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr "L’enregistrement est maintenant activé sur ce salon"
+msgstr "L’inscription est maintenant activé sur ce salon"
 
 #: dist/converse-no-dependencies.js:28815
-#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr "L’enregistrement est maintenant désactivé sur ce salon"
+msgstr "L’inscription est maintenant désactivé sur ce salon"
 
 #: dist/converse-no-dependencies.js:28816
 msgid "This groupchat is now no longer anonymous"
@@ -980,23 +986,23 @@ msgstr "Choisir un fichier à envoyer"
 
 #: dist/converse-no-dependencies.js:42156
 msgid "1111"
-msgstr ""
+msgstr "1111"
 
 #: dist/converse-no-dependencies.js:42166
 msgid "2222"
-msgstr ""
+msgstr "2222"
 
 #: dist/converse-no-dependencies.js:42178
 msgid "3333"
-msgstr ""
+msgstr "3333"
 
 #: dist/converse-no-dependencies.js:42188
 msgid "4444"
-msgstr ""
+msgstr "4444"
 
 #: dist/converse-no-dependencies.js:42199
 msgid "hello world"
-msgstr ""
+msgstr "Bonjour je suis un programme qui marche"
 
 #: dist/converse-no-dependencies.js:42234
 msgid "Click to write as a normal (non-spoiler) message"

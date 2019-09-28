@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:01+0200\n"
-"PO-Revision-Date: 2019-09-28 05:54+0000\n"
+"PO-Revision-Date: 2019-09-29 12:55+0000\n"
 "Last-Translator: Estébastien Robespi <estebastien@mailbox.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -1140,31 +1140,24 @@ msgstr "Non modéré"
 
 #: dist/converse-no-dependencies.js:46736
 msgid "Affiliation changed"
-msgstr ""
+msgstr "Affiliation modifiée"
 
 #: dist/converse-no-dependencies.js:46759
-#, fuzzy
 msgid "Sorry, something went wrong while trying to set the affiliation"
 msgstr ""
-"Désolé, quelque chose s’est mal passé mal lors de la tentative de "
-"réactualisation"
+"Désolé, un problème est survenu lors de la modification de l'affiliation."
 
 #: dist/converse-no-dependencies.js:46775
-#, fuzzy
 msgid "Role changed"
-msgstr "Ouvrir la discussion"
+msgstr "Rôle modifié"
 
 #: dist/converse-no-dependencies.js:46788
-#, fuzzy
 msgid "You're not allowed to make that change"
-msgstr "Vous n’êtes pas autorisé à créer des salons."
+msgstr "Vous n’êtes pas autorisé·e à faire cette modification"
 
 #: dist/converse-no-dependencies.js:46790
-#, fuzzy
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr ""
-"Désolé, quelque chose s’est mal passé mal lors de la tentative de "
-"réactualisation"
+msgstr "Désolé, un problème est survenu lors de la modification de rôle"
 
 #: dist/converse-no-dependencies.js:46820
 msgid "Query for Groupchats"
@@ -1358,7 +1351,7 @@ msgstr "Autoriser l’utilisateur à être membre"
 
 #: dist/converse-no-dependencies.js:47715
 msgid "Opens up the moderator tools GUI"
-msgstr ""
+msgstr "Ouvre l'interface graphique des outils de modération"
 
 #: dist/converse-no-dependencies.js:47715
 msgid "Remove user's ability to post messages"

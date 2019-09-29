@@ -41,6 +41,7 @@ converse.plugins.add('converse-chatboxes', {
             'auto_join_private_chats': [],
             'clear_messages_on_reconnection': false,
             'filter_by_resource': false,
+            'allow_message_corrections': 'all',
             'send_chat_state_notifications': true
         });
         _converse.api.promises.add([
@@ -285,6 +286,7 @@ converse.plugins.add('converse-chatboxes', {
                     'message_type': 'chat',
                     'nickname': undefined,
                     'num_unread': 0,
+                    'time_sent': (new Date(0)).toISOString(),
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.PRIVATE_CHAT_TYPE,
                     'url': ''
@@ -766,6 +768,36 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             /**
+             * Responsible for setting the editable attribute of messages.
+             * If _converse.allow_message_corrections is "last", then only the last
+             * message sent from me will be editable. If set to "all" all messages
+             * will be editable. Otherwise no messages will be editable.
+             * @method _converse.ChatBox#setEditable
+             * @memberOf _converse.ChatBox
+             * @param { Object } attrs An object containing message attributes.
+             * @param { String } send_time - time when the message was sent
+             */
+            setEditable (attrs, send_time, stanza) {
+                if (stanza && u.isHeadlineMessage(_converse, stanza)) {
+                    return;
+                }
+                if (u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
+                    return;
+                }
+                if (_converse.allow_message_corrections === 'all') {
+                    attrs.editable = true;
+                } else if ((_converse.allow_message_corrections === 'last') &&
+                           (send_time > this.get('time_sent'))) {
+                    this.set({'time_sent': send_time});
+                    const msg = this.messages.findWhere({'editable': true});
+                    if (msg) {
+                        msg.save({'editable': false});
+                    }
+                    attrs.editable = true;
+                }
+            },
+
+            /**
              * Responsible for sending off a text message inside an ongoing chat conversation.
              * @method _converse.ChatBox#sendMessage
              * @memberOf _converse.ChatBox
@@ -793,6 +825,7 @@ converse.plugins.add('converse-chatboxes', {
                         'received': undefined
                     });
                 } else {
+                    this.setEditable(attrs, (new Date()).toISOString());
                     message = this.messages.create(attrs);
                 }
                 _converse.api.send(this.createMessageStanza(message));
@@ -1258,6 +1291,7 @@ converse.plugins.add('converse-chatboxes', {
                             !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact, is_mam)) {
 
                         const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+                        chatbox.setEditable(attrs, attrs.time, stanza);
                         if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
                             const msg = chatbox.correctMessage(attrs) || chatbox.messages.create(attrs);
                             chatbox.incrementUnreadMsgCounter(msg);

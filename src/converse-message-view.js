@@ -154,7 +154,7 @@ converse.plugins.add('converse-message-view', {
                     return this.renderFileUploadProgresBar();
                 }
                 const isValidChange = prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop);
-                if (['correcting', 'message', 'type', 'upload', 'received'].filter(isValidChange).length) {
+                if (['correcting', 'message', 'type', 'upload', 'received', 'editable'].filter(isValidChange).length) {
                     await this.debouncedRender();
                 }
                 if (edited) {

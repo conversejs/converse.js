@@ -988,7 +988,7 @@ converse.plugins.add('converse-chatview', {
                     while (idx > 0) {
                         idx -= 1;
                         const candidate = this.model.messages.at(idx);
-                        if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                        if (candidate.get('editable')) {
                             message = candidate;
                             break;
                         }

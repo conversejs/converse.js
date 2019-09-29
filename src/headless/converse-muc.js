@@ -399,6 +399,7 @@ converse.plugins.add('converse-muc', {
                     'name': '',
                     'num_unread': 0,
                     'roomconfig': {},
+                    'time_sent': (new Date(0)).toISOString(),
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.CHATROOMS_TYPE
                 }
@@ -1578,6 +1579,7 @@ converse.plugins.add('converse-muc', {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                this.setEditable(attrs, attrs.time);
                 if (attrs.nick &&
                         !this.subjectChangeHandled(attrs) &&
                         !this.ignorableCSN(attrs) &&

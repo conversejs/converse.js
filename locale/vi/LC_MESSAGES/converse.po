@@ -8,52 +8,55 @@ msgstr ""
 "Project-Id-Version: Converse.js 5.0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-13 15:17+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2019-10-01 17:56+0000\n"
+"Last-Translator: ltdangkhoa <luuthaidangkhoa@gmail.com>\n"
+"Language-Team: Vietnamese <https://hosted.weblate.org/projects/conversejs/"
+"translations/vi/>\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: dist/converse-no-dependencies.js:7905
 msgid "Uploading file:"
-msgstr ""
+msgstr "Tải file lên:"
 
 #: dist/converse-no-dependencies.js:8014
 msgid "This message has been edited"
-msgstr ""
+msgstr "Tin nhắn đã được chỉnh sửa"
 
 #: dist/converse-no-dependencies.js:8020
 msgid "Edit this message"
-msgstr ""
+msgstr "Sửa tin nhắn"
 
 #: dist/converse-no-dependencies.js:8036
 msgid "Message versions"
-msgstr ""
+msgstr "Phiên bản tin nhắn"
 
 #: dist/converse-no-dependencies.js:8050 dist/converse-no-dependencies.js:8327
 #: dist/converse-no-dependencies.js:8441 dist/converse-no-dependencies.js:9007
 #: dist/converse-no-dependencies.js:49286
 #: dist/converse-no-dependencies.js:49375
 msgid "Close"
-msgstr ""
+msgstr "Đóng"
 
 #: dist/converse-no-dependencies.js:8331
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "Hình đại diện người dùng"
 
 #: dist/converse-no-dependencies.js:8341
 msgid "Full Name:"
-msgstr ""
+msgstr "Tên đầy đủ:"
 
 #: dist/converse-no-dependencies.js:8347 dist/converse-no-dependencies.js:8523
 msgid "XMPP Address:"
-msgstr ""
+msgstr "Địa chỉ XMPP:"
 
 #: dist/converse-no-dependencies.js:8355
 msgid "Nickname:"
-msgstr ""
+msgstr "Nick:"
 
 #: dist/converse-no-dependencies.js:8363
 msgid "URL:"
@@ -65,39 +68,39 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8383
 msgid "Role:"
-msgstr ""
+msgstr "Vai trò:"
 
 #: dist/converse-no-dependencies.js:8391
 msgid "OMEMO Fingerprints"
-msgstr ""
+msgstr "Dấu OMEMO"
 
 #: dist/converse-no-dependencies.js:8415
 msgid "Trusted"
-msgstr ""
+msgstr "Tin cậy"
 
 #: dist/converse-no-dependencies.js:8429
 msgid "Untrusted"
-msgstr ""
+msgstr "Không tin cậy"
 
 #: dist/converse-no-dependencies.js:8443
 msgid "Refresh"
-msgstr ""
+msgstr "Làm mới"
 
 #: dist/converse-no-dependencies.js:8447
 msgid "Remove as contact"
-msgstr ""
+msgstr "Xoá liên hệ"
 
 #: dist/converse-no-dependencies.js:8529
 msgid "Password:"
-msgstr ""
+msgstr "Mật khẩu:"
 
 #: dist/converse-no-dependencies.js:8531
 msgid "password"
-msgstr ""
+msgstr "mật khẩu"
 
 #: dist/converse-no-dependencies.js:8541
 msgid "This is a trusted device"
-msgstr ""
+msgstr "Thiết bị tin cậy"
 
 #: dist/converse-no-dependencies.js:8543
 msgid ""
@@ -106,7 +109,7 @@ msgid ""
 "log out. It's important that you explicitly log out, otherwise not all "
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
-msgstr ""
+msgstr "Để tăng hiệu năng, bản cache dữ liệu sẽ lưu trên trình duyệt."
 
 #: dist/converse-no-dependencies.js:8547
 msgid "Log in"

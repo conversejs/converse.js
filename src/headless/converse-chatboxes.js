@@ -1396,6 +1396,13 @@ converse.plugins.add('converse-chatboxes', {
             _converse.api.trigger('chatBoxesInitialized');
         });
 
+        _converse.api.listen.on('clearSession', () => {
+            if (_converse.shouldClearCache()) {
+                _converse.chatboxes.filter(c => c.messages && c.messages.clearSession({'silent': true}));
+            }
+        });
+
+
         _converse.api.listen.on('presencesInitialized', (reconnecting) => _converse.chatboxes.onConnected(reconnecting));
         _converse.api.listen.on('reconnected', () => _converse.chatboxes.forEach(m => m.onReconnection()));
         /************************ END Event Handlers ************************/

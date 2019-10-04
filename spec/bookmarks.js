@@ -267,6 +267,7 @@
                     'nick': ' Othello'
                 });
                 expect(_converse.bookmarks.length).toBe(1);
+                await u.waitUntil(() => _converse.chatboxes.length >= 1);
                 expect(view.model.get('bookmarked')).toBeTruthy();
                 let bookmark_icon = await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(u.hasClass('button-on', bookmark_icon)).toBeTruthy();

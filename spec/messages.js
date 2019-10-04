@@ -1045,7 +1045,7 @@
             const message = 'This message is sent from this chatbox';
             await test_utils.sendMessage(view, message);
 
-            const chatbox = _converse.api.chats.get(contact_jid);
+            const chatbox = await _converse.api.chats.get(contact_jid);
             expect(chatbox.messages.models.length, 1);
             const msg_object = chatbox.messages.models[0];
 

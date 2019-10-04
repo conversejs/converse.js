@@ -56,7 +56,7 @@
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group .group-toggle').length, 300);
                 let muc_jid = 'chillout@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-                let room = _converse.api.rooms.get(muc_jid);
+                let room = await _converse.api.rooms.get(muc_jid);
                 expect(room instanceof Object).toBeTruthy();
 
                 let chatroomview = _converse.chatboxviews.get(muc_jid);
@@ -68,19 +68,19 @@
                 // Test with mixed case
                 muc_jid = 'Leisure@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-                room = _converse.api.rooms.get(muc_jid);
+                room = await _converse.api.rooms.get(muc_jid);
                 expect(room instanceof Object).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(muc_jid.toLowerCase());
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
 
                 muc_jid = 'leisure@montague.lit';
-                room = _converse.api.rooms.get(muc_jid);
+                room = await _converse.api.rooms.get(muc_jid);
                 expect(room instanceof Object).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(muc_jid.toLowerCase());
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
 
                 muc_jid = 'leiSure@montague.lit';
-                room = _converse.api.rooms.get(muc_jid);
+                room = await _converse.api.rooms.get(muc_jid);
                 expect(room instanceof Object).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(muc_jid.toLowerCase());
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
@@ -88,7 +88,7 @@
 
                 // Non-existing room
                 muc_jid = 'chillout2@montague.lit';
-                room = _converse.api.rooms.get(muc_jid);
+                room = await _converse.api.rooms.get(muc_jid);
                 expect(typeof room === 'undefined').toBeTruthy();
                 done();
             }));

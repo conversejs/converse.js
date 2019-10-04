@@ -261,26 +261,27 @@
                 _converse.api.trigger('rosterContactsFetched');
 
                 // Test on chat that doesn't exist.
-                expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                let chat = await _converse.api.chats.get('non-existing@jabber.org');
+                expect(chat).toBeFalsy();
                 const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
                 // Test on chat that's not open
-                let box = _converse.api.chats.get(jid);
-                expect(typeof box === 'undefined').toBeTruthy();
+                chat = await _converse.api.chats.get(jid);
+                expect(typeof chat === 'undefined').toBeTruthy();
                 expect(_converse.chatboxes.length).toBe(1);
 
                 // Test for one JID
-                box = await _converse.api.chats.open(jid);
-                expect(box instanceof Object).toBeTruthy();
-                expect(box.get('box_id')).toBe(`box-${btoa(jid)}`);
+                chat = await _converse.api.chats.open(jid);
+                expect(chat instanceof Object).toBeTruthy();
+                expect(chat.get('box_id')).toBe(`box-${btoa(jid)}`);
 
                 const view = _converse.chatboxviews.get(jid);
                 await u.waitUntil(() => u.isVisible(view.el));
                 // Test for multiple JIDs
                 test_utils.openChatBoxFor(_converse, jid2);
                 await u.waitUntil(() => _converse.chatboxes.length == 2);
-                const list = _converse.api.chats.get([jid, jid2]);
+                const list = await _converse.api.chats.get([jid, jid2]);
                 expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(`box-${btoa(jid)}`);
                 expect(list[1].get('box_id')).toBe(`box-${btoa(jid2)}`);
@@ -298,13 +299,14 @@
                 const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 // Test on chat that doesn't exist.
-                expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                let chat = await _converse.api.chats.get('non-existing@jabber.org');
+                expect(chat).toBeFalsy();
 
-                const box = await _converse.api.chats.open(jid);
-                expect(box instanceof Object).toBeTruthy();
-                expect(box.get('box_id')).toBe(`box-${btoa(jid)}`);
+                chat = await _converse.api.chats.open(jid);
+                expect(chat instanceof Object).toBeTruthy();
+                expect(chat.get('box_id')).toBe(`box-${btoa(jid)}`);
                 expect(
-                    _.keys(box),
+                    Object.keys(chat),
                     ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
                 );
                 const view = _converse.chatboxviews.get(jid);

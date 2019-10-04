@@ -281,8 +281,8 @@ converse.plugins.add('converse-vcard', {
                  *     fetched again even if it's been fetched before.
                  * @returns {promise} A promise which resolves once the update has completed.
                  * @example
-                 * _converse.api.waitUntil('rosterContactsFetched').then(() => {
-                 *     const chatbox = _converse.chatboxes.getChatBox('someone@example.org');
+                 * _converse.api.waitUntil('rosterContactsFetched').then(async () => {
+                 *     const chatbox = await _converse.chatboxes.getChatBox('someone@example.org');
                  *     _converse.api.vcard.update(chatbox);
                  * });
                  */

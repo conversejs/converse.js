@@ -326,9 +326,9 @@ converse.plugins.add('converse-chatboxes', {
 
             initMessages () {
                 this.messages = new this.messagesCollection();
+                this.messages.chatbox = this;
                 const storage = _converse.config.get('storage');
                 this.messages.browserStorage = new BrowserStorage[storage](this.getMessagesCacheKey());
-                this.messages.chatbox = this;
                 this.listenTo(this.messages, 'change:upload', message => {
                     if (message.get('upload') === _converse.SUCCESS) {
                         _converse.api.send(this.createMessageStanza(message));
@@ -1167,7 +1167,7 @@ converse.plugins.add('converse-chatboxes', {
                 if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                     return;
                 }
-                const chatbox = this.getChatBox(from_jid);
+                const chatbox = await this.getChatBox(from_jid);
                 if (!chatbox) {
                     return;
                 }
@@ -1203,7 +1203,7 @@ converse.plugins.add('converse-chatboxes', {
             /**
              * Handler method for all incoming single-user chat "message" stanzas.
              * @private
-             * @method _converse.ChatBox#onMessage
+             * @method _converse.ChatBoxes#onMessage
              * @param { XMLElement } stanza - The incoming message stanza
              */
             async onMessage (stanza) {
@@ -1279,7 +1279,7 @@ converse.plugins.add('converse-chatboxes', {
                 // Get chat box, but only create when the message has something to show to the user
                 const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
                 const roster_nick = get(contact, 'attributes.nickname');
-                const chatbox = this.getChatBox(contact_jid, {'nickname': roster_nick}, has_body);
+                const chatbox = await this.getChatBox(contact_jid, {'nickname': roster_nick}, has_body);
 
                 if (chatbox) {
                     const message = await chatbox.getDuplicateMessage(stanza);
@@ -1319,7 +1319,7 @@ converse.plugins.add('converse-chatboxes', {
              * @param { object } attrs - Optional chat box atributes. If the
              *  chat box already exists, its attributes will be updated.
              */
-            getChatBox (jid, attrs={}, create) {
+            async getChatBox (jid, attrs={}, create) {
                 if (isObject(jid)) {
                     create = attrs;
                     attrs = jid;
@@ -1337,6 +1337,7 @@ converse.plugins.add('converse-chatboxes', {
                             _converse.log(response.responseText);
                         }
                     });
+                    await chatbox.messages.fetched;
                     if (!chatbox.isValid()) {
                         chatbox.destroy();
                         return null;
@@ -1470,7 +1471,7 @@ converse.plugins.add('converse-chatboxes', {
                  * // To open a single chat, provide the JID of the contact you're chatting with in that chat:
                  * converse.plugins.add('myplugin', {
                  *     initialize: function() {
-                 *         var _converse = this._converse;
+                 *         const _converse = this._converse;
                  *         // Note, buddy@example.org must be in your contacts roster!
                  *         _converse.api.chats.open('buddy@example.com').then(chat => {
                  *             // Now you can do something with the chat model
@@ -1482,7 +1483,7 @@ converse.plugins.add('converse-chatboxes', {
                  * // To open an array of chats, provide an array of JIDs:
                  * converse.plugins.add('myplugin', {
                  *     initialize: function () {
-                 *         var _converse = this._converse;
+                 *         const _converse = this._converse;
                  *         // Note, these users must first be in your contacts roster!
                  *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then(chats => {
                  *             // Now you can do something with the chat models
@@ -1518,7 +1519,7 @@ converse.plugins.add('converse-chatboxes', {
                  *
                  * @method _converse.api.chats.get
                  * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-                 * @returns {_converse.ChatBox}
+                 * @returns { Promise<_converse.ChatBox> }
                  *
                  * @example
                  * // To return a single chat, provide the JID of the contact you're chatting with in that chat:
@@ -1535,19 +1536,13 @@ converse.plugins.add('converse-chatboxes', {
                  */
                 get (jids) {
                     if (jids === undefined) {
-                        const result = [];
-                        _converse.chatboxes.each(function (chatbox) {
-                            // FIXME: Leaky abstraction from MUC. We need to add a
-                            // base type for chat boxes, and check for that.
-                            if (chatbox.get('type') !== _converse.CHATROOMS_TYPE) {
-                                result.push(chatbox);
-                            }
-                        });
-                        return result;
+                        // FIXME: Leaky abstraction from MUC. We need to add a
+                        // base type for chat boxes, and check for that.
+                        return _converse.chatboxes.filter(c => (c.get('type') !== _converse.CHATROOMS_TYPE));
                     } else if (isString(jids)) {
                         return _converse.chatboxes.getChatBox(jids);
                     }
-                    return jids.map(jid => _converse.chatboxes.getChatBox(jid, {}, true));
+                    return Promise.all(jids.map(jid => _converse.chatboxes.getChatBox(jid, {}, true)));
                 }
             }
         });

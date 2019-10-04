@@ -1,11 +1,19 @@
 # Changelog
 
-## 5.0.5
+## 6.0.0 (Unreleased)
 
+- #1691 Fix `collection.chatbox is undefined` errors
 - Prevent editing of sent file uploads.
 
-## 5.0.4 (2019-10-08)
+### Breaking changes
 
+- The following API methods now return promises:
+  * `_converse.api.chats.get`
+  * `_converse.api.chats.create` 
+  * `_converse.api.rooms.get`
+  * `_converse.api.rooms.create`
+
+## 5.0.4 (2019-10-08)
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow_message_corrections)
   which, if set to `last`, limits editing of sent messages to the last message sent.
 - Bugfix: Don't treat every duplicate message ID as a message correction; since some clients don't use globally unique ID's this causes false positives.

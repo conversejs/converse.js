@@ -99,19 +99,23 @@ converse.plugins.add('converse-bookmarks', {
             comparator: (item) => item.get('name').toLowerCase(),
 
             initialize () {
-                this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
+                this.on('add', bm => this.openBookmarkedRoom(bm)
+                    .then(bm => this.markRoomAsBookmarked(bm))
+                    .catch(e => _converse.log(e, Strophe.LogLevel.FATAL))
+                );
+
                 this.on('remove', this.markRoomAsUnbookmarked, this);
                 this.on('remove', this.sendBookmarkStanza, this);
 
-                const storage = _converse.config.get('storage'),
-                      cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
+                const storage = _converse.config.get('storage');
+                const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
                 this.fetched_flag = cache_key+'fetched';
                 this.browserStorage = new BrowserStorage[storage](cache_key);
             },
 
-            openBookmarkedRoom (bookmark) {
+            async openBookmarkedRoom (bookmark) {
                 if ( _converse.muc_respect_autojoin && bookmark.get('autojoin')) {
-                    const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                    const groupchat = await _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
                     groupchat.maybeShow();
                 }
                 return bookmark;

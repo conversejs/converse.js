@@ -11,13 +11,14 @@ import "converse-chatview";
 import _FormData from "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
+import { get } from "lodash";
 import tpl_brand_heading from "templates/converse_brand_heading.html";
 import tpl_controlbox from "templates/controlbox.html";
 import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
 import tpl_login_panel from "templates/login_panel.html";
 
 const CHATBOX_TYPE = 'chatbox';
-const { Strophe, Backbone, _, dayjs } = converse.env;
+const { Strophe, Backbone, dayjs } = converse.env;
 const u = converse.env.utils;
 
 const CONNECTION_STATUS_CSS_CLASS = {
@@ -374,7 +375,7 @@ converse.plugins.add('converse-controlbox', {
             toHTML () {
                 const connection_status = _converse.connfeedback.get('connection_status');
                 let feedback_class, pretty_status;
-                if (_.includes(REPORTABLE_STATUSES, connection_status)) {
+                if (REPORTABLE_STATUSES.includes(connection_status)) {
                     pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
                     feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
                 }
@@ -400,7 +401,7 @@ converse.plugins.add('converse-controlbox', {
             },
 
             initPopovers () {
-                _.forEach(this.el.querySelectorAll('[data-title]'), el => {
+                Array.from(this.el.querySelectorAll('[data-title]')).forEach(el => {
                     const popover = new bootstrap.Popover(el, {
                         'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
                         'dismissible': _converse.view_mode === 'mobile' && true || false,
@@ -453,15 +454,14 @@ converse.plugins.add('converse-controlbox', {
                         jid = jid.substr(0, jid.length - last_part.length);
                     }
                     jid = Strophe.escapeNode(jid) + last_part;
-                } else if (_converse.default_domain && !_.includes(jid, '@')) {
+                } else if (_converse.default_domain && !jid.includes('@')) {
                     jid = jid + '@' + _converse.default_domain;
                 }
                this.connect(jid, form_data.get('password'));
             },
 
             connect (jid, password) {
-                if (_.includes(["converse/login", "converse/register"],
-                        Backbone.history.getFragment())) {
+                if (["converse/login", "converse/register"].includes(Backbone.history.getFragment())) {
                     _converse.router.navigate('', {'replace': true});
                 }
                 _converse.connection.reset();
@@ -501,7 +501,7 @@ converse.plugins.add('converse-controlbox', {
                 _converse.chatboxviews.insertRowColumn(this.render().el);
                 _converse.api.waitUntil('initialized')
                     .then(this.render.bind(this))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    .catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
             },
 
             render () {
@@ -570,11 +570,11 @@ converse.plugins.add('converse-controlbox', {
         });
 
         _converse.api.listen.on('clearSession', () => {
-            const chatboxviews = _.get(_converse, 'chatboxviews', null);
+            const chatboxviews = get(_converse, 'chatboxviews', null);
             const view = chatboxviews && chatboxviews.get('controlbox');
             if (view) {
                u.safeSave(view.model, {'connected': false});
-               if (_.get(view, 'controlbox_pane')) {
+               if (get(view, 'controlbox_pane')) {
                   view.controlbox_pane.remove();
                   delete view.controlbox_pane;
                }
@@ -585,7 +585,7 @@ converse.plugins.add('converse-controlbox', {
         Promise.all([
             _converse.api.waitUntil('connectionInitialized'),
             _converse.api.waitUntil('chatBoxViewsInitialized')
-        ]).then(addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        ]).then(addControlBox).catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
 
         _converse.api.listen.on('chatBoxesFetched', () => {
             const controlbox = _converse.chatboxes.get('controlbox') || addControlBox();

@@ -391,28 +391,23 @@ converse.plugins.add('converse-chatview', {
              * @method _converse.ChatBoxView#addSpoilerButton
              */
             async addSpoilerButton (options) {
-                __('1111')
                 if (!options.show_spoiler_button || this.model.get('type') === _converse.CHATROOMS_TYPE) {
                     return;
                 }
-                __('2222')
                 const contact_jid = this.model.get('jid');
                 if (this.model.presence.resources.length === 0) {
                     return;
                 }
-                __('3333')
                 const results = await Promise.all(
                     this.model.presence.resources.map(
                         r => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${r.get('name')}`)
                     )
                 );
-                __('4444')
                 const all_resources_support_spolers = results.reduce((acc, val) => (acc && val), true);
                 if (all_resources_support_spolers) {
                     const html = tpl_spoiler_button(this.model.toJSON());
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
                 }
-                __('hello world')
             },
 
             insertHeading () {

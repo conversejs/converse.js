@@ -2,14 +2,13 @@
 
 ## 5.0.4
 
+- Add config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow_message_corrections)
+  which, if set to `last`, limits editing of sent messages to the last message sent
 - Bugfix: Don't treat every duplicate message ID as a message correction; since some
   clients don't use globally unique ID's this causes false positives.
+- Bugfix: process stanzas from mam one-by-one in order to correctly process message receipts
 - #1712: `TypeError: plugin._features is not a function`
-- Bugfix: process stanzas from mam one-by-one in order to correctly process message
-  receipts
-- #1714 Bugfix: Don't notify the user in case we're receiving a message delivery receipt only
-- add config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow_message_corrections)
-  which, if set to `last`, limits editing of sent messages to the last message sent
+- #1714 Don't notify the user in case we're receiving a message delivery receipt only
 
 ## 5.0.3 (2019-09-13)
 

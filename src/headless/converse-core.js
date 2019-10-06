@@ -238,7 +238,7 @@ _converse.default_settings = {
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
         'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'oc',
-        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
+        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
     ],
     message_carbons: true,
     nickname: undefined,

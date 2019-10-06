@@ -1222,6 +1222,21 @@ providers_link
 The hyperlink on the registration form which points to a directory of public
 XMPP servers.
 
+assets_path
+-----------
+
+* Default: The `publicPath <https://webpack.js.org/guides/public-path/>`_ value configured in the relevant Webpack configuration.
+
+Since version 5.0.0, Converse serves a smaller bundle by extracting various
+resources (for example emojis and translations) into separate files (aka
+"chunks") which are loaded asynchronously on demand.
+
+The URL path at which these resources are loaded is normally set by the ``publicPath``
+setting of Webpack but this means that it's hardcoded to a particular value at
+compile time.
+
+This configuration seting allows this value to be set at runtime as well.
+
 push_app_servers
 ----------------
 

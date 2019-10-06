@@ -1904,7 +1904,7 @@ _converse.api = {
  * @global
  * @namespace converse
  */
-const converse = {
+Object.assign(window.converse, {
     /**
      * Public API method which initializes Converse.
      * This method must always be called when using Converse.
@@ -1997,9 +1997,7 @@ const converse = {
         'sizzle': sizzle,
         'utils': u
     }
-};
-
-window.converse = converse;
+});
 
 /**
  * Once Converse.js has loaded, it'll dispatch a custom event with the name `converse-loaded`.

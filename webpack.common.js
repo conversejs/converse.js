@@ -7,7 +7,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
         chunkFilename: '[name].js'
     },
-    entry: path.resolve(__dirname, 'src/converse.js'),
+    entry: path.resolve(__dirname, 'src/entry.js'),
     externals: [{
         "window": "window"
     }],

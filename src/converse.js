@@ -1,3 +1,10 @@
+// Converse.js (A browser based XMPP chat client)
+// https://conversejs.org
+//
+// Copyright (c) 2019, The Converse developers
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
 /* START: Removable components
  * --------------------
  * Any of the following components may be removed if they're not needed.

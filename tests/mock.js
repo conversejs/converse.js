@@ -1,6 +1,9 @@
 (function (root, factory) {
     define("mock", [], factory);
 }(this, function () {
+
+    converse.load();
+
     const _ = converse.env._;
     const Promise = converse.env.Promise;
     const Strophe = converse.env.Strophe;
@@ -178,7 +181,7 @@
         };
     }();
 
-    async function initConverse (settings, spies, promises) {
+    async function initConverse (settings, spies={}, promises) {
         window.localStorage.clear();
         window.sessionStorage.clear();
         const el = document.querySelector('#conversejs');
@@ -187,8 +190,8 @@
         }
 
         const connection = mock.mock_connection();
-        if (!_.isNil(spies)) {
-            _.forEach(spies.connection, method => spyOn(connection, method));
+        if (spies && spies.connection) {
+            spies.connection.forEach(method => spyOn(connection, method));
         }
 
         const _converse = await converse.initialize(Object.assign({
@@ -204,8 +207,8 @@
             'debug': false
         }, settings || {}));
 
-        if (!_.isNil(spies)) {
-            _.forEach(spies._converse, method => spyOn(_converse, method).and.callThrough());
+        if (spies && spies._converse) {
+            spies._converse.forEach(method => spyOn(_converse, method).and.callThrough());
         }
 
         _converse.ChatBoxViews.prototype.trimChat = function () {};
@@ -240,7 +243,7 @@
                     'vcard_error': undefined
                 };
                 resolve(result);
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            }).catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
         };
         if (_.get(settings, 'auto_login') !== false) {
             _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
@@ -250,7 +253,7 @@
         return _converse;
     }
 
-    mock.initConverse = function (spies, promise_names=[], settings=null, func) {
+    mock.initConverse = function (spies={}, promise_names=[], settings=null, func) {
         if (_.isFunction(spies)) {
             func = spies;
             spies = null;

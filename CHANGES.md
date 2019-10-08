@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.0.5
+
+- New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_filter)
+- Fix issue [Add user pictures in mention autocomplete list](https://git.happy-dev.fr/startinblox/components/sib-chat/issues/50).
+- Fix issue [Mention names autocomplete](https://git.happy-dev.fr/startinblox/components/sib-chat/issues/95).
+
 ## 5.0.4 (2019-10-08)
 
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow_message_corrections)

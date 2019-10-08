@@ -1884,12 +1884,15 @@ _converse.api = {
         if (reject) {
             promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
         } else {
-            promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
+            promise = new Promise(resolve => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
         }
         _converse.api.trigger('send', stanza);
         return promise;
     }
 };
+
+
+window.converse = window.converse || {};
 
 /**
  * ### The Public API

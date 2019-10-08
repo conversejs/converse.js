@@ -15,7 +15,7 @@ import bootstrap from "bootstrap.native";
 import tpl_emoji_button from "templates/emoji_button.html";
 import tpl_emojis from "templates/emojis.html";
 
-const { Backbone, sizzle, _ } = converse.env;
+const { Backbone, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -30,7 +30,7 @@ converse.plugins.add('converse-emoji-views', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-emoji", "converse-chatview"],
+    dependencies: ["converse-emoji", "converse-chatview", "converse-muc-views"],
 
 
     overrides: {
@@ -110,7 +110,7 @@ converse.plugins.add('converse-emoji-views', {
                 this.emoji_picker_view.chatview = this;
             },
 
-            createEmojiDropdown (ev) {
+            createEmojiDropdown () {
                 const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
                 this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
                 this.emoji_dropdown.el = dropdown_el;

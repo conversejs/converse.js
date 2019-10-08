@@ -198,7 +198,7 @@
         "no-underscore-dangle": "off",
         "no-unmodified-loop-condition": "error",
         "no-unneeded-ternary": "off",
-        "no-unused-vars": "off",
+        "no-unused-vars": "error",
         "no-unused-expressions": "off",
         "no-use-before-define": "off",
         "no-useless-call": "error",

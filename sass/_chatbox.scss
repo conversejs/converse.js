@@ -204,7 +204,7 @@
             color: var(--text-color);
             overflow-y: auto;
             border: 0;
-            background-color: #ffffff;
+            background-color: var(--chat-content-background-color);
             line-height: 1.3em;
 
             video {

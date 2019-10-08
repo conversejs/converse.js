@@ -869,6 +869,14 @@ muc_mention_autocomplete_min_chars
 The number of characters that need to be entered before the auto-complete list
 of matching nicknames is shown.
 
+muc_mention_autocomplete_filter
+-------------------------------
+
+* Default:  ``contains``
+
+The method used for filtering MUC participants when using auto-complete. 
+Valid values are ``contains`` and ``starts_with``.
+
 message_archiving
 -----------------
 

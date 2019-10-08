@@ -503,6 +503,11 @@ body.converse-fullscreen {
         border: var(--avatar-border);
         background-color: var(--avatar-background-color);
     }
+    
+    .avatar-autocomplete {
+        margin-right: 0.5em; 
+        vertical-align: middle;
+    }    
 
     .activated {
         display: block !important;

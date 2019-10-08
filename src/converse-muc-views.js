@@ -114,6 +114,7 @@ converse.plugins.add('converse-muc-views', {
             'muc_show_join_leave': true,
             'muc_show_join_leave_status': true,
             'muc_mention_autocomplete_min_chars': 0,
+            'muc_mention_autocomplete_filter': 'contains',
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
@@ -755,7 +756,7 @@ converse.plugins.add('converse-muc-views', {
                     'min_chars': _converse.muc_mention_autocomplete_min_chars,
                     'match_current_word': true,
                     'list': () => this.getAutoCompleteList(),
-                    'filter': _converse.FILTER_STARTSWITH,
+                    'filter': _converse.muc_mention_autocomplete_filter == 'contains' ? _converse.FILTER_CONTAINS : _converse.FILTER_STARTSWITH,
                     'ac_triggers': ["Tab", "@"],
                     'include_triggers': []
                 });

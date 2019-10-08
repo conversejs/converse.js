@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.4
+## 5.0.4 (2019-10-08)
 
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow_message_corrections)
   which, if set to `last`, limits editing of sent messages to the last message sent.

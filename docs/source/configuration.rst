@@ -1271,6 +1271,17 @@ For example:
         });
 
 
+.. _`reload_on_disconnect`:
+
+reload_on_disconnect
+--------------------
+
+* Default:  ``false``
+
+If set to ``true`` the browser performs a page reload after a disconnect
+(i.e. after the user logs out). This helps to avoid some failuers by starting from a fresh
+session (e.g. empty chatboxes after a relogin without manual page reload).
+
 .. _`roomconfig_whitelist`:
 
 roomconfig_whitelist

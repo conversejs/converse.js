@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.0.5 (unreleased)
+
+- New config option [reload_on_disconnect](https://conversejs.org/docs/html/
+  configuration.html#reload_on_disconnect) which forces a page reload after user
+  logs out from Converse.
+
 ## 5.0.4 (2019-10-08)
 
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow_message_corrections)

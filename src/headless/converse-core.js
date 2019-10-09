@@ -244,6 +244,7 @@ _converse.default_settings = {
     nickname: undefined,
     password: undefined,
     priority: 0,
+    reload_on_disconnect: false,
     rid: undefined,
     root: window.document,
     sid: undefined,
@@ -713,6 +714,9 @@ function finishDisconnection () {
      * @example _converse.api.listen.on('disconnected', () => { ... });
      */
     _converse.api.trigger('disconnected');
+    if (_converse.reload_on_disconnect) {
+       location.reload();
+    }
 }
 
 

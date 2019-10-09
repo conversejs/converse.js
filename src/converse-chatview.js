@@ -954,7 +954,7 @@ converse.plugins.add('converse-chatview', {
                     while (idx < this.model.messages.length-1) {
                         idx += 1;
                         const candidate = this.model.messages.at(idx);
-                        if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                        if (candidate.get('editable')) {
                             message = candidate;
                             break;
                         }
@@ -982,7 +982,7 @@ converse.plugins.add('converse-chatview', {
                         }
                     }
                 }
-                message = message || this.getOwnMessages().reverse().find(m => m.get('message'));
+                message = message || this.getOwnMessages().reverse().find(m => m.get('editable'));
                 if (message) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                     message.save('correcting', true);

@@ -785,7 +785,7 @@ converse.plugins.add('converse-chatboxes', {
                     return;
                 }
                 if (_converse.allow_message_corrections === 'all') {
-                    attrs.editable = true;
+                    attrs.editable = !(attrs.file || 'oob_url' in attrs);
                 } else if ((_converse.allow_message_corrections === 'last') &&
                            (send_time > this.get('time_sent'))) {
                     this.set({'time_sent': send_time});
@@ -793,7 +793,7 @@ converse.plugins.add('converse-chatboxes', {
                     if (msg) {
                         msg.save({'editable': false});
                     }
-                    attrs.editable = true;
+                    attrs.editable = !(attrs.file || 'oob_url' in attrs);
                 }
             },
 
@@ -889,14 +889,14 @@ converse.plugins.add('converse-chatboxes', {
                             'ephemeral': true
                         });
                     } else {
-                        const message = this.messages.create(
-                            Object.assign(
-                                this.getOutgoingMessageAttributes(), {
-                                'file': true,
-                                'progress': 0,
-                                'slot_request_url': slot_request_url
-                            }), {'silent': true}
-                        );
+                        const attrs = Object.assign(
+                            this.getOutgoingMessageAttributes(), {
+                            'file': true,
+                            'progress': 0,
+                            'slot_request_url': slot_request_url
+                        });
+                        this.setEditable(attrs, (new Date()).toISOString());
+                        const message = this.messages.create(attrs, {'silent': true});
                         message.file = file;
                         this.messages.trigger('add', message);
                         message.getRequestSlotURL();

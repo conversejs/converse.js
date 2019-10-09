@@ -268,7 +268,6 @@
                     async function (done, _converse) {
 
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
-                const sendIQ = _converse.connection.sendIQ;
                 const muc_jid = 'lounge@montague.lit';
                 await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
 

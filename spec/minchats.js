@@ -159,7 +159,6 @@
             await test_utils.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'fires');
             const view = _converse.chatboxviews.get(muc_jid);
             view.model.set({'minimized': true});
-            const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const message = 'fires: Your attention is required';
             const nick = mock.chatroom_names[0];
             const msg = $msg({

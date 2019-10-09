@@ -6,12 +6,8 @@
         ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const _ = converse.env._;
-    const $iq = converse.env.$iq;
-    const $msg = converse.env.$msg;
     const $pres = converse.env.$pres;
     const Strophe = converse.env.Strophe;
-    const u = converse.env.utils;
 
     describe("The nickname autocomplete feature", function () {
 

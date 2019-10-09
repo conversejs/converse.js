@@ -263,7 +263,7 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            onOccupantRemoved (occupant) {
+            onOccupantRemoved () {
                 this.stopListening(this.occupant);
                 delete this.occupant;
                 const chatbox = _.get(this, 'collection.chatbox');
@@ -484,7 +484,6 @@ converse.plugins.add('converse-muc', {
             },
 
             initFeatures () {
-                const storage = _converse.config.get('storage');
                 const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
                 this.features = new Backbone.Model(
                     _.assign({id}, _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)))
@@ -1176,7 +1175,6 @@ converse.plugins.add('converse-muc', {
             async updateMemberLists (members) {
                 const all_affiliations = ['member', 'admin', 'owner'];
                 const aff_lists = await Promise.all(all_affiliations.map(a => this.getAffiliationList(a)));
-                const known_affiliations = all_affiliations.filter(a => !u.isErrorObject(aff_lists[all_affiliations.indexOf(a)]));
                 const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc: [...val, ...acc]), []);
                 await this.setAffiliations(u.computeAffiliationsDelta(true, false, members, old_members));
                 if (_converse.muc_fetch_members) {
@@ -2329,9 +2327,9 @@ converse.plugins.add('converse-muc', {
                         attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                     }
                     if (_.isString(jids)) {
-                        return getChatRoom(jids, attrs);
+                        return getChatRoom(jids, attrs, create);
                     }
-                    return jids.map(jid => getChatRoom(jid, attrs));
+                    return jids.map(jid => getChatRoom(jid, attrs, create));
                 }
             }
         });

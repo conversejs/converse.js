@@ -2,7 +2,6 @@
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const _ = converse.env._;
     const Backbone = converse.env.Backbone;
     const Strophe = converse.env.Strophe;
     const $iq = converse.env.$iq;
@@ -259,7 +258,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(iq_result));
 
                     const view = _converse.chatboxviews.get(contact_jid);
-                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                    await new Promise(resolve => view.once('messageInserted', resolve));
                     expect(view.model.messages.length).toBe(1);
                     expect(view.model.messages.at(0).get('message')).toBe("Thrice the brinded cat hath mew'd.");
                     done();

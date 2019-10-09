@@ -9,7 +9,7 @@
 import "./converse-disco";
 import converse from "./converse-core";
 
-const { Strophe, Backbone, $iq, $build, $msg, $pres, dayjs, _ } = converse.env;
+const { Strophe, $iq } = converse.env;
 
 Strophe.addNamespace('PUBSUB_ERROR', Strophe.NS.PUBSUB+"#errors");
 
@@ -22,8 +22,7 @@ converse.plugins.add('converse-pubsub', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
 
 
         /************************ BEGIN API ************************/

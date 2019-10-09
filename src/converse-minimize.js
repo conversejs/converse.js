@@ -100,13 +100,13 @@ converse.plugins.add('converse-minimize', {
 
             setChatBoxHeight (height) {
                 if (!this.model.get('minimized')) {
-                    return this.__super__.setChatBoxHeight.apply(this, arguments);
+                    return this.__super__.setChatBoxHeight.call(this, height);
                 }
             },
 
             setChatBoxWidth (width) {
                 if (!this.model.get('minimized')) {
-                    return this.__super__.setChatBoxWidth.apply(this, arguments);
+                    return this.__super__.setChatBoxWidth.call(this, width);
                 }
             }
         },
@@ -115,7 +115,7 @@ converse.plugins.add('converse-minimize', {
             render () {
                 const { _converse } = this.__super__,
                     { __ } = _converse;
-                const result = this.__super__.render.apply(this, arguments);
+                this.__super__.render.apply(this, arguments);
                 const new_html = tpl_chatbox_minimize({
                     'info_minimize': __('Minimize this chat box')
                 });
@@ -251,7 +251,7 @@ converse.plugins.add('converse-minimize', {
              * Minimizes a chat box.
              * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
              */
-            minimize (ev) {
+            minimize () {
                 this.model.minimize();
                 return this;
             },

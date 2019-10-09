@@ -16,7 +16,6 @@
 import "converse-chatview";
 import converse from "@converse/headless/converse-core";
 
-const { _, Strophe } = converse.env;
 const u = converse.env.utils;
 
 

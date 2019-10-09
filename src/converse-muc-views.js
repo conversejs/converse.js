@@ -11,12 +11,11 @@
  */
 import "converse-modal";
 import "backbone.vdomview";
+import "formdata-polyfill";
+import "@converse/headless/utils/muc";
 import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
-import _FormData from "formdata-polyfill";
-import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
-import muc_utils from "@converse/headless/utils/muc";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.html";
 import tpl_chatarea from "templates/chatarea.html";
 import tpl_chatroom from "templates/chatroom.html";
@@ -43,12 +42,11 @@ import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
 
-const { Backbone, Strophe, dayjs, sizzle, _, $iq, $msg, $pres } = converse.env;
+const { Backbone, Strophe, sizzle, _, $iq, $pres } = converse.env;
 const u = converse.env.utils;
 
 const ROLES = ['moderator', 'participant', 'visitor'];
 const AFFILIATIONS = ['admin', 'member', 'outcast', 'owner'];
-const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
@@ -439,7 +437,7 @@ converse.plugins.add('converse-muc-views', {
                 toggleRoomInfo(ev);
             },
 
-            onDomainChange (model) {
+            onDomainChange () {
                 if (_converse.auto_list_rooms) {
                     this.updateRoomsList();
                 }
@@ -500,7 +498,7 @@ converse.plugins.add('converse-muc-views', {
                 }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS});
                 _converse.api.sendIQ(iq)
                     .then(iq => this.onRoomsFound(iq))
-                    .catch(iq => this.informNoRoomsFound())
+                    .catch(() => this.informNoRoomsFound())
             },
 
             showRooms (ev) {
@@ -952,7 +950,7 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            hideOccupants (ev, preserve_state) {
+            hideOccupants (ev) {
                 /* Show or hide the right sidebar containing the chat
                  * occupants (and the invite widget).
                  */
@@ -1037,7 +1035,7 @@ converse.plugins.add('converse-muc-views', {
                 if (!args.startsWith('@')) {
                     args = '@'+ args;
                 }
-                const [text, references] = this.model.parseTextForReferences(args);
+                const [text, references] = this.model.parseTextForReferences(args); // eslint-disable-line no-unused-vars
                 if (!references.length) {
                     this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
                     return;
@@ -1312,7 +1310,7 @@ converse.plugins.add('converse-muc-views', {
                 this.renderAfterTransition();
             },
 
-            getAndRenderConfigurationForm (ev) {
+            getAndRenderConfigurationForm () {
                 /* Start the process of configuring a groupchat, either by
                  * rendering a configuration form, or by auto-configuring
                  * based on the "roomconfig" data stored on the
@@ -1451,7 +1449,6 @@ converse.plugins.add('converse-muc-views', {
             getNotificationWithMessage (message) {
                 let el = this.content.lastElementChild;
                 while (el) {
-                    const data = _.get(el, 'dataset', {});
                     if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
                         return;
                     }
@@ -2061,7 +2058,7 @@ converse.plugins.add('converse-muc-views', {
                     'list': list
                 });
                 this.invite_auto_complete.on('suggestion-box-selectcomplete', ev => this.promptForInvite(ev));
-                this.invite_auto_complete.on('suggestion-box-open', ev => {
+                this.invite_auto_complete.on('suggestion-box-open', () => {
                     this.invite_auto_complete.ul.setAttribute('style', `max-height: calc(${this.el.offsetHeight}px - 80px);`);
                 });
             }

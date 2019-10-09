@@ -6,7 +6,7 @@
         ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const { Promise, Strophe, $iq, $msg, $pres, sizzle, _ } = converse.env;
+    const { Promise, Strophe, $msg, $pres, sizzle } = converse.env;
     const u = converse.env.utils;
 
     describe("A Groupchat Message", function () {
@@ -65,7 +65,7 @@
                     type: 'groupchat'
                 }).c('body').t(message).tree();
             await view.model.onMessage(msg);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(u.hasClass('mentioned', view.el.querySelector('.chat-msg'))).toBeTruthy();
             done();
         }));
@@ -87,7 +87,7 @@
                     type: 'groupchat'
                 }).c('body').t('First message').tree();
             await view.model.onMessage(msg);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
 
             msg = $msg({
@@ -97,7 +97,7 @@
                     type: 'groupchat'
                 }).c('body').t('Another message').tree();
             await view.model.onMessage(msg);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             done();
         }));
@@ -223,7 +223,7 @@
                 type: 'groupchat'
             }).c('body').t('I wrote this message!').tree();
             await view.model.onMessage(msg);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
             expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
@@ -250,7 +250,7 @@
                 type: 'groupchat'
             }).c('body').t('Another message!').tree();
             await view.model.onMessage(msg);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('member');
             expect(view.model.messages.last().occupant.get('role')).toBe('participant');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
@@ -286,7 +286,7 @@
                 type: 'groupchat'
             }).c('body').t('Message from someone not in the MUC right now').tree();
             await view.model.onMessage(msg);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().occupant).toBeUndefined();
             // Check that there's a new "add" event handler, for when the occupant appears.
             expect(view.model.occupants._events.add.length).toBe(add_events+1);
@@ -351,7 +351,7 @@
                     type: 'groupchat'
                 }).c('body').t('I wrote this message!').tree();
             await view.model.onMessage(msg);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().get('sender')).toBe('me');
             done();
         }));
@@ -382,7 +382,7 @@
                     'type': 'groupchat',
                     'id': msg_id,
                 }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder airlock breaks?');
@@ -445,7 +445,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder airlock breaks?');
@@ -456,7 +456,7 @@
                 target: textarea,
                 keyCode: 38 // Up arrow
             });
-            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
@@ -470,7 +470,7 @@
                 keyCode: 13 // Enter
             });
             expect(_converse.connection.send).toHaveBeenCalled();
-            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())
@@ -503,7 +503,7 @@
                 'to': 'romeo@montague.lit',
                 'type': 'groupchat'
             }).c('body').t('Hello world').tree());
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
 
             // Test that pressing the down arrow cancels message correction
@@ -544,7 +544,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(0);
 
             const msg_obj = view.model.messages.at(0);
@@ -623,7 +623,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
 
             const msg_obj = view.model.messages.at(0);
@@ -659,7 +659,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelector('.chat-msg .chat-msg__body').textContent.trim())
                 .toBe("But soft, what light through yonder airlock breaks?");
@@ -744,7 +744,7 @@
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
                 await view.model.onMessage(msg);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 const messages = view.el.querySelectorAll('.chat-msg__text');
                 expect(messages.length).toBe(1);
                 expect(messages[0].classList.length).toEqual(1);
@@ -907,7 +907,7 @@
                 }
                 spyOn(_converse.connection, 'send');
                 view.onKeyDown(enter_event);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 const msg = _converse.connection.send.calls.all()[0].args[0];
                 expect(msg.toLocaleString())
                     .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
@@ -921,7 +921,6 @@
                                 `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
 
-                const first_msg = view.model.messages.findWhere({'message': 'hello z3r0 gibson mr.robot, how are you?'});
                 const action = view.el.querySelector('.chat-msg .chat-msg__action');
                 action.style.opacity = 1;
                 action.click();

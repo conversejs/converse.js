@@ -8,10 +8,6 @@
     ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const Strophe = converse.env.Strophe;
-    const $iq = converse.env.$iq;
-    const $pres = converse.env.$pres;
-    const _ = converse.env._;
     const u = converse.env.utils;
     // See: https://xmpp.org/rfcs/rfc3921.html
 

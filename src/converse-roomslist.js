@@ -9,14 +9,14 @@
  * Converse.js plugin which shows a list of currently open
  * rooms in the "Rooms Panel" of the ControlBox.
  */
+import "@converse/headless/converse-muc";
 import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
-import muc from "@converse/headless/converse-muc";
 import tpl_rooms_list from "templates/rooms_list.html";
 import tpl_rooms_list_item from "templates/rooms_list_item.html"
 
-const { Backbone, Strophe, sizzle, _ } = converse.env;
+const { Backbone, Strophe, } = converse.env;
 const u = converse.env.utils;
 
 
@@ -51,7 +51,7 @@ converse.plugins.add('converse-roomslist', {
 
             comparator (room) {
                 if (_converse.bookmarks && room.get('bookmarked')) {
-                    const bookmark = _.head(_converse.bookmarks.where({'jid': room.get('jid')}));
+                    const bookmark = _converse.bookmarks.findWhere({'jid': room.get('jid')});
                     return bookmark.get('name');
                 } else {
                     return room.get('name');
@@ -236,7 +236,7 @@ converse.plugins.add('converse-roomslist', {
                 }
             },
 
-            showOrHide (item) {
+            showOrHide () {
                 if (!this.model.models.length) {
                     u.hideElement(this.el);
                 } else {

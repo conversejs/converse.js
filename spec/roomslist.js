@@ -1,7 +1,7 @@
 (function (root, factory) {
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
-    const { Backbone, Promise, Strophe, $iq, $msg, $pres, b64_sha1, sizzle, _ } = converse.env;
+    const { Strophe, $iq, $msg, $pres, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
 
@@ -59,9 +59,6 @@
                 async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
-
-            const contact_jid = 'newguy@montague.lit';
             let stanza = $pres({
                     to: 'romeo@montague.lit/orchard',
                     from: 'lounge@montague.lit/newguy'
@@ -291,7 +288,6 @@
             await test_utils.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'romeo');
             const view = _converse.chatboxviews.get(room_jid);
             view.model.set({'minimized': true});
-            const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const nick = mock.chatroom_names[0];
             await view.model.onMessage(
                 $msg({

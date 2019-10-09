@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jasmine", "mock", "test-utils"], factory);
-} (this, function (jasmine, mock, test_utils) {
+    define(["jasmine", "mock"], factory);
+} (this, function (jasmine, mock) {
 
     return describe("The XMPPStatus model", function () {
 

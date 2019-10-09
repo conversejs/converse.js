@@ -2,7 +2,6 @@
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const Strophe = converse.env.Strophe;
     const _ = converse.env._;
     const $msg = converse.env.$msg;
     const u = converse.env.utils;
@@ -73,7 +72,7 @@
                             }).c('body').t(message).tree();
 
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await new Promise(resolve => view.once('messageInserted', resolve));
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
                         if (no_notification) {
@@ -103,7 +102,7 @@
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
                         await u.waitUntil(() => _converse.chatboxviews.keys().length);
                         const view = _converse.chatboxviews.get('notify.example.com');
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await new Promise(resolve => view.once('messageInserted', resolve));
                         expect(
                             _.includes(_converse.chatboxviews.keys(),
                                 'notify.example.com')

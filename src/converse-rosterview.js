@@ -9,10 +9,10 @@
 import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
+import "formdata-polyfill";
 import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
 import SHA1 from 'strophe.js/src/sha1';
-import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
 import tpl_add_contact_modal from "templates/add_contact_modal.html";
 import tpl_group_header from "templates/group_header.html";
@@ -21,9 +21,8 @@ import tpl_requesting_contact from "templates/requesting_contact.html";
 import tpl_roster from "templates/roster.html";
 import tpl_roster_filter from "templates/roster_filter.html";
 import tpl_roster_item from "templates/roster_item.html";
-import tpl_search_contact from "templates/search_contact.html";
 
-const { Backbone, Strophe, $iq, sizzle, _ } = converse.env;
+const { Backbone, Strophe, _ } = converse.env;
 const u = converse.env.utils;
 
 
@@ -58,7 +57,6 @@ converse.plugins.add('converse-rosterview', {
             'xa': __('This contact is away for an extended period'),
             'away': __('This contact is away')
         };
-        const LABEL_GROUPS = __('Groups');
 
 
         _converse.AddContactModal = _converse.BootstrapModal.extend({
@@ -266,7 +264,7 @@ converse.plugins.add('converse-rosterview', {
                 }
             },
 
-            liveFilter: _.debounce(function (ev) {
+            liveFilter: _.debounce(function () {
                 this.model.save({
                     'filter_text': this.el.querySelector('.roster-filter').value
                 });
@@ -496,9 +494,8 @@ converse.plugins.add('converse-rosterview', {
                 if (!_converse.allow_contact_removal) { return; }
                 if (!confirm(__("Are you sure you want to remove this contact?"))) { return; }
 
-                let iq;
                 try {
-                    iq = await this.model.removeFromRoster();
+                    await this.model.removeFromRoster();
                     this.remove();
                     if (this.model.collection) {
                         // The model might have already been removed as
@@ -605,7 +602,6 @@ converse.plugins.add('converse-rosterview', {
                  * title.
                  */
                 let shown = 0;
-                const all_contact_views = this.getAll();
                 this.model.contacts.forEach(contact => {
                     const contact_view = this.get(contact.get('id'));
                     if (_.includes(contacts, contact)) {

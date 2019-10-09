@@ -6,12 +6,12 @@
 /**
  * @module converse-message-view
  */
+import "./utils/html";
 import "@converse/headless/converse-emoji";
 import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
 import { debounce } from 'lodash'
 import filesize from "filesize";
-import html from "./utils/html";
 import tpl_csn from "templates/csn.html";
 import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
@@ -20,7 +20,7 @@ import tpl_message_versions_modal from "templates/message_versions_modal.html";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
-const { Backbone, dayjs } = converse.env;
+const { dayjs } = converse.env;
 const u = converse.env.utils;
 
 

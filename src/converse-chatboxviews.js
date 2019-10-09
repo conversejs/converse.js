@@ -63,12 +63,9 @@ converse.plugins.add('converse-chatboxviews', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
 
-        _converse.api.promises.add([
-            'chatBoxViewsInitialized'
-        ]);
+        _converse.api.promises.add(['chatBoxViewsInitialized']);
 
         // Configuration values for this plugin
         // ====================================

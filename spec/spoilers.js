@@ -36,7 +36,7 @@
                 .tree();
             await _converse.chatboxes.onMessage(msg);
             const view = _converse.chatboxviews.get(sender_jid);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Mercutio');
             const message_content = view.el.querySelector('.chat-msg__text');
@@ -70,7 +70,7 @@
                     }).tree();
             await _converse.chatboxes.onMessage(msg);
             const view = _converse.chatboxviews.get(sender_jid);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Mercutio')).toBeTruthy();
             const message_content = view.el.querySelector('.chat-msg__text');
@@ -114,7 +114,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
 
             /* Test the XML stanza
              *
@@ -191,7 +191,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
 
             /* Test the XML stanza
              *

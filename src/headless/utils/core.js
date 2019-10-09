@@ -497,7 +497,6 @@ u.getSelectValues = function (select) {
 
 u.formatFingerprint = function (fp) {
     fp = fp.replace(/^05/, '');
-    const arr = [];
     for (let i=1; i<8; i++) {
         const idx = i*8+i-1;
         fp = fp.slice(0, idx) + ' ' + fp.slice(idx);

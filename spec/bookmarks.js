@@ -1,5 +1,3 @@
-/*global waitUntilPromise */
-
 (function (root, factory) {
     define([
         "jasmine",
@@ -10,7 +8,6 @@
     "use strict";
     const $iq = converse.env.$iq,
          $msg = converse.env.$msg,
-         Backbone = converse.env.Backbone,
          Strophe = converse.env.Strophe,
          sizzle = converse.env.sizzle,
          _ = converse.env._,

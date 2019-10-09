@@ -13,7 +13,7 @@ import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
 
-const { Backbone, Strophe, dayjs, sizzle, $build, $iq, $msg, _ } = converse.env;
+const { Backbone, Strophe, sizzle, $build, $iq, $msg, _ } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO+".devicelist");
@@ -22,7 +22,7 @@ Strophe.addNamespace('OMEMO_WHITELISTED', Strophe.NS.OMEMO+".whitelisted");
 Strophe.addNamespace('OMEMO_BUNDLES', Strophe.NS.OMEMO+".bundles");
 
 const UNDECIDED = 0;
-const TRUSTED = 1;
+const TRUSTED = 1; // eslint-disable-line no-unused-vars
 const UNTRUSTED = -1;
 const TAG_LENGTH = 128;
 const KEY_ALGO = {
@@ -44,16 +44,13 @@ function parseBundle (bundle_el) {
     /* Given an XML element representing a user's OMEMO bundle, parse it
      * and return a map.
      */
-    const signed_prekey_public_el = bundle_el.querySelector('signedPreKeyPublic'),
-          signed_prekey_signature_el = bundle_el.querySelector('signedPreKeySignature'),
-          identity_key_el = bundle_el.querySelector('identityKey');
-
+    const signed_prekey_public_el = bundle_el.querySelector('signedPreKeyPublic');
+    const signed_prekey_signature_el = bundle_el.querySelector('signedPreKeySignature');
     const prekeys = sizzle(`prekeys > preKeyPublic`, bundle_el)
         .map(el => ({
             'id': parseInt(el.getAttribute('preKeyId'), 10),
             'key': el.textContent
         }));
-
     return {
         'identity_key': bundle_el.querySelector('identityKey').textContent.trim(),
         'signed_prekey': {
@@ -693,7 +690,7 @@ converse.plugins.add('converse-omemo', {
                 return Promise.resolve(parseInt(this.get('device_id'), 10));
             },
 
-            isTrustedIdentity (identifier, identity_key, direction) {
+            isTrustedIdentity (identifier, identity_key, direction) {  // eslint-disable-line no-unused-vars
                 if (identifier === null || identifier === undefined) {
                     throw new Error("Can't check identity key for invalid key");
                 }
@@ -761,7 +758,7 @@ converse.plugins.add('converse-omemo', {
                 return Promise.resolve();
             },
 
-            loadSignedPreKey (keyId) {
+            loadSignedPreKey (keyId) {  // eslint-disable-line no-unused-vars
                 const res = this.get('signed_prekey');
                 if (res) {
                     return Promise.resolve({
@@ -1263,7 +1260,7 @@ converse.plugins.add('converse-omemo', {
             _converse.generateFingerprints(jid).catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
         });
 
-        _converse.api.listen.on('profileModalInitialized', (contact) => {
+        _converse.api.listen.on('profileModalInitialized', () => {
             _converse.generateFingerprints(_converse.bare_jid).catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
         });
 

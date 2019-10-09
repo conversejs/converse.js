@@ -45,7 +45,7 @@ converse.plugins.add('converse-register', {
         // New functions which don't exist yet can also be added.
 
         LoginPanel: {
-            render (cfg) {
+            render () {
                 const { _converse } = this.__super__;
                 this.__super__.render.apply(this, arguments);
                 if (_converse.allow_registration && !_converse.auto_login) {
@@ -107,7 +107,6 @@ converse.plugins.add('converse-register', {
         Object.assign(_converse.ControlBoxView.prototype, {
 
             showLoginOrRegisterForm () {
-                const { _converse } = this.__super__;
                 if (!this.registerpanel) {
                     return;
                 }
@@ -173,7 +172,7 @@ converse.plugins.add('converse-register', {
                 'click .button-cancel': 'renderProviderChoiceForm',
             },
 
-            initialize (cfg) {
+            initialize () {
                 this.reset();
                 this.registerHooks();
             },

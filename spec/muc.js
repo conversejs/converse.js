@@ -270,15 +270,6 @@
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const sendIQ = _converse.connection.sendIQ;
                 const muc_jid = 'lounge@montague.lit';
-                let sent_IQ, IQ_id;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    if (iq.nodeTree.getAttribute('to') === 'lounge@montague.lit') {
-                        sent_IQ = iq;
-                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                    } else {
-                        sendIQ.bind(this)(iq, callback, errback);
-                    }
-                });
                 await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
 
                 const disco_selector = `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
@@ -499,7 +490,7 @@
                     }).c('body').t(message).tree();
 
                 await view.model.onMessage(msg);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
 
                 spyOn(view.model, 'clearMessages').and.callThrough();
                 view.model.close();
@@ -531,7 +522,7 @@
                     }).c('body').t(message).tree();
 
                 await view.model.onMessage(msg);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 view.el.querySelector('.chat-msg__text a').click();
                 await u.waitUntil(() => _converse.chatboxes.length === 3)
                 expect(_.includes(_converse.chatboxes.pluck('id'), 'coven@chat.shakespeare.lit')).toBe(true);
@@ -543,7 +534,6 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
-                const sent_IQs = _converse.connection.IQ_stanzas;
                 const muc_jid = 'coven@chat.shakespeare.lit';
                 const room = Strophe.getNodeFromJid(muc_jid);
                 const server = Strophe.getDomainFromJid(muc_jid);
@@ -653,7 +643,7 @@
                     'type': 'groupchat'
                 }).c('body').t('hello world').tree();
                 _converse.connection._dataRecv(test_utils.createRequest(msg));
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
 
                 // Add another entrant, otherwise the above message will be
                 // collapsed if "newguy" leaves immediately again
@@ -1117,7 +1107,7 @@
                     }).c('body').t('Some message').tree();
 
                 await view.model.onMessage(msg);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
 
                 let stanza = u.toStanza(
                     `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" type="unavailable" from="conversations@conference.siacs.eu/Guus">
@@ -1242,7 +1232,7 @@
                             <delay xmlns="urn:xmpp:delay" stamp="${(new Date()).toISOString()}" from="some1@montague.lit"/>
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
 
                 presence = $pres({
                         to: 'romeo@montague.lit/_converse.js-29092160',
@@ -1277,7 +1267,7 @@
                            <delay xmlns="urn:xmpp:delay" stamp="${(new Date()).toISOString()}" from="some1@montague.lit"/>"+
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
 
                 jasmine.clock().tick(ONE_DAY_LATER);
                 // Test a user leaving a groupchat
@@ -1333,7 +1323,7 @@
                         'type': 'groupchat'
                     }).c('body').t(message).tree();
                 await view.model.onMessage(msg);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Dyon van de Wege')).toBeTruthy();
                 expect(view.el.querySelector('.chat-msg__text').textContent.trim()).toBe('is tired');
 
@@ -1345,7 +1335,7 @@
                     type: 'groupchat'
                 }).c('body').t(message).tree();
                 await view.model.onMessage(msg);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(_.includes(sizzle('.chat-msg__author:last', view.el).pop().textContent, '**Romeo Montague')).toBeTruthy();
                 expect(sizzle('.chat-msg__text:last', view.el).pop().textContent.trim()).toBe('is as well');
                 done();
@@ -1667,7 +1657,7 @@
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 var view = _converse.chatboxviews.get('lounge@montague.lit'),
                     occupants = view.el.querySelector('.occupant-list');
-                var presence, jid;
+                var presence;
                 for (var i=0; i<mock.chatroom_names.length; i++) {
                     const name = mock.chatroom_names[i];
                     const role = mock.chatroom_roles[name].role;
@@ -1850,7 +1840,6 @@
                     async function (done, _converse) {
 
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
-                const sendIQ = _converse.connection.sendIQ;
                 const muc_jid = 'lounge@montague.lit';
 
                 await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
@@ -1964,7 +1953,6 @@
                 spyOn(_converse.api, "trigger").and.callThrough();
                 spyOn(window, 'prompt').and.callFake(() => "Please join!");
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                const chat_area = view.el.querySelector('.chat-area');
 
                 expect(view.model.getOwnAffiliation()).toBe('owner');
                 expect(view.model.features.get('open')).toBe(false);
@@ -2062,7 +2050,7 @@
                     type: 'groupchat'
                 }).c('body').t(text);
                 await view.model.onMessage(message.nodeTree);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 const chat_content = view.el.querySelector('.chat-content');
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(chat_content.querySelector('.chat-msg__text').textContent.trim()).toBe(text);
@@ -2089,7 +2077,7 @@
                     preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
 
                 expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', jasmine.any(_converse.Message));
                 const chat_content = view.el.querySelector('.chat-content');
@@ -2136,7 +2124,7 @@
                             type: 'groupchat',
                             id: (new Date()).getTime(),
                         }).c('body').t('Message: '+i).tree());
-                    promises.push(new Promise((resolve, reject) => view.once('messageInserted', resolve)))
+                    promises.push(new Promise(resolve => view.once('messageInserted', resolve)))
                 }
                 await Promise.all(promises);
                 // Give enough time for `markScrolled` to have been called
@@ -2149,7 +2137,7 @@
                             type: 'groupchat',
                             id: (new Date()).getTime(),
                         }).c('body').t(message).tree());
-                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                    await new Promise(resolve => view.once('messageInserted', resolve));
 
                     // Now check that the message appears inside the chatbox in the DOM
                     const chat_content = view.el.querySelector('.chat-content');
@@ -2175,7 +2163,7 @@
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
-                await new Promise((resolve, reject) => view.model.once('change:subject', resolve));
+                await new Promise(resolve => view.model.once('change:subject', resolve));
                 expect(sizzle('.chat-event:last').pop().textContent.trim()).toBe('Topic set by ralphm');
                 expect(sizzle('.chat-topic:last').pop().textContent.trim()).toBe(text);
                 expect(view.el.querySelector('.chatroom-description').textContent.trim()).toBe(text);
@@ -2186,7 +2174,7 @@
                          <body>This is a message</body>
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(sizzle('.chat-topic').length).toBe(1);
                 expect(sizzle('.chat-msg__subject').length).toBe(1);
                 expect(sizzle('.chat-msg__subject').pop().textContent.trim()).toBe('This is a message subject');
@@ -2209,7 +2197,6 @@
                     'text': subject,
                     'author': 'ralphm'
                 }});
-                const chat_content = view.el.querySelector('.chat-content');
                 expect(sizzle('.chat-event:last').pop().textContent.trim()).toBe('Topic set by ralphm');
                 expect(sizzle('.chat-topic:last').pop().textContent.trim()).toBe(subject);
                 done();
@@ -2675,12 +2662,11 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                let sent_IQ, IQ_id;
+                let IQ_id;
                 const sendIQ = _converse.connection.sendIQ;
 
                 await test_utils.openAndEnterChatRoom(_converse, 'coven@chat.shakespeare.lit', 'some1');
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
 
@@ -4284,7 +4270,6 @@
                     async function (done, _converse) {
 
                 spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
-                const sendIQ = _converse.connection.sendIQ;
                 const sent_IQs = _converse.connection.IQ_stanzas;
                 const muc_jid = 'coven@chat.shakespeare.lit';
 
@@ -4430,8 +4415,6 @@
                     async function (done, _converse) {
 
                 await test_utils.openChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'romeo');
-                var roomview = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-
                 var exclude_existing = false;
                 var remove_absentees = false;
                 var new_list = [];
@@ -4696,7 +4679,7 @@
 
                 const server_input = modal.el.querySelector('input[name="server"]');
                 expect(server_input.placeholder).toBe('conference.example.org');
-                const input = server_input.value = 'chat.shakespeare.lit';
+                server_input.value = 'chat.shakespeare.lit';
                 modal.el.querySelector('input[type="submit"]').click();
                 await u.waitUntil(() => _converse.chatboxes.length);
 
@@ -4840,7 +4823,6 @@
 
                 view.model.set({'minimized': true});
 
-                const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const nick = mock.chatroom_names[0];
 
                 await view.model.onMessage($msg({
@@ -5045,7 +5027,7 @@
                         type: 'groupchat'
                     }).c('body').t('hello world').tree();
                     await view.model.onMessage(msg);
-                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                    await new Promise(resolve => view.once('messageInserted', resolve));
 
                     const messages = view.el.querySelectorAll('.message');
                     expect(messages.length).toBe(7);
@@ -5255,7 +5237,7 @@
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
                     "Your message was not delivered because you're not allowed to send messages in this groupchat.");
                 done();

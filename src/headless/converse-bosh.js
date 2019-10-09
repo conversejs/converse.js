@@ -12,7 +12,7 @@ import 'strophe.js/src/bosh';
 import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 
-const { Backbone, Strophe, _ } = converse.env;
+const { Backbone, Strophe } = converse.env;
 
 const BOSH_SESSION_ID = 'converse.bosh-session';
 

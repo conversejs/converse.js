@@ -7,6 +7,7 @@
  * @module converse-core
  */
 import 'strophe.js/src/websocket';
+import './polyfill';
 import * as strophe from 'strophe.js/src/core';
 import Backbone from 'backbone';
 import BrowserStorage from 'backbone.browserStorage';
@@ -15,7 +16,6 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
 import i18n from './i18n';
 import pluggable from 'pluggable.js/src/pluggable';
-import polyfill from './polyfill';
 import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
 

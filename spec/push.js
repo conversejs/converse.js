@@ -59,7 +59,6 @@
                 }, async function (done, _converse) {
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
-            const room_jid = 'coven@chat.shakespeare.lit';
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.push_app_servers[0].jid,
                 [{'category': 'pubsub', 'type':'push'}],

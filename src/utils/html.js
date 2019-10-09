@@ -10,7 +10,6 @@ import URI from "urijs";
 import _ from "../headless/lodash.noconflict";
 import sizzle from "sizzle";
 import tpl_audio from  "../templates/audio.html";
-import tpl_field from "@converse/headless/templates/field.html";
 import tpl_file from "../templates/file.html";
 import tpl_form_captcha from "../templates/form_captcha.html";
 import tpl_form_checkbox from "../templates/form_checkbox.html";
@@ -172,7 +171,7 @@ u.renderImageURLs = function (_converse, el) {
     const list = el.textContent.match(URL_REGEX) || [];
     return Promise.all(
         list.map(url =>
-            new Promise((resolve, reject) => {
+            new Promise((resolve) => {
                 if (u.isImageURL(url)) {
                     return isImage(url).then(img => {
                         const i = new Image();
@@ -290,8 +289,12 @@ u.ancestor = function (el, selector) {
     return parent;
 }
 
-u.nextUntil = function (el, selector, include_self=false) {
-    /* Return the element's siblings until one matches the selector. */
+/**
+ * Return the element's siblings until one matches the selector.
+ * @private
+ * @method u#nextUntil
+ */
+u.nextUntil = function (el, selector) {
     const matches = [];
     let sibling_el = el.nextElementSibling;
     while (sibling_el !== null && !sibling_el.matches(selector)) {

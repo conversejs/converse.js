@@ -2,9 +2,7 @@
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     const _ = converse.env._,
-          $pres = converse.env.$pres,
           $msg = converse.env.$msg,
-          $iq = converse.env.$iq,
           u = converse.env.utils,
           Strophe = converse.env.Strophe,
           sizzle = converse.env.sizzle;
@@ -198,7 +196,6 @@
 
             test_utils.createContacts(_converse, 'all').openControlBox();
 
-            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
@@ -233,7 +230,6 @@
                 async function (done, _converse) {
 
             test_utils.openControlBox();
-            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
@@ -243,7 +239,6 @@
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
             const input_jid = modal.el.querySelector('input[name="jid"]');
-            const input_name = modal.el.querySelector('input[name="name"]');
             input_jid.value = 'someone@montague.lit';
             modal.el.querySelector('button[type="submit"]').click();
 
@@ -280,7 +275,6 @@
             window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
             XMLHttpRequest.and.callFake(() => xhr);
 
-            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
@@ -353,7 +347,6 @@
             window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
             XMLHttpRequest.and.callFake(() => xhr);
 
-            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             modal = _converse.rosterview.add_contact_modal;

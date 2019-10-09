@@ -15,7 +15,7 @@ import { intersection, pick } from 'lodash'
 import converse from "./converse-core";
 import sizzle from "sizzle";
 
-const { Strophe, $iq, $build, dayjs } = converse.env;
+const { Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;
 
 // XEP-0313 Message Archive Management

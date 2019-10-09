@@ -10,7 +10,7 @@
  * as specified in XEP-0199 XMPP Ping.
  */
 import converse from "./converse-core";
-const { Strophe, $iq, _ } = converse.env;
+const { Strophe, $iq } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('PING', "urn:xmpp:ping");

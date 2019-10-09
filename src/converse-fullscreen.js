@@ -14,8 +14,6 @@ import "converse-singleton";
 import converse from "@converse/headless/converse-core";
 import tpl_brand_heading from "templates/inverse_brand_heading.html";
 
-const { Strophe, _ } = converse.env;
-
 
 converse.plugins.add('converse-fullscreen', {
 

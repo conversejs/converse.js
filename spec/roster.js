@@ -2,7 +2,6 @@
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     const $iq = converse.env.$iq;
-    const $msg = converse.env.$msg;
     const $pres = converse.env.$pres;
     const Strophe = converse.env.Strophe;
     const _ = converse.env._;
@@ -187,7 +186,7 @@
                 const roster = _converse.rosterview.roster_el;
                 _converse.rosterview.filter_view.delegateEvents();
 
-                const contacts = await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
+                await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
                 expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
                 filter.value = "juliet";
                 u.triggerEvent(filter, "keydown", "KeyboardEvent");
@@ -286,7 +285,7 @@
                 var button = _converse.rosterview.el.querySelector('span[data-type="groups"]');
                 button.click();
 
-                const contacts = await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
+                await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
                 expect(sizzle('.roster-group', roster).filter(u.isVisible).length).toBe(5);
 
                 var filter = _converse.rosterview.el.querySelector('.roster-filter');
@@ -403,7 +402,6 @@
                     "Pending contacts"
                 ]);
                 // Check that usernames appear alphabetically per group
-                let names;
                 _.each(_.keys(mock.groups), function (name) {
                     const contacts = sizzle('.roster-group[data-group="'+name+'"] ul', _converse.rosterview.el);
                     const names = _.map(contacts, o => o.textContent.trim());
@@ -608,8 +606,7 @@
                 spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
                 spyOn(contact, 'removeFromRoster').and.callThrough();
                 await u.waitUntil(() => sizzle(".pending-contact-name:contains('"+name+"')", _converse.rosterview.el).length, 700);
-                var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
                     sent_IQ = iq;
                     callback();
                 });
@@ -784,9 +781,8 @@
                 spyOn(window, 'confirm').and.returnValue(true);
                 spyOn(contact, 'removeFromRoster').and.callThrough();
 
-                const sendIQ = _converse.connection.sendIQ;
                 let sent_IQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
                     sent_IQ = iq;
                     callback();
                 });

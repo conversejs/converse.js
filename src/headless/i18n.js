@@ -6,11 +6,8 @@
 // Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-import * as strophe from 'strophe.js/src/core';
 import Jed from "jed";
 import dayjs from "dayjs";
-
-const Strophe = strophe.default.Strophe;
 
 
 function detectLocale (library_check) {

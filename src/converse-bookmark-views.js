@@ -95,7 +95,7 @@ converse.plugins.add('converse-bookmark-views', {
                  */
                 ev.preventDefault();
                 const jid = ev.target.getAttribute('data-room-jid');
-                const chatroom = _converse.api.rooms.open(jid, {'bring_to_foreground': true});
+                _converse.api.rooms.open(jid, {'bring_to_foreground': true});
                 _converse.chatboxviews.get(jid).renderBookmarkForm();
             },
         });
@@ -307,7 +307,7 @@ converse.plugins.add('converse-bookmark-views', {
                 }
             },
 
-            showOrHide (item) {
+            showOrHide () {
                 if (_converse.hide_open_bookmarks) {
                     const bookmarks = this.model.filter((bookmark) =>
                             !_converse.chatboxes.get(bookmark.get('jid')));

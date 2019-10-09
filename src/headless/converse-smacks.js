@@ -11,8 +11,9 @@
  */
 import converse from "./converse-core";
 
-const { Strophe, $build, _ } = converse.env;
+const { Strophe, } = converse.env;
 const u = converse.env.utils;
+
 
 Strophe.addNamespace('SM', 'urn:xmpp:sm:3');
 
@@ -159,7 +160,7 @@ converse.plugins.add('converse-smacks', {
             stanzas.forEach(s => _converse.api.send(s));
         }
 
-        function onResumedStanza (el, resolve) {
+        function onResumedStanza (el) {
             saveSessionData(el);
             handleAck(el);
             resendUnackedStanzas();
@@ -171,8 +172,8 @@ converse.plugins.add('converse-smacks', {
 
         async function sendResumeStanza () {
             const promise = u.getResolveablePromise();
-            _converse.connection._addSysHandler(_.flow(onResumedStanza, promise.resolve), Strophe.NS.SM, 'resumed');
-            _converse.connection._addSysHandler(_.flow(onFailedStanza, promise.resolve), Strophe.NS.SM, 'failed');
+            _converse.connection._addSysHandler(el => promise.resolve(onResumedStanza(el)), Strophe.NS.SM, 'resumed');
+            _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
             const previous_id = _converse.session.get('smacks_stream_id');
             const h = _converse.session.get('num_stanzas_handled');
@@ -188,8 +189,8 @@ converse.plugins.add('converse-smacks', {
             }
             if (await isStreamManagementSupported()) {
                 const promise = u.getResolveablePromise();
-                _converse.connection._addSysHandler(_.flow(saveSessionData, promise.resolve), Strophe.NS.SM, 'enabled');
-                _converse.connection._addSysHandler(_.flow(onFailedStanza, promise.resolve), Strophe.NS.SM, 'failed');
+                _converse.connection._addSysHandler(el => promise.resolve(saveSessionData(el)), Strophe.NS.SM, 'enabled');
+                _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
                 const resume = (_converse.api.connection.isType('websocket') || _converse.isTestEnv());
                 const stanza = u.toStanza(`<enable xmlns="${Strophe.NS.SM}" resume="${resume}"/>`);

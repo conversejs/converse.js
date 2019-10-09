@@ -10,7 +10,7 @@ import * as twemoji from "twemoji";
 import _ from "./lodash.noconflict";
 import converse from "./converse-core";
 
-const { Backbone, Strophe } = converse.env;
+const { Backbone, } = converse.env;
 const u = converse.env.utils;
 
 const ASCII_LIST = {
@@ -253,7 +253,7 @@ converse.plugins.add('converse-emoji', {
              */
             getEmojiRenderer () {
                 const how = {
-                    'attributes': (icon, variant) => {
+                    'attributes': (icon) => {
                         const codepoint = twemoji.default.convert.toCodePoint(icon);
                         return {'title': `${u.getEmojisByAtrribute('cp')[codepoint]['sn']} ${icon}`}
                     }

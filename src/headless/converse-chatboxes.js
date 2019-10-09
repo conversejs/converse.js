@@ -13,7 +13,7 @@ import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import filesize from "filesize";
 
-const { $msg, Backbone, Strophe, dayjs, sizzle, utils, _ } = converse.env;
+const { $msg, Backbone, Strophe, dayjs, sizzle, utils } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
@@ -404,7 +404,7 @@ converse.plugins.add('converse-chatboxes', {
                 this.announceReconnection();
             },
 
-            validate (attrs, options) {
+            validate (attrs) {
                 if (!attrs.jid) {
                     return 'Ignored ChatBox without JID';
                 }
@@ -453,7 +453,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
-            getUpdatedMessageAttributes (message, stanza) {
+            getUpdatedMessageAttributes (message, stanza) {  // eslint-disable-line no-unused-vars
                 // Overridden in converse-muc and converse-mam
                 return {};
             },
@@ -673,7 +673,7 @@ converse.plugins.add('converse-chatboxes', {
                 _converse.api.send(receipt_stanza);
             },
 
-            handleReceipt (stanza, from_jid, is_carbon, is_me, is_mam) {
+            handleReceipt (stanza, from_jid, is_carbon, is_me) {
                 const requests_receipt = sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop() !== undefined;
                 if (requests_receipt && !is_carbon && !is_me) {
                     this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
@@ -1287,7 +1287,7 @@ converse.plugins.add('converse-chatboxes', {
                         chatbox.updateMessage(message, original_stanza);
                     }
                     if (!message &&
-                            !chatbox.handleReceipt (stanza, from_jid, is_carbon, is_me, is_mam) &&
+                            !chatbox.handleReceipt (stanza, from_jid, is_carbon, is_me) &&
                             !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact, is_mam)) {
 
                         const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);

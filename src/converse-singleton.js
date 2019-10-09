@@ -10,9 +10,6 @@
  */
 import converse from "@converse/headless/converse-core";
 
-const { _, Strophe } = converse.env;
-const u = converse.env.utils;
-
 
 converse.plugins.add('converse-singleton', {
 
@@ -31,7 +28,7 @@ converse.plugins.add('converse-singleton', {
             'hide_muc_server': true
         });
         const { _converse } = this;
-        if (!_.isArray(_converse.auto_join_rooms) && !_.isArray(_converse.auto_join_private_chats)) {
+        if (!Array.isArray(_converse.auto_join_rooms) && !Array.isArray(_converse.auto_join_private_chats)) {
             throw new Error("converse-singleton: auto_join_rooms must be an Array");
         }
         if (_converse.auto_join_rooms.length > 1 || _converse.auto_join_private_chats.length > 1) {

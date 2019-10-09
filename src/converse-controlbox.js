@@ -8,7 +8,7 @@
  * @module converse-controlbox
  */
 import "converse-chatview";
-import _FormData from "formdata-polyfill";
+import "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import { get } from "lodash";
@@ -17,7 +17,6 @@ import tpl_controlbox from "templates/controlbox.html";
 import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
 import tpl_login_panel from "templates/login_panel.html";
 
-const CHATBOX_TYPE = 'chatbox';
 const { Strophe, Backbone, dayjs } = converse.env;
 const u = converse.env.utils;
 
@@ -109,7 +108,7 @@ converse.plugins.add('converse-controlbox', {
         },
 
         ChatBox: {
-            validate (attrs, options) {
+            validate (attrs) {
                 const { _converse } = this.__super__;
                 if (attrs.type === _converse.CONTROLBOX_TYPE) {
                     if (_converse.view_mode === 'embedded' && _converse.singleton)  {
@@ -270,12 +269,13 @@ converse.plugins.add('converse-controlbox', {
                 return this;
             },
 
+            /**
+             * Renders the "Contacts" panel of the controlbox.
+             * This will only be called after the user has already been logged in.
+             * @private
+             * @method _converse.ControlBoxView.renderControlBoxPane
+             */
             renderControlBoxPane () {
-                /* Renders the "Contacts" panel of the controlbox.
-                 *
-                 * This will only be called after the user has already been
-                 * logged in.
-                 */
                 if (this.loginpanel) {
                     this.loginpanel.remove();
                     delete this.loginpanel;
@@ -366,7 +366,7 @@ converse.plugins.add('converse-controlbox', {
                 'change input': 'validate'
             },
 
-            initialize (cfg) {
+            initialize () {
                 this.listenTo(this.model, 'change', this.render)
                 this.listenTo(_converse.connfeedback, 'change', this.render);
                 this.render();
@@ -402,7 +402,7 @@ converse.plugins.add('converse-controlbox', {
 
             initPopovers () {
                 Array.from(this.el.querySelectorAll('[data-title]')).forEach(el => {
-                    const popover = new bootstrap.Popover(el, {
+                    new bootstrap.Popover(el, {
                         'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
                         'dismissible': _converse.view_mode === 'mobile' && true || false,
                         'container': this.el.parentElement.parentElement.parentElement

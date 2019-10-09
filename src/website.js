@@ -1,7 +1,7 @@
 (function () {
-    document.addEventListener("DOMContentLoaded", function(event) { 
+    document.addEventListener("DOMContentLoaded", function () {
 
-        window.addEventListener('scroll', function (ev) {
+        window.addEventListener('scroll', function () {
             var navbar = document.querySelector(".navbar");
             var rect = navbar.getBoundingClientRect();
             if (rect.top + window.scrollY > 50) {

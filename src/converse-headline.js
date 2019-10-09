@@ -10,7 +10,7 @@ import "converse-chatview";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.html";
 
-const { _, dayjs, utils } = converse.env;
+const { utils } = converse.env;
 
 
 converse.plugins.add('converse-headline', {
@@ -50,14 +50,13 @@ converse.plugins.add('converse-headline', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-            { __ } = _converse;
+        const { _converse } = this;
 
         _converse.HeadlinesBox = _converse.ChatBox.extend({
             defaults () {
                 return {
                     'bookmarked': false,
-                    'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
+                    'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
                     'message_type': 'headline',
                     'num_unread': 0,
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
@@ -120,14 +119,13 @@ converse.plugins.add('converse-headline', {
             /* Handler method for all incoming messages of type "headline". */
             if (utils.isHeadlineMessage(_converse, message)) {
                 const from_jid = message.getAttribute('from');
-                if (_.includes(from_jid, '@') &&
+                if (from_jid.includes('@') &&
                         !_converse.roster.get(from_jid) &&
                         !_converse.allow_non_roster_messaging) {
                     return;
                 }
-                if (_.isNull(message.querySelector('body'))) {
-                    // Avoid creating a chat box if we have nothing to show
-                    // inside it.
+                if (message.querySelector('body') === null) {
+                    // Avoid creating a chat box if we have nothing to show inside it.
                     return;
                 }
                 const chatbox = _converse.chatboxes.create({

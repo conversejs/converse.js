@@ -7,7 +7,6 @@
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
     const _ = converse.env._;
-    const $iq = converse.env.$iq;
     const $msg = converse.env.$msg;
     const Strophe = converse.env.Strophe;
     const u = converse.env.utils;
@@ -71,7 +70,7 @@
 
                 await _converse.chatboxes.onMessage(msg);
                 const view = _converse.chatboxviews.get(sender_jid);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
                 expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Mercutio')).toBeTruthy();
                 expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
@@ -115,14 +114,12 @@
                 const online_contacts = _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact a.open-chat');
                 expect(online_contacts.length).toBe(15);
                 let el = online_contacts[0];
-                const jid = el.textContent.trim().replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 el.click();
                 await u.waitUntil(() => document.querySelectorAll("#conversejs .chatbox").length == 2);
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 online_contacts[1].click();
                 await u.waitUntil(() => _converse.chatboxes.length == 3);
                 el = online_contacts[1];
-                const new_jid = el.textContent.trim().replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 // Check that new chat boxes are created to the left of the
                 // controlbox (but to the right of all existing chat boxes)
@@ -233,7 +230,7 @@
 
                 await test_utils.waitForRoster(_converse, 'current');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                const chat = await _converse.api.chats.create(sender_jid, {'minimized': true});
+                await _converse.api.chats.create(sender_jid, {'minimized': true});
                 await u.waitUntil(() => _converse.chatboxes.length > 1);
                 const chatBoxView = _converse.chatboxviews.get(sender_jid);
                 expect(u.isVisible(chatBoxView.el)).toBeFalsy();
@@ -257,7 +254,6 @@
                 const view = await test_utils.openChatBoxFor(_converse, contact_jid);
                 const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', _converse.rosterview.el).pop();
                 await u.waitUntil(() => u.isVisible(el));
-                const jid = el.textContent.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const textarea = view.el.querySelector('.chat-textarea');
                 await u.waitUntil(() => u.isVisible(textarea));
                 textarea.blur();
@@ -470,7 +466,7 @@
                         keyCode: 13 // Enter
                     };
                     view.onKeyDown(ev);
-                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                    await new Promise(resolve => view.once('messageInserted', resolve));
                     view.onKeyUp(ev);
                     expect(counter.textContent).toBe('200');
 
@@ -758,7 +754,6 @@
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
-                        let contact, sent_stanza, IQ_id, stanza;
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
                         await test_utils.waitForRoster(_converse, 'current');
@@ -886,7 +881,6 @@
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
-                        let contact, sent_stanza, IQ_id, stanza;
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
                         await test_utils.waitForRoster(_converse, 'current');
@@ -1026,7 +1020,6 @@
                         view.close();
                         expect(view.model.get('chat_state')).toBe('inactive');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        var $stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
                         const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
                         expect(stanza.getAttribute('to')).toBe(contact_jid);
                         expect(stanza.childNodes.length).toBe(3);
@@ -1181,7 +1174,7 @@
                 spyOn(_converse, 'clearMsgCounter').and.callThrough();
 
                 await _converse.chatboxes.onMessage(msg);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(_converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
                 expect(_converse.msg_counter).toBe(1);
@@ -1588,8 +1581,7 @@
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
 
-                const base_url = document.URL.split(window.location.pathname)[0],
-                      message = "geo:37.786971,-122.399677",
+                const message = "geo:37.786971,-122.399677",
                       contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
                 await test_utils.openChatBoxFor(_converse, contact_jid);

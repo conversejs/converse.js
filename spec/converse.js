@@ -4,8 +4,7 @@
         "mock",
         "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
-    const b64_sha1 = converse.env.b64_sha1,
-          _ = converse.env._,
+    const _ = converse.env._,
           u = converse.env.utils;
 
     describe("Converse", function() {
@@ -354,7 +353,7 @@
 
             describe("The \"plugins.add\" method", function() {
                 it("throws an error when multiple plugins attempt to register with the same name",
-                        mock.initConverse((done, _converse) => {
+                        mock.initConverse((done, _converse) => {  // eslint-disable-line no-unused-vars
 
                     converse.plugins.add('myplugin', {});
                     const error = new TypeError('Error: plugin with name "myplugin" has already been registered!');

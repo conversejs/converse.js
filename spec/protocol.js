@@ -389,12 +389,8 @@
                 expect(_converse.roster.get('contact@example.org') instanceof _converse.RosterContact).toBeTruthy();
                 spyOn(contact, "ackUnsubscribe").and.callThrough();
 
-                spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
-                    sent_stanza = stanza;
-                });
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                });
+                spyOn(_converse.connection, 'send').and.callFake(stanza => { sent_stanza = stanza });
+                spyOn(_converse.connection, 'sendIQ').and.callFake(iq => { sent_IQ = iq });
                 /* We now assume the contact declines the subscription
                  * requests.
                  *

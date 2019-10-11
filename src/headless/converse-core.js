@@ -1552,17 +1552,26 @@ _converse.api = {
          * @example _converse.api.user.logout();
          */
         logout () {
+            const promise = u.getResolveablePromise();
+            const complete = () => {
+                // Recreate all the promises
+                Object.keys(_converse.promises).forEach(addPromise);
+                /**
+                 * Triggered once the user has logged out.
+                 * @event _converse#logout
+                 */
+                _converse.api.trigger('logout');
+                promise.resolve();
+            }
+
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (_converse.connection !== undefined) {
+                _converse.api.listen.once('disconnected', () => complete());
                 _converse.connection.disconnect();
+            } else {
+                complete();
             }
-            // Recreate all the promises
-            Object.keys(_converse.promises).forEach(addPromise);
-            /**
-             * Triggered once the user has logged out.
-             * @event _converse#logout
-             */
-            _converse.api.trigger('logout');
+            return promise;
         },
 
         /**

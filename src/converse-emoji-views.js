@@ -10,7 +10,6 @@
 
 import "@converse/headless/converse-emoji";
 import { debounce, find } from "lodash";
-import BrowserStorage from "backbone.browserStorage";
 import bootstrap from "bootstrap.native";
 import tpl_emoji_button from "templates/emoji_button.html";
 import tpl_emojis from "templates/emojis.html";
@@ -103,7 +102,7 @@ converse.plugins.add('converse-emoji-views', {
                     const storage = _converse.config.get('storage'),
                           id = `converse.emoji-${_converse.bare_jid}`;
                     _converse.emojipicker = new _converse.EmojiPicker({'id': id});
-                    _converse.emojipicker.browserStorage = new BrowserStorage[storage](id);
+                    _converse.emojipicker.browserStorage = _converse.createStore(id, storage);
                     _converse.emojipicker.fetch();
                 }
                 this.emoji_picker_view = new _converse.EmojiPickerView({'model': _converse.emojipicker});

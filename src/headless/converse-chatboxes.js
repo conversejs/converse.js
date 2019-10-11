@@ -9,7 +9,6 @@
 import "./converse-emoji";
 import "./utils/form";
 import { get, isObject, isString, propertyOf } from "lodash";
-import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import filesize from "filesize";
 
@@ -328,7 +327,7 @@ converse.plugins.add('converse-chatboxes', {
                 this.messages = new this.messagesCollection();
                 this.messages.chatbox = this;
                 const storage = _converse.config.get('storage');
-                this.messages.browserStorage = new BrowserStorage[storage](this.getMessagesCacheKey());
+                this.messages.browserStorage = _converse.createStore(this.getMessagesCacheKey(), storage);
                 this.listenTo(this.messages, 'change:upload', message => {
                     if (message.get('upload') === _converse.SUCCESS) {
                         _converse.api.send(this.createMessageStanza(message));
@@ -1147,8 +1146,8 @@ converse.plugins.add('converse-chatboxes', {
                     return;
                 }
                 const storage = _converse.config.get('storage');
-                this.browserStorage = new BrowserStorage[storage](
-                    `converse.chatboxes-${_converse.bare_jid}`);
+                const id = `converse.chatboxes-${_converse.bare_jid}`;
+                this.browserStorage = _converse.createStore(id, storage);
                 this.registerMessageHandler();
                 this.fetch({
                     'add': true,

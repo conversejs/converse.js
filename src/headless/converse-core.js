@@ -354,6 +354,12 @@ _converse.isUniView = function () {
     return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 };
 
+_converse.createStore = function (id, storage) {
+    const s = storage ? storage : _converse.storage[_converse.config.get('storage')];
+    return new BrowserStorage[s](id);
+}
+
+
 _converse.router = new Backbone.Router();
 
 function initPlugins () {
@@ -411,7 +417,7 @@ function initClientConfig () {
         'trusted': _converse.trusted && true || false,
         'storage': _converse.trusted ? 'local' : 'session'
     });
-    _converse.config.browserStorage = new BrowserStorage.session(id);
+    _converse.config.browserStorage = _converse.createStore(id, "session");
     _converse.config.fetch();
     /**
      * Triggered once the XMPP-client configuration has been initialized.
@@ -641,7 +647,7 @@ async function initSession (jid) {
     const id = `converse.session-${bare_jid}`;
     if (!_converse.session || _converse.session.get('id') !== id) {
         _converse.session = new Backbone.Model({id});
-        _converse.session.browserStorage = new BrowserStorage.session(id);
+        _converse.session.browserStorage = _converse.createStore(id, "session");
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
         if (_converse.session.get('active')) {
             _converse.session.clear();
@@ -1199,7 +1205,7 @@ _converse.initialize = async function (settings, callback) {
         } else {
             const id = `converse.xmppstatus-${_converse.bare_jid}`;
             _converse.xmppstatus = new this.XMPPStatus({'id': id});
-            _converse.xmppstatus.browserStorage = new BrowserStorage.session(id);
+            _converse.xmppstatus.browserStorage = _converse.createStore(id, "session");
             _converse.xmppstatus.fetch({
                 'success': () => _converse.onStatusInitialized(reconnecting),
                 'error': () => _converse.onStatusInitialized(reconnecting),

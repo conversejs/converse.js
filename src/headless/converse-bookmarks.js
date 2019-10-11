@@ -10,7 +10,6 @@
  * Converse.js plugin which adds views for bookmarks specified in XEP-0048.
  */
 import "@converse/headless/converse-muc";
-import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 
 const { Backbone, Strophe, $iq, sizzle, _ } = converse.env;
@@ -110,7 +109,7 @@ converse.plugins.add('converse-bookmarks', {
                 const storage = _converse.config.get('storage');
                 const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
                 this.fetched_flag = cache_key+'fetched';
-                this.browserStorage = new BrowserStorage[storage](cache_key);
+                this.browserStorage = _converse.createStore(cache_key, storage);
             },
 
             async openBookmarkedRoom (bookmark) {
@@ -126,7 +125,7 @@ converse.plugins.add('converse-bookmarks', {
                 if (this.browserStorage.records.length > 0) {
                     this.fetch({
                         'success': () => deferred.resolve(),
-                        'error':  () => deferred.resolve()
+                        'error': () => deferred.resolve()
                     });
                 } else if (! window.sessionStorage.getItem(this.fetched_flag)) {
                     // There aren't any cached bookmarks and the

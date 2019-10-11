@@ -12,7 +12,6 @@
 import "./converse-disco";
 import "./converse-emoji";
 import "./utils/muc";
-import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import u from "./utils/form";
 
@@ -488,14 +487,13 @@ converse.plugins.add('converse-muc', {
                 this.features = new Backbone.Model(
                     _.assign({id}, _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)))
                 );
-                this.features.browserStorage = new BrowserStorage.session(id);
+                this.features.browserStorage = _converse.createStore(id, "session");
             },
 
             initOccupants () {
                 this.occupants = new _converse.ChatRoomOccupants();
-                this.occupants.browserStorage = new BrowserStorage.session(
-                    `converse.occupants-${_converse.bare_jid}${this.get('jid')}`
-                );
+                const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
+                this.occupants.browserStorage = _converse.createStore(id, 'session');
                 this.occupants.chatroom  = this;
                 this.occupants.fetched = new Promise(resolve => {
                     this.occupants.fetch({

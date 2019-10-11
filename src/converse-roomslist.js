@@ -10,7 +10,6 @@
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 import "@converse/headless/converse-muc";
-import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_rooms_list from "templates/rooms_list.html";
@@ -175,7 +174,7 @@ converse.plugins.add('converse-roomslist', {
                       id = `converse.roomslist${_converse.bare_jid}`;
 
                 this.list_model = new _converse.RoomsList({'id': id});
-                this.list_model.browserStorage = new BrowserStorage[storage](id);
+                this.list_model.browserStorage = _converse.createStore(id, storage);
                 this.list_model.fetch();
                 this.render();
                 this.sortAndPositionAllItems();
@@ -271,7 +270,7 @@ converse.plugins.add('converse-roomslist', {
                   id = `converse.open-rooms-{_converse.bare_jid}`,
                   model = new _converse.OpenRooms();
 
-            model.browserStorage = new BrowserStorage[storage](id);
+            model.browserStorage = _converse.createStore(id, storage);
             _converse.rooms_list_view = new _converse.RoomsListView({'model': model});
             /**
              * Triggered once the _converse.RoomsListView has been created and initialized.

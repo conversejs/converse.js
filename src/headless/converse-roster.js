@@ -6,7 +6,6 @@
 /**
  * @module converse-roster
  */
-import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 
 const { Backbone, Strophe, $iq, $pres, dayjs, sizzle, _ } = converse.env;
@@ -68,18 +67,18 @@ converse.plugins.add('converse-roster', {
         _converse.initRoster = function () {
             const storage = _converse.config.get('storage');
             _converse.roster = new _converse.RosterContacts();
-            _converse.roster.browserStorage = new BrowserStorage[storage](
-                `converse.contacts-${_converse.bare_jid}`);
+            let id = `converse.contacts-${_converse.bare_jid}`;
+            _converse.roster.browserStorage = _converse.createStore(id, storage);
 
             _converse.roster.data = new Backbone.Model();
-            const id = `converse-roster-model-${_converse.bare_jid}`;
+            id = `converse-roster-model-${_converse.bare_jid}`;
             _converse.roster.data.id = id;
-            _converse.roster.data.browserStorage = new BrowserStorage[storage](id);
+            _converse.roster.data.browserStorage = _converse.createStore(id, storage);
             _converse.roster.data.fetch();
 
+            id = `converse.roster.groups${_converse.bare_jid}`;
             _converse.rostergroups = new _converse.RosterGroups();
-            _converse.rostergroups.browserStorage = new BrowserStorage[storage](
-                `converse.roster.groups${_converse.bare_jid}`);
+            _converse.rostergroups.browserStorage = _converse.createStore(id, storage);
             /**
              * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
              * been created, but not yet populated with data.
@@ -152,7 +151,7 @@ converse.plugins.add('converse-roster', {
             initialize () {
                 this.resources = new Resources();
                 const id = `converse.identities-${this.get('jid')}`;
-                this.resources.browserStorage = new BrowserStorage.session(id);
+                this.resources.browserStorage = _converse.createStore(id, "session");
                 this.listenTo(this.resources, 'update', this.onResourcesChanged);
                 this.listenTo(this.resources, 'change', this.onResourcesChanged);
             },
@@ -446,7 +445,7 @@ converse.plugins.add('converse-roster', {
                             'add': true,
                             'silent': true,
                             'success': resolve,
-                            'error': reject
+                            'error': (m, e) => reject(e)
                         });
                     });
                 } catch (e) {
@@ -965,7 +964,7 @@ converse.plugins.add('converse-roster', {
             } else {
                 _converse.presences = new _converse.Presences();
                 const id = `converse.presences-${_converse.bare_jid}`;
-                _converse.presences.browserStorage = new BrowserStorage.session(id);
+                _converse.presences.browserStorage = _converse.createStore(id, "session");
                 // We might be continuing an existing session, so we fetch
                 // cached presence data.
                 _converse.presences.fetch();

@@ -13,7 +13,6 @@ import "converse-modal";
 import "backbone.vdomview";
 import "formdata-polyfill";
 import "@converse/headless/utils/muc";
-import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.html";
@@ -124,11 +123,12 @@ converse.plugins.add('converse-muc-views', {
                 if (this.roomspanel && u.isInDOM(this.roomspanel.el)) {
                     return this.roomspanel;
                 }
+                const id = `converse.roomspanel${_converse.bare_jid}`;
+
                 this.roomspanel = new _converse.RoomsPanel({
                     'model': new (_converse.RoomsPanelModel.extend({
-                        'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage
-                        'browserStorage': new BrowserStorage[_converse.config.get('storage')](
-                            `converse.roomspanel${_converse.bare_jid}`)
+                        id,
+                        'browserStorage': _converse.createStore(id, _converse.config.get('storage'))
                     }))()
                 });
                 this.roomspanel.model.fetch();
@@ -933,7 +933,7 @@ converse.plugins.add('converse-muc-views', {
                     _converse.router.navigate('');
                 }
                 this.model.leave();
-                _converse.ChatBoxView.prototype.close.apply(this, arguments);
+                return _converse.ChatBoxView.prototype.close.apply(this, arguments);
             },
 
             updateOccupantsToggle () {
@@ -2200,7 +2200,7 @@ converse.plugins.add('converse-muc-views', {
                  * @method _converse.api.roomviews.close
                  * @param {(String[]|String)} jids The JID or array of JIDs of the chatroom(s)
                  */
-                'close' (jids) {
+                close (jids) {
                     let views;
                     if (jids === undefined) {
                         views = _converse.chatboxviews;

@@ -6,7 +6,6 @@
 /**
  * @module converse-vcard
  */
-import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import tpl_vcard from "./templates/vcard.html";
 
@@ -160,7 +159,7 @@ converse.plugins.add('converse-vcard', {
         _converse.initVCardCollection = function () {
             _converse.vcards = new _converse.VCards();
             const id = `${_converse.bare_jid}-converse.vcards`;
-            _converse.vcards.browserStorage = new BrowserStorage[_converse.config.get('storage')](id);
+            _converse.vcards.browserStorage = _converse.createStore(id, _converse.config.get('storage'));
             _converse.vcards.fetch();
         }
         _converse.api.listen.on('afterResourceBinding', _converse.initVCardCollection);

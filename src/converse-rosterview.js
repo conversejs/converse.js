@@ -10,7 +10,6 @@ import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
 import "formdata-polyfill";
-import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
 import SHA1 from 'strophe.js/src/sha1';
 import converse from "@converse/headless/converse-core";
@@ -807,7 +806,7 @@ converse.plugins.add('converse-rosterview', {
                 const model = new _converse.RosterFilter();
                 model.id = `_converse.rosterfilter${_converse.bare_jid}`;
                 const storage = _converse.config.get('storage');
-                model.browserStorage = new BrowserStorage[storage](this.filter.id);
+                model.browserStorage = _converse.createStore(this.filter.id, storage);
                 this.filter_view = new _converse.RosterFilterView({'model': model});
                 this.listenTo(this.filter_view.model, 'change', this.updateFilter);
                 this.filter_view.model.fetch();

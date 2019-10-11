@@ -7,7 +7,6 @@
  * @module converse-minimize
  */
 import "converse-chatview";
-import BrowserStorage from "backbone.browserStorage";
 import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox_minimize from "templates/chatbox_minimize.html";
@@ -459,11 +458,11 @@ converse.plugins.add('converse-minimize', {
 
             initToggle () {
                 const storage = _converse.config.get('storage'),
-                      id = `converse.minchatstoggle${_converse.bare_jid}`;
+                      id = `converse.minchatstoggle-${_converse.bare_jid}`;
                 this.toggleview = new _converse.MinimizedChatsToggleView({
                     'model': new _converse.MinimizedChatsToggle({'id': id})
                 });
-                this.toggleview.model.browserStorage = new BrowserStorage[storage](id);
+                this.toggleview.model.browserStorage = _converse.createStore(id, storage);
                 this.toggleview.model.fetch();
             },
 

@@ -11,7 +11,6 @@
  */
 import "backbone.nativeview";
 import "@converse/headless/converse-muc";
-import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_bookmark from "templates/bookmark.html";
@@ -255,7 +254,7 @@ converse.plugins.add('converse-bookmark-views', {
                 const storage = _converse.config.get('storage'),
                       id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
                 this.list_model = new _converse.BookmarksList({'id': id});
-                this.list_model.browserStorage = new BrowserStorage[storage](id);
+                this.list_model.browserStorage = _converse.createStore(id, storage);
 
                 const render = () => {
                     this.render();

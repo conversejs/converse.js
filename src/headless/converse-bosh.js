@@ -9,7 +9,6 @@
  * Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
  */
 import 'strophe.js/src/bosh';
-import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 
 const { Backbone, Strophe } = converse.env;
@@ -36,7 +35,7 @@ converse.plugins.add('converse-bosh', {
             const id = BOSH_SESSION_ID;
             if (!_converse.bosh_session) {
                 _converse.bosh_session = new Backbone.Model({id});
-                _converse.bosh_session.browserStorage = new BrowserStorage.session(id);
+                _converse.bosh_session.browserStorage = _converse.createStore(id, "session");
                 await new Promise(resolve => _converse.bosh_session.fetch({'success': resolve, 'error': resolve}));
             }
             if (_converse.jid) {

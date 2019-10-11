@@ -23,6 +23,7 @@ import utils from "@converse/headless/utils/form";
 
 // Strophe methods for building stanzas
 const { Strophe, Backbone, sizzle, $iq, _ } = converse.env;
+const u = converse.env.utils;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -589,7 +590,7 @@ converse.plugins.add('converse-register', {
                 if (has_empty_inputs) { return; }
 
                 const inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
-                      iq = $iq({'type': 'set', 'id': _converse.connection.getUniqueId()})
+                      iq = $iq({'type': 'set', 'id': u.getUniqueId()})
                             .c("query", {xmlns:Strophe.NS.REGISTER});
 
                 if (this.form_type === 'xform') {

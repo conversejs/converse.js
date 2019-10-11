@@ -557,13 +557,19 @@ u.placeCaretAtEnd = function (textarea) {
     this.scrollTop = 999999;
 };
 
-u.getUniqueId = function () {
-    return 'xxxxxxxx-xxxx'.replace(/[x]/g, function(c) {
-        var r = Math.random() * 16 | 0,
-            v = c === 'x' ? r : r & 0x3 | 0x8;
+u.getUniqueId = function (suffix) {
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0,
+                v = c === 'x' ? r : r & 0x3 | 0x8;
         return v.toString(16);
     });
-};
+    // We prefix the ID with letters so that it's also a valid ID for DOM elements.
+    if (typeof(suffix) === "string" || typeof(suffix) === "number") {
+        return "id" + uuid + ":" + suffix;
+    } else {
+        return "id" + uuid;
+    }
+}
 
 
 /**

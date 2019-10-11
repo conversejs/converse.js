@@ -1238,7 +1238,7 @@ converse.plugins.add('converse-muc-views', {
                             _converse.api.send($pres({
                                 from: _converse.connection.jid,
                                 to: `${jid}/${args}`,
-                                id: _converse.connection.getUniqueId()
+                                id: u.getUniqueId()
                             }).tree());
                         }
                         break;

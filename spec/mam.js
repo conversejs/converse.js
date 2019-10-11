@@ -863,12 +863,6 @@
                     mock.initConverse([], {}, async function (done, _converse) {
 
                 const entity = await _converse.api.disco.entities.get(_converse.domain);
-                let  sent_stanza, IQ_id;
-                const sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_stanza = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
                 spyOn(_converse, 'onMAMPreferences').and.callThrough();
                 _converse.message_archiving = 'never';
 
@@ -879,9 +873,10 @@
 
                 entity.onFeatureAdded(feature);
 
-                expect(_converse.connection.sendIQ).toHaveBeenCalled();
-                expect(sent_stanza.toLocaleString()).toBe(
-                    `<iq id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                let sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('iq[type="get"] prefs[xmlns="urn:xmpp:mam:2"]', s).length).pop());
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                         `<prefs xmlns="urn:xmpp:mam:2"/>`+
                     `</iq>`);
 
@@ -894,7 +889,7 @@
                  *   </prefs>
                  * </iq>
                  */
-                let stanza = $iq({'type': 'result', 'id': IQ_id})
+                let stanza = $iq({'type': 'result', 'id': sent_stanza.getAttribute('id')})
                     .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'roster'})
                     .c('always').c('jid').t('romeo@montague.lit').up().up()
                     .c('never').c('jid').t('montague@montague.lit');
@@ -903,8 +898,9 @@
                 await u.waitUntil(() => _converse.onMAMPreferences.calls.count());
                 expect(_converse.onMAMPreferences).toHaveBeenCalled();
 
-                expect(sent_stanza.toString()).toBe(
-                    `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('iq[type="set"] prefs[xmlns="urn:xmpp:mam:2"]', s).length).pop());
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                         `<prefs default="never" xmlns="urn:xmpp:mam:2">`+
                             `<always><jid>romeo@montague.lit</jid></always>`+
                             `<never><jid>montague@montague.lit</jid></never>`+
@@ -924,7 +920,7 @@
                  *   </prefs>
                  * </iq>
                  */
-                stanza = $iq({'type': 'result', 'id': IQ_id})
+                stanza = $iq({'type': 'result', 'id': sent_stanza.getAttribute('id')})
                     .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'always'})
                         .c('always').up()
                         .c('never');

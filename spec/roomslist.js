@@ -79,20 +79,16 @@
                 [`${Strophe.NS.PUBSUB}#publish-options`]
             );
 
-            const call = await u.waitUntil(() =>
-                _.filter(
-                    _converse.connection.send.calls.all(),
-                    c => sizzle('items[node="storage:bookmarks"]', c.args[0]).length
-                ).pop()
-            );
-            expect(Strophe.serialize(call.args[0])).toBe(
-                `<iq from="romeo@montague.lit/orchard" id="${call.args[0].getAttribute('id')}" type="get" xmlns="jabber:client">`+
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
+            expect(Strophe.serialize(sent_stanza)).toBe(
+                `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                 '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                     '<items node="storage:bookmarks"/>'+
                 '</pubsub>'+
                 '</iq>');
 
-            stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':call.args[0].getAttribute('id')})
+            stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
                 .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                     .c('items', {'node': 'storage:bookmarks'})
                         .c('item', {'id': 'current'})

@@ -917,7 +917,7 @@ converse.plugins.add('converse-roster', {
             });
         });
 
-        _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
+        _converse.api.listen.on('beforeTearDown', () => _converse.unregisterPresenceHandler());
 
         _converse.api.waitUntil('rosterContactsFetched').then(() => {
             _converse.roster.on('add', (contact) => {

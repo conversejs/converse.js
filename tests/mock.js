@@ -182,7 +182,7 @@
     Strophe.Connection = MockConnection;
 
 
-    async function initConverse (settings, spies={}) {
+    async function initConverse (settings) {
         window.localStorage.clear();
         window.sessionStorage.clear();
 
@@ -197,10 +197,6 @@
             'use_emojione': false,
             'view_mode': mock.view_mode,
         }, settings || {}));
-
-        if (spies && spies._converse) {
-            spies._converse.forEach(method => spyOn(_converse, method).and.callThrough());
-        }
 
         _converse.ChatBoxViews.prototype.trimChat = function () {};
 
@@ -244,15 +240,14 @@
         return _converse;
     }
 
-    mock.initConverse = function (spies={}, promise_names=[], settings=null, func) {
-        if (_.isFunction(spies)) {
-            func = spies;
-            spies = null;
+    mock.initConverse = function (promise_names=[], settings=null, func) {
+        if (_.isFunction(promise_names)) {
+            func = promise_names;
             promise_names = []
             settings = null;
         }
         return async done => {
-            const _converse = await initConverse(settings, spies);
+            const _converse = await initConverse(settings);
             async function _done () {
                 if (_converse.api.connection.connected()) {
                     await _converse.api.user.logout();
@@ -264,7 +259,12 @@
                 done();
             }
             await Promise.all((promise_names || []).map(_converse.api.waitUntil));
-            func(_done, _converse).catch(e => { fail(e); _done(); });
+            try {
+                await func(_done, _converse);
+            } catch(e) {
+                fail(e);
+                _done();
+            }
         }
     };
     return mock;

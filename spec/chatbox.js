@@ -16,10 +16,7 @@
 
         describe("A Chatbox", function () {
 
-            it("has a /help command to show the available commands",
-                mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    async function (done, _converse) {
+            it("has a /help command to show the available commands", mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
                 test_utils.openControlBox();
@@ -48,11 +45,7 @@
             }));
 
 
-            it("supports the /me command",
-                mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
-                    async function (done, _converse) {
-
+            it("supports the /me command", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
                 await test_utils.waitForRoster(_converse, 'current');
                 await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                 await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
@@ -98,7 +91,7 @@
             }));
 
             it("is created when you click on a roster item", mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -128,7 +121,7 @@
             }));
 
             it("opens when a new message is received", mock.initConverse(
-                null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
+                ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
                 _converse.api.trigger('rosterContactsFetched');
@@ -149,7 +142,7 @@
             }));
 
             it("doesn't open when a message without body is received", mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -168,7 +161,7 @@
             }));
 
             it("can be trimmed to conserve space",
-                mock.initConverse(null, ['rosterGroupsFetched', 'emojisInitialized'], {},
+                mock.initConverse(['rosterGroupsFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
                 spyOn(_converse.chatboxviews, 'trimChats');
@@ -225,7 +218,7 @@
 
             it("can be opened in minimized mode initially",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -243,7 +236,7 @@
 
 
             it("is focused if its already open and you click on its corresponding roster item",
-                mock.initConverse(null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -269,7 +262,7 @@
 
             it("can be saved to, and retrieved from, browserStorage",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 spyOn(_converse.ChatBoxViews.prototype, 'trimChats');
@@ -305,7 +298,7 @@
 
             it("can be closed by clicking a DOM element with class 'close-chatbox-button'",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -340,7 +333,7 @@
 
             it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -379,7 +372,7 @@
 
             it("will be removed from browserStorage when closed",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 spyOn(_converse.ChatBoxViews.prototype, 'trimChats');
@@ -420,7 +413,7 @@
 
                 it("can be found on each chat box",
                     mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 3);
@@ -439,7 +432,7 @@
 
                 it("shows the remaining character count if a message_limit is configured",
                     mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 200},
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 200},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 3);
@@ -479,7 +472,7 @@
 
                 it("does not show a remaining character count if message_limit is zero",
                     mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 0},
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 0},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 3);
@@ -495,7 +488,7 @@
 
                 it("can contain a button for starting a call",
                     mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current');
@@ -530,7 +523,7 @@
 
                 it("is ignored when it's a carbon copy of one of my own",
                     mock.initConverse(
-                        null, ['rosterGroupsFetched'], {},
+                        ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current');
@@ -562,7 +555,7 @@
 
                 it("does not open a new chatbox",
                     mock.initConverse(
-                        null, ['rosterGroupsFetched'], {},
+                        ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current');
@@ -587,7 +580,7 @@
 
                     it("is sent when the user opens a chat box",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
@@ -609,7 +602,7 @@
                     }));
 
                     it("is sent when the user maximizes a minimized a chat box", mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current', 1);
@@ -643,7 +636,7 @@
 
                     it("is sent as soon as the user starts typing a message which is not a command",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
@@ -682,7 +675,7 @@
 
                     it("is NOT sent out if send_chat_state_notifications doesn't allow it",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'send_chat_state_notifications': []},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {'send_chat_state_notifications': []},
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
@@ -706,7 +699,7 @@
 
                     it("will be shown if received",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched'], {},
+                            ['rosterGroupsFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
@@ -751,7 +744,7 @@
 
                     it("can be a composing carbon message that this user sent from a different client",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
@@ -796,7 +789,7 @@
 
                     it("is sent if the user has stopped typing since 30 seconds",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
@@ -850,7 +843,7 @@
 
                     it("will be shown if received",
                             mock.initConverse(
-                                null, ['rosterGroupsFetched'], {},
+                                ['rosterGroupsFetched'], {},
                                 async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
@@ -878,7 +871,7 @@
 
                     it("can be a paused carbon message that this user sent from a different client",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
@@ -923,7 +916,7 @@
 
                     it("is sent if the user has stopped typing since 2 minutes",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                             async function (done, _converse) {
 
                         const sent_stanzas = _converse.connection.sent_stanzas;
@@ -986,7 +979,7 @@
 
                     it("is sent when the user a minimizes a chat box",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
@@ -1007,7 +1000,7 @@
 
                     it("is sent if the user closes a chat box",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
@@ -1031,7 +1024,7 @@
 
                     it("will clear any other chat status notifications",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
@@ -1073,7 +1066,7 @@
 
                     it("will be shown if received",
                         mock.initConverse(
-                            null, ['rosterGroupsFetched'], {},
+                            ['rosterGroupsFetched'], {},
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current', 3);
@@ -1104,7 +1097,7 @@
 
             it("'/clear' can be used to clear messages in a conversation",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1146,7 +1139,7 @@
 
             it("is incremented when the message is received and the window is not focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
 
@@ -1185,7 +1178,7 @@
 
             it("is cleared when the window is focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1200,7 +1193,7 @@
 
             it("is not incremented when the message is received and the window is focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1226,7 +1219,7 @@
 
             it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1276,7 +1269,7 @@
 
             it("is incremented when the message is received and ChatBoxView is scrolled up",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1293,7 +1286,7 @@
 
             it("is not incremented when the message is received and ChatBoxView is scrolled down",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1309,7 +1302,7 @@
             }));
 
             it("is incremeted when message is received, chatbox is scrolled down and the window is not focused",
-                mock.initConverse(null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1329,7 +1322,7 @@
 
             it("is incremeted when message is received, chatbox is scrolled up and the window is not focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1347,7 +1340,7 @@
 
             it("is cleared when ChatBoxView was scrolled down and the window become focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1366,7 +1359,7 @@
 
             it("is not cleared when ChatBoxView was scrolled up and the windows become focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1389,7 +1382,7 @@
 
             it("is updated when message is received and chatbox is scrolled up",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1415,7 +1408,7 @@
 
             it("is updated when message is received and chatbox is minimized",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1445,7 +1438,7 @@
 
             it("is cleared when chatbox is maximzied after receiving messages in minimized mode",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1471,7 +1464,7 @@
 
             it("is cleared when unread messages are viewed which were received in scrolled-up chatbox",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -1496,7 +1489,7 @@
 
             it("is not cleared after user clicks on roster view when chatbox is already opened and scrolled up",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1523,7 +1516,7 @@
 
             it("is displayed when scrolled up chatbox is minimized after receiving unread messages",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1551,7 +1544,7 @@
 
             it("is incremented when message is received and windows is not focused",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1576,7 +1569,7 @@
 
             it("will render Openstreetmap-URL from geo-URI",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);

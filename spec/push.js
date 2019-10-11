@@ -11,7 +11,7 @@
     describe("XEP-0357 Push Notifications", function () {
 
         it("can be enabled",
-            mock.initConverse(null,
+            mock.initConverse(
                 ['rosterGroupsFetched'], {
                     'push_app_servers': [{
                         'jid': 'push-5@client.example',
@@ -49,7 +49,7 @@
         }));
 
         it("can be enabled for a MUC domain",
-            mock.initConverse(null,
+            mock.initConverse(
                 ['rosterGroupsFetched'], {
                     'enable_muc_push': true,
                     'push_app_servers': [{
@@ -109,7 +109,7 @@
         }));
 
         it("can be disabled",
-            mock.initConverse(null,
+            mock.initConverse(
                 ['rosterGroupsFetched'], {
                     'push_app_servers': [{
                         'jid': 'push-5@client.example',
@@ -145,7 +145,7 @@
 
 
         it("can require a secret token to be included",
-            mock.initConverse(null,
+            mock.initConverse(
                 ['rosterGroupsFetched'], {
                     'push_app_servers': [{
                         'jid': 'push-5@client.example',

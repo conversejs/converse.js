@@ -11,7 +11,7 @@
 
         it("allows you to set affiliations and roles",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
@@ -138,7 +138,7 @@
 
         it("shows an error message if a particular affiliation list may not be retrieved",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();

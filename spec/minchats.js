@@ -10,7 +10,7 @@
 
         it("shows chats that have been minimized",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
@@ -45,7 +45,7 @@
 
         it("can be toggled to hide or show minimized chats",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
@@ -73,7 +73,7 @@
 
         it("shows the number messages received to minimized chats",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
@@ -152,7 +152,7 @@
 
         it("shows the number messages received to minimized groupchats",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'kitchen@conference.shakespeare.lit';

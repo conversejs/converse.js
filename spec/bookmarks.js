@@ -16,7 +16,7 @@
     describe("A chat room", function () {
 
         it("can be bookmarked", mock.initConverse(
-            null, ['rosterGroupsFetched', 'emojisInitialized'], {},
+            ['rosterGroupsFetched', 'emojisInitialized'], {},
             async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -142,7 +142,7 @@
 
 
         it("will be automatically opened if 'autojoin' is set on the bookmark", mock.initConverse(
-            null, ['rosterGroupsFetched'], {},
+            ['rosterGroupsFetched'], {},
             async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -186,7 +186,7 @@
         describe("when bookmarked", function () {
 
             it("will use the nickname from the bookmark", mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(
@@ -211,7 +211,7 @@
             }));
 
             it("displays that it's bookmarked through its bookmark icon", mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 test_utils.waitUntilDiscoConfirmed(
@@ -239,7 +239,7 @@
             }));
 
             it("can be unbookmarked", mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 let sent_stanza, IQ_id;
@@ -317,7 +317,7 @@
         describe("and when autojoin is set", function () {
 
             it("will be be opened and joined automatically upon login", mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 await test_utils.waitUntilBookmarksReturned(_converse);
@@ -346,7 +346,7 @@
     describe("Bookmarks", function () {
 
         it("can be pushed from the XMPP server", mock.initConverse(
-            ['send'], ['rosterGroupsFetched', 'connected'], {},
+            ['rosterGroupsFetched', 'connected'], {},
             async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -404,7 +404,7 @@
 
 
         it("can be retrieved from the XMPP server", mock.initConverse(
-                null, ['chatBoxesFetched', 'roomsPanelRendered', 'rosterGroupsFetched'], {},
+                ['chatBoxesFetched', 'roomsPanelRendered', 'rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -482,7 +482,7 @@
         describe("The rooms panel", function () {
 
             it("shows a list of bookmarks", mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(
@@ -558,7 +558,7 @@
 
 
             it("remembers the toggle state of the bookmarks list", mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -614,7 +614,7 @@
     describe("When hide_open_bookmarks is true and a bookmarked room is opened", function () {
 
         it("can be closed", mock.initConverse(
-            null, ['rosterGroupsFetched'],
+            ['rosterGroupsFetched'],
             { hide_open_bookmarks: true },
             async function (done, _converse) {
 

@@ -11,7 +11,7 @@
 
         it("can be received with a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -48,7 +48,7 @@
 
         it("can be received without a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -82,7 +82,7 @@
 
         it("can be sent without a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current', 1);
@@ -155,7 +155,7 @@
 
         it("can be sent with a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current', 1);

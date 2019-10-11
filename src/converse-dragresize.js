@@ -172,7 +172,7 @@ converse.plugins.add('converse-dragresize', {
                 // Initialize last known mouse position
                 this.prev_pageY = 0;
                 this.prev_pageX = 0;
-                if (_converse.connection.connected) {
+                if (_.get(_converse.connection, 'connected')) {
                     this.height = this.model.get('height');
                     this.width = this.model.get('width');
                 }

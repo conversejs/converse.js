@@ -238,7 +238,9 @@
                 done();
             }));
 
-            it("has a method 'add' with which contacts can be added", mock.initConverse((done, _converse) => {
+            it("has a method 'add' with which contacts can be added",
+                    mock.initConverse(['rosterInitialized'], {}, (done, _converse) => {
+
                 test_utils.createContacts(_converse, 'current');
                 const error = new TypeError('contacts.add: invalid jid');
                 expect(_converse.api.contacts.add).toThrow(error);

@@ -13,6 +13,7 @@
          _ = converse.env._,
          u = converse.env.utils;
 
+
     describe("A chat room", function () {
 
         it("can be bookmarked", mock.initConverse(
@@ -186,14 +187,8 @@
         describe("when bookmarked", function () {
 
             it("will use the nickname from the bookmark", mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
-
-                await test_utils.waitUntilDiscoConfirmed(
-                    _converse, _converse.bare_jid,
-                    [{'category': 'pubsub', 'type': 'pep'}],
-                    ['http://jabber.org/protocol/pubsub#publish-options']
-                );
+                    ['rosterGroupsFetched'], {}, async function (done, _converse) {
+                await test_utils.waitUntilBookmarksReturned(_converse);
                 const room_jid = 'coven@chat.shakespeare.lit';
                 await u.waitUntil(() => _converse.bookmarks);
                 _converse.bookmarks.create({
@@ -346,17 +341,9 @@
     describe("Bookmarks", function () {
 
         it("can be pushed from the XMPP server", mock.initConverse(
-            ['rosterGroupsFetched', 'connected'], {},
-            async function (done, _converse) {
+                ['rosterGroupsFetched', 'connected'], {}, async function (done, _converse) {
 
-            await test_utils.waitUntilDiscoConfirmed(
-                _converse, _converse.bare_jid,
-                [{'category': 'pubsub', 'type': 'pep'}],
-                ['http://jabber.org/protocol/pubsub#publish-options']
-            );
-            await u.waitUntil(() => _converse.bookmarks);
-            // Emit here instead of mocking fetching of bookmarks.
-            _converse.api.trigger('bookmarksInitialized');
+            await test_utils.waitUntilBookmarksReturned(_converse);
 
             /* The stored data is automatically pushed to all of the user's
              * connected resources.
@@ -382,7 +369,7 @@
              * </event>
              * </message>
              */
-            var stanza = $msg({
+            const stanza = $msg({
                 'from': 'romeo@montague.lit',
                 'to': 'romeo@montague.lit/orchard',
                 'type': 'headline',
@@ -473,6 +460,7 @@
                                 }); // Purposefully exclude the <nick> element to test #1043
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await u.waitUntil(() => _converse.bookmarks.onBookmarksReceived.calls.count());
+            await _converse.api.waitUntil('bookmarksInitialized');
             expect(_converse.bookmarks.models.length).toBe(2);
             expect(_converse.bookmarks.findWhere({'jid': 'theplay@conference.shakespeare.lit'}).get('autojoin')).toBe(true);
             expect(_converse.bookmarks.findWhere({'jid': 'another@conference.shakespeare.lit'}).get('autojoin')).toBe(false);
@@ -619,21 +607,10 @@
             async function (done, _converse) {
 
             test_utils.openControlBox();
-            const jid = 'room@conference.example.org';
-            await test_utils.waitUntilDiscoConfirmed(
-                _converse, _converse.bare_jid,
-                [{'category': 'pubsub', 'type': 'pep'}],
-                ['http://jabber.org/protocol/pubsub#publish-options']
-            );
-            await u.waitUntil(() => _converse.bookmarks);
-            // XXX Create bookmarks view here, otherwise we need to mock stanza
-            // traffic for it to get created.
-            _converse.bookmarksview = new _converse.BookmarksView(
-                {'model': _converse.bookmarks}
-            );
-            _converse.api.trigger('bookmarksInitialized');
+            await test_utils.waitUntilBookmarksReturned(_converse);
 
             // Check that it's there
+            const jid = 'room@conference.example.org';
             _converse.bookmarks.create({
                 'jid': jid,
                 'autojoin': false,
@@ -655,7 +632,7 @@
             // Check that it reappears once the room is closed
             const view = _converse.chatboxviews.get(jid);
             view.close();
-            expect(u.hasClass('hidden', _converse.bookmarksview.el.querySelector(".available-chatroom"))).toBeFalsy();
+            await u.waitUntil(() => !u.hasClass('hidden', _converse.bookmarksview.el.querySelector(".available-chatroom")));
             done();
         }));
     });

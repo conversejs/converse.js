@@ -10,7 +10,7 @@
 
         it("is not available unless allow_registration=true",
             mock.initConverse(
-                null, ['chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: false },
                 async function (done, _converse) {
@@ -24,7 +24,7 @@
 
         it("can be opened by clicking on the registration tab",
             mock.initConverse(
-                null, ['chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
@@ -45,7 +45,7 @@
 
         it("allows the user to choose an XMPP provider's domain",
             mock.initConverse(
-                null, ['chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
@@ -81,7 +81,7 @@
 
         it("will render a registration form as received from the XMPP provider",
             mock.initConverse(
-                null, ['chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
@@ -137,7 +137,7 @@
 
         it("will set form_type to legacy and submit it as legacy",
             mock.initConverse(
-                null, ['chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
@@ -194,7 +194,7 @@
 
         it("will set form_type to xform and submit it as xform",
             mock.initConverse(
-                null, ['chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
@@ -267,7 +267,7 @@
 
         it("renders the account registration form",
             mock.initConverse(
-                null, ['chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   view_mode: 'fullscreen',
                   allow_registration: true },

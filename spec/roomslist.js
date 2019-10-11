@@ -8,7 +8,7 @@
     describe("A list of open groupchats", function () {
 
         it("is shown in controlbox", mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
+                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
                 { allow_bookmarks: false // Makes testing easier, otherwise we
                                          // have to mock stanza traffic.
                 }, async function (done, _converse) {
@@ -53,7 +53,6 @@
 
         it("uses bookmarks to determine groupchat names",
             mock.initConverse(
-                null,
                 ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
                 {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
@@ -114,7 +113,7 @@
     describe("A groupchat shown in the groupchats list", function () {
 
         it("is highlighted if it's currently open", mock.initConverse(
-            null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
+            ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
             { view_mode: 'fullscreen',
               allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             }, async function (done, _converse) {
@@ -141,7 +140,7 @@
         }));
 
         it("has an info icon which opens a details modal when clicked", mock.initConverse(
-            null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
+            ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
                                      // have to mock stanza traffic.
@@ -246,7 +245,7 @@
         }));
 
         it("can be closed", mock.initConverse(
-            null, ['rosterGroupsFetched', 'emojisInitialized'],
+            ['rosterGroupsFetched', 'emojisInitialized'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             },
@@ -271,7 +270,7 @@
         }));
 
         it("shows unread messages directed at the user", mock.initConverse(
-                null, null,
+                null,
                 { whitelisted_plugins: ['converse-roomslist'],
                 allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
                 }, async (done, _converse) => {

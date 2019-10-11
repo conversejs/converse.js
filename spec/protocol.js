@@ -50,7 +50,7 @@
              */
             it("Subscribe to contact, contact accepts and subscribes back",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'],
+                    ['rosterGroupsFetched'],
                     { roster_groups: false },
                     async function (done, _converse) {
 
@@ -368,7 +368,7 @@
 
             it("Alternate Flow: Contact Declines Subscription Request",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
                 /* The process by which a user subscribes to a contact, including
@@ -451,7 +451,7 @@
 
             it("Unsubscribe to a contact when subscription is mutual",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'],
+                    ['rosterGroupsFetched'],
                     { roster_groups: false },
                     async function (done, _converse) {
 
@@ -510,7 +510,7 @@
             }));
 
             it("Receiving a subscription request", mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 spyOn(_converse.api, "trigger").and.callThrough();

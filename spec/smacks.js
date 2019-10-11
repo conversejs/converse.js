@@ -11,7 +11,7 @@
 
         it("gets enabled with an <enable> stanza and resumed with a <resume> stanza",
             mock.initConverse(
-                null, ['chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { 'auto_login': false,
                   'enable_smacks': true,
                   'show_controlbox_by_default': true,

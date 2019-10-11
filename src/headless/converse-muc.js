@@ -728,7 +728,7 @@ converse.plugins.add('converse-muc', {
                 const is_spoiler = this.get('composing_spoiler');
                 var references;
                 [text, references] = this.parseTextForReferences(text);
-                const origin_id = _converse.connection.getUniqueId();
+                const origin_id = u.getUniqueId();
 
                 return {
                     'id': origin_id,
@@ -814,7 +814,7 @@ converse.plugins.add('converse-muc', {
                 const invitation = $msg({
                     'from': _converse.connection.jid,
                     'to': recipient,
-                    'id': _converse.connection.getUniqueId()
+                    'id': u.getUniqueId()
                 }).c('x', attrs);
                 _converse.api.send(invitation);
                 /**
@@ -1911,10 +1911,7 @@ converse.plugins.add('converse-muc', {
             },
 
             initialize (attributes) {
-                this.set(Object.assign(
-                    {'id': _converse.connection.getUniqueId()},
-                    attributes)
-                );
+                this.set(Object.assign({'id': u.getUniqueId()}, attributes));
                 this.on('change:image_hash', this.onAvatarChanged, this);
             },
 

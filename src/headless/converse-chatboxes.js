@@ -91,7 +91,7 @@ converse.plugins.add('converse-chatboxes', {
 
             defaults () {
                 return {
-                    'msgid': _converse.connection.getUniqueId(),
+                    'msgid': u.getUniqueId(),
                     'time': (new Date()).toISOString(),
                     'ephemeral': false
                 };
@@ -620,7 +620,7 @@ converse.plugins.add('converse-chatboxes', {
             sendMarker(to_jid, id, type) {
                 const stanza = $msg({
                     'from': _converse.connection.jid,
-                    'id': _converse.connection.getUniqueId(),
+                    'id': u.getUniqueId(),
                     'to': to_jid,
                     'type': 'chat',
                 }).c(type, {'xmlns': Strophe.NS.MARKERS, 'id': id});
@@ -665,7 +665,7 @@ converse.plugins.add('converse-chatboxes', {
             sendReceiptStanza (to_jid, id) {
                 const receipt_stanza = $msg({
                     'from': _converse.connection.jid,
-                    'id': _converse.connection.getUniqueId(),
+                    'id': u.getUniqueId(),
                     'to': to_jid,
                     'type': 'chat',
                 }).c('received', {'xmlns': Strophe.NS.RECEIPTS, 'id': id}).up()
@@ -704,7 +704,7 @@ converse.plugins.add('converse-chatboxes', {
                         'from': _converse.connection.jid,
                         'to': this.get('jid'),
                         'type': this.get('message_type'),
-                        'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid'),
+                        'id': message.get('edited') && u.getUniqueId() || message.get('msgid'),
                     }).c('body').t(message.get('message')).up()
                       .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).root();
 
@@ -748,7 +748,7 @@ converse.plugins.add('converse-chatboxes', {
 
             getOutgoingMessageAttributes (text, spoiler_hint) {
                 const is_spoiler = this.get('composing_spoiler');
-                const origin_id = _converse.connection.getUniqueId();
+                const origin_id = u.getUniqueId();
                 return {
                     'id': origin_id,
                     'jid': this.get('jid'),
@@ -821,7 +821,7 @@ converse.plugins.add('converse-chatboxes', {
                         'older_versions': older_versions,
                         'references': attrs.references,
                         'is_single_emoji':  attrs.message ? u.isSingleEmoji(attrs.message) : false,
-                        'origin_id': _converse.connection.getUniqueId(),
+                        'origin_id': u.getUniqueId(),
                         'received': undefined
                     });
                 } else {
@@ -846,7 +846,7 @@ converse.plugins.add('converse-chatboxes', {
                     }
                     _converse.api.send(
                         $msg({
-                            'id': _converse.connection.getUniqueId(),
+                            'id': u.getUniqueId(),
                             'to': this.get('jid'),
                             'type': 'chat'
                         }).c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
@@ -1039,7 +1039,7 @@ converse.plugins.add('converse-chatboxes', {
                 // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
                 attrs['id'] = attrs['origin_id'] ||
                     attrs[`stanza_id ${attrs.from}`] ||
-                    _converse.connection.getUniqueId();
+                    u.getUniqueId();
                 return attrs;
             },
 

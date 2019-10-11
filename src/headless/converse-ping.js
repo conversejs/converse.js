@@ -99,7 +99,7 @@ converse.plugins.add('converse-ping', {
                     const iq = $iq({
                             'type': 'get',
                             'to': jid,
-                            'id': _converse.connection.getUniqueId('ping')
+                            'id': u.getUniqueId('ping')
                         }).c('ping', {'xmlns': Strophe.NS.PING});
 
                     const result = await _converse.api.sendIQ(iq, 10000, false);

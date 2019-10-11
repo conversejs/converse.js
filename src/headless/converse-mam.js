@@ -477,7 +477,7 @@ converse.plugins.add('converse-mam', {
                         return {'messages': []};
                     }
 
-                    const queryid = _converse.connection.getUniqueId();
+                    const queryid = u.getUniqueId();
                     const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
                     if (options) {
                         stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})

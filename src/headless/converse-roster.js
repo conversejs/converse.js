@@ -639,7 +639,7 @@ converse.plugins.add('converse-roster', {
             async fetchFromServer () {
                 const stanza = $iq({
                     'type': 'get',
-                    'id': _converse.connection.getUniqueId('roster')
+                    'id': u.getUniqueId('roster')
                 }).c('query', {xmlns: Strophe.NS.ROSTER});
                 if (this.rosterVersioningSupported()) {
                     stanza.attrs({'ver': this.data.get('version')});

@@ -262,8 +262,10 @@
         }
         return async done => {
             const _converse = await initConverse(settings, spies);
-            function _done () {
-                _converse.api.user.logout();
+            async function _done () {
+                await _converse.api.user.logout();
+                const el = document.querySelector('#conversejs');
+                el.parentElement.removeChild(el);
                 done();
             }
             await Promise.all((promise_names || []).map(_converse.api.waitUntil));

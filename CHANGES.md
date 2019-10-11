@@ -9,18 +9,18 @@
 
 - The following API methods now return promises:
   * `_converse.api.chats.get`
-  * `_converse.api.chats.create` 
+  * `_converse.api.chats.create`
   * `_converse.api.rooms.get`
   * `_converse.api.rooms.create`
 
 ## 5.0.4 (2019-10-08)
-- New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow_message_corrections)
+- New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow-message-corrections)
   which, if set to `last`, limits editing of sent messages to the last message sent.
 - Bugfix: Don't treat every duplicate message ID as a message correction; since some clients don't use globally unique ID's this causes false positives.
 - Bugfix: process stanzas from mam one-by-one in order to correctly process message receipts
 - #1712: `TypeError: plugin._features is not a function`
 - #1714: Don't notify the user in case we're receiving a message delivery receipt only
-- #1739: New config option [assets_path](https://conversejs.org/docs/html/configuration.html#assets_path)
+- #1739: New config option [assets_path](https://conversejs.org/docs/html/configuration.html#assets-path)
   which lets you set the path from which "chunks" are loaded.
 
 ## 5.0.3 (2019-09-13)

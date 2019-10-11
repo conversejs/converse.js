@@ -1565,7 +1565,7 @@ _converse.api = {
         const options = args.pop();
         if (options && options.synchronous) {
             const events = _converse._events[name] || [];
-            await Promise.all(events.map(e => e.callback.call(e.ctx, args)));
+            await Promise.all(events.map(e => e.callback.apply(e.ctx, args.splice(1))));
         } else {
             _converse.trigger.apply(_converse, arguments);
         }

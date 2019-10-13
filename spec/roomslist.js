@@ -15,11 +15,9 @@
 
             test_utils.openControlBox();
             const controlbox = _converse.chatboxviews.get('controlbox');
-            let list = controlbox.el.querySelector('div.rooms-list-container');
+            let list = controlbox.el.querySelector('.list-container--openrooms');
             expect(_.includes(list.classList, 'hidden')).toBeTruthy();
-
             await test_utils.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
-            expect(_converse.rooms_list_view === undefined).toBeFalsy();
 
             const lview = _converse.rooms_list_view
             await u.waitUntil(() => lview.el.querySelectorAll(".open-room").length);
@@ -37,7 +35,7 @@
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(1);
             expect(room_els[0].innerText).toBe('lounge@montague.lit');
-            list = controlbox.el.querySelector('div.rooms-list-container');
+            list = controlbox.el.querySelector('.list-container--openrooms');
             u.waitUntil(() => _.includes(list.classList, 'hidden'));
 
             view = _converse.chatboxviews.get('lounge@montague.lit');
@@ -45,11 +43,10 @@
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(0);
 
-            list = controlbox.el.querySelector('div.rooms-list-container');
+            list = controlbox.el.querySelector('.list-container--openrooms');
             expect(_.includes(list.classList, 'hidden')).toBeTruthy();
             done();
-            }
-        ));
+        }));
 
         it("uses bookmarks to determine groupchat names",
             mock.initConverse(
@@ -100,7 +97,7 @@
 
             await _converse.api.waitUntil('roomsListInitialized');
             const controlbox = _converse.chatboxviews.get('controlbox');
-            const list = controlbox.el.querySelector('div.rooms-list-container');
+            const list = controlbox.el.querySelector('.list-container--openrooms');
             expect(_.includes(list.classList, 'hidden')).toBeFalsy();
             const items = list.querySelectorAll('.list-item');
             expect(items.length).toBe(1);

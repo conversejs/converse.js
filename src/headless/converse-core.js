@@ -355,7 +355,7 @@ _converse.isUniView = function () {
 };
 
 _converse.createStore = function (id, storage) {
-    const s = storage ? storage : _converse.storage[_converse.config.get('storage')];
+    const s = storage ? storage : _converse.config.get('storage');
     return new BrowserStorage[s](id);
 }
 

@@ -169,13 +169,17 @@ u.isOnlyMessageDeliveryReceipt = function (msg) {
     return msg['received'] && u.isEmptyMessage(msg);
 };
 
+u.isChatRoom = function (model) {
+    return model && (model.get('type') === 'chatroom');
+}
+
 u.isHeadlineMessage = function (_converse, message) {
     const from_jid = message.getAttribute('from');
     if (message.getAttribute('type') === 'headline') {
         return true;
     }
     const chatbox = _converse.chatboxes.get(Strophe.getBareJidFromJid(from_jid));
-    if (chatbox && chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+    if (u.isChatRoom(chatbox)) {
         return false;
     }
     if (message.getAttribute('type') !== 'error' && from_jid && !_.includes(from_jid, '@')) {

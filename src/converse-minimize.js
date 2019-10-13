@@ -397,7 +397,6 @@ converse.plugins.add('converse-minimize', {
                         'title': this.model.getDisplayName()
                     });
                 this.el.innerHTML = tpl_trimmed_chat(data);
-                this.setElement(this.el.firstElementChild);
                 return this.el;
             },
 

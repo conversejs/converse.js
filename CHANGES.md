@@ -4,6 +4,7 @@
 
 - #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
 - #1691 Fix `collection.chatbox is undefined` errors
+- #1733 New message notifications for a minimized chat stack on top of each other
 - Prevent editing of sent file uploads.
 
 ### Breaking changes

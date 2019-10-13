@@ -11,8 +11,9 @@
  */
 import "@converse/headless/converse-muc";
 import converse from "@converse/headless/converse-core";
+import { get } from "lodash";
 
-const { Backbone, Strophe, $iq, sizzle, _ } = converse.env;
+const { Backbone, Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -91,7 +92,11 @@ converse.plugins.add('converse-bookmarks', {
             }
         }
 
-        _converse.Bookmark = Backbone.Model;
+        _converse.Bookmark = Backbone.Model.extend({
+            getDisplayName () {
+                return Strophe.xmlunescape(this.get('name'));
+            }
+        });
 
         _converse.Bookmarks = _converse.Collection.extend({
             model: _converse.Bookmark,
@@ -213,13 +218,13 @@ converse.plugins.add('converse-bookmarks', {
                     `items[node="storage:bookmarks"] item storage[xmlns="storage:bookmarks"] conference`,
                     stanza
                 );
-                _.forEach(bookmarks, (bookmark) => {
+                bookmarks.forEach(bookmark => {
                     const jid = bookmark.getAttribute('jid');
                     this.create({
                         'jid': jid,
                         'name': bookmark.getAttribute('name') || jid,
                         'autojoin': bookmark.getAttribute('autojoin') === 'true',
-                        'nick': _.get(bookmark.querySelector('nick'), 'textContent')
+                        'nick': get(bookmark.querySelector('nick'), 'textContent')
                     });
                 });
             },
@@ -243,6 +248,10 @@ converse.plugins.add('converse-bookmarks', {
                         return deferred.reject(new Error("Could not fetch bookmarks"));
                     }
                 }
+            },
+
+            getUnopenedBookmarks () {
+                return this.filter(b => !_converse.chatboxes.get(b.get('jid')));
             }
         });
 

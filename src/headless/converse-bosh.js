@@ -46,7 +46,7 @@ converse.plugins.add('converse-bosh', {
                 }
             } else { // Keepalive
                 const jid = _converse.bosh_session.get('jid');
-                jid && await _converse.setUserJID();
+                jid && await _converse.setUserJID(jid);
             }
             return _converse.bosh_session;
         }

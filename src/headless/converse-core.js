@@ -490,7 +490,7 @@ function connect (credentials) {
             BOSH_WAIT
         );
     } else if (_converse.authentication === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (_converse.connection.pass || _converse.password);
+        const password = credentials ? credentials.password : (_.get(_converse.connection, 'pass') || _converse.password);
         if (!password) {
             if (_converse.auto_login) {
                 throw new Error("autoLogin: If you use auto_login and "+

@@ -1419,11 +1419,6 @@ _converse.initialize = async function (settings, callback) {
 
     // Initialization
     // --------------
-    // This is the end of the initialize method.
-    if (settings.connection) {
-        this.connection = settings.connection;
-    }
-
     await finishInitialization();
     if (_converse.isTestEnv()) {
         return _converse;

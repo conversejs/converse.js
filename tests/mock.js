@@ -262,6 +262,7 @@
             try {
                 await func(_done, _converse);
             } catch(e) {
+                console.error(e);
                 fail(e);
                 _done();
             }

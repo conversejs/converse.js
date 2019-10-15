@@ -939,6 +939,8 @@ converse.plugins.add('converse-roster', {
             }
         }
 
+        _converse.api.listen.on('streamResumptionFailed', () => _converse.session.set('roster_fetched', false));
+
         _converse.api.listen.on('clearSession', () => {
             clearPresences();
             if (_converse.shouldClearCache()) {

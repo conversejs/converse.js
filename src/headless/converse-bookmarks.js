@@ -194,8 +194,8 @@ converse.plugins.add('converse-bookmarks', {
                 }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                     .c('items', {'node': 'storage:bookmarks'});
                 _converse.api.sendIQ(stanza)
-                    .then((iq) => this.onBookmarksReceived(deferred, iq))
-                    .catch((iq) => this.onBookmarksReceivedError(deferred, iq)
+                    .then(iq => this.onBookmarksReceived(deferred, iq))
+                    .catch(iq => this.onBookmarksReceivedError(deferred, iq)
                 );
             },
 
@@ -237,12 +237,22 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             onBookmarksReceivedError (deferred, iq) {
-                window.sessionStorage.setItem(this.fetched_flag, true);
-                _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
-                _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
+                if (iq === null) {
+                    _converse.log('Error: timeout while fetching bookmarks', Strophe.LogLevel.ERROR);
+                    _converse.api.alert.show(
+                        Strophe.LogLevel.ERROR,
+                        __('Timeout Error'),
+                        [__("The server did not return your bookmarks within the allowed time. "+
+                            "You can reload the page to request them again.")]
+                    );
+                } else {
+                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
+                    _converse.log(iq, Strophe.LogLevel.DEBUG);
+                }
                 if (deferred) {
                     if (iq.querySelector('error[type="cancel"] item-not-found')) {
                         // Not an exception, the user simply doesn't have any bookmarks.
+                        window.sessionStorage.setItem(this.fetched_flag, true);
                         return deferred.resolve();
                     } else {
                         return deferred.reject(new Error("Could not fetch bookmarks"));

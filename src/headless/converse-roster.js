@@ -438,33 +438,33 @@ converse.plugins.add('converse-roster', {
              * @returns {promise} Promise which resolves once the contacts have been fetched.
              */
             async fetchRosterContacts () {
-                let collection;
-                try {
-                    collection = await new Promise((resolve, reject) => {
+                if (_converse.session.get('roster_fetched')) {
+                    const result = await new Promise((resolve, reject) => {
                         this.fetch({
                             'add': true,
                             'silent': true,
                             'success': resolve,
-                            'error': (m, e) => reject(e)
+                            'error': (c, e) => reject(e)
                         });
                     });
-                } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
-                    _converse.session.set('roster_fetched', false)
+                    if (u.isErrorObject(result)) {
+                        _converse.log(result, Strophe.LogLevel.ERROR);
+                        _converse.session.set('roster_fetched', false)
+                    } else {
+                        /**
+                         * The contacts roster has been retrieved from the local cache (`sessionStorage`).
+                         * @event _converse#cachedRoster
+                         * @type { _converse.RosterContacts }
+                         * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
+                         * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
+                         */
+                        _converse.api.trigger('cachedRoster', result);
+                        return;
+                    }
                 }
-                if (_converse.session.get('roster_fetched')) {
-                    /**
-                     * The contacts roster has been retrieved from the local cache (`sessionStorage`).
-                     * @event _converse#cachedRoster
-                     * @type { _converse.RosterContacts }
-                     * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
-                     * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
-                     */
-                    _converse.api.trigger('cachedRoster', collection);
-                } else {
-                    _converse.send_initial_presence = true;
-                    return _converse.roster.fetchFromServer();
-                }
+
+                _converse.send_initial_presence = true;
+                return _converse.roster.fetchFromServer();
             },
 
             subscribeToSuggestedItems (msg) {

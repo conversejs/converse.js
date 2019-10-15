@@ -46,10 +46,6 @@
 
             iq = IQ_stanzas.pop();
             expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
-
-            iq = IQ_stanzas.pop();
-            expect(Strophe.serialize(iq)).toBe(
                 `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
@@ -57,6 +53,10 @@
             expect(Strophe.serialize(disco_iq)).toBe(
                 `<iq from="romeo@montague.lit" id="${disco_iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
+
+            iq = IQ_stanzas.pop();
+            expect(Strophe.serialize(iq)).toBe(
+                `<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
 
             expect(sent_stanzas.filter(s => (s.nodeName === 'r')).length).toBe(2);
             expect(_converse.session.get('unacked_stanzas').length).toBe(4);
@@ -118,9 +118,9 @@
                 `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
-            iq = IQ_stanzas.pop();
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
+            // We don't fetch the roster again because it's cached.
+            expect(_converse.session.get('roster_fetched')).toBeFalsy();
+            expect(IQ_stanzas.filter(iq => sizzle('query[xmlns="jabber:iq:roster"]', iq).pop()).length).toBe(0);
 
             await _converse.api.waitUntil('statusInitialized');
             done();

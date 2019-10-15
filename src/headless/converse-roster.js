@@ -6,6 +6,7 @@
 /**
  * @module converse-roster
  */
+import "@converse/headless/converse-status";
 import converse from "@converse/headless/converse-core";
 
 const { Backbone, Strophe, $iq, $pres, dayjs, sizzle, _ } = converse.env;
@@ -14,7 +15,7 @@ const u = converse.env.utils;
 
 converse.plugins.add('converse-roster', {
 
-    dependencies: [],
+    dependencies: ['converse-status'],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -59,6 +60,21 @@ converse.plugins.add('converse-roster', {
 
 
         /**
+         * Reject or cancel another user's subscription to our presence updates.
+         * @method rejectPresenceSubscription
+         * @private
+         * @memberOf _converse
+         * @param { String } jid - The Jabber ID of the user whose subscription is being canceled
+         * @param { String } message - An optional message to the user
+         */
+        _converse.rejectPresenceSubscription = function (jid, message) {
+            const pres = $pres({to: jid, type: "unsubscribed"});
+            if (message && message !== "") { pres.c("status").t(message); }
+            _converse.api.send(pres);
+        };
+
+
+        /**
          * Initialize the Bakcbone collections that represent the contats
          * roster and the roster groups.
          * @private
@@ -88,6 +104,13 @@ converse.plugins.add('converse-roster', {
              * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
              */
             _converse.api.trigger('rosterInitialized');
+        };
+
+
+        _converse.sendInitialPresence = function () {
+            if (_converse.send_initial_presence) {
+                _converse.xmppstatus.sendPresence();
+            }
         };
 
 
@@ -714,6 +737,7 @@ converse.plugins.add('converse-roster', {
                 _converse.api.trigger('contactRequest', this.create(user_data));
             },
 
+
             handleIncomingSubscription (presence) {
                 const jid = presence.getAttribute('from'),
                     bare_jid = Strophe.getBareJidFromJid(jid),
@@ -972,6 +996,7 @@ converse.plugins.add('converse-roster', {
             _converse.api.trigger('presencesInitialized', reconnecting);
         });
 
+
         _converse.api.listen.on('presencesInitialized', (reconnecting) => {
             if (reconnecting) {
                 /**
@@ -983,7 +1008,6 @@ converse.plugins.add('converse-roster', {
                  */
                 _converse.api.trigger('rosterReadyAfterReconnection');
             } else {
-                _converse.registerIntervalHandler();
                 _converse.initRoster();
             }
             _converse.roster.onConnected();

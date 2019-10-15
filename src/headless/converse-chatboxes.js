@@ -49,6 +49,33 @@ converse.plugins.add('converse-chatboxes', {
             'privateChatsAutoJoined'
         ]);
 
+        let msg_counter = 0;
+
+        _converse.incrementMsgCounter = function () {
+            msg_counter += 1;
+            const title = document.title;
+            if (!title) {
+                return;
+            }
+            if (title.search(/^Messages \(\d+\) /) === -1) {
+                document.title = `Messages (${msg_counter}) ${title}`;
+            } else {
+                document.title = title.replace(/^Messages \(\d+\) /, `Messages (${msg_counter})`);
+            }
+        };
+
+        _converse.clearMsgCounter = function () {
+            msg_counter = 0;
+            const title = document.title;
+            if (!title) {
+                return;
+            }
+            if (title.search(/^Messages \(\d+\) /) !== -1) {
+                document.title = title.replace(/^Messages \(\d+\) /, "");
+            }
+        };
+
+
         function openChat (jid) {
             if (!utils.isValidJID(jid)) {
                 return _converse.log(
@@ -1405,6 +1432,7 @@ converse.plugins.add('converse-chatboxes', {
 
         _converse.api.listen.on('presencesInitialized', (reconnecting) => _converse.chatboxes.onConnected(reconnecting));
         _converse.api.listen.on('reconnected', () => _converse.chatboxes.forEach(m => m.onReconnection()));
+        _converse.api.listen.on('windowStateChanged', d => (d.state === 'visible') && _converse.clearMsgCounter());
         /************************ END Event Handlers ************************/
 
 

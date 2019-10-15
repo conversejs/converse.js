@@ -1138,15 +1138,14 @@
         describe("A Message Counter", function () {
 
             it("is incremented when the message is received and the window is not focused",
-                mock.initConverse(
-                    ['rosterGroupsFetched'], {},
-                    async function (done, _converse) {
-
+                    mock.initConverse(
+                        ['rosterGroupsFetched'], {},
+                        async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
-                expect(_converse.msg_counter).toBe(0);
+                expect(document.title).toBe('Converse Tests');
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const view = await test_utils.openChatBoxFor(_converse, sender_jid)
@@ -1170,7 +1169,7 @@
                 await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(_converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
-                expect(_converse.msg_counter).toBe(1);
+                expect(document.title).toBe('Messages (1) Converse Tests');
                 expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                 _converse.windowSate = previous_state;
                 done();
@@ -1199,7 +1198,7 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
-                expect(_converse.msg_counter).toBe(0);
+                expect(document.title).toBe('Converse Tests');
                 spyOn(_converse, 'incrementMsgCounter').and.callThrough();
                 _converse.saveWindowState(null, 'focus');
                 const message = 'This message will not increment the message counter';
@@ -1213,7 +1212,7 @@
                       .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 await _converse.chatboxes.onMessage(msg);
                 expect(_converse.incrementMsgCounter).not.toHaveBeenCalled();
-                expect(_converse.msg_counter).toBe(0);
+                expect(document.title).toBe('Converse Tests');
                 done();
             }));
 
@@ -1224,7 +1223,7 @@
 
                 await test_utils.waitForRoster(_converse, 'current');
                 // initial state
-                expect(_converse.msg_counter).toBe(0);
+                expect(document.title).toBe('Converse Tests');
                 const message = 'This message will always increment the message counter from zero',
                     sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     msgFactory = function () {
@@ -1244,12 +1243,12 @@
                 _converse.chatboxes.onMessage(msgFactory());
                 await u.waitUntil(() => _converse.api.chats.get().length === 2)
                 let view = _converse.chatboxviews.get(sender_jid);
-                expect(_converse.msg_counter).toBe(1);
+                expect(document.title).toBe('Messages (1) Converse Tests');
 
                 // come back to converse-chat page
                 _converse.saveWindowState(null, 'focus');
                 expect(u.isVisible(view.el)).toBeTruthy();
-                expect(_converse.msg_counter).toBe(0);
+                expect(document.title).toBe('Converse Tests');
 
                 // close chatbox and leave converse-chat page again
                 view.close();
@@ -1260,7 +1259,7 @@
                 await u.waitUntil(() => _converse.api.chats.get().length === 2)
                 view = _converse.chatboxviews.get(sender_jid);
                 expect(u.isVisible(view.el)).toBeTruthy();
-                expect(_converse.msg_counter).toBe(1);
+                expect(document.title).toBe('Messages (1) Converse Tests');
                 done();
             }));
         });

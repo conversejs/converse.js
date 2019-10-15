@@ -256,6 +256,7 @@
                 if (el) {
                     el.parentElement.removeChild(el);
                 }
+                document.title = "Converse Tests";
                 done();
             }
             await Promise.all((promise_names || []).map(_converse.api.waitUntil));

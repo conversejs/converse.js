@@ -6,6 +6,7 @@
 /**
  * @module converse-vcard
  */
+import "./converse-status";
 import converse from "./converse-core";
 import tpl_vcard from "./templates/vcard.html";
 
@@ -15,7 +16,7 @@ const u = converse.env.utils;
 
 converse.plugins.add('converse-vcard', {
 
-    dependencies: ["converse-roster"],
+    dependencies: ["converse-status", "converse-roster"],
 
     overrides: {
         XMPPStatus: {
@@ -162,10 +163,9 @@ converse.plugins.add('converse-vcard', {
             _converse.vcards.browserStorage = _converse.createStore(id, _converse.config.get('storage'));
             _converse.vcards.fetch();
         }
-        _converse.api.listen.on('afterResourceBinding', _converse.initVCardCollection);
-
 
         _converse.api.listen.on('statusInitialized', () => {
+            _converse.initVCardCollection();
             const vcards = _converse.vcards;
             if (_converse.session) {
                 const jid = _converse.session.get('bare_jid');

@@ -10,6 +10,7 @@
 - Initial support for sending custom emojis. Currently only between Converse
   instances. Still working out a wire protocol for compatibility with other clients.
   To add custom emojis, edit the `emojis.json` file.
+- Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
 
 ### Breaking changes
 
@@ -26,6 +27,7 @@
   * `_converse.api.rooms.create`
 
 - The `show_only_online_users` setting has been removed.
+- The order of certain events have now changed: `statusInitialized` is now triggered after `initialized` and `connected` and `reconnected`.
 
 ## 5.0.4 (2019-10-08)
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow-message-corrections)

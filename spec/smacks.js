@@ -50,16 +50,17 @@
 
             await test_utils.waitForRoster(_converse, 'current', 1);
 
-            iq = IQ_stanzas.pop();
+            IQ_stanzas.pop();
+            const disco_iq = IQ_stanzas.pop();
+            expect(Strophe.serialize(disco_iq)).toBe(
+                `<iq from="romeo@montague.lit" id="${disco_iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
+                    `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
+
             iq = IQ_stanzas.pop();
             expect(Strophe.serialize(iq)).toBe(
                 `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
-            const disco_iq = IQ_stanzas.pop();
-            expect(Strophe.serialize(disco_iq)).toBe(
-                `<iq from="romeo@montague.lit" id="${disco_iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-                    `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
 
             expect(sent_stanzas.filter(s => (s.nodeName === 'r')).length).toBe(2);
             expect(_converse.session.get('unacked_stanzas').length).toBe(5);

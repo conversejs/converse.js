@@ -4,9 +4,12 @@
         {[ if (!o.query) { ]}
         <ul>
             {[ Object.keys(o.emoji_categories).forEach(function (category) { ]}
-            <li data-category="{{{category}}}" class="emoji-category {{{o.current_category}}} {{{ category}}} {[ if (o.current_category === category) { ]} picked {[ } ]}" title="{{{o._converse.emoji_category_labels[category]}}}">
+                {[ if (o.emoji_categories[category]) { ]}
+                <li data-category="{{{category}}}" class="emoji-category {{{o.current_category}}} {{{ category}}} {[ if (o.current_category === category) { ]} picked {[ } ]}"
+                    title="{{{ o.__(o._converse.emoji_category_labels[category]) }}}">
                     <a class="pick-category" href="#emoji-picker-{{{category}}}" data-category="{{{category}}}"> {{ o.transformCategory(o.emoji_categories[category]) }} </a>
                 </li>
+                {[ } ]}
             {[ }); ]}
         </ul>
         {[ } ]}
@@ -24,15 +27,17 @@
             </ul>
         {[ } else { ]}
             {[ Object.keys(o.emoji_categories).forEach(function (category) { ]}
-                <a id="emoji-picker-{{{category}}}" class="emoji-category__heading" data-category="{{{category}}}">{{{o._converse.emoji_category_labels[category]}}}</a>
-                <ul class="emoji-picker" data-category="{{{category}}}">
-                    {[ Object.values(o.emojis_by_category[category]).forEach(function (emoji) { ]}
-                    <li class="emoji insert-emoji {[ if (o.shouldBeHidden(emoji.sn)) { ]} hidden {[ }; ]}"
-                        data-emoji="{{{emoji.sn}}}" title="{{{emoji.sn}}}">
-                            <a href="#" data-emoji="{{{emoji.sn}}}"> {{ o.transform(emoji.sn) }}  </a>
-                    </li>
-                    {[ }); ]}
-                </ul>
+                {[ if (o.emoji_categories[category]) { ]}
+                    <a id="emoji-picker-{{{category}}}" class="emoji-category__heading" data-category="{{{category}}}">{{{ o.__(o._converse.emoji_category_labels[category]) }}} </a>
+                    <ul class="emoji-picker" data-category="{{{category}}}">
+                        {[ Object.values(o.emojis_by_category[category]).forEach(function (emoji) { ]}
+                        <li class="emoji insert-emoji {[ if (o.shouldBeHidden(emoji.sn)) { ]} hidden {[ }; ]}"
+                            data-emoji="{{{emoji.sn}}}" title="{{{emoji.sn}}}">
+                                <a href="#" data-emoji="{{{emoji.sn}}}"> {{ o.transform(emoji.sn) }}  </a>
+                        </li>
+                        {[ }); ]}
+                    </ul>
+                {[ } ]}
             {[ }); ]}
         {[ } ]}
     </div>

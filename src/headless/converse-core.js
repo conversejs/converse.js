@@ -313,6 +313,28 @@ _converse.__ = function (str) {
     return i18n.translate.apply(i18n, arguments);
 };
 
+
+/**
+ * A no-op method which is used to signal to gettext that the passed in string
+ * should be included in the pot translation file.
+ *
+ * In contrast to the double-underscore method, the triple underscore method
+ * doesn't actually translate the strings.
+ *
+ * One reason for this method might be because we're using strings we cannot
+ * send to the translation function because they require variable interpolation
+ * and we don't yet have the variables at scan time.
+ *
+ * @method ___
+ * @private
+ * @memberOf _converse
+ * @param { String } str
+ */
+_converse.___ = function (str) {
+    return str;
+}
+
+
 const __ = _converse.__;
 
 const PROMISES = [

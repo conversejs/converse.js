@@ -1026,9 +1026,10 @@
             // Non-https images aren't rendered
             base_url = document.URL.split(window.location.pathname)[0];
             message = base_url+"/logo/conversejs-filled.svg";
-            expect(view.el.querySelectorAll('img').length).toBe(4);
+            const chat_content = view.el.querySelector('.chat-content');
+            expect(chat_content.querySelectorAll('img').length).toBe(4);
             test_utils.sendMessage(view, message);
-            expect(view.el.querySelectorAll('img').length).toBe(4);
+            expect(chat_content.querySelectorAll('img').length).toBe(4);
             done();
         }));
 

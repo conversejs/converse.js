@@ -6,6 +6,9 @@
 - #1691 Fix `collection.chatbox is undefined` errors
 - #1733 New message notifications for a minimized chat stack on top of each other
 - Prevent editing of sent file uploads.
+- Initial support for sending custom emojis. Currently only between Converse
+  instances. Still working out a wire protocol for compatibility with other clients.
+  To add custom emojis, edit the `emojis.json` file.
 
 ### Breaking changes
 

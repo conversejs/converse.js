@@ -100,8 +100,8 @@ converse.plugins.add('converse-muc', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { __, ___ } = _converse;
 
         // Configuration values for this plugin
         // ====================================
@@ -127,15 +127,6 @@ converse.plugins.add('converse-muc', {
                             "to true when muc_domain is not set");
         }
 
-
-        function ___ (str) {
-            /* This is part of a hack to get gettext to scan strings to be
-            * translated. Strings we cannot send to the function above because
-            * they require variable interpolation and we don't yet have the
-            * variables at scan time.
-            */
-            return str;
-        }
 
         /* https://xmpp.org/extensions/xep-0045.html
          * ----------------------------------------

@@ -10,7 +10,7 @@ import * as twemoji from "twemoji";
 import _ from "./lodash.noconflict";
 import converse from "./converse-core";
 
-const { Backbone, } = converse.env;
+const { Backbone } = converse.env;
 const u = converse.env.utils;
 
 const ASCII_LIST = {
@@ -166,7 +166,7 @@ converse.plugins.add('converse-emoji', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
-        const { __ } = _converse;
+        const { ___ } = _converse;
 
         _converse.api.settings.update({
             'emoji_image_path': twemoji.default.base,
@@ -179,23 +179,32 @@ converse.plugins.add('converse-emoji', {
                 "nature": ":rainbow:",
                 "food": ":hotdog:",
                 "symbols": ":musical_note:",
-                "flags": ":flag_ac:"
+                "flags": ":flag_ac:",
+                "custom": ":converse:"
+            },
+            // We use the triple-underscore method which doesn't actually
+            // translate but does signify to gettext that these strings should
+            // go into the POT file. The translation then happens in the
+            // template. We do this so that users can pass in their own
+            // strings via converse.initialize, which is before __ is
+            // available.
+            'emoji_category_labels': {
+                "smileys": ___("Smileys and emotions"),
+                "people": ___("People"),
+                "activity": ___("Activities"),
+                "travel": ___("Travel"),
+                "objects": ___("Objects"),
+                "nature": ___("Animals and nature"),
+                "food": ___("Food and drink"),
+                "symbols": ___("Symbols"),
+                "flags": ___("Flags"),
+                "custom": ___("Stickers")
             }
         });
+
         _converse.api.promises.add(['emojisInitialized']);
         twemoji.default.base = _converse.emoji_image_path;
 
-        _converse.emoji_category_labels = {
-            "smileys": __("Smileys and emotions"),
-            "people": __("People"),
-            "activity": __("Activities"),
-            "travel": __("Travel"),
-            "objects": __("Objects"),
-            "nature": __("Animals and nature"),
-            "food": __("Food and drink"),
-            "symbols": __("Symbols"),
-            "flags": __("Flags")
-        }
 
         /**
          * Model for storing data related to the Emoji picker widget
@@ -253,28 +262,43 @@ converse.plugins.add('converse-emoji', {
              */
             getEmojiRenderer () {
                 const how = {
-                    'attributes': (icon) => {
+                    'attributes': icon => {
                         const codepoint = twemoji.default.convert.toCodePoint(icon);
                         return {'title': `${u.getEmojisByAtrribute('cp')[codepoint]['sn']} ${icon}`}
                     }
                 };
-                const toUnicode = u.shortnameToUnicode;
-                return _converse.use_system_emojis ? toUnicode: text => twemoji.default.parse(toUnicode(text), how);
+                const transform = u.shortnamesToEmojis;
+                return _converse.use_system_emojis ? transform : text => twemoji.default.parse(transform(text), how);
             },
 
             /**
-             * Returns unicode represented by the passed in shortname.
-             * @method u.shortnameToUnicode
+             * Returns an emoji represented by the passed in shortname.
+             * Scans the passed in text for shortnames and replaces them with
+             * emoji unicode glyphs or alternatively if it's a custom emoji
+             * without unicode representation then markup for an HTML image tag
+             * is returned.
+             *
+             * The shortname needs to be defined in `emojis.json`
+             * and needs to have either a `cp` attribute for the codepoint, or
+             * an `url` attribute which points to the source for the image.
+             *
+             * @method u.shortnamesToEmojis
              * @param {string} str - String containg the shortname(s)
              */
-            shortnameToUnicode (str) {
+            shortnamesToEmojis (str, unicode_only=false) {
                 str = str.replace(_converse.emojis.shortnames_regex, shortname => {
                     if ((typeof shortname === 'undefined') || (shortname === '') || (!_converse.emoji_shortnames.includes(shortname))) {
                         // if the shortname doesnt exist just return the entire match
                         return shortname;
                     }
-                    const unicode = _converse.emojis_map[shortname].cp.toUpperCase();
-                    return convert(unicode);
+                    const codepoint = _converse.emojis_map[shortname].cp;
+                    if (codepoint) {
+                        return convert(codepoint.toUpperCase());
+                    } else if (unicode_only) {
+                        return shortname;
+                    } else {
+                        return `<img class="emoji" draggable="false" alt="${shortname}" src="${_converse.emojis_map[shortname].url}"/>`;
+                    }
                 });
                 // Also replace ASCII smileys
                 str = str.replace(ASCII_REPLACE_REGEX, (entire, m1, m2, m3) => {
@@ -287,6 +311,15 @@ converse.plugins.add('converse-emoji', {
                     return m2+convert(unicode);
                 });
                 return str;
+            },
+
+            /**
+             * Returns unicode represented by the passed in shortname.
+             * @method u.shortnameToUnicode
+             * @param {string} str - String containg the shortname(s)
+             */
+            shortnameToUnicode (str) {
+                return this.shortnamesToEmojis(str, true);
             },
 
             /**

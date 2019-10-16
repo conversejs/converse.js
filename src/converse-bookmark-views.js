@@ -259,10 +259,8 @@ converse.plugins.add('converse-bookmark-views', {
             insertIntoControlBox () {
                 const controlboxview = _converse.chatboxviews.get('controlbox');
                 if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
-                    const el = controlboxview.el.querySelector('.bookmarks-list');
-                    if (el !== null) {
-                        el.parentNode.replaceChild(this.el, el);
-                    }
+                    const el = controlboxview.el.querySelector('.list-container--bookmarks');
+                    el && el.parentNode.replaceChild(this.el, el);
                 }
             },
 

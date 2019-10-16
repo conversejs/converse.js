@@ -53,7 +53,7 @@ converse.plugins.add('converse-roomslist', {
 
         _converse.RoomsListView = Backbone.VDOMView.extend({
             tagName: 'div',
-            className: 'open-rooms-list list-container rooms-list-container',
+            className: 'list-container list-container--openrooms',
             events: {
                 'click .add-bookmark': 'addBookmark',
                 'click .close-room': 'closeRoom',
@@ -111,10 +111,8 @@ converse.plugins.add('converse-roomslist', {
             insertIntoControlBox () {
                 const controlboxview = _converse.chatboxviews.get('controlbox');
                 if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
-                    const el = controlboxview.el.querySelector('.open-rooms-list');
-                    if (el !== null) {
-                        el.parentNode.replaceChild(this.el, el);
-                    }
+                    const el = controlboxview.el.querySelector('.list-container--openrooms');
+                    el && el.parentNode.replaceChild(this.el, el);
                 }
             },
 

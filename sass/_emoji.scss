@@ -150,22 +150,30 @@
         height: var(--overlayed-emoji-picker-height);
     }
     .chatbox {
-        .toggle-smiley {
-            .emoji-picker.toolbar-menu {
-                .emoji-picker__container {
-                    .emoji-picker {
-                        .insert-emoji {
-                            a {
-                                font-size: var(--font-size);
-                            }
+        .sendXMPPMessage {
+            .toggle-smiley {
+                .emoji-picker.toolbar-menu {
+                    li {
+                        &.insert-emoji {
+                            height: 20px;
+                            width: 20px;
                         }
                     }
-                    .emoji-skintone-picker {
-                        font-size: var(--font-size-small);
-                    }
-                    .emoji-picker__header {
-                        .emoji-category {
-                            font-size: var(--font-size);
+                    .emoji-picker__container {
+                        .emoji-picker {
+                            .insert-emoji {
+                                a {
+                                    font-size: var(--font-size);
+                                }
+                            }
+                        }
+                        .emoji-skintone-picker {
+                            font-size: var(--font-size-small);
+                        }
+                        .emoji-picker__header {
+                            .emoji-category {
+                                font-size: var(--font-size-small);
+                            }
                         }
                     }
                 }

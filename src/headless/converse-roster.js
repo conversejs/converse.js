@@ -569,11 +569,8 @@ converse.plugins.add('converse-roster', {
             },
 
             getNumOnlineContacts () {
-                let ignored = ['offline', 'unavailable'];
-                if (_converse.show_only_online_users) {
-                    ignored = _.union(ignored, ['dnd', 'xa', 'away']);
-                }
-                return _.sum(this.models.filter((model) => !_.includes(ignored, model.presence.get('show'))));
+                const ignored = ['offline', 'unavailable'];
+                return _.sum(this.models.filter(m => !ignored.includes(m.presence.get('show'))));
             },
 
             /**

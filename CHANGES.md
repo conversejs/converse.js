@@ -24,6 +24,8 @@
   * `_converse.api.rooms.get`
   * `_converse.api.rooms.create`
 
+- The `show_only_online_users` setting has been removed.
+
 ## 5.0.4 (2019-10-08)
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow-message-corrections)
   which, if set to `last`, limits editing of sent messages to the last message sent.

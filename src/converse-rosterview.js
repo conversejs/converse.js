@@ -42,7 +42,6 @@ converse.plugins.add('converse-rosterview', {
             'allow_contact_removal': true,
             'hide_offline_users': false,
             'roster_groups': true,
-            'show_only_online_users': false,
             'show_toolbar': true,
             'xhr_user_search_url': null,
         });
@@ -461,16 +460,17 @@ converse.plugins.add('converse-rosterview', {
                 return this;
             },
 
+            /**
+             * Returns a boolean indicating whether this contact should
+             * generally be visible in the roster.
+             * It doesn't check for the more specific case of whether
+             * the group it's in is collapsed.
+             * @private
+             * @method _converse.RosterContactView#mayBeShown
+             */
             mayBeShown () {
-                /* Return a boolean indicating whether this contact should
-                 * generally be visible in the roster.
-                 *
-                 * It doesn't check for the more specific case of whether
-                 * the group it's in is collapsed.
-                 */
                 const chatStatus = this.model.presence.get('show');
-                if ((_converse.show_only_online_users && chatStatus !== 'online') ||
-                    (_converse.hide_offline_users && chatStatus === 'offline')) {
+                if (_converse.hide_offline_users && chatStatus === 'offline') {
                     // If pending or requesting, show
                     if ((this.model.get('ask') === 'subscribe') ||
                             (this.model.get('subscription') === 'from') ||

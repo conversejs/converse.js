@@ -788,7 +788,7 @@ hide_offline_users
 
 * Default:  ``false``
 
-If set to ``true``, then don't show offline users.
+If set to ``true``, then offline users aren't shown in the roster.
 
 hide_open_bookmarks
 -------------------
@@ -1491,20 +1491,6 @@ show_images_inline
 
 If set to false, images won't be rendered in chats, instead only their links will be shown.
 
-show_only_online_users
-----------------------
-
-* Default:  ``false``
-
-If set to ``true``, only online users will be shown in the contacts roster.
-Users with any other status (e.g. away, busy etc.) will not be shown.
-
-show_send_button
-----------------
-
-* Default:  ``false``
-
-If set to ``true``, a button will be visible which can be clicked to send a message.
 
 singleton
 ---------

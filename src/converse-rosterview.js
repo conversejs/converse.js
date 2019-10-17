@@ -594,13 +594,14 @@ converse.plugins.add('converse-rosterview', {
                 return u.slideIn(this.contacts_el);
             },
 
+            /* Given a list of contacts, make sure they're filtered out
+             * (aka hidden) and that all other contacts are visible.
+             * If all contacts are hidden, then also hide the group title.
+             * @private
+             * @method _converse.RosterGroupView#filterOutContacts
+             * @param { Array } contacts
+             */
             filterOutContacts (contacts=[]) {
-                /* Given a list of contacts, make sure they're filtered out
-                 * (aka hidden) and that all other contacts are visible.
-                 *
-                 * If all contacts are hidden, then also hide the group
-                 * title.
-                 */
                 let shown = 0;
                 this.model.contacts.forEach(contact => {
                     const contact_view = this.get(contact.get('id'));
@@ -618,10 +619,15 @@ converse.plugins.add('converse-rosterview', {
                 }
             },
 
+            /**
+             * Given the filter query "q" and the filter type "type",
+             * return a list of contacts that need to be filtered out.
+             * @private
+             * @method _converse.RosterGroupView#getFilterMatches
+             * @param { String } q - The filter query
+             * @param { String } type - The filter type
+             */
             getFilterMatches (q, type) {
-                /* Given the filter query "q" and the filter type "type",
-                 * return a list of contacts that need to be filtered out.
-                 */
                 if (q.length === 0) {
                     return [];
                 }
@@ -632,15 +638,13 @@ converse.plugins.add('converse-rosterview', {
                         // When filtering by chat state, we still want to
                         // show requesting contacts, even though they don't
                         // have the state in question.
-                        matches = this.model.contacts.filter(
-                            (contact) => !_.includes(contact.presence.get('show'), q) && !contact.get('requesting')
-                        );
+                        matches = this.model.contacts.filter(c => !_.includes(c.presence.get('show'), q) && !c.get('requesting'));
                     } else if (q === 'unread_messages') {
                         matches = this.model.contacts.filter({'num_unread': 0});
+                    } else if (q === 'online') {
+                        matches = this.model.contacts.filter(c => ["offline", "unavailable"].includes(c.presence.get('show')));
                     } else {
-                        matches = this.model.contacts.filter(
-                            (contact) => !_.includes(contact.presence.get('show'), q)
-                        );
+                        matches = this.model.contacts.filter(c => !_.includes(c.presence.get('show'), q));
                     }
                 } else  {
                     matches = this.model.contacts.filter((contact) => {

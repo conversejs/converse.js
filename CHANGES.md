@@ -3,8 +3,9 @@
 ## 6.0.0 (Unreleased)
 
 - #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
-- #1691 Fix `collection.chatbox is undefined` errors
-- #1733 New message notifications for a minimized chat stack on top of each other
+- #1089: When filtering the roster for `online` users, show all non-offline users.
+- #1691: Fix `collection.chatbox is undefined` errors
+- #1733: New message notifications for a minimized chat stack on top of each other
 - Prevent editing of sent file uploads.
 - Initial support for sending custom emojis. Currently only between Converse
   instances. Still working out a wire protocol for compatibility with other clients.

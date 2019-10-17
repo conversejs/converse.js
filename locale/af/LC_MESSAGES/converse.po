@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-10-17 10:44+0200\n"
+"PO-Revision-Date: 2019-10-18 15:52+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9.1-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -130,11 +130,11 @@ msgstr "Klik hier om anoniem in te log"
 
 #: dist/converse-no-dependencies.js:8593
 msgid "Search"
-msgstr ""
+msgstr "Soek"
 
 #: dist/converse-no-dependencies.js:8627
 msgid "Search results"
-msgstr ""
+msgstr "Soekresultate"
 
 #: dist/converse-no-dependencies.js:8777
 msgid "Enter a new Groupchat"
@@ -338,6 +338,11 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Rolle word aan gebruikers toegeken om aan hulle sekere vermoeëns binne die "
+"konteks van 'n groepklets te verskaf of verwyder. Hulle kan eksplisiet "
+"toegewys word, óf implisiet as deel van 'n affiliasie. 'n Role wat nie "
+"implisiet as deel van 'n affiliasie toegeken is nie, is slegs geldig vir die "
+"huidige gebruikersessie."
 
 #: dist/converse-no-dependencies.js:9316 dist/converse-no-dependencies.js:49895
 msgid "Role"
@@ -364,7 +369,7 @@ msgstr "Wys gebruikers"
 
 #: dist/converse-no-dependencies.js:9374
 msgid "No users with that role found."
-msgstr "Geen gebruikers met daardie rol gevind nie"
+msgstr "Geen gebruikers met daardie rol gevind nie."
 
 #: dist/converse-no-dependencies.js:9390
 msgid "New Role"
@@ -404,11 +409,12 @@ msgstr ""
 #: dist/converse-no-dependencies.js:9436 dist/converse-no-dependencies.js:9460
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr ""
-"Verban gebruiker deur sy affiliasie na uitgeworpene (\"outcast\") te verander"
+"Verban gebruiker deur sy affiliasie na uitgeworpene (\"outcast\") te "
+"verander."
 
 #: dist/converse-no-dependencies.js:9470
 msgid "No users with that affiliation found."
-msgstr "Geen gebruikers met daardie affiliasie gevind nie"
+msgstr "Geen gebruikers met daardie affiliasie gevind nie."
 
 #: dist/converse-no-dependencies.js:9490
 msgid "New affiliation"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-09-22 18:27+0000\n"
+"PO-Revision-Date: 2019-10-18 15:52+0000\n"
 "Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.9.1-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -561,7 +561,7 @@ msgstr "Flaggen"
 
 #: dist/converse-no-dependencies.js:27496
 msgid "Stickers"
-msgstr ""
+msgstr "Aufkleber"
 
 #: dist/converse-no-dependencies.js:28145
 msgid "This groupchat is not anonymous"
@@ -797,13 +797,15 @@ msgstr "Leider konnte das Lesezeichen nicht gespeichert werden."
 
 #: dist/converse-no-dependencies.js:31732
 msgid "Timeout Error"
-msgstr ""
+msgstr "Timeout-Fehler"
 
 #: dist/converse-no-dependencies.js:31732
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"Der Server hat Ihre Lesezeichen nicht innerhalb der zulässigen Zeit "
+"zurückgegeben. Sie können die Seite neu laden, um sie erneut anzufordern."
 
 #: dist/converse-no-dependencies.js:33481
 msgid "Unencryptable OMEMO message"

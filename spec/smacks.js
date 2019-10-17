@@ -163,9 +163,6 @@
                 `</failed>`);
             _converse.connection._dataRecv(test_utils.createRequest(result));
 
-            _converse.connection.IQ_stanzas = [];
-            const IQ_stanzas = _converse.connection.IQ_stanzas;
-
             // Session data gets reset
             expect(_converse.session.get('smacks_enabled')).toBe(false);
             expect(_converse.session.get('num_stanzas_handled')).toBe(0);

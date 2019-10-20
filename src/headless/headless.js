@@ -14,6 +14,7 @@ import "./converse-pubsub";      // XEP-0060 Pubsub
 import "./converse-roster";      // Contacts Roster
 import "./converse-rsm";         // XEP-0059 Result Set management
 import "./converse-smacks";      // XEP-0198 Stream Management
+import "./converse-status";   // XEP-0199 XMPP Ping
 import "./converse-vcard";       // XEP-0054 VCard-temp
 /* END: Removable components */
 

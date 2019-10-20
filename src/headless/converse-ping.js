@@ -10,7 +10,7 @@
  * as specified in XEP-0199 XMPP Ping.
  */
 import converse from "./converse-core";
-const { Strophe, $iq, _ } = converse.env;
+const { Strophe, $iq } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('PING', "urn:xmpp:ping");
@@ -99,7 +99,7 @@ converse.plugins.add('converse-ping', {
                     const iq = $iq({
                             'type': 'get',
                             'to': jid,
-                            'id': _converse.connection.getUniqueId('ping')
+                            'id': u.getUniqueId('ping')
                         }).c('ping', {'xmlns': Strophe.NS.PING});
 
                     const result = await _converse.api.sendIQ(iq, 10000, false);

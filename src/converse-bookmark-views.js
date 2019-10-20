@@ -11,10 +11,7 @@
  */
 import "backbone.nativeview";
 import "@converse/headless/converse-muc";
-import BrowserStorage from "backbone.browserStorage";
-import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
-import tpl_bookmark from "templates/bookmark.html";
 import tpl_bookmarks_list from "templates/bookmarks_list.html"
 import tpl_chatroom_bookmark_form from "templates/chatroom_bookmark_form.html";
 import tpl_chatroom_bookmark_toggle from "templates/chatroom_bookmark_toggle.html";
@@ -95,7 +92,7 @@ converse.plugins.add('converse-bookmark-views', {
                  */
                 ev.preventDefault();
                 const jid = ev.target.getAttribute('data-room-jid');
-                const chatroom = _converse.api.rooms.open(jid, {'bring_to_foreground': true});
+                _converse.api.rooms.open(jid, {'bring_to_foreground': true});
                 _converse.chatboxviews.get(jid).renderBookmarkForm();
             },
         });
@@ -212,25 +209,7 @@ converse.plugins.add('converse-bookmark-views', {
         });
 
 
-        _converse.BookmarkView = Backbone.VDOMView.extend({
-            toHTML () {
-                return tpl_bookmark({
-                    'hidden': _converse.hide_open_bookmarks &&
-                              _converse.chatboxes.where({'jid': this.model.get('jid')}).length,
-                    'bookmarked': true,
-                    'info_leave_room': __('Leave this groupchat'),
-                    'info_remove': __('Remove this bookmark'),
-                    'info_remove_bookmark': __('Unbookmark this groupchat'),
-                    'info_title': __('Show more information on this groupchat'),
-                    'jid': this.model.get('jid'),
-                    'name': Strophe.xmlunescape(this.model.get('name')),
-                    'open_title': __('Click to open this groupchat')
-                });
-            }
-        });
-
-
-        _converse.BookmarksView = OrderedListView.extend({
+        _converse.BookmarksView = Backbone.VDOMView.extend({
             tagName: 'div',
             className: 'bookmarks-list list-container rooms-list-container',
             events: {
@@ -239,50 +218,49 @@ converse.plugins.add('converse-bookmark-views', {
                 'click .remove-bookmark': 'removeBookmark',
                 'click .open-room': 'openRoom',
             },
-            listSelector: '.rooms-list',
-            ItemView: _converse.BookmarkView,
-            subviewIndex: 'jid',
 
             initialize () {
-                OrderedListView.prototype.initialize.apply(this, arguments);
+                this.listenTo(this.model, 'add', this.render);
+                this.listenTo(this.model, 'remove', this.render);
 
-                this.listenTo(this.model, 'add', this.showOrHide);
-                this.listenTo(this.model, 'remove', this.showOrHide);
+                this.listenTo(_converse.chatboxes, 'add', this.render);
+                this.listenTo(_converse.chatboxes, 'remove', this.render);
 
-                this.listenTo(_converse.chatboxes, 'add', this.renderBookmarkListElement);
-                this.listenTo(_converse.chatboxes, 'remove', this.renderBookmarkListElement);
-
-                const storage = _converse.config.get('storage'),
-                      id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
-                this.list_model = new _converse.BookmarksList({'id': id});
-                this.list_model.browserStorage = new BrowserStorage[storage](id);
+                const id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
+                this.list_model = new _converse.BookmarksList({id});
+                this.list_model.browserStorage = _converse.createStore(id);
 
                 const render = () => {
                     this.render();
-                    this.sortAndPositionAllItems();
+                    this.insertIntoControlBox();
                 }
                 this.list_model.fetch({'success': render, 'error': render});
             },
 
-            render () {
-                this.el.innerHTML = tpl_bookmarks_list({
-                    'toggle_state': this.list_model.get('toggle-state'),
+            toHTML () {
+                return tpl_bookmarks_list({
+                    '_converse': _converse,
+                    'bookmarks': this.model,
                     'desc_bookmarks': __('Click to toggle the bookmarks list'),
+                    'info_leave_room': __('Leave this groupchat'),
+                    'info_remove': __('Remove this bookmark'),
+                    'info_remove_bookmark': __('Unbookmark this groupchat'),
+                    'info_title': __('Show more information on this groupchat'),
                     'label_bookmarks': __('Bookmarks'),
-                    '_converse': _converse
+                    'open_title': __('Click to open this groupchat'),
+                    'toggle_state': this.list_model.get('toggle-state'),
+                    'is_bookmark_hidden': b => {
+                        return !!(_converse.hide_open_bookmarks && _converse.chatboxes.get(b.get('jid')))
+                    },
+                    'hidden': this.model.getUnopenedBookmarks().length && true
                 });
-                this.showOrHide();
-                this.insertIntoControlBox();
-                return this;
             },
 
             insertIntoControlBox () {
                 const controlboxview = _converse.chatboxviews.get('controlbox');
                 if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
-                    const el = controlboxview.el.querySelector('.bookmarks-list');
-                    if (el !== null) {
-                        el.parentNode.replaceChild(this.el, el);
-                    }
+                    const el = controlboxview.el.querySelector('.list-container--bookmarks');
+                    el && el.parentNode.replaceChild(this.el, el);
                 }
             },
 
@@ -298,28 +276,6 @@ converse.plugins.add('converse-bookmark-views', {
 
             removeBookmark: _converse.removeBookmarkViaEvent,
             addBookmark: _converse.addBookmarkViaEvent,
-
-            renderBookmarkListElement (chatbox) {
-                const bookmarkview = this.get(chatbox.get('jid'));
-                if (bookmarkview) {
-                    bookmarkview.render();
-                    this.showOrHide();
-                }
-            },
-
-            showOrHide (item) {
-                if (_converse.hide_open_bookmarks) {
-                    const bookmarks = this.model.filter((bookmark) =>
-                            !_converse.chatboxes.get(bookmark.get('jid')));
-                    if (!bookmarks.length) {
-                        u.hideElement(this.el);
-                        return;
-                    }
-                }
-                if (this.model.models.length) {
-                    u.showElement(this.el);
-                }
-            },
 
             toggleBookmarksList (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }

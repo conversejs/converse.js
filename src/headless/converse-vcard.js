@@ -6,17 +6,17 @@
 /**
  * @module converse-vcard
  */
-import BrowserStorage from "backbone.browserStorage";
+import "./converse-status";
 import converse from "./converse-core";
 import tpl_vcard from "./templates/vcard.html";
 
-const { Backbone, Strophe, _, $iq, $build, dayjs, sizzle } = converse.env;
+const { Backbone, Strophe, _, $iq, dayjs, } = converse.env;
 const u = converse.env.utils;
 
 
 converse.plugins.add('converse-vcard', {
 
-    dependencies: ["converse-roster"],
+    dependencies: ["converse-status", "converse-roster"],
 
     overrides: {
         XMPPStatus: {
@@ -160,13 +160,12 @@ converse.plugins.add('converse-vcard', {
         _converse.initVCardCollection = function () {
             _converse.vcards = new _converse.VCards();
             const id = `${_converse.bare_jid}-converse.vcards`;
-            _converse.vcards.browserStorage = new BrowserStorage[_converse.config.get('storage')](id);
+            _converse.vcards.browserStorage = _converse.createStore(id, _converse.config.get('storage'));
             _converse.vcards.fetch();
         }
-        _converse.api.listen.on('afterResourceBinding', _converse.initVCardCollection);
-
 
         _converse.api.listen.on('statusInitialized', () => {
+            _converse.initVCardCollection();
             const vcards = _converse.vcards;
             if (_converse.session) {
                 const jid = _converse.session.get('bare_jid');
@@ -281,8 +280,8 @@ converse.plugins.add('converse-vcard', {
                  *     fetched again even if it's been fetched before.
                  * @returns {promise} A promise which resolves once the update has completed.
                  * @example
-                 * _converse.api.waitUntil('rosterContactsFetched').then(() => {
-                 *     const chatbox = _converse.chatboxes.getChatBox('someone@example.org');
+                 * _converse.api.waitUntil('rosterContactsFetched').then(async () => {
+                 *     const chatbox = await _converse.chatboxes.getChatBox('someone@example.org');
                  *     _converse.api.vcard.update(chatbox);
                  * });
                  */

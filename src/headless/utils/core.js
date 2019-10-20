@@ -107,6 +107,15 @@ u.isSameBareJID = function (jid1, jid2) {
             Strophe.getBareJidFromJid(jid2).toLowerCase();
 };
 
+
+u.isSameDomain = function (jid1, jid2) {
+    if (!_.isString(jid1) || !_.isString(jid2)) {
+        return false;
+    }
+    return Strophe.getDomainFromJid(jid1).toLowerCase() ===
+            Strophe.getDomainFromJid(jid2).toLowerCase();
+};
+
 u.isNewMessage = function (message) {
     /* Given a stanza, determine whether it's a new
      * message, i.e. not a MAM archived one.
@@ -148,13 +157,29 @@ u.isOnlyChatStateNotification = function (msg) {
     return msg['chat_state'] && u.isEmptyMessage(msg);
 };
 
+u.isOnlyMessageDeliveryReceipt = function (msg) {
+    if (msg instanceof Element) {
+        // See XEP-0184 Message Delivery Receipts
+        return (msg.querySelector('body') === null) &&
+                    (msg.querySelector('received') !== null);
+    }
+    if (msg instanceof Backbone.Model) {
+        msg = msg.attributes;
+    }
+    return msg['received'] && u.isEmptyMessage(msg);
+};
+
+u.isChatRoom = function (model) {
+    return model && (model.get('type') === 'chatroom');
+}
+
 u.isHeadlineMessage = function (_converse, message) {
     const from_jid = message.getAttribute('from');
     if (message.getAttribute('type') === 'headline') {
         return true;
     }
     const chatbox = _converse.chatboxes.get(Strophe.getBareJidFromJid(from_jid));
-    if (chatbox && chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+    if (u.isChatRoom(chatbox)) {
         return false;
     }
     if (message.getAttribute('type') !== 'error' && from_jid && !_.includes(from_jid, '@')) {
@@ -485,7 +510,6 @@ u.getSelectValues = function (select) {
 
 u.formatFingerprint = function (fp) {
     fp = fp.replace(/^05/, '');
-    const arr = [];
     for (let i=1; i<8; i++) {
         const idx = i*8+i-1;
         fp = fp.slice(0, idx) + ' ' + fp.slice(idx);
@@ -546,13 +570,19 @@ u.placeCaretAtEnd = function (textarea) {
     this.scrollTop = 999999;
 };
 
-u.getUniqueId = function () {
-    return 'xxxxxxxx-xxxx'.replace(/[x]/g, function(c) {
-        var r = Math.random() * 16 | 0,
-            v = c === 'x' ? r : r & 0x3 | 0x8;
+u.getUniqueId = function (suffix) {
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0,
+                v = c === 'x' ? r : r & 0x3 | 0x8;
         return v.toString(16);
     });
-};
+    // We prefix the ID with letters so that it's also a valid ID for DOM elements.
+    if (typeof(suffix) === "string" || typeof(suffix) === "number") {
+        return "id" + uuid + ":" + suffix;
+    } else {
+        return "id" + uuid;
+    }
+}
 
 
 /**

@@ -10,13 +10,11 @@
 
         it("shows users currently present in the groupchat",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {'muc_show_join_leave': false},
+                ['rosterGroupsFetched'], {'muc_show_join_leave': false},
                 async function (done, _converse) {
 
             test_utils.openControlBox();
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit'),
-                  occupants = view.el.querySelector('.occupant-list');
             _.rangeRight(3000, 0).forEach(i => {
                 const name = `User ${i.toString().padStart(5, '0')}`;
                 const presence = $pres({
@@ -39,7 +37,7 @@
 
         xit("adds hundreds of contacts to the roster",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
             _converse.roster_groups = false;
@@ -83,7 +81,7 @@
 
         xit("adds hundreds of contacts to the roster, with roster groups",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
             // _converse.show_only_online_users = true;

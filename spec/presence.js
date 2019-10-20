@@ -8,10 +8,6 @@
     ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const Strophe = converse.env.Strophe;
-    const $iq = converse.env.$iq;
-    const $pres = converse.env.$pres;
-    const _ = converse.env._;
     const u = converse.env.utils;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
@@ -19,7 +15,7 @@
 
         it("includes a entity capabilities node",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 (done, _converse) => {
 
             _converse.api.disco.own.identities.clear();
@@ -75,7 +71,7 @@
 
         it("includes the saved status message",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async (done, _converse) => {
 
             test_utils.openControlBox();
@@ -115,7 +111,7 @@
 
         it("has its priority taken into account",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 (done, _converse) => {
 
             test_utils.openControlBox();

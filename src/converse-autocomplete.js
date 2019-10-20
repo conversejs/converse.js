@@ -194,7 +194,6 @@ converse.plugins.add("converse-autocomplete", {
             }
 
             insertValue (suggestion) {
-                let value;
                 if (this.match_current_word) {
                     u.replaceCurrentWord(this.input, suggestion.value);
                 } else {

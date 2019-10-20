@@ -6,8 +6,8 @@
 /**
  * @module converse-core
  */
-import 'strophe.js/src/bosh';
 import 'strophe.js/src/websocket';
+import './polyfill';
 import * as strophe from 'strophe.js/src/core';
 import Backbone from 'backbone';
 import BrowserStorage from 'backbone.browserStorage';
@@ -16,7 +16,6 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
 import i18n from './i18n';
 import pluggable from 'pluggable.js/src/pluggable';
-import polyfill from './polyfill';
 import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
 
@@ -87,6 +86,7 @@ const CORE_PLUGINS = [
     'converse-roster',
     'converse-rsm',
     'converse-smacks',
+    'converse-status',
     'converse-vcard'
 ];
 
@@ -104,13 +104,13 @@ const _converse = {
     'promises': {}
 }
 
-_converse.VERSION_NAME = "v5.0.4dev";
+_converse.VERSION_NAME = "v5.0.5dev";
 
 Object.assign(_converse, Backbone.Events);
 
 _converse.Collection = Backbone.Collection.extend({
-    clearSession () {
-        Array.from(this.models).forEach(m => m.destroy());
+    clearSession (options) {
+        Array.from(this.models).forEach(m => m.destroy(options));
         this.browserStorage._clear();
         this.reset();
     }
@@ -231,6 +231,7 @@ _converse.default_settings = {
     csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
     debug: false,
     default_state: 'online',
+    discover_connection_methods: false,
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
@@ -239,7 +240,7 @@ _converse.default_settings = {
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
         'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'oc',
-        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
+        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
     ],
     message_carbons: true,
     nickname: undefined,
@@ -313,6 +314,28 @@ _converse.__ = function (str) {
     return i18n.translate.apply(i18n, arguments);
 };
 
+
+/**
+ * A no-op method which is used to signal to gettext that the passed in string
+ * should be included in the pot translation file.
+ *
+ * In contrast to the double-underscore method, the triple underscore method
+ * doesn't actually translate the strings.
+ *
+ * One reason for this method might be because we're using strings we cannot
+ * send to the translation function because they require variable interpolation
+ * and we don't yet have the variables at scan time.
+ *
+ * @method ___
+ * @private
+ * @memberOf _converse
+ * @param { String } str
+ */
+_converse.___ = function (str) {
+    return str;
+}
+
+
 const __ = _converse.__;
 
 const PROMISES = [
@@ -331,7 +354,7 @@ function addPromise (promise) {
 }
 
 _converse.isTestEnv = function () {
-    return _.get(_converse.connection, 'service') === 'jasmine tests';
+    return Strophe.Connection.name === 'MockConnection';
 }
 
 
@@ -353,6 +376,12 @@ _converse.isUniView = function () {
      */
     return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 };
+
+_converse.createStore = function (id, storage) {
+    const s = storage ? storage : _converse.config.get('storage');
+    return new BrowserStorage[s](id);
+}
+
 
 _converse.router = new Backbone.Router();
 
@@ -411,7 +440,7 @@ function initClientConfig () {
         'trusted': _converse.trusted && true || false,
         'storage': _converse.trusted ? 'local' : 'session'
     });
-    _converse.config.browserStorage = new BrowserStorage.session(id);
+    _converse.config.browserStorage = _converse.createStore(id, "session");
     _converse.config.fetch();
     /**
      * Triggered once the XMPP-client configuration has been initialized.
@@ -458,7 +487,7 @@ async function attemptNonPreboundSession (credentials, automatic) {
         } else if (!_converse.isTestEnv() && window.PasswordCredential) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
-            throw new Error("attemptNonPreboundSession: Could not find any credentials to log you in with!");
+            _converse.log("attemptNonPreboundSession: Could not find any credentials to log in with", Strophe.LogLevel.WARN);
         }
     } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication) && (!automatic || _converse.auto_login)) {
         connect();
@@ -484,7 +513,7 @@ function connect (credentials) {
             BOSH_WAIT
         );
     } else if (_converse.authentication === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (_converse.connection.pass || _converse.password);
+        const password = credentials ? credentials.password : (_.get(_converse.connection, 'pass') || _converse.password);
         if (!password) {
             if (_converse.auto_login) {
                 throw new Error("autoLogin: If you use auto_login and "+
@@ -524,20 +553,13 @@ function reconnect () {
 const debouncedReconnect = _.debounce(reconnect, 2000);
 
 
-_converse.shouldClearCache = function () {
-    return !_converse.config.get('trusted') || _converse.isTestEnv();
-}
+_converse.shouldClearCache = () => (!_converse.config.get('trusted') || _converse.isTestEnv());
 
 function clearSession  () {
     if (_converse.session !== undefined) {
         _converse.session.destroy();
         _converse.session.browserStorage._clear();
         delete _converse.session;
-    }
-    if (_converse.shouldClearCache() && _converse.xmppstatus) {
-        _converse.xmppstatus.destroy();
-        _converse.xmppstatus.browserStorage._clear();
-        delete _converse.xmppstatus;
     }
     /**
      * Triggered once the user session has been cleared,
@@ -549,36 +571,83 @@ function clearSession  () {
 }
 
 
-/**
- * Creates a new Strophe.Connection instance and if applicable, attempt to
- * restore the BOSH session or if `auto_login` is true, attempt to log in.
+async function onDomainDiscovered (response) {
+    const text = await response.text();
+    const xrd = (new window.DOMParser()).parseFromString(text, "text/xml").firstElementChild;
+    if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
+        return _converse.log("Could not discover XEP-0156 connection methods", Strophe.LogLevel.WARN);
+    }
+    const bosh_links = sizzle(`Link[rel="urn:xmpp:alt-connections:xbosh"]`, xrd);
+    const ws_links = sizzle(`Link[rel="urn:xmpp:alt-connections:websocket"]`, xrd);
+    const bosh_methods = bosh_links.map(el => el.getAttribute('href'));
+    const ws_methods = ws_links.map(el => el.getAttribute('href'));
+    // TODO: support multiple endpoints
+    _converse.websocket_url = ws_methods.pop();
+    _converse.bosh_service_url = bosh_methods.pop();
+    if (bosh_methods.length === 0 && ws_methods.length === 0) {
+        _converse.log(
+            "onDomainDiscovered: neither BOSH nor WebSocket connection methods have been specified with XEP-0156.",
+            Strophe.LogLevel.WARN
+        );
+    }
+}
+
+
+/* Use XEP-0156 to check whether this host advertises websocket or BOSH connection methods.
  */
-_converse.initConnection = async function () {
-    if (!_converse.connection) {
-        if (!_converse.bosh_service_url && ! _converse.websocket_url) {
+async function discoverConnectionMethods (domain) {
+    const options = {
+        'mode': 'cors',
+        'headers': {
+            'Accept': 'application/xrd+xml, text/xml'
+        }
+    };
+    const url = `https://${domain}/.well-known/host-meta`;
+    let response;
+    try {
+        response = await fetch(url, options);
+    } catch (e) {
+        _converse.log(`Failed to discover alternative connection methods at ${url}`, Strophe.LogLevel.ERROR);
+        return _converse.log(e, Strophe.LogLevel.ERROR);
+    }
+    if (response.status >= 200 && response.status < 400) {
+        await onDomainDiscovered(response);
+    } else {
+        _converse.log("Could not discover XEP-0156 connection methods", Strophe.LogLevel.WARN);
+    }
+}
+
+
+_converse.initConnection = async function (domain) {
+    if (_converse.discover_connection_methods) {
+        await discoverConnectionMethods(domain);
+    }
+    if (! _converse.bosh_service_url) {
+        if (_converse.authentication === _converse.PREBIND) {
+            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
+        }
+        if (! _converse.websocket_url) {
             throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
         }
-        if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url) {
-            _converse.connection = new Strophe.Connection(
-                _converse.websocket_url,
-                Object.assign(_converse.default_connection_options, _converse.connection_options)
-            );
-        } else if (_converse.bosh_service_url) {
-            _converse.connection = new Strophe.Connection(
-                _converse.bosh_service_url,
-                Object.assign(
-                    _converse.default_connection_options,
-                    _converse.connection_options,
-                    {'keepalive': _converse.keepalive}
-                )
-            );
-        } else {
-            throw new Error("initConnection: this browser does not support "+
-                            "websockets and bosh_service_url wasn't specified.");
-        }
-        if (_converse.auto_login || _converse.keepalive) {
-            await _converse.api.user.login(null, null, true);
-        }
+    }
+
+    if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url) {
+        _converse.connection = new Strophe.Connection(
+            _converse.websocket_url,
+            Object.assign(_converse.default_connection_options, _converse.connection_options)
+        );
+    } else if (_converse.bosh_service_url) {
+        _converse.connection = new Strophe.Connection(
+            _converse.bosh_service_url,
+            Object.assign(
+                _converse.default_connection_options,
+                _converse.connection_options,
+                {'keepalive': _converse.keepalive}
+            )
+        );
+    } else {
+        throw new Error("initConnection: this browser does not support "+
+                        "websockets and bosh_service_url wasn't specified.");
     }
     setUpXMLLogging();
     /**
@@ -588,15 +657,15 @@ _converse.initConnection = async function () {
      * @event _converse#connectionInitialized
      */
     _converse.api.trigger('connectionInitialized');
-};
+}
 
 
-async function setUserJID (jid) {
+async function initSession (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (!_converse.session || _converse.session.get('id') !== id) {
         _converse.session = new Backbone.Model({id});
-        _converse.session.browserStorage = new BrowserStorage.session(id);
+        _converse.session.browserStorage = _converse.createStore(id, "session");
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
         if (_converse.session.get('active')) {
             _converse.session.clear();
@@ -613,23 +682,14 @@ async function setUserJID (jid) {
     } else {
         saveJIDtoSession(jid);
     }
-    /**
-     * Triggered whenever the user's JID has been updated
-     * @event _converse#setUserJID
-     */
-    _converse.api.trigger('setUserJID');
-    return jid;
 }
+
 
 function saveJIDtoSession (jid) {
     jid = _converse.session.get('jid') || jid;
     if (_converse.authentication !== _converse.ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + _converse.generateResource();
     }
-    // Set JID on the connection object so that when we call
-    // `connection.bind` the new resource is found by Strophe.js
-    // and sent to the XMPP server.
-    _converse.connection.jid = jid;
     _converse.jid = jid;
     _converse.bare_jid = Strophe.getBareJidFromJid(jid);
     _converse.resource = Strophe.getResourceFromJid(jid);
@@ -641,6 +701,64 @@ function saveJIDtoSession (jid) {
        'domain': _converse.domain,
        'active': true
     });
+    // Set JID on the connection object so that when we call `connection.bind`
+    // the new resource is found by Strophe.js and sent to the XMPP server.
+    _converse.connection.jid = jid;
+}
+
+
+/**
+ * Stores the passed in JID for the current user, potentially creating a
+ * resource if the JID is bare.
+ *
+ * Given that we can only create an XMPP connection if we know the domain of
+ * the server connect to and we only know this once we know the JID, we also
+ * call {@link _converse.initConnection } (if necessary) to make sure that the
+ * connection is set up.
+ *
+ * @method _converse#setUserJID
+ * @emits _converse#setUserJID
+ * @params { String } jid
+ */
+_converse.setUserJID = async function (jid) {
+    if (!_converse.connection || !u.isSameDomain(_converse.connection.jid, jid)) {
+        const domain = Strophe.getDomainFromJid(jid)
+        await _converse.initConnection(domain);
+    }
+    await initSession(jid);
+    /**
+     * Triggered whenever the user's JID has been updated
+     * @event _converse#setUserJID
+     */
+    _converse.api.trigger('setUserJID');
+    return jid;
+}
+
+
+function enableCarbons () {
+    /* Ask the XMPP server to enable Message Carbons
+     * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
+     */
+    if (!_converse.message_carbons || !_converse.session || _converse.session.get('carbons_enabled')) {
+        return;
+    }
+    const carbons_iq = new Strophe.Builder('iq', {
+        'from': _converse.connection.jid,
+        'id': 'enablecarbons',
+        'type': 'set'
+      })
+      .c('enable', {xmlns: Strophe.NS.CARBONS});
+    _converse.connection.addHandler((iq) => {
+        if (iq.querySelectorAll('error').length > 0) {
+            _converse.log(
+                'An error occurred while trying to enable message carbons.',
+                Strophe.LogLevel.WARN);
+        } else {
+            _converse.session.save({'carbons_enabled': true});
+            _converse.log('Message carbons have been enabled.');
+        }
+    }, null, "iq", null, "enablecarbons");
+    _converse.connection.send(carbons_iq);
 }
 
 
@@ -650,15 +768,39 @@ async function onConnected (reconnecting) {
      */
     delete _converse.connection.reconnecting;
     _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
-    await setUserJID(_converse.connection.jid);
+    await _converse.setUserJID(_converse.connection.jid);
     /**
      * Synchronous event triggered after we've sent an IQ to bind the
      * user's JID resource for this session.
      * @event _converse#afterResourceBinding
      */
-    await _converse.api.trigger('afterResourceBinding', {'synchronous': true});
-    _converse.enableCarbons();
-    _converse.initStatus(reconnecting)
+    await _converse.api.trigger('afterResourceBinding', reconnecting, {'synchronous': true});
+    enableCarbons();
+
+    if (reconnecting) {
+        /**
+         * After the connection has dropped and converse.js has reconnected.
+         * Any Strophe stanza handlers (as registered via `converse.listen.stanza`) will
+         * have to be registered anew.
+         * @event _converse#reconnected
+         * @example _converse.api.listen.on('reconnected', () => { ... });
+         */
+        _converse.api.trigger('reconnected');
+    } else {
+        /**
+         * Triggered once converse.js has been initialized.
+         * See also {@link _converse#event:pluginsInitialized}.
+         * @event _converse#initialized
+         */
+        _converse.api.trigger('initialized');
+        /**
+         * Triggered after the connection has been established and Converse
+         * has got all its ducks in a row.
+         * @event _converse#initialized
+         */
+        _converse.api.trigger('connected');
+    }
+
 }
 
 
@@ -682,15 +824,19 @@ function setUpXMLLogging () {
 async function finishInitialization () {
     initClientConfig();
     initPlugins();
-    await _converse.initConnection();
     _converse.registerGlobalEventHandlers();
-    if (!Backbone.history.started) {
+
+    if (!Backbone.History.started) {
         Backbone.history.start();
     }
     if (_converse.idle_presence_timeout > 0) {
         _converse.api.listen.on('addClientFeatures', () => {
             _converse.api.disco.own.features.add(Strophe.NS.IDLE);
         });
+    }
+    if (_converse.auto_login ||
+            _converse.keepalive && _.invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
+        await _converse.api.user.login(null, null, true);
     }
 }
 
@@ -707,6 +853,7 @@ function finishDisconnection () {
     _converse.connection.reset();
     tearDown();
     clearSession();
+    delete _converse.connection;
     /**
      * Triggered after converse.js has disconnected from the XMPP server.
      * @event _converse#disconnected
@@ -726,7 +873,7 @@ function fetchLoginCredentials (wait=0) {
             xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 400) {
                     const data = JSON.parse(xhr.responseText);
-                    setUserJID(data.jid).then(() => {
+                    _converse.setUserJID(data.jid).then(() => {
                         resolve({
                             jid: data.jid,
                             password: data.password
@@ -762,7 +909,7 @@ async function getLoginCredentials () {
 async function getLoginCredentialsFromBrowser () {
     const creds = await navigator.credentials.get({'password': true});
     if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-        await setUserJID(creds.id);
+        await _converse.setUserJID(creds.id);
         return {'jid': creds.id, 'password': creds.password};
     }
 }
@@ -783,18 +930,19 @@ function cleanup () {
     if (_converse.chatboxviews) {
         delete _converse.chatboxviews;
     }
+    if (_converse.connection) {
+        _converse.connection.reset();
+    }
     _converse.stopListening();
     _converse.off();
 }
 
 
 _converse.initialize = async function (settings, callback) {
+    cleanup();
+
     settings = settings !== undefined ? settings : {};
-    const init_promise = u.getResolveablePromise();
     PROMISES.forEach(addPromise);
-    if (_converse.connection !== undefined) {
-        cleanup();
-    }
 
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it
@@ -853,7 +1001,6 @@ _converse.initialize = async function (settings, callback) {
      * https://github.com/jcbrand/converse.js/issues/521
      */
     this.send_initial_presence = true;
-    this.msg_counter = 0;
     this.user_settings = settings; // Save the user settings so that they can be used by plugins
 
     // Module-level functions
@@ -861,128 +1008,12 @@ _converse.initialize = async function (settings, callback) {
 
     this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
 
-    /**
-     * Send out a Client State Indication (XEP-0352)
-     * @private
-     * @method sendCSI
-     * @memberOf _converse
-     * @param { String } stat - The user's chat status
-     */
-    this.sendCSI = function (stat) {
-        _converse.api.send($build(stat, {xmlns: Strophe.NS.CSI}));
-        _converse.inactive = (stat === _converse.INACTIVE) ? true : false;
-    };
-
-    this.onUserActivity = function () {
-        /* Resets counters and flags relating to CSI and auto_away/auto_xa */
-        if (_converse.idle_seconds > 0) {
-            _converse.idle_seconds = 0;
-        }
-        if (!_converse.connection.authenticated) {
-            // We can't send out any stanzas when there's no authenticated connection.
-            // This can happen when the connection reconnects.
-            return;
-        }
-        if (_converse.inactive) {
-            _converse.sendCSI(_converse.ACTIVE);
-        }
-        if (_converse.idle) {
-            _converse.idle = false;
-            _converse.xmppstatus.sendPresence();
-        }
-        if (_converse.auto_changed_status === true) {
-            _converse.auto_changed_status = false;
-            // XXX: we should really remember the original state here, and
-            // then set it back to that...
-            _converse.xmppstatus.set('status', _converse.default_state);
-        }
-    };
-
-    this.onEverySecond = function () {
-        /* An interval handler running every second.
-         * Used for CSI and the auto_away and auto_xa features.
-         */
-        if (!_converse.connection.authenticated) {
-            // We can't send out any stanzas when there's no authenticated connection.
-            // This can happen when the connection reconnects.
-            return;
-        }
-        const stat = _converse.xmppstatus.get('status');
-        _converse.idle_seconds++;
-        if (_converse.csi_waiting_time > 0 &&
-                _converse.idle_seconds > _converse.csi_waiting_time &&
-                !_converse.inactive) {
-            _converse.sendCSI(_converse.INACTIVE);
-        }
-        if (_converse.idle_presence_timeout > 0 &&
-                _converse.idle_seconds > _converse.idle_presence_timeout &&
-                !_converse.idle) {
-            _converse.idle = true;
-            _converse.xmppstatus.sendPresence();
-        }
-        if (_converse.auto_away > 0 &&
-                _converse.idle_seconds > _converse.auto_away &&
-                stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
-            _converse.auto_changed_status = true;
-            _converse.xmppstatus.set('status', 'away');
-        } else if (_converse.auto_xa > 0 &&
-                _converse.idle_seconds > _converse.auto_xa &&
-                stat !== 'xa' && stat !== 'dnd') {
-            _converse.auto_changed_status = true;
-            _converse.xmppstatus.set('status', 'xa');
-        }
-    };
-
-    this.registerIntervalHandler = function () {
-        /* Set an interval of one second and register a handler for it.
-         * Required for the auto_away, auto_xa and csi_waiting_time features.
-         */
-        if (
-            _converse.auto_away < 1 &&
-            _converse.auto_xa < 1 &&
-            _converse.csi_waiting_time < 1 &&
-            _converse.idle_presence_timeout < 1
-        ) {
-            // Waiting time of less then one second means features aren't used.
-            return;
-        }
-        _converse.idle_seconds = 0;
-        _converse.auto_changed_status = false; // Was the user's status changed by Converse?
-        window.addEventListener('click', _converse.onUserActivity);
-        window.addEventListener('focus', _converse.onUserActivity);
-        window.addEventListener('keypress', _converse.onUserActivity);
-        window.addEventListener('mousemove', _converse.onUserActivity);
-        const options = {'once': true, 'passive': true};
-        window.addEventListener(_converse.unloadevent, _converse.onUserActivity, options);
-        window.addEventListener(_converse.unloadevent, () => {
-            if (_converse.session) {
-                _converse.session.save('active', false);
-            }
-        });
-        _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
-    };
-
     this.setConnectionStatus = function (connection_status, message) {
         _converse.connfeedback.set({
             'connection_status': connection_status,
             'message': message
         });
     };
-
-    /**
-     * Reject or cancel another user's subscription to our presence updates.
-     * @method rejectPresenceSubscription
-     * @private
-     * @memberOf _converse
-     * @param { String } jid - The Jabber ID of the user whose subscription is being canceled
-     * @param { String } message - An optional message to the user
-     */
-    this.rejectPresenceSubscription = function (jid, message) {
-        const pres = $pres({to: jid, type: "unsubscribed"});
-        if (message && message !== "") { pres.c("status").t(message); }
-        _converse.api.send(pres);
-    };
-
 
     /**
      * Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
@@ -1032,11 +1063,15 @@ _converse.initialize = async function (settings, callback) {
         }
     };
 
+    /**
+     * Callback method called by Strophe as the Strophe.Connection goes
+     * through various states while establishing or tearing down a
+     * connection.
+     * @method _converse#onConnectStatusChanged
+     * @private
+     * @memberOf _converse
+     */
     this.onConnectStatusChanged = function (status, message) {
-        /* Callback method called by Strophe as the Strophe.Connection goes
-         * through various states while establishing or tearing down a
-         * connection.
-         */
         _converse.log(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
             _converse.setConnectionStatus(status);
@@ -1091,49 +1126,6 @@ _converse.initialize = async function (settings, callback) {
         }
     };
 
-    this.incrementMsgCounter = function () {
-        this.msg_counter += 1;
-        const unreadMsgCount = this.msg_counter;
-        let title = document.title;
-        if (!title) {
-            return;
-        }
-        if (title.search(/^Messages \(\d+\) /) === -1) {
-            title = `Messages (${unreadMsgCount}) ${title}`;
-        } else {
-            title = title.replace(/^Messages \(\d+\) /, `Messages (${unreadMsgCount})`);
-        }
-    };
-
-    this.clearMsgCounter = function () {
-        this.msg_counter = 0;
-        let title = document.title;
-        if (!title) {
-            return;
-        }
-        if (title.search(/^Messages \(\d+\) /) !== -1) {
-            title = title.replace(/^Messages \(\d+\) /, "");
-        }
-    };
-
-    this.initStatus = (reconnecting) => {
-        // If there's no xmppstatus obj, then we were never connected to
-        // begin with, so we set reconnecting to false.
-        reconnecting = _converse.xmppstatus === undefined ? false : reconnecting;
-        if (reconnecting) {
-            _converse.onStatusInitialized(reconnecting);
-        } else {
-            const id = `converse.xmppstatus-${_converse.bare_jid}`;
-            _converse.xmppstatus = new this.XMPPStatus({'id': id});
-            _converse.xmppstatus.browserStorage = new BrowserStorage.session(id);
-            _converse.xmppstatus.fetch({
-                'success': () => _converse.onStatusInitialized(reconnecting),
-                'error': () => _converse.onStatusInitialized(reconnecting),
-                'silent': true
-            });
-        }
-    }
-
     this.saveWindowState = function (ev) {
         // XXX: eventually we should be able to just use
         // document.visibilityState (when we drop support for older
@@ -1152,9 +1144,6 @@ _converse.initialize = async function (settings, callback) {
             state = event_map[ev.type];
         } else {
             state = document.hidden ? "hidden" : "visible";
-        }
-        if (state  === 'visible') {
-            _converse.clearMsgCounter();
         }
         _converse.windowState = state;
         /**
@@ -1182,73 +1171,6 @@ _converse.initialize = async function (settings, callback) {
         _converse.api.trigger('registeredGlobalEventHandlers');
     };
 
-    this.enableCarbons = function () {
-        /* Ask the XMPP server to enable Message Carbons
-         * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
-         */
-        if (!this.message_carbons || !this.session || this.session.get('carbons_enabled')) {
-            return;
-        }
-        const carbons_iq = new Strophe.Builder('iq', {
-            'from': this.connection.jid,
-            'id': 'enablecarbons',
-            'type': 'set'
-          })
-          .c('enable', {xmlns: Strophe.NS.CARBONS});
-        this.connection.addHandler((iq) => {
-            if (iq.querySelectorAll('error').length > 0) {
-                _converse.log(
-                    'An error occurred while trying to enable message carbons.',
-                    Strophe.LogLevel.WARN);
-            } else {
-                this.session.save({'carbons_enabled': true});
-                _converse.log('Message carbons have been enabled.');
-            }
-        }, null, "iq", null, "enablecarbons");
-        this.connection.send(carbons_iq);
-    };
-
-
-    this.sendInitialPresence = function () {
-        if (_converse.send_initial_presence) {
-            _converse.xmppstatus.sendPresence();
-        }
-    };
-
-    this.onStatusInitialized = function (reconnecting) {
-        /**
-         * Triggered when the user's own chat status has been initialized.
-         * @event _converse#statusInitialized
-         * @example _converse.api.listen.on('statusInitialized', status => { ... });
-         * @example _converse.api.waitUntil('statusInitialized').then(() => { ... });
-         */
-        _converse.api.trigger('statusInitialized', reconnecting);
-        if (reconnecting) {
-            /**
-             * After the connection has dropped and converse.js has reconnected.
-             * Any Strophe stanza handlers (as registered via `converse.listen.stanza`) will
-             * have to be registered anew.
-             * @event _converse#reconnected
-             * @example _converse.api.listen.on('reconnected', () => { ... });
-             */
-            _converse.api.trigger('reconnected');
-        } else {
-            init_promise.resolve();
-            /**
-             * Triggered once converse.js has been initialized.
-             * See also {@link _converse#event:pluginsInitialized}.
-             * @event _converse#initialized
-             */
-            _converse.api.trigger('initialized');
-            /**
-             * Triggered after the connection has been established and Converse
-             * has got all its ducks in a row.
-             * @event _converse#initialized
-             */
-            _converse.api.trigger('connected');
-        }
-    };
-
     this.bindResource = async function () {
         /**
          * Synchronous event triggered before we send an IQ to bind the user's
@@ -1271,84 +1193,11 @@ _converse.initialize = async function (settings, callback) {
     });
     this.connfeedback = new this.ConnectionFeedback();
 
-
-    this.XMPPStatus = Backbone.Model.extend({
-        defaults: {
-            "status":  _converse.default_state
-        },
-
-        initialize () {
-            this.on('change', item => {
-                if (!_.isObject(item.changed)) {
-                    return;
-                }
-                if ('status' in item.changed || 'status_message' in item.changed) {
-                    this.sendPresence(this.get('status'), this.get('status_message'));
-                }
-            });
-        },
-
-        getNickname () {
-            return _converse.nickname;
-        },
-
-        getFullname () {
-            // Gets overridden in converse-vcard
-            return '';
-        },
-
-        constructPresence (type, status_message) {
-            let presence;
-            type = _.isString(type) ? type : (this.get('status') || _converse.default_state);
-            status_message = _.isString(status_message) ? status_message : this.get('status_message');
-            // Most of these presence types are actually not explicitly sent,
-            // but I add all of them here for reference and future proofing.
-            if ((type === 'unavailable') ||
-                    (type === 'probe') ||
-                    (type === 'error') ||
-                    (type === 'unsubscribe') ||
-                    (type === 'unsubscribed') ||
-                    (type === 'subscribe') ||
-                    (type === 'subscribed')) {
-                presence = $pres({'type': type});
-            } else if (type === 'offline') {
-                presence = $pres({'type': 'unavailable'});
-            } else if (type === 'online') {
-                presence = $pres();
-            } else {
-                presence = $pres().c('show').t(type).up();
-            }
-            if (status_message) {
-                presence.c('status').t(status_message).up();
-            }
-            presence.c('priority').t(
-                _.isNaN(Number(_converse.priority)) ? 0 : _converse.priority
-            ).up();
-            if (_converse.idle) {
-                const idle_since = new Date();
-                idle_since.setSeconds(idle_since.getSeconds() - _converse.idle_seconds);
-                presence.c('idle', {xmlns: Strophe.NS.IDLE, since: idle_since.toISOString()});
-            }
-            return presence;
-        },
-
-        sendPresence (type, status_message) {
-            _converse.api.send(this.constructPresence(type, status_message));
-        }
-    });
-
     // Initialization
     // --------------
-    // This is the end of the initialize method.
-    if (settings.connection) {
-        this.connection = settings.connection;
-    }
-
     await finishInitialization();
     if (_converse.isTestEnv()) {
         return _converse;
-    } else {
-        return init_promise;
     }
 };
 
@@ -1379,7 +1228,7 @@ _converse.api = {
          * @returns {boolean} Whether there is an established connection or not.
          */
         connected () {
-            return (_converse.connection && _converse.connection.connected) || false;
+            return _.get(_converse, 'connection', {}).connected && true;
         },
 
         /**
@@ -1418,7 +1267,7 @@ _converse.api = {
                 // We also call `_proto._doDisconnect` so that connection event handlers
                 // for the old transport are removed.
                 if (_converse.api.connection.isType('websocket') && _converse.bosh_service_url) {
-                    await setUserJID(_converse.bare_jid);
+                    await _converse.setUserJID(_converse.bare_jid);
                     _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Bosh(_converse.connection);
                     _converse.connection.service = _converse.bosh_service_url;
@@ -1427,9 +1276,9 @@ _converse.api = {
                         // When reconnecting anonymously, we need to connect with only
                         // the domain, not the full JID that we had in our previous
                         // (now failed) session.
-                        await setUserJID(_converse.settings.jid);
+                        await _converse.setUserJID(_converse.settings.jid);
                     } else {
-                        await setUserJID(_converse.bare_jid);
+                        await _converse.setUserJID(_converse.bare_jid);
                     }
                     _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Websocket(_converse.connection);
@@ -1440,7 +1289,7 @@ _converse.api = {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
-                await setUserJID(_converse.settings.jid);
+                await _converse.setUserJID(_converse.settings.jid);
             }
             if (_converse.connection.reconnecting) {
                 debouncedReconnect();
@@ -1485,7 +1334,7 @@ _converse.api = {
         const options = args.pop();
         if (options && options.synchronous) {
             const events = _converse._events[name] || [];
-            await Promise.all(events.map(e => e.callback.call(e.ctx, args)));
+            await Promise.all(events.map(e => e.callback.apply(e.ctx, args.splice(1))));
         } else {
             _converse.trigger.apply(_converse, arguments);
         }
@@ -1528,20 +1377,19 @@ _converse.api = {
          *  fails to restore a previous auth'd session.
          */
         async login (jid, password, automatic=false) {
-            if (_converse.api.connection.isType('bosh')) {
+            if (jid || _converse.jid) {
+                jid = await _converse.setUserJID(jid || _converse.jid);
+            }
+
+            // See whether there is a BOSH session to re-attach to
+            if (_.invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
                 } else if (_converse.authentication === _converse.PREBIND && (!automatic || _converse.auto_login)) {
                     return _converse.startNewPreboundBOSHSession();
                 }
-            } else if (_converse.authentication === _converse.PREBIND) {
-                throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
             }
 
-            if (jid || _converse.jid) {
-                // Reassign because we might have gained a resource
-                jid = await setUserJID(jid || _converse.jid);
-            }
             password = password || _converse.password;
             const credentials = (jid && password) ? { jid, password } : null;
             attemptNonPreboundSession(credentials, automatic);
@@ -1553,83 +1401,28 @@ _converse.api = {
          * @example _converse.api.user.logout();
          */
         logout () {
+            const promise = u.getResolveablePromise();
+            const complete = () => {
+                // Recreate all the promises
+                Object.keys(_converse.promises).forEach(addPromise);
+                /**
+                 * Triggered once the user has logged out.
+                 * @event _converse#logout
+                 */
+                _converse.api.trigger('logout');
+                promise.resolve();
+            }
+
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (_converse.connection !== undefined) {
+                _converse.api.listen.once('disconnected', () => complete());
                 _converse.connection.disconnect();
+            } else {
+                complete();
             }
-            // Recreate all the promises
-            Object.keys(_converse.promises).forEach(addPromise);
-            /**
-             * Triggered once the user has logged out.
-             * @event _converse#logout
-             */
-            _converse.api.trigger('logout');
+            return promise;
         },
 
-        /**
-         * Set and get the user's chat status, also called their *availability*.
-         *
-         * @namespace _converse.api.user.status
-         * @memberOf _converse.api.user
-         */
-        status: {
-            /** Return the current user's availability status.
-             *
-             * @method _converse.api.user.status.get
-             * @example _converse.api.user.status.get();
-             */
-            get () {
-                return _converse.xmppstatus.get('status');
-            },
-            /**
-             * The user's status can be set to one of the following values:
-             *
-             * @method _converse.api.user.status.set
-             * @param {string} value The user's chat status (e.g. 'away', 'dnd', 'offline', 'online', 'unavailable' or 'xa')
-             * @param {string} [message] A custom status message
-             *
-             * @example this._converse.api.user.status.set('dnd');
-             * @example this._converse.api.user.status.set('dnd', 'In a meeting');
-             */
-            set (value, message) {
-                const data = {'status': value};
-                if (!_.includes(Object.keys(_converse.STATUS_WEIGHTS), value)) {
-                    throw new Error(
-                        'Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1'
-                    );
-                }
-                if (_.isString(message)) {
-                    data.status_message = message;
-                }
-                _converse.xmppstatus.sendPresence(value);
-                _converse.xmppstatus.save(data);
-            },
-
-            /**
-             * Set and retrieve the user's custom status message.
-             *
-             * @namespace _converse.api.user.status.message
-             * @memberOf _converse.api.user.status
-             */
-            message: {
-                /**
-                 * @method _converse.api.user.status.message.get
-                 * @returns {string} The status message
-                 * @example const message = _converse.api.user.status.message.get()
-                 */
-                get () {
-                    return _converse.xmppstatus.get('status_message');
-                },
-                /**
-                 * @method _converse.api.user.status.message.set
-                 * @param {string} status The status message
-                 * @example _converse.api.user.status.message.set('In a meeting');
-                 */
-                set (status) {
-                    _converse.xmppstatus.save({ status_message: status });
-                }
-            }
-        }
     },
 
     /**
@@ -1858,6 +1651,11 @@ _converse.api = {
      * _converse.api.send(msg);
      */
     send (stanza) {
+        if (!_converse.api.connection.connected()) {
+            _converse.log("Not sending stanza because we're not connected!", Strophe.LogLevel.WARN);
+            _converse.log(Strophe.serialize(stanza), Strophe.LogLevel.WARN);
+            return;
+        }
         if (_.isString(stanza)) {
             stanza = u.toStanza(stanza);
         }
@@ -1885,12 +1683,15 @@ _converse.api = {
         if (reject) {
             promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
         } else {
-            promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
+            promise = new Promise(resolve => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
         }
         _converse.api.trigger('send', stanza);
         return promise;
     }
 };
+
+
+window.converse = window.converse || {};
 
 /**
  * ### The Public API
@@ -1905,7 +1706,7 @@ _converse.api = {
  * @global
  * @namespace converse
  */
-const converse = {
+Object.assign(window.converse, {
     /**
      * Public API method which initializes Converse.
      * This method must always be called when using Converse.
@@ -1998,9 +1799,7 @@ const converse = {
         'sizzle': sizzle,
         'utils': u
     }
-};
-
-window.converse = converse;
+});
 
 /**
  * Once Converse.js has loaded, it'll dispatch a custom event with the name `converse-loaded`.

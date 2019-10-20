@@ -204,7 +204,7 @@
             color: var(--text-color);
             overflow-y: auto;
             border: 0;
-            background-color: #ffffff;
+            background-color: var(--chat-content-background-color);
             line-height: 1.3em;
 
             video {
@@ -479,29 +479,6 @@
 }
 
 
-#conversejs.converse-embedded.converse-singleton {
-    .flyout {
-        border: none !important;
-    }
-    .chat-head {
-        height: var(--fullpage-chat-head-height);
-        padding: 0.5em;
-    }
-    .chatbox {
-        margin: 0;
-        @include make-col-ready();
-        @include media-breakpoint-up(md) {
-            @include make-col(12);
-        }
-        @include media-breakpoint-up(lg) {
-            @include make-col(12);
-        }
-        @include media-breakpoint-up(xl) {
-            @include make-col(12);
-        }
-    }
-}
-
 #conversejs.converse-embedded,
 #conversejs.converse-fullscreen  {
     .flyout {
@@ -529,6 +506,10 @@
 
     .chatbox {
         margin: 0;
+        .box-flyout {
+            box-shadow: none;
+            overflow: hidden;
+        }
         @include make-col-ready();
         @include media-breakpoint-up(md) {
             @include make-col(8);
@@ -539,12 +520,31 @@
         @include media-breakpoint-up(xl) {
             @include make-col(10);
         }
+    }
 
-        .box-flyout {
-            box-shadow: none;
-            overflow: hidden;
+    &.converse-singleton {
+        .flyout {
+            border: none !important;
+        }
+        .chat-head {
+            height: var(--fullpage-chat-head-height);
+            padding: 0.5em;
+        }
+        .chatbox {
+            margin: 0;
+            @include make-col-ready();
+            @include media-breakpoint-up(md) {
+                @include make-col(12);
+            }
+            @include media-breakpoint-up(lg) {
+                @include make-col(12);
+            }
+            @include media-breakpoint-up(xl) {
+                @include make-col(12);
+            }
         }
     }
+
 }
 
 #conversejs.converse-embedded {

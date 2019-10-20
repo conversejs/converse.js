@@ -2,9 +2,7 @@
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     const _ = converse.env._,
-          $pres = converse.env.$pres,
           $msg = converse.env.$msg,
-          $iq = converse.env.$iq,
           u = converse.env.utils,
           Strophe = converse.env.Strophe,
           sizzle = converse.env.sizzle;
@@ -14,7 +12,7 @@
 
         it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
             // This spec will only pass if the controlbox is not currently
@@ -40,7 +38,7 @@
 
             it("can be used to add contact and it checks for case-sensivity",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 spyOn(_converse.api, "trigger").and.callThrough();
@@ -68,7 +66,7 @@
 
             it("shows the number of unread mentions received",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'all').openControlBox();
@@ -118,7 +116,7 @@
 
             it("shows the user's chat status, which is online by default",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -130,7 +128,7 @@
 
             it("can be used to set the current user's chat status",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -159,7 +157,7 @@
 
             it("can be used to set a custom status message",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -193,12 +191,11 @@
 
         it("opens up an add modal when you click on it",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'all').openControlBox();
 
-            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
@@ -229,11 +226,10 @@
 
         it("can be configured to not provide search suggestions",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {'autocomplete_add_contact': false},
+                ['rosterGroupsFetched'], {'autocomplete_add_contact': false},
                 async function (done, _converse) {
 
             test_utils.openControlBox();
-            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
@@ -243,7 +239,6 @@
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
             const input_jid = modal.el.querySelector('input[name="jid"]');
-            const input_name = modal.el.querySelector('input[name="name"]');
             input_jid.value = 'someone@montague.lit';
             modal.el.querySelector('button[type="submit"]').click();
 
@@ -262,7 +257,7 @@
 
         it("integrates with xhr_user_search_url to search for contacts",
             mock.initConverse(
-                null, ['rosterGroupsFetched'],
+                ['rosterGroupsFetched'],
                 { 'xhr_user_search_url': 'http://example.org/?' },
                 async function (done, _converse) {
 
@@ -280,7 +275,6 @@
             window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
             XMLHttpRequest.and.callFake(() => xhr);
 
-            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
@@ -320,7 +314,7 @@
 
         it("can be configured to not provide search suggestions for XHR search results",
             mock.initConverse(
-                null, ['rosterGroupsFetched'],
+                ['rosterGroupsFetched'],
                 { 'autocomplete_add_contact': false,
                   'xhr_user_search_url': 'http://example.org/?' },
                 async function (done, _converse) {
@@ -353,7 +347,6 @@
             window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
             XMLHttpRequest.and.callFake(() => xhr);
 
-            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             modal = _converse.rosterview.add_contact_modal;

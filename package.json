@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "description": "Browser based XMPP chat client",
   "browser": "dist/converse.js",
   "module": "src/converse.js",
@@ -20,7 +20,8 @@
     "headless": "webpack --config webpack.headless.js",
     "nodeps": "webpack --config webpack.nodeps.js",
     "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist/ npm run dev && ASSET_PATH=https://cdn.conversejs.org/dist/ npm run build",
-    "build": "webpack --config webpack.prod.js",
+    "prod": "webpack --config webpack.prod.js",
+    "build": "npm run dev && npm run prod",
     "dev": "webpack --config webpack.dev.js",
     "watch": "webpack --watch --config webpack.dev.js",
     "lerna": "lerna bootstrap --hoist --ignore-scripts",

@@ -10,12 +10,11 @@
 
 import "@converse/headless/converse-emoji";
 import { debounce, find } from "lodash";
-import BrowserStorage from "backbone.browserStorage";
 import bootstrap from "bootstrap.native";
 import tpl_emoji_button from "templates/emoji_button.html";
 import tpl_emojis from "templates/emojis.html";
 
-const { Backbone, sizzle, _ } = converse.env;
+const { Backbone, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -30,7 +29,7 @@ converse.plugins.add('converse-emoji-views', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-emoji", "converse-chatview"],
+    dependencies: ["converse-emoji", "converse-chatview", "converse-muc-views"],
 
 
     overrides: {
@@ -103,14 +102,14 @@ converse.plugins.add('converse-emoji-views', {
                     const storage = _converse.config.get('storage'),
                           id = `converse.emoji-${_converse.bare_jid}`;
                     _converse.emojipicker = new _converse.EmojiPicker({'id': id});
-                    _converse.emojipicker.browserStorage = new BrowserStorage[storage](id);
+                    _converse.emojipicker.browserStorage = _converse.createStore(id, storage);
                     _converse.emojipicker.fetch();
                 }
                 this.emoji_picker_view = new _converse.EmojiPickerView({'model': _converse.emojipicker});
                 this.emoji_picker_view.chatview = this;
             },
 
-            createEmojiDropdown (ev) {
+            createEmojiDropdown () {
                 const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
                 this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
                 this.emoji_dropdown.el = dropdown_el;

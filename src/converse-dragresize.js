@@ -172,7 +172,7 @@ converse.plugins.add('converse-dragresize', {
                 // Initialize last known mouse position
                 this.prev_pageY = 0;
                 this.prev_pageX = 0;
-                if (_converse.connection.connected) {
+                if (_.get(_converse.connection, 'connected')) {
                     this.height = this.model.get('height');
                     this.width = this.model.get('width');
                 }
@@ -351,7 +351,7 @@ converse.plugins.add('converse-dragresize', {
                         _converse.resizing.chatbox.width,
                         _converse.resizing.chatbox.model.get('default_width')
                 );
-                if (_converse.connection.connected) {
+                if (_converse.api.connection.connected()) {
                     _converse.resizing.chatbox.model.save({'height': height});
                     _converse.resizing.chatbox.model.save({'width': width});
                 } else {

@@ -11,7 +11,7 @@
 
         it("can be received with a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -36,7 +36,7 @@
                 .tree();
             await _converse.chatboxes.onMessage(msg);
             const view = _converse.chatboxviews.get(sender_jid);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Mercutio');
             const message_content = view.el.querySelector('.chat-msg__text');
@@ -48,7 +48,7 @@
 
         it("can be received without a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -70,7 +70,7 @@
                     }).tree();
             await _converse.chatboxes.onMessage(msg);
             const view = _converse.chatboxviews.get(sender_jid);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Mercutio')).toBeTruthy();
             const message_content = view.el.querySelector('.chat-msg__text');
@@ -82,7 +82,7 @@
 
         it("can be sent without a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current', 1);
@@ -114,7 +114,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
 
             /* Test the XML stanza
              *
@@ -155,7 +155,7 @@
 
         it("can be sent with a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current', 1);
@@ -191,7 +191,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.once('messageInserted', resolve));
 
             /* Test the XML stanza
              *

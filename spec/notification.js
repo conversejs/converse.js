@@ -2,7 +2,6 @@
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const Strophe = converse.env.Strophe;
     const _ = converse.env._;
     const $msg = converse.env.$msg;
     const u = converse.env.utils;
@@ -15,9 +14,7 @@
                 describe("an HTML5 Notification", function () {
 
                     it("is shown when a new private message is received",
-                        mock.initConverse(
-                            null, ['rosterGroupsFetched'], {},
-                            async (done, _converse) => {
+                            mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
                         await test_utils.waitForRoster(_converse, 'current');
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
@@ -41,9 +38,7 @@
                     }));
 
                     it("is shown when you are mentioned in a groupchat",
-                        mock.initConverse(
-                            null, ['rosterGroupsFetched'], {},
-                            async (done, _converse) => {
+                            mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
                         await test_utils.createContacts(_converse, 'current');
                         await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -73,7 +68,7 @@
                             }).c('body').t(message).tree();
 
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await new Promise(resolve => view.once('messageInserted', resolve));
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
                         if (no_notification) {
@@ -83,9 +78,7 @@
                     }));
 
                     it("is shown for headline messages",
-                        mock.initConverse(
-                            null, ['rosterGroupsFetched'], {},
-                            async (done, _converse) => {
+                            mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
@@ -103,7 +96,7 @@
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
                         await u.waitUntil(() => _converse.chatboxviews.keys().length);
                         const view = _converse.chatboxviews.get('notify.example.com');
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await new Promise(resolve => view.once('messageInserted', resolve));
                         expect(
                             _.includes(_converse.chatboxviews.keys(),
                                 'notify.example.com')
@@ -167,9 +160,7 @@
             describe("A notification sound", function () {
 
                 it("is played when the current user is mentioned in a groupchat",
-                    mock.initConverse(
-                        null, ['rosterGroupsFetched'], {},
-                        async (done, _converse) => {
+                        mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
                     test_utils.createContacts(_converse, 'current');
                     await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');

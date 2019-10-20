@@ -7,24 +7,24 @@
 /**
  * @module converse-profile
  */
+import "@converse/headless/converse-status";
 import "@converse/headless/converse-vcard";
 import "converse-modal";
-import _FormData from "formdata-polyfill";
+import "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import tpl_chat_status_modal from "templates/chat_status_modal.html";
 import tpl_client_info_modal from "templates/client_info_modal.html";
 import tpl_profile_modal from "templates/profile_modal.html";
 import tpl_profile_view from "templates/profile_view.html";
-import tpl_status_option from "templates/status_option.html";
 
-const { Strophe, Backbone, utils, _, dayjs, sizzle } = converse.env;
+const { Strophe, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
 converse.plugins.add('converse-profile', {
 
-    dependencies: ["converse-modal", "converse-vcard", "converse-chatboxviews"],
+    dependencies: ["converse-status", "converse-modal", "converse-vcard", "converse-chatboxviews"],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -61,7 +61,6 @@ converse.plugins.add('converse-profile', {
                 return tpl_profile_modal(Object.assign(
                     this.model.toJSON(),
                     this.model.vcard.toJSON(), {
-                    '_': _,
                     '__': __,
                     '_converse': _converse,
                     'alt_avatar': __('Your avatar image'),

@@ -11,8 +11,9 @@
  */
 import converse from "./converse-core";
 
-const { Strophe, $build, _ } = converse.env;
+const { Strophe, } = converse.env;
 const u = converse.env.utils;
+
 
 Strophe.addNamespace('SM', 'urn:xmpp:sm:3');
 
@@ -32,6 +33,9 @@ converse.plugins.add('converse-smacks', {
         });
 
         function isStreamManagementSupported () {
+            if (_converse.api.connection.isType('bosh') && !_converse.isTestEnv()) {
+                return false;
+            }
             return _converse.api.disco.stream.getFeature('sm', Strophe.NS.SM);
         }
 
@@ -95,7 +99,7 @@ converse.plugins.add('converse-smacks', {
         }
 
         function resetSessionData () {
-            _converse.session.save({
+            _converse.session && _converse.session.save({
                 'smacks_enabled': false,
                 'num_stanzas_handled': 0,
                 'num_stanzas_handled_by_server': 0,
@@ -128,6 +132,11 @@ converse.plugins.add('converse-smacks', {
                 _converse.log(el.outerHTML, Strophe.LogLevel.ERROR);
             }
             resetSessionData();
+            /**
+             * Triggered when the XEP-0198 stream could not be resumed.
+             * @event _converse#streamResumptionFailed
+             */
+             _converse.api.trigger('streamResumptionFailed');
             return true;
         }
 
@@ -156,7 +165,7 @@ converse.plugins.add('converse-smacks', {
             stanzas.forEach(s => _converse.api.send(s));
         }
 
-        function onResumedStanza (el, resolve) {
+        function onResumedStanza (el) {
             saveSessionData(el);
             handleAck(el);
             resendUnackedStanzas();
@@ -168,8 +177,8 @@ converse.plugins.add('converse-smacks', {
 
         async function sendResumeStanza () {
             const promise = u.getResolveablePromise();
-            _converse.connection._addSysHandler(_.flow(onResumedStanza, promise.resolve), Strophe.NS.SM, 'resumed');
-            _converse.connection._addSysHandler(_.flow(onFailedStanza, promise.resolve), Strophe.NS.SM, 'failed');
+            _converse.connection._addSysHandler(el => promise.resolve(onResumedStanza(el)), Strophe.NS.SM, 'resumed');
+            _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
             const previous_id = _converse.session.get('smacks_stream_id');
             const h = _converse.session.get('num_stanzas_handled');
@@ -185,8 +194,8 @@ converse.plugins.add('converse-smacks', {
             }
             if (await isStreamManagementSupported()) {
                 const promise = u.getResolveablePromise();
-                _converse.connection._addSysHandler(_.flow(saveSessionData, promise.resolve), Strophe.NS.SM, 'enabled');
-                _converse.connection._addSysHandler(_.flow(onFailedStanza, promise.resolve), Strophe.NS.SM, 'failed');
+                _converse.connection._addSysHandler(el => promise.resolve(saveSessionData(el)), Strophe.NS.SM, 'enabled');
+                _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
                 const resume = (_converse.api.connection.isType('websocket') || _converse.isTestEnv());
                 const stanza = u.toStanza(`<enable xmlns="${Strophe.NS.SM}" resume="${resume}"/>`);
@@ -206,9 +215,7 @@ converse.plugins.add('converse-smacks', {
             _converse.connection.addHandler(stanzaHandler);
             _converse.connection.addHandler(sendAck, Strophe.NS.SM, 'r');
             _converse.connection.addHandler(handleAck, Strophe.NS.SM, 'a');
-
-            if ((_converse.api.connection.isType('websocket') || _converse.isTestEnv()) &&
-                    _converse.session.get('smacks_stream_id')) {
+            if (_converse.session.get('smacks_stream_id')) {
                 await sendResumeStanza();
             } else {
                 resetSessionData();

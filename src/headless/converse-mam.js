@@ -15,7 +15,7 @@ import { intersection, pick } from 'lodash'
 import converse from "./converse-core";
 import sizzle from "sizzle";
 
-const { Strophe, $iq, $build, dayjs } = converse.env;
+const { Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;
 
 // XEP-0313 Message Archive Management
@@ -126,7 +126,14 @@ converse.plugins.add('converse-mam', {
                     }, options);
 
                 const result = await _converse.api.archive.query(query);
-                result.messages.forEach(message_handler);
+                /* eslint-disable no-await-in-loop */
+                for (const message of result.messages) {
+                    try {
+                        await message_handler(message);
+                    } catch (e) {
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                    }
+                }
 
                 if (result.error) {
                     result.error.retry = () => this.fetchArchivedMessages(options, page);
@@ -470,7 +477,7 @@ converse.plugins.add('converse-mam', {
                         return {'messages': []};
                     }
 
-                    const queryid = _converse.connection.getUniqueId();
+                    const queryid = u.getUniqueId();
                     const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
                     if (options) {
                         stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})

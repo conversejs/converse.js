@@ -10,7 +10,7 @@
 
         it("shows chats that have been minimized",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
@@ -45,7 +45,7 @@
 
         it("can be toggled to hide or show minimized chats",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
@@ -73,7 +73,7 @@
 
         it("shows the number messages received to minimized chats",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
@@ -152,14 +152,13 @@
 
         it("shows the number messages received to minimized groupchats",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'kitchen@conference.shakespeare.lit';
             await test_utils.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'fires');
             const view = _converse.chatboxviews.get(muc_jid);
             view.model.set({'minimized': true});
-            const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const message = 'fires: Your attention is required';
             const nick = mock.chatroom_names[0];
             const msg = $msg({

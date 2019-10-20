@@ -1,13 +1,12 @@
-/* global __dirname, module, process */
+/* global __dirname, module */
 const path = require('path');
-const webpack = require('webpack');
 
 module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'), // Output path for generated bundles
         chunkFilename: '[name].js'
     },
-    entry: path.resolve(__dirname, 'src/converse.js'),
+    entry: path.resolve(__dirname, 'src/entry.js'),
     externals: [{
         "window": "window"
     }],

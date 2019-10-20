@@ -23,6 +23,7 @@ import utils from "@converse/headless/utils/form";
 
 // Strophe methods for building stanzas
 const { Strophe, Backbone, sizzle, $iq, _ } = converse.env;
+const u = converse.env.utils;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -45,7 +46,7 @@ converse.plugins.add('converse-register', {
         // New functions which don't exist yet can also be added.
 
         LoginPanel: {
-            render (cfg) {
+            render () {
                 const { _converse } = this.__super__;
                 this.__super__.render.apply(this, arguments);
                 if (_converse.allow_registration && !_converse.auto_login) {
@@ -107,7 +108,6 @@ converse.plugins.add('converse-register', {
         Object.assign(_converse.ControlBoxView.prototype, {
 
             showLoginOrRegisterForm () {
-                const { _converse } = this.__super__;
                 if (!this.registerpanel) {
                     return;
                 }
@@ -173,9 +173,9 @@ converse.plugins.add('converse-register', {
                 'click .button-cancel': 'renderProviderChoiceForm',
             },
 
-            initialize (cfg) {
+            initialize () {
                 this.reset();
-                this.registerHooks();
+                _converse.api.listen.on('connectionInitialized', () => this.registerHooks());
             },
 
             render () {
@@ -340,7 +340,7 @@ converse.plugins.add('converse-register', {
              * @method _converse.RegisterPanel#fetchRegistrationForm
              * @param { String } domain_name - XMPP server domain
              */
-            fetchRegistrationForm (domain_name) {
+            async fetchRegistrationForm (domain_name) {
                 if (!this.model.get('registration_form_rendered')) {
                     this.renderRegistrationRequest();
                 }
@@ -348,7 +348,8 @@ converse.plugins.add('converse-register', {
                     'domain': Strophe.getDomainFromJid(domain_name),
                     '_registering': true
                 });
-                _converse.connection.connect(this.domain, "", this.onConnectStatusChanged.bind(this));
+                await _converse.initConnection(this.domain);
+                _converse.connection.connect(this.domain, "", status => this.onConnectStatusChanged(status));
                 return false;
             },
 
@@ -590,7 +591,7 @@ converse.plugins.add('converse-register', {
                 if (has_empty_inputs) { return; }
 
                 const inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
-                      iq = $iq({'type': 'set', 'id': _converse.connection.getUniqueId()})
+                      iq = $iq({'type': 'set', 'id': u.getUniqueId()})
                             .c("query", {xmlns:Strophe.NS.REGISTER});
 
                 if (this.form_type === 'xform') {

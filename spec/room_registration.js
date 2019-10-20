@@ -14,7 +14,7 @@
 
             it("allows you to register your nickname in a room",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
                     async function (done, _converse) {
 
                 const muc_jid = 'coven@chat.shakespeare.lit';
@@ -71,10 +71,9 @@
 
             it("allows you to automatically register your nickname when joining a room",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
                     async function (done, _converse) {
 
-                const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const muc_jid = 'coven@chat.shakespeare.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);

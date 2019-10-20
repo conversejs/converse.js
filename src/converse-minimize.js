@@ -7,7 +7,6 @@
  * @module converse-minimize
  */
 import "converse-chatview";
-import BrowserStorage from "backbone.browserStorage";
 import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox_minimize from "templates/chatbox_minimize.html";
@@ -100,13 +99,13 @@ converse.plugins.add('converse-minimize', {
 
             setChatBoxHeight (height) {
                 if (!this.model.get('minimized')) {
-                    return this.__super__.setChatBoxHeight.apply(this, arguments);
+                    return this.__super__.setChatBoxHeight.call(this, height);
                 }
             },
 
             setChatBoxWidth (width) {
                 if (!this.model.get('minimized')) {
-                    return this.__super__.setChatBoxWidth.apply(this, arguments);
+                    return this.__super__.setChatBoxWidth.call(this, width);
                 }
             }
         },
@@ -115,7 +114,7 @@ converse.plugins.add('converse-minimize', {
             render () {
                 const { _converse } = this.__super__,
                     { __ } = _converse;
-                const result = this.__super__.render.apply(this, arguments);
+                this.__super__.render.apply(this, arguments);
                 const new_html = tpl_chatbox_minimize({
                     'info_minimize': __('Minimize this chat box')
                 });
@@ -251,7 +250,7 @@ converse.plugins.add('converse-minimize', {
              * Minimizes a chat box.
              * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
              */
-            minimize (ev) {
+            minimize () {
                 this.model.minimize();
                 return this;
             },
@@ -318,7 +317,7 @@ converse.plugins.add('converse-minimize', {
              * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesBoxView } [newchat]
              */
             async trimChats (newchat) {
-                if (_converse.no_trimming || !_converse.connection.connected || _converse.view_mode !== 'overlayed') {
+                if (_converse.no_trimming || !_converse.api.connection.connected() || _converse.view_mode !== 'overlayed') {
                     return;
                 }
                 const shown_chats = this.getShownChats();
@@ -398,7 +397,6 @@ converse.plugins.add('converse-minimize', {
                         'title': this.model.getDisplayName()
                     });
                 this.el.innerHTML = tpl_trimmed_chat(data);
-                this.setElement(this.el.firstElementChild);
                 return this.el;
             },
 
@@ -459,11 +457,11 @@ converse.plugins.add('converse-minimize', {
 
             initToggle () {
                 const storage = _converse.config.get('storage'),
-                      id = `converse.minchatstoggle${_converse.bare_jid}`;
+                      id = `converse.minchatstoggle-${_converse.bare_jid}`;
                 this.toggleview = new _converse.MinimizedChatsToggleView({
                     'model': new _converse.MinimizedChatsToggle({'id': id})
                 });
-                this.toggleview.model.browserStorage = new BrowserStorage[storage](id);
+                this.toggleview.model.browserStorage = _converse.createStore(id, storage);
                 this.toggleview.model.fetch();
             },
 
@@ -556,10 +554,7 @@ converse.plugins.add('converse-minimize', {
         });
 
         /************************ BEGIN Event Handlers ************************/
-        Promise.all([
-            _converse.api.waitUntil('connectionInitialized'),
-            _converse.api.waitUntil('chatBoxViewsInitialized')
-        ]).then(() => {
+        _converse.api.waitUntil('chatBoxViewsInitialized').then(() => {
             _converse.minimized_chats = new _converse.MinimizedChats({
                 model: _converse.chatboxes
             });

@@ -1,5 +1,44 @@
 # Changelog
 
+## 6.0.0 (Unreleased)
+
+- #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
+- #1089: When filtering the roster for `online` users, show all non-offline users.
+- #1691: Fix `collection.chatbox is undefined` errors
+- #1733: New message notifications for a minimized chat stack on top of each other
+- Prevent editing of sent file uploads.
+- Initial support for sending custom emojis. Currently only between Converse
+  instances. Still working out a wire protocol for compatibility with other clients.
+  To add custom emojis, edit the `emojis.json` file.
+- Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
+
+### Breaking changes
+
+- In order to add support for XEP-0156, the XMPP connection needs to be created
+  only once we know the JID of the user that's logging in. This means that the
+  [connectionInitialized](https://conversejs.org/docs/html/api/-_converse.html#event:connectionInitialized)
+  event now fires much later than before. Plugins that rely on `connectionInitialized`
+  being triggered before the user's JID has been provided will need to be updated.
+
+- The following API methods now return promises:
+  * `_converse.api.chats.get`
+  * `_converse.api.chats.create`
+  * `_converse.api.rooms.get`
+  * `_converse.api.rooms.create`
+
+- The `show_only_online_users` setting has been removed.
+- The order of certain events have now changed: `statusInitialized` is now triggered after `initialized` and `connected` and `reconnected`.
+
+## 5.0.4 (2019-10-08)
+- New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow-message-corrections)
+  which, if set to `last`, limits editing of sent messages to the last message sent.
+- Bugfix: Don't treat every duplicate message ID as a message correction; since some clients don't use globally unique ID's this causes false positives.
+- Bugfix: process stanzas from mam one-by-one in order to correctly process message receipts
+- #1712: `TypeError: plugin._features is not a function`
+- #1714: Don't notify the user in case we're receiving a message delivery receipt only
+- #1739: New config option [assets_path](https://conversejs.org/docs/html/configuration.html#assets-path)
+  which lets you set the path from which "chunks" are loaded.
+
 ## 5.0.3 (2019-09-13)
 
 - Emit `chatBoxFocused` and `chatBoxBlurred` events for emoji picker input
@@ -19,8 +58,8 @@
 - Use `listenTo` to avoid memory leaks when views get removed.
 - SECURITY FIX: Ignore MAM `chat` messages not sent from yourself
 - #1692 Bugfix: `TypeError: oldest_message is undefined`
-- #1704 SECURITY FIX: Impersonation by misusage of groupchat carbons
-- #1705 Bugfix: `this.roomspanel` is `undefined` after hibernating
+- #1704: SECURITY FIX: Impersonation by misusage of groupchat carbons
+- #1705: Bugfix: `this.roomspanel` is `undefined` after hibernating
 
 ## 5.0.1 (2019-08-14)
 

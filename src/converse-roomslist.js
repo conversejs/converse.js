@@ -9,14 +9,11 @@
  * Converse.js plugin which shows a list of currently open
  * rooms in the "Rooms Panel" of the ControlBox.
  */
-import BrowserStorage from "backbone.browserStorage";
-import { OrderedListView } from "backbone.overview";
+import "@converse/headless/converse-muc";
 import converse from "@converse/headless/converse-core";
-import muc from "@converse/headless/converse-muc";
 import tpl_rooms_list from "templates/rooms_list.html";
-import tpl_rooms_list_item from "templates/rooms_list_item.html"
 
-const { Backbone, Strophe, sizzle, _ } = converse.env;
+const { Backbone, Strophe, } = converse.env;
 const u = converse.env.utils;
 
 
@@ -40,55 +37,11 @@ converse.plugins.add('converse-roomslist', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { __ } = _converse;
 
         // Promises exposed by this plugin
         _converse.api.promises.add('roomsListInitialized');
-
-
-        _converse.OpenRooms = _converse.Collection.extend({
-
-            comparator (room) {
-                if (_converse.bookmarks && room.get('bookmarked')) {
-                    const bookmark = _.head(_converse.bookmarks.where({'jid': room.get('jid')}));
-                    return bookmark.get('name');
-                } else {
-                    return room.get('name');
-                }
-            },
-
-            initialize () {
-                _converse.chatboxes.on('add', this.onChatBoxAdded, this);
-                _converse.chatboxes.on('change:hidden', this.onChatBoxChanged, this);
-                _converse.chatboxes.on('change:bookmarked', this.onChatBoxChanged, this);
-                _converse.chatboxes.on('change:name', this.onChatBoxChanged, this);
-                _converse.chatboxes.on('change:num_unread', this.onChatBoxChanged, this);
-                _converse.chatboxes.on('change:num_unread_general', this.onChatBoxChanged, this);
-                _converse.chatboxes.on('remove', this.onChatBoxRemoved, this);
-                this.reset(_converse.chatboxes.where({'type': _converse.CHATROOMS_TYPE}).map(cb => cb.attributes));
-            },
-
-            onChatBoxAdded (item) {
-                if (item.get('type') === _converse.CHATROOMS_TYPE) {
-                    this.create(item.attributes);
-                }
-            },
-
-            onChatBoxChanged (item) {
-                if (item.get('type') === _converse.CHATROOMS_TYPE) {
-                    const room =  this.get(item.get('jid'));
-                    room && room.set(item.attributes);
-                }
-            },
-
-            onChatBoxRemoved (item) {
-                if (item.get('type') === _converse.CHATROOMS_TYPE) {
-                    const room = this.get(item.get('jid'))
-                    this.remove(room);
-                }
-            }
-        });
 
 
         _converse.RoomsList = Backbone.Model.extend({
@@ -97,122 +50,80 @@ converse.plugins.add('converse-roomslist', {
             }
         });
 
-        _converse.RoomsListElementView = Backbone.VDOMView.extend({
-            events: {
-                'click .room-info': 'showRoomDetailsModal'
-            },
 
-            initialize () {
-                this.listenTo(this.model, 'destroy', this.remove)
-                this.listenTo(this.model, 'remove', this.remove)
-                this.listenTo(this.model, 'change:bookmarked', this.render)
-                this.listenTo(this.model, 'change:hidden', this.render)
-                this.listenTo(this.model, 'change:name', this.render)
-                this.listenTo(this.model, 'change:num_unread', this.render)
-                this.listenTo(this.model, 'change:num_unread_general', this.render)
-            },
-
-            toHTML () {
-                return tpl_rooms_list_item(
-                    Object.assign(this.model.toJSON(), {
-                        // XXX: By the time this renders, the _converse.bookmarks
-                        // collection should already exist if bookmarks are
-                        // supported by the XMPP server. So we can use it
-                        // as a check for support (other ways of checking are async).
-                        'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
-                        'currently_open': _converse.isUniView() && !this.model.get('hidden'),
-                        'info_leave_room': __('Leave this groupchat'),
-                        'info_remove_bookmark': __('Unbookmark this groupchat'),
-                        'info_add_bookmark': __('Bookmark this groupchat'),
-                        'info_title': __('Show more information on this groupchat'),
-                        'name': this.getRoomsListElementName(),
-                        'open_title': __('Click to open this groupchat')
-                    }));
-            },
-
-            showRoomDetailsModal (ev) {
-                const room = _converse.chatboxes.get(this.model.get('jid'));
-                ev.preventDefault();
-                if (room.room_details_modal === undefined) {
-                    room.room_details_modal = new _converse.RoomDetailsModal({'model': room});
-                }
-                room.room_details_modal.show(ev);
-            },
-
-            getRoomsListElementName () {
-                if (this.model.get('bookmarked') && _converse.bookmarks) {
-                    const bookmark = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
-                    if (bookmark) {
-                        return bookmark.get('name');
-                    }
-                }
-                return this.model.get('name');
-            }
-        });
-
-
-        _converse.RoomsListView = OrderedListView.extend({
+        _converse.RoomsListView = Backbone.VDOMView.extend({
             tagName: 'div',
-            className: 'open-rooms-list list-container rooms-list-container',
+            className: 'list-container list-container--openrooms',
             events: {
                 'click .add-bookmark': 'addBookmark',
                 'click .close-room': 'closeRoom',
                 'click .list-toggle': 'toggleRoomsList',
                 'click .remove-bookmark': 'removeBookmark',
                 'click .open-room': 'openRoom',
+                'click .room-info': 'showRoomDetailsModal'
             },
-            listSelector: '.rooms-list',
-            ItemView: _converse.RoomsListElementView,
-            subviewIndex: 'jid',
 
             initialize () {
-                OrderedListView.prototype.initialize.apply(this, arguments);
+                this.listenTo(this.model, 'add', this.renderIfChatRoom)
+                this.listenTo(this.model, 'remove', this.renderIfChatRoom)
+                this.listenTo(this.model, 'destroy', this.renderIfChatRoom)
+                this.listenTo(this.model, 'change', this.renderIfRelevantChange)
 
-                this.listenTo(this.model, 'add', this.showOrHide)
-                this.listenTo(this.model, 'remove', this.showOrHide)
-
-                const storage = _converse.config.get('storage'),
-                      id = `converse.roomslist${_converse.bare_jid}`;
-
-                this.list_model = new _converse.RoomsList({'id': id});
-                this.list_model.browserStorage = new BrowserStorage[storage](id);
+                const id = `converse.roomslist${_converse.bare_jid}`;
+                this.list_model = new _converse.RoomsList({id});
+                this.list_model.browserStorage = _converse.createStore(id);
                 this.list_model.fetch();
                 this.render();
-                this.sortAndPositionAllItems();
+                this.insertIntoControlBox();
             },
 
-            render () {
-                this.el.innerHTML = tpl_rooms_list({
-                    'toggle_state': this.list_model.get('toggle-state'),
+            renderIfChatRoom (model) {
+                u.isChatRoom(model) && this.render();
+            },
+
+            renderIfRelevantChange (model) {
+                const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general'];
+                const changed = model.changed || {};
+                if (u.isChatRoom(model) && Object.keys(changed).filter(m => attrs.includes(m)).length) {
+                    this.render();
+                }
+            },
+
+            toHTML () {
+                return tpl_rooms_list({
+                    'rooms': _converse.api.rooms.get(),
+                    'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
+                    'collapsed': this.list_model.get('toggle-state') !== _converse.OPENED,
                     'desc_rooms': __('Click to toggle the list of open groupchats'),
+                    'info_add_bookmark': __('Bookmark this groupchat'),
+                    'info_leave_room': __('Leave this groupchat'),
+                    'info_remove_bookmark': __('Unbookmark this groupchat'),
+                    'info_title': __('Show more information on this groupchat'),
+                    'open_title': __('Click to open this groupchat'),
+                    'currently_open': room => _converse.isUniView() && !room.get('hidden'),
+                    'toggle_state': this.list_model.get('toggle-state'),
                     // Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
                     'label_rooms': __('Open Groupchats'),
-                    '_converse': _converse
+                    '_converse': _converse,
                 });
-                if (this.list_model.get('toggle-state') !== _converse.OPENED) {
-                    this.el.querySelector('.open-rooms-list').classList.add('collapsed');
-                }
-                this.showOrHide();
-                this.insertIntoControlBox();
-                return this;
             },
 
             insertIntoControlBox () {
                 const controlboxview = _converse.chatboxviews.get('controlbox');
                 if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
-                    const el = controlboxview.el.querySelector('.open-rooms-list');
-                    if (el !== null) {
-                        el.parentNode.replaceChild(this.el, el);
-                    }
+                    const el = controlboxview.el.querySelector('.list-container--openrooms');
+                    el && el.parentNode.replaceChild(this.el, el);
                 }
             },
 
-            hide () {
-                u.hideElement(this.el);
-            },
-
-            show () {
-                u.showElement(this.el);
+            showRoomDetailsModal (ev) {
+                const jid = ev.target.getAttribute('data-room-jid');
+                const room = _converse.chatboxes.get(jid);
+                ev.preventDefault();
+                if (room.room_details_modal === undefined) {
+                    room.room_details_modal = new _converse.RoomDetailsModal({'model': room});
+                }
+                room.room_details_modal.show(ev);
             },
 
             async openRoom (ev) {
@@ -233,14 +144,6 @@ converse.plugins.add('converse-roomslist', {
                 if (confirm(__("Are you sure you want to leave the groupchat %1$s?", name))) {
                     // TODO: replace with API call
                     _converse.chatboxviews.get(jid).close();
-                }
-            },
-
-            showOrHide (item) {
-                if (!this.model.models.length) {
-                    u.hideElement(this.el);
-                } else {
-                    u.showElement(this.el);
                 }
             },
 
@@ -267,12 +170,7 @@ converse.plugins.add('converse-roomslist', {
         });
 
         const initRoomsListView = function () {
-            const storage = _converse.config.get('storage'),
-                  id = `converse.open-rooms-{_converse.bare_jid}`,
-                  model = new _converse.OpenRooms();
-
-            model.browserStorage = new BrowserStorage[storage](id);
-            _converse.rooms_list_view = new _converse.RoomsListView({'model': model});
+            _converse.rooms_list_view = new _converse.RoomsListView({'model': _converse.chatboxes});
             /**
              * Triggered once the _converse.RoomsListView has been created and initialized.
              * @event _converse#roomsListInitialized

@@ -6,17 +6,13 @@
         ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const _ = converse.env._;
-    const $iq = converse.env.$iq;
-    const $msg = converse.env.$msg;
-    const Strophe = converse.env.Strophe;
     const u = converse.env.utils;
 
     return describe("The User Details Modal", function () {
 
         it("can be used to remove a contact",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
@@ -49,7 +45,7 @@
 
         it("shows an alert when an error happened while removing the contact",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'emojisInitialized'], {},
+                ['rosterGroupsFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');

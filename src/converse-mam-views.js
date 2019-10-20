@@ -33,8 +33,7 @@ converse.plugins.add('converse-mam-views', {
                 return result;
             },
 
-            async onScroll (ev) {
-                const { _converse } = this.__super__;
+            async onScroll () {
                 if (this.content.scrollTop === 0 && this.model.messages.length) {
                     const oldest_message = this.model.getOldestMessage();
                     if (oldest_message) {

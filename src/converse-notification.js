@@ -8,9 +8,10 @@
  * @module converse-notification
  */
 import converse from "@converse/headless/converse-core";
+import { get } from "lodash";
 
-const { Strophe, _, sizzle } = converse.env,
-      u = converse.env.utils;
+const { Strophe, sizzle } = converse.env;
+const u = converse.env.utils;
 
 
 converse.plugins.add('converse-notification', {
@@ -56,7 +57,7 @@ converse.plugins.add('converse-notification', {
             }
             const mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
             notify_all = notify_all === true ||
-                (Array.isArray(notify_all) && _.includes(notify_all, room_jid));
+                (Array.isArray(notify_all) && notify_all.includes(room_jid));
             if (sender === room.get('nick') || (!notify_all && !mentioned)) {
                 return false;
             }
@@ -87,17 +88,18 @@ converse.plugins.add('converse-notification', {
             }
             const is_me = Strophe.getBareJidFromJid(message.getAttribute('from')) === _converse.bare_jid;
             return !u.isOnlyChatStateNotification(message) &&
+                !u.isOnlyMessageDeliveryReceipt(message) &&
                 !is_me &&
                 (_converse.show_desktop_notifications === 'all' || _converse.isMessageToHiddenChat(message));
         };
 
 
+        /**
+         * Plays a notification sound
+         * @private
+         * @method _converse#playSoundNotification
+         */
         _converse.playSoundNotification = function () {
-            /* Plays a sound to notify that a new message was recieved.
-             */
-            // XXX Eventually this can be refactored to use Notification's sound
-            // feature, but no browser currently supports it.
-            // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
             if (_converse.play_sounds && window.Audio !== undefined) {
                 const audioOgg = new Audio(_converse.sounds_path+"msg_received.ogg");
                 const canPlayOgg = audioOgg.canPlayType('audio/ogg');
@@ -122,10 +124,13 @@ converse.plugins.add('converse-notification', {
                 Notification.permission === "granted";
         };
 
+        /**
+         * Shows an HTML5 Notification with the passed in message
+         * @private
+         * @method _converse#showMessageNotification
+         * @param { String } message
+         */
         _converse.showMessageNotification = function (message) {
-            /* Shows an HTML5 Notification to indicate that a new chat
-             * message was received.
-             */
             if (!_converse.areDesktopNotificationsEnabled()) {
                 return;
             }
@@ -133,12 +138,12 @@ converse.plugins.add('converse-notification', {
             const full_from_jid = message.getAttribute('from'),
                   from_jid = Strophe.getBareJidFromJid(full_from_jid);
             if (message.getAttribute('type') === 'headline') {
-                if (!_.includes(from_jid, '@') || _converse.allow_non_roster_messaging) {
+                if (!from_jid.includes('@') || _converse.allow_non_roster_messaging) {
                     title = __("Notification from %1$s", from_jid);
                 } else {
                     return;
                 }
-            } else if (!_.includes(from_jid, '@')) {
+            } else if (!from_jid.includes('@')) {
                 // workaround for Prosody which doesn't give type "headline"
                 title = __("Notification from %1$s", from_jid);
             } else if (message.getAttribute('type') === 'groupchat') {
@@ -165,7 +170,7 @@ converse.plugins.add('converse-notification', {
             // the message...
             const body = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, message).length ?
                          __('OMEMO Message received') :
-                         _.get(message.querySelector('body'), 'textContent');
+                         get(message.querySelector('body'), 'textContent');
             if (!body) {
                 return;
             }
@@ -184,7 +189,7 @@ converse.plugins.add('converse-notification', {
             /* Creates an HTML5 Notification to inform of a change in a
              * contact's chat state.
              */
-            if (_.includes(_converse.chatstate_notification_blacklist, contact.jid)) {
+            if (_converse.chatstate_notification_blacklist.includes(contact.jid)) {
                 // Don't notify if the user is being ignored.
                 return;
             }
@@ -273,8 +278,7 @@ converse.plugins.add('converse-notification', {
         };
 
         _converse.requestPermission = function () {
-            if (_converse.supports_html5_notification &&
-                ! _.includes(['denied', 'granted'], Notification.permission)) {
+            if (_converse.supports_html5_notification && !['denied', 'granted'].includes(Notification.permission)) {
                 // Ask user to enable HTML5 notifications
                 Notification.requestPermission();
             }
@@ -292,4 +296,3 @@ converse.plugins.add('converse-notification', {
         });
     }
 });
-

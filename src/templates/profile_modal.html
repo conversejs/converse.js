@@ -91,7 +91,7 @@
                                             {{{o.__('Other OMEMO-enabled devices')}}}
                                             </label>
                                         </li>
-                                        {[ o._.forEach(o.view.other_devices, function (device) { ]}
+                                        {[ o.view.other_devices.forEach(function (device) { ]}
                                             {[ if (device.get('bundle') && device.get('bundle').fingerprint) { ]}
                                             <li class="fingerprint-removal-item list-group-item nopadding">
                                                 <label>

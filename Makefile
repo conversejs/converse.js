@@ -34,21 +34,21 @@ all: stamp-npm dist
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
 	@echo ""
-	@echo " all			Set up dev environment and create all builds"
-	@echo " build		Create minified builds of converse.js and all its dependencies."
-	@echo " clean		Remove all NPM packages."
-	@echo " check		Run all tests."
-	@echo " dev			Set up the development environment and build unminified resources. To force a fresh start, run 'make clean' first."
-	@echo " devserver	Set up the development environment and start the webpack dev server."
-	@echo " html		Make standalone HTML files of the documentation."
-	@echo " po			Generate gettext PO files for each i18n language."
-	@echo " pot			Generate a gettext POT file to be used for translations."
-	@echo " release		Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
-	@echo " serve		Serve this directory via a webserver on port 8000."
-	@echo " serve_bg	Same as \"serve\", but do it in the background"
-	@echo " stamp-npm	Install NPM dependencies"
-	@echo " watch		Watch for changes on JS and scss files and automatically update the generated files."
-	@echo " logo		Generate PNG logos of multiple sizes."
+	@echo " all         Set up dev environment and create all builds"
+	@echo " build       Create minified builds of converse.js and all its dependencies."
+	@echo " clean       Remove all NPM packages."
+	@echo " check       Run all tests."
+	@echo " dev         Set up the development environment and build unminified resources. To force a fresh start, run 'make clean' first."
+	@echo " devserver   Set up the development environment and start the webpack dev server."
+	@echo " html        Make standalone HTML files of the documentation."
+	@echo " po          Generate gettext PO files for each i18n language."
+	@echo " pot         Generate a gettext POT file to be used for translations."
+	@echo " release     Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
+	@echo " serve       Serve this directory via a webserver on port 8000."
+	@echo " serve_bg    Same as \"serve\", but do it in the background"
+	@echo " stamp-npm   Install NPM dependencies"
+	@echo " watch       Watch for changes on JS and scss files and automatically update the generated files."
+	@echo " logo        Generate PNG logos of multiple sizes."
 
 
 ########################################################################
@@ -68,7 +68,7 @@ serve_bg: stamp-npm
 dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js stamp-npm @converse/headless
 	npm run nodeps
 
-GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ -keyword=___ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=5.0.3 dist/converse-no-dependencies.js -c
+GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=5.0.4 dist/converse-no-dependencies.js -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies.js
@@ -109,6 +109,9 @@ postrelease:
 
 $(LERNA):
 	npm install lerna
+
+package-lock.json: package.json
+	npm install
 
 stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 	npm run lerna

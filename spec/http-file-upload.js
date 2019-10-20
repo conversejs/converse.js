@@ -172,7 +172,7 @@
 
                 it("does not appear in private chats",
                     mock.initConverse(
-                        null, ['emojisInitialized'], {},
+                        ['emojisInitialized'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 3);
@@ -191,7 +191,7 @@
                 }));
 
                 it("does not appear in MUC chats", mock.initConverse(
-                        null, ['rosterGroupsFetched'], {},
+                        ['rosterGroupsFetched'], {},
                         async (done, _converse) => {
 
                     await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -233,7 +233,7 @@
                 }));
 
                 it("appears in MUC chats", mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async (done, _converse) => {
 
                     await test_utils.waitUntilDiscoConfirmed(
@@ -276,7 +276,7 @@
                             'name': "my-juliet.jpg"
                         };
                         view.model.sendFiles([file]);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await new Promise(resolve => view.once('messageInserted', resolve));
 
                         await u.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                         const iq = IQ_stanzas.pop();
@@ -323,7 +323,7 @@
                                     'oob_url': message.get('get'),
                                     'message': message.get('get')
                                 });
-                                return new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+                                return new Promise(resolve => view.model.messages.once('rendered', resolve));
                             });
                         });
                         let sent_stanza;
@@ -383,7 +383,7 @@
                             'name': "my-juliet.jpg"
                         };
                         view.model.sendFiles([file]);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await new Promise(resolve => view.once('messageInserted', resolve));
 
                         await u.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                         const iq = IQ_stanzas.pop();
@@ -429,7 +429,7 @@
                                     'oob_url': message.get('get'),
                                     'message': message.get('get')
                                 });
-                                return new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+                                return new Promise(resolve => view.model.messages.once('rendered', resolve));
                             });
                         });
                         let sent_stanza;
@@ -464,12 +464,11 @@
 
                     it("shows an error message if the file is too large",
                         mock.initConverse(
-                            null, ['emojisInitialized'], {},
+                            ['emojisInitialized'], {},
                             async function (done, _converse) {
 
                         const IQ_stanzas = _converse.connection.IQ_stanzas;
                         const IQ_ids =  _converse.connection.IQ_ids;
-                        const send_backup = XMLHttpRequest.prototype.send;
 
                         await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
                         await u.waitUntil(() => _.filter(
@@ -588,7 +587,7 @@
             describe("While a file is being uploaded", function () {
 
                 it("shows a progress bar", mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                     await test_utils.waitUntilDiscoConfirmed(
@@ -596,7 +595,6 @@
                         [{'category': 'server', 'type':'IM'}],
                         ['http://jabber.org/protocol/disco#items'], [], 'info');
 
-                    const send_backup = XMLHttpRequest.prototype.send;
                     const IQ_stanzas = _converse.connection.IQ_stanzas;
 
                     await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
@@ -613,7 +611,7 @@
                         'name': "my-juliet.jpg"
                     };
                     view.model.sendFiles([file]);
-                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                    await new Promise(resolve => view.once('messageInserted', resolve));
                     await u.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length)
                     const iq = IQ_stanzas.pop();
                     expect(Strophe.serialize(iq)).toBe(
@@ -657,8 +655,6 @@
                             done();
                         });
                     });
-                    let sent_stanza;
-                    spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 }));
             });

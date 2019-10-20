@@ -1,11 +1,11 @@
 {
   "name": "@converse/headless",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "description": "Converse.js Headless build",
   "author": "cmrd Senya <senya@riseup.net>",
   "homepage": "https://conversejs.org",
   "license": "MPL-2.0",
-  "main": "dist/converse-headless.js",
+  "main": "dist/converse-headless.min.js",
   "files": [
     "**/*.js",
     "templates/*"

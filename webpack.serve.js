@@ -7,11 +7,11 @@ module.exports = merge(common, {
     mode: "development",
     devtool: "inline-source-map",
     devServer: {
-        contentBase: "./dist"
+        contentBase: "./"
     },
     plugins: [
         new HTMLWebpackPlugin({
-            title: 'Production',
+            title: 'Converse.js Dev',
             template: 'webpack.html'
         })
     ],

@@ -12,7 +12,6 @@
 import "./converse-disco";
 import "./converse-emoji";
 import "./utils/muc";
-import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import u from "./utils/form";
 
@@ -101,8 +100,8 @@ converse.plugins.add('converse-muc', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { __, ___ } = _converse;
 
         // Configuration values for this plugin
         // ====================================
@@ -128,15 +127,6 @@ converse.plugins.add('converse-muc', {
                             "to true when muc_domain is not set");
         }
 
-
-        function ___ (str) {
-            /* This is part of a hack to get gettext to scan strings to be
-            * translated. Strings we cannot send to the function above because
-            * they require variable interpolation and we don't yet have the
-            * variables at scan time.
-            */
-            return str;
-        }
 
         /* https://xmpp.org/extensions/xep-0045.html
          * ----------------------------------------
@@ -230,14 +220,14 @@ converse.plugins.add('converse-muc', {
             }
         }
 
-        function openChatRoom (jid, settings) {
+        async function openChatRoom (jid, settings) {
             /* Opens a groupchat, making sure that certain attributes
              * are correct, for example that the "type" is set to
              * "chatroom".
              */
             settings.type = _converse.CHATROOMS_TYPE;
             settings.id = jid;
-            const chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
+            const chatbox = await _converse.chatboxes.getChatBox(jid, settings, true);
             chatbox.maybeShow(true);
             return chatbox;
         }
@@ -263,7 +253,7 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            onOccupantRemoved (occupant) {
+            onOccupantRemoved () {
                 this.stopListening(this.occupant);
                 delete this.occupant;
                 const chatbox = _.get(this, 'collection.chatbox');
@@ -399,6 +389,7 @@ converse.plugins.add('converse-muc', {
                     'name': '',
                     'num_unread': 0,
                     'roomconfig': {},
+                    'time_sent': (new Date(0)).toISOString(),
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.CHATROOMS_TYPE
                 }
@@ -483,19 +474,17 @@ converse.plugins.add('converse-muc', {
             },
 
             initFeatures () {
-                const storage = _converse.config.get('storage');
                 const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
                 this.features = new Backbone.Model(
                     _.assign({id}, _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)))
                 );
-                this.features.browserStorage = new BrowserStorage.session(id);
+                this.features.browserStorage = _converse.createStore(id, "session");
             },
 
             initOccupants () {
                 this.occupants = new _converse.ChatRoomOccupants();
-                this.occupants.browserStorage = new BrowserStorage.session(
-                    `converse.occupants-${_converse.bare_jid}${this.get('jid')}`
-                );
+                const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
+                this.occupants.browserStorage = _converse.createStore(id, 'session');
                 this.occupants.chatroom  = this;
                 this.occupants.fetched = new Promise(resolve => {
                     this.occupants.fetch({
@@ -633,7 +622,7 @@ converse.plugins.add('converse-muc', {
                         disco_entity.destroy();
                     }
                 }
-                if (_converse.connection.connected) {
+                if (_converse.api.connection.connected()) {
                     this.sendUnavailablePresence(exit_msg);
                 }
                 u.safeSave(this, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
@@ -728,7 +717,7 @@ converse.plugins.add('converse-muc', {
                 const is_spoiler = this.get('composing_spoiler');
                 var references;
                 [text, references] = this.parseTextForReferences(text);
-                const origin_id = _converse.connection.getUniqueId();
+                const origin_id = u.getUniqueId();
 
                 return {
                     'id': origin_id,
@@ -814,7 +803,7 @@ converse.plugins.add('converse-muc', {
                 const invitation = $msg({
                     'from': _converse.connection.jid,
                     'to': recipient,
-                    'id': _converse.connection.getUniqueId()
+                    'id': u.getUniqueId()
                 }).c('x', attrs);
                 _converse.api.send(invitation);
                 /**
@@ -1175,7 +1164,6 @@ converse.plugins.add('converse-muc', {
             async updateMemberLists (members) {
                 const all_affiliations = ['member', 'admin', 'owner'];
                 const aff_lists = await Promise.all(all_affiliations.map(a => this.getAffiliationList(a)));
-                const known_affiliations = all_affiliations.filter(a => !u.isErrorObject(aff_lists[all_affiliations.indexOf(a)]));
                 const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc: [...val, ...acc]), []);
                 await this.setAffiliations(u.computeAffiliationsDelta(true, false, members, old_members));
                 if (_converse.muc_fetch_members) {
@@ -1578,6 +1566,7 @@ converse.plugins.add('converse-muc', {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                this.setEditable(attrs, attrs.time);
                 if (attrs.nick &&
                         !this.subjectChangeHandled(attrs) &&
                         !this.ignorableCSN(attrs) &&
@@ -1911,10 +1900,7 @@ converse.plugins.add('converse-muc', {
             },
 
             initialize (attributes) {
-                this.set(Object.assign(
-                    {'id': _converse.connection.getUniqueId()},
-                    attributes)
-                );
+                this.set(Object.assign({'id': u.getUniqueId()}, attributes));
                 this.on('change:image_hash', this.onAvatarChanged, this);
             },
 
@@ -2040,7 +2026,7 @@ converse.plugins.add('converse-muc', {
          * @method _converse.ChatRoom#onDirectMUCInvitation
          * @param { XMLElement } message - The message stanza containing the invitation.
          */
-        _converse.onDirectMUCInvitation = function (message) {
+        _converse.onDirectMUCInvitation = async function (message) {
             const x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
                 from = Strophe.getBareJidFromJid(message.getAttribute('from')),
                 room_jid = x_el.getAttribute('jid'),
@@ -2066,7 +2052,7 @@ converse.plugins.add('converse-muc', {
                 }
             }
             if (result === true) {
-                const chatroom = openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
+                const chatroom = await openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
                 if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
                     _converse.chatboxes.get(room_jid).join();
                 }
@@ -2196,6 +2182,7 @@ converse.plugins.add('converse-muc', {
                  * @param {(string[]|string)} jid|jids The JID or array of
                  *     JIDs of the chatroom(s) to create
                  * @param {object} [attrs] attrs The room attributes
+                 * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
                  */
                 create (jids, attrs={}) {
                     attrs = _.isString(attrs) ? {'nick': attrs} : (attrs || {});
@@ -2239,6 +2226,7 @@ converse.plugins.add('converse-muc', {
                  *   another chat already in the foreground.
                  *   Set `force` to `true` if you want to force the room to be
                  *   maximized or shown.
+                 * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
                  *
                  * @example
                  * this._converse.api.rooms.open('group@muc.example.com')
@@ -2275,13 +2263,14 @@ converse.plugins.add('converse-muc', {
                         _converse.log(err_msg, Strophe.LogLevel.ERROR);
                         throw(new TypeError(err_msg));
                     } else if (_.isString(jids)) {
-                        const room = _converse.api.rooms.create(jids, attrs);
-                        if (room) {
-                            room.maybeShow(force);
-                        }
+                        const room = await _converse.api.rooms.create(jids, attrs);
+                        room && room.maybeShow(force);
                         return room;
                     } else {
-                        return jids.map(jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
+                        return jids.map(async jid => {
+                            const room = await _converse.api.rooms.create(jid, attrs);
+                            room.maybeShow(force);
+                        });
                     }
                 },
 
@@ -2298,6 +2287,7 @@ converse.plugins.add('converse-muc', {
                  *     the user's JID will be used.
                  * @param {boolean} create A boolean indicating whether the room should be created
                  *     if not found (default: `false`)
+                 * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
                  * @example
                  * _converse.api.waitUntil('roomsAutoJoined').then(() => {
                  *     const create_if_not_found = true;
@@ -2327,9 +2317,9 @@ converse.plugins.add('converse-muc', {
                         attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                     }
                     if (_.isString(jids)) {
-                        return getChatRoom(jids, attrs);
+                        return getChatRoom(jids, attrs, create);
                     }
-                    return jids.map(jid => getChatRoom(jid, attrs));
+                    return jids.map(jid => getChatRoom(jid, attrs, create));
                 }
             }
         });

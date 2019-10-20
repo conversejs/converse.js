@@ -8,9 +8,7 @@ import converse from "@converse/headless/converse-core";
 import hello from "hellojs";
 import tpl_oauth_providers from "templates/oauth_providers.html";
 
-const _ = converse.env._,
-      Backbone = converse.env.Backbone,
-      Strophe = converse.env.Strophe;
+const { _, Backbone } = converse.env;
 
 
 // The following line registers your plugin.
@@ -55,7 +53,7 @@ converse.plugins.add("converse-oauth", {
                 this.oauth_providers_view.render();
             },
 
-            render (cfg) {
+            render () {
                 const { _converse } = this.__super__;
                 const result = this.__super__.render.apply(this, arguments);
                 if (_converse.oauth_providers && !_converse.auto_login) {

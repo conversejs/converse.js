@@ -11,7 +11,7 @@ import "backbone.nativeview";
 import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
-import BrowserStorage from "backbone.browserStorage";
+import { debounce, get, isString } from "lodash";
 import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.html";
@@ -29,7 +29,8 @@ import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.html";
 import xss from "xss/dist/xss";
 
-const { $msg, Backbone, Strophe, _, sizzle, dayjs } = converse.env;
+
+const { Backbone, Strophe, sizzle, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -87,7 +88,7 @@ converse.plugins.add('converse-chatview', {
             initialize () {
                 this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
 
-                this.debouncedRender = _.debounce(this.render, 50);
+                this.debouncedRender = debounce(this.render, 50);
                 if (this.model.vcard) {
                     this.listenTo(this.model.vcard, 'change', this.debouncedRender);
                 }
@@ -100,7 +101,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             render () {
-                const vcard = _.get(this.model, 'vcard'),
+                const vcard = get(this.model, 'vcard'),
                       vcard_json = vcard ? vcard.toJSON() : {};
                 this.el.innerHTML = tpl_chatbox_head(
                     Object.assign(
@@ -157,12 +158,11 @@ converse.plugins.add('converse-chatview', {
             },
 
             toHTML () {
-                const vcard = _.get(this.model, 'vcard'),
+                const vcard = get(this.model, 'vcard'),
                       vcard_json = vcard ? vcard.toJSON() : {};
                 return tpl_user_details_modal(Object.assign(
                     this.model.toJSON(),
                     vcard_json, {
-                    '_': _,
                     '__': __,
                     'view': this,
                     '_converse': _converse,
@@ -204,9 +204,7 @@ converse.plugins.add('converse-chatview', {
                 if (result === true) {
                     this.modal.hide();
                     this.model.contact.removeFromRoster(
-                        (iq) => {
-                            this.model.contact.destroy();
-                        },
+                        () => this.model.contact.destroy(),
                         (err) => {
                             _converse.log(err, Strophe.LogLevel.ERROR);
                             _converse.api.alert.show(
@@ -281,8 +279,8 @@ converse.plugins.add('converse-chatview', {
             },
 
             initDebounced () {
-                this.scrollDown = _.debounce(this._scrollDown, 100);
-                this.markScrolled = _.debounce(this._markScrolled, 100);
+                this.scrollDown = debounce(this._scrollDown, 100);
+                this.markScrolled = debounce(this._markScrolled, 100);
             },
 
             render () {
@@ -302,7 +300,7 @@ converse.plugins.add('converse-chatview', {
                 if (!_converse.show_toolbar) {
                     return this;
                 }
-                const options = _.assign(
+                const options = Object.assign(
                     this.model.toJSON(),
                     this.getToolbarOptions()
                 );
@@ -324,11 +322,11 @@ converse.plugins.add('converse-chatview', {
                 form_container.innerHTML = tpl_chatbox_message_form(
                     Object.assign(this.model.toJSON(), {
                         'message_limit': _converse.message_limit,
-                        'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
+                        'hint_value': get(this.el.querySelector('.spoiler-hint'), 'value'),
                         'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
                         'label_send': __('Send'),
                         'label_spoiler_hint': __('Optional hint'),
-                        'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
+                        'message_value': get(this.el.querySelector('.chat-textarea'), 'value'),
                         'show_send_button': _converse.show_send_button,
                         'show_toolbar': _converse.show_toolbar,
                         'unread_msgs': __('You have unread messages')
@@ -354,7 +352,7 @@ converse.plugins.add('converse-chatview', {
                 this.user_details_modal.show(ev);
             },
 
-            toggleFileUpload (ev) {
+            toggleFileUpload () {
                 this.el.querySelector('input.fileupload').click();
             },
 
@@ -391,28 +389,23 @@ converse.plugins.add('converse-chatview', {
              * @method _converse.ChatBoxView#addSpoilerButton
              */
             async addSpoilerButton (options) {
-                __('1111')
                 if (!options.show_spoiler_button || this.model.get('type') === _converse.CHATROOMS_TYPE) {
                     return;
                 }
-                __('2222')
                 const contact_jid = this.model.get('jid');
                 if (this.model.presence.resources.length === 0) {
                     return;
                 }
-                __('3333')
                 const results = await Promise.all(
                     this.model.presence.resources.map(
                         r => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${r.get('name')}`)
                     )
                 );
-                __('4444')
                 const all_resources_support_spolers = results.reduce((acc, val) => (acc && val), true);
                 if (all_resources_support_spolers) {
                     const html = tpl_spoiler_button(this.model.toJSON());
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
                 }
-                __('hello world')
             },
 
             insertHeading () {
@@ -560,10 +553,8 @@ converse.plugins.add('converse-chatview', {
                  * them here, otherwise we get a null reference later
                  * upon element insertion.
                  */
-                const msg_dates = _.invokeMap(
-                    sizzle('.message:not(.chat-state-notification)', this.content),
-                    Element.prototype.getAttribute, 'data-isodate'
-                );
+                const sel = '.message:not(.chat-state-notification)';
+                const msg_dates = sizzle(sel, this.content).map(e => e.getAttribute('data-isodate'));
                 const cutoff_iso = cutoff.toISOString();
                 msg_dates.push(cutoff_iso);
                 msg_dates.sort();
@@ -895,13 +886,11 @@ converse.plugins.add('converse-chatview', {
                         return this.editLaterMessage();
                     }
                 }
-                if (_.includes([
-                            _converse.keycodes.SHIFT,
-                            _converse.keycodes.META,
-                            _converse.keycodes.META_RIGHT,
-                            _converse.keycodes.ESCAPE,
-                            _converse.keycodes.ALT]
-                        , ev.keyCode)) {
+                if ([_converse.keycodes.SHIFT,
+                        _converse.keycodes.META,
+                        _converse.keycodes.META_RIGHT,
+                        _converse.keycodes.ESCAPE,
+                        _converse.keycodes.ALT].includes(ev.keyCode)) {
                     return;
                 }
                 if (this.model.get('chat_state') !== _converse.COMPOSING) {
@@ -921,9 +910,8 @@ converse.plugins.add('converse-chatview', {
 
             onEscapePressed (ev) {
                 ev.preventDefault();
-                const idx = this.model.messages.findLastIndex('correcting'),
-                      message = idx >=0 ? this.model.messages.at(idx) : null;
-
+                const idx = this.model.messages.findLastIndex('correcting');
+                const message = idx >=0 ? this.model.messages.at(idx) : null;
                 if (message) {
                     message.save('correcting', false);
                 }
@@ -966,7 +954,7 @@ converse.plugins.add('converse-chatview', {
                     while (idx < this.model.messages.length-1) {
                         idx += 1;
                         const candidate = this.model.messages.at(idx);
-                        if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                        if (candidate.get('editable')) {
                             message = candidate;
                             break;
                         }
@@ -988,13 +976,13 @@ converse.plugins.add('converse-chatview', {
                     while (idx > 0) {
                         idx -= 1;
                         const candidate = this.model.messages.at(idx);
-                        if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                        if (candidate.get('editable')) {
                             message = candidate;
                             break;
                         }
                     }
                 }
-                message = message || _.findLast(this.getOwnMessages(), msg => msg.get('message'));
+                message = message || this.getOwnMessages().reverse().find(m => m.get('editable'));
                 if (message) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                     message.save('correcting', true);
@@ -1136,7 +1124,7 @@ converse.plugins.add('converse-chatview', {
                 if (Backbone.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
                 }
-                if (_converse.connection.connected) {
+                if (_converse.api.connection.connected()) {
                     // Immediately sending the chat state, because the
                     // model is going to be destroyed afterwards.
                     this.model.setChatState(_converse.INACTIVE);
@@ -1349,10 +1337,10 @@ converse.plugins.add('converse-chatview', {
                         );
                         return null;
                     }
-                    if (_.isString(jids)) {
+                    if (isString(jids)) {
                         return _converse.chatboxviews.get(jids);
                     }
-                    return jids.map(jid => _converse.chatboxviews.get(jids));
+                    return jids.map(jid => _converse.chatboxviews.get(jid));
                 }
             }
         });

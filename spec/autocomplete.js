@@ -6,18 +6,14 @@
         ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const _ = converse.env._;
-    const $iq = converse.env.$iq;
-    const $msg = converse.env.$msg;
     const $pres = converse.env.$pres;
     const Strophe = converse.env.Strophe;
-    const u = converse.env.utils;
 
     describe("The nickname autocomplete feature", function () {
 
         it("shows all autocompletion options when the user presses @",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
@@ -59,7 +55,7 @@
 
         it("autocompletes when the user presses tab",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -170,7 +166,7 @@
 
         it("autocompletes when the user presses backspace",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');

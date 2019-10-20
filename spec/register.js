@@ -10,7 +10,7 @@
 
         it("is not available unless allow_registration=true",
             mock.initConverse(
-                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: false },
                 async function (done, _converse) {
@@ -24,7 +24,7 @@
 
         it("can be opened by clicking on the registration tab",
             mock.initConverse(
-                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
@@ -45,18 +45,18 @@
 
         it("allows the user to choose an XMPP provider's domain",
             mock.initConverse(
-                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
 
+            spyOn(Strophe.Connection.prototype, 'connect');
             await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
             test_utils.openControlBox();
             const cbview = _converse.chatboxviews.get('controlbox');
             const registerview = cbview.registerpanel;
             spyOn(registerview, 'onProviderChosen').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect');
 
             // Open the register panel
             cbview.el.querySelector('.toggle-register-login').click();
@@ -75,17 +75,18 @@
             form.querySelector('input[name=domain]').value = 'conversejs.org';
             submit_button.click();
             expect(registerview.onProviderChosen).toHaveBeenCalled();
-            expect(_converse.connection.connect).toHaveBeenCalled();
+            await u.waitUntil(() => _converse.connection.connect.calls.count());
             done();
         }));
 
         it("will render a registration form as received from the XMPP provider",
             mock.initConverse(
-                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
 
+            spyOn(Strophe.Connection.prototype, 'connect');
             await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
             test_utils.openControlBox();
             const cbview = _converse.chatboxviews.get('controlbox');
@@ -97,7 +98,6 @@
             spyOn(registerview, 'onRegistrationFields').and.callThrough();
             spyOn(registerview, 'renderRegistrationForm').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').and.callThrough();
 
             expect(registerview._registering).toBeFalsy();
             expect(_converse.connection.connected).toBeFalsy();
@@ -105,7 +105,7 @@
             registerview.el.querySelector('input[type=submit]').click();
             expect(registerview.onProviderChosen).toHaveBeenCalled();
             expect(registerview._registering).toBeTruthy();
-            expect(_converse.connection.connect).toHaveBeenCalled();
+            await u.waitUntil(() => _converse.connection.connect.calls.count());
 
             let stanza = new Strophe.Builder("stream:features", {
                         'xmlns:stream': "http://etherx.jabber.org/streams",
@@ -137,7 +137,7 @@
 
         it("will set form_type to legacy and submit it as legacy",
             mock.initConverse(
-                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
@@ -194,7 +194,7 @@
 
         it("will set form_type to xform and submit it as xform",
             mock.initConverse(
-                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 async function (done, _converse) {
@@ -267,7 +267,7 @@
 
         it("renders the account registration form",
             mock.initConverse(
-                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                ['chatBoxesInitialized'],
                 { auto_login: false,
                   view_mode: 'fullscreen',
                   allow_registration: true },

@@ -388,6 +388,13 @@ converse.plugins.add('converse-minimize', {
                 this.listenTo(this.model, 'change:fullname', this.render)
                 this.listenTo(this.model, 'change:jid', this.render)
                 this.listenTo(this.model, 'destroy', this.remove)
+                /**
+                 * Triggered once a {@link _converse.MinimizedChatBoxView } has been initialized
+                 * @event _converse#minimizedChatViewInitialized
+                 * @type { _converse.MinimizedChatBoxView }
+                 * @example _converse.api.listen.on('minimizedChatViewInitialized', view => { ... });
+                 */
+                _converse.api.trigger('minimizedChatViewInitialized', this);
             },
 
             render () {

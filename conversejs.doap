@@ -89,6 +89,13 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0122.html"/>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>basic string field sub-type usage</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0124.html"/>
       </xmpp:SupportedXep>
     </implements>

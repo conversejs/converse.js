@@ -44,6 +44,10 @@ const XFORM_TYPE_MAP = {
     'list-multi': 'dropdown'
 };
 
+function getInputType(field) {
+	return XFORM_TYPE_MAP[field.getAttribute('type')]
+}
+
 function slideOutWrapup (el) {
     /* Wrapup function for slideOut. */
     el.removeAttribute('data-slider-marker');
@@ -459,7 +463,7 @@ u.xForm2TemplateResult = function (field, stanza, options) {
         return tpl_form_username({
             'domain': ' @' + options.domain,
             'name': field.getAttribute('var'),
-            'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+            'type': getInputType(field),
             'label': field.getAttribute('label') || '',
             'value': field.querySelector('value')?.textContent,
             'required': !!field.querySelector('required')
@@ -485,7 +489,7 @@ u.xForm2TemplateResult = function (field, stanza, options) {
             'autocomplete': getAutoCompleteProperty(name, options),
             'placeholder': null,
             'required': !!field.querySelector('required'),
-            'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+            'type': getInputType(field),
             'value': field.querySelector('value')?.textContent
         });
     }

@@ -18,6 +18,7 @@ Three config settings have been obsoleted:
   - show_images_inline
   - muc_show_ogp_unfurls
 
+- Use more specific types for form fields based on XEP-0122
 
 ### Breaking Changes
 

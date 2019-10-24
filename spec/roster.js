@@ -601,7 +601,7 @@
 
             it("do not have a header if there aren't any",
                 mock.initConverse(
-                    ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched', 'VCardsInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.openControlBox(_converse);
@@ -613,16 +613,15 @@
                     ask: 'subscribe',
                     fullname: name
                 });
-                spyOn(window, 'confirm').and.returnValue(true);
                 await u.waitUntil(() => {
                     const el = _converse.rosterview.get('Pending contacts').el;
                     return u.isVisible(el) && _.filter(el.querySelectorAll('li'), li => u.isVisible(li)).length;
                 }, 700)
 
-                spyOn(_converse.connection, 'sendIQ').and.callThrough();
-                sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
+                const remove_el = await u.waitUntil(() => sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop());
+                spyOn(window, 'confirm').and.returnValue(true);
+                remove_el.click();
                 expect(window.confirm).toHaveBeenCalled();
-                expect(_converse.connection.sendIQ).toHaveBeenCalled();
 
                 const iq = _converse.connection.IQ_stanzas.pop();
                 expect(Strophe.serialize(iq)).toBe(
@@ -739,7 +738,7 @@
                         ask: null,
                         fullname: name
                     });
-                    return u.waitUntil(() => contact.vcard.get('fullname'));
+                    return u.waitUntil(() => contact.initialized);
                 }));
                 await u.waitUntil(() => sizzle('li', _converse.rosterview.el).length, 600);
                 // Check that they are sorted alphabetically
@@ -1041,7 +1040,7 @@
                         requesting: true,
                         nickname: name
                     });
-                    return u.waitUntil(() => contact.vcard.get('fullname'));
+                    return u.waitUntil(() => contact.initialized);
                 }));
                 await u.waitUntil(() => _converse.rosterview.get('Contact requests').el.querySelectorAll('li').length, 700);
                 expect(_converse.rosterview.update).toHaveBeenCalled();

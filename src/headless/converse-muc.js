@@ -340,10 +340,10 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            setVCard () {
+            async setVCard () {
+                await _converse.api.waitUntil('VCardsInitialized');
                 if (!_converse.vcards) {
-                    // VCards aren't supported
-                    return;
+                    return; // VCards aren't supported
                 }
                 if (['error', 'info'].includes(this.get('type'))) {
                     return;
@@ -403,10 +403,7 @@ converse.plugins.add('converse-muc', {
             },
 
             async initialize() {
-                if (_converse.vcards) {
-                    this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')}) ||
-                        _converse.vcards.create({'jid': this.get('jid')});
-                }
+                this.setVCard();
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
 
                 this.initFeatures(); // sendChatState depends on this.features
@@ -419,6 +416,14 @@ converse.plugins.add('converse-muc', {
                 await this.initOccupants();
                 await this.fetchMessages();
                 this.enterRoom();
+            },
+
+            async setVCard () {
+                await _converse.api.waitUntil('VCardsInitialized');
+                if (_converse.vcards) {
+                    this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')}) ||
+                        _converse.vcards.create({'jid': this.get('jid')});
+                }
             },
 
             async enterRoom () {

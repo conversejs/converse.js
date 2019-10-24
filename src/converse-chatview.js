@@ -701,6 +701,7 @@ converse.plugins.add('converse-chatview', {
              * @param { _converse.Message } message - The message object
              */
             async showMessage (message) {
+                await message.initialized;
                 const view = this.add(message.get('id'), new _converse.MessageView({'model': message}));
                 await view.render();
                 // Clear chat state notifications

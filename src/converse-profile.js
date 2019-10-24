@@ -310,7 +310,7 @@ converse.plugins.add('converse-profile', {
         /******************** Event Handlers ********************/
 
         _converse.api.listen.on('controlBoxPaneInitialized', async view => {
-            await _converse.api.waitUntil('statusInitialized');
+            await _converse.api.waitUntil('VCardsInitialized');
             _converse.xmppstatusview = new _converse.XMPPStatusView({'model': _converse.xmppstatus});
             view.el.insertAdjacentElement('afterBegin', _converse.xmppstatusview.render().el);
         });

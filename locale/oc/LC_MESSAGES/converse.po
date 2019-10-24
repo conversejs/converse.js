@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-09-22 18:27+0000\n"
+"PO-Revision-Date: 2019-11-02 03:04+0000\n"
 "Last-Translator: Quentí <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: dist/converse-no-dependencies.js:7899
 msgid "Uploading file:"
@@ -552,7 +552,7 @@ msgstr "Drapèus"
 
 #: dist/converse-no-dependencies.js:27496
 msgid "Stickers"
-msgstr ""
+msgstr "Pegasolets"
 
 #: dist/converse-no-dependencies.js:28145
 msgid "This groupchat is not anonymous"
@@ -598,12 +598,12 @@ msgstr "Una nòva sala es estada creada"
 #: dist/converse-no-dependencies.js:28158
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr ""
+msgstr "Vòstre escais-nos es estat automaticament definit a : %1$s"
 
 #: dist/converse-no-dependencies.js:28159
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr "Vòstre escais-nom es « %1$s »"
+msgstr "Vòstre escais-nom es estat cambiat per « %1$s »"
 
 #: dist/converse-no-dependencies.js:28162
 msgid "You have been banned from this groupchat"
@@ -636,29 +636,29 @@ msgstr ""
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:28170
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned"
-msgstr "%1$s pòt pas mai parlar"
+msgstr "%1$s es estat forabandit"
 
 #: dist/converse-no-dependencies.js:28171
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr ""
+msgstr "L’escais-nom de %1$s a cambiat"
 
 #: dist/converse-no-dependencies.js:28172
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out"
-msgstr "%1$s pòt pas mai parlar"
+msgstr "%1$s es estat expulsat"
 
 #: dist/converse-no-dependencies.js:28173
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "Sètz estat tirat de la sala a causa d’un cambiament d’afiliacion"
+msgstr "%1$s es estat tirat a causa d’un cambiament d’afiliacion"
 
 #: dist/converse-no-dependencies.js:28174
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "%1$s es estat levat per es pas membre"
 
 #: dist/converse-no-dependencies.js:29866
 msgid "You're not allowed to register yourself in this groupchat."
@@ -789,13 +789,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:31732
 msgid "Timeout Error"
-msgstr ""
+msgstr "Error de relambi"
 
 #: dist/converse-no-dependencies.js:31732
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"Lo servidor a pas tornat vòstres marcapaginas pendent lo temps autorizat. "
+"Podètz actualizar la pagina per los tornar demandar."
 
 #: dist/converse-no-dependencies.js:33481
 msgid "Unencryptable OMEMO message"

@@ -65,6 +65,8 @@ converse.plugins.add('converse-vcard', {
          */
         const { _converse } = this;
 
+        _converse.api.promises.add('VCardsInitialized');
+
 
         _converse.VCard = Backbone.Model.extend({
             defaults: {
@@ -101,7 +103,9 @@ converse.plugins.add('converse-vcard', {
             model: _converse.VCard,
 
             initialize () {
-                this.on('add', vcard => _converse.api.vcard.update(vcard));
+                this.on('add', vcard => {
+                    _converse.api.vcard.update(vcard);
+                });
             }
         });
 
@@ -157,26 +161,36 @@ converse.plugins.add('converse-vcard', {
         }
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.initVCardCollection = function () {
+        _converse.initVCardCollection = async function () {
             _converse.vcards = new _converse.VCards();
-            const id = `${_converse.bare_jid}-converse.vcards`;
-            _converse.vcards.browserStorage = _converse.createStore(id, _converse.config.get('storage'));
-            _converse.vcards.fetch();
-        }
-
-        _converse.api.listen.on('statusInitialized', () => {
-            _converse.initVCardCollection();
+            _converse.vcards.browserStorage = _converse.createStore(`${_converse.bare_jid}-converse.vcards`);
+            await new Promise(resolve => {
+                _converse.vcards.fetch({
+                    'success': resolve,
+                    'error': resolve
+                }, {'silent': true});
+            });
             const vcards = _converse.vcards;
             if (_converse.session) {
                 const jid = _converse.session.get('bare_jid');
                 _converse.xmppstatus.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
             }
-        });
+            /**
+             * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
+             * @event _converse#VCardsInitialized
+             */
+            _converse.api.trigger('VCardsInitialized');
+        }
+
+        _converse.api.listen.on('statusInitialized', _converse.initVCardCollection);
 
         _converse.api.listen.on('clearSession', () => {
-            if (_converse.shouldClearCache() && _converse.vcards) {
-                _converse.vcards.clearSession();
-                delete _converse.vcards;
+            if (_converse.shouldClearCache()) {
+                _converse.api.promises.add('VCardsInitialized');
+                if (_converse.vcards) {
+                    _converse.vcards.clearSession();
+                    delete _converse.vcards;
+                }
             }
         });
 
@@ -184,16 +198,24 @@ converse.plugins.add('converse-vcard', {
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.VCARD));
 
 
-        function setVCardOnModel (model) {
-            // TODO: if we can make this method async and wait for the VCard to
-            // be updated, then we'll avoid unnecessary re-rendering of roster contacts.
-            const jid = model.get('jid');
+        async function setVCardOnModel (model) {
+            let jid;
+            if (model instanceof _converse.Message) {
+                if (model.get('type') === 'error') {
+                    return;
+                }
+                jid = model.get('from');
+            } else {
+                jid = model.get('jid');
+            }
+            await _converse.api.waitUntil('VCardsInitialized');
             model.vcard = _converse.vcards.findWhere({'jid': jid});
             if (!model.vcard) {
                 model.vcard = _converse.vcards.create({'jid': jid});
             }
         }
-        _converse.api.listen.on('rosterContactInitialized', contact => setVCardOnModel(contact));
+        _converse.api.listen.on('rosterContactInitialized', m => setVCardOnModel(m));
+        _converse.api.listen.on('messageInitialized', m => setVCardOnModel(m));
 
 
         /************************ BEGIN API ************************/
@@ -286,9 +308,9 @@ converse.plugins.add('converse-vcard', {
                  * });
                  */
                 async update (model, force) {
-                    const vcard = await this.get(model, force);
-                    delete vcard['stanza']
-                    model.save(vcard);
+                    const data = await this.get(model, force);
+                    delete data['stanza']
+                    model.save(data);
                 }
             }
         });

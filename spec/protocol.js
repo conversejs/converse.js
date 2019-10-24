@@ -165,7 +165,7 @@
                 // A contact should now have been created
                 expect(_converse.roster.get('contact@example.org') instanceof _converse.RosterContact).toBeTruthy();
                 expect(contact.get('jid')).toBe('contact@example.org');
-                expect(_converse.api.vcard.get).toHaveBeenCalled();
+                await u.waitUntil(() => contact.initialized);
 
                 /* To subscribe to the contact's presence information,
                  * the user's client MUST send a presence stanza of

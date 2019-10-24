@@ -722,10 +722,8 @@
                         var view = _converse.chatboxviews.get(sender_jid);
                         expect(view).toBeDefined();
 
-                        await u.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
-                        // Check that the notification appears inside the chatbox in the DOM
-                        let events = view.el.querySelectorAll('.chat-state-notification');
-                        expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
+                        const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
+                        expect(event.textContent).toEqual(mock.cur_names[1] + ' is typing');
 
                         // Check that it doesn't appear twice
                         msg = $msg({
@@ -735,7 +733,7 @@
                                 id: (new Date()).getTime()
                             }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
-                        events = view.el.querySelectorAll('.chat-state-notification');
+                        const events = view.el.querySelectorAll('.chat-state-notification');
                         expect(events.length).toBe(1);
                         expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
                         done();
@@ -778,7 +776,8 @@
                         expect(msg_obj.get('sender')).toEqual('me');
                         expect(msg_obj.get('is_delayed')).toEqual(false);
                         const chat_content = chatboxview.el.querySelector('.chat-content');
-                        const status_text = chat_content.querySelector('.chat-info.chat-state-notification').textContent;
+                        const el = await u.waitUntil(() => chat_content.querySelector('.chat-info.chat-state-notification'));
+                        const status_text = el.textContent;
                         expect(status_text).toBe('Typing from another device');
                         done();
                     }));
@@ -863,7 +862,7 @@
                         await _converse.chatboxes.onMessage(msg);
                         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         await u.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
-                        var event = view.el.querySelector('.chat-info.chat-state-notification');
+                        const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
                         expect(event.textContent).toEqual(mock.cur_names[1] + ' has stopped typing');
                         done();
                     }));
@@ -904,9 +903,8 @@
                         const msg_obj = chatbox.messages.models[0];
                         expect(msg_obj.get('sender')).toEqual('me');
                         expect(msg_obj.get('is_delayed')).toEqual(false);
-                        const chat_content = chatboxview.el.querySelector('.chat-content');
-                        const status_text = chat_content.querySelector('.chat-info.chat-state-notification').textContent;
-                        expect(status_text).toBe('Stopped typing on the other device');
+                        const el = await u.waitUntil(() => chatboxview.el.querySelector('.chat-info.chat-state-notification'));
+                        expect(el.textContent).toBe('Stopped typing on the other device');
                         done();
                     }));
                 });
@@ -1045,7 +1043,7 @@
                             .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                             .tree();
                         await _converse.chatboxes.onMessage(msg);
-                        await u.waitUntil(() => view.model.messages.length);
+                        await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
                         expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(1);
                         msg = $msg({
                                 from: sender_jid,
@@ -1056,7 +1054,7 @@
                         await _converse.chatboxes.onMessage(msg);
                         await u.waitUntil(() => (view.model.messages.length > 1));
                         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-                        expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(0);
+                        await u.waitUntil(() => view.el.querySelectorAll('.chat-state-notification').length === 0);
                         done();
                     }));
                 });
@@ -1084,7 +1082,7 @@
                         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         const view = _converse.chatboxviews.get(sender_jid);
                         await u.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1]);
-                        const event = view.el.querySelector('.chat-state-notification');
+                        const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
                         expect(event.textContent).toEqual(mock.cur_names[1] + ' has gone away');
                         done();
                     }));

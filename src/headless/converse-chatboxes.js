@@ -123,11 +123,11 @@ converse.plugins.add('converse-chatboxes', {
                 };
             },
 
-            initialize () {
+            async initialize () {
+                this.initialized = u.getResolveablePromise();
                 ModelWithContact.prototype.initialize.apply(this, arguments);
 
                 if (this.get('type') === 'chat') {
-                    this.setVCard();
                     this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
                 }
 
@@ -137,6 +137,8 @@ converse.plugins.add('converse-chatboxes', {
                 if (this.isEphemeral()) {
                     window.setTimeout(this.safeDestroy.bind(this), 10000);
                 }
+                await _converse.api.trigger('messageInitialized', this, {'Synchronous': true});
+                this.initialized.resolve();
             },
 
             safeDestroy () {
@@ -144,19 +146,6 @@ converse.plugins.add('converse-chatboxes', {
                     this.destroy()
                 } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
-                }
-            },
-
-            setVCard () {
-                if (!_converse.vcards) {
-                    // VCards aren't supported
-                    return;
-                }
-                if (this.get('type') === 'error') {
-                    return;
-                } else {
-                    const jid = Strophe.getBareJidFromJid(this.get('from'));
-                    this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                 }
             },
 

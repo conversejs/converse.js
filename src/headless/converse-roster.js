@@ -74,39 +74,6 @@ converse.plugins.add('converse-roster', {
         };
 
 
-        /**
-         * Initialize the Bakcbone collections that represent the contats
-         * roster and the roster groups.
-         * @private
-         * @method _converse.initRoster
-         */
-        _converse.initRoster = function () {
-            const storage = _converse.config.get('storage');
-            _converse.roster = new _converse.RosterContacts();
-            let id = `converse.contacts-${_converse.bare_jid}`;
-            _converse.roster.browserStorage = _converse.createStore(id, storage);
-
-            _converse.roster.data = new Backbone.Model();
-            id = `converse-roster-model-${_converse.bare_jid}`;
-            _converse.roster.data.id = id;
-            _converse.roster.data.browserStorage = _converse.createStore(id, storage);
-            _converse.roster.data.fetch();
-
-            id = `converse.roster.groups${_converse.bare_jid}`;
-            _converse.rostergroups = new _converse.RosterGroups();
-            _converse.rostergroups.browserStorage = _converse.createStore(id, storage);
-            /**
-             * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
-             * been created, but not yet populated with data.
-             * This event is useful when you want to create views for these collections.
-             * @event _converse#chatBoxMaximized
-             * @example _converse.api.listen.on('rosterInitialized', () => { ... });
-             * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
-             */
-            _converse.api.trigger('rosterInitialized');
-        };
-
-
         _converse.sendInitialPresence = function () {
             if (_converse.send_initial_presence) {
                 _converse.xmppstatus.sendPresence();
@@ -243,6 +210,7 @@ converse.plugins.add('converse-roster', {
             },
 
             async initialize (attributes) {
+                this.initialized = u.getResolveablePromise();
                 this.setPresence();
                 const { jid } = attributes;
                 const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
@@ -268,6 +236,7 @@ converse.plugins.add('converse-roster', {
                  * @param { _converse.RosterContact } contact
                  */
                 await _converse.api.trigger('rosterContactInitialized', this, {'Synchronous': true});
+                this.initialized.resolve();
             },
 
             setPresence () {
@@ -995,7 +964,36 @@ converse.plugins.add('converse-roster', {
         });
 
 
-        _converse.api.listen.on('presencesInitialized', (reconnecting) => {
+        async function initRoster () {
+            // Initialize the Bakcbone collections that represent the contats
+            // roster and the roster groups.
+            await _converse.api.waitUntil('VCardsInitialized');
+            const storage = _converse.config.get('storage');
+            _converse.roster = new _converse.RosterContacts();
+            let id = `converse.contacts-${_converse.bare_jid}`;
+            _converse.roster.browserStorage = _converse.createStore(id, storage);
+
+            _converse.roster.data = new Backbone.Model();
+            id = `converse-roster-model-${_converse.bare_jid}`;
+            _converse.roster.data.id = id;
+            _converse.roster.data.browserStorage = _converse.createStore(id, storage);
+            _converse.roster.data.fetch();
+
+            id = `converse.roster.groups${_converse.bare_jid}`;
+            _converse.rostergroups = new _converse.RosterGroups();
+            _converse.rostergroups.browserStorage = _converse.createStore(id, storage);
+            /**
+             * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
+             * been created, but not yet populated with data.
+             * This event is useful when you want to create views for these collections.
+             * @event _converse#chatBoxMaximized
+             * @example _converse.api.listen.on('rosterInitialized', () => { ... });
+             * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
+             */
+            _converse.api.trigger('rosterInitialized');
+        }
+
+        _converse.api.listen.on('presencesInitialized', async (reconnecting) => {
             if (reconnecting) {
                 /**
                  * Similar to `rosterInitialized`, but instead pertaining to reconnection.
@@ -1006,7 +1004,7 @@ converse.plugins.add('converse-roster', {
                  */
                 _converse.api.trigger('rosterReadyAfterReconnection');
             } else {
-                _converse.initRoster();
+                await initRoster();
             }
             _converse.roster.onConnected();
             _converse.registerPresenceHandler();

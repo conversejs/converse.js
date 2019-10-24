@@ -336,7 +336,8 @@ converse.plugins.add('converse-rosterview', {
                 "click .remove-xmpp-contact": "removeContact"
             },
 
-            initialize () {
+            async initialize () {
+                await this.model.initialized;
                 this.listenTo(this.model, "change", this.render);
                 this.listenTo(this.model, "highlight", this.highlight);
                 this.listenTo(this.model, "destroy", this.remove);
@@ -345,6 +346,7 @@ converse.plugins.add('converse-rosterview', {
 
                 this.listenTo(this.model.presence, "change:show", this.render);
                 this.listenTo(this.model.vcard, 'change:fullname', this.render);
+                this.render();
             },
 
             render () {
@@ -978,7 +980,7 @@ converse.plugins.add('converse-rosterview', {
         });
 
 
-        function initRoster () {
+        function initRosterView () {
             /* Create an instance of RosterView once the RosterGroups
              * collection has been created (in @converse/headless/converse-core.js)
              */
@@ -996,8 +998,8 @@ converse.plugins.add('converse-rosterview', {
              */
             _converse.api.trigger('rosterViewInitialized');
         }
-        _converse.api.listen.on('rosterInitialized', initRoster);
-        _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
+        _converse.api.listen.on('rosterInitialized', initRosterView);
+        _converse.api.listen.on('rosterReadyAfterReconnection', initRosterView);
 
         _converse.api.listen.on('afterTearDown', () => {
             if (converse.rosterview) {

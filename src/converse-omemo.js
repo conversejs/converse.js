@@ -714,9 +714,8 @@ converse.plugins.add('converse-omemo', {
                 if (identifier === null || identifier === undefined) {
                     throw new Error("Can't save identity_key for invalid identifier");
                 }
-                const address = new libsignal.SignalProtocolAddress.fromString(identifier),
-                      existing = this.get('identity_key'+address.getName());
-
+                const address = new libsignal.SignalProtocolAddress.fromString(identifier);
+                const existing = this.get('identity_key'+address.getName());
                 const b64_idkey = u.arrayBufferToBase64(identity_key);
                 this.save('identity_key'+address.getName(), b64_idkey)
 
@@ -986,8 +985,7 @@ converse.plugins.add('converse-omemo', {
             initialize () {
                 this.devices = new _converse.Devices();
                 const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
-                const storage = _converse.config.get('storage');
-                this.devices.browserStorage = _converse.createStore(id, storage);
+                this.devices.browserStorage = _converse.createStore(id);
                 this.fetchDevices();
             },
 
@@ -1096,7 +1094,7 @@ converse.plugins.add('converse-omemo', {
 
 
         function fetchDeviceLists () {
-            return new Promise((success, error) => _converse.devicelists.fetch({success, error}));
+            return new Promise((success, error) => _converse.devicelists.fetch({success, 'error': (m, e) => error(e)}));
         }
 
         async function fetchOwnDevices () {
@@ -1171,10 +1169,9 @@ converse.plugins.add('converse-omemo', {
 
         function restoreOMEMOSession () {
             if (_converse.omemo_store === undefined)  {
-                const storage = _converse.config.get('storage'),
-                      id = `converse.omemosession-${_converse.bare_jid}`;
+                const id = `converse.omemosession-${_converse.bare_jid}`;
                 _converse.omemo_store = new _converse.OMEMOStore({'id': id});
-                _converse.omemo_store.browserStorage = _converse.createStore(id, storage);
+                _converse.omemo_store.browserStorage = _converse.createStore(id);
             }
             return _converse.omemo_store.fetchSession();
         }
@@ -1184,9 +1181,8 @@ converse.plugins.add('converse-omemo', {
                 return;
             }
             _converse.devicelists = new _converse.DeviceLists();
-            const storage = _converse.config.get('storage'),
-                  id = `converse.devicelists-${_converse.bare_jid}`;
-            _converse.devicelists.browserStorage = _converse.createStore(id, storage);
+            const id = `converse.devicelists-${_converse.bare_jid}`;
+            _converse.devicelists.browserStorage = _converse.createStore(id);
 
             try {
                 await fetchOwnDevices();

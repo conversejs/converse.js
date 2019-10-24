@@ -61,7 +61,7 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current', 1);
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid);
             const view = _converse.api.chatviews.get(contact_jid);
@@ -92,7 +92,7 @@
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(true);
+            await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')));
 
             spyOn(_converse.connection, 'send');
             textarea.value = 'But soft, what light through yonder window breaks?';
@@ -189,10 +189,10 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current', 1);
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.chatboxviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
             const textarea = view.el.querySelector('textarea.chat-textarea');
             expect(textarea.value).toBe('');
             view.onKeyDown({
@@ -348,7 +348,7 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
 
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
@@ -514,11 +514,10 @@
             async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
 
-            /* Ideally we wouldn't have to filter out headline
-            * messages, but Prosody gives them the wrong 'type' :(
-            */
+            // Ideally we wouldn't have to filter out headline
+            // messages, but Prosody gives them the wrong 'type' :(
             sinon.spy(_converse, 'log');
             sinon.spy(_converse.chatboxes, 'getChatBox');
             sinon.spy(u, 'isHeadlineMessage');
@@ -551,7 +550,7 @@
 
             const include_nick = false;
             await test_utils.waitForRoster(_converse, 'current', 2, include_nick);
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
 
             // Send a message from a different resource
             const msgtext = 'This is a carbon message';
@@ -603,7 +602,7 @@
 
             await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
             await test_utils.waitForRoster(_converse, 'current');
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
 
             // Send a message from a different resource
             const msgtext = 'This is a sent carbon message';
@@ -622,13 +621,15 @@
                         'to': recipient_jid,
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
+
             await _converse.chatboxes.onMessage(msg);
             // Check that the chatbox and its view now exist
-            const chatbox = _converse.chatboxes.get(recipient_jid);
-            const view = _converse.chatboxviews.get(recipient_jid);
+            const chatbox = await _converse.api.chats.get(recipient_jid);
+            const view = _converse.api.chatviews.get(recipient_jid);
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(chatbox).toBeDefined();
             expect(view).toBeDefined();
-            await new Promise(resolve => view.once('messageInserted', resolve));
+
             // Check that the message was received and check the message parameters
             expect(chatbox.messages.length).toEqual(1);
             const msg_obj = chatbox.messages.models[0];
@@ -648,7 +649,7 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             /* <message from="mallory@evil.example" to="b@xmpp.example">
              *    <received xmlns='urn:xmpp:carbons:2'>
              *      <forwarded xmlns='urn:xmpp:forward:0'>
@@ -679,11 +680,11 @@
             await _converse.chatboxes.onMessage(msg);
 
             // Check that chatbox for impersonated user is not created.
-            let chatbox = _converse.chatboxes.get(impersonated_jid);
+            let chatbox = await _converse.api.chats.get(impersonated_jid);
             expect(chatbox).not.toBeDefined();
 
             // Check that the chatbox for the malicous user is not created
-            chatbox = _converse.chatboxes.get(sender_jid);
+            chatbox = await _converse.api.chats.get(sender_jid);
             expect(chatbox).not.toBeDefined();
             done();
         }));
@@ -699,7 +700,7 @@
             await test_utils.waitForRoster(_converse, 'current');
             const contact_name = mock.cur_names[0];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             spyOn(_converse.api, "trigger").and.callThrough();
 
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -757,14 +758,14 @@
 
             const include_nick = false;
             await test_utils.waitForRoster(_converse, 'current', 2, include_nick);
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             spyOn(_converse.api, "trigger").and.callThrough();
             const contact_name = mock.cur_names[1];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
             await test_utils.openChatBoxFor(_converse, contact_jid);
-            test_utils.clearChatBoxMessages(_converse, contact_jid);
+            await test_utils.clearChatBoxMessages(_converse, contact_jid);
             const one_day_ago = dayjs().subtract(1, 'day');
             const chatbox = _converse.chatboxes.get(contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
@@ -849,10 +850,10 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.chatboxviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
             const message = '<p>This message contains <em>some</em> <b>markup</b></p>';
             spyOn(view.model, 'sendMessage').and.callThrough();
             await test_utils.sendMessage(view, message);
@@ -869,10 +870,10 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.chatboxviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
             const message = 'This message contains a hyperlink: www.opkode.com';
             spyOn(view.model, 'sendMessage').and.callThrough();
             test_utils.sendMessage(view, message);
@@ -891,11 +892,11 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.chatboxviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
 
             let message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
             await test_utils.sendMessage(view, message);
@@ -990,11 +991,11 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            let base_url = 'https://conversejs.org';
+            const base_url = 'https://conversejs.org';
             let message = base_url+"/logo/conversejs-filled.svg";
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid);
-            const view = _converse.chatboxviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
             test_utils.sendMessage(view, message);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
@@ -1024,7 +1025,6 @@
             expect(msg.querySelectorAll('img').length).toEqual(2);
 
             // Non-https images aren't rendered
-            base_url = document.URL.split(window.location.pathname)[0];
             message = base_url+"/logo/conversejs-filled.svg";
             const chat_content = view.el.querySelector('.chat-content');
             expect(chat_content.querySelectorAll('img').length).toBe(4);
@@ -1065,7 +1065,7 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
 
             const base_time = new Date();
             const ONE_MINUTE_LATER = 60000;
@@ -1345,7 +1345,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 spyOn(_converse.api, "trigger").and.callThrough();
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, contact_jid)
@@ -1389,7 +1389,7 @@
 
                 const include_nick = false;
                 await test_utils.waitForRoster(_converse, 'current', 1, include_nick);
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
                 spyOn(_converse.api, "trigger").and.callThrough();
                 const message = 'This is a received message';
@@ -1463,7 +1463,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const msg_id = u.getUniqueId();
                 const view = await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -1492,7 +1492,6 @@
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
                 expect(view.model.messages.models.length).toBe(1);
-                expect(view.model.messages.browserStorage.records.length).toBe(1);
 
                 _converse.chatboxes.onMessage($msg({
                         'from': sender_jid,
@@ -1515,7 +1514,6 @@
                 expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
                 expect(older_msgs[0].childNodes[1].textContent).toBe(': But soft, what light through yonder airlock breaks?');
                 expect(view.model.messages.models.length).toBe(1);
-                expect(view.model.messages.browserStorage.records.length).toBe(1);
                 done();
             }));
 
@@ -1524,11 +1522,10 @@
 
                 it("the VCard for that user is fetched and the chatbox updated with the results",
                     mock.initConverse(
-                        ['rosterGroupsFetched'], {},
+                        ['rosterGroupsFetched', 'emojisInitialized'], {'allow_non_roster_messaging': true},
                         async function (done, _converse) {
 
-                    _converse.api.trigger('rosterContactsFetched');
-                    _converse.allow_non_roster_messaging = true;
+                    await test_utils.waitForRoster(_converse, 'current', 0);
                     spyOn(_converse.api, "trigger").and.callThrough();
 
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1558,14 +1555,14 @@
                     expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
                     // Check that the chatbox and its view now exist
-                    const chatbox = _converse.chatboxes.get(sender_jid);
-                    const view = _converse.chatboxviews.get(sender_jid);
+                    const chatbox = await _converse.api.chats.get(sender_jid);
+                    const view = _converse.api.chatviews.get(sender_jid);
+                    await new Promise(resolve => view.once('messageInserted', resolve));
 
                     expect(chatbox).toBeDefined();
                     expect(view).toBeDefined();
                     expect(chatbox.get('fullname') === sender_jid);
 
-                    await new Promise(resolve => view.once('messageInserted', resolve));
                     await u.waitUntil(() => view.el.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
                     let author_el = view.el.querySelector('.chat-msg__author');
                     expect( _.includes(author_el.textContent.trim(), 'Mercutio')).toBeTruthy();
@@ -1583,11 +1580,10 @@
 
                 it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
                     mock.initConverse(
-                        ['rosterGroupsFetched'], {},
+                        ['rosterGroupsFetched'], {'allow_non_roster_messaging': false},
                         async function (done, _converse) {
 
-                    _converse.allow_non_roster_messaging = false;
-                    _converse.api.trigger('rosterContactsFetched');
+                    await test_utils.waitForRoster(_converse, 'current', 0);
 
                     spyOn(_converse.api, "trigger").and.callThrough();
                     const message = 'This is a received message from someone not on the roster';
@@ -1607,7 +1603,6 @@
                     expect(chatbox).not.toBeDefined();
                     // onMessage is a handler for received XMPP messages
                     await _converse.chatboxes.onMessage(msg);
-                    expect(_converse.api.chats.get().length).toBe(1);
                     let view = _converse.chatboxviews.get(sender_jid);
                     expect(view).not.toBeDefined();
 
@@ -1618,7 +1613,7 @@
                     await new Promise(resolve => view.once('messageInserted', resolve));
                     expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                     // Check that the chatbox and its view now exist
-                    chatbox = _converse.chatboxes.get(sender_jid);
+                    chatbox = await _converse.api.chats.get(sender_jid);
                     expect(chatbox).toBeDefined();
                     expect(view).toBeDefined();
                     // Check that the message was received and check the message parameters
@@ -1755,6 +1750,7 @@
                         .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                             .t('Something else went wrong as well');
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    await u.waitUntil(() => view.model.messages.length > 3);
                     await new Promise(resolve => view.once('messageInserted', resolve));
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(3);
                     done();
@@ -1768,7 +1764,7 @@
                     // See #1317
                     // https://github.com/conversejs/converse.js/issues/1317
                     await test_utils.waitForRoster(_converse, 'current');
-                    test_utils.openControlBox();
+                    await test_utils.openControlBox(_converse);
 
                     const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -1887,7 +1883,7 @@
                         type: 'chat',
                         id: '134234623462346'
                     }).c('body').t(message).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 await _converse.chatboxes.onMessage(msg);
                 await u.waitUntil(() => _converse.chatboxviews.keys().length > 1, 1000);
                 const view = _converse.chatboxviews.get(sender_jid);
@@ -2111,7 +2107,7 @@
                 ['rosterGroupsFetched', 'emojisInitialized'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
-            _converse.api.trigger('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 0);
             const contact_jid = 'someone@montague.lit';
             const msgid = u.getUniqueId();
             const stanza = u.toStanza(`

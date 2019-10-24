@@ -6,13 +6,16 @@
         ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    var $msg = converse.env.$msg,
-        _ = converse.env._,
-        utils = converse.env.utils;
+    const $msg = converse.env.$msg,
+          _ = converse.env._,
+          u = converse.env.utils;
 
     describe("A headlines box", function () {
 
-        it("will not open nor display non-headline messages", mock.initConverse((done, _converse) => {
+        it("will not open nor display non-headline messages",
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
+
             /* XMPP spam message:
              *
              *  <message xmlns="jabber:client"
@@ -23,7 +26,7 @@
              *      <body>SORRY FOR THIS ADVERT</body
              *  </message
              */
-            sinon.spy(utils, 'isHeadlineMessage');
+            sinon.spy(u, 'isHeadlineMessage');
             const stanza = $msg({
                     'xmlns': 'jabber:client',
                     'to': 'romeo@montague.lit',
@@ -33,9 +36,10 @@
                 .c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t("-wwdmz").up()
                 .c('body').t('SORRY FOR THIS ADVERT');
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(utils.isHeadlineMessage.called).toBeTruthy();
-            expect(utils.isHeadlineMessage.returned(false)).toBeTruthy();
-            utils.isHeadlineMessage.restore();
+            await u.waitUntil(() => _converse.api.chats.get().length);
+            expect(u.isHeadlineMessage.called).toBeTruthy();
+            expect(u.isHeadlineMessage.returned(false)).toBeTruthy();
+            u.isHeadlineMessage.restore();
             done();
         }));
 
@@ -55,7 +59,7 @@
              *  </x>
              *  </message>
              */
-            sinon.spy(utils, 'isHeadlineMessage');
+            sinon.spy(u, 'isHeadlineMessage');
             const stanza = $msg({
                     'type': 'headline',
                     'from': 'notify.example.com',
@@ -73,9 +77,9 @@
                     _converse.chatboxviews.keys(),
                     'notify.example.com')
                 ).toBeTruthy();
-            expect(utils.isHeadlineMessage.called).toBeTruthy();
-            expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
-            utils.isHeadlineMessage.restore(); // unwraps
+            expect(u.isHeadlineMessage.called).toBeTruthy();
+            expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
+            u.isHeadlineMessage.restore(); // unwraps
             // Headlines boxes don't show an avatar
             const view = _converse.chatboxviews.get('notify.example.com');
             expect(view.model.get('show_avatar')).toBeFalsy();
@@ -84,11 +88,12 @@
         }));
 
         it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
-            mock.initConverse((done, _converse) => {
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
 
             _converse.allow_non_roster_messaging = false;
-            sinon.spy(utils, 'isHeadlineMessage');
-            var stanza = $msg({
+            sinon.spy(u, 'isHeadlineMessage');
+            const stanza = $msg({
                     'type': 'headline',
                     'from': 'andre5114@jabber.snc.ru/Spark',
                     'to': 'romeo@montague.lit',
@@ -98,9 +103,9 @@
                 .c('body').t('Здравствуйте друзья');
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             expect(_.without('controlbox', _converse.chatboxviews.keys()).length).toBe(0);
-            expect(utils.isHeadlineMessage.called).toBeTruthy();
-            expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
-            utils.isHeadlineMessage.restore(); // unwraps
+            expect(u.isHeadlineMessage.called).toBeTruthy();
+            expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
+            u.isHeadlineMessage.restore(); // unwraps
             done();
         }));
     });

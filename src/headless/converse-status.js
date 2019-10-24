@@ -225,7 +225,6 @@ converse.plugins.add('converse-status', {
         _converse.api.listen.on('clearSession', () => {
             if (_converse.shouldClearCache() && _converse.xmppstatus) {
                 _converse.xmppstatus.destroy();
-                _converse.xmppstatus.browserStorage._clear();
                 delete _converse.xmppstatus;
             }
         });

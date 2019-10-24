@@ -22,13 +22,7 @@
     },
     "rules": {
         "lodash/prefer-lodash-chain": "off",
-        "lodash/prefer-lodash-method": [2, {
-            "ignoreMethods": [
-                "assign", "every", "keys", "find", "endsWith", "startsWith", "filter",
-                "reduce", "isArray", "create", "map", "replace", "some", "toLower",
-                "split", "trim", "forEach", "toUpperCase", "includes", "values", "padStart"
-            ]
-        }],
+        "lodash/prefer-lodash-method": "off",
         "lodash/import-scope": "off",
         "lodash/prefer-constant": "off",
         "lodash/prefer-get": "off",

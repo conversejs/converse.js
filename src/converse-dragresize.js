@@ -49,9 +49,12 @@ converse.plugins.add('converse-dragresize', {
         ChatBox: {
             initialize () {
                 const { _converse } = this.__super__;
-                const result = this.__super__.initialize.apply(this, arguments),
-                    height = this.get('height'), width = this.get('width'),
-                    save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);
+                const result = this.__super__.initialize.apply(this, arguments);
+                const height = this.get('height'), width = this.get('width');
+                const save = this.get('id') === 'controlbox' ?
+                    (attrs) => this.set(attrs) :
+                    (attrs) => this.save(attrs);
+
                 save({
                     'height': _converse.applyDragResistance(height, this.get('default_height')),
                     'width': _converse.applyDragResistance(width, this.get('default_width')),

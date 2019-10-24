@@ -258,9 +258,8 @@
                 ['rosterInitialized', 'chatBoxesInitialized'], {},
                 async (done, _converse) => {
 
-                test_utils.openControlBox();
-                test_utils.createContacts(_converse, 'current', 2);
-                _converse.api.trigger('rosterContactsFetched');
+                await test_utils.openControlBox(_converse);
+                await test_utils.waitForRoster(_converse, 'current', 2);
 
                 // Test on chat that doesn't exist.
                 let chat = await _converse.api.chats.get('non-existing@jabber.org');
@@ -294,9 +293,8 @@
                 ['rosterGroupsFetched', 'chatBoxesInitialized'], {},
                 async (done, _converse) => {
 
-                test_utils.openControlBox();
-                test_utils.createContacts(_converse, 'current', 2);
-                _converse.api.trigger('rosterContactsFetched');
+                await test_utils.openControlBox(_converse);
+                await test_utils.waitForRoster(_converse, 'current', 2);
 
                 const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';

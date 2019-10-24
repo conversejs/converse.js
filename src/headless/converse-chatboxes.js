@@ -353,8 +353,7 @@ converse.plugins.add('converse-chatboxes', {
             initMessages () {
                 this.messages = new this.messagesCollection();
                 this.messages.chatbox = this;
-                const storage = _converse.config.get('storage');
-                this.messages.browserStorage = _converse.createStore(this.getMessagesCacheKey(), storage);
+                this.messages.browserStorage = _converse.createStore(this.getMessagesCacheKey());
                 this.listenTo(this.messages, 'change:upload', message => {
                     if (message.get('upload') === _converse.SUCCESS) {
                         _converse.api.send(this.createMessageStanza(message));
@@ -388,27 +387,28 @@ converse.plugins.add('converse-chatboxes', {
                 return this.messages.fetched;
             },
 
-            clearMessages () {
+            async clearMessages () {
                 try {
-                    this.messages.models.forEach(m => m.destroy());
+                    await Promise.all(this.messages.models.map(m => m.destroy()));
                     this.messages.reset();
                 } catch (e) {
                     this.messages.trigger('reset');
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 } finally {
                     delete this.messages.fetched;
-                    this.messages.browserStorage._clear();
                 }
             },
 
-            close () {
+            async close () {
                 try {
-                    this.destroy();
+                    await new Promise((success, reject) => {
+                        return this.destroy({success, 'error': (m, e) => reject(e)})
+                    });
                 } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 } finally {
                     if (_converse.clear_messages_on_reconnection) {
-                        this.clearMessages();
+                        await this.clearMessages();
                     }
                 }
             },
@@ -1172,9 +1172,7 @@ converse.plugins.add('converse-chatboxes', {
                 if (reconnecting) {
                     return;
                 }
-                const storage = _converse.config.get('storage');
-                const id = `converse.chatboxes-${_converse.bare_jid}`;
-                this.browserStorage = _converse.createStore(id, storage);
+                this.browserStorage = _converse.createStore(`converse.chatboxes-${_converse.bare_jid}`);
                 this.registerMessageHandler();
                 this.fetch({
                     'add': true,
@@ -1202,7 +1200,7 @@ converse.plugins.add('converse-chatboxes', {
                     return;
                 }
                 const attrs = await chatbox.getMessageAttributesFromStanza(stanza, stanza);
-                chatbox.messages.create(attrs);
+                await chatbox.messages.create(attrs);
             },
 
             /**
@@ -1353,6 +1351,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 jid = Strophe.getBareJidFromJid(jid.toLowerCase());
 
+                await _converse.api.waitUntil('chatBoxesFetched');
                 let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
                 if (chatbox) {
                     chatbox.save(attrs);
@@ -1519,11 +1518,7 @@ converse.plugins.add('converse-chatboxes', {
                  * });
                  */
                 async open (jids, attrs, force) {
-                    await Promise.all([
-                        _converse.api.waitUntil('rosterContactsFetched'),
-                        _converse.api.waitUntil('chatBoxesFetched')
-                    ]);
-
+                    await _converse.api.waitUntil('chatBoxesFetched');
                     if (isString(jids)) {
                         const chat = await _converse.api.chats.create(jids, attrs);
                         if (chat) {
@@ -1542,7 +1537,7 @@ converse.plugins.add('converse-chatboxes', {
                 },
 
                 /**
-                 * Returns a chat model. The chat should already be open.
+                 * Retrieves a chat model. The chat should already be open.
                  *
                  * @method _converse.api.chats.get
                  * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']

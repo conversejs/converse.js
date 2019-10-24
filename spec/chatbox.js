@@ -19,7 +19,7 @@
             it("has a /help command to show the available commands", mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
 
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -49,7 +49,7 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 await test_utils.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
                 await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
-                await test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 expect(_converse.chatboxes.length).toEqual(1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 let message = '/me is tired';
@@ -95,7 +95,7 @@
                 async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
 
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
@@ -105,7 +105,7 @@
 
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700);
                 const online_contacts = _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact a.open-chat');
-                expect(online_contacts.length).toBe(15);
+                expect(online_contacts.length).toBe(17);
                 let el = online_contacts[0];
                 el.click();
                 await u.waitUntil(() => document.querySelectorAll("#conversejs .chatbox").length == 2);
@@ -124,7 +124,7 @@
                 ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
-                _converse.api.trigger('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 0);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const stanza = u.toStanza(`
                     <message from="${sender_jid}"
@@ -171,7 +171,7 @@
                 spyOn(trimmed_chatboxes, 'removeChat').and.callThrough();
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
 
                 let jid, chatboxview;
                 // openControlBox was called earlier, so the controlbox is
@@ -183,7 +183,7 @@
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length);
                 // Test that they can be maximized again
                 const online_contacts = _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact a.open-chat');
-                expect(online_contacts.length).toBe(15);
+                expect(online_contacts.length).toBe(17);
                 let i;
                 for (i=0; i<online_contacts.length; i++) {
                     const el = online_contacts[i];
@@ -192,11 +192,11 @@
                 await u.waitUntil(() => _converse.chatboxes.length == 16);
                 expect(_converse.chatboxviews.trimChats.calls.count()).toBe(16);
 
+                _converse.api.chatviews.get().forEach(v => spyOn(v, 'onMinimized').and.callThrough());
                 for (i=0; i<online_contacts.length; i++) {
                     const el = online_contacts[i];
                     jid = _.trim(el.textContent.trim()).replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     chatboxview = _converse.chatboxviews.get(jid);
-                    spyOn(chatboxview, 'onMinimized').and.callThrough();
                     chatboxview.model.set({'minimized': true});
                     expect(trimmed_chatboxes.addChat).toHaveBeenCalled();
                     expect(chatboxview.onMinimized).toHaveBeenCalled();
@@ -240,7 +240,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 expect(_converse.chatboxes.length).toEqual(1);
 
                 const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -267,10 +267,9 @@
 
                 spyOn(_converse.ChatBoxViews.prototype, 'trimChats');
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
 
                 spyOn(_converse.api, "trigger").and.callThrough();
-                test_utils.openControlBox();
 
                 test_utils.openChatBoxes(_converse, 6);
                 await u.waitUntil(() => _converse.chatboxes.length == 7);
@@ -282,6 +281,7 @@
                 // The chatboxes will then be fetched from browserStorage inside the
                 // onConnected method
                 newchatboxes.onConnected();
+                await new Promise(resolve => _converse.api.listen.on('chatBoxesFetched', resolve));
                 expect(newchatboxes.length).toEqual(7);
                 // Check that the chatboxes items retrieved from browserStorage
                 // have the same attributes values as the original ones.
@@ -302,7 +302,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
 
                 const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -337,7 +337,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
 
                 const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -377,13 +377,11 @@
 
                 spyOn(_converse.ChatBoxViews.prototype, 'trimChats');
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                 spyOn(_converse.api, "trigger").and.callThrough();
-                _converse.chatboxes.browserStorage._clear();
 
                 test_utils.closeControlBox();
-
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 expect(_converse.chatboxes.length).toEqual(1);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
@@ -392,18 +390,19 @@
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 expect(_converse.chatboxes.length).toEqual(7);
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxInitialized', jasmine.any(Object));
-                test_utils.closeAllChatBoxes(_converse);
+                await test_utils.closeAllChatBoxes(_converse);
 
                 expect(_converse.chatboxes.length).toEqual(1);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                var newchatboxes = new _converse.ChatBoxes();
+                const newchatboxes = new _converse.ChatBoxes();
                 expect(newchatboxes.length).toEqual(0);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
                 // onConnected will fetch chatboxes in browserStorage, but
                 // because there aren't any open chatboxes, there won't be any
                 // in browserStorage either. XXX except for the controlbox
                 newchatboxes.onConnected();
+                await new Promise(resolve => _converse.api.listen.on('chatBoxesFetched', resolve));
                 expect(newchatboxes.length).toEqual(1);
                 expect(newchatboxes.models[0].id).toBe("controlbox");
                 done();
@@ -417,7 +416,7 @@
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 3);
-                    test_utils.openControlBox();
+                    await test_utils.openControlBox(_converse);
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const chatbox = _converse.chatboxes.get(contact_jid);
@@ -436,7 +435,7 @@
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 3);
-                    test_utils.openControlBox();
+                    await test_utils.openControlBox(_converse);
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
@@ -476,7 +475,7 @@
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 3);
-                    test_utils.openControlBox();
+                    await test_utils.openControlBox(_converse);
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
@@ -492,7 +491,7 @@
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current');
-                    test_utils.openControlBox();
+                    await test_utils.openControlBox(_converse);
 
                     let toolbar, call_button;
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -527,7 +526,7 @@
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current');
-                    test_utils.openControlBox();
+                    await test_utils.openControlBox(_converse);
 
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -559,7 +558,7 @@
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current');
-                    test_utils.openControlBox();
+                    await test_utils.openControlBox(_converse);
 
                     spyOn(_converse.api, "trigger").and.callThrough();
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -585,7 +584,7 @@
 
                         await test_utils.waitForRoster(_converse, 'current');
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
                         u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         spyOn(_converse.connection, 'send');
                         await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -606,7 +605,7 @@
                         async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current', 1);
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -640,7 +639,7 @@
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -679,7 +678,7 @@
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -703,7 +702,7 @@
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
 
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse.api, "trigger").and.callThrough();
@@ -794,7 +793,7 @@
 
                         await test_utils.waitForRoster(_converse, 'current');
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700);
                         _converse.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
                         await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -847,7 +846,7 @@
                                 async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         // TODO: only show paused state if the previous state was composing
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
@@ -926,7 +925,7 @@
 
                         await test_utils.waitForRoster(_converse, 'current');
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 1000);
                         await test_utils.openChatBoxFor(_converse, contact_jid);
                         const view = _converse.chatboxviews.get(contact_jid);
@@ -983,7 +982,7 @@
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
 
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -1005,7 +1004,7 @@
 
                         await test_utils.waitForRoster(_converse, 'current');
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         const view = await test_utils.openChatBoxFor(_converse, contact_jid);
                         expect(view.model.get('chat_state')).toBe('active');
@@ -1028,7 +1027,7 @@
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current');
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse.api, "trigger").and.callThrough();
@@ -1070,7 +1069,7 @@
                             async function (done, _converse) {
 
                         await test_utils.waitForRoster(_converse, 'current', 3);
-                        test_utils.openControlBox();
+                        await test_utils.openControlBox(_converse);
 
                         spyOn(_converse.api, "trigger").and.callThrough();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1101,7 +1100,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
                 spyOn(_converse.api, "trigger").and.callThrough();
@@ -1110,8 +1109,9 @@
                 let message = 'This message is another sent from this chatbox';
                 await test_utils.sendMessage(view, message);
 
-                expect(view.model.messages.length > 0).toBeTruthy();
-                expect(view.model.messages.browserStorage.records.length > 0).toBeTruthy();
+                expect(view.model.messages.length === 1).toBeTruthy();
+                let stored_messages = await view.model.messages.browserStorage.findAll();
+                expect(stored_messages.length).toBe(1);
                 await u.waitUntil(() => view.el.querySelector('.chat-msg'));
 
                 message = '/clear';
@@ -1125,10 +1125,12 @@
                     preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
-                expect(view.clearMessages).toHaveBeenCalled();
+                expect(view.clearMessages.calls.all().length).toBe(1);
+                await view.clearMessages.calls.all()[0].returnValue;
                 expect(window.confirm).toHaveBeenCalled();
                 expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
-                expect(view.model.messages.browserStorage.records.length, 0); // And also from browserStorage
+                stored_messages = await view.model.messages.browserStorage.findAll();
+                expect(stored_messages.length).toBe(0);
                 expect(_converse.api.trigger.calls.count(), 1);
                 expect(_converse.api.trigger.calls.mostRecent().args, ['messageSend', message]);
                 done();
@@ -1143,7 +1145,7 @@
                         async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
 
                 expect(document.title).toBe('Converse Tests');
 
@@ -1181,7 +1183,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 _converse.windowState = 'hidden';
                 spyOn(_converse, 'clearMsgCounter').and.callThrough();
                 _converse.saveWindowState(null, 'focus');
@@ -1196,7 +1198,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
 
                 expect(document.title).toBe('Converse Tests');
                 spyOn(_converse, 'incrementMsgCounter').and.callThrough();
@@ -1466,7 +1468,7 @@
                     ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);

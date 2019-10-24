@@ -168,7 +168,8 @@
                 'name':  'The Play',
                 'nick': ' Othello'
             });
-            expect(_converse.chatboxviews.get(jid) === undefined).toBeFalsy();
+            await u.waitUntil(() => _converse.api.rooms.get().length);
+            expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBeFalsy();
 
             // Check that we don't auto-join if muc_respect_autojoin is false
             _converse.muc_respect_autojoin = false;
@@ -188,20 +189,20 @@
 
             it("will use the nickname from the bookmark", mock.initConverse(
                     ['rosterGroupsFetched'], {}, async function (done, _converse) {
+
                 await test_utils.waitUntilBookmarksReturned(_converse);
                 const room_jid = 'coven@chat.shakespeare.lit';
-                await u.waitUntil(() => _converse.bookmarks);
                 _converse.bookmarks.create({
                     'jid': room_jid,
                     'autojoin': false,
                     'name':  'The Play',
                     'nick': 'Othello'
                 });
-                const model = await _converse.api.rooms.open(room_jid);
-                spyOn(model, 'join').and.callThrough();
+                const room = await _converse.api.rooms.open(room_jid);
+                spyOn(room, 'join').and.callThrough();
                 await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
-                await u.waitUntil(() => model.join.calls.count());
-                expect(model.get('nick')).toBe('Othello');
+                await u.waitUntil(() => room.join.calls.count());
+                expect(room.get('nick')).toBe('Othello');
                 done();
             }));
 
@@ -234,22 +235,13 @@
             }));
 
             it("can be unbookmarked", mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                    ['rosterGroupsFetched'], {}, async function (done, _converse) {
 
-                let sent_stanza, IQ_id;
-
-                await test_utils.waitUntilDiscoConfirmed(
-                    _converse, _converse.bare_jid,
-                    [{'category': 'pubsub', 'type': 'pep'}],
-                    ['http://jabber.org/protocol/pubsub#publish-options']
-                );
-                const sendIQ = _converse.connection.sendIQ;
-                await test_utils.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
-
-                const jid = 'theplay@conference.shakespeare.lit';
-                const view = _converse.chatboxviews.get(jid);
-                await u.waitUntil(() => !_.isNull(view.el.querySelector('.toggle-bookmark')));
+                await test_utils.waitUntilBookmarksReturned(_converse);
+                const muc_jid = 'theplay@conference.shakespeare.lit';
+                await _converse.api.rooms.open(muc_jid);
+                const view = _converse.chatboxviews.get(muc_jid);
+                await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
 
                 spyOn(view, 'toggleBookmark').and.callThrough();
                 spyOn(_converse.bookmarks, 'sendBookmarkStanza').and.callThrough();
@@ -261,16 +253,13 @@
                     'name':  'The Play',
                     'nick': ' Othello'
                 });
+
                 expect(_converse.bookmarks.length).toBe(1);
                 await u.waitUntil(() => _converse.chatboxes.length >= 1);
                 expect(view.model.get('bookmarked')).toBeTruthy();
                 let bookmark_icon = await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(u.hasClass('button-on', bookmark_icon)).toBeTruthy();
 
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_stanza = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
                 spyOn(_converse.connection, 'getUniqueId').and.callThrough();
                 bookmark_icon.click();
                 bookmark_icon = await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
@@ -281,8 +270,9 @@
                 // Check that an IQ stanza is sent out, containing no
                 // conferences to bookmark (since we removed the one and
                 // only bookmark).
-                expect(sent_stanza.toLocaleString()).toBe(
-                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                const sent_stanza = _converse.connection.IQ_stanzas.pop();
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                         `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                             `<publish node="storage:bookmarks">`+
                                 `<item id="current">`+
@@ -478,7 +468,7 @@
                     [{'category': 'pubsub', 'type': 'pep'}],
                     ['http://jabber.org/protocol/pubsub#publish-options']
                 );
-                test_utils.openControlBox();
+                test_utils.openControlBox(_converse);
 
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const sent_stanza = await u.waitUntil(
@@ -546,10 +536,9 @@
 
 
             it("remembers the toggle state of the bookmarks list", mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                    ['rosterGroupsFetched'], {}, async function (done, _converse) {
 
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 await test_utils.waitUntilDiscoConfirmed(
                     _converse, _converse.bare_jid,
                     [{'category': 'pubsub', 'type': 'pep'}],
@@ -558,7 +547,7 @@
 
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const sent_stanza = await u.waitUntil(
-                    () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
+                    () => IQ_stanzas.filter(s => sizzle('iq items[node="storage:bookmarks"]', s).length).pop());
 
                 expect(Strophe.serialize(sent_stanza)).toBe(
                     `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
@@ -567,13 +556,13 @@
                     '</pubsub>'+
                     '</iq>'
                 );
-
-                const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
+                const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id': sent_stanza.getAttribute('id')})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'})
                             .c('item', {'id': 'current'})
                                 .c('storage', {'xmlns': 'storage:bookmarks'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await _converse.api.waitUntil('bookmarksInitialized');
 
                 _converse.bookmarks.create({
                     'jid': 'theplay@conference.shakespeare.lit',
@@ -606,7 +595,7 @@
             { hide_open_bookmarks: true },
             async function (done, _converse) {
 
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             await test_utils.waitUntilBookmarksReturned(_converse);
 
             // Check that it's there

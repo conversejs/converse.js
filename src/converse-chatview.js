@@ -445,6 +445,14 @@ converse.plugins.add('converse-chatview', {
                 this.insertIntoDOM();
                 this.scrollDown();
                 this.content.addEventListener('scroll', this.markScrolled.bind(this));
+                /**
+                 * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
+                 * `sessionStorage` but **NOT** from the server.
+                 * @event _converse#afterMessagesFetched
+                 * @type {_converse.ChatBoxView | _converse.ChatRoomView}
+                 * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+                 */
+                _converse.api.trigger('afterMessagesFetched', this);
             },
 
             insertIntoDOM () {
@@ -589,7 +597,7 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            showHelpMessages (msgs, type, spinner) {
+            showHelpMessages (msgs, type='info', spinner) {
                 msgs.forEach(msg => {
                     this.content.insertAdjacentHTML(
                         'beforeend',
@@ -997,11 +1005,11 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            clearMessages (ev) {
+            async clearMessages (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 const result = confirm(__("Are you sure you want to clear the messages from this conversation?"));
                 if (result === true) {
-                    this.model.clearMessages();
+                    await this.model.clearMessages();
                 }
                 return this;
             },
@@ -1119,7 +1127,7 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            close (ev) {
+            async close (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (Backbone.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
@@ -1130,7 +1138,7 @@ converse.plugins.add('converse-chatview', {
                     this.model.setChatState(_converse.INACTIVE);
                     this.model.sendChatState();
                 }
-                this.model.close();
+                await this.model.close();
                 this.remove();
                 /**
                  * Triggered once a chatbox has been closed.
@@ -1247,10 +1255,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             viewUnreadMessages () {
-                this.model.save({
-                    'scrolled': false,
-                    'top_visible_message': null
-                });
+                this.model.save({'scrolled': false, 'top_visible_message': null});
                 this.scrollDown();
             },
 
@@ -1315,7 +1320,7 @@ converse.plugins.add('converse-chatview', {
              * @namespace _converse.api.chatviews
              * @memberOf _converse.api
              */
-            'chatviews': {
+            chatviews: {
                  /**
                   * Get the view of an already open chat.
                   * @method _converse.api.chatviews.get
@@ -1329,13 +1334,9 @@ converse.plugins.add('converse-chatview', {
                   * // To return an array of views, provide an array of JIDs:
                   * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
                   */
-                'get' (jids) {
+                get (jids) {
                     if (jids === undefined) {
-                        _converse.log(
-                            "chatviews.get: You need to provide at least one JID",
-                            Strophe.LogLevel.ERROR
-                        );
-                        return null;
+                        return Object.values(_converse.chatboxviews.getAll());
                     }
                     if (isString(jids)) {
                         return _converse.chatboxviews.get(jids);

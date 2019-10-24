@@ -31,10 +31,10 @@ require.config(config);
 
 var specs = [
     "jasmine",
-    //"spec/transcripts",
+    // "spec/transcripts",
+    // "spec/profiling",
     "spec/spoilers",
     "spec/roomslist",
-    "spec/profiling",
     "spec/utils",
     "spec/converse",
     "spec/bookmarks",

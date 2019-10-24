@@ -81,8 +81,7 @@
                 async function (done, _converse) {
 
             const message = 'This message will be encrypted'
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.api.trigger('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const view = await test_utils.openChatBoxFor(_converse, contact_jid);
             const payload = await view.model.encryptMessage(message);
@@ -98,8 +97,7 @@
                 async function (done, _converse) {
 
             let sent_stanza;
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.api.trigger('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await u.waitUntil(() => initializedOMEMO(_converse));
             await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -386,8 +384,7 @@
 
             await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.api.trigger('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await u.waitUntil(() => initializedOMEMO(_converse));
             await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -605,8 +602,7 @@
                 async function (done, _converse) {
 
             _converse.NUM_PREKEYS = 5; // Restrict to 5, otherwise the resulting stanza is too large to easily test
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.api.trigger('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
             await u.waitUntil(() => initializedOMEMO(_converse));
@@ -710,7 +706,7 @@
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
 
-            test_utils.createContacts(_converse, 'current', 1);
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
             // Wait until own devices are fetched
@@ -884,7 +880,7 @@
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
             expect(Strophe.serialize(iq_stanza)).toBe(
@@ -1036,8 +1032,7 @@
 
             _converse.NUM_PREKEYS = 2; // Restrict to 2, otherwise the resulting stanza is too large to easily test
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.api.trigger('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
             let stanza = $iq({
@@ -1113,8 +1108,7 @@
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.api.trigger('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
             let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
@@ -1460,8 +1454,7 @@
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.api.trigger('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid)
             // We simply emit, to avoid doing all the setup work

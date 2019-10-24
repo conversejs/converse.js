@@ -43,7 +43,7 @@
 
                 spyOn(_converse.api, "trigger").and.callThrough();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 // Adding two contacts one with Capital initials and one with small initials of same JID (Case sensitive check)
                 _converse.roster.create({
                     jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
@@ -69,8 +69,8 @@
                     ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'all').openControlBox();
-                _converse.api.trigger('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'all');
+                await test_utils.openControlBox(_converse);
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -78,8 +78,8 @@
                 const chatview = _converse.chatboxviews.get(sender_jid);
                 chatview.model.set({'minimized': true});
 
-                expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
-                expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
+                expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count') === null).toBeTruthy();
+                expect(_converse.rosterview.el.querySelector('.msgs-indicator') === null).toBeTruthy();
 
                 let msg = $msg({
                         from: sender_jid,
@@ -119,7 +119,7 @@
                     ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openControlBox();
+                test_utils.openControlBox(_converse);
                 var view = _converse.xmppstatusview;
                 expect(u.hasClass('online', view.el.querySelector('.xmpp-status span:first-child'))).toBe(true);
                 expect(view.el.querySelector('.xmpp-status span.online').textContent.trim()).toBe('I am online');
@@ -131,8 +131,7 @@
                     ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.openControlBox();
-
+                await test_utils.openControlBox(_converse);
                 var cbview = _converse.chatboxviews.get('controlbox');
                 cbview.el.querySelector('.change-status').click()
                 var modal = _converse.xmppstatusview.status_modal;
@@ -160,8 +159,7 @@
                     ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.openControlBox();
-
+                await test_utils.openControlBox(_converse);
                 const cbview = _converse.chatboxviews.get('controlbox');
                 cbview.el.querySelector('.change-status').click()
                 const modal = _converse.xmppstatusview.status_modal;
@@ -194,7 +192,8 @@
                 ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'all').openControlBox();
+            await test_utils.waitForRoster(_converse, 'all');
+            await test_utils.openControlBox(_converse);
 
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
@@ -229,7 +228,7 @@
                 ['rosterGroupsFetched'], {'autocomplete_add_contact': false},
                 async function (done, _converse) {
 
-            test_utils.openControlBox();
+            test_utils.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
@@ -319,7 +318,8 @@
                   'xhr_user_search_url': 'http://example.org/?' },
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'all').openControlBox();
+            await test_utils.waitForRoster(_converse, 'all');
+            await test_utils.openControlBox(_converse);
             var modal;
             const xhr = {
                 'open': function open () {},

@@ -120,18 +120,24 @@ converse.plugins.add('converse-disco', {
                 _converse.api.trigger('discoExtensionFieldDiscovered', field);
             },
 
-            fetchFeatures (options) {
-                if (options.ignore_cache || this.features.browserStorage.records.length === 0) {
+            async fetchFeatures (options) {
+                if (options.ignore_cache) {
                     this.queryInfo();
                 } else {
-                    this.features.fetch({
-                        add: true,
-                        success: () => {
-                            this.waitUntilFeaturesDiscovered.resolve(this);
-                            this.trigger('featuresDiscovered');
-                        }
-                    });
-                    this.identities.fetch({add: true});
+                    const store_id = this.features.browserStorage.name;
+                    const result = await this.features.browserStorage.store.getItem(store_id);
+                    if (result && result.length === 0 || result === null) {
+                        this.queryInfo();
+                    } else {
+                        this.features.fetch({
+                            add: true,
+                            success: () => {
+                                this.waitUntilFeaturesDiscovered.resolve(this);
+                                this.trigger('featuresDiscovered');
+                            }
+                        });
+                        this.identities.fetch({add: true});
+                    }
                 }
             },
 
@@ -281,6 +287,9 @@ converse.plugins.add('converse-disco', {
                          * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
                          */
                         _converse.api.trigger('streamFeaturesAdded');
+                    },
+                    error (m, e) {
+                        _converse.log(e, Strophe.LogLevel.ERROR);
                     }
                 });
             }
@@ -345,15 +354,18 @@ converse.plugins.add('converse-disco', {
 
         /******************** Event Handlers ********************/
 
+        // Re-create promise upon reconnection
+        _converse.api.listen.on('will-reconnect', () => _converse.api.promises.add('streamFeaturesAdded'));
+
         _converse.api.listen.on('userSessionInitialized', initStreamFeatures);
         _converse.api.listen.on('beforeResourceBinding', initStreamFeatures);
 
         _converse.api.listen.on('reconnected', initializeDisco);
         _converse.api.listen.on('connected', initializeDisco);
 
-        _converse.api.listen.on('beforeTearDown', () => {
+        _converse.api.listen.on('beforeTearDown', async () => {
             if (_converse.stream_features) {
-                _converse.stream_features.clearSession();
+                await _converse.stream_features.clearSession();
                 delete _converse.stream_features;
             }
         });

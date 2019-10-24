@@ -84,10 +84,17 @@ converse.plugins.add('converse-muc', {
     dependencies: ["converse-chatboxes", "converse-disco", "converse-controlbox"],
 
     overrides: {
+        tearDown () {
+            const { _converse } = this.__super__;
+            const groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
+            _.each(groupchats, gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
+            this.__super__.tearDown.call(this, arguments);
+        },
+
         ChatBoxes: {
             model (attrs, options) {
                 const { _converse } = this.__super__;
-                if (attrs.type == _converse.CHATROOMS_TYPE) {
+                if (attrs && attrs.type == _converse.CHATROOMS_TYPE) {
                     return new _converse.ChatRoom(attrs, options);
                 } else {
                     return this.__super__.model.apply(this, arguments);
@@ -528,11 +535,15 @@ converse.plugins.add('converse-muc', {
                  * registered for this groupchat.
                  */
                 if (this.message_handler) {
-                    _converse.connection.deleteHandler(this.message_handler);
+                    if (_converse.connection) {
+                        _converse.connection.deleteHandler(this.message_handler);
+                    }
                     delete this.message_handler;
                 }
                 if (this.presence_handler) {
-                    _converse.connection.deleteHandler(this.presence_handler);
+                    if (_converse.connection) {
+                        _converse.connection.deleteHandler(this.presence_handler);
+                    }
                     delete this.presence_handler;
                 }
                 return this;
@@ -612,14 +623,13 @@ converse.plugins.add('converse-muc', {
              * @method _converse.ChatRoom#leave
              * @param { string } [exit_msg] - Message to indicate your reason for leaving
              */
-            leave (exit_msg) {
+            async leave (exit_msg) {
                 this.features.destroy();
-                this.occupants.browserStorage._clear();
-                this.occupants.reset();
+                this.occupants.clearSession();
                 if (_converse.disco_entities) {
                     const disco_entity = _converse.disco_entities.get(this.get('jid'));
                     if (disco_entity) {
-                        disco_entity.destroy();
+                        await new Promise((success, error) => disco_entity.destroy({success, error}));
                     }
                 }
                 if (_converse.api.connection.connected()) {
@@ -629,10 +639,11 @@ converse.plugins.add('converse-muc', {
                 this.removeHandlers();
             },
 
-            close () {
+            async close () {
                 try {
-                    this.features.destroy();
-                    this.features.browserStorage._clear();
+                    await new Promise((success, reject) => {
+                        return this.features.destroy({success, 'error': (m, e) => reject(e)})
+                    });
                 } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 }
@@ -838,9 +849,10 @@ converse.plugins.add('converse-muc', {
                 }
                 const fields = await _converse.api.disco.getFields(this.get('jid'));
                 this.save({
-                    'name': identity && identity.get('name'),
-                    'description': _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value')
-                });
+                        'name': identity && identity.get('name'),
+                        'description': _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value')
+                    }
+                );
 
                 const features = await _converse.api.disco.getFeatures(this.get('jid'));
                 const attrs = Object.assign(
@@ -857,6 +869,7 @@ converse.plugins.add('converse-muc', {
                     }
                     attrs[fieldname.replace('muc_', '')] = true;
                 });
+                attrs.description = _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value');
                 this.features.save(attrs);
             },
 
@@ -1010,33 +1023,6 @@ converse.plugins.add('converse-muc', {
              */
             getOwnOccupant () {
                 return this.occupants.findWhere({'jid': _converse.bare_jid});
-            },
-
-            /**
-             * Parse the presence stanza for the current user's affiliation and
-             * role and save them on the relevant {@link _converse.ChatRoomOccupant}
-             * instance.
-             * @private
-             * @method _converse.ChatRoom#saveAffiliationAndRole
-             * @param { XMLElement } pres - A <presence> stanza.
-             */
-            saveAffiliationAndRole (pres) {
-                const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
-                const is_self = (pres.querySelector("status[code='110']") !== null);
-                if (is_self && item) {
-                    const affiliation = item.getAttribute('affiliation');
-                    const role = item.getAttribute('role');
-                    const changes = {};
-                    if (affiliation) {
-                        changes['affiliation'] = affiliation;
-                    }
-                    if (role) {
-                        changes['role'] = role;
-                    }
-                    if (!_.isEmpty(changes)) {
-                        this.getOwnOccupant().save(changes);
-                    }
-                }
             },
 
             /**
@@ -1265,8 +1251,7 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Given a presence stanza, update the occupant model
-             * based on its contents.
+             * Given a presence stanza, update the occupant model based on its contents.
              * @private
              * @method _converse.ChatRoom#updateOccupantsOnPresence
              * @param { XMLElement } pres - The presence stanza
@@ -1572,7 +1557,13 @@ converse.plugins.add('converse-muc', {
                         !this.ignorableCSN(attrs) &&
                         (attrs['chat_state'] || !u.isEmptyMessage(attrs))) {
 
-                    const msg = this.correctMessage(attrs) || this.messages.create(attrs);
+                    const msg = this.correctMessage(attrs) ||
+                        await new Promise((success, reject) => {
+                            this.messages.create(
+                                attrs,
+                                { success, 'erorr': (m, e) => reject(e) }
+                            )
+                        });
                     this.incrementUnreadMsgCounter(msg);
                 }
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});
@@ -1802,7 +1793,6 @@ converse.plugins.add('converse-muc', {
                     this.save('connection_status', converse.ROOMSTATUS.ENTERED);
                 }
                 this.updateOccupantsOnPresence(stanza);
-                this.saveAffiliationAndRole(stanza);
 
                 if (stanza.getAttribute('type') === 'unavailable') {
                     this.handleDisconnection(stanza);
@@ -1839,6 +1829,7 @@ converse.plugins.add('converse-muc', {
                         }
                     }
                 }
+                this.save({'connection_status': converse.ROOMSTATUS.ENTERED});
             },
 
             /**
@@ -1983,6 +1974,12 @@ converse.plugins.add('converse-muc', {
                         this.create(attrs);
                     }
                 });
+                /**
+                 * Triggered once the member lists for this MUC have been fetched and processed.
+                 * @event _converse#membersFetched
+                 * @example _converse.api.listen.on('membersFetched', () => { ... });
+                 */
+                _converse.api.trigger('membersFetched');
             },
 
             findOccupant (data) {
@@ -2142,7 +2139,7 @@ converse.plugins.add('converse-muc', {
              */
             return _converse.chatboxes
                 .filter(m => (m.get('type') === _converse.CHATROOMS_TYPE))
-                .forEach(m => m.save('connection_status', converse.ROOMSTATUS.DISCONNECTED))
+                .forEach(m => m.save({'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
         }
         _converse.api.listen.on('disconnected', disconnectChatRooms);
 
@@ -2267,15 +2264,14 @@ converse.plugins.add('converse-muc', {
                         room && room.maybeShow(force);
                         return room;
                     } else {
-                        return jids.map(async jid => {
-                            const room = await _converse.api.rooms.create(jid, attrs);
-                            room.maybeShow(force);
-                        });
+                        const rooms = await Promise.all(jids.map(jid => _converse.api.rooms.create(jid, attrs)));
+                        rooms.forEach(r => r.maybeShow(force));
+                        return rooms;
                     }
                 },
 
                 /**
-                 * Returns an object representing a MUC chatroom (aka groupchat)
+                 * Fetches the object representing a MUC chatroom (aka groupchat)
                  *
                  * @method _converse.api.rooms.get
                  * @param {string} [jid] The room JID (if not specified, all rooms will be returned).

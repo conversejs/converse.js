@@ -3,6 +3,7 @@
 ## 6.0.0 (Unreleased)
 
 - #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
+- #1105: Store persistent data in IndexedDB instead of localStorage
 - #1089: When filtering the roster for `online` users, show all non-offline users.
 - #1691: Fix `collection.chatbox is undefined` errors
 - #1733: New message notifications for a minimized chat stack on top of each other
@@ -15,6 +16,10 @@
 
 ### Breaking changes
 
+- In contrast to sessionStorage and localStorage, IndexedDB is an asynchronous database.
+  A lot of code that relied on database access to be synchronous had to be
+  updated to work with asynchronous access via promises.
+
 - In order to add support for XEP-0156, the XMPP connection needs to be created
   only once we know the JID of the user that's logging in. This means that the
   [connectionInitialized](https://conversejs.org/docs/html/api/-_converse.html#event:connectionInitialized)
@@ -26,6 +31,7 @@
   * `_converse.api.chats.create`
   * `_converse.api.rooms.get`
   * `_converse.api.rooms.create`
+  * `_converse.api.roomviews.close`
 
 - The `show_only_online_users` setting has been removed.
 - The order of certain events have now changed: `statusInitialized` is now triggered after `initialized` and `connected` and `reconnected`.

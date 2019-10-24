@@ -13,7 +13,7 @@
                 ['rosterGroupsFetched'], {'muc_show_join_leave': false},
                 async function (done, _converse) {
 
-            test_utils.openControlBox();
+            test_utils.openControlBox(_converse);
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             _.rangeRight(3000, 0).forEach(i => {
                 const name = `User ${i.toString().padStart(5, '0')}`;
@@ -41,7 +41,7 @@
                     function (done, _converse) {
 
             _converse.roster_groups = false;
-            test_utils.openControlBox();
+            test_utils.openControlBox(_converse);
 
             expect(_converse.roster.pluck('jid').length).toBe(0);
             var stanza = $iq({
@@ -86,7 +86,7 @@
 
             // _converse.show_only_online_users = true;
             _converse.roster_groups = true;
-            test_utils.openControlBox();
+            test_utils.openControlBox(_converse);
 
             expect(_converse.roster.pluck('jid').length).toBe(0);
             var stanza = $iq({

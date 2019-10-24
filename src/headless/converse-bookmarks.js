@@ -127,19 +127,13 @@ converse.plugins.add('converse-bookmarks', {
 
             fetchBookmarks () {
                 const deferred = u.getResolveablePromise();
-                if (this.browserStorage.records.length > 0) {
+                if (window.sessionStorage.getItem(this.fetched_flag)) {
                     this.fetch({
                         'success': () => deferred.resolve(),
                         'error': () => deferred.resolve()
                     });
-                } else if (! window.sessionStorage.getItem(this.fetched_flag)) {
-                    // There aren't any cached bookmarks and the
-                    // `fetched_flag` is off, so we query the XMPP server.
-                    // If nothing is returned from the XMPP server, we set
-                    // the `fetched_flag` to avoid calling the server again.
-                    this.fetchBookmarksFromServer(deferred);
                 } else {
-                    deferred.resolve();
+                    this.fetchBookmarksFromServer(deferred);
                 }
                 return deferred;
             },
@@ -231,6 +225,7 @@ converse.plugins.add('converse-bookmarks', {
 
             onBookmarksReceived (deferred, iq) {
                 this.createBookmarksFromStanza(iq);
+                window.sessionStorage.setItem(this.fetched_flag, true);
                 if (deferred !== undefined) {
                     return deferred.resolve();
                 }
@@ -301,6 +296,7 @@ converse.plugins.add('converse-bookmarks', {
             if (_converse.bookmarks !== undefined) {
                 _converse.bookmarks.clearSession({'silent': true});
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
+                delete _converse.bookmarks;
             }
         });
 

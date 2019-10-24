@@ -40,7 +40,7 @@
                     it("is shown when you are mentioned in a groupchat",
                             mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
-                        await test_utils.createContacts(_converse, 'current');
+                        await test_utils.waitForRoster(_converse, 'current');
                         await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                         const view = _converse.api.chatviews.get('lounge@montague.lit');
                         if (!view.el.querySelectorAll('.chat-area').length) {
@@ -66,10 +66,10 @@
                                 to: 'romeo@montague.lit',
                                 type: 'groupchat'
                             }).c('body').t(message).tree();
-
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
                         await new Promise(resolve => view.once('messageInserted', resolve));
-                        expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+
+                        await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
                         if (no_notification) {
                             delete window.Notification;
@@ -128,16 +128,16 @@
                         done();
                     }));
 
-                    it("is shown when a user changes their chat state (if show_chat_state_notifications is true)", mock.initConverse((done, _converse) => {
-                        // TODO: not yet testing show_desktop_notifications setting
-                        _converse.show_chat_state_notifications = true;
+                    it("is shown when a user changes their chat state (if show_chat_state_notifications is true)",
+                            mock.initConverse(['rosterGroupsFetched'], {show_chat_state_notifications: true},
+                            async (done, _converse) => {
 
-                        test_utils.createContacts(_converse, 'current');
+                        await test_utils.waitForRoster(_converse, 'current', 3);
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'showChatStateNotification');
                         const jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         _converse.roster.get(jid).presence.set('show', 'busy'); // This will emit 'contactStatusChanged'
-                        expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                        await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
                         expect(_converse.showChatStateNotification).toHaveBeenCalled();
                         done()
                     }));

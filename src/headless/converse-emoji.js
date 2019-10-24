@@ -388,7 +388,6 @@ converse.plugins.add('converse-emoji', {
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('clearSession', () => {
             if (_converse.emojipicker) {
-                _converse.emojipicker.browserStorage._clear();
                 _converse.emojipicker.destroy();
                 delete _converse.emojipicker
             }

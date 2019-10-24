@@ -885,7 +885,6 @@ converse.plugins.add('converse-muc-views', {
                  */
                 if (u.isPersistableModel(this.model)) {
                     this.model.clearUnreadMsgCounter();
-                    this.model.save();
                 }
                 this.scrollDown();
             },
@@ -925,12 +924,12 @@ converse.plugins.add('converse-muc-views', {
              * @private
              * @method _converse.ChatRoomView#close
              */
-            close () {
+            async close () {
                 this.hide();
                 if (Backbone.history.getFragment() === "converse/room?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
                 }
-                this.model.leave();
+                await this.model.leave();
                 return _converse.ChatBoxView.prototype.close.apply(this, arguments);
             },
 
@@ -2128,7 +2127,6 @@ converse.plugins.add('converse-muc-views', {
             const view = _converse.chatboxviews.get('controlbox');
             if (view && view.roomspanel) {
                 view.roomspanel.model.destroy();
-                view.roomspanel.model.browserStorage._clear();
                 view.roomspanel.remove();
                 delete view.roomspanel;
             }
@@ -2197,6 +2195,7 @@ converse.plugins.add('converse-muc-views', {
                  *
                  * @method _converse.api.roomviews.close
                  * @param {(String[]|String)} jids The JID or array of JIDs of the chatroom(s)
+                 * @returns { Promise } - Promise which resolves once the views have been closed.
                  */
                 close (jids) {
                     let views;
@@ -2207,11 +2206,7 @@ converse.plugins.add('converse-muc-views', {
                     } else if (Array.isArray(jids)) {
                         views = jids.map(jid => _converse.chatboxviews.get(jid));
                     }
-                    views.forEach(view => {
-                        if (view.is_chatroom && view.model) {
-                            view.close();
-                        }
-                    });
+                    return Promise.all(views.map(v => (v.is_chatroom && v.model && v.close())))
                 }
             }
         });

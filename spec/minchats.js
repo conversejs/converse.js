@@ -13,11 +13,8 @@
                 ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.api.trigger('rosterContactsFetched');
-
-            test_utils.openControlBox();
-            _converse.minimized_chats.toggleview.model.browserStorage._clear();
+            await test_utils.waitForRoster(_converse, 'current');
+            await test_utils.openControlBox(_converse);
             _converse.minimized_chats.initToggle();
 
             let contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -48,11 +45,8 @@
                 ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.api.trigger('rosterContactsFetched');
-
-            test_utils.openControlBox();
-            _converse.minimized_chats.toggleview.model.browserStorage._clear();
+            await test_utils.waitForRoster(_converse, 'current');
+            await test_utils.openControlBox(_converse);
             _converse.minimized_chats.initToggle();
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -74,13 +68,10 @@
         it("shows the number messages received to minimized chats",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                function (done, _converse) {
+                async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.api.trigger('rosterContactsFetched');
-
-            test_utils.openControlBox();
-            _converse.minimized_chats.toggleview.model.browserStorage._clear();
+            await test_utils.waitForRoster(_converse, 'current');
+            await test_utils.openControlBox(_converse);
             _converse.minimized_chats.initToggle();
 
             var i, contact_jid, chatview, msg;

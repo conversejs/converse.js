@@ -5,9 +5,9 @@
         "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const Strophe = converse.env.Strophe;
     const $iq = converse.env.$iq;
     const $pres = converse.env.$pres;
+    const Strophe = converse.env.Strophe;
     const _ = converse.env._;
     const sizzle = converse.env.sizzle;
     const u = converse.env.utils;
@@ -175,7 +175,7 @@
                  */
                 const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => s.match('presence')).pop());
                 expect(contact.subscribe).toHaveBeenCalled();
-                expect(sent_presence).toBe( // Strophe adds the xmlns attr (although not in spec)
+                expect(sent_presence).toBe(
                     `<presence to="contact@example.org" type="subscribe" xmlns="jabber:client">`+
                         `<nick xmlns="http://jabber.org/protocol/nick">Romeo Montague</nick>`+
                     `</presence>`
@@ -455,18 +455,13 @@
                     { roster_groups: false },
                     async function (done, _converse) {
 
-                var sent_IQ, IQ_id, jid = 'abram@montague.lit';
-                test_utils.openControlBox(_converse);
-                test_utils.createContacts(_converse, 'current');
+                const jid = 'abram@montague.lit';
+                await test_utils.openControlBox(_converse);
+                await test_utils.waitForRoster(_converse, 'current');
                 spyOn(window, 'confirm').and.returnValue(true);
                 // We now have a contact we want to remove
                 expect(_converse.roster.get(jid) instanceof _converse.RosterContact).toBeTruthy();
 
-                var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
                 const header = sizzle('a:contains("My contacts")', _converse.rosterview.el).pop();
                 await u.waitUntil(() => header.parentElement.querySelectorAll('li').length);
 
@@ -493,8 +488,9 @@
                  *   </query>
                  * </iq>
                  */
-                expect(sent_IQ.toLocaleString()).toBe(
-                    `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                const sent_iq = _converse.connection.IQ_stanzas.pop();
+                expect(Strophe.serialize(sent_iq)).toBe(
+                    `<iq id="${sent_iq.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:roster">`+
                             `<item jid="abram@montague.lit" subscription="remove"/>`+
                         `</query>`+
@@ -502,7 +498,7 @@
 
                 // Receive confirmation from the contact's server
                 // <iq type='result' id='remove1'/>
-                const stanza = $iq({'type': 'result', 'id':IQ_id});
+                const stanza = $iq({'type': 'result', 'id': sent_iq.getAttribute('id')});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 // Our contact has now been removed
                 await u.waitUntil(() => typeof _converse.roster.get(jid) === "undefined");
@@ -514,9 +510,8 @@
                 async function (done, _converse) {
 
                 spyOn(_converse.api, "trigger").and.callThrough();
-                test_utils.openControlBox(_converse);
-                // Create some contacts so that we can test positioning
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.openControlBox(_converse);
+                await test_utils.waitForRoster(_converse, 'current');
                 /* <presence
                  *     from='user@example.com'
                  *     to='contact@example.org'
@@ -534,7 +529,7 @@
                     const header = sizzle('a:contains("Contact requests")', _converse.rosterview.el).pop();
                     const contacts = _.filter(header.parentElement.querySelectorAll('li'), u.isVisible);
                     return contacts.length;
-                }, 300);
+                }, 500);
                 expect(_converse.api.trigger).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
                 const header = sizzle('a:contains("Contact requests")', _converse.rosterview.el).pop();
                 expect(u.isVisible(header)).toBe(true);

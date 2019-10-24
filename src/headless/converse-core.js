@@ -26,6 +26,7 @@ const $msg = strophe.default.$msg;
 const $pres = strophe.default.$pres;
 
 Backbone = Backbone.noConflict();
+BrowserStorage.patch(Backbone);
 
 dayjs.extend(advancedFormat);
 
@@ -109,9 +110,20 @@ _converse.VERSION_NAME = "v5.0.5dev";
 Object.assign(_converse, Backbone.Events);
 
 _converse.Collection = Backbone.Collection.extend({
-    clearSession (options) {
-        Array.from(this.models).forEach(m => m.destroy(options));
-        this.browserStorage._clear();
+    async clearSession (options={}) {
+        await Promise.all(Array.from(this.models).map(m => {
+            return new Promise(
+                success => m.destroy(
+                    Object.assign(options, {
+                        success,
+                        'error': (m, e) => {
+                            _converse.log(e, Strophe.LogLevel.ERROR);
+                            success()
+                        }
+                    })
+                )
+            );
+        }));
         this.reset();
     }
 });
@@ -377,9 +389,39 @@ _converse.isUniView = function () {
     return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 };
 
+
+async function initStorage () {
+    // Sets up Backbone.BrowserStorage and localForage for the 3 different stores.
+    _converse.localStorage = BrowserStorage.localForage.createInstance({
+        'name': 'local',
+        'driver': BrowserStorage.localForage.LOCALSTORAGE
+    });
+    await _converse.localStorage.config({'driver': BrowserStorage.localForage.LOCALSTORAGE});
+
+    _converse.indexedDB = BrowserStorage.localForage.createInstance({
+        'name': 'indexed',
+        'driver': BrowserStorage.localForage.INDEXEDDB
+    });
+    await _converse.indexedDB.config({'driver': BrowserStorage.localForage.INDEXEDDB});
+
+    await BrowserStorage.sessionStorageInitialized;
+    _converse.sessionStorage = BrowserStorage.localForage.createInstance({
+        'name': 'session',
+        'driver': 'sessionStorageWrapper'
+    });
+    await _converse.sessionStorage.config({'driver': 'sessionStorageWrapper'});
+
+    _converse.storage = {
+        'session': _converse.sessionStorage,
+        'local': _converse.localStorage,
+        'indexed': _converse.indexedDB
+    }
+}
+
+
 _converse.createStore = function (id, storage) {
-    const s = storage ? storage : _converse.config.get('storage');
-    return new BrowserStorage[s](id);
+    const s = storage ? storage : _converse.storage[_converse.config.get('storage')];
+    return new Backbone.BrowserStorage(id, s);
 }
 
 
@@ -455,8 +497,8 @@ function initClientConfig () {
 }
 
 
-function tearDown () {
-    _converse.api.trigger('beforeTearDown');
+async function tearDown () {
+    await _converse.api.trigger('beforeTearDown', {'synchronous': true});
     window.removeEventListener('click', _converse.onUserActivity);
     window.removeEventListener('focus', _converse.onUserActivity);
     window.removeEventListener('keypress', _converse.onUserActivity);
@@ -531,7 +573,7 @@ function connect (credentials) {
 }
 
 
-function reconnect () {
+async function reconnect () {
     _converse.log('RECONNECTING: the connection has dropped, attempting to reconnect.');
     _converse.setConnectionStatus(
         Strophe.Status.RECONNECTING,
@@ -546,7 +588,7 @@ function reconnect () {
     _converse.api.trigger('will-reconnect');
 
     _converse.connection.reconnecting = true;
-    tearDown();
+    await tearDown();
     return _converse.api.user.login();
 }
 
@@ -558,7 +600,6 @@ _converse.shouldClearCache = () => (!_converse.config.get('trusted') || _convers
 function clearSession  () {
     if (_converse.session !== undefined) {
         _converse.session.destroy();
-        _converse.session.browserStorage._clear();
         delete _converse.session;
     }
     /**
@@ -669,7 +710,7 @@ async function initSession (jid) {
         await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
         if (_converse.session.get('active')) {
             _converse.session.clear();
-            _converse.session.save({'id': id});
+            _converse.session.save({id});
         }
         saveJIDtoSession(jid);
         /**
@@ -822,6 +863,7 @@ function setUpXMLLogging () {
 
 
 async function finishInitialization () {
+    await initStorage();
     initClientConfig();
     initPlugins();
     _converse.registerGlobalEventHandlers();
@@ -920,10 +962,15 @@ function unregisterGlobalEventHandlers () {
     _converse.api.trigger('unregisteredGlobalEventHandlers');
 }
 
-function cleanup () {
-    // Looks like _converse.initialized was called again without logging
-    // out or disconnecting in the previous session.
-    // This happens in tests. We therefore first clean up.
+async function cleanup () {
+    // Make sure everything is reset in case this is a subsequent call to
+    // convesre.initialize (happens during tests).
+    if (_converse.localStorage) {
+        await Promise.all([
+            BrowserStorage.localForage.dropInstance({'name': 'local'}),
+            BrowserStorage.localForage.dropInstance({'name': 'indexed'}),
+            BrowserStorage.localForage.dropInstance({'name': 'session'})]);
+    }
     Backbone.history.stop();
     unregisterGlobalEventHandlers();
     delete _converse.controlboxtoggle;
@@ -939,7 +986,7 @@ function cleanup () {
 
 
 _converse.initialize = async function (settings, callback) {
-    cleanup();
+    await cleanup();
 
     settings = settings !== undefined ? settings : {};
     PROMISES.forEach(addPromise);
@@ -1256,7 +1303,7 @@ _converse.api = {
             const conn_status = _converse.connfeedback.get('connection_status');
 
             if (_converse.authentication === _converse.ANONYMOUS) {
-                tearDown();
+                await tearDown();
                 clearSession();
             }
             if (conn_status === Strophe.Status.CONNFAIL) {
@@ -1421,8 +1468,7 @@ _converse.api = {
                 complete();
             }
             return promise;
-        },
-
+        }
     },
 
     /**

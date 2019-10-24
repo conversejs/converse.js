@@ -684,11 +684,10 @@ converse.plugins.add('converse-roster', {
                 const jid = item.getAttribute('jid');
                 if (this.isSelf(jid)) { return; }
 
-                const contact = this.get(jid),
-                    subscription = item.getAttribute("subscription"),
-                    ask = item.getAttribute("ask"),
-                    groups = _.map(item.getElementsByTagName('group'), Strophe.getText);
-
+                const contact = this.get(jid);
+                const subscription = item.getAttribute("subscription");
+                const ask = item.getAttribute("ask");
+                const groups = Array.from(item.getElementsByTagName('group')).map(e => e.textContent);
                 if (!contact) {
                     if ((subscription === "none" && ask === null) || (subscription === "remove")) {
                         return; // We're lazy when adding contacts.
@@ -959,7 +958,6 @@ converse.plugins.add('converse-roster', {
             if (_converse.shouldClearCache()) {
                 if (_converse.roster) {
                     _.invoke(_converse, 'roster.data.destroy');
-                    _.invoke(_converse, 'roster.data.browserStorage._clear');
                     _converse.roster.clearSession();
                     delete _converse.roster;
                 }
@@ -1024,7 +1022,7 @@ converse.plugins.add('converse-roster', {
              * @namespace _converse.api.contacts
              * @memberOf _converse.api
              */
-            'contacts': {
+            contacts: {
                 /**
                  * This method is used to retrieve roster contacts.
                  *

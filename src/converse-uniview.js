@@ -96,7 +96,15 @@ converse.plugins.add('converse-uniview', {
                     .forEach(hideChat);
 
                 if (view.model.get('hidden')) {
-                    u.safeSave(view.model, {'hidden': false});
+                    return new Promise(resolve => {
+                        u.safeSave(
+                            view.model,
+                            {'hidden': false}, {
+                                'success': resolve,
+                                'failure': resolve
+                            }
+                        );
+                    });
                 }
             }
         });

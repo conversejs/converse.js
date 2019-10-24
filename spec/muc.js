@@ -1355,7 +1355,6 @@
                 await _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 await u.waitUntil(() => u.isVisible(view.el));
-                spyOn(view.model, 'saveAffiliationAndRole').and.callThrough();
                 // We pretend this is a new room, so no disco info is returned.
                 const features_stanza = $iq({
                         from: 'coven@chat.shakespeare.lit',
@@ -1385,7 +1384,6 @@
                     }).up()
                     .c('status', {code: '110'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.model.saveAffiliationAndRole).toHaveBeenCalled();
                 expect(u.isVisible(view.el.querySelector('.toggle-chatbox-button'))).toBeTruthy();
                 await u.waitUntil(() => !_.isNull(view.el.querySelector('.configure-chatroom-button')))
                 expect(u.isVisible(view.el.querySelector('.configure-chatroom-button'))).toBeTruthy();

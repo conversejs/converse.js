@@ -50,7 +50,7 @@
 
         it("can be used to replay conversations",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             _converse.allow_non_roster_messaging = true;

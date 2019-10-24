@@ -77,7 +77,7 @@
 
         it("adds methods for encrypting and decrypting messages via AES GCM",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const message = 'This message will be encrypted'
@@ -94,7 +94,7 @@
 
         it("enables encrypted messages to be sent and received",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
             let sent_stanza;
@@ -234,7 +234,7 @@
 
         it("enables encrypted groupchat messages to be sent and received",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             // MEMO encryption works only in members only conferences
@@ -381,7 +381,7 @@
 
         it("will create a new device based on a received carbon message",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
@@ -472,7 +472,7 @@
 
         it("gracefully handles auth errors when trying to send encrypted groupchat messages",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             // MEMO encryption works only in members only conferences
@@ -601,7 +601,7 @@
 
         it("can receive a PreKeySignalMessage",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             _converse.NUM_PREKEYS = 5; // Restrict to 5, otherwise the resulting stanza is too large to easily test
@@ -701,7 +701,7 @@
 
         it("updates device lists based on PEP messages",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
+                ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -875,7 +875,7 @@
 
         it("updates device bundles based on PEP messages",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -1025,7 +1025,7 @@
 
         it("publishes a bundle with which an encrypted session can be created",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -1104,7 +1104,7 @@
 
         it("adds a toolbar button for starting an encrypted chat session",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -1269,7 +1269,7 @@
 
         it("adds a toolbar button for starting an encrypted groupchat session",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -1451,7 +1451,7 @@
 
         it("shows OMEMO device fingerprints in the user details modal",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(

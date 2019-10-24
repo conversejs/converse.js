@@ -12,7 +12,6 @@
 import "./converse-disco";
 import "./converse-emoji";
 import "./utils/muc";
-import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import u from "./utils/form";
 
@@ -101,8 +100,8 @@ converse.plugins.add('converse-muc', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { __, ___ } = _converse;
 
         // Configuration values for this plugin
         // ====================================
@@ -128,15 +127,6 @@ converse.plugins.add('converse-muc', {
                             "to true when muc_domain is not set");
         }
 
-
-        function ___ (str) {
-            /* This is part of a hack to get gettext to scan strings to be
-            * translated. Strings we cannot send to the function above because
-            * they require variable interpolation and we don't yet have the
-            * variables at scan time.
-            */
-            return str;
-        }
 
         /* https://xmpp.org/extensions/xep-0045.html
          * ----------------------------------------
@@ -488,14 +478,13 @@ converse.plugins.add('converse-muc', {
                 this.features = new Backbone.Model(
                     _.assign({id}, _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)))
                 );
-                this.features.browserStorage = new BrowserStorage.session(id);
+                this.features.browserStorage = _converse.createStore(id, "session");
             },
 
             initOccupants () {
                 this.occupants = new _converse.ChatRoomOccupants();
-                this.occupants.browserStorage = new BrowserStorage.session(
-                    `converse.occupants-${_converse.bare_jid}${this.get('jid')}`
-                );
+                const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
+                this.occupants.browserStorage = _converse.createStore(id, 'session');
                 this.occupants.chatroom  = this;
                 this.occupants.fetched = new Promise(resolve => {
                     this.occupants.fetch({
@@ -633,7 +622,7 @@ converse.plugins.add('converse-muc', {
                         disco_entity.destroy();
                     }
                 }
-                if (_converse.connection.connected) {
+                if (_converse.api.connection.connected()) {
                     this.sendUnavailablePresence(exit_msg);
                 }
                 u.safeSave(this, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
@@ -728,7 +717,7 @@ converse.plugins.add('converse-muc', {
                 const is_spoiler = this.get('composing_spoiler');
                 var references;
                 [text, references] = this.parseTextForReferences(text);
-                const origin_id = _converse.connection.getUniqueId();
+                const origin_id = u.getUniqueId();
 
                 return {
                     'id': origin_id,
@@ -814,7 +803,7 @@ converse.plugins.add('converse-muc', {
                 const invitation = $msg({
                     'from': _converse.connection.jid,
                     'to': recipient,
-                    'id': _converse.connection.getUniqueId()
+                    'id': u.getUniqueId()
                 }).c('x', attrs);
                 _converse.api.send(invitation);
                 /**
@@ -1911,10 +1900,7 @@ converse.plugins.add('converse-muc', {
             },
 
             initialize (attributes) {
-                this.set(Object.assign(
-                    {'id': _converse.connection.getUniqueId()},
-                    attributes)
-                );
+                this.set(Object.assign({'id': u.getUniqueId()}, attributes));
                 this.on('change:image_hash', this.onAvatarChanged, this);
             },
 

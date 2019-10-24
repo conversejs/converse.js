@@ -17,9 +17,7 @@
         describe("The XEP-0313 Archive", function () {
 
             it("is queried when the user enters a new MUC",
-                mock.initConverse(
-                    null, ['discoInitialized'], {'archived_messages_page_size': 2},
-                    async function (done, _converse) {
+                    mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (done, _converse) {
 
                 spyOn(_converse.ChatBox.prototype, 'fetchArchivedMessages').and.callThrough();
                 const sent_IQs = _converse.connection.IQ_stanzas;
@@ -211,7 +209,7 @@
 
                 it("is discarded if it doesn't come from the right sender",
                     mock.initConverse(
-                        null, ['discoInitialized'], {},
+                        ['discoInitialized'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 1);
@@ -267,7 +265,7 @@
 
                 it("updates the is_archived value of an already cached version",
                     mock.initConverse(
-                        null, ['discoInitialized'], {},
+                        ['discoInitialized'], {},
                         async function (done, _converse) {
 
                     await test_utils.openAndEnterChatRoom(_converse, 'trek-radio@conference.lightwitch.org', 'romeo');
@@ -315,7 +313,7 @@
 
                 it("isn't shown as duplicate by comparing its stanza id or archive id",
                     mock.initConverse(
-                        null, ['discoInitialized'], {},
+                        ['discoInitialized'], {},
                         async function (done, _converse) {
 
                     await test_utils.openAndEnterChatRoom(_converse, 'trek-radio@conference.lightwitch.org', 'jcbrand');
@@ -354,7 +352,7 @@
 
                 it("isn't shown as duplicate by comparing only the archive id",
                     mock.initConverse(
-                        null, ['discoInitialized'], {},
+                        ['discoInitialized'], {},
                         async function (done, _converse) {
 
                     await test_utils.openAndEnterChatRoom(_converse, 'discuss@conference.conversejs.org', 'romeo');
@@ -407,9 +405,7 @@
         describe("The archive.query API", function () {
 
            it("can be used to query for all archived messages",
-                mock.initConverse(
-                    null, ['discoInitialized'], {},
-                    async function (done, _converse) {
+                    mock.initConverse(['discoInitialized'], {}, async function (done, _converse) {
 
                 const sendIQ = _converse.connection.sendIQ;
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
@@ -427,9 +423,7 @@
             }));
 
            it("can be used to query for all messages to/from a particular JID",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -458,9 +452,7 @@
             }));
 
            it("can be used to query for archived messages from a chat room",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 const room_jid = 'coven@chat.shakespeare.lit';
                 _converse.api.archive.query({'with': room_jid, 'groupchat': true});
@@ -485,9 +477,7 @@
            }));
 
             it("checks whether returned MAM messages from a MUC room are from the right JID",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 const room_jid = 'coven@chat.shakespeare.lit';
                 const promise = _converse.api.archive.query({'with': room_jid, 'groupchat': true, 'max':'10'});
@@ -556,9 +546,7 @@
            }));
 
            it("can be used to query for all messages in a certain timespan",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -596,9 +584,7 @@
            }));
 
            it("throws a TypeError if an invalid date is provided",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 try {
@@ -610,9 +596,7 @@
            }));
 
            it("can be used to query for all messages after a certain time",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -646,9 +630,7 @@
            }));
 
            it("can be used to query for a limited set of results",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -682,9 +664,7 @@
            }));
 
            it("can be used to page through results",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -722,9 +702,7 @@
            }));
 
            it("accepts \"before\" with an empty string as value to reverse the order",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -754,9 +732,7 @@
            }));
 
            it("accepts a _converse.RSM object for the query options",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -798,9 +774,7 @@
            }));
 
            it("returns an object which includes the messages and a _converse.RSM object",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 let sent_stanza, IQ_id;
@@ -886,17 +860,9 @@
         describe("The default preference", function () {
 
             it("is set once server support for MAM has been confirmed",
-                mock.initConverse(
-                    null, [], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 const entity = await _converse.api.disco.entities.get(_converse.domain);
-                let  sent_stanza, IQ_id;
-                const sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_stanza = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
                 spyOn(_converse, 'onMAMPreferences').and.callThrough();
                 _converse.message_archiving = 'never';
 
@@ -907,9 +873,10 @@
 
                 entity.onFeatureAdded(feature);
 
-                expect(_converse.connection.sendIQ).toHaveBeenCalled();
-                expect(sent_stanza.toLocaleString()).toBe(
-                    `<iq id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                let sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('iq[type="get"] prefs[xmlns="urn:xmpp:mam:2"]', s).length).pop());
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                         `<prefs xmlns="urn:xmpp:mam:2"/>`+
                     `</iq>`);
 
@@ -922,7 +889,7 @@
                  *   </prefs>
                  * </iq>
                  */
-                let stanza = $iq({'type': 'result', 'id': IQ_id})
+                let stanza = $iq({'type': 'result', 'id': sent_stanza.getAttribute('id')})
                     .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'roster'})
                     .c('always').c('jid').t('romeo@montague.lit').up().up()
                     .c('never').c('jid').t('montague@montague.lit');
@@ -931,8 +898,9 @@
                 await u.waitUntil(() => _converse.onMAMPreferences.calls.count());
                 expect(_converse.onMAMPreferences).toHaveBeenCalled();
 
-                expect(sent_stanza.toString()).toBe(
-                    `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                sent_stanza = await u.waitUntil(() => IQ_stanzas.filter(s => sizzle('iq[type="set"] prefs[xmlns="urn:xmpp:mam:2"]', s).length).pop());
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                         `<prefs default="never" xmlns="urn:xmpp:mam:2">`+
                             `<always><jid>romeo@montague.lit</jid></always>`+
                             `<never><jid>montague@montague.lit</jid></never>`+
@@ -952,7 +920,7 @@
                  *   </prefs>
                  * </iq>
                  */
-                stanza = $iq({'type': 'result', 'id': IQ_id})
+                stanza = $iq({'type': 'result', 'id': sent_stanza.getAttribute('id')})
                     .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'always'})
                         .c('always').up()
                         .c('never');
@@ -969,9 +937,7 @@
         describe("A Chatbox", function () {
 
             it("will fetch archived messages once it's opened",
-                mock.initConverse(
-                    null, ['discoInitialized'], {},
-                    async function (done, _converse) {
+                    mock.initConverse(['discoInitialized'], {}, async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1031,9 +997,7 @@
             }));
 
             it("will show an error message if the MAM query times out",
-                mock.initConverse(
-                    null, ['discoInitialized'], {},
-                    async function (done, _converse) {
+                    mock.initConverse(['discoInitialized'], {}, async function (done, _converse) {
 
                 const sendIQ = _converse.connection.sendIQ;
 

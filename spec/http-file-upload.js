@@ -172,7 +172,7 @@
 
                 it("does not appear in private chats",
                     mock.initConverse(
-                        null, ['emojisInitialized'], {},
+                        ['emojisInitialized'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 3);
@@ -191,7 +191,7 @@
                 }));
 
                 it("does not appear in MUC chats", mock.initConverse(
-                        null, ['rosterGroupsFetched'], {},
+                        ['rosterGroupsFetched'], {},
                         async (done, _converse) => {
 
                     await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -233,7 +233,7 @@
                 }));
 
                 it("appears in MUC chats", mock.initConverse(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async (done, _converse) => {
 
                     await test_utils.waitUntilDiscoConfirmed(
@@ -464,7 +464,7 @@
 
                     it("shows an error message if the file is too large",
                         mock.initConverse(
-                            null, ['emojisInitialized'], {},
+                            ['emojisInitialized'], {},
                             async function (done, _converse) {
 
                         const IQ_stanzas = _converse.connection.IQ_stanzas;
@@ -587,7 +587,7 @@
             describe("While a file is being uploaded", function () {
 
                 it("shows a progress bar", mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                     await test_utils.waitUntilDiscoConfirmed(

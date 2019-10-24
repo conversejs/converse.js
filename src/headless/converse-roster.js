@@ -6,7 +6,7 @@
 /**
  * @module converse-roster
  */
-import BrowserStorage from "backbone.browserStorage";
+import "@converse/headless/converse-status";
 import converse from "@converse/headless/converse-core";
 
 const { Backbone, Strophe, $iq, $pres, dayjs, sizzle, _ } = converse.env;
@@ -15,7 +15,7 @@ const u = converse.env.utils;
 
 converse.plugins.add('converse-roster', {
 
-    dependencies: [],
+    dependencies: ['converse-status'],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -60,6 +60,21 @@ converse.plugins.add('converse-roster', {
 
 
         /**
+         * Reject or cancel another user's subscription to our presence updates.
+         * @method rejectPresenceSubscription
+         * @private
+         * @memberOf _converse
+         * @param { String } jid - The Jabber ID of the user whose subscription is being canceled
+         * @param { String } message - An optional message to the user
+         */
+        _converse.rejectPresenceSubscription = function (jid, message) {
+            const pres = $pres({to: jid, type: "unsubscribed"});
+            if (message && message !== "") { pres.c("status").t(message); }
+            _converse.api.send(pres);
+        };
+
+
+        /**
          * Initialize the Bakcbone collections that represent the contats
          * roster and the roster groups.
          * @private
@@ -68,18 +83,18 @@ converse.plugins.add('converse-roster', {
         _converse.initRoster = function () {
             const storage = _converse.config.get('storage');
             _converse.roster = new _converse.RosterContacts();
-            _converse.roster.browserStorage = new BrowserStorage[storage](
-                `converse.contacts-${_converse.bare_jid}`);
+            let id = `converse.contacts-${_converse.bare_jid}`;
+            _converse.roster.browserStorage = _converse.createStore(id, storage);
 
             _converse.roster.data = new Backbone.Model();
-            const id = `converse-roster-model-${_converse.bare_jid}`;
+            id = `converse-roster-model-${_converse.bare_jid}`;
             _converse.roster.data.id = id;
-            _converse.roster.data.browserStorage = new BrowserStorage[storage](id);
+            _converse.roster.data.browserStorage = _converse.createStore(id, storage);
             _converse.roster.data.fetch();
 
+            id = `converse.roster.groups${_converse.bare_jid}`;
             _converse.rostergroups = new _converse.RosterGroups();
-            _converse.rostergroups.browserStorage = new BrowserStorage[storage](
-                `converse.roster.groups${_converse.bare_jid}`);
+            _converse.rostergroups.browserStorage = _converse.createStore(id, storage);
             /**
              * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
              * been created, but not yet populated with data.
@@ -89,6 +104,13 @@ converse.plugins.add('converse-roster', {
              * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
              */
             _converse.api.trigger('rosterInitialized');
+        };
+
+
+        _converse.sendInitialPresence = function () {
+            if (_converse.send_initial_presence) {
+                _converse.xmppstatus.sendPresence();
+            }
         };
 
 
@@ -104,39 +126,24 @@ converse.plugins.add('converse-roster', {
         _converse.populateRoster = async function (ignore_cache=false) {
             if (ignore_cache) {
                 _converse.send_initial_presence = true;
-                try {
-                    await _converse.roster.fetchFromServer();
-                    /**
-                     * Triggered once roster contacts have been fetched. Used by the
-                     * `converse-rosterview.js` plugin to know when it can start to show the roster.
-                     * @event _converse#rosterContactsFetched
-                     * @example _converse.api.listen.on('rosterContactsFetched', () => { ... });
-                     */
-                    _converse.api.trigger('rosterContactsFetched');
-                } catch (reason) {
-                    _converse.log(reason, Strophe.LogLevel.ERROR);
-                } finally {
-                    _converse.sendInitialPresence();
-                }
-            } else {
-                try {
-                    await _converse.rostergroups.fetchRosterGroups();
-                    /**
-                     * Triggered once roster groups have been fetched. Used by the
-                     * `converse-rosterview.js` plugin to know when it can start alphabetically
-                     * position roster groups.
-                     * @event _converse#rosterGroupsFetched
-                     * @example _converse.api.listen.on('rosterGroupsFetched', () => { ... });
-                     * @example _converse.api.waitUntil('rosterGroupsFetched').then(() => { ... });
-                     */
-                    _converse.api.trigger('rosterGroupsFetched');
-                    await _converse.roster.fetchRosterContacts();
-                    _converse.api.trigger('rosterContactsFetched');
-                } catch (reason) {
-                    _converse.log(reason, Strophe.LogLevel.ERROR);
-                } finally {
-                    _converse.sendInitialPresence();
-                }
+            }
+            try {
+                await _converse.rostergroups.fetchRosterGroups();
+                /**
+                 * Triggered once roster groups have been fetched. Used by the
+                 * `converse-rosterview.js` plugin to know when it can start alphabetically
+                 * position roster groups.
+                 * @event _converse#rosterGroupsFetched
+                 * @example _converse.api.listen.on('rosterGroupsFetched', () => { ... });
+                 * @example _converse.api.waitUntil('rosterGroupsFetched').then(() => { ... });
+                 */
+                _converse.api.trigger('rosterGroupsFetched');
+                await _converse.roster.fetchRosterContacts();
+                _converse.api.trigger('rosterContactsFetched');
+            } catch (reason) {
+                _converse.log(reason, Strophe.LogLevel.ERROR);
+            } finally {
+                _converse.sendInitialPresence();
             }
         };
 
@@ -152,7 +159,7 @@ converse.plugins.add('converse-roster', {
             initialize () {
                 this.resources = new Resources();
                 const id = `converse.identities-${this.get('jid')}`;
-                this.resources.browserStorage = new BrowserStorage.session(id);
+                this.resources.browserStorage = _converse.createStore(id, "session");
                 this.listenTo(this.resources, 'update', this.onResourcesChanged);
                 this.listenTo(this.resources, 'change', this.onResourcesChanged);
             },
@@ -439,21 +446,22 @@ converse.plugins.add('converse-roster', {
              * @returns {promise} Promise which resolves once the contacts have been fetched.
              */
             async fetchRosterContacts () {
-                let collection;
-                try {
-                    collection = await new Promise((resolve, reject) => {
-                        this.fetch({
-                            'add': true,
-                            'silent': true,
-                            'success': resolve,
-                            'error': reject
-                        });
+                const result = await new Promise((resolve, reject) => {
+                    this.fetch({
+                        'add': true,
+                        'silent': true,
+                        'success': resolve,
+                        'error': (c, e) => reject(e)
                     });
-                } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
-                    _converse.session.set('roster_fetched', false)
+                });
+                if (u.isErrorObject(result)) {
+                    _converse.log(result, Strophe.LogLevel.ERROR);
+                    // Force a full roster refresh
+                    _converse.session.set('roster_cached', false)
+                    this.data.save('version', undefined);
                 }
-                if (_converse.session.get('roster_fetched')) {
+
+                if (_converse.session.get('roster_cached')) {
                     /**
                      * The contacts roster has been retrieved from the local cache (`sessionStorage`).
                      * @event _converse#cachedRoster
@@ -461,7 +469,7 @@ converse.plugins.add('converse-roster', {
                      * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
                      * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
                      */
-                    _converse.api.trigger('cachedRoster', collection);
+                    _converse.api.trigger('cachedRoster', result);
                 } else {
                     _converse.send_initial_presence = true;
                     return _converse.roster.fetchFromServer();
@@ -570,11 +578,8 @@ converse.plugins.add('converse-roster', {
             },
 
             getNumOnlineContacts () {
-                let ignored = ['offline', 'unavailable'];
-                if (_converse.show_only_online_users) {
-                    ignored = _.union(ignored, ['dnd', 'xa', 'away']);
-                }
-                return _.sum(this.models.filter((model) => !_.includes(ignored, model.presence.get('show'))));
+                const ignored = ['offline', 'unavailable'];
+                return _.sum(this.models.filter(m => !ignored.includes(m.presence.get('show'))));
             },
 
             /**
@@ -627,7 +632,7 @@ converse.plugins.add('converse-roster', {
             },
 
             rosterVersioningSupported () {
-                return !!(_converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version'));
+                return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
             },
 
             /**
@@ -639,7 +644,7 @@ converse.plugins.add('converse-roster', {
             async fetchFromServer () {
                 const stanza = $iq({
                     'type': 'get',
-                    'id': _converse.connection.getUniqueId('roster')
+                    'id': u.getUniqueId('roster')
                 }).c('query', {xmlns: Strophe.NS.ROSTER});
                 if (this.rosterVersioningSupported()) {
                     stanza.attrs({'ver': this.data.get('version')});
@@ -657,7 +662,7 @@ converse.plugins.add('converse-roster', {
                     _converse.log(iq, Strophe.LogLevel.ERROR);
                     return _converse.log("Error while trying to fetch roster from the server", Strophe.LogLevel.ERROR);
                 }
-                _converse.session.save('roster_fetched', true);
+                _converse.session.save('roster_cached', true);
                 /**
                  * When the roster has been received from the XMPP server.
                  * See also the `cachedRoster` event further up, which gets called instead of
@@ -731,6 +736,7 @@ converse.plugins.add('converse-roster', {
                  */
                 _converse.api.trigger('contactRequest', this.create(user_data));
             },
+
 
             handleIncomingSubscription (presence) {
                 const jid = presence.getAttribute('from'),
@@ -852,6 +858,11 @@ converse.plugins.add('converse-roster', {
         });
 
 
+        /**
+         * @class
+         * @namespace _converse.RosterGroups
+         * @memberOf _converse
+         */
         _converse.RosterGroups = _converse.Collection.extend({
             model: _converse.RosterGroup,
 
@@ -872,12 +883,13 @@ converse.plugins.add('converse-roster', {
                 }
             },
 
+            /**
+             * Fetches all the roster groups from sessionStorage.
+             * @private
+             * @method _converse.RosterGroups#fetchRosterGroups
+             * @returns { Promise } - A promise which resolves once the groups have been fetched.
+             */
             fetchRosterGroups () {
-                /* Fetches all the roster groups from sessionStorage.
-                *
-                * Returns a promise which resolves once the groups have been
-                * returned.
-                */
                 return new Promise(success => {
                     this.fetch({
                         success,
@@ -917,7 +929,7 @@ converse.plugins.add('converse-roster', {
             });
         });
 
-        _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
+        _converse.api.listen.on('beforeTearDown', () => _converse.unregisterPresenceHandler());
 
         _converse.api.waitUntil('rosterContactsFetched').then(() => {
             _converse.roster.on('add', (contact) => {
@@ -939,6 +951,8 @@ converse.plugins.add('converse-roster', {
                 _converse.presences.clearSession();
             }
         }
+
+        _converse.api.listen.on('streamResumptionFailed', () => _converse.session.set('roster_cached', false));
 
         _converse.api.listen.on('clearSession', () => {
             clearPresences();
@@ -965,7 +979,7 @@ converse.plugins.add('converse-roster', {
             } else {
                 _converse.presences = new _converse.Presences();
                 const id = `converse.presences-${_converse.bare_jid}`;
-                _converse.presences.browserStorage = new BrowserStorage.session(id);
+                _converse.presences.browserStorage = _converse.createStore(id, "session");
                 // We might be continuing an existing session, so we fetch
                 // cached presence data.
                 _converse.presences.fetch();
@@ -982,6 +996,7 @@ converse.plugins.add('converse-roster', {
             _converse.api.trigger('presencesInitialized', reconnecting);
         });
 
+
         _converse.api.listen.on('presencesInitialized', (reconnecting) => {
             if (reconnecting) {
                 /**
@@ -993,12 +1008,11 @@ converse.plugins.add('converse-roster', {
                  */
                 _converse.api.trigger('rosterReadyAfterReconnection');
             } else {
-                _converse.registerIntervalHandler();
                 _converse.initRoster();
             }
             _converse.roster.onConnected();
             _converse.registerPresenceHandler();
-            _converse.populateRoster(reconnecting);
+            _converse.populateRoster(!_converse.connection.restored);
         });
 
 

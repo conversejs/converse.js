@@ -40,7 +40,7 @@
         }));
 
         it("will open and display headline messages", mock.initConverse(
-            null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+            ['rosterGroupsFetched'], {}, function (done, _converse) {
 
             /* <message from='notify.example.com'
              *          to='romeo@im.example.com'

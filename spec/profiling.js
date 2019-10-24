@@ -10,7 +10,7 @@
 
         it("shows users currently present in the groupchat",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {'muc_show_join_leave': false},
+                ['rosterGroupsFetched'], {'muc_show_join_leave': false},
                 async function (done, _converse) {
 
             test_utils.openControlBox();
@@ -37,7 +37,7 @@
 
         xit("adds hundreds of contacts to the roster",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
             _converse.roster_groups = false;
@@ -81,7 +81,7 @@
 
         xit("adds hundreds of contacts to the roster, with roster groups",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
             // _converse.show_only_online_users = true;

@@ -8,7 +8,6 @@
  * @description
  * Converse plugin which add support for XEP-0030: Service Discovery
  */
-import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import sizzle from "sizzle";
 
@@ -44,32 +43,27 @@ converse.plugins.add('converse-disco', {
                 this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
 
                 this.dataforms = new _converse.Collection();
-                this.dataforms.browserStorage = new BrowserStorage.session(
-                    `converse.dataforms-${this.get('jid')}`
-                );
+                let id = `converse.dataforms-${this.get('jid')}`;
+                this.dataforms.browserStorage = _converse.createStore(id, 'session');
 
                 this.features = new _converse.Collection();
-                this.features.browserStorage = new BrowserStorage.session(
-                    `converse.features-${this.get('jid')}`
-                );
+                id = `converse.features-${this.get('jid')}`;
+                this.features.browserStorage = _converse.createStore(id, 'session');
                 this.listenTo(this.features, 'add', this.onFeatureAdded)
 
                 this.fields = new _converse.Collection();
-                this.fields.browserStorage = new BrowserStorage.session(
-                    `converse.fields-${this.get('jid')}`
-                );
+                id = `converse.fields-${this.get('jid')}`;
+                this.fields.browserStorage = _converse.createStore(id, 'session');
                 this.listenTo(this.fields, 'add', this.onFieldAdded)
 
                 this.identities = new _converse.Collection();
-                this.identities.browserStorage = new BrowserStorage.session(
-                    `converse.identities-${this.get('jid')}`
-                );
+                id = `converse.identities-${this.get('jid')}`;
+                this.identities.browserStorage = _converse.createStore(id, 'session');
                 this.fetchFeatures(options);
 
                 this.items = new _converse.DiscoEntities();
-                this.items.browserStorage = new BrowserStorage.session(
-                    `converse.disco-items-${this.get('jid')}`
-                );
+                id = `converse.disco-items-${this.get('jid')}`;
+                this.items.browserStorage = _converse.createStore(id, 'session');
                 this.items.fetch();
             },
 
@@ -267,7 +261,7 @@ converse.plugins.add('converse-disco', {
             const id = `converse.stream-features-${bare_jid}`;
             if (!_converse.stream_features || _converse.stream_features.browserStorage.id !== id) {
                 _converse.stream_features = new _converse.Collection();
-                _converse.stream_features.browserStorage = new BrowserStorage.session(id);
+                _converse.stream_features.browserStorage = _converse.createStore(id, "session");
                 _converse.stream_features.fetch({
                     success (collection) {
                         if (collection.length === 0 && _converse.connection.features) {
@@ -331,10 +325,8 @@ converse.plugins.add('converse-disco', {
             _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
             _converse.disco_entities = new _converse.DiscoEntities();
-            _converse.disco_entities.browserStorage = new BrowserStorage.session(
-                `converse.disco-entities-${_converse.bare_jid}`
-            );
-
+            const id = `converse.disco-entities-${_converse.bare_jid}`;
+            _converse.disco_entities.browserStorage = _converse.createStore(id, 'session');
             const collection = await _converse.disco_entities.fetchEntities();
             if (collection.length === 0 || !collection.get(_converse.domain)) {
                 // If we don't have an entity for our own XMPP server,

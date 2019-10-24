@@ -639,6 +639,23 @@ The default chat status that the user wil have. If you for example set this to
 ``'chat'``, then Converse will send out a presence stanza with ``"show"``
 set to ``'chat'`` as soon as you've been logged in.
 
+
+discover_connection_methods
+---------------------------
+
+* Default: ``false``
+
+Use `XEP-0156 <https://xmpp.org/extensions/xep-0156.html>`_ to discover whether
+the XMPP host for the current user advertises any Websocket or BOSH connection
+URLs that can be used.
+
+If this is set to ``false``, then a `websocket_url`_ or `bosh_service_url`_ need to be
+set.
+
+Currently only the XML encoded host-meta resource is supported as shown in
+`Example 2 under section 3.3 <https://xmpp.org/extensions/xep-0156.html#httpexamples>`_.
+
+
 domain_placeholder
 ------------------
 
@@ -647,7 +664,62 @@ domain_placeholder
 The placeholder text shown in the domain input on the registration form.
 
 
+emoji_categories
+----------------
 
+* Default:::
+  {
+    "smileys": ":grinning:",
+    "people": ":thumbsup:",
+    "activity": ":soccer:",
+    "travel": ":motorcycle:",
+    "objects": ":bomb:",
+    "nature": ":rainbow:",
+    "food": ":hotdog:",
+    "symbols": ":musical_note:",
+    "flags": ":flag_ac:",
+    "custom": ":converse:"
+  }
+
+This setting lets you define the categories that are available in the emoji
+picker, as well as the default image that's shown for each category.
+
+The keys of the map are the categories and the values are the shortnames of the
+representative images.
+
+If you want to remove a category, don't just remove the key, instead set its
+value to ``undefined``.
+
+Due to restrictions intended to prevent addition of undeclared configuration
+settings, it's not possible to add new emoji categories. There is however a
+``custom`` category where you can put your own custom emojis (also known as
+"stickers").
+
+To add custom emojis, you need to edit ``src/headless/emojis.json`` to add new
+entries to the map under the  ``custom`` key.
+
+
+emoji_categories_label
+----------------------
+
+* Default:::
+  {
+    "smileys": "Smileys and emotions",
+    "people": "People",
+    "activity": "Activities",
+    "travel": "Travel",
+    "objects": "Objects",
+    "nature": "Animals and nature",
+    "food": "Food and drink",
+    "symbols": "Symbols",
+    "flags": "Flags",
+    "custom": "Stickers"
+  }
+
+This setting lets you pass in the text value that goes into the `title`
+attribute for the emoji categories. These strings will be translated, but for
+your custom text to be translatable, you'll need to wrap it in `__()``
+somewhere in your own code.
 
 emoji_image_path
 ----------------
@@ -716,7 +788,7 @@ hide_offline_users
 
 * Default:  ``false``
 
-If set to ``true``, then don't show offline users.
+If set to ``true``, then offline users aren't shown in the roster.
 
 hide_open_bookmarks
 -------------------
@@ -1427,20 +1499,6 @@ show_images_inline
 
 If set to false, images won't be rendered in chats, instead only their links will be shown.
 
-show_only_online_users
-----------------------
-
-* Default:  ``false``
-
-If set to ``true``, only online users will be shown in the contacts roster.
-Users with any other status (e.g. away, busy etc.) will not be shown.
-
-show_send_button
-----------------
-
-* Default:  ``false``
-
-If set to ``true``, a button will be visible which can be clicked to send a message.
 
 singleton
 ---------
@@ -1631,6 +1689,7 @@ Allows you to show or hide buttons on the chatboxes' toolbars.
     Shows a button for toggling (i.e. showing/hiding) the list of occupants in a chatroom.
 
 .. _`websocket-url`:
+
 
 websocket_url
 -------------

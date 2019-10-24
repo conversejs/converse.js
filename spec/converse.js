@@ -30,7 +30,7 @@
         describe("A chat state indication", function () {
 
             it("are sent out when the client becomes or stops being idle",
-                mock.initConverse(null, ['discoInitialized'], {}, (done, _converse) => {
+                mock.initConverse(['discoInitialized'], {}, (done, _converse) => {
 
                 spyOn(_converse, 'sendCSI').and.callThrough();
                 let sent_stanza;
@@ -215,7 +215,7 @@
 
             it("has a method 'get' which returns wrapped contacts",
                 mock.initConverse(
-                    null, ['emojisInitialized'], {},
+                    ['emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -238,7 +238,9 @@
                 done();
             }));
 
-            it("has a method 'add' with which contacts can be added", mock.initConverse((done, _converse) => {
+            it("has a method 'add' with which contacts can be added",
+                    mock.initConverse(['rosterInitialized'], {}, (done, _converse) => {
+
                 test_utils.createContacts(_converse, 'current');
                 const error = new TypeError('contacts.add: invalid jid');
                 expect(_converse.api.contacts.add).toThrow(error);
@@ -253,7 +255,7 @@
         describe("The \"chats\" API", function() {
 
             it("has a method 'get' which returns the promise that resolves to a chat model", mock.initConverse(
-                null, ['rosterInitialized', 'chatBoxesInitialized'], {},
+                ['rosterInitialized', 'chatBoxesInitialized'], {},
                 async (done, _converse) => {
 
                 test_utils.openControlBox();
@@ -289,7 +291,7 @@
             }));
 
             it("has a method 'open' which opens and returns a promise that resolves to a chat model", mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesInitialized'], {},
+                ['rosterGroupsFetched', 'chatBoxesInitialized'], {},
                 async (done, _converse) => {
 
                 test_utils.openControlBox();
@@ -321,9 +323,8 @@
         });
 
         describe("The \"settings\" API", function() {
-            it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(
-                    null, null, {'play_sounds': true},
-                    (done, _converse) => {
+            it("has methods 'get' and 'set' to set configuration settings",
+                    mock.initConverse(null, {'play_sounds': true}, (done, _converse) => {
 
                 expect(_.keys(_converse.api.settings)).toEqual(["update", "get", "set"]);
                 expect(_converse.api.settings.get("play_sounds")).toBe(true);

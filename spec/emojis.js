@@ -14,7 +14,7 @@
 
             it("can be opened by clicking a button in the chat toolbar",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -41,7 +41,7 @@
 
             it("is opened to autocomplete emojis in the textarea",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
@@ -109,7 +109,7 @@
 
             it("allows you to search for particular emojis",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
@@ -121,7 +121,7 @@
                 await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
                 const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
                 const input = picker.querySelector('.emoji-search');
-                expect(sizzle('.insert-emoji:not(.hidden)', picker).length).toBe(1589);
+                expect(sizzle('.insert-emoji:not(.hidden)', picker).length).toBe(1591);
 
                 expect(view.emoji_picker_view.model.get('query')).toBeUndefined();
                 input.value = 'smiley';
@@ -161,7 +161,7 @@
         describe("A Chat Message", function () {
             it("will display larger if it's only emojis",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {'use_system_emojis': true},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {'use_system_emojis': true},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');

@@ -132,6 +132,11 @@ converse.plugins.add('converse-smacks', {
                 _converse.log(el.outerHTML, Strophe.LogLevel.ERROR);
             }
             resetSessionData();
+            /**
+             * Triggered when the XEP-0198 stream could not be resumed.
+             * @event _converse#streamResumptionFailed
+             */
+             _converse.api.trigger('streamResumptionFailed');
             return true;
         }
 

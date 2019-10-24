@@ -13,7 +13,7 @@
 
         it("is rejected if it's an unencapsulated forwarded message",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -49,7 +49,7 @@
 
         it("is specially marked when you are mentioned in it",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -72,7 +72,7 @@
 
         it("can not be expected to have a unique id attribute",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -104,7 +104,7 @@
 
         it("is ignored if it has the same stanza-id of an already received on",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'room@muc.example.com';
@@ -150,7 +150,7 @@
 
         it("will be discarded if it's a malicious message meant to look like a carbon copy",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -210,7 +210,7 @@
 
         it("keeps track of the sender's role and affiliation",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -338,7 +338,7 @@
 
         it("keeps track whether you are the sender or not",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -358,7 +358,7 @@
 
         it("can be replaced with a correction",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -425,7 +425,7 @@
 
         it("can be sent as a correction by using the up arrow",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -530,7 +530,7 @@
 
         it("will be shown as received upon MUC reflection",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -573,7 +573,7 @@
 
         it("gets updated with its stanza-id upon MUC reflection",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'room@muc.example.com';
@@ -609,7 +609,7 @@
 
         it("can cause a delivery receipt to be returned",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -645,7 +645,7 @@
 
         it("can cause a chat marker to be returned",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -714,7 +714,7 @@
 
             it("highlights all users mentioned via XEP-0372 references",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
@@ -760,7 +760,7 @@
 
             it("gets parsed for mentions which get turned into references",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
@@ -842,7 +842,7 @@
 
             it("parses for mentions as indicated with an @ preceded by a space or at the start of the text",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
@@ -877,7 +877,7 @@
 
             it("can get corrected and given new references",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
@@ -953,7 +953,7 @@
 
             it("includes XEP-0372 references to that person",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
+                    ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';

@@ -10,7 +10,6 @@ import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
 import "formdata-polyfill";
-import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
 import SHA1 from 'strophe.js/src/sha1';
 import converse from "@converse/headless/converse-core";
@@ -43,7 +42,6 @@ converse.plugins.add('converse-rosterview', {
             'allow_contact_removal': true,
             'hide_offline_users': false,
             'roster_groups': true,
-            'show_only_online_users': false,
             'show_toolbar': true,
             'xhr_user_search_url': null,
         });
@@ -462,16 +460,17 @@ converse.plugins.add('converse-rosterview', {
                 return this;
             },
 
+            /**
+             * Returns a boolean indicating whether this contact should
+             * generally be visible in the roster.
+             * It doesn't check for the more specific case of whether
+             * the group it's in is collapsed.
+             * @private
+             * @method _converse.RosterContactView#mayBeShown
+             */
             mayBeShown () {
-                /* Return a boolean indicating whether this contact should
-                 * generally be visible in the roster.
-                 *
-                 * It doesn't check for the more specific case of whether
-                 * the group it's in is collapsed.
-                 */
                 const chatStatus = this.model.presence.get('show');
-                if ((_converse.show_only_online_users && chatStatus !== 'online') ||
-                    (_converse.hide_offline_users && chatStatus === 'offline')) {
+                if (_converse.hide_offline_users && chatStatus === 'offline') {
                     // If pending or requesting, show
                     if ((this.model.get('ask') === 'subscribe') ||
                             (this.model.get('subscription') === 'from') ||
@@ -594,13 +593,14 @@ converse.plugins.add('converse-rosterview', {
                 return u.slideIn(this.contacts_el);
             },
 
+            /* Given a list of contacts, make sure they're filtered out
+             * (aka hidden) and that all other contacts are visible.
+             * If all contacts are hidden, then also hide the group title.
+             * @private
+             * @method _converse.RosterGroupView#filterOutContacts
+             * @param { Array } contacts
+             */
             filterOutContacts (contacts=[]) {
-                /* Given a list of contacts, make sure they're filtered out
-                 * (aka hidden) and that all other contacts are visible.
-                 *
-                 * If all contacts are hidden, then also hide the group
-                 * title.
-                 */
                 let shown = 0;
                 this.model.contacts.forEach(contact => {
                     const contact_view = this.get(contact.get('id'));
@@ -618,10 +618,15 @@ converse.plugins.add('converse-rosterview', {
                 }
             },
 
+            /**
+             * Given the filter query "q" and the filter type "type",
+             * return a list of contacts that need to be filtered out.
+             * @private
+             * @method _converse.RosterGroupView#getFilterMatches
+             * @param { String } q - The filter query
+             * @param { String } type - The filter type
+             */
             getFilterMatches (q, type) {
-                /* Given the filter query "q" and the filter type "type",
-                 * return a list of contacts that need to be filtered out.
-                 */
                 if (q.length === 0) {
                     return [];
                 }
@@ -632,15 +637,13 @@ converse.plugins.add('converse-rosterview', {
                         // When filtering by chat state, we still want to
                         // show requesting contacts, even though they don't
                         // have the state in question.
-                        matches = this.model.contacts.filter(
-                            (contact) => !_.includes(contact.presence.get('show'), q) && !contact.get('requesting')
-                        );
+                        matches = this.model.contacts.filter(c => !_.includes(c.presence.get('show'), q) && !c.get('requesting'));
                     } else if (q === 'unread_messages') {
                         matches = this.model.contacts.filter({'num_unread': 0});
+                    } else if (q === 'online') {
+                        matches = this.model.contacts.filter(c => ["offline", "unavailable"].includes(c.presence.get('show')));
                     } else {
-                        matches = this.model.contacts.filter(
-                            (contact) => !_.includes(contact.presence.get('show'), q)
-                        );
+                        matches = this.model.contacts.filter(c => !_.includes(c.presence.get('show'), q));
                     }
                 } else  {
                     matches = this.model.contacts.filter((contact) => {
@@ -807,7 +810,7 @@ converse.plugins.add('converse-rosterview', {
                 const model = new _converse.RosterFilter();
                 model.id = `_converse.rosterfilter${_converse.bare_jid}`;
                 const storage = _converse.config.get('storage');
-                model.browserStorage = new BrowserStorage[storage](this.filter.id);
+                model.browserStorage = _converse.createStore(this.filter.id, storage);
                 this.filter_view = new _converse.RosterFilterView({'model': model});
                 this.listenTo(this.filter_view.model, 'change', this.updateFilter);
                 this.filter_view.model.fetch();

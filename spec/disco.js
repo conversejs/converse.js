@@ -16,7 +16,7 @@
 
             it("stores the features it receives",
                 mock.initConverse(
-                    null, ['discoInitialized'], {},
+                    ['discoInitialized'], {},
                     async function (done, _converse) {
 
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
@@ -179,7 +179,7 @@
         describe("Whenever converse.js discovers a new server feature", function () {
            it("emits the serviceDiscovered event",
                 mock.initConverse(
-                    null, ['discoInitialized'], {},
+                    ['discoInitialized'], {},
                     function (done, _converse) {
 
                 sinon.spy(_converse.api, "trigger");

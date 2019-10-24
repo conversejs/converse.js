@@ -7,6 +7,7 @@
 /**
  * @module converse-profile
  */
+import "@converse/headless/converse-status";
 import "@converse/headless/converse-vcard";
 import "converse-modal";
 import "formdata-polyfill";
@@ -23,7 +24,7 @@ const u = converse.env.utils;
 
 converse.plugins.add('converse-profile', {
 
-    dependencies: ["converse-modal", "converse-vcard", "converse-chatboxviews"],
+    dependencies: ["converse-status", "converse-modal", "converse-vcard", "converse-chatboxviews"],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is

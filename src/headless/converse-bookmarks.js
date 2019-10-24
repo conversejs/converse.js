@@ -10,10 +10,10 @@
  * Converse.js plugin which adds views for bookmarks specified in XEP-0048.
  */
 import "@converse/headless/converse-muc";
-import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
+import { get } from "lodash";
 
-const { Backbone, Strophe, $iq, sizzle, _ } = converse.env;
+const { Backbone, Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -92,7 +92,11 @@ converse.plugins.add('converse-bookmarks', {
             }
         }
 
-        _converse.Bookmark = Backbone.Model;
+        _converse.Bookmark = Backbone.Model.extend({
+            getDisplayName () {
+                return Strophe.xmlunescape(this.get('name'));
+            }
+        });
 
         _converse.Bookmarks = _converse.Collection.extend({
             model: _converse.Bookmark,
@@ -110,7 +114,7 @@ converse.plugins.add('converse-bookmarks', {
                 const storage = _converse.config.get('storage');
                 const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
                 this.fetched_flag = cache_key+'fetched';
-                this.browserStorage = new BrowserStorage[storage](cache_key);
+                this.browserStorage = _converse.createStore(cache_key, storage);
             },
 
             async openBookmarkedRoom (bookmark) {
@@ -126,7 +130,7 @@ converse.plugins.add('converse-bookmarks', {
                 if (this.browserStorage.records.length > 0) {
                     this.fetch({
                         'success': () => deferred.resolve(),
-                        'error':  () => deferred.resolve()
+                        'error': () => deferred.resolve()
                     });
                 } else if (! window.sessionStorage.getItem(this.fetched_flag)) {
                     // There aren't any cached bookmarks and the
@@ -190,8 +194,8 @@ converse.plugins.add('converse-bookmarks', {
                 }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                     .c('items', {'node': 'storage:bookmarks'});
                 _converse.api.sendIQ(stanza)
-                    .then((iq) => this.onBookmarksReceived(deferred, iq))
-                    .catch((iq) => this.onBookmarksReceivedError(deferred, iq)
+                    .then(iq => this.onBookmarksReceived(deferred, iq))
+                    .catch(iq => this.onBookmarksReceivedError(deferred, iq)
                 );
             },
 
@@ -214,13 +218,13 @@ converse.plugins.add('converse-bookmarks', {
                     `items[node="storage:bookmarks"] item storage[xmlns="storage:bookmarks"] conference`,
                     stanza
                 );
-                _.forEach(bookmarks, (bookmark) => {
+                bookmarks.forEach(bookmark => {
                     const jid = bookmark.getAttribute('jid');
                     this.create({
                         'jid': jid,
                         'name': bookmark.getAttribute('name') || jid,
                         'autojoin': bookmark.getAttribute('autojoin') === 'true',
-                        'nick': _.get(bookmark.querySelector('nick'), 'textContent')
+                        'nick': get(bookmark.querySelector('nick'), 'textContent')
                     });
                 });
             },
@@ -233,17 +237,31 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             onBookmarksReceivedError (deferred, iq) {
-                window.sessionStorage.setItem(this.fetched_flag, true);
-                _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
-                _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
+                if (iq === null) {
+                    _converse.log('Error: timeout while fetching bookmarks', Strophe.LogLevel.ERROR);
+                    _converse.api.alert.show(
+                        Strophe.LogLevel.ERROR,
+                        __('Timeout Error'),
+                        [__("The server did not return your bookmarks within the allowed time. "+
+                            "You can reload the page to request them again.")]
+                    );
+                } else {
+                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
+                    _converse.log(iq, Strophe.LogLevel.DEBUG);
+                }
                 if (deferred) {
                     if (iq.querySelector('error[type="cancel"] item-not-found')) {
                         // Not an exception, the user simply doesn't have any bookmarks.
+                        window.sessionStorage.setItem(this.fetched_flag, true);
                         return deferred.resolve();
                     } else {
                         return deferred.reject(new Error("Could not fetch bookmarks"));
                     }
                 }
+            },
+
+            getUnopenedBookmarks () {
+                return this.filter(b => !_converse.chatboxes.get(b.get('jid')));
             }
         });
 

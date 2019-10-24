@@ -12,7 +12,7 @@
 
         it("can be used to remove a contact",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
@@ -45,7 +45,7 @@
 
         it("shows an alert when an error happened while removing the contact",
             mock.initConverse(
-                null, ['rosterGroupsFetched', 'emojisInitialized'], {},
+                ['rosterGroupsFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');

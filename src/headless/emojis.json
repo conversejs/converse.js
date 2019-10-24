@@ -1,4 +1,8 @@
 {
+"custom": {
+":converse:":{"sn":":converse:","url":"/dist/custom_emojis/converse.png","c":"custom"},
+":xmpp:":{"sn":":xmpp:","url":"/dist/custom_emojis/xmpp.png","c":"custom"}
+},
 "smileys": {
 ":smiley:":{"sn":":smiley:","cp":"1f603","sns":[],"c":"smileys"},
 ":smile:":{"sn":":smile:","cp":"1f604","sns":[],"c":"smileys"},
@@ -2692,4 +2696,3 @@
 ":tone5:":{"sn":":tone5:","cp":"1f3ff","sns":[],"c":"modifier"}
 }
 }
-

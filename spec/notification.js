@@ -14,9 +14,7 @@
                 describe("an HTML5 Notification", function () {
 
                     it("is shown when a new private message is received",
-                        mock.initConverse(
-                            null, ['rosterGroupsFetched'], {},
-                            async (done, _converse) => {
+                            mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
                         await test_utils.waitForRoster(_converse, 'current');
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
@@ -40,9 +38,7 @@
                     }));
 
                     it("is shown when you are mentioned in a groupchat",
-                        mock.initConverse(
-                            null, ['rosterGroupsFetched'], {},
-                            async (done, _converse) => {
+                            mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
                         await test_utils.createContacts(_converse, 'current');
                         await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -82,9 +78,7 @@
                     }));
 
                     it("is shown for headline messages",
-                        mock.initConverse(
-                            null, ['rosterGroupsFetched'], {},
-                            async (done, _converse) => {
+                            mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
@@ -166,9 +160,7 @@
             describe("A notification sound", function () {
 
                 it("is played when the current user is mentioned in a groupchat",
-                    mock.initConverse(
-                        null, ['rosterGroupsFetched'], {},
-                        async (done, _converse) => {
+                        mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
                     test_utils.createContacts(_converse, 'current');
                     await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');

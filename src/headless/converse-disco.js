@@ -265,7 +265,7 @@ converse.plugins.add('converse-disco', {
         function initStreamFeatures () {
             const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
             const id = `converse.stream-features-${bare_jid}`;
-            if (!_converse.stream_features || _converse.stream_features.browserStorage.id !== id) {
+            if (!_converse.stream_features || _converse.stream_features.browserStorage.name !== id) {
                 _converse.stream_features = new _converse.Collection();
                 _converse.stream_features.browserStorage = _converse.createStore(id, "session");
                 _converse.stream_features.fetch({
@@ -355,8 +355,6 @@ converse.plugins.add('converse-disco', {
         /******************** Event Handlers ********************/
 
         // Re-create promise upon reconnection
-        _converse.api.listen.on('will-reconnect', () => _converse.api.promises.add('streamFeaturesAdded'));
-
         _converse.api.listen.on('userSessionInitialized', initStreamFeatures);
         _converse.api.listen.on('beforeResourceBinding', initStreamFeatures);
 
@@ -364,6 +362,7 @@ converse.plugins.add('converse-disco', {
         _converse.api.listen.on('connected', initializeDisco);
 
         _converse.api.listen.on('beforeTearDown', async () => {
+            _converse.api.promises.add('streamFeaturesAdded')
             if (_converse.stream_features) {
                 await _converse.stream_features.clearSession();
                 delete _converse.stream_features;

@@ -391,25 +391,26 @@ _converse.isUniView = function () {
 
 
 async function initStorage () {
+    await BrowserStorage.sessionStorageInitialized;
+
     // Sets up Backbone.BrowserStorage and localForage for the 3 different stores.
     _converse.localStorage = BrowserStorage.localForage.createInstance({
         'name': 'local',
-        'driver': BrowserStorage.localForage.LOCALSTORAGE
+        'description': 'localStorage instance',
+        'driver': [BrowserStorage.localForage.LOCALSTORAGE]
     });
-    await _converse.localStorage.config({'driver': BrowserStorage.localForage.LOCALSTORAGE});
 
     _converse.indexedDB = BrowserStorage.localForage.createInstance({
         'name': 'indexed',
-        'driver': BrowserStorage.localForage.INDEXEDDB
+        'description': 'indexedDB instance',
+        'driver': [BrowserStorage.localForage.INDEXEDDB]
     });
-    await _converse.indexedDB.config({'driver': BrowserStorage.localForage.INDEXEDDB});
 
-    await BrowserStorage.sessionStorageInitialized;
     _converse.sessionStorage = BrowserStorage.localForage.createInstance({
         'name': 'session',
-        'driver': 'sessionStorageWrapper'
+        'description': 'sessionStorage instance',
+        'driver': ['sessionStorageWrapper']
     });
-    await _converse.sessionStorage.config({'driver': 'sessionStorageWrapper'});
 
     _converse.storage = {
         'session': _converse.sessionStorage,
@@ -420,7 +421,7 @@ async function initStorage () {
 
 
 _converse.createStore = function (id, storage) {
-    const s = storage ? storage : _converse.storage[_converse.config.get('storage')];
+    const s = _converse.storage[storage ? storage : _converse.config.get('storage')];
     return new Backbone.BrowserStorage(id, s);
 }
 

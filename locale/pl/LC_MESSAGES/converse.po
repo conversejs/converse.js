@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-07-13 13:01+0000\n"
-"Last-Translator: Andrzej Czerniak <andrzej.czerniak@gmail.com>\n"
+"PO-Revision-Date: 2019-10-29 19:53+0000\n"
+"Last-Translator: Rambox <mail.rambox@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
 "translations/pl/>\n"
 "Language: pl\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9.1\n"
 
 #: dist/converse-no-dependencies.js:7899
 msgid "Uploading file:"
@@ -57,9 +57,8 @@ msgid "Full Name:"
 msgstr "Nazwa"
 
 #: dist/converse-no-dependencies.js:8341 dist/converse-no-dependencies.js:8517
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "Adres XMPP"
+msgstr "Adres XMPP:"
 
 #: dist/converse-no-dependencies.js:8349
 #, fuzzy
@@ -71,14 +70,12 @@ msgid "URL:"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:8367
-#, fuzzy
 msgid "Email:"
-msgstr "E-mail"
+msgstr "E-mail:"
 
 #: dist/converse-no-dependencies.js:8377
-#, fuzzy
 msgid "Role:"
-msgstr "Rola"
+msgstr "Rola:"
 
 #: dist/converse-no-dependencies.js:8385
 msgid "OMEMO Fingerprints"
@@ -97,9 +94,8 @@ msgid "Refresh"
 msgstr "Odśwież"
 
 #: dist/converse-no-dependencies.js:8441
-#, fuzzy
 msgid "Remove as contact"
-msgstr "Dodaj kontakt"
+msgstr "Usuń kontakt"
 
 #: dist/converse-no-dependencies.js:8523
 msgid "Password:"
@@ -129,7 +125,6 @@ msgstr ""
 "podręcznej zostanąusunięte."
 
 #: dist/converse-no-dependencies.js:8541
-#, fuzzy
 msgid "Log in"
 msgstr "Zaloguj się"
 
@@ -142,9 +137,8 @@ msgid "Search"
 msgstr "Szukaj"
 
 #: dist/converse-no-dependencies.js:8627
-#, fuzzy
 msgid "Search results"
-msgstr "Szukaj"
+msgstr "Wyniki wyszukiwania"
 
 #: dist/converse-no-dependencies.js:8777
 msgid "Enter a new Groupchat"
@@ -157,7 +151,7 @@ msgstr "Ksywka"
 
 #: dist/converse-no-dependencies.js:8787
 msgid "This field is required"
-msgstr ""
+msgstr "To pole jest wymagane"
 
 #: dist/converse-no-dependencies.js:8793
 msgid "Join"
@@ -188,9 +182,8 @@ msgid "Groupchat address (JID)"
 msgstr "Nazwa pokoju"
 
 #: dist/converse-no-dependencies.js:8883
-#, fuzzy
 msgid "Description"
-msgstr "Opis:"
+msgstr "Opis"
 
 #: dist/converse-no-dependencies.js:8889
 msgid "Topic"
@@ -201,19 +194,16 @@ msgid "Topic author"
 msgstr "Autor tematu"
 
 #: dist/converse-no-dependencies.js:8899
-#, fuzzy
 msgid "Online users"
-msgstr "Dostępny"
+msgstr "Dostępni użytkownicy"
 
 #: dist/converse-no-dependencies.js:8903 dist/converse-no-dependencies.js:9043
-#, fuzzy
 msgid "Features"
-msgstr "Możliwości:"
+msgstr "Możliwości"
 
 #: dist/converse-no-dependencies.js:8907 dist/converse-no-dependencies.js:9049
-#, fuzzy
 msgid "Password protected"
-msgstr "Hasło:"
+msgstr "Chronione hasłem"
 
 #: dist/converse-no-dependencies.js:8909 dist/converse-no-dependencies.js:9047
 #, fuzzy

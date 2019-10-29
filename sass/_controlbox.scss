@@ -291,9 +291,9 @@
         }
 
         .controlbox-panes {
+            background-color: var(--controlbox-pane-background-color);
             height: 100%;
             overflow-y: auto;
-            background-color: var(--controlbox-pane-background-color);
         }
 
         .controlbox-subtitle {
@@ -571,8 +571,7 @@
 
             .chatbox {
                 .box-flyout {
-                    margin-left: 15px; // Counteracts Bootstrap margins, but
-                                       // not clear why needed...
+                    margin-left: 15px; // Counteracts Bootstrap margins, but not clear why needed...
                     left: 0;
                     bottom: 0;
                     border-radius: 0;
@@ -586,6 +585,7 @@
                 .box-flyout {
                     width: 100vw !important;
                     height: 100vh !important;
+                    margin-right: -15px;
                 }
                 .sidebar {
                     display: block;

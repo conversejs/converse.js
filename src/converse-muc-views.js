@@ -711,13 +711,11 @@ converse.plugins.add('converse-muc-views', {
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
-                if (this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor') {
-                    container.innerHTML = tpl_chatroom_bottom_panel({'__': __});
-                } else {
-                    if (!container.firstElementChild || !container.querySelector('.sendXMPPMessage')) {
-                        this.renderMessageForm();
-                        this.initMentionAutoComplete();
-                    }
+                const can_edit = !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
+                container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit});
+                if (can_edit) {
+                    this.renderMessageForm();
+                    this.initMentionAutoComplete();
                 }
             },
 

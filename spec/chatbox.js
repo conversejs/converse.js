@@ -446,8 +446,8 @@
                     view.insertIntoTextArea('hello world');
                     expect(counter.textContent).toBe('188');
 
-                    toolbar.querySelector('li.toggle-smiley').click();
-                    const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                    toolbar.querySelector('a.toggle-smiley').click();
+                    const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__lists'));
                     const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
                     item.click()
                     expect(counter.textContent).toBe('179');

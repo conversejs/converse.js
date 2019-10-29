@@ -43,12 +43,6 @@ converse.plugins.add('converse-emoji-views', {
                     this.emoji_dropdown.toggle();
                 }
                 this.__super__.onEnterPressed.apply(this, arguments);
-            }
-        },
-
-        ChatRoomView: {
-            events: {
-                'click .toggle-smiley': 'toggleEmojiMenu'
             },
 
             onKeyDown (ev) {
@@ -62,6 +56,12 @@ converse.plugins.add('converse-emoji-views', {
                     }
                 }
                 return this.__super__.onKeyDown.call(this, ev);
+            }
+        },
+
+        ChatRoomView: {
+            events: {
+                'click .toggle-smiley': 'toggleEmojiMenu'
             }
         }
     },
@@ -85,10 +85,7 @@ converse.plugins.add('converse-emoji-views', {
         const emoji_aware_chat_view = {
 
             async autocompleteInPicker (input, value) {
-                if (this.emoji_dropdown === undefined) {
-                    this.createEmojiDropdown();
-                }
-                await _converse.api.waitUntil('emojisInitialized');
+                await this.createEmojiDropdown();
                 this.emoji_picker_view.model.set({
                     'autocompleting': value,
                     'position': input.selectionStart
@@ -99,49 +96,47 @@ converse.plugins.add('converse-emoji-views', {
 
             createEmojiPicker () {
                 if (!_converse.emojipicker) {
-                    const storage = _converse.config.get('storage'),
-                          id = `converse.emoji-${_converse.bare_jid}`;
+                    const id = `converse.emoji-${_converse.bare_jid}`;
                     _converse.emojipicker = new _converse.EmojiPicker({'id': id});
-                    _converse.emojipicker.browserStorage = _converse.createStore(id, storage);
+                    _converse.emojipicker.browserStorage = _converse.createStore(id);
                     _converse.emojipicker.fetch();
                 }
                 this.emoji_picker_view = new _converse.EmojiPickerView({'model': _converse.emojipicker});
                 this.emoji_picker_view.chatview = this;
+                this.insertEmojiPicker();
             },
 
-            createEmojiDropdown () {
-                const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
-                this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
-                this.emoji_dropdown.el = dropdown_el;
+            async createEmojiDropdown () {
+                if (!this.emoji_dropdown) {
+                    await _converse.api.waitUntil('emojisInitialized');
+                    const el = this.el.querySelector('.emoji-picker');
+                    this.emoji_dropdown = new bootstrap.Dropdown(el, true);
+                    this.emoji_dropdown.el = el;
+                }
             },
 
             async toggleEmojiMenu (ev) {
-                if (this.emoji_dropdown === undefined) {
-                    ev.stopPropagation();
-                    this.createEmojiDropdown();
-                    this.emoji_dropdown.toggle();
-                    await _converse.api.waitUntil('emojisInitialized');
-                    this.emoji_picker_view.setScrollPosition();
-                }
+                ev.stopPropagation();
+                await this.createEmojiDropdown();
+                this.emoji_dropdown.toggle();
+                this.emoji_picker_view.setScrollPosition();
             },
 
             insertEmojiPicker () {
-                const picker_el = this.el.querySelector('.emoji-picker');
-                if (picker_el !== null) {
-                    picker_el.innerHTML = '';
-                    picker_el.appendChild(this.emoji_picker_view.el);
-                }
+                const el = this.el.querySelector('.emoji-picker__container');
+                el.innerHTML = '';
+                el.appendChild(this.emoji_picker_view.el);
             }
         };
         Object.assign(_converse.ChatBoxView.prototype, emoji_aware_chat_view);
 
 
         _converse.EmojiPickerView = Backbone.VDOMView.extend({
-            className: 'emoji-picker__container',
+            className: 'emoji-picker',
             events: {
                 'click .emoji-picker__header li.emoji-category': 'chooseCategory',
                 'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone',
-                'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
+                'click .emoji-picker li': 'insertEmoji',
                 'keydown .emoji-search': 'onKeyDown'
             },
 
@@ -153,11 +148,10 @@ converse.plugins.add('converse-emoji-views', {
                 this.listenTo(this.model, 'change:current_category', this.render)
                 await _converse.api.waitUntil('emojisInitialized');
                 this.render();
-                _converse.api.trigger('emojiPickerViewInitialized');
             },
 
             toHTML () {
-                const html = tpl_emojis(
+                return tpl_emojis(
                     Object.assign(
                         this.model.toJSON(), {
                             '__': __,
@@ -173,7 +167,6 @@ converse.plugins.add('converse-emoji-views', {
                         }
                     )
                 );
-                return html;
             },
 
             afterRender () {
@@ -246,7 +239,9 @@ converse.plugins.add('converse-emoji-views', {
                 const position = this.model.get('position');
                 this.model.set({'autocompleting': null, 'position': null});
                 this.chatview.insertIntoTextArea(value, replace, false, position);
-                this.chatview.emoji_dropdown.toggle();
+                if (this.chatview.emoji_dropdown) {
+                    this.chatview.emoji_dropdown.toggle();
+                }
                 this.filter('', true);
             },
 
@@ -350,7 +345,6 @@ converse.plugins.add('converse-emoji-views', {
                 const html = tpl_emoji_button({'tooltip_insert_smiley': __('Insert emojis')});
                 view.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
                 view.createEmojiPicker();
-                view.insertEmojiPicker();
             }
         });
     }

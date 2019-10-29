@@ -2921,15 +2921,12 @@
                 spyOn(window, 'confirm').and.callFake(() => true);
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                const textarea = view.el.querySelector('.chat-textarea');
-                textarea.value = '/clear';
-
+                let textarea = view.el.querySelector('.chat-textarea');
                 const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-                view.onKeyDown(enter);
                 textarea.value = '/help';
                 view.onKeyDown(enter);
 
-                let info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                let info_messages = sizzle('.chat-info:not(.chat-event)', view.el);
                 expect(info_messages.length).toBe(20);
                 expect(info_messages.pop().textContent.trim()).toBe('/voice: Allow muted user to post messages');
                 expect(info_messages.pop().textContent.trim()).toBe('/topic: Set groupchat subject (alias for /subject)');
@@ -2954,6 +2951,7 @@
 
                 const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
                 occupant.set('affiliation', 'admin');
+                textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = '/clear';
                 view.onKeyDown(enter);
                 textarea.value = '/help';
@@ -2969,6 +2967,8 @@
                 occupant.set('affiliation', 'member');
                 textarea.value = '/clear';
                 view.onKeyDown(enter);
+                await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
+
                 textarea.value = '/help';
                 view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);
@@ -2977,8 +2977,11 @@
                 expect(commands).toEqual(["/clear", "/help", "/kick", "/me", "/modtools", "/mute", "/nick", "/register", "/subject", "/topic", "/voice"]);
 
                 occupant.set('role', 'participant');
+                textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = '/clear';
                 view.onKeyDown(enter);
+                await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
+
                 textarea.value = '/help';
                 view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);

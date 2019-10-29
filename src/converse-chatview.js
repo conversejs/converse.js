@@ -318,7 +318,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             renderMessageForm () {
-                const form_container = this.el.querySelector('.bottom-panel');
+                const form_container = this.el.querySelector('.message-form-container');
                 form_container.innerHTML = tpl_chatbox_message_form(
                     Object.assign(this.model.toJSON(), {
                         'message_limit': _converse.message_limit,

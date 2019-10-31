@@ -103,13 +103,10 @@ converse.plugins.add('converse-profile', {
                 .then(() => _converse.api.vcard.update(this.model.vcard, true))
                 .catch((err) => {
                     _converse.log(err, Strophe.LogLevel.FATAL);
-                    _converse.api.alert.show(
-                        Strophe.LogLevel.ERROR,
-                        __('Error'), [
-                            __("Sorry, an error happened while trying to save your profile data."),
-                            __("You can check your browser's developer console for any error output.")
-                        ]
-                    )
+                    _converse.api.show('error', __('Error'), [
+                        __("Sorry, an error happened while trying to save your profile data."),
+                        __("You can check your browser's developer console for any error output.")
+                    ]);
                 });
                 this.modal.hide();
             },

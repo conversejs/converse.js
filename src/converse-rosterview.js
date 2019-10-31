@@ -505,11 +505,9 @@ converse.plugins.add('converse-rosterview', {
                     }
                 } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
-                    _converse.api.alert.show(
-                        Strophe.LogLevel.ERROR,
-                        __('Error'),
+                    _converse.api.alert('error', __('Error'),
                         [__('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName())]
-                    )
+                    );
                 }
             },
 

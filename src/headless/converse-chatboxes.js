@@ -1516,7 +1516,7 @@ converse.plugins.add('converse-chatboxes', {
                         return chat;
                     } else if (Array.isArray(jids)) {
                         return Promise.all(
-                            jids.map(j => _converse.api.chats.create(j, attrs).then(c => c ? c.maybeShow(force) : null))
+                            jids.map(j => _converse.api.chats.create(j, attrs).then(c => c && c.maybeShow(force)))
                                 .filter(c => c)
                         );
                     }

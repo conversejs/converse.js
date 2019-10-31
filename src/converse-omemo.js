@@ -123,7 +123,7 @@ converse.plugins.add('converse-omemo', {
                         const { _converse } = this.__super__,
                               { __ } = _converse;
                         _converse.log(err, Strophe.LogLevel.ERROR);
-                        _converse.api.alert.show(
+                        _converse.api.alert(
                             Strophe.LogLevel.ERROR,
                             __('Error'), [__('Sorry, an error occurred while trying to remove the devices.')]
                         )
@@ -413,10 +413,10 @@ converse.plugins.add('converse-omemo', {
                         err_msgs.push(__("Unable to send an encrypted message due to an unexpected error."));
                         err_msgs.push(e.iq.outerHTML);
                     }
-                    _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), err_msgs);
+                    _converse.api.alert('error', __('Error'), err_msgs);
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 } else if (e.user_facing) {
-                    _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [e.message]);
+                    _converse.api.alert('error', __('Error'), [e.message]);
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 } else {
                     throw e;
@@ -470,7 +470,7 @@ converse.plugins.add('converse-omemo', {
                             this.model.contact.getDisplayName()
                         )];
                     }
-                    return _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), messages);
+                    return _converse.api.alert('error', __('Error'), messages);
                 }
                 ev.preventDefault();
                 this.model.save({'omemo_active': !this.model.get('omemo_active')});

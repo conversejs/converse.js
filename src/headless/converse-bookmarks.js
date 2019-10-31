@@ -174,10 +174,9 @@ converse.plugins.add('converse-bookmarks', {
             onBookmarkError (iq, options) {
                 _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
                 _converse.log(iq);
-                _converse.api.alert.show(
-                    Strophe.LogLevel.ERROR,
-                    __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
-                )
+                _converse.api.alert(
+                    'error', __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
+                );
                 this.findWhere({'jid': options.jid}).destroy();
             },
 
@@ -234,9 +233,7 @@ converse.plugins.add('converse-bookmarks', {
             onBookmarksReceivedError (deferred, iq) {
                 if (iq === null) {
                     _converse.log('Error: timeout while fetching bookmarks', Strophe.LogLevel.ERROR);
-                    _converse.api.alert.show(
-                        Strophe.LogLevel.ERROR,
-                        __('Timeout Error'),
+                    _converse.api.alert('error', __('Timeout Error'),
                         [__("The server did not return your bookmarks within the allowed time. "+
                             "You can reload the page to request them again.")]
                     );

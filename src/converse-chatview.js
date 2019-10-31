@@ -207,13 +207,10 @@ converse.plugins.add('converse-chatview', {
                         () => this.model.contact.destroy(),
                         (err) => {
                             _converse.log(err, Strophe.LogLevel.ERROR);
-                            _converse.api.alert.show(
-                                Strophe.LogLevel.ERROR,
-                                __('Error'),
-                                [__('Sorry, there was an error while trying to remove %1$s as a contact.',
-                                    this.model.contact.getDisplayName())
-                                ]
-                            )
+                            _converse.api.alert('error', __('Error'), [
+                                __('Sorry, there was an error while trying to remove %1$s as a contact.',
+                                this.model.contact.getDisplayName())
+                            ]);
                         }
                     );
                 }

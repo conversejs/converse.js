@@ -9,10 +9,11 @@
 import "backbone.vdomview";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
+import { isString } from "lodash";
 import tpl_alert from "templates/alert.html";
 import tpl_alert_modal from "templates/alert_modal.html";
 
-const { Strophe, Backbone, sizzle, _ } = converse.env;
+const { Backbone, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -106,35 +107,40 @@ converse.plugins.add('converse-modal', {
         let alert;
 
         Object.assign(_converse.api, {
-            'alert': {
-                show (type, title, messages) {
-                    if (_.isString(messages)) {
-                        messages = [messages];
-                    }
-                    if (type === Strophe.LogLevel.ERROR) {
-                        type = 'alert-danger';
-                    } else if (type === Strophe.LogLevel.INFO) {
-                        type = 'alert-info';
-                    } else if (type === Strophe.LogLevel.WARN) {
-                        type = 'alert-warning';
-                    }
-
-                    if (alert === undefined) {
-                        const model = new Backbone.Model({
-                            'title': title,
-                            'messages': messages,
-                            'type': type
-                        })
-                        alert = new _converse.Alert({'model': model});
-                    } else {
-                        alert.model.set({
-                            'title': title,
-                            'messages': messages,
-                            'type': type
-                        });
-                    }
-                    alert.show();
+            /**
+             * Show an alert modal to the user.
+             * @method _converse.api.alert
+             * @param { ('info'|'warn'|'error') } type - The type of alert.
+             * @returns { String } title - The header text for the alert.
+             * @returns { (String[]|String) } messages - The alert text to show to the user.
+             */
+            alert (type, title, messages) {
+                if (isString(messages)) {
+                    messages = [messages];
                 }
+                if (type === 'error') {
+                    type = 'alert-danger';
+                } else if (type === 'info') {
+                    type = 'alert-info';
+                } else if (type === 'warn') {
+                    type = 'alert-warning';
+                }
+
+                if (alert === undefined) {
+                    const model = new Backbone.Model({
+                        'title': title,
+                        'messages': messages,
+                        'type': type
+                    })
+                    alert = new _converse.Alert({'model': model});
+                } else {
+                    alert.model.set({
+                        'title': title,
+                        'messages': messages,
+                        'type': type
+                    });
+                }
+                alert.show();
             }
         });
     }

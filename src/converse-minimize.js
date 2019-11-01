@@ -112,8 +112,9 @@ converse.plugins.add('converse-minimize', {
 
         ChatBoxHeading: {
             render () {
-                const { _converse } = this.__super__,
-                    { __ } = _converse;
+                const { _converse } = this.__super__;
+                const { __ } = _converse;
+
                 this.__super__.render.apply(this, arguments);
                 const new_html = tpl_chatbox_minimize({
                     'info_minimize': __('Minimize this chat box')

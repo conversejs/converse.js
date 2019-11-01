@@ -13,6 +13,7 @@
   instances. Still working out a wire protocol for compatibility with other clients.
   To add custom emojis, edit the `emojis.json` file.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
+- New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
 
 ### Breaking changes
 
@@ -33,10 +34,12 @@
   * `_converse.api.rooms.create`
   * `_converse.api.roomviews.close`
 
+- `_converse.api.chats.get()` now only returns one-on-one chats, not the control box or headline notifications.
 - The `show_only_online_users` setting has been removed.
 - The order of certain events have now changed: `statusInitialized` is now triggered after `initialized` and `connected` and `reconnected`.
 - `_converse.api.alert.show` is now `_converse.api.show` and instead of taking
   an integer for the `type`, "info", "warn" or "error" should be passed in.
+- The `converse-headline` plugin has been split up into `converse-headlines` and `converse-headlines-view`.
 
 ## 5.0.4 (2019-10-08)
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow-message-corrections)

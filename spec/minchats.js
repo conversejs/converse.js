@@ -95,7 +95,7 @@
                         id: (new Date()).getTime()
                     }).c('body').t('This message is sent to a minimized chatbox').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    _converse.chatboxes.onMessage(msg);
+                    _converse.handleMessageStanza(msg);
                 }
                 return u.waitUntil(() => chatview.model.messages.length);
             }).then(() => {
@@ -103,7 +103,7 @@
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((3).toString());
                 // Chat state notifications don't increment the unread messages counter
                 // <composing> state
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',
@@ -112,7 +112,7 @@
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
 
                 // <paused> state
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',
@@ -121,7 +121,7 @@
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
 
                 // <gone> state
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',
@@ -130,7 +130,7 @@
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
 
                 // <inactive> state
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',

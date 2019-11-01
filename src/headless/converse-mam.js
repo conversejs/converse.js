@@ -117,7 +117,7 @@ converse.plugins.add('converse-mam', {
                 }
                 const message_handler = is_groupchat ?
                     this.onMessage.bind(this) :
-                    _converse.chatboxes.onMessage.bind(_converse.chatboxes);
+                    _converse.handleMessageStanza.bind(_converse.chatboxes);
 
                 const query = Object.assign({
                         'groupchat': is_groupchat,

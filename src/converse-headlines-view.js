@@ -10,10 +10,8 @@ import "converse-chatview";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.html";
 
-const { utils } = converse.env;
 
-
-converse.plugins.add('converse-headline', {
+converse.plugins.add('converse-headlines-view', {
     /* Plugin dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
      * this plugin.
@@ -24,26 +22,7 @@ converse.plugins.add('converse-headline', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatview"],
-
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        //
-        // New functions which don't exist yet can also be added.
-
-        ChatBoxes: {
-            model (attrs, options) {
-                const { _converse } = this.__super__;
-                if (attrs.type == _converse.HEADLINES_TYPE) {
-                    return new _converse.HeadlinesBox(attrs, options);
-                } else {
-                    return this.__super__.model.apply(this, arguments);
-                }
-            },
-        }
-    },
+    dependencies: ["converse-headlines", "converse-chatview"],
 
 
     initialize () {
@@ -51,24 +30,6 @@ converse.plugins.add('converse-headline', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
-
-        _converse.HeadlinesBox = _converse.ChatBox.extend({
-            defaults () {
-                return {
-                    'bookmarked': false,
-                    'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
-                    'message_type': 'headline',
-                    'num_unread': 0,
-                    'time_opened': this.get('time_opened') || (new Date()).getTime(),
-                    'type': _converse.HEADLINES_TYPE
-                }
-            },
-
-            initialize () {
-                this.initMessages();
-                this.set({'box_id': `box-${btoa(this.get('jid'))}`});
-            }
-        });
 
 
         _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
@@ -114,40 +75,6 @@ converse.plugins.add('converse-headline', {
             'renderMessageForm': function renderMessageForm () {},
             'afterShown': function afterShown () {}
         });
-
-        async function onHeadlineMessage (message) {
-            /* Handler method for all incoming messages of type "headline". */
-            if (utils.isHeadlineMessage(_converse, message)) {
-                const from_jid = message.getAttribute('from');
-                if (from_jid.includes('@') &&
-                        !_converse.roster.get(from_jid) &&
-                        !_converse.allow_non_roster_messaging) {
-                    return;
-                }
-                if (message.querySelector('body') === null) {
-                    // Avoid creating a chat box if we have nothing to show inside it.
-                    return;
-                }
-                const chatbox = _converse.chatboxes.create({
-                    'id': from_jid,
-                    'jid': from_jid,
-                    'type': _converse.HEADLINES_TYPE,
-                    'from': from_jid
-                });
-                const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
-                await chatbox.messages.create(attrs);
-                _converse.api.trigger('message', {'chatbox': chatbox, 'stanza': message});
-            }
-        }
-
-        function registerHeadlineHandler () {
-            _converse.connection.addHandler(message => {
-                onHeadlineMessage(message);
-                return true
-            }, null, 'message');
-        }
-        _converse.api.listen.on('connected', registerHeadlineHandler);
-        _converse.api.listen.on('reconnected', registerHeadlineHandler);
 
 
         _converse.api.listen.on('chatBoxViewsInitialized', () => {

@@ -38,7 +38,7 @@
                         type: 'chat',
                         id: (new Date()).getTime()
                     }).c('body').t('hello world').tree();
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
                 expect(view.content.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
                 done();
@@ -61,7 +61,7 @@
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 const view = _converse.chatboxviews.get(sender_jid);
                 await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
@@ -135,7 +135,7 @@
 
                 const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve));
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await u.waitUntil(() => _converse.api.chats.get().length === 2);
+                await new Promise(resolve => _converse.api.listen.once('chatBoxInitialized', resolve));
                 await u.waitUntil(() => message_promise);
                 expect(_converse.chatboxviews.keys().length).toBe(2);
                 done();
@@ -190,7 +190,7 @@
                     el.click();
                 }
                 await u.waitUntil(() => _converse.chatboxes.length == 16);
-                expect(_converse.chatboxviews.trimChats.calls.count()).toBe(16);
+                expect(_converse.chatboxviews.trimChats.calls.count()).toBe(17);
 
                 _converse.api.chatviews.get().forEach(v => spyOn(v, 'onMinimized').and.callThrough());
                 for (i=0; i<online_contacts.length; i++) {
@@ -212,7 +212,7 @@
 
                 expect(trimmedview.restore).toHaveBeenCalled();
                 expect(chatbox.maximize).toHaveBeenCalled();
-                expect(_converse.chatboxviews.trimChats.calls.count()).toBe(17);
+                expect(_converse.chatboxviews.trimChats.calls.count()).toBe(18);
                 done();
             }));
 
@@ -520,58 +520,28 @@
 
             describe("A Chat Status Notification", function () {
 
-                it("is ignored when it's a carbon copy of one of my own",
-                    mock.initConverse(
-                        ['rosterGroupsFetched'], {},
-                        async function (done, _converse) {
-
-                    await test_utils.waitForRoster(_converse, 'current');
-                    await test_utils.openControlBox(_converse);
-
-                    const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    await test_utils.openChatBoxFor(_converse, sender_jid);
-                    let stanza = u.toStanza(
-                        `<message from="${sender_jid}"
-                                 type="chat"
-                                 to="romeo@montague.lit/orchard">
-                            <composing xmlns="http://jabber.org/protocol/chatstates"/>
-                            <no-store xmlns="urn:xmpp:hints"/>
-                            <no-permanent-store xmlns="urn:xmpp:hints"/>
-                        </message>`);
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                    stanza = u.toStanza(
-                        `<message from="${sender_jid}"
-                                 type="chat"
-                                 to="romeo@montague.lit/orchard">
-                            <paused xmlns="http://jabber.org/protocol/chatstates"/>
-                            <no-store xmlns="urn:xmpp:hints"/>
-                            <no-permanent-store xmlns="urn:xmpp:hints"/>
-                        </message>`);
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    done();
-                }));
-
                 it("does not open a new chatbox",
                     mock.initConverse(
-                        ['rosterGroupsFetched'], {},
+                        ['rosterGroupsFetched', 'emojisInitialized'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current');
                     await test_utils.openControlBox(_converse);
 
-                    spyOn(_converse.api, "trigger").and.callThrough();
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     // <composing> state
-                    const msg = $msg({
+                    const stanza = $msg({
                             'from': sender_jid,
                             'to': _converse.connection.jid,
                             'type': 'chat',
                             'id': (new Date()).getTime()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    await _converse.chatboxes.onMessage(msg);
+
+                    spyOn(_converse.api, "trigger").and.callThrough();
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    await u.waitUntil(() => _converse.api.trigger.calls.count());
                     expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-                    expect(_converse.api.chats.get().length).toBe(1);
+                    expect(_converse.chatboxviews.keys().length).toBe(1);
                     done();
                 }));
 
@@ -705,7 +675,6 @@
                         await test_utils.openControlBox(_converse);
 
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse.api, "trigger").and.callThrough();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -716,10 +685,13 @@
                                 to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
-                            }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.chatboxes.onMessage(msg);
+                            }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+
+                        spyOn(_converse.api, "trigger").and.callThrough();
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
+                        await u.waitUntil(() => _converse.api.trigger.calls.count());
                         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-                        var view = _converse.chatboxviews.get(sender_jid);
+                        const view = _converse.chatboxviews.get(sender_jid);
                         expect(view).toBeDefined();
 
                         const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
@@ -732,7 +704,7 @@
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.chatboxes.onMessage(msg);
+                        await _converse.handleMessageStanza(msg);
                         const events = view.el.querySelectorAll('.chat-state-notification');
                         expect(events.length).toBe(1);
                         expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
@@ -765,7 +737,7 @@
                                     'to': recipient_jid,
                                     'type': 'chat'
                             }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.chatboxes.onMessage(msg);
+                        await _converse.handleMessageStanza(msg);
                         await u.waitUntil(() => view.model.messages.length);
                         // Check that the chatbox and its view now exist
                         const chatbox = _converse.chatboxes.get(recipient_jid);
@@ -859,7 +831,7 @@
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.chatboxes.onMessage(msg);
+                        await _converse.handleMessageStanza(msg);
                         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         await u.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
                         const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
@@ -893,7 +865,7 @@
                                     'to': recipient_jid,
                                     'type': 'chat'
                             }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.chatboxes.onMessage(msg);
+                        await _converse.handleMessageStanza(msg);
                         await u.waitUntil(() => view.model.messages.length);
                         // Check that the chatbox and its view now exist
                         const chatbox = _converse.chatboxes.get(recipient_jid);
@@ -1042,7 +1014,8 @@
                                 'type': 'chat'})
                             .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                             .tree();
-                        await _converse.chatboxes.onMessage(msg);
+                        await _converse.handleMessageStanza(msg);
+                        await u.waitUntil(() => view.model.messages.length);
                         await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
                         expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(1);
                         msg = $msg({
@@ -1050,8 +1023,8 @@
                                 to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
-                            }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.chatboxes.onMessage(msg);
+                            }).c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                        await _converse.handleMessageStanza(msg);
                         await u.waitUntil(() => (view.model.messages.length > 1));
                         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         await u.waitUntil(() => view.el.querySelectorAll('.chat-state-notification').length === 0);
@@ -1078,7 +1051,7 @@
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.chatboxes.onMessage(msg);
+                        await _converse.handleMessageStanza(msg);
                         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         const view = _converse.chatboxviews.get(sender_jid);
                         await u.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1]);
@@ -1165,7 +1138,7 @@
                 spyOn(_converse, 'incrementMsgCounter').and.callThrough();
                 spyOn(_converse, 'clearMsgCounter').and.callThrough();
 
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(_converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
@@ -1210,7 +1183,7 @@
                         id: (new Date()).getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 expect(_converse.incrementMsgCounter).not.toHaveBeenCalled();
                 expect(document.title).toBe('Converse Tests');
                 done();
@@ -1240,14 +1213,13 @@
 
                 // leave converse-chat page
                 _converse.windowState = 'hidden';
-                _converse.chatboxes.onMessage(msgFactory());
-                await u.waitUntil(() => _converse.api.chats.get().length === 2)
+                await _converse.handleMessageStanza(msgFactory());
                 let view = _converse.chatboxviews.get(sender_jid);
                 expect(document.title).toBe('Messages (1) Converse Tests');
 
                 // come back to converse-chat page
                 _converse.saveWindowState(null, 'focus');
-                expect(u.isVisible(view.el)).toBeTruthy();
+                await u.waitUntil(() => u.isVisible(view.el));
                 expect(document.title).toBe('Converse Tests');
 
                 // close chatbox and leave converse-chat page again
@@ -1255,8 +1227,7 @@
                 _converse.windowState = 'hidden';
 
                 // check that msg_counter is incremented from zero again
-                _converse.chatboxes.onMessage(msgFactory());
-                await u.waitUntil(() => _converse.api.chats.get().length === 2)
+                await _converse.handleMessageStanza(msgFactory());
                 view = _converse.chatboxviews.get(sender_jid);
                 expect(u.isVisible(view.el)).toBeTruthy();
                 expect(document.title).toBe('Messages (1) Converse Tests');
@@ -1277,7 +1248,7 @@
 
                 const view = await test_utils.openChatBoxFor(_converse, sender_jid)
                 view.model.save('scrolled', true);
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => view.model.messages.length);
                 expect(view.model.get('num_unread')).toBe(1);
                 done();
@@ -1295,7 +1266,7 @@
 
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 const chatbox = _converse.chatboxes.get(sender_jid);
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 expect(chatbox.get('num_unread')).toBe(0);
                 done();
             }));
@@ -1313,7 +1284,7 @@
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 _converse.windowState = 'hidden';
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 await u.waitUntil(() => chatbox.messages.length);
                 expect(chatbox.get('num_unread')).toBe(1);
                 done();
@@ -1331,7 +1302,7 @@
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 chatbox.save('scrolled', true);
                 _converse.windowState = 'hidden';
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 await u.waitUntil(() => chatbox.messages.length);
                 expect(chatbox.get('num_unread')).toBe(1);
                 done();
@@ -1348,7 +1319,7 @@
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 _converse.windowState = 'hidden';
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 await u.waitUntil(() => chatbox.messages.length);
                 expect(chatbox.get('num_unread')).toBe(1);
                 _converse.saveWindowState(null, 'focus');
@@ -1368,7 +1339,7 @@
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 chatbox.save('scrolled', true);
                 _converse.windowState = 'hidden';
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 await u.waitUntil(() => chatbox.messages.length);
                 expect(chatbox.get('num_unread')).toBe(1);
                 _converse.saveWindowState(null, 'focus');
@@ -1392,13 +1363,13 @@
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 chatbox.save('scrolled', true);
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => chatbox.messages.length);
                 const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('1');
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => chatbox.messages.length > 1);
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('2');
@@ -1421,14 +1392,14 @@
                 chatboxview.minimize();
 
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => chatbox.messages.length);
                 const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('1');
 
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => chatbox.messages.length === 2);
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('2');
@@ -1450,10 +1421,10 @@
                 const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
                 const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
                 view.minimize();
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 await u.waitUntil(() => chatbox.messages.length);
                 expect(select_msgs_indicator().textContent).toBe('1');
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 await u.waitUntil(() => chatbox.messages.length > 1);
                 expect(select_msgs_indicator().textContent).toBe('2');
                 view.model.maximize();
@@ -1476,7 +1447,7 @@
                 const selector = `a.open-chat:contains("${chatbox.get('nickname')}") .msgs-indicator`;
                 const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
                 chatbox.save('scrolled', true);
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 const view = _converse.chatboxviews.get(sender_jid);
                 await u.waitUntil(() => view.model.messages.length);
                 expect(select_msgs_indicator().textContent).toBe('1');
@@ -1502,7 +1473,7 @@
                 const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
                 const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
                 chatbox.save('scrolled', true);
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 await u.waitUntil(() => view.model.messages.length);
                 expect(select_msgs_indicator().textContent).toBe('1');
                 await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -1530,7 +1501,7 @@
                 };
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 chatbox.save('scrolled', true);
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 await u.waitUntil(() => chatbox.messages.length);
                 const chatboxview = _converse.chatboxviews.get(sender_jid);
                 chatboxview.minimize();
@@ -1558,7 +1529,7 @@
                     return minimizedChatBoxView.el.querySelector('.message-count');
                 };
                 view.minimize();
-                _converse.chatboxes.onMessage(msgFactory());
+                _converse.handleMessageStanza(msgFactory());
                 await u.waitUntil(() => view.model.messages.length);
                 const unread_count = selectUnreadMsgCount();
                 expect(u.isVisible(unread_count)).toBeTruthy();

@@ -91,7 +91,7 @@ converse.plugins.add('converse-roomslist', {
 
             toHTML () {
                 return tpl_rooms_list({
-                    'rooms': _converse.api.rooms.get(),
+                    'rooms': this.model.filter(m => m.get('type') === _converse.CHATROOMS_TYPE),
                     'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
                     'collapsed': this.list_model.get('toggle-state') !== _converse.OPENED,
                     'desc_rooms': __('Click to toggle the list of open groupchats'),

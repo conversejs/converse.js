@@ -168,7 +168,7 @@
                 'name':  'The Play',
                 'nick': ' Othello'
             });
-            await u.waitUntil(() => _converse.api.rooms.get().length);
+            await new Promise(resolve => _converse.api.listen.once('chatBoxInitialized', resolve));
             expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBeFalsy();
 
             // Check that we don't auto-join if muc_respect_autojoin is false

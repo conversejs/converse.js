@@ -163,7 +163,7 @@
 
                 await test_utils.waitForRoster(_converse, 'current');
                 const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',
@@ -177,7 +177,7 @@
                 let message = chat_content.querySelector('.chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
 
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',

@@ -21,7 +21,8 @@
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const forwarded_contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid);
-            expect(_converse.api.chats.get().length).toBe(2);
+            let models = await _converse.api.chats.get();
+            expect(models.length).toBe(1);
             const received_stanza = u.toStanza(`
                 <message to='${_converse.jid}' from='${contact_jid}' type='chat' id='${_converse.connection.getUniqueId()}'>
                     <body>A most courteous exposition!</body>
@@ -51,7 +52,8 @@
                             'Forwarded messages not part of an encapsulating protocol are not supported</text>'+
                     '</error>'+
                 '</message>');
-            expect(_converse.api.chats.get().length).toBe(2);
+            models = await _converse.api.chats.get();
+            expect(models.length).toBe(1);
             done();
         }));
 
@@ -148,7 +150,7 @@
             await u.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
 
             // Test that messages from other users don't have the pencil icon
-            _converse.chatboxes.onMessage(
+            _converse.handleMessageStanza(
                 $msg({
                     'from': contact_jid,
                     'to': _converse.connection.jid,
@@ -352,7 +354,6 @@
 
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
-            spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
             _converse.filter_by_resource = true;
 
             let msg = $msg({
@@ -364,8 +365,7 @@
                 .c('body').t("message").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T13:08:25Z'})
                 .tree();
-            await _converse.chatboxes.onMessage(msg);
-            await u.waitUntil(() => _converse.api.chats.get().length);
+            await _converse.handleMessageStanza(msg);
             const view = _converse.api.chatviews.get(sender_jid);
 
             msg = $msg({
@@ -377,7 +377,7 @@
                 .c('body').t("Older message").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T22:08:25Z'})
                 .tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             msg = $msg({
@@ -389,7 +389,7 @@
                 .c('body').t("Inbetween message").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'})
                 .tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             msg = $msg({
@@ -401,7 +401,7 @@
                 .c('body').t("another inbetween message").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'})
                 .tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             msg = $msg({
@@ -413,7 +413,7 @@
                 .c('body').t("An earlier message on the next day").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T12:18:23Z'})
                 .tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             msg = $msg({
@@ -425,7 +425,7 @@
                 .c('body').t("newer message from the next day").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T22:28:23Z'})
                 .tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             // Insert <composing> message, to also check that
@@ -439,7 +439,7 @@
                     'type': 'chat'})
                 .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                 .tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
 
             msg = $msg({
                     'id': _converse.connection.getUniqueId(),
@@ -450,7 +450,7 @@
                 .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                 .c('body').t("latest message")
                 .tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             const chat_content = view.el.querySelector('.chat-content');
@@ -519,7 +519,7 @@
             // Ideally we wouldn't have to filter out headline
             // messages, but Prosody gives them the wrong 'type' :(
             sinon.spy(_converse, 'log');
-            sinon.spy(_converse.chatboxes, 'getChatBox');
+            sinon.spy(_converse.api.chatboxes, 'get');
             sinon.spy(u, 'isHeadlineMessage');
             const msg = $msg({
                     from: 'montague.lit',
@@ -527,17 +527,17 @@
                     type: 'chat',
                     id: (new Date()).getTime()
                 }).c('body').t("This headline message will not be shown").tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             expect(_converse.log.calledWith(
                 "onMessage: Ignoring incoming headline message from JID: montague.lit",
                 Strophe.LogLevel.INFO
             )).toBeTruthy();
             expect(u.isHeadlineMessage.called).toBeTruthy();
             expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
-            expect(_converse.chatboxes.getChatBox.called).toBeFalsy();
+            expect(_converse.api.chatboxes.get.called).toBeFalsy();
             // Remove sinon spies
             _converse.log.restore();
-            _converse.chatboxes.getChatBox.restore();
+            _converse.api.chatboxes.get.restore();
             u.isHeadlineMessage.restore();
             done();
         }));
@@ -570,8 +570,7 @@
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
 
-            await _converse.chatboxes.onMessage(msg);
-            await u.waitUntil(() => (_converse.api.chats.get().length > 1))
+            await _converse.handleMessageStanza(msg);
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
 
@@ -622,7 +621,7 @@
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
 
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             // Check that the chatbox and its view now exist
             const chatbox = await _converse.api.chats.get(recipient_jid);
             const view = _converse.api.chatviews.get(recipient_jid);
@@ -677,15 +676,15 @@
                         'to': _converse.connection.jid,
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
 
             // Check that chatbox for impersonated user is not created.
             let chatbox = await _converse.api.chats.get(impersonated_jid);
-            expect(chatbox).not.toBeDefined();
+            expect(chatbox).toBe(null);
 
             // Check that the chatbox for the malicous user is not created
             chatbox = await _converse.api.chats.get(sender_jid);
-            expect(chatbox).not.toBeDefined();
+            expect(chatbox).toBe(null);
             done();
         }));
 
@@ -719,7 +718,7 @@
                 id: (new Date()).getTime()
             }).c('body').t(message).up()
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
 
             await u.waitUntil(() => chatview.model.messages.length);
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -730,7 +729,7 @@
             expect(trimmedview.model.get('minimized')).toBeTruthy();
             expect(u.isVisible(count)).toBeTruthy();
             expect(count.textContent).toBe('1');
-            _converse.chatboxes.onMessage(
+            _converse.handleMessageStanza(
                 $msg({
                     from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     to: _converse.connection.jid,
@@ -779,7 +778,7 @@
             }).c('body').t(message).up()
             .c('delay', { xmlns:'urn:xmpp:delay', from: 'montague.lit', stamp: one_day_ago.toISOString() })
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -812,7 +811,7 @@
                 id: new Date().getTime()
             }).c('body').t(message).up()
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -1077,7 +1076,7 @@
             jasmine.clock().install();
             jasmine.clock().mockDate(base_time);
 
-            _converse.chatboxes.onMessage($msg({
+            _converse.handleMessageStanza($msg({
                     'from': sender_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
@@ -1089,7 +1088,7 @@
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             jasmine.clock().tick(3*ONE_MINUTE_LATER);
-            _converse.chatboxes.onMessage($msg({
+            _converse.handleMessageStanza($msg({
                     'from': sender_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
@@ -1099,7 +1098,7 @@
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             jasmine.clock().tick(11*ONE_MINUTE_LATER);
-            _converse.chatboxes.onMessage($msg({
+            _converse.handleMessageStanza($msg({
                     'from': sender_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
@@ -1112,7 +1111,7 @@
             // Insert <composing> message, to also check that
             // text messages are inserted correctly with
             // temporary chat events in the chat contents.
-            _converse.chatboxes.onMessage($msg({
+            _converse.handleMessageStanza($msg({
                     'id': 'aeb219',
                     'to': _converse.bare_jid,
                     'xmlns': 'jabber:client',
@@ -1123,7 +1122,7 @@
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             jasmine.clock().tick(1*ONE_MINUTE_LATER);
-            _converse.chatboxes.onMessage($msg({
+            _converse.handleMessageStanza($msg({
                     'from': sender_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
@@ -1154,7 +1153,7 @@
                 "Another message within 10 minutes, but from a different person");
 
             // Let's add a delayed, inbetween message
-            _converse.chatboxes.onMessage(
+            _converse.handleMessageStanza(
                 $msg({
                     'xmlns': 'jabber:client',
                     'id': _converse.connection.getUniqueId(),
@@ -1184,7 +1183,7 @@
                 "Another message 1 minute and 1 second since the previous one");
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(7)'))).toBe(false);
 
-            _converse.chatboxes.onMessage(
+            _converse.handleMessageStanza(
                 $msg({
                     'xmlns': 'jabber:client',
                     'id': _converse.connection.getUniqueId(),
@@ -1242,7 +1241,7 @@
                     'id': msg_id,
                 }).c('body').t('Message!').up()
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
-            await _converse.chatboxes.onMessage(msg);
+            await _converse.handleMessageStanza(msg);
             const sent_messages = sent_stanzas.map(s => _.isElement(s) ? s : s.nodeTree).filter(s => s.nodeName === 'message');
             expect(sent_messages.length).toBe(1);
             const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_messages[0]).pop();
@@ -1274,8 +1273,7 @@
                         'id': msg_id
                 }).c('body').t('Message!').up()
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
-            await _converse.chatboxes.onMessage(msg);
-            await u.waitUntil(() => _converse.api.chats.get().length);
+            await _converse.handleMessageStanza(msg);
             expect(view.model.sendReceiptStanza).not.toHaveBeenCalled();
             done();
         }));
@@ -1298,7 +1296,6 @@
                     preventDefault: function preventDefault () {},
                     keyCode: 13 // Enter
                 });
-                await u.waitUntil(() => _converse.api.chats.get().length);
                 const chatbox = _converse.chatboxes.get(contact_jid);
                 expect(chatbox).toBeDefined();
                 await new Promise(resolve => view.once('messageInserted', resolve));
@@ -1314,7 +1311,7 @@
                 expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
 
                 // Also handle receipts with type 'chat'. See #1353
-                spyOn(_converse.chatboxes, 'onMessage').and.callThrough();
+                spyOn(_converse, 'handleMessageStanza').and.callThrough();
                 textarea.value = 'Another message';
                 view.onKeyDown({
                     target: textarea,
@@ -1334,7 +1331,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(msg));
                 await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(2);
-                expect(_converse.chatboxes.onMessage.calls.count()).toBe(1);
+                expect(_converse.handleMessageStanza.calls.count()).toBe(1);
                 done();
             }));
 
@@ -1396,7 +1393,7 @@
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 // We don't already have an open chatbox for this user
                 expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
-                _converse.chatboxes.onMessage(
+                await _converse.handleMessageStanza(
                     $msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
@@ -1405,8 +1402,7 @@
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                 );
-                await u.waitUntil(() => (_converse.api.chats.get().length === 2));
-                const chatbox = _converse.chatboxes.get(sender_jid);
+                const chatbox = await _converse.chatboxes.get(sender_jid);
                 expect(chatbox).toBeDefined();
                 const view = _converse.api.chatviews.get(sender_jid);
                 expect(view).toBeDefined();
@@ -1421,7 +1417,8 @@
                 expect(msg_obj.get('is_delayed')).toEqual(false);
                 // Now check that the message appears inside the chatbox in the DOM
                 const chat_content = view.el.querySelector('.chat-content');
-                expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
+                const mel = await u.waitUntil(() => chat_content.querySelector('.chat-msg .chat-msg__text'));
+                expect(mel.textContent).toEqual(message);
                 expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
                 await u.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0]);
                 expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Mercutio');
@@ -1437,7 +1434,7 @@
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
                 const message = '\n\n        This is a received message         \n\n';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                _converse.chatboxes.onMessage(
+                await _converse.handleMessageStanza(
                     $msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
@@ -1446,13 +1443,13 @@
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                 );
-                await u.waitUntil(() => (_converse.api.chats.get().length === 2));
                 const view = _converse.api.chatviews.get(sender_jid);
                 expect(view.model.messages.length).toEqual(1);
                 const msg_obj = view.model.messages.at(0);
                 expect(msg_obj.get('message')).toEqual(message.trim());
                 const chat_content = view.el.querySelector('.chat-content');
-                expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message.trim());
+                const mel = await u.waitUntil(() => chat_content.querySelector('.chat-msg .chat-msg__text'));
+                expect(mel.textContent).toEqual(message.trim());
                 done();
             }));
 
@@ -1467,7 +1464,7 @@
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const msg_id = u.getUniqueId();
                 const view = await test_utils.openChatBoxFor(_converse, sender_jid);
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',
@@ -1478,7 +1475,7 @@
                 expect(view.el.querySelector('.chat-msg__text').textContent)
                     .toBe('But soft, what light through yonder airlock breaks?');
 
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',
@@ -1493,7 +1490,7 @@
                 expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
                 expect(view.model.messages.models.length).toBe(1);
 
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',
@@ -1550,8 +1547,7 @@
                     // We don't already have an open chatbox for this user
                     expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
-                    await _converse.chatboxes.onMessage(msg);
-                    await u.waitUntil(() => _converse.api.chats.get().length);
+                    await _converse.handleMessageStanza(msg);
                     expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
                     // Check that the chatbox and its view now exist
@@ -1600,15 +1596,15 @@
                     expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
                     let chatbox = await _converse.api.chats.get(sender_jid);
-                    expect(chatbox).not.toBeDefined();
+                    expect(chatbox).toBe(null);
                     // onMessage is a handler for received XMPP messages
-                    await _converse.chatboxes.onMessage(msg);
+                    await _converse.handleMessageStanza(msg);
                     let view = _converse.chatboxviews.get(sender_jid);
                     expect(view).not.toBeDefined();
 
                     // onMessage is a handler for received XMPP messages
                     _converse.allow_non_roster_messaging = true;
-                    await _converse.chatboxes.onMessage(msg);
+                    await _converse.handleMessageStanza(msg);
                     view = _converse.chatboxviews.get(sender_jid);
                     await new Promise(resolve => view.once('messageInserted', resolve));
                     expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -1807,7 +1803,7 @@
                 // Create enough messages so that there's a scrollbar.
                 const promises = [];
                 for (let i=0; i<20; i++) {
-                    _converse.chatboxes.onMessage($msg({
+                    _converse.handleMessageStanza($msg({
                             from: sender_jid,
                             to: _converse.connection.jid,
                             type: 'chat',
@@ -1826,7 +1822,7 @@
                 view.model.set('scrolled', true);
 
                 const message = 'This message is received while the chat area is scrolled up';
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                         from: sender_jid,
                         to: _converse.connection.jid,
                         type: 'chat',
@@ -1858,7 +1854,7 @@
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
                 // Send a message from a different resource
                 spyOn(_converse, 'log');
-                spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
+                spyOn(_converse.api.chatboxes, 'create').and.callThrough();
                 _converse.filter_by_resource = true;
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 let msg = $msg({
@@ -1868,12 +1864,12 @@
                         id: (new Date()).getTime()
                     }).c('body').t("This message will not be shown").up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                await _converse.chatboxes.onMessage(msg);
-                await u.waitUntil(() => _converse.api.chats.get().length);
+                await _converse.handleMessageStanza(msg);
+
                 expect(_converse.log).toHaveBeenCalledWith(
                         "onMessage: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
                         Strophe.LogLevel.INFO);
-                expect(_converse.chatboxes.getChatBox).not.toHaveBeenCalled();
+                expect(_converse.api.chatboxes.create).not.toHaveBeenCalled();
                 _converse.filter_by_resource = false;
 
                 const message = "This message sent to a different resource will be shown";
@@ -1884,11 +1880,11 @@
                         id: '134234623462346'
                     }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                await _converse.chatboxes.onMessage(msg);
+                await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => _converse.chatboxviews.keys().length > 1, 1000);
                 const view = _converse.chatboxviews.get(sender_jid);
                 await u.waitUntil(() => view.model.messages.length);
-                expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
+                expect(_converse.api.chatboxes.create).toHaveBeenCalled();
                 const last_message = await u.waitUntil(() => sizzle('.chat-content:last .chat-msg__text', view.el).pop());
                 const msg_txt = last_message.textContent;
                 expect(msg_txt).toEqual(message);
@@ -2121,20 +2117,11 @@
 
             const sent_stanzas = [];
             spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
-            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await u.waitUntil(() => _converse.api.chats.get().length == 2);
+            await _converse.handleMessageStanza(stanza);
             const sent_messages = sent_stanzas
                 .map(s => _.isElement(s) ? s : s.nodeTree)
                 .filter(e => e.nodeName === 'message');
-
-            // Only one message is sent out, and it's not a chat marker
-            expect(sent_messages.length).toBe(1);
-            expect(Strophe.serialize(sent_messages[0])).toBe(
-                `<message id="${sent_messages[0].getAttribute('id')}" to="someone@montague.lit" type="chat" xmlns="jabber:client">`+
-                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                    `<no-store xmlns="urn:xmpp:hints"/>`+
-                    `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
-                `</message>`);
+            expect(sent_messages.length).toBe(0);
             done();
         }));
 

@@ -12,6 +12,7 @@
 import "./converse-disco";
 import "./converse-emoji";
 import "./utils/muc";
+import { clone, get, intersection, invoke, isElement, isObject, isString, uniq, zipObject } from "lodash";
 import converse from "./converse-core";
 import u from "./utils/form";
 
@@ -22,7 +23,7 @@ const MUC_ROLE_WEIGHTS = {
     'none':         2,
 };
 
-const { Strophe, Backbone, $iq, $build, $msg, $pres, sizzle, _ } = converse.env;
+const { Strophe, Backbone, $iq, $build, $msg, $pres, sizzle } = converse.env;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -81,13 +82,13 @@ converse.plugins.add('converse-muc', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatboxes", "converse-disco", "converse-controlbox"],
+    dependencies: ["converse-chatboxes", "converse-chat", "converse-disco", "converse-controlbox"],
 
     overrides: {
         tearDown () {
             const { _converse } = this.__super__;
             const groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
-            _.each(groupchats, gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
+            groupchats.forEach(gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
             this.__super__.tearDown.call(this, arguments);
         },
 
@@ -129,7 +130,7 @@ converse.plugins.add('converse-muc', {
         });
         _converse.api.promises.add(['roomsAutoJoined']);
 
-        if (_converse.locked_muc_domain && !_.isString(_converse.muc_domain)) {
+        if (_converse.locked_muc_domain && !isString(_converse.muc_domain)) {
             throw new Error("Config Error: it makes no sense to set locked_muc_domain "+
                             "to true when muc_domain is not set");
         }
@@ -234,7 +235,7 @@ converse.plugins.add('converse-muc', {
              */
             settings.type = _converse.CHATROOMS_TYPE;
             settings.id = jid;
-            const chatbox = await _converse.chatboxes.getChatBox(jid, settings, true);
+            const chatbox = await _converse.api.rooms.get(jid, settings, true);
             chatbox.maybeShow(true);
             return chatbox;
         }
@@ -263,7 +264,7 @@ converse.plugins.add('converse-muc', {
             onOccupantRemoved () {
                 this.stopListening(this.occupant);
                 delete this.occupant;
-                const chatbox = _.get(this, 'collection.chatbox');
+                const chatbox = get(this, 'collection.chatbox');
                 if (!chatbox) {
                     return _converse.log(
                         `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
@@ -277,7 +278,7 @@ converse.plugins.add('converse-muc', {
                 if (occupant.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
                     this.occupant = occupant;
                     this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
-                    const chatbox = _.get(this, 'collection.chatbox');
+                    const chatbox = get(this, 'collection.chatbox');
                     if (!chatbox) {
                         return _converse.log(
                             `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
@@ -290,7 +291,7 @@ converse.plugins.add('converse-muc', {
 
             setOccupant () {
                 if (this.get('type') !== 'groupchat') { return; }
-                const chatbox = _.get(this, 'collection.chatbox');
+                const chatbox = get(this, 'collection.chatbox');
                 if (!chatbox) {
                     return _converse.log(
                         `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
@@ -308,7 +309,7 @@ converse.plugins.add('converse-muc', {
             },
 
             getVCardForChatroomOccupant () {
-                const chatbox = _.get(this, 'collection.chatbox');
+                const chatbox = get(this, 'collection.chatbox');
                 const nick = Strophe.getResourceFromJid(this.get('from'));
 
                 if (chatbox && chatbox.get('nick') === nick) {
@@ -488,7 +489,7 @@ converse.plugins.add('converse-muc', {
             initFeatures () {
                 const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
                 this.features = new Backbone.Model(
-                    _.assign({id}, _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)))
+                    Object.assign({id}, zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(() => false)))
                 );
                 this.features.browserStorage = _converse.createStore(id, "session");
             },
@@ -855,13 +856,13 @@ converse.plugins.add('converse-muc', {
                 const fields = await _converse.api.disco.getFields(this.get('jid'));
                 this.save({
                         'name': identity && identity.get('name'),
-                        'description': _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value')
+                        'description': get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value')
                     }
                 );
 
                 const features = await _converse.api.disco.getFeatures(this.get('jid'));
                 const attrs = Object.assign(
-                    _.zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(_.stubFalse)),
+                    zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(() => false)),
                     {'fetched': (new Date()).toISOString()}
                 );
                 features.each(feature => {
@@ -874,7 +875,7 @@ converse.plugins.add('converse-muc', {
                     }
                     attrs[fieldname.replace('muc_', '')] = true;
                 });
-                attrs.description = _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value');
+                attrs.description = get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value');
                 this.features.save(attrs);
             },
 
@@ -1006,7 +1007,7 @@ converse.plugins.add('converse-muc', {
              * @returns { ('none'|'visitor'|'participant'|'moderator') }
              */
             getOwnRole () {
-                return _.get(this.getOwnOccupant(), 'attributes.role');
+                return get(this.getOwnOccupant(), 'attributes.role');
             },
 
             /**
@@ -1016,7 +1017,7 @@ converse.plugins.add('converse-muc', {
              * @returns { ('none'|'outcast'|'member'|'admin'|'owner') }
              */
             getOwnAffiliation () {
-                return _.get(this.getOwnOccupant(), 'attributes.affiliation');
+                return get(this.getOwnOccupant(), 'attributes.affiliation');
             },
 
             /**
@@ -1066,7 +1067,7 @@ converse.plugins.add('converse-muc', {
              * @returns { Promise }
              */
             setAffiliations (members) {
-                const affiliations = _.uniq(members.map(m => m.affiliation));
+                const affiliations = uniq(members.map(m => m.affiliation));
                 return Promise.all(affiliations.map(a => this.setAffiliation(a, members)));
             },
 
@@ -1280,8 +1281,8 @@ converse.plugins.add('converse-muc', {
                 }
                 const jid = data.jid || '';
                 const attributes = Object.assign(data, {
-                    'jid': Strophe.getBareJidFromJid(jid) || _.get(occupant, 'attributes.jid'),
-                    'resource': Strophe.getResourceFromJid(jid) || _.get(occupant, 'attributes.resource')
+                    'jid': Strophe.getBareJidFromJid(jid) || get(occupant, 'attributes.jid'),
+                    'resource': Strophe.getResourceFromJid(jid) || get(occupant, 'attributes.resource')
                 });
                 if (occupant) {
                     occupant.save(attributes);
@@ -1326,7 +1327,7 @@ converse.plugins.add('converse-muc', {
                                     }
                                 });
                             } else if (child.getAttribute("xmlns") === Strophe.NS.VCARDUPDATE) {
-                                data.image_hash = _.get(child.querySelector('photo'), 'textContent');
+                                data.image_hash = get(child.querySelector('photo'), 'textContent');
                             }
                     }
                 });
@@ -1415,7 +1416,7 @@ converse.plugins.add('converse-muc', {
              */
             isOwnMessage (msg) {
                 let from;
-                if (_.isElement(msg)) {
+                if (isElement(msg)) {
                     from = msg.getAttribute('from');
                 } else if (msg instanceof _converse.Message) {
                     from = msg.get('from');
@@ -1460,7 +1461,7 @@ converse.plugins.add('converse-muc', {
                     await _converse.api.sendIQ(ping);
                 } catch (e) {
                     const sel = `error not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`;
-                    if (_.isElement(e) && sizzle(sel, e).length) {
+                    if (isElement(e) && sizzle(sel, e).length) {
                         return false;
                     }
                 }
@@ -1576,7 +1577,7 @@ converse.plugins.add('converse-muc', {
 
 
             handleModifyError(pres) {
-                const text = _.get(pres.querySelector('error text'), 'textContent');
+                const text = get(pres.querySelector('error text'), 'textContent');
                 if (text) {
                     if (this.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
                         this.setDisconnectionMessage(text);
@@ -1598,7 +1599,7 @@ converse.plugins.add('converse-muc', {
                     return;
                 }
                 const codes = sizzle('status', x).map(s => s.getAttribute('code'));
-                const disconnection_codes = _.intersection(codes, Object.keys(_converse.muc.disconnect_messages));
+                const disconnection_codes = intersection(codes, Object.keys(_converse.muc.disconnect_messages));
                 const disconnected = is_self && disconnection_codes.length > 0;
                 if (!disconnected) {
                     return;
@@ -1608,8 +1609,8 @@ converse.plugins.add('converse-muc', {
                 // element. This appears to be a safe assumption, since
                 // each <x/> element pertains to a single user.
                 const item = x.querySelector('item');
-                const reason = item ? _.get(item.querySelector('reason'), 'textContent') : undefined;
-                const actor = item ? _.invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
+                const reason = item ? get(item.querySelector('reason'), 'textContent') : undefined;
+                const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
                 const message = _converse.muc.disconnect_messages[disconnection_codes[0]];
                 this.setDisconnectionMessage(message, reason, actor);
             },
@@ -1639,8 +1640,8 @@ converse.plugins.add('converse-muc', {
                         const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                         message = __(_converse.muc.action_info_messages[code], nick);
                         const item = x.querySelector('item');
-                        const reason = item ? _.get(item.querySelector('reason'), 'textContent') : undefined;
-                        const actor = item ? _.invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
+                        const reason = item ? get(item.querySelector('reason'), 'textContent') : undefined;
+                        const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
                         if (actor) {
                             message += '\n' + __('This action was done by %1$s.', actor);
                         }
@@ -1705,7 +1706,7 @@ converse.plugins.add('converse-muc', {
             onErrorPresence (stanza) {
                 const error = stanza.querySelector('error');
                 const error_type = error.getAttribute('type');
-                const reason = _.get(sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent');
+                const reason = get(sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent');
 
                 if (error_type === 'modify') {
                     this.handleModifyError(stanza);
@@ -1731,7 +1732,7 @@ converse.plugins.add('converse-muc', {
                         const message = __("Your nickname doesn't conform to this groupchat's policies.");
                         this.setDisconnectionMessage(message, reason);
                     } else if (sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
-                        const moved_jid = _.get(sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent')
+                        const moved_jid = get(sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent')
                             .replace(/^xmpp:/, '')
                             .replace(/\?join$/, '');
                         this.save({
@@ -2073,18 +2074,11 @@ converse.plugins.add('converse-muc', {
             _converse.api.listen.on('reconnected', registerDirectInvitationHandler);
         }
 
-        const getChatRoom = function (jid, attrs, create) {
-            jid = jid.toLowerCase();
-            attrs.type = _converse.CHATROOMS_TYPE;
-            attrs.id = jid;
-            return _converse.chatboxes.getChatBox(jid, attrs, create);
-        };
-
         const createChatRoom = function (jid, attrs) {
             if (jid.startsWith('xmpp:') && jid.endsWith('?join')) {
                 jid = jid.replace(/^xmpp:/, '').replace(/\?join$/, '');
             }
-            return getChatRoom(jid, attrs, true);
+            return _converse.api.rooms.get(jid, attrs, true);
         };
 
         /**
@@ -2095,13 +2089,13 @@ converse.plugins.add('converse-muc', {
          */
         function autoJoinRooms () {
             _converse.auto_join_rooms.forEach(groupchat => {
-                if (_.isString(groupchat)) {
+                if (isString(groupchat)) {
                     if (_converse.chatboxes.where({'jid': groupchat}).length) {
                         return;
                     }
                     _converse.api.rooms.open(groupchat);
-                } else if (_.isObject(groupchat)) {
-                    _converse.api.rooms.open(groupchat.jid, _.clone(groupchat));
+                } else if (isObject(groupchat)) {
+                    _converse.api.rooms.open(groupchat.jid, clone(groupchat));
                 } else {
                     _converse.log(
                         'Invalid groupchat criteria specified for "auto_join_rooms"',
@@ -2187,13 +2181,13 @@ converse.plugins.add('converse-muc', {
                  * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
                  */
                 create (jids, attrs={}) {
-                    attrs = _.isString(attrs) ? {'nick': attrs} : (attrs || {});
+                    attrs = isString(attrs) ? {'nick': attrs} : (attrs || {});
                     if (!attrs.nick && _converse.muc_nickname_from_jid) {
                         attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                     }
                     if (jids === undefined) {
                         throw new TypeError('rooms.create: You need to provide at least one JID');
-                    } else if (_.isString(jids)) {
+                    } else if (isString(jids)) {
                         return createChatRoom(jids, attrs);
                     }
                     return jids.map(jid => createChatRoom(jid, attrs));
@@ -2264,7 +2258,7 @@ converse.plugins.add('converse-muc', {
                         const err_msg = 'rooms.open: You need to provide at least one JID';
                         _converse.log(err_msg, Strophe.LogLevel.ERROR);
                         throw(new TypeError(err_msg));
-                    } else if (_.isString(jids)) {
+                    } else if (isString(jids)) {
                         const room = await _converse.api.rooms.create(jids, attrs);
                         room && room.maybeShow(force);
                         return room;
@@ -2288,7 +2282,7 @@ converse.plugins.add('converse-muc', {
                  *     the user's JID will be used.
                  * @param {boolean} create A boolean indicating whether the room should be created
                  *     if not found (default: `false`)
-                 * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+                 * @returns { Promise<_converse.ChatRoom> }
                  * @example
                  * _converse.api.waitUntil('roomsAutoJoined').then(() => {
                  *     const create_if_not_found = true;
@@ -2299,28 +2293,26 @@ converse.plugins.add('converse-muc', {
                  *     )
                  * });
                  */
-                get (jids, attrs, create) {
-                    if (_.isString(attrs)) {
-                        attrs = {'nick': attrs};
-                    } else if (attrs === undefined) {
-                        attrs = {};
+                async get (jids, attrs={}, create=false) {
+                    async function _get (jid) {
+                        let model = await _converse.api.chatboxes.get(jid);
+                        if (!model && create) {
+                            model = await _converse.api.chatboxes.create(jid, attrs, _converse.ChatRoom);
+                        } else {
+                            model = (model && model.get('type') === _converse.CHATROOMS_TYPE) ? model : null;
+                            if (model && Object.keys(attrs).length) {
+                                model.save(attrs);
+                            }
+                        }
+                        return model;
                     }
                     if (jids === undefined) {
-                        const result = [];
-                        _converse.chatboxes.each(function (chatbox) {
-                            if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
-                                result.push(chatbox);
-                            }
-                        });
-                        return result;
+                        const chats = await _converse.api.chatboxes.get();
+                        return chats.filter(c => (c.get('type') === _converse.CHATROOMS_TYPE));
+                    } else if (isString(jids)) {
+                        return _get(jids);
                     }
-                    if (!attrs.nick) {
-                        attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
-                    }
-                    if (_.isString(jids)) {
-                        return getChatRoom(jids, attrs, create);
-                    }
-                    return jids.map(jid => getChatRoom(jid, attrs, create));
+                    return Promise.all(jids.map(jid => _get(jid)));
                 }
             }
         });

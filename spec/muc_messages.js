@@ -120,7 +120,6 @@
                                by="room@muc.example.com"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await u.waitUntil(() => _converse.api.chats.get().length);
             await u.waitUntil(() => view.model.messages.length === 1);
             await u.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 1);
             let result = await view.model.findDuplicateFromStanzaID.calls.all()[0].returnValue;
@@ -572,7 +571,6 @@
             const view = _converse.api.chatviews.get(muc_jid);
 
             view.model.sendMessage('hello world');
-            await u.waitUntil(() => _converse.api.chats.get().length);
             await u.waitUntil(() => view.model.messages.length === 1);
             const msg = view.model.messages.at(0);
             expect(msg.get('stanza_id')).toBeUndefined();

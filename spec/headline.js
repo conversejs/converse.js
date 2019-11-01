@@ -14,7 +14,7 @@
 
         it("will not open nor display non-headline messages",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
 
             /* XMPP spam message:
              *
@@ -36,9 +36,9 @@
                 .c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t("-wwdmz").up()
                 .c('body').t('SORRY FOR THIS ADVERT');
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await u.waitUntil(() => _converse.api.chats.get().length);
             expect(u.isHeadlineMessage.called).toBeTruthy();
             expect(u.isHeadlineMessage.returned(false)).toBeTruthy();
+            expect(_converse.api.headlines.get().length === 0);
             u.isHeadlineMessage.restore();
             done();
         }));

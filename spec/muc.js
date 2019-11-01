@@ -89,7 +89,7 @@
                 // Non-existing room
                 muc_jid = 'chillout2@montague.lit';
                 room = await _converse.api.rooms.get(muc_jid);
-                expect(typeof room === 'undefined').toBeTruthy();
+                expect(room).toBe(null);
                 done();
             }));
 

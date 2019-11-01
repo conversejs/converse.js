@@ -88,7 +88,7 @@
                         id: (new Date()).getTime()
                     }).c('body').t('hello').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                _converse.chatboxes.onMessage(msg);
+                _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator").length);
                 spyOn(chatview.model, 'incrementUnreadMsgCounter').and.callThrough();
                 expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('1');
@@ -101,7 +101,7 @@
                         id: (new Date()).getTime()
                     }).c('body').t('hello again').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                _converse.chatboxes.onMessage(msg);
+                _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => chatview.model.incrementUnreadMsgCounter.calls.count());
                 expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('2');
                 expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');

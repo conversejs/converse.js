@@ -263,7 +263,7 @@
             expect(window.confirm).toHaveBeenCalledWith(
                 'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
 
-            await u.waitUntil(() => !_converse.api.rooms.get().length);
+            await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(0);
             expect(_converse.chatboxes.length).toBe(1);

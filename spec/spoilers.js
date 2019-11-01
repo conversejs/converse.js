@@ -34,8 +34,8 @@
                       'xmlns': 'urn:xmpp:spoiler:0',
                     }).t(spoiler_hint)
                 .tree();
-            await _converse.chatboxes.onMessage(msg);
-            await u.waitUntil(() => _converse.api.chats.get().length === 2);
+            _converse.connection._dataRecv(test_utils.createRequest(msg));
+            await new Promise(resolve => _converse.api.listen.once('chatBoxInitialized', resolve));
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise(resolve => view.once('messageInserted', resolve));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
@@ -69,10 +69,10 @@
                   .c('spoiler', {
                       'xmlns': 'urn:xmpp:spoiler:0',
                     }).tree();
-            await _converse.chatboxes.onMessage(msg);
-            await u.waitUntil(() => _converse.api.chats.get().length === 2);
+            _converse.connection._dataRecv(test_utils.createRequest(msg));
+            await new Promise(resolve => _converse.api.listen.once('chatBoxInitialized', resolve));
             const view = _converse.chatboxviews.get(sender_jid);
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await u.waitUntil(() => u.isVisible(view.el));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Mercutio')).toBeTruthy();
             const message_content = view.el.querySelector('.chat-msg__text');

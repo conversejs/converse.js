@@ -303,7 +303,6 @@
             spyOn(registerview, 'onRegistrationFields').and.callThrough();
             spyOn(registerview, 'renderRegistrationForm').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').and.callThrough();
 
             registerview.el.querySelector('input[name=domain]').value = 'conversejs.org';
             registerview.el.querySelector('input[type=submit]').click();

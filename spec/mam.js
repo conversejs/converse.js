@@ -205,7 +205,7 @@
 
         describe("An archived message", function () {
 
-            describe("when recieved", function () {
+            describe("when received", function () {
 
                 it("is discarded if it doesn't come from the right sender",
                     mock.initConverse(

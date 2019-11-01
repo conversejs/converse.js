@@ -47,6 +47,7 @@ converse.plugins.add('converse-chatview', {
      */
     dependencies: [
         "converse-chatboxviews",
+        "converse-chat",
         "converse-disco",
         "converse-message-view",
         "converse-modal"
@@ -72,17 +73,6 @@ converse.plugins.add('converse-chatview', {
             },
         });
 
-        function onWindowStateChanged (data) {
-            if (_converse.chatboxviews) {
-                _converse.chatboxviews.forEach(view => {
-                    if (view.model.get('id') !== 'controlbox') {
-                        view.onWindowStateChanged(data.state);
-                    }
-                });
-            }
-        }
-        _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
-
 
         _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
             initialize () {
@@ -91,6 +81,9 @@ converse.plugins.add('converse-chatview', {
                 this.debouncedRender = debounce(this.render, 50);
                 if (this.model.vcard) {
                     this.listenTo(this.model.vcard, 'change', this.debouncedRender);
+                }
+                if (this.model.contact) {
+                    this.listenTo(this.model.contact, 'destroy', this.debouncedRender);
                 }
                 if (this.model.rosterContactAdded) {
                     this.model.rosterContactAdded.then(() => {
@@ -101,8 +94,8 @@ converse.plugins.add('converse-chatview', {
             },
 
             render () {
-                const vcard = get(this.model, 'vcard'),
-                      vcard_json = vcard ? vcard.toJSON() : {};
+                const vcard = get(this.model, 'vcard');
+                const vcard_json = vcard ? vcard.toJSON() : {};
                 this.el.innerHTML = tpl_chatbox_head(
                     Object.assign(
                         vcard_json,
@@ -409,10 +402,6 @@ converse.plugins.add('converse-chatview', {
                 this.heading = new _converse.ChatBoxHeading({'model': this.model});
                 this.heading.render();
                 this.heading.chatview = this;
-
-                if (this.model.contact !== undefined) {
-                    this.listenTo(this.model.contact, 'destroy', this.heading.render);
-                }
                 const flyout = this.el.querySelector('.flyout');
                 flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
                 return this;
@@ -1299,15 +1288,29 @@ converse.plugins.add('converse-chatview', {
 
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
             const views = _converse.chatboxviews;
-            _converse.chatboxes.on('add', item => {
+            _converse.chatboxes.on('add', async item => {
                 if (!views.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+                    await item.initialized;
                     views.add(item.get('id'), new _converse.ChatBoxView({model: item}));
                 }
             });
         });
 
-        // Advertise that we support XEP-0382 Message Spoilers
+
+        /************************ BEGIN Event Handlers ************************/
+        function onWindowStateChanged (data) {
+            if (_converse.chatboxviews) {
+                _converse.chatboxviews.forEach(view => {
+                    if (view.model.get('id') !== 'controlbox') {
+                        view.onWindowStateChanged(data.state);
+                    }
+                });
+            }
+        }
+        _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
         _converse.api.listen.on('connected', () => _converse.api.disco.own.features.add(Strophe.NS.SPOILER));
+        /************************ END Event Handlers ************************/
+
 
         /************************ BEGIN API ************************/
         Object.assign(_converse.api, {

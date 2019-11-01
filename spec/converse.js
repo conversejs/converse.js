@@ -269,7 +269,7 @@
 
                 // Test on chat that's not open
                 chat = await _converse.api.chats.get(jid);
-                expect(typeof chat === 'undefined').toBeTruthy();
+                expect(chat === null).toBeTruthy();
                 expect(_converse.chatboxes.length).toBe(1);
 
                 // Test for one JID
@@ -281,7 +281,7 @@
                 await u.waitUntil(() => u.isVisible(view.el));
                 // Test for multiple JIDs
                 test_utils.openChatBoxFor(_converse, jid2);
-                await u.waitUntil(() => _converse.chatboxes.length == 2);
+                await u.waitUntil(() => _converse.chatboxes.length == 3);
                 const list = await _converse.api.chats.get([jid, jid2]);
                 expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(`box-${btoa(jid)}`);

@@ -30,7 +30,7 @@
                                 id: (new Date()).getTime()
                             }).c('body').t(message).up()
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                        await _converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        await _converse.handleMessageStanza(msg); // This will emit 'message'
                         await u.waitUntil(() => _converse.api.chatviews.get(sender_jid));
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();

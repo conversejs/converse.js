@@ -52,7 +52,7 @@
     };
 
     utils.openControlBox = async function (_converse) {
-        const model = await _converse.api.chats.open('controlbox');
+        const model = await _converse.api.controlbox.open();
         await u.waitUntil(() => model.get('connected'));
         var toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
@@ -121,7 +121,7 @@
 
     utils.openChatRoomViaModal = async function (_converse, jid, nick='') {
         // Opens a new chatroom
-        const model = await _converse.api.chats.open('controlbox');
+        const model = await _converse.api.controlbox.open('controlbox');
         await u.waitUntil(() => model.get('connected'));
         utils.openControlBox();
         const view = await _converse.chatboxviews.get('controlbox');

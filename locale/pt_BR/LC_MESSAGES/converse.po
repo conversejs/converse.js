@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-09-28 05:54+0000\n"
-"Last-Translator: Abner Santana <abnssantana@gmail.com>\n"
+"PO-Revision-Date: 2019-11-02 03:04+0000\n"
+"Last-Translator: Antonio Morais <antoniomorais360@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -121,7 +121,6 @@ msgstr ""
 "OMEMO não estará disponível."
 
 #: dist/converse-no-dependencies.js:8541
-#, fuzzy
 msgid "Log in"
 msgstr "Entrar"
 
@@ -134,9 +133,8 @@ msgid "Search"
 msgstr "Procurar"
 
 #: dist/converse-no-dependencies.js:8627
-#, fuzzy
 msgid "Search results"
-msgstr "Procurar"
+msgstr "Procurar resultados"
 
 #: dist/converse-no-dependencies.js:8777
 msgid "Enter a new Groupchat"
@@ -156,9 +154,8 @@ msgid "Join"
 msgstr "Entrar"
 
 #: dist/converse-no-dependencies.js:8833
-#, fuzzy
 msgid "You're not allowed to send messages in this room"
-msgstr "Você não tem permissão de criar novas salas."
+msgstr "Você não tem permissão para enviar mensagens nesta sala"
 
 #: dist/converse-no-dependencies.js:8847
 msgid "This groupchat no longer exists"
@@ -169,19 +166,16 @@ msgid "The conversation has moved. Click below to enter."
 msgstr "Esta conversa foi movida. Clique abaixo para entrar de novo."
 
 #: dist/converse-no-dependencies.js:8875
-#, fuzzy
 msgid "Name"
 msgstr "Nome"
 
 #: dist/converse-no-dependencies.js:8879
-#, fuzzy
 msgid "Groupchat address (JID)"
-msgstr "Endereço da sala (JID):"
+msgstr "Endereço da sala (JID)"
 
 #: dist/converse-no-dependencies.js:8883
-#, fuzzy
 msgid "Description"
-msgstr "Descrição:"
+msgstr "Descrição"
 
 #: dist/converse-no-dependencies.js:8889
 msgid "Topic"
@@ -204,17 +198,14 @@ msgid "Password protected"
 msgstr "Protegido por senha"
 
 #: dist/converse-no-dependencies.js:8909 dist/converse-no-dependencies.js:9047
-#, fuzzy
 msgid "This groupchat requires a password before entry"
 msgstr "Essa sala precisa de senha antes de entrar"
 
 #: dist/converse-no-dependencies.js:8915
-#, fuzzy
 msgid "No password required"
-msgstr "Sem senha"
+msgstr "Nenhuma senha necessária"
 
 #: dist/converse-no-dependencies.js:8917 dist/converse-no-dependencies.js:9055
-#, fuzzy
 msgid "This groupchat does not require a password upon entry"
 msgstr "Essa sala não precisa de senha para entrar"
 
@@ -224,7 +215,6 @@ msgid "Hidden"
 msgstr "Escondido"
 
 #: dist/converse-no-dependencies.js:8925 dist/converse-no-dependencies.js:9063
-#, fuzzy
 msgid "This groupchat is not publicly searchable"
 msgstr "Essa sala não aparece em pesquisas públicas"
 
@@ -234,7 +224,6 @@ msgid "Public"
 msgstr "Público"
 
 #: dist/converse-no-dependencies.js:8933 dist/converse-no-dependencies.js:9071
-#, fuzzy
 msgid "This groupchat is publicly searchable"
 msgstr "Essa sala pode ser pesquisada publicamente"
 
@@ -243,7 +232,6 @@ msgid "Members only"
 msgstr "Apenas membros"
 
 #: dist/converse-no-dependencies.js:8941
-#, fuzzy
 msgid "This groupchat is restricted to members only"
 msgstr "Essa sala é restrita apenas para membros"
 
@@ -253,7 +241,6 @@ msgid "Open"
 msgstr "Sala aberta"
 
 #: dist/converse-no-dependencies.js:8949 dist/converse-no-dependencies.js:9087
-#, fuzzy
 msgid "Anyone can join this groupchat"
 msgstr "Qualquer um pode se juntar a essa sala"
 
@@ -262,9 +249,8 @@ msgid "Persistent"
 msgstr "Persistente"
 
 #: dist/converse-no-dependencies.js:8957 dist/converse-no-dependencies.js:9095
-#, fuzzy
 msgid "This groupchat persists even if it's unoccupied"
-msgstr "Essa sala existe mesmo vazia"
+msgstr "Essa sala persistirá mesmo se estiver desocupada"
 
 #: dist/converse-no-dependencies.js:8963 dist/converse-no-dependencies.js:9105
 #: dist/converse-no-dependencies.js:47140
@@ -272,19 +258,16 @@ msgid "Temporary"
 msgstr "Temporário"
 
 #: dist/converse-no-dependencies.js:8965 dist/converse-no-dependencies.js:9103
-#, fuzzy
 msgid "This groupchat will disappear once the last person leaves"
-msgstr "Essa sala deixará de existir quando todas as pessoas saírem"
+msgstr "Esta sala desaparecerá assim que a última pessoa sair"
 
 #: dist/converse-no-dependencies.js:8971 dist/converse-no-dependencies.js:9113
-#, fuzzy
 msgid "Not anonymous"
 msgstr "Não anônimo"
 
 #: dist/converse-no-dependencies.js:8973 dist/converse-no-dependencies.js:9111
-#, fuzzy
 msgid "All other groupchat participants can see your XMPP address"
-msgstr "Todos os outros ocupantes da sala podem ver seu nome de usuário XMPP"
+msgstr "Todos os outros ocupantes da sala podem ver seu endereço XMPP"
 
 #: dist/converse-no-dependencies.js:8979 dist/converse-no-dependencies.js:9121
 #: dist/converse-no-dependencies.js:47139
@@ -292,9 +275,8 @@ msgid "Semi-anonymous"
 msgstr "Semi anônimo"
 
 #: dist/converse-no-dependencies.js:8981 dist/converse-no-dependencies.js:9119
-#, fuzzy
 msgid "Only moderators can see your XMPP address"
-msgstr "Apenas moderadores podem ver seu usuário XMPP"
+msgstr "Apenas moderadores podem ver seu endereço XMPP"
 
 #: dist/converse-no-dependencies.js:8987 dist/converse-no-dependencies.js:9129
 #: dist/converse-no-dependencies.js:47134
@@ -308,9 +290,8 @@ msgstr ""
 "Os participantes entrando nesta sala devem solicitar permissão para escrever"
 
 #: dist/converse-no-dependencies.js:8995 dist/converse-no-dependencies.js:9137
-#, fuzzy
 msgid "Not moderated"
-msgstr "Sem moderação"
+msgstr "Não moderada"
 
 #: dist/converse-no-dependencies.js:8997 dist/converse-no-dependencies.js:9135
 msgid "Participants entering this groupchat can write right away"
@@ -329,9 +310,8 @@ msgid "No password"
 msgstr "Sem senha"
 
 #: dist/converse-no-dependencies.js:9079
-#, fuzzy
 msgid "this groupchat is restricted to members only"
-msgstr "Essa sala é restrita apenas para membros"
+msgstr "essa sala é restrita apenas para membros"
 
 #: dist/converse-no-dependencies.js:9175 dist/converse-no-dependencies.js:40373
 #: dist/converse-no-dependencies.js:49985
@@ -345,9 +325,8 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: dist/converse-no-dependencies.js:9312
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "Moderado"
+msgstr "Ferramentas de Moderação"
 
 #: dist/converse-no-dependencies.js:9314
 msgid ""
@@ -356,49 +335,54 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"As funções são atribuídas aos usuários para conceder ou negar certas "
+"habilidades em um bate-papo com vários usuários. Eles são atribuídos "
+"explícita ou implicitamente como parte de uma afiliação. Uma função que não "
+"é devida a uma afiliação, é válida apenas pela duração da sessão do usuário."
 
 #: dist/converse-no-dependencies.js:9316 dist/converse-no-dependencies.js:49895
 msgid "Role"
-msgstr "Papel"
+msgstr "Função"
 
 #: dist/converse-no-dependencies.js:9328 dist/converse-no-dependencies.js:9352
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Moderadores são usuários privilegiados que podem alterar as funções de "
+"outros usuários (exceto aqueles com funções de administrador ou "
+"proprietário)."
 
 #: dist/converse-no-dependencies.js:9334 dist/converse-no-dependencies.js:9358
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "A função padrão implica que você pode ler e gravar mensagens."
 
 #: dist/converse-no-dependencies.js:9340 dist/converse-no-dependencies.js:9364
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Visitantes não têm permissão para escrever mensagens em um bate-papo "
+"moderado para vários usuários."
 
 #: dist/converse-no-dependencies.js:9348 dist/converse-no-dependencies.js:9444
-#, fuzzy
 msgid "Show users"
-msgstr "Mostrar salas"
+msgstr "Mostrar usuários"
 
 #: dist/converse-no-dependencies.js:9374
-#, fuzzy
 msgid "No users with that role found."
-msgstr "Usuários não encontrados"
+msgstr "Nenhum usuário com essa função encontrado."
 
 #: dist/converse-no-dependencies.js:9390
-#, fuzzy
 msgid "New Role"
-msgstr "Papel"
+msgstr "Nova função"
 
 #: dist/converse-no-dependencies.js:9404 dist/converse-no-dependencies.js:9504
 msgid "Reason"
-msgstr ""
+msgstr "Razão"
 
 #: dist/converse-no-dependencies.js:9406
-#, fuzzy
 msgid "Change role"
-msgstr "Mudar configurações"
+msgstr "Alterar função"
 
 #: dist/converse-no-dependencies.js:9410
 msgid ""
@@ -406,39 +390,45 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"Uma afiliação é um direito de longa duração que normalmente implica uma "
+"certa função e que concede privilégios e responsabilidades. Por exemplo, "
+"administradores e proprietários têm automaticamente a função de moderador."
 
 #: dist/converse-no-dependencies.js:9412
 msgid "Affiliation"
-msgstr ""
+msgstr "Afiliação"
 
 #: dist/converse-no-dependencies.js:9424 dist/converse-no-dependencies.js:9448
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Proprietário é a afiliação mais alta. Os proprietários podem modificar "
+"funções e afiliações de todos os outros usuários."
 
 #: dist/converse-no-dependencies.js:9430 dist/converse-no-dependencies.js:9454
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Admin é a segunda maior afiliação. Os administradores podem modificar "
+"funções e afiliações de todos os outros usuários, exceto proprietários."
 
 #: dist/converse-no-dependencies.js:9436 dist/converse-no-dependencies.js:9460
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr ""
+msgstr "Para banir um usuário, você atribui a ele a afiliação de \"banido\"."
 
 #: dist/converse-no-dependencies.js:9470
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "Nenhum usuário com essa afiliação encontrado."
 
 #: dist/converse-no-dependencies.js:9490
 msgid "New affiliation"
-msgstr ""
+msgstr "Nova afiliação"
 
 #: dist/converse-no-dependencies.js:9506
-#, fuzzy
 msgid "Change affiliation"
-msgstr "Mudar o usuário para administrador"
+msgstr "Alterar afiliação"
 
 #: dist/converse-no-dependencies.js:9865
 msgid "Save and close"
@@ -469,9 +459,8 @@ msgid "Checkbox for selecting the following fingerprint"
 msgstr "Caixa de seleção da seguinte assinatura"
 
 #: dist/converse-no-dependencies.js:9905
-#, fuzzy
 msgid "Device without a fingerprint"
-msgstr "Verificar com assinatura digital"
+msgstr "Dispositivo sem impressão digital"
 
 #: dist/converse-no-dependencies.js:9911
 msgid "Remove checked devices and close"
@@ -525,43 +514,43 @@ msgstr "Espere, estamos carregando o formulário de inscrição …"
 
 #: dist/converse-no-dependencies.js:27487
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Smileys e emoticons"
 
 #: dist/converse-no-dependencies.js:27488
 msgid "People"
-msgstr ""
+msgstr "Pessoas"
 
 #: dist/converse-no-dependencies.js:27489
 msgid "Activities"
-msgstr ""
+msgstr "Atividades"
 
 #: dist/converse-no-dependencies.js:27490
 msgid "Travel"
-msgstr ""
+msgstr "Viagem"
 
 #: dist/converse-no-dependencies.js:27491
 msgid "Objects"
-msgstr ""
+msgstr "Objetos"
 
 #: dist/converse-no-dependencies.js:27492
 msgid "Animals and nature"
-msgstr ""
+msgstr "Animais e natureza"
 
 #: dist/converse-no-dependencies.js:27493
 msgid "Food and drink"
-msgstr ""
+msgstr "Comida e bebida"
 
 #: dist/converse-no-dependencies.js:27494
 msgid "Symbols"
-msgstr ""
+msgstr "Símbolos"
 
 #: dist/converse-no-dependencies.js:27495
 msgid "Flags"
-msgstr ""
+msgstr "Bandeiras"
 
 #: dist/converse-no-dependencies.js:27496
 msgid "Stickers"
-msgstr ""
+msgstr "Adesivos"
 
 #: dist/converse-no-dependencies.js:28145
 msgid "This groupchat is not anonymous"
@@ -800,13 +789,15 @@ msgstr "Desculpe, algo deu errado ao tentar salvar seu favorito."
 
 #: dist/converse-no-dependencies.js:31732
 msgid "Timeout Error"
-msgstr ""
+msgstr "Erro de tempo limite"
 
 #: dist/converse-no-dependencies.js:31732
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"O servidor não retornou seus favoritos dentro do tempo permitido. Você pode "
+"recarregar a página para solicitá-los novamente."
 
 #: dist/converse-no-dependencies.js:33481
 msgid "Unencryptable OMEMO message"
@@ -1076,6 +1067,8 @@ msgstr "Mostrar o menu"
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
+"Você tem uma mensagem não enviada que será perdida se você continuar. Você "
+"tem certeza?"
 
 #: dist/converse-no-dependencies.js:43595
 msgid "Are you sure you want to clear the messages from this conversation?"
@@ -1174,7 +1167,7 @@ msgstr "Sem moderação"
 
 #: dist/converse-no-dependencies.js:47346
 msgid "Affiliation changed"
-msgstr ""
+msgstr "Afiliação alterada"
 
 #: dist/converse-no-dependencies.js:47369
 #, fuzzy
@@ -1352,7 +1345,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:48324
 msgid "You can run the following commands"
-msgstr ""
+msgstr "Você pode executar os seguintes comandos"
 
 #: dist/converse-no-dependencies.js:48325
 msgid "Change user's affiliation to admin"
@@ -1360,7 +1353,7 @@ msgstr "Mudar o usuário para administrador"
 
 #: dist/converse-no-dependencies.js:48325
 msgid "Ban user by changing their affiliation to outcast"
-msgstr ""
+msgstr "Banir o usuário alterando sua afiliação para banido"
 
 #: dist/converse-no-dependencies.js:48325
 #, fuzzy
@@ -1390,7 +1383,7 @@ msgstr "Subscrever como usuário membro"
 
 #: dist/converse-no-dependencies.js:48325
 msgid "Opens up the moderator tools GUI"
-msgstr ""
+msgstr "Abre a interface gráfica das ferramentas do moderador"
 
 #: dist/converse-no-dependencies.js:48325
 msgid "Remove user's ability to post messages"
@@ -1415,7 +1408,7 @@ msgstr "Escolha seu apelido"
 
 #: dist/converse-no-dependencies.js:48325
 msgid "Revoke the user's current affiliation"
-msgstr ""
+msgstr "Revogar a afiliação atual do usuário"
 
 #: dist/converse-no-dependencies.js:48325
 msgid "Set groupchat subject"
@@ -1528,7 +1521,7 @@ msgstr "Entrar na sala"
 
 #: dist/converse-no-dependencies.js:49036
 msgid "You need to provide a nickname"
-msgstr ""
+msgstr "Você precisa fornecer um apelido"
 
 #: dist/converse-no-dependencies.js:49053
 #, javascript-format
@@ -1722,6 +1715,8 @@ msgstr "Sobre"
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
+"%1$s Open Source %2$s XMPP cliente de bate papo oferecido a você por %3$s "
+"Opkode %2$s"
 
 #: dist/converse-no-dependencies.js:50024
 #, javascript-format
@@ -1795,7 +1790,7 @@ msgstr ""
 "mais ser descriptografadas neste dispositivo."
 
 #: dist/converse-no-dependencies.js:50924
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"

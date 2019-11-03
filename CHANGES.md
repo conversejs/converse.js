@@ -7,6 +7,7 @@
 - #1691: Fix `collection.chatbox is undefined` errors
 - #1733: New message notifications for a minimized chat stack on top of each other
 - #1757: Chats are hidden behind the controlbox on mobile
+- #1772 `_converse.api.contact.add(jid, nick)` fails, says not a function
 - Prevent editing of sent file uploads.
 - Initial support for sending custom emojis. Currently only between Converse
   instances. Still working out a wire protocol for compatibility with other clients.

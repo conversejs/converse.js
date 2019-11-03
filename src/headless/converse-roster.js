@@ -1079,8 +1079,9 @@ converse.plugins.add('converse-roster', {
                  * @example
                  *     _converse.api.contacts.add('buddy@example.com', 'Buddy')
                  */
-                'add' (jid, name) {
-                    if (!_.isString(jid) || !_.includes(jid, '@')) {
+                async add (jid, name) {
+                    await _converse.api.waitUntil('rosterContactsFetched');
+                    if (!_.isString(jid) || !jid.includes('@')) {
                         throw new TypeError('contacts.add: invalid jid');
                     }
                     _converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);

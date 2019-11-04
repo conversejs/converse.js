@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-10-20 08:53+0000\n"
+"PO-Revision-Date: 2019-11-05 08:27+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 3.9.1-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -361,28 +361,24 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:9348 dist/converse-no-dependencies.js:9444
-#, fuzzy
 msgid "Show users"
-msgstr "הצג חדרים"
+msgstr "הצגת משתמשים"
 
 #: dist/converse-no-dependencies.js:9374
-#, fuzzy
 msgid "No users with that role found."
-msgstr "לא נמצאו משתמשים"
+msgstr "לא נמצאו משתמשים בתפקיד הזה."
 
 #: dist/converse-no-dependencies.js:9390
-#, fuzzy
 msgid "New Role"
-msgstr "תפקיד"
+msgstr "תפקיד חדש"
 
 #: dist/converse-no-dependencies.js:9404 dist/converse-no-dependencies.js:9504
 msgid "Reason"
-msgstr ""
+msgstr "סיבה"
 
 #: dist/converse-no-dependencies.js:9406
-#, fuzzy
 msgid "Change role"
-msgstr "עריכת הגדרות"
+msgstr "שינוי תפקיד"
 
 #: dist/converse-no-dependencies.js:9410
 msgid ""

@@ -136,7 +136,7 @@ converse.plugins.add('converse-emoji-views', {
             events: {
                 'click .emoji-picker__header li.emoji-category': 'chooseCategory',
                 'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone',
-                'click .emoji-picker li': 'insertEmoji',
+                'click .insert-emoji': 'insertEmoji',
                 'keydown .emoji-search': 'onKeyDown'
             },
 

@@ -15,6 +15,7 @@ import "./utils/muc";
 import { clone, get, intersection, invoke, isElement, isObject, isString, uniq, zipObject } from "lodash";
 import converse from "./converse-core";
 import log from "./log";
+import stanza_utils from "./utils/stanza";
 import u from "./utils/form";
 
 const MUC_ROLE_WEIGHTS = {
@@ -1330,16 +1331,6 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            isReceipt (stanza) {
-                return sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).length > 0;
-            },
-
-            isChatMarker (stanza) {
-                return sizzle(
-                    `received[xmlns="${Strophe.NS.MARKERS}"],
-                     displayed[xmlns="${Strophe.NS.MARKERS}"],
-                     acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
-            },
 
             /**
              * Handle a subject change and return `true` if so.
@@ -1527,9 +1518,7 @@ converse.plugins.add('converse-muc', {
                 if (message) {
                     this.updateMessage(message, original_stanza);
                 }
-                if (message ||
-                        this.isReceipt(stanza) ||
-                        this.isChatMarker(stanza)) {
+                if (message || stanza_utils.isReceipt(stanza) || stanza_utils.isChatMarker(stanza)) {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);

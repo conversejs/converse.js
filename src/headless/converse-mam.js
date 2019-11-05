@@ -38,16 +38,6 @@ converse.plugins.add('converse-mam', {
                     return this.findDuplicateFromArchiveID(stanza);
                 }
                 return message;
-            },
-
-            getUpdatedMessageAttributes (message, stanza) {
-                const attrs = this.__super__.getUpdatedMessageAttributes.apply(this, arguments);
-                if (message && !message.get('is_archived')) {
-                    return Object.assign(attrs, {
-                        'is_archived': this.isArchived(stanza)
-                    }, this.getStanzaIDs(stanza))
-                }
-                return attrs;
             }
         }
     },

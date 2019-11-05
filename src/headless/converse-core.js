@@ -18,6 +18,7 @@ import i18n from './i18n';
 import log from '@converse/headless/log';
 import pluggable from 'pluggable.js/src/pluggable';
 import sizzle from 'sizzle';
+import stanza_utils from "@converse/headless/utils/stanza";
 import u from '@converse/headless/utils/core';
 
 const Strophe = strophe.default.Strophe;
@@ -91,7 +92,8 @@ const CORE_PLUGINS = [
     'converse-rsm',
     'converse-smacks',
     'converse-status',
-    'converse-vcard'
+    'converse-vcard',
+    'stanza-utils'
 ];
 
 
@@ -1800,20 +1802,7 @@ Object.assign(window.converse, {
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
      */
-    'env': {
-        '$build': $build,
-        '$iq': $iq,
-        '$msg': $msg,
-        '$pres': $pres,
-        'Backbone': Backbone,
-        'Promise': Promise,
-        'Strophe': Strophe,
-        '_': _,
-        'log': log,
-        'dayjs': dayjs,
-        'sizzle': sizzle,
-        'utils': u
-    }
+    'env': { $build, $iq, $msg, $pres, Backbone, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
 });
 
 /**

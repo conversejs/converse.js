@@ -1,3 +1,4 @@
+import "./utils/stanza";
 import { get, isObject, isString, propertyOf } from "lodash";
 import converse from "./converse-core";
 import filesize from "filesize";
@@ -20,7 +21,7 @@ converse.plugins.add('converse-chat', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatboxes", "converse-disco"],
+    dependencies: ["stanza-utils", "converse-chatboxes", "converse-disco"],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -28,6 +29,7 @@ converse.plugins.add('converse-chat', {
          */
         const { _converse } = this;
         const { __ } = _converse;
+        const { stanza_utils } = _converse;
 
         // Configuration values for this plugin
         // ====================================
@@ -433,7 +435,6 @@ converse.plugins.add('converse-chat', {
                 }
             },
 
-
             getMostRecentMessage () {
                 for (let i=this.messages.length-1; i>=0; i--) {
                     const message = this.messages.at(i);
@@ -444,8 +445,9 @@ converse.plugins.add('converse-chat', {
             },
 
             getUpdatedMessageAttributes (message, stanza) {  // eslint-disable-line no-unused-vars
-                // Overridden in converse-muc and converse-mam
-                return {};
+                return {
+                    'is_archived': stanza_utils.isArchived(stanza),
+                }
             },
 
             updateMessage (message, stanza) {
@@ -515,18 +517,13 @@ converse.plugins.add('converse-chat', {
                 return true;
             },
 
-            /**
-             * If the passed in `message` stanza contains an
-             * [XEP-0308](https://xmpp.org/extensions/xep-0308.html#usecase)
-             * `<replace>` element, return its `id` attribute.
-             * @private
-             * @method _converse.ChatBox#getReplaceId
-             * @param { XMLElement } stanza
-             */
-            getReplaceId (stanza) {
-                const el = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
-                if (el) {
-                    return el.getAttribute('id');
+            retractMessage (attrs) {
+                if (!attrs.moderated !== 'retracted' && !attrs.retracted) {
+                    return;
+                }
+                const message = this.messages.findWhere({'msgid': attrs.replaced_id, 'from': attrs.from});
+                if (!message) {
+                    return;
                 }
             },
 
@@ -596,7 +593,7 @@ converse.plugins.add('converse-chat', {
             },
 
             findDuplicateFromMessage (stanza) {
-                const text = this.getMessageBody(stanza) || undefined;
+                const text = stanza_utils.getMessageBody(stanza) || undefined;
                 if (!text) { return false; }
                 const id = stanza.getAttribute('id');
                 if (!id) { return false; }
@@ -892,75 +889,6 @@ converse.plugins.add('converse-chat', {
                 });
             },
 
-            getReferencesFromStanza (stanza) {
-                const text = propertyOf(stanza.querySelector('body'))('textContent');
-                return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
-                    const begin = ref.getAttribute('begin'),
-                          end = ref.getAttribute('end');
-                    return  {
-                        'begin': begin,
-                        'end': end,
-                        'type': ref.getAttribute('type'),
-                        'value': text.slice(begin, end),
-                        'uri': ref.getAttribute('uri')
-                    };
-                });
-            },
-
-            /**
-             * Extract the XEP-0359 stanza IDs from the passed in stanza
-             * and return a map containing them.
-             * @private
-             * @method _converse.ChatBox#getStanzaIDs
-             * @param { XMLElement } stanza - The message stanza
-             */
-            getStanzaIDs (stanza) {
-                const attrs = {};
-                const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
-                if (stanza_ids.length) {
-                    stanza_ids.forEach(s => (attrs[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id')));
-                }
-                const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
-                if (result) {
-                    const by_jid = stanza.getAttribute('from');
-                    attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
-                }
-
-                const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-                if (origin_id) {
-                    attrs['origin_id'] = origin_id.getAttribute('id');
-                }
-                return attrs;
-            },
-
-            isArchived (original_stanza) {
-                return !!sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
-            },
-
-            getErrorMessage (stanza) {
-                const error = stanza.querySelector('error');
-                return propertyOf(error.querySelector('text'))('textContent') ||
-                    __('Sorry, an error occurred:') + ' ' + error.innerHTML;
-            },
-
-            /**
-             * Given a message stanza, return the text contained in its body.
-             * @private
-             * @param { XMLElement } stanza
-             */
-            getMessageBody (stanza) {
-                const type = stanza.getAttribute('type');
-                if (type === 'error') {
-                    return this.getErrorMessage(stanza);
-                } else {
-                    const body = stanza.querySelector('body');
-                    if (body) {
-                        return body.textContent.trim();
-                    }
-                }
-            },
-
-
             /**
              * Parses a passed in message stanza and returns an object
              * of attributes.
@@ -970,65 +898,38 @@ converse.plugins.add('converse-chat', {
              * @param { XMLElement } delay - The <delay> node from the stanza, if there was one.
              * @param { XMLElement } original_stanza - The original stanza, that contains the
              *  message stanza, if it was contained, otherwise it's the message stanza itself.
+             * @returns { Object }
              */
             async getMessageAttributesFromStanza (stanza, original_stanza) {
-                const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop();
                 const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
-                const text = this.getMessageBody(stanza) || undefined;
+                const text = stanza_utils.getMessageBody(stanza) || undefined;
                 const chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                             stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
                             stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
                             stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                             stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-                const replaced_id = this.getReplaceId(stanza)
-                const msgid = replaced_id || stanza.getAttribute('id') || original_stanza.getAttribute('id');
-                const attrs = Object.assign({
-                    'chat_state': chat_state,
-                    'is_archived': this.isArchived(original_stanza),
-                    'is_delayed': !!delay,
-                    'is_single_emoji': text ? await u.isOnlyEmojis(text) : false,
-                    'is_spoiler': !!spoiler,
-                    'message': text,
-                    'msgid': msgid,
-                    'replaced_id': replaced_id,
-                    'references': this.getReferencesFromStanza(stanza),
-                    'subject': propertyOf(stanza.querySelector('subject'))('textContent'),
-                    'thread': propertyOf(stanza.querySelector('thread'))('textContent'),
-                    'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString(),
-                    'type': stanza.getAttribute('type')
-                }, this.getStanzaIDs(original_stanza));
-
-                if (attrs.type === 'groupchat') {
-                    attrs.from = stanza.getAttribute('from');
-                    attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
-                    attrs.sender = attrs.nick === this.get('nick') ? 'me': 'them';
-                    attrs.received = (new Date()).toISOString();
-                } else {
-                    attrs.from = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
-                    if (attrs.from === _converse.bare_jid) {
-                        attrs.sender = 'me';
-                        attrs.fullname = _converse.xmppstatus.get('fullname');
-                    } else {
-                        attrs.sender = 'them';
-                        attrs.fullname = this.get('fullname');
-                    }
-                }
-                sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza).forEach(xform => {
-                    attrs['oob_url'] = xform.querySelector('url').textContent;
-                    attrs['oob_desc'] = xform.querySelector('url').textContent;
-                });
-                if (spoiler) {
-                    attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
-                }
-                if (replaced_id) {
-                    attrs['edited'] = (new Date()).toISOString();
-                }
-                // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
-                attrs['id'] = attrs['origin_id'] ||
-                    attrs[`stanza_id ${attrs.from}`] ||
-                    u.getUniqueId();
-                return attrs;
+                return Object.assign(
+                    {
+                        'chat_state': chat_state,
+                        'is_archived': stanza_utils.isArchived(original_stanza),
+                        'is_delayed': !!delay,
+                        'is_single_emoji': text ? await u.isSingleEmoji(text) : false,
+                        'message': text,
+                        'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
+                        'references': stanza_utils.getReferences(stanza),
+                        'subject': propertyOf(stanza.querySelector('subject'))('textContent'),
+                        'thread': propertyOf(stanza.querySelector('thread'))('textContent'),
+                        'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString(),
+                        'type': stanza.getAttribute('type')
+                    },
+                    stanza_utils.getStanzaIDs(original_stanza),
+                    stanza_utils.getSenderAttributes(stanza, this),
+                    stanza_utils.getOutOfBandAttributes(stanza),
+                    stanza_utils.getMessageFasteningAttributes(stanza),
+                    stanza_utils.getSpoilerAttributes(stanza),
+                    stanza_utils.getCorrectionAttributes(stanza, original_stanza)
+                );
             },
 
             maybeShow () {

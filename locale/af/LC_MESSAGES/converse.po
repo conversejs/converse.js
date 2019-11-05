@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-10-18 15:52+0000\n"
+"PO-Revision-Date: 2019-11-06 14:43+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9.1-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -353,15 +353,17 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Moderators is bevoorregte gebruikers wat die rolle van ander gebruikers kan "
+"verander (uitsluitend diegene met admin or eienaar affiliasies)."
 
 #: dist/converse-no-dependencies.js:9334 dist/converse-no-dependencies.js:9358
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "Die verstekrol, impliseer dat u boodskappe kan lees en skryf."
 
 #: dist/converse-no-dependencies.js:9340 dist/converse-no-dependencies.js:9364
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
-msgstr ""
+msgstr "Besoekers mag nie boodskappe skryf in 'n gemodereerde groepgesprek nie."
 
 #: dist/converse-no-dependencies.js:9348 dist/converse-no-dependencies.js:9444
 msgid "Show users"
@@ -389,6 +391,9 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"'n Affiliasie is 'n blywende aanspraak wat gewoonlik 'n specifieke rol "
+"impliseer en sekere voorregte en verantwoordelikhede toeken.\n"
+"Byvoorbeeld, admins en eienaars het automaties die moderator rol."
 
 #: dist/converse-no-dependencies.js:9412
 msgid "Affiliation"
@@ -399,12 +404,16 @@ msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Eienaar is die hoogste affiliasie. Eienaars kan rolle en affiliasies van "
+"alle andere gebruikers verander."
 
 #: dist/converse-no-dependencies.js:9430 dist/converse-no-dependencies.js:9454
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Admin is die 2de hoogste affiliasie. Admins kan die rolle en affiliases van "
+"alle andere gebruikers behalwe eienaars verander."
 
 #: dist/converse-no-dependencies.js:9436 dist/converse-no-dependencies.js:9460
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
@@ -783,13 +792,15 @@ msgstr "Jammer, 'n fout het voorgekom tydens storing van u boekmerk."
 
 #: dist/converse-no-dependencies.js:31732
 msgid "Timeout Error"
-msgstr ""
+msgstr "Tydverstreke-fout"
 
 #: dist/converse-no-dependencies.js:31732
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"Die bediener het nie u boekmerke binne die toegelate tydperk teruggegee nie. "
+"U kan hierdie webbladd herlaai om opnuut te probeer."
 
 #: dist/converse-no-dependencies.js:33481
 msgid "Unencryptable OMEMO message"
@@ -1157,7 +1168,7 @@ msgstr "Ongemodereer"
 
 #: dist/converse-no-dependencies.js:47346
 msgid "Affiliation changed"
-msgstr ""
+msgstr "Affiliasie verander"
 
 #: dist/converse-no-dependencies.js:47369
 msgid "Sorry, something went wrong while trying to set the affiliation"

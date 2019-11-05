@@ -239,14 +239,24 @@
             }));
 
             it("has a method 'add' with which contacts can be added",
-                    mock.initConverse(['rosterInitialized'], {}, (done, _converse) => {
+                    mock.initConverse(['rosterInitialized'], {}, async (done, _converse) => {
 
-                test_utils.createContacts(_converse, 'current');
-                const error = new TypeError('contacts.add: invalid jid');
-                expect(_converse.api.contacts.add).toThrow(error);
-                expect(_converse.api.contacts.add.bind(_converse.api, "invalid jid")).toThrow(error);
+                await test_utils.waitForRoster(_converse, 'current', 0);
+                try {
+                    await _converse.api.contacts.add();
+                    throw new Error('Call should have failed');
+                } catch (e) {
+                    expect(e.message).toBe('contacts.add: invalid jid');
+
+                }
+                try {
+                    await _converse.api.contacts.add("invalid jid");
+                    throw new Error('Call should have failed');
+                } catch (e) {
+                    expect(e.message).toBe('contacts.add: invalid jid');
+                }
                 spyOn(_converse.roster, 'addAndSubscribe');
-                _converse.api.contacts.add("newcontact@example.org");
+                await _converse.api.contacts.add("newcontact@example.org");
                 expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
                 done();
             }));

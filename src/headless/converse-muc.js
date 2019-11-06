@@ -14,6 +14,7 @@ import "./converse-emoji";
 import "./utils/muc";
 import { clone, get, intersection, invoke, isElement, isObject, isString, uniq, zipObject } from "lodash";
 import converse from "./converse-core";
+import log from "./log";
 import u from "./utils/form";
 
 const MUC_ROLE_WEIGHTS = {
@@ -199,10 +200,7 @@ converse.plugins.add('converse-muc', {
 
         async function openRoom (jid) {
             if (!u.isValidMUCJID(jid)) {
-                return _converse.log(
-                    `Invalid JID "${jid}" provided in URL fragment`,
-                    Strophe.LogLevel.WARN
-                );
+                return log.warn(`invalid jid "${jid}" provided in url fragment`);
             }
             await _converse.api.waitUntil('roomsAutoJoined');
             if (_converse.allow_bookmarks) {
@@ -266,10 +264,7 @@ converse.plugins.add('converse-muc', {
                 delete this.occupant;
                 const chatbox = get(this, 'collection.chatbox');
                 if (!chatbox) {
-                    return _converse.log(
-                        `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
-                        Strophe.LogLevel.ERROR
-                    );
+                    return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                 }
                 this.listenTo(chatbox.occupants, 'add', this.onOccupantAdded);
             },
@@ -280,10 +275,7 @@ converse.plugins.add('converse-muc', {
                     this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
                     const chatbox = get(this, 'collection.chatbox');
                     if (!chatbox) {
-                        return _converse.log(
-                            `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
-                            Strophe.LogLevel.ERROR
-                        );
+                        return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                     }
                     this.stopListening(chatbox.occupants, 'add', this.onOccupantAdded);
                 }
@@ -293,10 +285,7 @@ converse.plugins.add('converse-muc', {
                 if (this.get('type') !== 'groupchat') { return; }
                 const chatbox = get(this, 'collection.chatbox');
                 if (!chatbox) {
-                    return _converse.log(
-                        `Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`,
-                        Strophe.LogLevel.ERROR
-                    );
+                    return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                 }
                 const nick = Strophe.getResourceFromJid(this.get('from'));
                 this.occupant = chatbox.occupants.findWhere({'nick': nick});
@@ -330,10 +319,7 @@ converse.plugins.add('converse-muc', {
                         if (jid) {
                             vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                         } else {
-                            _converse.log(
-                                `Could not assign VCard for message because no JID found! msgid: ${this.get('msgid')}`,
-                                Strophe.LogLevel.ERROR
-                            );
+                            log.error(`Could not assign VCard for message because no JID found! msgid: ${this.get('msgid')}`);
                             return;
                         }
                     }
@@ -429,10 +415,7 @@ converse.plugins.add('converse-muc', {
 
             async enterRoom () {
                 const conn_status = this.get('connection_status');
-                _converse.log(
-                    `${this.get('jid')} initialized with connection_status ${conn_status}`,
-                    Strophe.LogLevel.DEBUG
-                );
+                log.debug(`${this.get('jid')} initialized with connection_status ${conn_status}`);
                 if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
                     // We're not restoring a room from cache, so let's clear the potentially stale cache.
                     this.removeNonMembers();
@@ -526,7 +509,7 @@ converse.plugins.add('converse-muc', {
                             // MAM messages are handled in converse-mam.
                             // We shouldn't get MAM messages here because
                             // they shouldn't have a `type` attribute.
-                            _converse.log(`Received a MAM message with type "chat".`, Strophe.LogLevel.WARN);
+                            log.warn(`received a mam message with type "chat".`);
                             return true;
                         }
                         this.onMessage(stanza);
@@ -651,7 +634,7 @@ converse.plugins.add('converse-muc', {
                         return this.features.destroy({success, 'error': (m, e) => reject(e)})
                     });
                 } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                 }
                 return _converse.ChatBox.prototype.close.call(this);
             },
@@ -851,7 +834,7 @@ converse.plugins.add('converse-muc', {
                     identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid'));
                 } catch (e) {
                     // Getting the identity probably failed because this room doesn't exist yet.
-                    return _converse.log(e, Strophe.LogLevel.ERROR);
+                    return log.error(e);
                 }
                 const fields = await _converse.api.disco.getFields(this.get('jid'));
                 this.save({
@@ -1126,15 +1109,15 @@ converse.plugins.add('converse-muc', {
                 if (result === null) {
                     const err_msg = `Error: timeout while fetching ${affiliation} list for MUC ${this.get('jid')}`;
                     const err = new Error(err_msg);
-                    _converse.log(err_msg, Strophe.LogLevel.WARN);
-                    _converse.log(result, Strophe.LogLevel.WARN);
+                    log.warn(err_msg);
+                    log.warn(result);
                     return err;
                 }
                 if (u.isErrorStanza(result)) {
                     const err_msg = `Error: not allowed to fetch ${affiliation} list for MUC ${this.get('jid')}`;
                     const err = new Error(err_msg);
-                    _converse.log(err_msg, Strophe.LogLevel.WARN);
-                    _converse.log(result, Strophe.LogLevel.WARN);
+                    log.warn(err_msg);
+                    log.warn(result);
                     return err;
                 }
                 return u.parseMemberListIQ(result).filter(p => p);
@@ -1227,12 +1210,12 @@ converse.plugins.add('converse-muc', {
                     } else if (sizzle(`registration-required[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
                         err_msg = __("You're not allowed to register in this groupchat because it's members-only.");
                     }
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                     return err_msg;
                 }
                 const required_fields = sizzle('field required', iq).map(f => f.parentElement);
                 if (required_fields.length > 1 && required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
-                    return _converse.log(`Can't register the user register in the groupchat ${jid} due to the required fields`);
+                    return log.error(`Can't register the user register in the groupchat ${jid} due to the required fields`);
                 }
                 try {
                     await _converse.api.sendIQ($iq({
@@ -1250,8 +1233,8 @@ converse.plugins.add('converse-muc', {
                     } else if (sizzle(`bad-request[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
                         err_msg = __("Can't register your nickname in this groupchat, invalid data form supplied.");
                     }
-                    _converse.log(err_msg);
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(err_msg);
+                    log.error(e);
                     return err_msg;
                 }
             },
@@ -1517,18 +1500,14 @@ converse.plugins.add('converse-muc', {
                 const original_stanza = stanza;
                 const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
                 if (bare_forward) {
-                    return _converse.log(
-                        'onMessage: Ignoring unencapsulated forwarded groupchat message',
-                        Strophe.LogLevel.WARN
-                    );
+                    return log.warn('onMessage: Ignoring unencapsulated forwarded groupchat message');
                 }
                 const is_carbon = u.isCarbonMessage(stanza);
                 if (is_carbon) {
                     // XEP-280: groupchat messages SHOULD NOT be carbon copied, so we're discarding it.
-                    return _converse.log(
+                    return log.warn(
                         'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
-                        'according to the XEP groupchat messages SHOULD NOT be carbon copied',
-                        Strophe.LogLevel.WARN
+                        'according to the XEP groupchat messages SHOULD NOT be carbon copied'
                     );
                 }
                 const is_mam = u.isMAMMessage(stanza);
@@ -1537,10 +1516,7 @@ converse.plugins.add('converse-muc', {
                         const selector = `[xmlns="${Strophe.NS.MAM}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
                         stanza = sizzle(selector, stanza).pop();
                     } else {
-                        return _converse.log(
-                            `onMessage: Ignoring alleged MAM groupchat message from ${stanza.getAttribute('from')}`,
-                            Strophe.LogLevel.WARN
-                        );
+                        return log.warn(`onMessage: Ignoring alleged MAM groupchat message from ${stanza.getAttribute('from')}`);
                     }
                 }
 
@@ -2097,9 +2073,7 @@ converse.plugins.add('converse-muc', {
                 } else if (isObject(groupchat)) {
                     _converse.api.rooms.open(groupchat.jid, clone(groupchat));
                 } else {
-                    _converse.log(
-                        'Invalid groupchat criteria specified for "auto_join_rooms"',
-                        Strophe.LogLevel.ERROR);
+                    log.error('Invalid groupchat criteria specified for "auto_join_rooms"');
                 }
             });
             /**
@@ -2256,7 +2230,7 @@ converse.plugins.add('converse-muc', {
                     await _converse.api.waitUntil('chatBoxesFetched');
                     if (jids === undefined) {
                         const err_msg = 'rooms.open: You need to provide at least one JID';
-                        _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                        log.error(err_msg);
                         throw(new TypeError(err_msg));
                     } else if (isString(jids)) {
                         const room = await _converse.api.rooms.create(jids, attrs);

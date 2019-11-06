@@ -9,6 +9,7 @@
  */
 import converse from "@converse/headless/converse-core";
 import { get } from "lodash";
+import log from "@converse/headless/log";
 
 const { Strophe, sizzle } = converse.env;
 const u = converse.env.utils;
@@ -150,9 +151,7 @@ converse.plugins.add('converse-notification', {
                 title = __("%1$s says", Strophe.getResourceFromJid(full_from_jid));
             } else {
                 if (_converse.roster === undefined) {
-                    _converse.log(
-                        "Could not send notification, because roster is undefined",
-                        Strophe.LogLevel.ERROR);
+                    log.error("Could not send notification, because roster is undefined");
                     return;
                 }
                 roster_item = _converse.roster.get(from_jid);

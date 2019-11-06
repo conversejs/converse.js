@@ -10,6 +10,7 @@
  */
 import "converse-profile";
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
 
 const { Backbone, Strophe, sizzle, $build, $iq, $msg, _ } = converse.env;
@@ -122,7 +123,7 @@ converse.plugins.add('converse-omemo', {
                     .catch(err => {
                         const { _converse } = this.__super__,
                               { __ } = _converse;
-                        _converse.log(err, Strophe.LogLevel.ERROR);
+                        log.error(err);
                         _converse.api.alert(
                             Strophe.LogLevel.ERROR,
                             __('Error'), [__('Sorry, an error occurred while trying to remove the devices.')]
@@ -312,7 +313,7 @@ converse.plugins.add('converse-omemo', {
                         'type': 'error',
                     });
                 }
-                _converse.log(`${e.name} ${e.message}`, Strophe.LogLevel.ERROR);
+                log.error(`${e.name} ${e.message}`);
             },
 
             async handleDecryptedWhisperMessage (attrs, key_and_tag) {
@@ -414,10 +415,10 @@ converse.plugins.add('converse-omemo', {
                         err_msgs.push(e.iq.outerHTML);
                     }
                     _converse.api.alert('error', __('Error'), err_msgs);
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                 } else if (e.user_facing) {
                     _converse.api.alert('error', __('Error'), [e.message]);
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                 } else {
                     throw e;
                 }
@@ -557,11 +558,8 @@ converse.plugins.add('converse-omemo', {
                     const session = await buildSession(device);
                     return session;
                 } catch (e) {
-                    _converse.log(
-                        `Could not build an OMEMO session for device ${device.get('id')}`,
-                        Strophe.LogLevel.ERROR
-                    );
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(`Could not build an OMEMO session for device ${device.get('id')}`);
+                    log.error(e);
                     return null;
                 }
             }
@@ -845,7 +843,7 @@ converse.plugins.add('converse-omemo', {
                     Object.keys(this.getPreKeys())
                 );
                 if (missing_keys.length < 1) {
-                    _converse.log("No missing prekeys to generate for our own device", Strophe.LogLevel.WARN);
+                    log.warn("No missing prekeys to generate for our own device");
                     return Promise.resolve();
                 }
                 const keys = await Promise.all(missing_keys.map(id => libsignal.KeyHelper.generatePreKey(parseInt(id, 10))));
@@ -908,11 +906,8 @@ converse.plugins.add('converse-omemo', {
                                 }
                             },
                             'error': (model, resp) => {
-                                _converse.log(
-                                    "Could not fetch OMEMO session from cache, we'll generate a new one.",
-                                    Strophe.LogLevel.WARN
-                                );
-                                _converse.log(resp, Strophe.LogLevel.WARN);
+                                log.warn("Could not fetch OMEMO session from cache, we'll generate a new one.");
+                                log.warn(resp);
                                 this.generateBundle().then(resolve).catch(reject);
                             }
                         });
@@ -996,10 +991,10 @@ converse.plugins.add('converse-omemo', {
                         ids = await this.fetchDevicesFromServer()
                     } catch (e) {
                         if (e === null) {
-                            _converse.log(`Timeout error while fetching devices for ${this.get('jid')}`, Strophe.LogLevel.ERROR);
+                            log.error(`Timeout error while fetching devices for ${this.get('jid')}`);
                         } else {
-                            _converse.log(`Could not fetch devices for ${this.get('jid')}`, Strophe.LogLevel.ERROR);
-                            _converse.log(e, Strophe.LogLevel.ERROR);
+                            log.error(`Could not fetch devices for ${this.get('jid')}`);
+                            log.error(e);
                         }
                         this.destroy();
                     }
@@ -1014,7 +1009,7 @@ converse.plugins.add('converse-omemo', {
                     this._devices_promise = new Promise(resolve => {
                         this.devices.fetch({
                             'success': c => resolve(this.onDevicesFound(c)),
-                            'error': (m, e) => { _converse.log(e, Strophe.LogLevel.ERROR); resolve(); }
+                            'error': (m, e) => { log.error(e); resolve(); }
                         });
                     });
                 }
@@ -1049,7 +1044,7 @@ converse.plugins.add('converse-omemo', {
                 try {
                     iq = await _converse.api.sendIQ(stanza);
                 } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                     return [];
                 }
                 const device_ids = sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq).map(dev => dev.getAttribute('id'));
@@ -1161,7 +1156,7 @@ converse.plugins.add('converse-omemo', {
                         updateBundleFromStanza(message);
                     }
                 } catch (e) {
-                    _converse.log(e.message, Strophe.LogLevel.ERROR);
+                    log.error(e.message);
                 }
                 return true;
             }, null, 'message', 'headline');
@@ -1189,8 +1184,8 @@ converse.plugins.add('converse-omemo', {
                 await restoreOMEMOSession();
                 await _converse.omemo_store.publishBundle();
             } catch (e) {
-                _converse.log("Could not initialize OMEMO support", Strophe.LogLevel.ERROR);
-                _converse.log(e, Strophe.LogLevel.ERROR);
+                log.error("Could not initialize OMEMO support");
+                log.error(e);
                 return;
             }
             /**
@@ -1252,11 +1247,11 @@ converse.plugins.add('converse-omemo', {
 
         _converse.api.listen.on('userDetailsModalInitialized', (contact) => {
             const jid = contact.get('jid');
-            _converse.generateFingerprints(jid).catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
+            _converse.generateFingerprints(jid).catch(e => log.error(e));
         });
 
         _converse.api.listen.on('profileModalInitialized', () => {
-            _converse.generateFingerprints(_converse.bare_jid).catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
+            _converse.generateFingerprints(_converse.bare_jid).catch(e => log.error(e));
         });
 
         _converse.api.listen.on('afterTearDown', () => (delete _converse.omemo_store));

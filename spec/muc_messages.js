@@ -35,11 +35,10 @@
             `);
             const view = _converse.api.chatviews.get(muc_jid);
             await view.model.onMessage(received_stanza);
-            spyOn(_converse, 'log');
+            spyOn(converse.env.log, 'warn');
             _converse.connection._dataRecv(test_utils.createRequest(received_stanza));
-            expect(_converse.log).toHaveBeenCalledWith(
-                'onMessage: Ignoring unencapsulated forwarded groupchat message',
-                Strophe.LogLevel.WARN
+            expect(converse.env.log.warn).toHaveBeenCalledWith(
+                'onMessage: Ignoring unencapsulated forwarded groupchat message'
             );
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
             expect(view.model.messages.length).toBe(0);
@@ -193,12 +192,11 @@
                         'type': 'groupchat'
                 }).c('body').t('I am groot').tree();
             const view = _converse.api.chatviews.get(muc_jid);
-            spyOn(_converse, 'log');
+            spyOn(converse.env.log, 'warn');
             await view.model.onMessage(msg);
-            expect(_converse.log).toHaveBeenCalledWith(
+            expect(converse.env.log.warn).toHaveBeenCalledWith(
                 'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
-                'according to the XEP groupchat messages SHOULD NOT be carbon copied',
-                Strophe.LogLevel.WARN
+                'according to the XEP groupchat messages SHOULD NOT be carbon copied'
             );
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
             expect(view.model.messages.length).toBe(0);

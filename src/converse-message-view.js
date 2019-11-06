@@ -12,6 +12,7 @@ import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
 import { debounce } from 'lodash'
 import filesize from "filesize";
+import log from "@converse/headless/log";
 import tpl_csn from "templates/csn.html";
 import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
@@ -128,7 +129,7 @@ converse.plugins.add('converse-message-view', {
                     this.renderChatStateNotification()
                 } else if (this.model.get('file') && !this.model.get('oob_url')) {
                     if (!this.model.file) {
-                        _converse.log("Attempted to render a file upload message with no file data");
+                        log.error("Attempted to render a file upload message with no file data");
                         return this.el;
                     }
                     this.renderFileUploadProgresBar();

@@ -10,8 +10,9 @@
  * Converse.js plugin which adds support for XEP-0198: Stream Management
  */
 import converse from "./converse-core";
+import log from "./log";
 
-const { Strophe, } = converse.env;
+const { Strophe } = converse.env;
 const u = converse.env.utils;
 
 
@@ -50,7 +51,7 @@ converse.plugins.add('converse-smacks', {
             if (delta < 0) {
                 const err_msg = `New reported stanza count lower than previous. `+
                     `New: ${handled} - Previous: ${last_known_handled}`
-                _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                log.error(err_msg);
             }
             const unacked_stanzas = _converse.session.get('unacked_stanzas');
             if (delta > unacked_stanzas.length) {
@@ -59,7 +60,7 @@ converse.plugins.add('converse-smacks', {
                     `Reported Acknowledged Count: ${delta} -`+
                     `Unacknowledged Stanza Count: ${unacked_stanzas.length} -`+
                     `New: ${handled} - Previous: ${last_known_handled}`
-                _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                log.error(err_msg);
             }
             _converse.session.save({
                 'num_stanzas_handled_by_server': handled,
@@ -125,11 +126,11 @@ converse.plugins.add('converse-smacks', {
                 //
                 // After resource binding, sendEnableStanza will be called
                 // based on the afterResourceBinding event.
-                _converse.log('Could not resume previous SMACKS session, session id not found. '+
-                              'A new session will be established.', Strophe.LogLevel.WARN);
+                log.warn('Could not resume previous SMACKS session, session id not found. '+
+                         'A new session will be established.');
             } else {
-                _converse.log('Failed to enable stream management', Strophe.LogLevel.ERROR);
-                _converse.log(el.outerHTML, Strophe.LogLevel.ERROR);
+                log.error('Failed to enable stream management');
+                log.error(el.outerHTML);
             }
             resetSessionData();
             /**
@@ -224,7 +225,7 @@ converse.plugins.add('converse-smacks', {
 
         function onStanzaSent (stanza) {
             if (!_converse.session) {
-                _converse.log('No _converse.session!', Strophe.LogLevel.WARN);
+                log.warn('No _converse.session!');
                 return;
             }
             if (!_converse.session.get('smacks_enabled')) {

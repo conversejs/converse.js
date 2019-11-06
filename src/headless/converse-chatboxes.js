@@ -9,6 +9,7 @@
 import "./converse-emoji";
 import converse from "./converse-core";
 import { isString } from "lodash";
+import log from "./log";
 
 const { Strophe } = converse.env;
 
@@ -104,7 +105,7 @@ converse.plugins.add('converse-chatboxes', {
             try {
                 chatbox = new model(attrs, {'collection': _converse.chatboxes});
             } catch (e) {
-                _converse.log(e, Strophe.LogLevel.ERROR);
+                log.error(e);
                 return null;
             }
             await chatbox.initialized;

@@ -1,6 +1,7 @@
 import { get, isObject, isString, propertyOf } from "lodash";
 import converse from "./converse-core";
 import filesize from "filesize";
+import log from "./log";
 
 const { $msg, Backbone, Strophe, dayjs, sizzle, utils } = converse.env;
 const u = converse.env.utils;
@@ -98,7 +99,7 @@ converse.plugins.add('converse-chat', {
                 try {
                     this.destroy()
                 } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                 }
             },
 
@@ -164,7 +165,7 @@ converse.plugins.add('converse-chat', {
                 try {
                     stanza = await this.sendSlotRequestStanza();
                 } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                     return this.save({
                         'type': 'error',
                         'message': __("Sorry, could not determine upload URL."),
@@ -190,7 +191,7 @@ converse.plugins.add('converse-chat', {
                 const xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
-                        _converse.log("Status: " + xhr.status, Strophe.LogLevel.INFO);
+                        log.info("Status: " + xhr.status);
                         if (xhr.status === 200 || xhr.status === 201) {
                             this.save({
                                 'upload': _converse.SUCCESS,
@@ -318,7 +319,7 @@ converse.plugins.add('converse-chat', {
 
             fetchMessages () {
                 if (this.messages.fetched) {
-                    _converse.log(`Not re-fetching messages for ${this.get('jid')}`, Strophe.LogLevel.INFO);
+                    log.info(`Not re-fetching messages for ${this.get('jid')}`);
                     return;
                 }
                 this.messages.fetched = u.getResolveablePromise();
@@ -356,7 +357,7 @@ converse.plugins.add('converse-chat', {
                     this.messages.reset();
                 } catch (e) {
                     this.messages.trigger('reset');
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                 } finally {
                     delete this.messages.fetched;
                 }
@@ -368,7 +369,7 @@ converse.plugins.add('converse-chat', {
                         return this.destroy({success, 'error': (m, e) => reject(e)})
                     });
                 } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                 } finally {
                     if (_converse.clear_messages_on_reconnection) {
                         await this.clearMessages();
@@ -401,7 +402,7 @@ converse.plugins.add('converse-chat', {
                 const auto_join = _converse.auto_join_private_chats.concat(room_jids);
                 if (_converse.singleton && !auto_join.includes(attrs.jid) && !_converse.auto_join_on_invite) {
                     const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
-                    _converse.log(msg, Strophe.LogLevel.WARN);
+                    log.warn(msg);
                     return msg;
                 }
             },
@@ -625,11 +626,8 @@ converse.plugins.add('converse-chat', {
                 if (markers.length === 0) {
                     return false;
                 } else if (markers.length > 1) {
-                    _converse.log(
-                        'handleChatMarker: Ignoring incoming stanza with multiple message markers',
-                        Strophe.LogLevel.ERROR
-                    );
-                    _converse.log(stanza, Strophe.LogLevel.ERROR);
+                    log.error('handleChatMarker: Ignoring incoming stanza with multiple message markers');
+                    log.error(stanza);
                     return false;
                 } else {
                     const marker = markers.pop();
@@ -1088,8 +1086,8 @@ converse.plugins.add('converse-chat', {
                     .c('not-allowed', {xmlns:"urn:ietf:params:xml:ns:xmpp-stanzas"}).up()
                     .c('text', {xmlns:"urn:ietf:params:xml:ns:xmpp-stanzas"}).t(text)
             );
-            _converse.log(`Rejecting message stanza with the following reason: ${text}`, Strophe.LogLevel.WARN);
-            _converse.log(stanza, Strophe.LogLevel.WARN);
+            log.warn(`Rejecting message stanza with the following reason: ${text}`);
+            log.warn(stanza);
         }
 
 
@@ -1123,17 +1121,11 @@ converse.plugins.add('converse-chat', {
             const to_resource = Strophe.getResourceFromJid(to_jid);
 
             if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
-                return _converse.log(
-                    `onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`,
-                    Strophe.LogLevel.INFO
-                );
+                return log.info(`onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`);
             } else if (utils.isHeadlineMessage(_converse, stanza)) {
                 // XXX: Prosody sends headline messages with the
                 // wrong type ('chat'), so we need to filter them out here.
-                return _converse.log(
-                    `onMessage: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`,
-                    Strophe.LogLevel.INFO
-                );
+                return log.info(`onMessage: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`);
             }
 
             const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
@@ -1163,29 +1155,20 @@ converse.plugins.add('converse-chat', {
                     to_jid = stanza.getAttribute('to');
                     from_jid = stanza.getAttribute('from');
                 } else {
-                    return _converse.log(
-                        `onMessage: Ignoring alleged MAM message from ${stanza.getAttribute('from')}`,
-                        Strophe.LogLevel.WARN
-                    );
+                    return log.warn(`onMessage: Ignoring alleged MAM message from ${stanza.getAttribute('from')}`);
                 }
             }
 
             const from_bare_jid = Strophe.getBareJidFromJid(from_jid);
             const is_me = from_bare_jid === _converse.bare_jid;
             if (is_me && to_jid === null) {
-                return _converse.log(
-                    `Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`,
-                    Strophe.LogLevel.ERROR
-                );
+                return log.error(`Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`);
             }
             const contact_jid = is_me ? Strophe.getBareJidFromJid(to_jid) : from_bare_jid;
             const contact = await _converse.api.contacts.get(contact_jid);
             if (contact === undefined && !_converse.allow_non_roster_messaging) {
-                _converse.log(
-                    `Blocking messaging with a JID not in our roster because allow_non_roster_messaging is false.`,
-                    Strophe.LogLevel.ERROR
-                );
-                return _converse.log(stanza, Strophe.LogLevel.ERROR);
+                log.error(`Blocking messaging with a JID not in our roster because allow_non_roster_messaging is false.`);
+                return log.error(stanza);
             }
             // Get chat box, but only create when the message has something to show to the user
             const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
@@ -1210,7 +1193,7 @@ converse.plugins.add('converse-chat', {
                    // MAM messages are handled in converse-mam.
                    // We shouldn't get MAM messages here because
                    // they shouldn't have a `type` attribute.
-                   _converse.log(`Received a MAM message with type "chat".`, Strophe.LogLevel.WARN);
+                   log.warn(`Received a MAM message with type "chat".`);
                    return true;
                }
                _converse.handleMessageStanza(stanza);
@@ -1247,9 +1230,7 @@ converse.plugins.add('converse-chat', {
                 if (isString(jid)) {
                     _converse.api.chats.open(jid);
                 } else {
-                    _converse.log(
-                        'Invalid jid criteria specified for "auto_join_private_chats"',
-                        Strophe.LogLevel.ERROR);
+                    log.error('Invalid jid criteria specified for "auto_join_private_chats"');
                 }
             });
             /**
@@ -1267,10 +1248,7 @@ converse.plugins.add('converse-chat', {
         /************************ BEGIN Route Handlers ************************/
         function openChat (jid) {
             if (!utils.isValidJID(jid)) {
-                return _converse.log(
-                    `Invalid JID "${jid}" provided in URL fragment`,
-                    Strophe.LogLevel.WARN
-                );
+                return log.warn(`Invalid JID "${jid}" provided in URL fragment`);
             }
             _converse.api.chats.open(jid);
         }
@@ -1312,7 +1290,7 @@ converse.plugins.add('converse-chat', {
                         }
                         const chatbox = _converse.api.chats.get(jids, attrs, true);
                         if (!chatbox) {
-                            _converse.log("Could not open chatbox for JID: "+jids, Strophe.LogLevel.ERROR);
+                            log.error("Could not open chatbox for JID: "+jids);
                             return;
                         }
                         return chatbox;
@@ -1324,10 +1302,7 @@ converse.plugins.add('converse-chat', {
                             return _converse.api.chats.get(jid, attrs, true).maybeShow();
                         }));
                     }
-                    _converse.log(
-                        "chats.create: You need to provide at least one JID",
-                        Strophe.LogLevel.ERROR
-                    );
+                    log.error("chats.create: You need to provide at least one JID");
                     return null;
                 },
 
@@ -1385,7 +1360,7 @@ converse.plugins.add('converse-chat', {
                         );
                     }
                     const err_msg = "chats.open: You need to provide at least one JID";
-                    _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                    log.error(err_msg);
                     throw new Error(err_msg);
                 },
 

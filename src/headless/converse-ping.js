@@ -10,6 +10,8 @@
  * as specified in XEP-0199 XMPP Ping.
  */
 import converse from "./converse-core";
+import log from "./log";
+
 const { Strophe, $iq } = converse.env;
 const u = converse.env.utils;
 
@@ -104,13 +106,13 @@ converse.plugins.add('converse-ping', {
 
                     const result = await _converse.api.sendIQ(iq, 10000, false);
                     if (result === null) {
-                        _converse.log(`Timeout while pinging ${jid}`, Strophe.LogLevel.WARN);
+                        log.warn(`Timeout while pinging ${jid}`);
                         if (jid === Strophe.getDomainFromJid(_converse.bare_jid)) {
                             _converse.api.connection.reconnect();
                         }
                     } else if (u.isErrorStanza(result)) {
-                        _converse.log(`Error while pinging ${jid}`, Strophe.LogLevel.ERROR);
-                        _converse.log(result, Strophe.LogLevel.ERROR);
+                        log.error(`Error while pinging ${jid}`);
+                        log.error(result);
                     }
                     return true;
                 }

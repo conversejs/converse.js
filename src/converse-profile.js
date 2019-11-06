@@ -13,12 +13,13 @@ import "converse-modal";
 import "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 import tpl_chat_status_modal from "templates/chat_status_modal.html";
 import tpl_client_info_modal from "templates/client_info_modal.html";
 import tpl_profile_modal from "templates/profile_modal.html";
 import tpl_profile_view from "templates/profile_view.html";
 
-const { Strophe, sizzle } = converse.env;
+const { sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -102,7 +103,7 @@ converse.plugins.add('converse-profile', {
                 _converse.api.vcard.set(_converse.bare_jid, data)
                 .then(() => _converse.api.vcard.update(this.model.vcard, true))
                 .catch((err) => {
-                    _converse.log(err, Strophe.LogLevel.FATAL);
+                    log.fatal(err);
                     _converse.api.show('error', __('Error'), [
                         __("Sorry, an error happened while trying to save your profile data."),
                         __("You can check your browser's developer console for any error output.")

@@ -518,7 +518,7 @@
 
             // Ideally we wouldn't have to filter out headline
             // messages, but Prosody gives them the wrong 'type' :(
-            sinon.spy(_converse, 'log');
+            sinon.spy(converse.env.log, 'info');
             sinon.spy(_converse.api.chatboxes, 'get');
             sinon.spy(u, 'isHeadlineMessage');
             const msg = $msg({
@@ -528,15 +528,14 @@
                     id: (new Date()).getTime()
                 }).c('body').t("This headline message will not be shown").tree();
             await _converse.handleMessageStanza(msg);
-            expect(_converse.log.calledWith(
-                "onMessage: Ignoring incoming headline message from JID: montague.lit",
-                Strophe.LogLevel.INFO
+            expect(converse.env.log.info.calledWith(
+                "onMessage: Ignoring incoming headline message from JID: montague.lit"
             )).toBeTruthy();
             expect(u.isHeadlineMessage.called).toBeTruthy();
             expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
             expect(_converse.api.chatboxes.get.called).toBeFalsy();
             // Remove sinon spies
-            _converse.log.restore();
+            converse.env.log.info.restore();
             _converse.api.chatboxes.get.restore();
             u.isHeadlineMessage.restore();
             done();
@@ -1853,7 +1852,7 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
                 // Send a message from a different resource
-                spyOn(_converse, 'log');
+                spyOn(converse.env.log, 'info');
                 spyOn(_converse.api.chatboxes, 'create').and.callThrough();
                 _converse.filter_by_resource = true;
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1866,9 +1865,9 @@
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 await _converse.handleMessageStanza(msg);
 
-                expect(_converse.log).toHaveBeenCalledWith(
-                        "onMessage: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
-                        Strophe.LogLevel.INFO);
+                expect(converse.env.log.info).toHaveBeenCalledWith(
+                    "onMessage: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
+                );
                 expect(_converse.api.chatboxes.create).not.toHaveBeenCalled();
                 _converse.filter_by_resource = false;
 

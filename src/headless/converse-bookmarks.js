@@ -12,6 +12,7 @@
 import "@converse/headless/converse-muc";
 import converse from "@converse/headless/converse-core";
 import { get } from "lodash";
+import log from "./log";
 
 const { Backbone, Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
@@ -105,7 +106,7 @@ converse.plugins.add('converse-bookmarks', {
             initialize () {
                 this.on('add', bm => this.openBookmarkedRoom(bm)
                     .then(bm => this.markRoomAsBookmarked(bm))
-                    .catch(e => _converse.log(e, Strophe.LogLevel.FATAL))
+                    .catch(e => log.fatal(e))
                 );
 
                 this.on('remove', this.markRoomAsUnbookmarked, this);
@@ -172,8 +173,8 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             onBookmarkError (iq, options) {
-                _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
-                _converse.log(iq);
+                log.error("Error while trying to add bookmark");
+                log.error(iq);
                 _converse.api.alert(
                     'error', __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
                 );
@@ -232,14 +233,14 @@ converse.plugins.add('converse-bookmarks', {
 
             onBookmarksReceivedError (deferred, iq) {
                 if (iq === null) {
-                    _converse.log('Error: timeout while fetching bookmarks', Strophe.LogLevel.ERROR);
+                    log.error('Error: timeout while fetching bookmarks');
                     _converse.api.alert('error', __('Timeout Error'),
                         [__("The server did not return your bookmarks within the allowed time. "+
                             "You can reload the page to request them again.")]
                     );
                 } else {
-                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
-                    _converse.log(iq, Strophe.LogLevel.DEBUG);
+                    log.error('Error while fetching bookmarks');
+                    log.error(iq);
                 }
                 if (deferred) {
                     if (iq.querySelector('error[type="cancel"] item-not-found')) {
@@ -305,7 +306,7 @@ converse.plugins.add('converse-bookmarks', {
                 if (sizzle('event[xmlns="'+Strophe.NS.PUBSUB+'#event"] items[node="storage:bookmarks"]', message).length) {
                     _converse.api.waitUntil('bookmarksInitialized')
                         .then(() => _converse.bookmarks.createBookmarksFromStanza(message))
-                        .catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
+                        .catch(e => log.fatal(e));
                 }
             }, null, 'message', 'headline', null, _converse.bare_jid);
 

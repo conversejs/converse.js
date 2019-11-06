@@ -8,6 +8,7 @@
  */
 import "./converse-disco";
 import converse from "./converse-core";
+import log from "./log";
 
 const { Strophe, $iq } = converse.env;
 
@@ -68,8 +69,8 @@ converse.plugins.add('converse-pubsub', {
 
                             Object.keys(options).forEach(k => stanza.c('field', {'var': k}).c('value').t(options[k]).up().up());
                         } else {
-                            _converse.log(`_converse.api.publish: ${jid} does not support #publish-options, `+
-                                          `so we didn't set them even though they were provided.`)
+                            log.warn(`_converse.api.publish: ${jid} does not support #publish-options, `+
+                                     `so we didn't set them even though they were provided.`)
                         }
                     }
                     try {
@@ -83,10 +84,7 @@ converse.plugins.add('converse-pubsub', {
                             // met. We re-publish but without publish-options.
                             const el = stanza.nodeTree;
                             el.querySelector('publish-options').outerHTML = '';
-                            _converse.log(
-                                `PubSub: Republishing without publish options. ${el.outerHTML}`,
-                                Strophe.LogLevel.WARN
-                            );
+                            log.warn(`PubSub: Republishing without publish options. ${el.outerHTML}`);
                             _converse.api.sendIQ(el);
                         } else {
                             throw iq;

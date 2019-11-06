@@ -15,6 +15,7 @@ import "formdata-polyfill";
 import "@converse/headless/utils/muc";
 import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.html";
 import tpl_chatarea from "templates/chatarea.html";
 import tpl_chatroom from "templates/chatroom.html";
@@ -219,7 +220,7 @@ converse.plugins.add('converse-muc-views', {
                 parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
                 _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null)
                     .then(stanza => insertRoomInfo(parent_el, stanza))
-                    .catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
+                    .catch(e => log.error(e));
             }
         }
 
@@ -353,7 +354,7 @@ converse.plugins.add('converse-muc-views', {
                     })
                     .catch(err => {
                         this.alert(__('Sorry, something went wrong while trying to set the affiliation'), 'danger');
-                        _converse.log(err, Strophe.LogLevel.ERROR);
+                        log.error(err);
                     });
             },
 
@@ -377,7 +378,7 @@ converse.plugins.add('converse-muc-views', {
                         } else {
                             this.alert(__('Sorry, something went wrong while trying to set the role'), 'danger');
                             if (u.isErrorObject(e)) {
-                                _converse.log(e, Strophe.LogLevel.ERROR);
+                                log.error(e);
                             }
                         }
                     }
@@ -1149,7 +1150,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onCommandError (err) {
-                _converse.log(err, Strophe.LogLevel.FATAL);
+                log.fatal(err);
                 this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."));
             },
 
@@ -1366,7 +1367,7 @@ converse.plugins.add('converse-muc-views', {
                     this.showSpinner();
                     this.model.fetchRoomConfiguration()
                         .then(iq => this.renderConfigurationForm(iq))
-                        .catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
+                        .catch(e => log.error(e));
                 } else {
                     this.closeForm();
                 }
@@ -2125,7 +2126,7 @@ converse.plugins.add('converse-muc-views', {
                 // Features could have been added before the controlbox was
                 // initialized. We're only interested in MUC
                 _converse.disco_entities.each(entity => featureAdded(entity.features.findWhere({'var': Strophe.NS.MUC })));
-            }).catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
+            }).catch(e => log.error(e));
         }
 
         function fetchAndSetMUCDomain (controlboxview) {

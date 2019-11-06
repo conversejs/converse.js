@@ -9,6 +9,7 @@
  * Converse plugin which add support for XEP-0030: Service Discovery
  */
 import converse from "./converse-core";
+import log from "./log";
 import sizzle from "sizzle";
 
 const { Backbone, Strophe, $iq, utils, _ } = converse.env;
@@ -146,7 +147,7 @@ converse.plugins.add('converse-disco', {
                 try {
                     stanza = await _converse.api.disco.info(this.get('jid'), null);
                 } catch (iq) {
-                    _converse.log(iq, Strophe.LogLevel.ERROR);
+                    log.error(iq);
                     this.waitUntilFeaturesDiscovered.resolve(this);
                     return;
                 }
@@ -289,7 +290,7 @@ converse.plugins.add('converse-disco', {
                         _converse.api.trigger('streamFeaturesAdded');
                     },
                     error (m, e) {
-                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        log.error(e);
                     }
                 });
             }
@@ -413,7 +414,7 @@ converse.plugins.add('converse-disco', {
                         if (_converse.stream_features === undefined && !_converse.api.connection.connected()) {
                             // Happens during tests when disco lookups happen asynchronously after teardown.
                             const msg = `Tried to get feature ${name} ${xmlns} but _converse.stream_features has been torn down`;
-                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            log.warn(msg);
                             return;
                         }
                         return _converse.stream_features.findWhere({'name': name, 'xmlns': xmlns});
@@ -573,7 +574,7 @@ converse.plugins.add('converse-disco', {
                         if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
                             // Happens during tests when disco lookups happen asynchronously after teardown.
                             const msg = `Tried to look up entity ${jid} but _converse.disco_entities has been torn down`;
-                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            log.warn(msg);
                             return;
                         }
                         const entity = _converse.disco_entities.get(jid);
@@ -635,7 +636,7 @@ converse.plugins.add('converse-disco', {
                         if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
                             // Happens during tests when disco lookups happen asynchronously after teardown.
                             const msg = `Tried to get feature ${feature} for ${jid} but _converse.disco_entities has been torn down`;
-                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            log.warn(msg);
                             return;
                         }
                         entity = await entity.waitUntilFeaturesDiscovered;
@@ -771,14 +772,14 @@ converse.plugins.add('converse-disco', {
                  *             // The entity DOES NOT have this identity
                  *         }
                  *     }
-                 * ).catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
+                 * ).catch(e => log.error(e));
                  */
                 async getIdentity (category, type, jid) {
                     const e = await _converse.api.disco.entities.get(jid, true);
                     if (e === undefined && !_converse.api.connection.connected()) {
                         // Happens during tests when disco lookups happen asynchronously after teardown.
                         const msg = `Tried to look up category ${category} for ${jid} but _converse.disco_entities has been torn down`;
-                        _converse.log(msg, Strophe.LogLevel.WARN);
+                        log.warn(msg);
                         return;
                     }
                     return e.getIdentity(category, type);

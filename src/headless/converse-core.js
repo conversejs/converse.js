@@ -15,6 +15,7 @@ import _ from './lodash.noconflict';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
 import i18n from './i18n';
+import log from '@converse/headless/log';
 import pluggable from 'pluggable.js/src/pluggable';
 import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
@@ -119,7 +120,7 @@ _converse.Collection = Backbone.Collection.extend({
                     Object.assign(options, {
                         success,
                         'error': (m, e) => {
-                            _converse.log(e, Strophe.LogLevel.ERROR);
+                            log.error(e);
                             success()
                         }
                     })
@@ -271,46 +272,12 @@ _converse.default_settings = {
     whitelisted_plugins: []
 };
 
+const loglevel = _converse.debug ? Strophe.LogLevel.DEBUG : Strophe.LogLevel.INFO;
+log.initialize(loglevel);
+_converse.log = log.log;
 
-/**
- * Logs messages to the browser's developer console.
- * Available loglevels are 0 for 'debug', 1 for 'info', 2 for 'warn',
- * 3 for 'error' and 4 for 'fatal'.
- * When using the 'error' or 'warn' loglevels, a full stacktrace will be
- * logged as well.
- * @method log
- * @private
- * @memberOf _converse
- * @param { string } message - The message to be logged
- * @param { integer } level - The loglevel which allows for filtering of log messages
- */
-_converse.log = function (message, level, style='') {
-    if (level === Strophe.LogLevel.ERROR || level === Strophe.LogLevel.FATAL) {
-        style = style || 'color: maroon';
-    }
-    if (message instanceof Error) {
-        message = message.stack;
-    } else if (_.isElement(message)) {
-        message = message.outerHTML;
-    }
-    const prefix = style ? '%c' : '';
-    if (level === Strophe.LogLevel.ERROR) {
-        u.logger.error(`${prefix} ERROR: ${message}`, style);
-    } else if (level === Strophe.LogLevel.WARN) {
-        u.logger.warn(`${prefix} ${(new Date()).toISOString()} WARNING: ${message}`, style);
-    } else if (level === Strophe.LogLevel.FATAL) {
-        u.logger.error(`${prefix} FATAL: ${message}`, style);
-    } else if (_converse.debug) {
-        if (level === Strophe.LogLevel.DEBUG) {
-            u.logger.debug(`${prefix} ${(new Date()).toISOString()} DEBUG: ${message}`, style);
-        } else {
-            u.logger.info(`${prefix} ${(new Date()).toISOString()} INFO: ${message}`, style);
-        }
-    }
-};
-
-Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
-Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
+Strophe.log = function (level, msg) { log.log(level+' '+msg, level); };
+Strophe.error = function (msg) { log.log(msg, Strophe.LogLevel.ERROR); };
 
 
 /**
@@ -532,7 +499,7 @@ async function attemptNonPreboundSession (credentials, automatic) {
         } else if (!_converse.isTestEnv() && window.PasswordCredential) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
-            _converse.log("attemptNonPreboundSession: Could not find any credentials to log in with", Strophe.LogLevel.WARN);
+            log.warn("attemptNonPreboundSession: Could not find any credentials to log in with");
         }
     } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication) && (!automatic || _converse.auto_login)) {
         connect();
@@ -577,7 +544,7 @@ function connect (credentials) {
 
 
 async function reconnect () {
-    _converse.log('RECONNECTING: the connection has dropped, attempting to reconnect.');
+    log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
     _converse.setConnectionStatus(
         Strophe.Status.RECONNECTING,
         __('The connection has dropped, attempting to reconnect.')
@@ -619,7 +586,7 @@ async function onDomainDiscovered (response) {
     const text = await response.text();
     const xrd = (new window.DOMParser()).parseFromString(text, "text/xml").firstElementChild;
     if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
-        return _converse.log("Could not discover XEP-0156 connection methods", Strophe.LogLevel.WARN);
+        return log.warn("Could not discover XEP-0156 connection methods");
     }
     const bosh_links = sizzle(`Link[rel="urn:xmpp:alt-connections:xbosh"]`, xrd);
     const ws_links = sizzle(`Link[rel="urn:xmpp:alt-connections:websocket"]`, xrd);
@@ -629,9 +596,8 @@ async function onDomainDiscovered (response) {
     _converse.websocket_url = ws_methods.pop();
     _converse.bosh_service_url = bosh_methods.pop();
     if (bosh_methods.length === 0 && ws_methods.length === 0) {
-        _converse.log(
-            "onDomainDiscovered: neither BOSH nor WebSocket connection methods have been specified with XEP-0156.",
-            Strophe.LogLevel.WARN
+        log.warn(
+            "onDomainDiscovered: neither BOSH nor WebSocket connection methods have been specified with XEP-0156."
         );
     }
 }
@@ -651,13 +617,14 @@ async function discoverConnectionMethods (domain) {
     try {
         response = await fetch(url, options);
     } catch (e) {
-        _converse.log(`Failed to discover alternative connection methods at ${url}`, Strophe.LogLevel.ERROR);
-        return _converse.log(e, Strophe.LogLevel.ERROR);
+        log.error(`Failed to discover alternative connection methods at ${url}`);
+        log.error(e);
+        return;
     }
     if (response.status >= 200 && response.status < 400) {
         await onDomainDiscovered(response);
     } else {
-        _converse.log("Could not discover XEP-0156 connection methods", Strophe.LogLevel.WARN);
+        log.warn("Could not discover XEP-0156 connection methods");
     }
 }
 
@@ -794,12 +761,10 @@ function enableCarbons () {
       .c('enable', {xmlns: Strophe.NS.CARBONS});
     _converse.connection.addHandler((iq) => {
         if (iq.querySelectorAll('error').length > 0) {
-            _converse.log(
-                'An error occurred while trying to enable message carbons.',
-                Strophe.LogLevel.WARN);
+            log.warn('An error occurred while trying to enable message carbons.');
         } else {
             _converse.session.save({'carbons_enabled': true});
-            _converse.log('Message carbons have been enabled.');
+            log.debug('Message carbons have been enabled.');
         }
     }, null, "iq", null, "enablecarbons");
     _converse.connection.send(carbons_iq);
@@ -850,16 +815,16 @@ async function onConnected (reconnecting) {
 
 function setUpXMLLogging () {
     Strophe.log = function (level, msg) {
-        _converse.log(msg, level);
+        log.log(msg, level);
     };
     _converse.connection.xmlInput = function (body) {
         if (_converse.debug) {
-            _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkgoldenrod');
+            log.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkgoldenrod');
         }
     };
     _converse.connection.xmlOutput = function (body) {
         if (_converse.debug) {
-            _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkcyan');
+            log.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkcyan');
         }
     };
 }
@@ -893,7 +858,7 @@ async function finishInitialization () {
  * @private
  */
 function finishDisconnection () {
-    _converse.log('DISCONNECTED');
+    log.debug('DISCONNECTED');
     delete _converse.connection.reconnecting;
     _converse.connection.reset();
     tearDown();
@@ -941,8 +906,8 @@ async function getLoginCredentials () {
         try {
             credentials = await fetchLoginCredentials(wait); // eslint-disable-line no-await-in-loop
         } catch (e) {
-            _converse.log('Could not fetch login credentials', Strophe.LogLevel.ERROR);
-            _converse.log(e, Strophe.LogLevel.ERROR);
+            log.error('Could not fetch login credentials');
+            log.error(e);
         }
         // If unsuccessful, we wait 2 seconds between subsequent attempts to
         // fetch the credentials.
@@ -1036,7 +1001,7 @@ _converse.initialize = async function (settings, callback) {
             _converse.locale = i18n.getLocale(settings.i18n, _converse.locales);
             await i18n.fetchTranslations(_converse);
         } catch (e) {
-            _converse.log(e.message, Strophe.LogLevel.FATAL);
+            log.fatal(e.message);
         }
     }
 
@@ -1122,17 +1087,17 @@ _converse.initialize = async function (settings, callback) {
      * @memberOf _converse
      */
     this.onConnectStatusChanged = function (status, message) {
-        _converse.log(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
+        log.debug(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
             _converse.setConnectionStatus(status);
             // By default we always want to send out an initial presence stanza.
             _converse.send_initial_presence = true;
             _converse.setDisconnectionCause();
             if (_converse.connection.reconnecting) {
-                _converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
+                log.debug(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                 onConnected(true);
             } else {
-                _converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
+                log.debug(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
                 if (_converse.connection.restored) {
                     // No need to send an initial presence stanza when
                     // we're restoring an existing session.
@@ -1701,8 +1666,8 @@ _converse.api = {
      */
     send (stanza) {
         if (!_converse.api.connection.connected()) {
-            _converse.log("Not sending stanza because we're not connected!", Strophe.LogLevel.WARN);
-            _converse.log(Strophe.serialize(stanza), Strophe.LogLevel.WARN);
+            log.warn("Not sending stanza because we're not connected!");
+            log.warn(Strophe.serialize(stanza));
             return;
         }
         if (_.isString(stanza)) {
@@ -1844,6 +1809,7 @@ Object.assign(window.converse, {
         'Promise': Promise,
         'Strophe': Strophe,
         '_': _,
+        'log': log,
         'dayjs': dayjs,
         'sizzle': sizzle,
         'utils': u

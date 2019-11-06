@@ -13,6 +13,7 @@ import "formdata-polyfill";
 import { OrderedListView } from "backbone.overview";
 import SHA1 from 'strophe.js/src/sha1';
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 import tpl_add_contact_modal from "templates/add_contact_modal.html";
 import tpl_group_header from "templates/group_header.html";
 import tpl_pending_contact from "templates/pending_contact.html";
@@ -504,7 +505,7 @@ converse.plugins.add('converse-rosterview', {
                         this.model.destroy();
                     }
                 } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                     _converse.api.alert('error', __('Error'),
                         [__('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName())]
                     );
@@ -933,10 +934,9 @@ converse.plugins.add('converse-rosterview', {
                     this.addExistingContact(contact, options);
                 } else {
                     if (!_converse.allow_contact_requests) {
-                        _converse.log(
+                        log.debug(
                             `Not adding requesting or pending contact ${contact.get('jid')} `+
-                            `because allow_contact_requests is false`,
-                            Strophe.LogLevel.DEBUG
+                            `because allow_contact_requests is false`
                         );
                         return;
                     }
@@ -971,7 +971,7 @@ converse.plugins.add('converse-rosterview', {
                 /* Place the rosterview inside the "Contacts" panel. */
                 _converse.api.waitUntil('rosterViewInitialized')
                     .then(() => view.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
-                    .catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
+                    .catch(e => log.fatal(e));
             }
             insertRoster();
             view.model.on('change:connected', insertRoster);

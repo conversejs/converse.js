@@ -14,6 +14,7 @@ import "converse-modal";
 import { debounce, get, isString } from "lodash";
 import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.html";
 import tpl_chatbox_head from "templates/chatbox_head.html";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
@@ -184,7 +185,7 @@ converse.plugins.add('converse-chatview', {
                 try {
                     await _converse.api.vcard.update(this.model.contact.vcard, true);
                 } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.FATAL);
+                    log.fatal(e);
                     this.alert(__('Sorry, something went wrong while trying to refresh'), 'danger');
                 }
                 u.removeClass('fa-spin', refresh_icon);
@@ -199,7 +200,7 @@ converse.plugins.add('converse-chatview', {
                     this.model.contact.removeFromRoster(
                         () => this.model.contact.destroy(),
                         (err) => {
-                            _converse.log(err, Strophe.LogLevel.ERROR);
+                            log.error(err);
                             _converse.api.alert('error', __('Error'), [
                                 __('Sorry, there was an error while trying to remove %1$s as a contact.',
                                 this.model.contact.getDisplayName())

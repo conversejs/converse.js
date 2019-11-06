@@ -230,9 +230,9 @@
                                             'from': contact_jid,
                                             'type':'chat'
                                         }).c('body').t("Meet me at the dance");
-                    spyOn(_converse, 'log');
+                    spyOn(converse.env.log, 'warn');
                     _converse.connection._dataRecv(test_utils.createRequest(msg));
-                    expect(_converse.log).toHaveBeenCalledWith(`Ignoring alleged MAM message from ${msg.nodeTree.getAttribute('from')}`, Strophe.LogLevel.WARN);
+                    expect(converse.env.log.warn).toHaveBeenCalledWith(`Ignoring alleged MAM message from ${msg.nodeTree.getAttribute('from')}`);
 
                     msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
                                 .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})

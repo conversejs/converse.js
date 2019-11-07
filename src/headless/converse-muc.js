@@ -11,10 +11,10 @@
  */
 import "./converse-disco";
 import "./converse-emoji";
-import "./utils/muc";
 import { clone, get, intersection, invoke, isElement, isObject, isString, uniq, zipObject } from "lodash";
 import converse from "./converse-core";
 import log from "./log";
+import muc_utils from "./utils/muc";
 import stanza_utils from "./utils/stanza";
 import u from "./utils/form";
 
@@ -1121,7 +1121,7 @@ converse.plugins.add('converse-muc', {
                     log.warn(result);
                     return err;
                 }
-                return u.parseMemberListIQ(result).filter(p => p);
+                return muc_utils.parseMemberListIQ(result).filter(p => p);
             },
 
             /**
@@ -1141,7 +1141,7 @@ converse.plugins.add('converse-muc', {
                 const all_affiliations = ['member', 'admin', 'owner'];
                 const aff_lists = await Promise.all(all_affiliations.map(a => this.getAffiliationList(a)));
                 const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc: [...val, ...acc]), []);
-                await this.setAffiliations(u.computeAffiliationsDelta(true, false, members, old_members));
+                await this.setAffiliations(muc_utils.computeAffiliationsDelta(true, false, members, old_members));
                 if (_converse.muc_fetch_members) {
                     return this.occupants.fetchMembers();
                 }
@@ -2121,6 +2121,8 @@ converse.plugins.add('converse-muc', {
 
 
         /************************ BEGIN API ************************/
+        converse.env.muc_utils = muc_utils;
+
         // We extend the default converse.js API to add methods specific to MUC groupchats.
         Object.assign(_converse.api, {
             /**

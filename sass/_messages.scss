@@ -219,11 +219,13 @@
             }
 
             .chat-msg__actions {
+                display: flex;
+                flex-wrap: nowrap;
                 .chat-msg__action {
                     height: var(--message-font-size);
                     font-size: var(--message-font-size);
                     padding: 0;
-                    padding-left: 0.2em;
+                    padding-left: 0.5em;
                     border: none;
                     opacity: 0;
                     background: transparent;

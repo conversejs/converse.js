@@ -378,6 +378,7 @@ converse.plugins.add('converse-muc', {
             },
 
             async initialize() {
+                this.initialized = u.getResolveablePromise();
                 this.setVCard();
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
 
@@ -391,6 +392,7 @@ converse.plugins.add('converse-muc', {
                 await this.initOccupants();
                 await this.fetchMessages();
                 this.enterRoom();
+                this.initialized.resolve();
             },
 
             async setVCard () {

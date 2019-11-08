@@ -305,26 +305,13 @@ converse.plugins.add('converse-muc', {
                 if (chatbox && chatbox.get('nick') === nick) {
                     return _converse.xmppstatus.vcard;
                 } else {
-                    let vcard;
-                    if (this.get('vcard_jid')) {
-                        vcard = _converse.vcards.findWhere({'jid': this.get('vcard_jid')});
+                    const jid = this.occupant && this.occupant.get('jid') || this.get('from');
+                    if (jid) {
+                        return _converse.vcards.findWhere({jid}) || _converse.vcards.create({jid});
+                    } else {
+                        log.error(`Could not assign VCard for message because no JID found! msgid: ${this.get('msgid')}`);
+                        return;
                     }
-                    if (!vcard) {
-                        let jid;
-                        if (this.occupant && this.occupant.get('jid')) {
-                            jid = this.occupant.get('jid');
-                            this.save({'vcard_jid': jid}, {'silent': true});
-                        } else {
-                            jid = this.get('from');
-                        }
-                        if (jid) {
-                            vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
-                        } else {
-                            log.error(`Could not assign VCard for message because no JID found! msgid: ${this.get('msgid')}`);
-                            return;
-                        }
-                    }
-                    return vcard;
                 }
             },
 

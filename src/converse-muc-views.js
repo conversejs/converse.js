@@ -616,15 +616,13 @@ converse.plugins.add('converse-muc-views', {
 
 
         /**
-         * The View of an open/ongoing groupchat conversation
+         * Backbone.NativeView which renders a groupchat, based upon
+         * { @link _converse.ChatBoxView } for normal one-on-one chat boxes.
          * @class
          * @namespace _converse.ChatRoomView
          * @memberOf _converse
          */
         _converse.ChatRoomView = _converse.ChatBoxView.extend({
-            /* Backbone.NativeView which renders a groupchat, based upon the view
-             * for normal one-on-one chat boxes.
-             */
             length: 300,
             tagName: 'div',
             className: 'chatbox chatroom hidden',
@@ -699,6 +697,9 @@ converse.plugins.add('converse-muc-views', {
                 this.renderBottomPanel();
                 if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     this.showSpinner();
+                }
+                if (!this.model.get('hidden')) {
+                    this.show();
                 }
                 return this;
             },
@@ -2151,13 +2152,14 @@ converse.plugins.add('converse-muc-views', {
             }
             _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
 
-            function addView (model) {
+            async function addView (model) {
                 const views = _converse.chatboxviews;
                 if (!views.get(model.get('id')) &&
                         model.get('type') === _converse.CHATROOMS_TYPE &&
                         model.isValid()
                 ) {
-                    return views.add(model.get('id'), new _converse.ChatRoomView({'model': model}));
+                    await model.initialized;
+                    return views.add(model.get('id'), new _converse.ChatRoomView({model}));
                 }
             }
             _converse.chatboxes.on('add', addView);

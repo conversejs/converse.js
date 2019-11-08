@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-09-22 18:27+0000\n"
+"PO-Revision-Date: 2019-11-09 18:04+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: dist/converse-no-dependencies.js:7899
 msgid "Uploading file:"
@@ -544,7 +544,7 @@ msgstr "Bandeiras"
 
 #: dist/converse-no-dependencies.js:27496
 msgid "Stickers"
-msgstr ""
+msgstr "Pegatinas"
 
 #: dist/converse-no-dependencies.js:28145
 msgid "This groupchat is not anonymous"
@@ -779,13 +779,15 @@ msgstr "Lamentámolo, algo fallou ao intentar gardar o marcador."
 
 #: dist/converse-no-dependencies.js:31732
 msgid "Timeout Error"
-msgstr ""
+msgstr "Fallo de caducidade"
 
 #: dist/converse-no-dependencies.js:31732
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"O servidor non devolveu os teus marcadores no tempo estipulado. Podes "
+"recargar a páxina para solicitalos de novo."
 
 #: dist/converse-no-dependencies.js:33481
 msgid "Unencryptable OMEMO message"

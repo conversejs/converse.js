@@ -180,7 +180,7 @@ converse.plugins.add('converse-emoji', {
                 "food": ":hotdog:",
                 "symbols": ":musical_note:",
                 "flags": ":flag_ac:",
-                "custom": ":converse:"
+                "custom": null
             },
             // We use the triple-underscore method which doesn't actually
             // translate but does signify to gettext that these strings should

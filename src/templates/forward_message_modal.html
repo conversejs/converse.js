@@ -1,0 +1,34 @@
+<div class="modal" id="forward-message-modal" tabindex="-1" role="dialog" aria-labelledby="forward-message-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="forward-message-modal-label">{{{o.__('forward this message')}}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="converse-form forward-message-form" autocomplete="off">
+                    <div class="suggestion-box">
+                        <div class="form-group">
+                            <label for="receiver">{{{o.__('Destination:')}}}</label>
+                            <input type="text" required="required" name="receiver" class="form-control receiver-input suggestion-box__input" placeholder="user@example.com" autofocus/>
+                            <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>                            
+                            <ul class="suggestion-box__results suggestion-box__results--below" style="margin-top: 30px;" hidden></ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="additional_message">{{{o.__('Additional Message:')}}}</label>
+                        <input type="text" name="additional_message" class="form-control additional-message-input" placeholder="{{{o.__('Optional: Add additional message here...')}}}" autofocus/>
+                    </div>
+                    <div class="form-group" >
+                        <label for="forward-message">{{{o.__('Original-Text:')}}}</label>
+                        <div class="forward-message" name="forward-message" style="overflow: scroll"><!--The source-message will be displayed here in afterRender --></div>
+                    </div>
+                    <input type="submit" class="btn btn-primary" name="forward" value="{{{o.__('forward')}}}"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

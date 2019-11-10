@@ -10,6 +10,14 @@
         .suggestion-box {
             width: 100%;
         }
+        .forward-message {
+            overflow: visible;
+            border: black;
+            height: 100px;
+            border-radius: 5px;
+            background-color: lightgrey;
+            padding: 5px;
+        }
     }
 
     .suggestion-box {

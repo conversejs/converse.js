@@ -1,0 +1,6 @@
+<!-- This is the inner-message (forwarded-message) of the received message -->
+<div class="forwarded-message">
+    <span class="forwarded-message__header">{{{o.__('Forwarded Message:')}}}</span>
+    <div class="forwarded-message__content">{{{ o.original_message }}}</div>
+    <span class="forwarded-message__header">{{{o.__('original author:')}}} {{{ o.original_from }}} ({{{o.__('time:')}}} {{{ o.original_time }}})</span>
+</div>

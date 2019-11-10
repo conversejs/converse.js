@@ -2493,3 +2493,33 @@ msgstr "Resynchronisieren Sie Ihre Kontakte"
 
 #~ msgid "Contact username"
 #~ msgstr "Benutzername"
+
+msgid "You can only send a message to an existing contact or an opened room."
+msgstr "Sie können eine Nachricht nur an einen existieren Kontakt oder offenen Chatraum senden."
+
+msgid "forward this message"
+msgstr "Nachricht weiterleiten"
+
+msgid "Destination:"
+msgstr "Empfänger:"
+
+msgid "Additional Message:"
+msgstr "Zusätzliche Nachricht"
+
+msgid "Original-Text"
+msgstr "Ursprüngliche Nachricht"
+
+msgid "Optional: Add additional message here..."
+msgstr "Optional: Geben Sie hier eine zusätzliche Nachricht ein..."
+
+msgid "forward"
+msgstr "weiterleiten"
+
+msgid "Forwarded Message:"
+msgstr "Weitergeleitete Nachricht:"
+
+msgid "original author:"
+msgstr "Ursprünglicher Autor:"
+
+msgid "time:"
+msgstr "Zeit:"

@@ -137,6 +137,7 @@ u.isEmptyMessage = function (attrs) {
     }
     return !attrs['oob_url'] &&
         !attrs['file'] &&
+        !attrs['is_forwarded_message'] &&
         !(attrs['is_encrypted'] && attrs['plaintext']) &&
         !attrs['message'];
 };

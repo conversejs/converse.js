@@ -17,6 +17,7 @@
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
+            _converse.whitelisted_plugins = _converse.whitelisted_plugins.filter(e => e !== 'converse-forward-message');
             await test_utils.waitForRoster(_converse, 'current', 2);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const forwarded_contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -83,7 +84,7 @@
             expect(textarea.value).toBe('');
 
             const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
-            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
             let action = view.el.querySelector('.chat-msg .chat-msg__action');
             expect(action.getAttribute('title')).toBe('Edit this message');
 
@@ -160,7 +161,7 @@
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
             );
             await new Promise(resolve => view.once('messageInserted', resolve));
-            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(3);
 
             // Test confirmation dialog
             spyOn(window, 'confirm').and.returnValue(true);

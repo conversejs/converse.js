@@ -1919,3 +1919,33 @@ msgstr ""
 #: dist/converse-no-dependencies.js:55061
 msgid "Re-sync your contacts"
 msgstr ""
+
+msgid "You can only send a message to an existing contact or an opened room."
+msgstr ""
+
+msgid "forward this message"
+msgstr ""
+
+msgid "Destination:"
+msgstr ""
+
+msgid "Additional Message:"
+msgstr ""
+
+msgid "Original-Text"
+msgstr ""
+
+msgid "Optional: Add additional message here..."
+msgstr ""
+
+msgid "forward"
+msgstr ""
+
+msgid "Forwarded Message:"
+msgstr ""
+
+msgid "original author:"
+msgstr ""
+
+msgid "time:"
+msgstr ""

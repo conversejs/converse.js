@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-11-05 08:27+0000\n"
+"PO-Revision-Date: 2019-11-12 09:04+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -409,17 +409,16 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9470
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "לא נמצאו משתמשים משויכים."
 
 #: dist/converse-no-dependencies.js:9490
 msgid "New affiliation"
-msgstr ""
+msgstr "שיוך חדש"
 
 # שייכות
 #: dist/converse-no-dependencies.js:9506
-#, fuzzy
 msgid "Change affiliation"
-msgstr "שנה סינוף משתמש למנהל"
+msgstr "שינוי שיוך"
 
 #: dist/converse-no-dependencies.js:9865
 msgid "Save and close"
@@ -505,43 +504,43 @@ msgstr "להחזיק חזק, אנחנו מביאים את טופס ההרשמה�
 
 #: dist/converse-no-dependencies.js:27487
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "חייכנים ורגשונים"
 
 #: dist/converse-no-dependencies.js:27488
 msgid "People"
-msgstr ""
+msgstr "אנשים"
 
 #: dist/converse-no-dependencies.js:27489
 msgid "Activities"
-msgstr ""
+msgstr "פעילויות"
 
 #: dist/converse-no-dependencies.js:27490
 msgid "Travel"
-msgstr ""
+msgstr "טיול"
 
 #: dist/converse-no-dependencies.js:27491
 msgid "Objects"
-msgstr ""
+msgstr "חפצים"
 
 #: dist/converse-no-dependencies.js:27492
 msgid "Animals and nature"
-msgstr ""
+msgstr "חיות וטבע"
 
 #: dist/converse-no-dependencies.js:27493
 msgid "Food and drink"
-msgstr ""
+msgstr "מזון ושתייה"
 
 #: dist/converse-no-dependencies.js:27494
 msgid "Symbols"
-msgstr ""
+msgstr "סמלים"
 
 #: dist/converse-no-dependencies.js:27495
 msgid "Flags"
-msgstr ""
+msgstr "דגלים"
 
 #: dist/converse-no-dependencies.js:27496
 msgid "Stickers"
-msgstr ""
+msgstr "מדבקות"
 
 # חדר זה אינו עלום
 #: dist/converse-no-dependencies.js:28145
@@ -561,12 +560,10 @@ msgid "The groupchat configuration has changed"
 msgstr "הגדרות ההתכתבות הקבוצתית הזאת נערכו"
 
 #: dist/converse-no-dependencies.js:28149
-#, fuzzy
 msgid "Groupchat logging is now enabled"
 msgstr "תיעוד ההתכתבות הקבוצתית פעיל כעת"
 
 #: dist/converse-no-dependencies.js:28150
-#, fuzzy
 msgid "Groupchat logging is now disabled"
 msgstr "תיעוד ההתכתבות הקבוצתית מושבת כעת"
 
@@ -678,18 +675,17 @@ msgstr ""
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:30299
-#, fuzzy
 msgid ""
 "Your message was not delivered because you're not allowed to send messages "
 "in this groupchat."
-msgstr "אין לך הרשאה להירשם להתכתבות קבוצתית זו, עמך הסליחה"
+msgstr ""
+"ההודעה שלך לא נשלחה כיוון שאין לך הרשאה לשלוח הודעות להתכתבות קבוצתית זו."
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:30301
-#, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "אין לך הרשאה להירשם עצמאית להתכתבות קבוצתית זו."
+msgstr "ההודעה שלך לא נשלחה כיוון שאינך בהתכתבות קבוצתית זו."
 
 #: dist/converse-no-dependencies.js:30498
 #: dist/converse-no-dependencies.js:48591
@@ -710,9 +706,8 @@ msgid ""
 msgstr "הכינוי שבחרת שמור או בשימוש, נא לבחור באחד אחר."
 
 #: dist/converse-no-dependencies.js:30571
-#, fuzzy
 msgid "Password incorrect"
-msgstr "הגנה בססמה"
+msgstr "הססמה שגויה"
 
 #: dist/converse-no-dependencies.js:30577
 msgid "You are not on the member list of this groupchat."
@@ -779,7 +774,7 @@ msgstr "משהו השתבש במהלך ניסיון שמירת הסימנייה 
 
 #: dist/converse-no-dependencies.js:31732
 msgid "Timeout Error"
-msgstr ""
+msgstr "שגיאת תום זמן קצוב"
 
 #: dist/converse-no-dependencies.js:31732
 msgid ""

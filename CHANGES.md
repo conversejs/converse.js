@@ -5,8 +5,7 @@
 - #1691 Fix `collection.chatbox is undefined` errors
 - Prevent editing of sent file uploads.
 - New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_filter)
-- Add user pictures in mention autocomplete list
-- Mention names autocomplete
+- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_show_avatar)
 
 ### Breaking changes
 

@@ -113,6 +113,7 @@ converse.plugins.add('converse-muc-views', {
             'muc_show_join_leave_status': true,
             'muc_mention_autocomplete_min_chars': 0,
             'muc_mention_autocomplete_filter': 'contains',
+            'muc_mention_autocomplete_show_avatar': true,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
@@ -752,18 +753,20 @@ converse.plugins.add('converse-muc-views', {
                 const element = document.createElement("li");
                 element.setAttribute("aria-selected", "false");
 
-                const img = document.createElement("img");
-                let dataUri = "data:" + _converse.DEFAULT_IMAGE_TYPE + ";base64," + _converse.DEFAULT_IMAGE;
+                if (_converse.muc_mention_autocomplete_show_avatar) {
+                    const img = document.createElement("img");
+                    let dataUri = "data:" + _converse.DEFAULT_IMAGE_TYPE + ";base64," + _converse.DEFAULT_IMAGE;
 
-                if (_converse.vcards) {
-                    const vcard = _converse.vcards.findWhere({'nickname': text});
-                    if (vcard) dataUri = "data:" + vcard.get('image_type') + ";base64," + vcard.get('image');
+                    if (_converse.vcards) {
+                        const vcard = _converse.vcards.findWhere({'nickname': text});
+                        if (vcard) dataUri = "data:" + vcard.get('image_type') + ";base64," + vcard.get('image');
+                    }
+
+                    img.setAttribute("src", dataUri);
+                    img.setAttribute("width", "22");
+                    img.setAttribute("class", "avatar avatar-autocomplete");
+                    element.appendChild(img);
                 }
-
-                img.setAttribute("src", dataUri);
-                img.setAttribute("width", "22");
-                img.setAttribute("class", "avatar avatar-autocomplete");
-                element.appendChild(img);
 
                 const regex = new RegExp("(" + input + ")", "ig");
                 const parts = input ? text.split(regex) : [text];

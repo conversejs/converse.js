@@ -118,7 +118,7 @@
                 await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
                 const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
                 const input = picker.querySelector('.emoji-search');
-                expect(sizzle('.insert-emoji:not(.hidden)', picker).length).toBe(1591);
+                expect(sizzle('.insert-emoji:not(.hidden)', picker).length).toBe(1589);
 
                 expect(view.emoji_picker_view.model.get('query')).toBeUndefined();
                 input.value = 'smiley';

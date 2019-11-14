@@ -218,11 +218,11 @@
                 type: 'groupchat'
             }).c('body').t('I wrote this message!').tree();
             await view.model.onMessage(msg);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
             expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat moderator owner');
-
             let presence = $pres({
                     to:'romeo@montague.lit/orchard',
                     from:'lounge@montague.lit/romeo',

@@ -297,7 +297,7 @@ converse.plugins.add('converse-message-view', {
 
             getRetractionText () {
                 const username = this.model.getDisplayName();
-                let retraction_text = __('A message by %1$s has been retracted', username);
+                let retraction_text = __('%1$s has retracted this message', username);
                 if (this.model.get('type') === 'groupchat') {
                     const retracted_by_mod = this.model.get('moderated_by');
                     if (retracted_by_mod) {
@@ -382,18 +382,19 @@ converse.plugins.add('converse-message-view', {
                 ];
                 if (this.model.get('type') === 'groupchat') {
                     if (this.model.occupant) {
-                        extra_classes += ` ${this.model.occupant.get('role') || ''} ${this.model.occupant.get('affiliation') || ''}`;
+                        extra_classes.push(this.model.occupant.get('role'));
+                        extra_classes.push(this.model.occupant.get('affiliation'));
                     }
                     if (this.model.get('sender') === 'them' && this.model.collection.chatbox.isUserMentioned(this.model)) {
                         // Add special class to mark groupchat messages
                         // in which we are mentioned.
-                        extra_classes += ' mentioned';
+                        extra_classes.push('mentioned');
                     }
                 }
                 if (this.model.get('correcting')) {
-                    extra_classes += ' correcting';
+                    extra_classes.push('correcting');
                 }
-                return extra_classes;
+                return extra_classes.filter(c => c).join(" ");
             }
         });
     }

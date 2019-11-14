@@ -1,4 +1,4 @@
-<div class="message chat-msg {{{o.type}}}{[ if (o.is_me_message) { ]} chat-msg--action {[ } ]}{{{o.extra_classes}}}"
+<div class="message chat-msg {{{o.type}}} {{{o.extra_classes}}} {[ if (o.is_me_message) { ]} chat-msg--action {[ } ]}"
         data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}" data-from="{{{o.from}}}" data-encrypted="{{{o.is_encrypted}}}">
     {[ if (o.type !== 'headline' && !o.is_me_message) { ]}
     <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>

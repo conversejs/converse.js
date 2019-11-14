@@ -409,7 +409,7 @@ converse.plugins.add('converse-muc', {
                     this.removeNonMembers();
                     await this.refreshRoomFeatures();
                     if (_converse.clear_messages_on_reconnection) {
-                        this.clearMessages();
+                        await this.clearMessages();
                     }
                     if (!u.isPersistableModel(this)) {
                         // XXX: Happens during tests, nothing to do if this

@@ -377,8 +377,7 @@ converse.plugins.add('converse-chat', {
 
             async clearMessages () {
                 try {
-                    await Promise.all(this.messages.models.map(m => m.destroy()));
-                    this.messages.reset();
+                    await this.messages.clearSession();
                 } catch (e) {
                     this.messages.trigger('reset');
                     log.error(e);
@@ -411,9 +410,9 @@ converse.plugins.add('converse-chat', {
                 _converse.api.trigger('chatReconnected', this);
             },
 
-            onReconnection () {
+            async onReconnection () {
                 if (_converse.clear_messages_on_reconnection) {
-                    this.clearMessages();
+                    await this.clearMessages();
                 }
                 this.announceReconnection();
             },

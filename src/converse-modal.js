@@ -180,6 +180,7 @@ converse.plugins.add('converse-modal', {
                     })
                     confirm = new _converse.Confirm({model});
                 } else {
+                    confirm.confirmation = u.getResolveablePromise();
                     confirm.model.set({
                         'title': title,
                         'messages': messages,
@@ -216,6 +217,7 @@ converse.plugins.add('converse-modal', {
                     })
                     prompt = new _converse.Prompt({model});
                 } else {
+                    prompt.confirmation = u.getResolveablePromise();
                     prompt.model.set({
                         'title': title,
                         'messages': messages,

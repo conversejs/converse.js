@@ -27,9 +27,10 @@
                 test_utils.sendMessage(view, '/help');
 
                 const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
-                expect(info_messages.length).toBe(3);
+                expect(info_messages.length).toBe(4);
                 expect(info_messages.pop().textContent).toBe('/help: Show this menu');
                 expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
+                expect(info_messages.pop().textContent).toBe('/close: Close this chat');
                 expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
 
                 const msg = $msg({

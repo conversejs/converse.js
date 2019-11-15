@@ -754,10 +754,13 @@ converse.plugins.add('converse-chatview', {
                     if (match[1] === "clear") {
                         this.clearMessages();
                         return true;
-                    }
-                    else if (match[1] === "help") {
+                    } else if (match[1] === "close") {
+                        this.close();
+                        return true;
+                    } else if (match[1] === "help") {
                         const msgs = [
                             `<strong>/clear</strong>: ${__('Remove messages')}`,
+                            `<strong>/close</strong>: ${__('Close this chat')}`,
                             `<strong>/me</strong>: ${__('Write in the third person')}`,
                             `<strong>/help</strong>: ${__('Show this menu')}`
                             ];

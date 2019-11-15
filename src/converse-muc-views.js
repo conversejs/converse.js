@@ -1328,6 +1328,7 @@ converse.plugins.add('converse-muc-views', {
                             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
                             `<strong>/ban</strong>: ${__('Ban user by changing their affiliation to outcast')}`,
                             `<strong>/clear</strong>: ${__('Clear the chat area')}`,
+                            `<strong>/close</strong>: ${__('Close this groupchat')}`,
                             `<strong>/deop</strong>: ${__('Change user role to participant')}`,
                             `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
                             `<strong>/help</strong>: ${__('Show this menu')}`,

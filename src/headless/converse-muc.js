@@ -1791,6 +1791,14 @@ converse.plugins.add('converse-muc', {
                         message = __(_converse.muc.new_nickname_messages[code], nick);
                     }
                     if (message) {
+                        if (code === "201" && this.messages.findWhere({'type': 'info', message})) {
+                            return;
+                        } else if (code in _converse.muc.info_messages &&
+                                this.messages.length &&
+                                this.messages.pop().get('message') === message) {
+                            // XXX: very naive duplication checking
+                            return;
+                        }
                         this.messages.create({'type': 'info', message});
                     }
                 });

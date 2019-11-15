@@ -39,6 +39,32 @@
                 expect(u.hasClass('chat-msg--followup', messages[1])).toBe(false);
                 done();
             }));
+
+            it("is not shown if its a duplicate",
+                mock.initConverse(
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const view = _converse.api.chatviews.get(muc_jid);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length);
+
+                const presence = u.toStanza(`
+                    <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <status code="201"/>
+                            <item role="moderator" affiliation="owner" jid="${_converse.jid}"/>
+                            <status code="110"/>
+                        </x>
+                    </presence>
+                `);
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length > 1);
+                expect(view.el.querySelectorAll('.chat-info').length).toBe(2);
+                done();
+            }));
         });
 
 

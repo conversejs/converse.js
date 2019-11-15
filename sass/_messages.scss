@@ -52,9 +52,6 @@
             font-size: 90%;
             padding: 0.17rem 1rem;
 
-            &.chat-msg--followup {
-                margin-left: 2.75rem;
-            }
             &.badge {
                 color: var(--chat-head-text-color);
             }
@@ -346,11 +343,6 @@
                 .chat-msg__content {
                     margin-left: 0;
                 }
-            }
-        }
-        &.chat-info {
-            &.chat-msg--followup {
-                margin-left: 0;
             }
         }
     }

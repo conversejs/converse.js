@@ -11,6 +11,37 @@
 
     describe("A Groupchat Message", function () {
 
+        describe("an info message", function () {
+
+            it("is not rendered as a followup message",
+                mock.initConverse(
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+
+                const view = _converse.api.chatviews.get(muc_jid);
+                const presence = u.toStanza(`
+                    <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <status code="201"/>
+                            <item role="moderator" affiliation="owner" jid="${_converse.jid}"/>
+                            <status code="110"/>
+                        </x>
+                    </presence>
+                `);
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 2);
+
+                const messages = view.el.querySelectorAll('.chat-info');
+                expect(u.hasClass('chat-msg--followup', messages[0])).toBe(false);
+                expect(u.hasClass('chat-msg--followup', messages[1])).toBe(false);
+                done();
+            }));
+        });
+
+
         it("is rejected if it's an unencapsulated forwarded message",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},

@@ -658,12 +658,13 @@ converse.plugins.add('converse-chatview', {
              * @param { HTMLElement } el - The message element
              */
             markFollowups (el) {
-                const from = el.getAttribute('data-from'),
-                      previous_el = el.previousElementSibling,
-                      date = dayjs(el.getAttribute('data-isodate')),
-                      next_el = el.nextElementSibling;
+                const from = el.getAttribute('data-from');
+                const previous_el = el.previousElementSibling;
+                const date = dayjs(el.getAttribute('data-isodate'));
+                const next_el = el.nextElementSibling;
 
                 if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) &&
+                        !u.hasClass('chat-info', el) && !u.hasClass('chat-info', previous_el) &&
                         previous_el.getAttribute('data-from') === from &&
                         date.isBefore(dayjs(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
                         el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
@@ -671,7 +672,7 @@ converse.plugins.add('converse-chatview', {
                 }
                 if (!next_el) { return; }
 
-                if (!u.hasClass('chat-msg--action', el) &&
+                if (!u.hasClass('chat-msg--action', el) && u.hasClass('chat-info', el) &&
                         next_el.getAttribute('data-from') === from &&
                         dayjs(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
                         el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {

@@ -27,7 +27,7 @@ import tpl_chatroom_features from "templates/chatroom_features.html";
 import tpl_chatroom_form from "templates/chatroom_form.html";
 import tpl_chatroom_head from "templates/chatroom_head.html";
 import tpl_chatroom_invite from "templates/chatroom_invite.html";
-import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
+import tpl_chatroom_nickname_form_modal from "templates/chatroom_nickname_form_modal.html";
 import tpl_chatroom_password_form from "templates/chatroom_password_form.html";
 import tpl_chatroom_sidebar from "templates/chatroom_sidebar.html";
 import tpl_info from "templates/info.html";
@@ -1028,7 +1028,7 @@ converse.plugins.add('converse-muc-views', {
             onConnectionStatusChanged () {
                 const conn_status = this.model.get('connection_status');
                 if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {
-                    this.renderNicknameForm();
+                    this.renderNicknameButton();
                 } else if (conn_status === converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                     this.renderPasswordForm();
                 } else if (conn_status === converse.ROOMSTATUS.CONNECTING) {
@@ -1471,29 +1471,34 @@ converse.plugins.add('converse-muc-views', {
             },
 
             hideChatRoomContents () {
-                const container_el = this.el.querySelector('.chatroom-body');
-                if (container_el !== null) {
-                    [].forEach.call(container_el.children, child => child.classList.add('hidden'));
-                }
+                return;
             },
 
-            renderNicknameForm () {
-                /* Render a form which allows the user to choose theirnickname.
+            renderNicknameButton () {
+                this.el.querySelector('.setNicknameButtonForm').classList.remove('hidden');
+                this.el.querySelector('.sendXMPPMessage').classList.add('hidden');
+                this.el.querySelector('.setNicknameButtonForm').addEventListener('submit', this.renderNicknameModal.bind(this), false);
+            },
+
+            renderNicknameModal (ev) {
+                /* Render a button which allows the user to get a modal to set their nickname.
                  */
+                ev.preventDefault();
                 const message = this.model.get('nickname_validation_message');
                 this.model.save('nickname_validation_message', undefined);
-                this.hideChatRoomContents();
-                if (!this.nickname_form) {
-                    this.nickname_form = new _converse.MUCNicknameForm({
-                        'model': new Backbone.Model({'validation_message': message}),
+                if (this.nickname_form_modal === undefined) {
+                    this.nickname_form_modal = new _converse.NicknameFormModal({
+                        //'model': new Backbone.Model({'validation_message': message}),
+                        'model': this.model,
                         'chatroomview': this,
                     });
                     const container_el = this.el.querySelector('.chatroom-body');
-                    container_el.insertAdjacentElement('beforeend', this.nickname_form.el);
+                    container_el.insertAdjacentElement('beforeend', this.nickname_form_modal.el);
                 } else {
-                    this.nickname_form.model.set('validation_message', message);
+                    this.nickname_form_modal.model.set('validation_message', message);
                 }
-                u.showElement(this.nickname_form.el);
+                this.nickname_form_modal.show(ev);
+                console.log(this.nickname_form_modal);
                 u.safeSave(this.model, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
             },
 
@@ -1778,7 +1783,7 @@ converse.plugins.add('converse-muc-views', {
                  * form has been submitted and removed.
                  */
                 if (this.model.get('connection_status') == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
-                    this.renderNicknameForm();
+                    this.renderNicknameButton();
                 } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                     this.renderPasswordForm();
                 } else if (this.model.get('connection_status') == converse.ROOMSTATUS.ENTERED) {
@@ -1956,13 +1961,14 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.MUCNicknameForm = Backbone.VDOMView.extend({
-            className: 'muc-nickname-form',
+        _converse.NicknameFormModal = _converse.BootstrapModal.extend({
+
             events: {
                 'submit form': 'submitNickname',
             },
 
             initialize (attrs) {
+                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.chatroomview = attrs.chatroomview;
                 this.listenTo(this.model, 'change:validation_message', this.render);
                 this.render();
@@ -1970,7 +1976,8 @@ converse.plugins.add('converse-muc-views', {
 
             toHTML () {
                 const err_msg = this.model.get('validation_message');
-                return tpl_chatroom_nickname_form({
+                return tpl_chatroom_nickname_form_modal({
+                    '__': __,
                     'heading': __('Please choose your nickname'),
                     'label_nickname': __('Nickname'),
                     'label_join': __('Enter groupchat'),
@@ -1998,8 +2005,10 @@ converse.plugins.add('converse-muc-views', {
                         'validation_message': __('You need to provide a nickname')
                     });
                 }
+                this.modal.hide();
             }
         });
+
 
         _converse.ChatRoomOccupantView = Backbone.VDOMView.extend({
             tagName: 'li',

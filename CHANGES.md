@@ -1,12 +1,13 @@
 # Changelog
 
-## 6.0.0 (Unreleased)
+## 5.0.5 (Unreleased)
 
 - #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
 - #1089: When filtering the roster for `online` users, show all non-offline users.
 - #1691: Fix `collection.chatbox is undefined` errors
 - #1733: New message notifications for a minimized chat stack on top of each other
 - #1757: Chats are hidden behind the controlbox on mobile
+- #1760 Private messages no longer received after websocket reconnect
 - #1772 `_converse.api.contact.add(jid, nick)` fails, says not a function
 - Prevent editing of sent file uploads.
 - Initial support for sending custom emojis. Currently only between Converse

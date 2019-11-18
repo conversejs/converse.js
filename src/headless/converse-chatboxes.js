@@ -1169,13 +1169,13 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             onConnected (reconnecting) {
+                this.registerMessageHandler();
                 if (reconnecting) {
                     return;
                 }
                 const storage = _converse.config.get('storage');
                 const id = `converse.chatboxes-${_converse.bare_jid}`;
                 this.browserStorage = _converse.createStore(id, storage);
-                this.registerMessageHandler();
                 this.fetch({
                     'add': true,
                     'success': c => this.onChatBoxesFetched(c)

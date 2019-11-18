@@ -18,8 +18,8 @@ function propertySort (array, property) {
 }
 
 function generateVerificationString (_converse) {
-    const identities = _converse.api.disco.own.identities.get(),
-          features = _converse.api.disco.own.features.get();
+    const identities = _converse.api.disco.own.identities.get();
+    const features = _converse.api.disco.own.features.get();
 
     if (identities.length > 1) {
         propertySort(identities, "category");

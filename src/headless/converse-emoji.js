@@ -180,7 +180,7 @@ converse.plugins.add('converse-emoji', {
                 "food": ":hotdog:",
                 "symbols": ":musical_note:",
                 "flags": ":flag_ac:",
-                "custom": ":converse:"
+                "custom": null
             },
             // We use the triple-underscore method which doesn't actually
             // translate but does signify to gettext that these strings should
@@ -324,18 +324,21 @@ converse.plugins.add('converse-emoji', {
 
             /**
              * Determines whether the passed in string is just a single emoji shortname;
-             * @method u.isSingleEmoji
+             * @method u.isOnlyEmojis
              * @param {string} shortname - A string which migh be just an emoji shortname
              * @returns {boolean}
              */
-            isSingleEmoji (shortname) {
-                shortname = shortname.trim();
-                if (!shortname || (shortname.length > 2 && !shortname.startsWith(':'))) {
-                    return;
+            isOnlyEmojis (text) {
+                const words = text.trim().split(/\s+/);
+                if (words.length === 0 || words.length > 6) {
+                    return false;
                 }
-                const result = twemoji.default.parse(u.shortnameToUnicode(shortname));
-                const match = result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
-                return match && match.length === 1;
+                const rejects = words.filter(text => {
+                    const result = twemoji.default.parse(u.shortnameToUnicode(text));
+                    const match = result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
+                    return !match || match.length !== 1;
+                });
+                return rejects.length === 0;
             },
 
             /**
@@ -388,7 +391,6 @@ converse.plugins.add('converse-emoji', {
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('clearSession', () => {
             if (_converse.emojipicker) {
-                _converse.emojipicker.browserStorage._clear();
                 _converse.emojipicker.destroy();
                 delete _converse.emojipicker
             }

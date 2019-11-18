@@ -152,7 +152,6 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                width: 100%;
             }
 
             .chat-msg__message {
@@ -224,6 +223,7 @@
                     height: var(--message-font-size);
                     font-size: var(--message-font-size);
                     padding: 0;
+                    padding-left: 0.2em;
                     border: none;
                     opacity: 0;
                     background: transparent;
@@ -271,7 +271,7 @@
             }
             &.chat-msg--action {
                 .chat-msg__content {
-                    flex-wrap: nowrap;
+                    flex-wrap: wrap;
                     flex-direction: row;
                     justify-content: flex-start;
                 }

@@ -239,14 +239,24 @@
             }));
 
             it("has a method 'add' with which contacts can be added",
-                    mock.initConverse(['rosterInitialized'], {}, (done, _converse) => {
+                    mock.initConverse(['rosterInitialized'], {}, async (done, _converse) => {
 
-                test_utils.createContacts(_converse, 'current');
-                const error = new TypeError('contacts.add: invalid jid');
-                expect(_converse.api.contacts.add).toThrow(error);
-                expect(_converse.api.contacts.add.bind(_converse.api, "invalid jid")).toThrow(error);
+                await test_utils.waitForRoster(_converse, 'current', 0);
+                try {
+                    await _converse.api.contacts.add();
+                    throw new Error('Call should have failed');
+                } catch (e) {
+                    expect(e.message).toBe('contacts.add: invalid jid');
+
+                }
+                try {
+                    await _converse.api.contacts.add("invalid jid");
+                    throw new Error('Call should have failed');
+                } catch (e) {
+                    expect(e.message).toBe('contacts.add: invalid jid');
+                }
                 spyOn(_converse.roster, 'addAndSubscribe');
-                _converse.api.contacts.add("newcontact@example.org");
+                await _converse.api.contacts.add("newcontact@example.org");
                 expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
                 done();
             }));
@@ -258,9 +268,8 @@
                 ['rosterInitialized', 'chatBoxesInitialized'], {},
                 async (done, _converse) => {
 
-                test_utils.openControlBox();
-                test_utils.createContacts(_converse, 'current', 2);
-                _converse.api.trigger('rosterContactsFetched');
+                await test_utils.openControlBox(_converse);
+                await test_utils.waitForRoster(_converse, 'current', 2);
 
                 // Test on chat that doesn't exist.
                 let chat = await _converse.api.chats.get('non-existing@jabber.org');
@@ -270,7 +279,7 @@
 
                 // Test on chat that's not open
                 chat = await _converse.api.chats.get(jid);
-                expect(typeof chat === 'undefined').toBeTruthy();
+                expect(chat === null).toBeTruthy();
                 expect(_converse.chatboxes.length).toBe(1);
 
                 // Test for one JID
@@ -282,7 +291,7 @@
                 await u.waitUntil(() => u.isVisible(view.el));
                 // Test for multiple JIDs
                 test_utils.openChatBoxFor(_converse, jid2);
-                await u.waitUntil(() => _converse.chatboxes.length == 2);
+                await u.waitUntil(() => _converse.chatboxes.length == 3);
                 const list = await _converse.api.chats.get([jid, jid2]);
                 expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(`box-${btoa(jid)}`);
@@ -294,9 +303,8 @@
                 ['rosterGroupsFetched', 'chatBoxesInitialized'], {},
                 async (done, _converse) => {
 
-                test_utils.openControlBox();
-                test_utils.createContacts(_converse, 'current', 2);
-                _converse.api.trigger('rosterContactsFetched');
+                await test_utils.openControlBox(_converse);
+                await test_utils.waitForRoster(_converse, 'current', 2);
 
                 const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';

@@ -437,11 +437,11 @@ u.onMultipleEvents = function (events=[], callback) {
     events.forEach(e => e.object.on(e.event, handler));
 };
 
-u.safeSave = function (model, attributes) {
+u.safeSave = function (model, attributes, options) {
     if (u.isPersistableModel(model)) {
-        model.save(attributes);
+        model.save(attributes, options);
     } else {
-        model.set(attributes);
+        model.set(attributes, options);
     }
 };
 

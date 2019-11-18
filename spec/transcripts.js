@@ -1,14 +1,13 @@
 (function (root, factory) {
     define([
         "jasmine",
-        "converse-core",
         "mock",
         "test-utils",
         "utils",
         "transcripts"
         ], factory
     );
-} (this, function (jasmine, converse, mock, test_utils, utils, transcripts) {
+} (this, function (jasmine, mock, test_utils, utils, transcripts) {
     var Strophe = converse.env.Strophe;
     var _ = converse.env._;
     var IGNORED_TAGS = [

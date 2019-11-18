@@ -76,13 +76,37 @@
         'Escalus, prince of Verona', 'The Nurse', 'Paris'
     ];
     mock.pend_names = [
-        'Lord Capulet', 'Lady Capulet', 'Servant'
+        'Lord Capulet', 'Guard', 'Servant'
     ];
-    mock.cur_names = [
-        'Mercutio', 'Juliet Capulet', 'Lady Montague', 'Lord Montague', 'Friar Laurence',
-        'Tybalt', 'Lady Capulet', 'Benviolo', 'Balthasar',
-        'Peter', 'Abram', 'Sampson', 'Gregory', 'Potpan', 'Friar John'
-    ];
+    mock.current_contacts_map = {
+        'Mercutio': ['Colleagues', 'friends & acquaintences'],
+        'Juliet Capulet': ['friends & acquaintences'],
+        'Lady Montague': ['Colleagues', 'Family'],
+        'Lord Montague': ['Family'],
+        'Friar Laurence': ['friends & acquaintences'],
+        'Tybalt': ['friends & acquaintences'],
+        'Lady Capulet': ['ænemies'],
+        'Benviolo': ['friends & acquaintences'],
+        'Balthasar': ['Colleagues'],
+        'Peter': ['Colleagues'],
+        'Abram': ['Colleagues'],
+        'Sampson': ['Colleagues'],
+        'Gregory': ['friends & acquaintences'],
+        'Potpan': [],
+        'Friar John': []
+    };
+
+    const map = mock.current_contacts_map;
+    const groups_map = {};
+    Object.keys(map).forEach(k => {
+        const groups = map[k].length ? map[k] : ["Ungrouped"];
+        Object.values(groups).forEach(g => {
+            groups_map[g] = groups_map[g] ? [...groups_map[g], k] : [k]
+        });
+    });
+    mock.groups_map = groups_map;
+
+    mock.cur_names = Object.keys(mock.current_contacts_map);
     mock.num_contacts = mock.req_names.length + mock.pend_names.length + mock.cur_names.length;
 
     mock.groups = {
@@ -195,42 +219,39 @@
             'no_trimming': true,
             'play_sounds': false,
             'use_emojione': false,
-            'view_mode': mock.view_mode,
+            'view_mode': mock.view_mode
         }, settings || {}));
 
         _converse.ChatBoxViews.prototype.trimChat = function () {};
 
         _converse.api.vcard.get = function (model, force) {
-            return new Promise(resolve => {
-                let jid;
-                if (_.isString(model)) {
-                    jid = model;
-                } else if (!model.get('vcard_updated') || force) {
-                    jid = model.get('jid') || model.get('muc_jid');
-                }
-                let fullname;
-                if (!jid || jid == 'romeo@montague.lit') {
-                    jid = 'romeo@montague.lit';
-                    fullname = 'Romeo Montague' ;
-                } else {
-                    const name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
-                    const last = name.length-1;
-                    name[0] =  name[0].charAt(0).toUpperCase()+name[0].slice(1);
-                    name[last] = name[last].charAt(0).toUpperCase()+name[last].slice(1);
-                    fullname = name.join(' ');
-                }
-                const vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
-                const result = {
-                    'vcard': vcard,
-                    'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
-                    'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
-                    'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
-                    'url': _.get(vcard.querySelector('URL'), 'textContent'),
-                    'vcard_updated': dayjs().format(),
-                    'vcard_error': undefined
-                };
-                resolve(result);
-            }).catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
+            let jid;
+            if (_.isString(model)) {
+                jid = model;
+            } else if (!model.get('vcard_updated') || force) {
+                jid = model.get('jid') || model.get('muc_jid');
+            }
+            let fullname;
+            if (!jid || jid == 'romeo@montague.lit') {
+                jid = 'romeo@montague.lit';
+                fullname = 'Romeo Montague' ;
+            } else {
+                const name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
+                const last = name.length-1;
+                name[0] =  name[0].charAt(0).toUpperCase()+name[0].slice(1);
+                name[last] = name[last].charAt(0).toUpperCase()+name[last].slice(1);
+                fullname = name.join(' ');
+            }
+            const vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
+            return {
+                'vcard': vcard,
+                'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
+                'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
+                'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
+                'url': _.get(vcard.querySelector('URL'), 'textContent'),
+                'vcard_updated': dayjs().format(),
+                'vcard_error': undefined
+            };
         };
         if (_.get(settings, 'auto_login') !== false) {
             _converse.api.user.login('romeo@montague.lit/orchard', 'secret');

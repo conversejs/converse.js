@@ -112,8 +112,9 @@ converse.plugins.add('converse-minimize', {
 
         ChatBoxHeading: {
             render () {
-                const { _converse } = this.__super__,
-                    { __ } = _converse;
+                const { _converse } = this.__super__;
+                const { __ } = _converse;
+
                 this.__super__.render.apply(this, arguments);
                 const new_html = tpl_chatbox_minimize({
                     'info_minimize': __('Minimize this chat box')
@@ -388,6 +389,13 @@ converse.plugins.add('converse-minimize', {
                 this.listenTo(this.model, 'change:fullname', this.render)
                 this.listenTo(this.model, 'change:jid', this.render)
                 this.listenTo(this.model, 'destroy', this.remove)
+                /**
+                 * Triggered once a {@link _converse.MinimizedChatBoxView } has been initialized
+                 * @event _converse#minimizedChatViewInitialized
+                 * @type { _converse.MinimizedChatBoxView }
+                 * @example _converse.api.listen.on('minimizedChatViewInitialized', view => { ... });
+                 */
+                _converse.api.trigger('minimizedChatViewInitialized', this);
             },
 
             render () {

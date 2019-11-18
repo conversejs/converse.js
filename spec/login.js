@@ -13,7 +13,7 @@
                   allow_registration: false },
                 async function (done, _converse) {
 
-            test_utils.openControlBox();
+            test_utils.openControlBox(_converse);
             const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
             const checkboxes = cbview.el.querySelectorAll('input[type="checkbox"]');
             expect(checkboxes.length).toBe(1);
@@ -51,7 +51,7 @@
             u.waitUntil(() => _converse.chatboxviews.get('controlbox'))
             .then(() => {
                 var cbview = _converse.chatboxviews.get('controlbox');
-                test_utils.openControlBox();
+                test_utils.openControlBox(_converse);
                 const checkboxes = cbview.el.querySelectorAll('input[type="checkbox"]');
                 expect(checkboxes.length).toBe(1);
 

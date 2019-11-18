@@ -74,7 +74,7 @@
                 ['rosterGroupsFetched'], {},
                 async (done, _converse) => {
 
-            test_utils.openControlBox();
+            test_utils.openControlBox(_converse);
             const view = _converse.xmppstatusview;
             spyOn(view.model, 'sendPresence').and.callThrough();
             spyOn(_converse.connection, 'send').and.callThrough();
@@ -112,12 +112,12 @@
         it("has its priority taken into account",
             mock.initConverse(
                 ['rosterGroupsFetched'], {},
-                (done, _converse) => {
+                async (done, _converse) => {
 
-            test_utils.openControlBox();
-            test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
+            test_utils.openControlBox(_converse);
+            await test_utils.waitForRoster(_converse, 'current');
             const contact_jid = mock.cur_names[8].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const contact = _converse.roster.get(contact_jid);
+            const contact = await _converse.api.contacts.get(contact_jid);
             let stanza = u.toStanza(`
                 <presence xmlns="jabber:client"
                         to="romeo@montague.lit/converse.js-21770972"

@@ -103,13 +103,10 @@ converse.plugins.add('converse-profile', {
                 .then(() => _converse.api.vcard.update(this.model.vcard, true))
                 .catch((err) => {
                     _converse.log(err, Strophe.LogLevel.FATAL);
-                    _converse.api.alert.show(
-                        Strophe.LogLevel.ERROR,
-                        __('Error'), [
-                            __("Sorry, an error happened while trying to save your profile data."),
-                            __("You can check your browser's developer console for any error output.")
-                        ]
-                    )
+                    _converse.api.show('error', __('Error'), [
+                        __("Sorry, an error happened while trying to save your profile data."),
+                        __("You can check your browser's developer console for any error output.")
+                    ]);
                 });
                 this.modal.hide();
             },
@@ -310,7 +307,7 @@ converse.plugins.add('converse-profile', {
         /******************** Event Handlers ********************/
 
         _converse.api.listen.on('controlBoxPaneInitialized', async view => {
-            await _converse.api.waitUntil('statusInitialized');
+            await _converse.api.waitUntil('VCardsInitialized');
             _converse.xmppstatusview = new _converse.XMPPStatusView({'model': _converse.xmppstatus});
             view.el.insertAdjacentElement('afterBegin', _converse.xmppstatusview.render().el);
         });

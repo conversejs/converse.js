@@ -47,17 +47,14 @@
         return req;
     };
 
-    utils.closeAllChatBoxes = function (converse) {
-        var i, chatbox;
-        for (i=converse.chatboxes.models.length-1; i>-1; i--) {
-            chatbox = converse.chatboxes.models[i];
-            converse.chatboxviews.get(chatbox.get('id')).close();
-        }
-        return this;
+    utils.closeAllChatBoxes = function (_converse) {
+        return Promise.all(_converse.chatboxviews.map(view => view.close()));
     };
 
-    utils.openControlBox = function () {
-        const toggle = document.querySelector(".toggle-controlbox");
+    utils.openControlBox = async function (_converse) {
+        const model = await _converse.api.controlbox.open();
+        await u.waitUntil(() => model.get('connected'));
+        var toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
             if (!u.isVisible(toggle)) {
                 u.removeClass('hidden', toggle);
@@ -68,9 +65,9 @@
     };
 
     utils.closeControlBox = function () {
-        var controlbox = document.querySelector("#controlbox");
+        const controlbox = document.querySelector("#controlbox");
         if (u.isVisible(controlbox)) {
-            var button = controlbox.querySelector(".close-chatbox-button");
+            const button = controlbox.querySelector(".close-chatbox-button");
             if (!_.isNull(button)) {
                 button.click();
             }
@@ -116,15 +113,19 @@
         return views;
     };
 
-    utils.openChatBoxFor = function (_converse, jid) {
+    utils.openChatBoxFor = async function (_converse, jid) {
+        await _converse.api.waitUntil('rosterContactsFetched');
         _converse.roster.get(jid).trigger("open");
         return u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
     };
 
     utils.openChatRoomViaModal = async function (_converse, jid, nick='') {
         // Opens a new chatroom
-        utils.openControlBox(_converse);
-        const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+        const model = await _converse.api.controlbox.open('controlbox');
+        await u.waitUntil(() => model.get('connected'));
+        utils.openControlBox();
+        const view = await _converse.chatboxviews.get('controlbox');
+        const roomspanel = view.roomspanel;
         roomspanel.el.querySelector('.show-add-muc-modal').click();
         utils.closeControlBox(_converse);
         const modal = roomspanel.add_room_modal;
@@ -281,6 +282,7 @@
             });
             _converse.connection._dataRecv(utils.createRequest(owner_list_stanza));
         }
+        return new Promise(resolve => _converse.api.listen.on('membersFetched', resolve));
     };
 
     utils.receiveOwnMUCPresence = function (_converse, muc_jid, nick) {
@@ -296,7 +298,8 @@
             }).up()
             .c('status').attrs({code:'110'});
         _converse.connection._dataRecv(utils.createRequest(presence));
-    }
+        // return utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+    };
 
 
     utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
@@ -318,19 +321,36 @@
     };
 
     utils.clearChatBoxMessages = function (converse, jid) {
-        var view = converse.chatboxviews.get(jid);
+        const view = converse.chatboxviews.get(jid);
         view.el.querySelector('.chat-content').innerHTML = '';
-        view.model.messages.reset();
-        view.model.messages.browserStorage._clear();
+        return view.model.messages.clearSession();
     };
 
-    utils.createContacts = function (converse, type, length) {
+    utils.createContact = async function (_converse, name, ask, requesting, subscription) {
+        const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        if (_converse.roster.get(jid)) {
+            return Promise.resolve();
+        }
+        const contact = await new Promise((success, error) => {
+            _converse.roster.create({
+                'ask': ask,
+                'fullname': name,
+                'jid': jid,
+                'requesting': requesting,
+                'subscription': subscription
+            }, {success, error});
+        });
+        return contact;
+    };
+
+    utils.createContacts = async function (_converse, type, length) {
         /* Create current (as opposed to requesting or pending) contacts
          * for the user's roster.
          *
          * These contacts are not grouped. See below.
          */
-        var names, jid, subscription, requesting, ask;
+        await _converse.api.waitUntil('rosterContactsFetched');
+        let names, subscription, requesting, ask;
         if (type === 'requesting') {
             names = mock.req_names;
             subscription = 'none';
@@ -347,33 +367,18 @@
             requesting = false;
             ask = null;
         } else if (type === 'all') {
-            this.createContacts(converse, 'current')
-                .createContacts(converse, 'requesting')
-                .createContacts(converse, 'pending');
+            await this.createContacts(_converse, 'current');
+            await this.createContacts(_converse, 'requesting')
+            await this.createContacts(_converse, 'pending');
             return this;
         } else {
             throw Error("Need to specify the type of contact to create");
         }
-
-        if (typeof length === 'undefined') {
-            length = names.length;
-        }
-        for (var i=0; i<length; i++) {
-            jid = names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            if (!converse.roster.get(jid)) {
-                converse.roster.create({
-                    'ask': ask,
-                    'name': names[i],
-                    'jid': jid,
-                    'requesting': requesting,
-                    'subscription': subscription
-                });
-            }
-        }
-        return this;
+        const promises = names.slice(0, length).map(n => this.createContact(_converse, n, ask, requesting, subscription));
+        await Promise.all(promises);
     };
 
-    utils.waitForRoster = async function (_converse, type='current', length, include_nick=true) {
+    utils.waitForRoster = async function (_converse, type='current', length=-1, include_nick=true, grouped=true) {
         const iq = await u.waitUntil(() =>
             _.filter(
                 _converse.connection.IQ_stanzas,
@@ -388,42 +393,34 @@
             'xmlns': 'jabber:iq:roster'
         });
         if (type === 'pending' || type === 'all') {
-            mock.pend_names.slice(0, length).map(name =>
+            const pend_names = (length > -1) ? mock.pend_names.slice(0, length) : mock.pend_names;
+            pend_names.map(name =>
                 result.c('item', {
                     jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     name: include_nick ? name : undefined,
-                    subscription: 'to'
-                }).up()
-            );
-        } else if (type === 'current' || type === 'all') {
-            mock.cur_names.slice(0, length).map(name =>
-                result.c('item', {
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                    name: include_nick ? name : undefined,
-                    subscription: 'both'
+                    subscription: 'none',
+                    ask: 'subscribe'
                 }).up()
             );
         }
+        if (type === 'current' || type === 'all') {
+            const cur_names = Object.keys(mock.current_contacts_map);
+            const names = (length > -1) ? cur_names.slice(0, length) : cur_names;
+            names.forEach(name => {
+                result.c('item', {
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
+                    name: include_nick ? name : undefined,
+                    subscription: 'both',
+                    ask: null
+                });
+                if (grouped) {
+                    mock.current_contacts_map[name].forEach(g => result.c('group').t(g).up());
+                }
+                result.up();
+            });
+        }
         _converse.connection._dataRecv(utils.createRequest(result));
         await _converse.api.waitUntil('rosterContactsFetched');
-    };
-
-    utils.createGroupedContacts = function (converse) {
-        /* Create grouped contacts
-         */
-        let i=0, j=0;
-        _.each(_.keys(mock.groups), function (name) {
-            j = i;
-            for (i=j; i<j+mock.groups[name]; i++) {
-                converse.roster.create({
-                    'jid': mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                    'subscription': 'both',
-                    'ask': null,
-                    'groups': name === 'ungrouped'? [] : [name],
-                    'name': mock.cur_names[i]
-                });
-            }
-        });
     };
 
     utils.createChatMessage = function (_converse, sender_jid, message) {

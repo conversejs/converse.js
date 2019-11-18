@@ -111,6 +111,8 @@ converse.plugins.add('converse-muc-views', {
             'muc_show_join_leave': true,
             'muc_show_join_leave_status': true,
             'muc_mention_autocomplete_min_chars': 0,
+            'muc_mention_autocomplete_filter': 'contains',
+            'muc_mention_autocomplete_show_avatar': true,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
@@ -711,13 +713,11 @@ converse.plugins.add('converse-muc-views', {
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
-                if (this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor') {
-                    container.innerHTML = tpl_chatroom_bottom_panel({'__': __});
-                } else {
-                    if (!container.firstElementChild || !container.querySelector('.sendXMPPMessage')) {
-                        this.renderMessageForm();
-                        this.initMentionAutoComplete();
-                    }
+                const can_edit = !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
+                container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit});
+                if (can_edit) {
+                    this.renderMessageForm();
+                    this.initMentionAutoComplete();
                 }
             },
 
@@ -746,6 +746,42 @@ converse.plugins.add('converse-muc-views', {
                 return this.model.occupants.filter('nick').map(o => ({'label': o.get('nick'), 'value': `@${o.get('nick')}`}));
             },
 
+            getAutoCompleteListItem(text, input) {
+                input = input.trim();
+                const element = document.createElement("li");
+                element.setAttribute("aria-selected", "false");
+
+                if (_converse.muc_mention_autocomplete_show_avatar) {
+                    const img = document.createElement("img");
+                    let dataUri = "data:" + _converse.DEFAULT_IMAGE_TYPE + ";base64," + _converse.DEFAULT_IMAGE;
+
+                    if (_converse.vcards) {
+                        const vcard = _converse.vcards.findWhere({'nickname': text});
+                        if (vcard) dataUri = "data:" + vcard.get('image_type') + ";base64," + vcard.get('image');
+                    }
+
+                    img.setAttribute("src", dataUri);
+                    img.setAttribute("width", "22");
+                    img.setAttribute("class", "avatar avatar-autocomplete");
+                    element.appendChild(img);
+                }
+
+                const regex = new RegExp("(" + input + ")", "ig");
+                const parts = input ? text.split(regex) : [text];
+
+                parts.forEach(txt => {
+                    if (input && txt.match(regex)) {
+                      const match = document.createElement("mark");
+                      match.textContent = txt;
+                      element.appendChild(match);
+                    } else {
+                      element.appendChild(document.createTextNode(txt));
+                    }
+                });
+
+                return element;
+            },
+
             initMentionAutoComplete () {
                 this.mention_auto_complete = new _converse.AutoComplete(this.el, {
                     'auto_first': true,
@@ -753,9 +789,10 @@ converse.plugins.add('converse-muc-views', {
                     'min_chars': _converse.muc_mention_autocomplete_min_chars,
                     'match_current_word': true,
                     'list': () => this.getAutoCompleteList(),
-                    'filter': _converse.FILTER_STARTSWITH,
+                    'filter': _converse.muc_mention_autocomplete_filter == 'contains' ? _converse.FILTER_CONTAINS : _converse.FILTER_STARTSWITH,
                     'ac_triggers': ["Tab", "@"],
-                    'include_triggers': []
+                    'include_triggers': [],
+                    'item': this.getAutoCompleteListItem
                 });
                 this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
             },
@@ -887,7 +924,6 @@ converse.plugins.add('converse-muc-views', {
                  */
                 if (u.isPersistableModel(this.model)) {
                     this.model.clearUnreadMsgCounter();
-                    this.model.save();
                 }
                 this.scrollDown();
             },
@@ -927,12 +963,12 @@ converse.plugins.add('converse-muc-views', {
              * @private
              * @method _converse.ChatRoomView#close
              */
-            close () {
+            async close () {
                 this.hide();
                 if (Backbone.history.getFragment() === "converse/room?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
                 }
-                this.model.leave();
+                await this.model.leave();
                 return _converse.ChatBoxView.prototype.close.apply(this, arguments);
             },
 
@@ -2130,7 +2166,6 @@ converse.plugins.add('converse-muc-views', {
             const view = _converse.chatboxviews.get('controlbox');
             if (view && view.roomspanel) {
                 view.roomspanel.model.destroy();
-                view.roomspanel.model.browserStorage._clear();
                 view.roomspanel.remove();
                 delete view.roomspanel;
             }
@@ -2199,6 +2234,7 @@ converse.plugins.add('converse-muc-views', {
                  *
                  * @method _converse.api.roomviews.close
                  * @param {(String[]|String)} jids The JID or array of JIDs of the chatroom(s)
+                 * @returns { Promise } - Promise which resolves once the views have been closed.
                  */
                 close (jids) {
                     let views;
@@ -2209,11 +2245,7 @@ converse.plugins.add('converse-muc-views', {
                     } else if (Array.isArray(jids)) {
                         views = jids.map(jid => _converse.chatboxviews.get(jid));
                     }
-                    views.forEach(view => {
-                        if (view.is_chatroom && view.model) {
-                            view.close();
-                        }
-                    });
+                    return Promise.all(views.map(v => (v.is_chatroom && v.model && v.close())))
                 }
             }
         });

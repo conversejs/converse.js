@@ -336,7 +336,8 @@ converse.plugins.add('converse-rosterview', {
                 "click .remove-xmpp-contact": "removeContact"
             },
 
-            initialize () {
+            async initialize () {
+                await this.model.initialized;
                 this.listenTo(this.model, "change", this.render);
                 this.listenTo(this.model, "highlight", this.highlight);
                 this.listenTo(this.model, "destroy", this.remove);
@@ -345,6 +346,7 @@ converse.plugins.add('converse-rosterview', {
 
                 this.listenTo(this.model.presence, "change:show", this.render);
                 this.listenTo(this.model.vcard, 'change:fullname', this.render);
+                this.render();
             },
 
             render () {
@@ -503,11 +505,9 @@ converse.plugins.add('converse-rosterview', {
                     }
                 } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
-                    _converse.api.alert.show(
-                        Strophe.LogLevel.ERROR,
-                        __('Error'),
+                    _converse.api.alert('error', __('Error'),
                         [__('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName())]
-                    )
+                    );
                 }
             },
 
@@ -808,9 +808,8 @@ converse.plugins.add('converse-rosterview', {
             createRosterFilter () {
                 // Create a model on which we can store filter properties
                 const model = new _converse.RosterFilter();
-                model.id = `_converse.rosterfilter${_converse.bare_jid}`;
-                const storage = _converse.config.get('storage');
-                model.browserStorage = _converse.createStore(this.filter.id, storage);
+                model.id = `_converse.rosterfilter-${_converse.bare_jid}`;
+                model.browserStorage = _converse.createStore(model.id);
                 this.filter_view = new _converse.RosterFilterView({'model': model});
                 this.listenTo(this.filter_view.model, 'change', this.updateFilter);
                 this.filter_view.model.fetch();
@@ -979,7 +978,7 @@ converse.plugins.add('converse-rosterview', {
         });
 
 
-        function initRoster () {
+        function initRosterView () {
             /* Create an instance of RosterView once the RosterGroups
              * collection has been created (in @converse/headless/converse-core.js)
              */
@@ -997,8 +996,8 @@ converse.plugins.add('converse-rosterview', {
              */
             _converse.api.trigger('rosterViewInitialized');
         }
-        _converse.api.listen.on('rosterInitialized', initRoster);
-        _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
+        _converse.api.listen.on('rosterInitialized', initRosterView);
+        _converse.api.listen.on('rosterReadyAfterReconnection', initRosterView);
 
         _converse.api.listen.on('afterTearDown', () => {
             if (converse.rosterview) {

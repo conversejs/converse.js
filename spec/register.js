@@ -16,8 +16,7 @@
                 async function (done, _converse) {
 
             await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
-            test_utils.openControlBox();
-            const cbview = _converse.chatboxviews.get('controlbox');
+            const cbview = _converse.api.controlbox.get();
             expect(cbview.el.querySelectorAll('a.register-account').length).toBe(0);
             done();
         }));
@@ -29,15 +28,22 @@
                   allow_registration: true },
                 async function (done, _converse) {
 
+            const toggle = document.querySelector(".toggle-controlbox");
+            if (!u.isVisible(document.querySelector("#controlbox"))) {
+                if (!u.isVisible(toggle)) {
+                    u.removeClass('hidden', toggle);
+                }
+                toggle.click();
+            }
             await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'), 300);
             const cbview = _converse.chatboxviews.get('controlbox');
-            test_utils.openControlBox();
             const panels = cbview.el.querySelector('.controlbox-panes');
             const login = panels.firstElementChild;
             const registration = panels.childNodes[1];
             const register_link = cbview.el.querySelector('a.register-account');
             expect(register_link.textContent).toBe("Create an account");
             register_link.click();
+
             await u.waitUntil(() => u.isVisible(registration));
             expect(u.isVisible(login)).toBe(false);
             done();
@@ -52,8 +58,7 @@
 
             spyOn(Strophe.Connection.prototype, 'connect');
             await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
-            test_utils.openControlBox();
-            const cbview = _converse.chatboxviews.get('controlbox');
+            const cbview = _converse.api.controlbox.get();
             const registerview = cbview.registerpanel;
             spyOn(registerview, 'onProviderChosen').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
@@ -88,8 +93,7 @@
 
             spyOn(Strophe.Connection.prototype, 'connect');
             await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
-            test_utils.openControlBox();
-            const cbview = _converse.chatboxviews.get('controlbox');
+            const cbview = _converse.api.controlbox.get();
             cbview.el.querySelector('.toggle-register-login').click();
 
             const registerview = _converse.chatboxviews.get('controlbox').registerpanel;
@@ -100,7 +104,7 @@
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
 
             expect(registerview._registering).toBeFalsy();
-            expect(_converse.connection.connected).toBeFalsy();
+            expect(_converse.api.connection.connected()).toBeFalsy();
             registerview.el.querySelector('input[name=domain]').value  = 'conversejs.org';
             registerview.el.querySelector('input[type=submit]').click();
             expect(registerview.onProviderChosen).toHaveBeenCalled();
@@ -143,8 +147,14 @@
                 async function (done, _converse) {
 
             await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
-            test_utils.openControlBox();
-            const cbview = _converse.chatboxviews.get('controlbox');
+            const toggle = document.querySelector(".toggle-controlbox");
+            if (!u.isVisible(document.querySelector("#controlbox"))) {
+                if (!u.isVisible(toggle)) {
+                    u.removeClass('hidden', toggle);
+                }
+                toggle.click();
+            }
+            const cbview = _converse.api.controlbox.get();
             cbview.el.querySelector('.toggle-register-login').click();
 
             const registerview = cbview.registerpanel;
@@ -153,7 +163,6 @@
             spyOn(registerview, 'onRegistrationFields').and.callThrough();
             spyOn(registerview, 'renderRegistrationForm').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').and.callThrough();
 
             registerview.el.querySelector('input[name=domain]').value = 'conversejs.org';
             registerview.el.querySelector('input[type=submit]').click();
@@ -200,8 +209,14 @@
                 async function (done, _converse) {
 
             await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
-            test_utils.openControlBox();
-            const cbview = _converse.chatboxviews.get('controlbox');
+            const toggle = document.querySelector(".toggle-controlbox");
+            if (!u.isVisible(document.querySelector("#controlbox"))) {
+                if (!u.isVisible(toggle)) {
+                    u.removeClass('hidden', toggle);
+                }
+                toggle.click();
+            }
+            const cbview = _converse.api.controlbox.get();
             cbview.el.querySelector('.toggle-register-login').click();
             const registerview = _converse.chatboxviews.get('controlbox').registerpanel;
             spyOn(registerview, 'onProviderChosen').and.callThrough();
@@ -209,7 +224,6 @@
             spyOn(registerview, 'onRegistrationFields').and.callThrough();
             spyOn(registerview, 'renderRegistrationForm').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').and.callThrough();
 
             registerview.el.querySelector('input[name=domain]').value = 'conversejs.org';
             registerview.el.querySelector('input[type=submit]').click();
@@ -274,7 +288,13 @@
                 async function (done, _converse) {
 
             await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
-            test_utils.openControlBox();
+            const toggle = document.querySelector(".toggle-controlbox");
+            if (!u.isVisible(document.querySelector("#controlbox"))) {
+                if (!u.isVisible(toggle)) {
+                    u.removeClass('hidden', toggle);
+                }
+                toggle.click();
+            }
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.toggle-register-login').click();
             const registerview = _converse.chatboxviews.get('controlbox').registerpanel;
@@ -283,7 +303,6 @@
             spyOn(registerview, 'onRegistrationFields').and.callThrough();
             spyOn(registerview, 'renderRegistrationForm').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').and.callThrough();
 
             registerview.el.querySelector('input[name=domain]').value = 'conversejs.org';
             registerview.el.querySelector('input[type=submit]').click();

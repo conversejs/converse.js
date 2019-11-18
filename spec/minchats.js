@@ -13,11 +13,8 @@
                 ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.api.trigger('rosterContactsFetched');
-
-            test_utils.openControlBox();
-            _converse.minimized_chats.toggleview.model.browserStorage._clear();
+            await test_utils.waitForRoster(_converse, 'current');
+            await test_utils.openControlBox(_converse);
             _converse.minimized_chats.initToggle();
 
             let contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -48,11 +45,8 @@
                 ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.api.trigger('rosterContactsFetched');
-
-            test_utils.openControlBox();
-            _converse.minimized_chats.toggleview.model.browserStorage._clear();
+            await test_utils.waitForRoster(_converse, 'current');
+            await test_utils.openControlBox(_converse);
             _converse.minimized_chats.initToggle();
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -74,13 +68,10 @@
         it("shows the number messages received to minimized chats",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                function (done, _converse) {
+                async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.api.trigger('rosterContactsFetched');
-
-            test_utils.openControlBox();
-            _converse.minimized_chats.toggleview.model.browserStorage._clear();
+            await test_utils.waitForRoster(_converse, 'current');
+            await test_utils.openControlBox(_converse);
             _converse.minimized_chats.initToggle();
 
             var i, contact_jid, chatview, msg;
@@ -104,7 +95,7 @@
                         id: (new Date()).getTime()
                     }).c('body').t('This message is sent to a minimized chatbox').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    _converse.chatboxes.onMessage(msg);
+                    _converse.handleMessageStanza(msg);
                 }
                 return u.waitUntil(() => chatview.model.messages.length);
             }).then(() => {
@@ -112,7 +103,7 @@
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((3).toString());
                 // Chat state notifications don't increment the unread messages counter
                 // <composing> state
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',
@@ -121,7 +112,7 @@
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
 
                 // <paused> state
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',
@@ -130,7 +121,7 @@
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
 
                 // <gone> state
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',
@@ -139,7 +130,7 @@
                 expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
 
                 // <inactive> state
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',

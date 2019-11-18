@@ -65,7 +65,6 @@
                     type: 'groupchat'
                 }).c('body').t(message).tree();
             await view.model.onMessage(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(u.hasClass('mentioned', view.el.querySelector('.chat-msg'))).toBeTruthy();
             done();
         }));
@@ -87,8 +86,7 @@
                     type: 'groupchat'
                 }).c('body').t('First message').tree();
             await view.model.onMessage(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
 
             msg = $msg({
                     from: 'lounge@montague.lit/some2',
@@ -97,8 +95,8 @@
                     type: 'groupchat'
                 }).c('body').t('Another message').tree();
             await view.model.onMessage(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
+            expect(view.model.messages.length).toBe(2);
             done();
         }));
 
@@ -122,7 +120,6 @@
                                by="room@muc.example.com"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await u.waitUntil(() => _converse.api.chats.get().length);
             await u.waitUntil(() => view.model.messages.length === 1);
             await u.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 1);
             let result = await view.model.findDuplicateFromStanzaID.calls.all()[0].returnValue;
@@ -154,7 +151,7 @@
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             const muc_jid = 'xsf@muc.xmpp.org';
             const sender_jid = `${muc_jid}/romeo`;
             const impersonated_jid = `${muc_jid}/i_am_groot`
@@ -223,7 +220,6 @@
                 type: 'groupchat'
             }).c('body').t('I wrote this message!').tree();
             await view.model.onMessage(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
             expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
@@ -250,7 +246,6 @@
                 type: 'groupchat'
             }).c('body').t('Another message!').tree();
             await view.model.onMessage(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('member');
             expect(view.model.messages.last().occupant.get('role')).toBe('participant');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
@@ -286,7 +281,6 @@
                 type: 'groupchat'
             }).c('body').t('Message from someone not in the MUC right now').tree();
             await view.model.onMessage(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().occupant).toBeUndefined();
             // Check that there's a new "add" event handler, for when the occupant appears.
             expect(view.model.occupants._events.add.length).toBe(add_events+1);
@@ -351,7 +345,6 @@
                     type: 'groupchat'
                 }).c('body').t('I wrote this message!').tree();
             await view.model.onMessage(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().get('sender')).toBe('me');
             done();
         }));
@@ -382,7 +375,6 @@
                     'type': 'groupchat',
                     'id': msg_id,
                 }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder airlock breaks?');
@@ -445,8 +437,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.once('messageInserted', resolve));
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
             expect(view.el.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder airlock breaks?');
 
@@ -503,7 +494,6 @@
                 'to': 'romeo@montague.lit',
                 'type': 'groupchat'
             }).c('body').t('Hello world').tree());
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
 
             // Test that pressing the down arrow cancels message correction
@@ -581,7 +571,6 @@
             const view = _converse.api.chatviews.get(muc_jid);
 
             view.model.sendMessage('hello world');
-            await u.waitUntil(() => _converse.api.chats.get().length);
             await u.waitUntil(() => view.model.messages.length === 1);
             const msg = view.model.messages.at(0);
             expect(msg.get('stanza_id')).toBeUndefined();
@@ -744,7 +733,6 @@
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
                 await view.model.onMessage(msg);
-                await new Promise(resolve => view.once('messageInserted', resolve));
                 const messages = view.el.querySelectorAll('.chat-msg__text');
                 expect(messages.length).toBe(1);
                 expect(messages[0].classList.length).toEqual(1);

@@ -117,7 +117,7 @@ converse.plugins.add('converse-mam', {
                 }
                 const message_handler = is_groupchat ?
                     this.onMessage.bind(this) :
-                    _converse.chatboxes.onMessage.bind(_converse.chatboxes);
+                    _converse.handleMessageStanza.bind(_converse.chatboxes);
 
                 const query = Object.assign({
                         'groupchat': is_groupchat,
@@ -253,16 +253,14 @@ converse.plugins.add('converse-mam', {
                 chat.fetchNewestMessages();
             }
         });
+
         _converse.api.listen.on('afterMessagesFetched', chat => {
             // XXX: We don't want to query MAM every time this is triggered
             // since it's not necessary when the chat is restored from cache.
             // (given that BOSH or SMACKS will ensure that you get messages
             // sent during the reload).
-            //
-            // With MUCs we can listen for `enteredNewRoom` but for
-            // one-on-one we have to use this hacky solutoin for now.
-            // `chat_state` is `undefined` only for newly created chats.
-            if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE && chat.get('chat_state') === undefined) {
+            // With MUCs we can listen for `enteredNewRoom`.
+            if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE && !_converse.connection.restored) {
                 chat.fetchNewestMessages();
             }
         });

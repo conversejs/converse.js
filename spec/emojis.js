@@ -18,24 +18,20 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
-                test_utils.openControlBox();
+                test_utils.openControlBox(_converse);
 
                 const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 const toolbar = view.el.querySelector('ul.chat-toolbar');
-                expect(toolbar.querySelectorAll('li.toggle-smiley').length).toBe(1);
-                spyOn(view, 'toggleEmojiMenu').and.callThrough();
-
-                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                toolbar.querySelector('li.toggle-smiley').click();
-
-                await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
-                const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                expect(toolbar.querySelectorAll('li.toggle-smiley__container').length).toBe(1);
+                toolbar.querySelector('a.toggle-smiley').click();
+                await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+                const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
                 const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
                 item.click()
                 expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':smiley: ');
-                toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
+                toolbar.querySelector('a.toggle-smiley').click(); // Close the panel again
                 done();
             }));
 
@@ -59,8 +55,8 @@
                     'key': 'Tab'
                 }
                 view.onKeyDown(tab_event);
-                await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
-                let picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+                let picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
                 const input = picker.querySelector('.emoji-search');
                 expect(input.value).toBe(':gri');
                 let visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
@@ -98,8 +94,8 @@
 
                 textarea.value = ':use';
                 view.onKeyDown(tab_event);
-                await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
-                picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+                picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
                 expect(input.value).toBe(':use');
                 visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
                 expect(visible_emojis.length).toBe(0);
@@ -114,14 +110,15 @@
 
                 const muc_jid = 'lounge@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+
                 const view = _converse.chatboxviews.get(muc_jid);
                 const toolbar = view.el.querySelector('ul.chat-toolbar');
-                expect(toolbar.querySelectorAll('li.toggle-smiley').length).toBe(1);
-                toolbar.querySelector('li.toggle-smiley').click();
-                await u.waitUntil(() => u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker__container')));
-                const picker = await u.waitUntil(() => view.el.querySelector('.toggle-smiley .emoji-picker__container'));
+                expect(toolbar.querySelectorAll('.toggle-smiley__container').length).toBe(1);
+                toolbar.querySelector('.toggle-smiley').click();
+                await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+                const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
                 const input = picker.querySelector('.emoji-search');
-                expect(sizzle('.insert-emoji:not(.hidden)', picker).length).toBe(1591);
+                expect(sizzle('.insert-emoji:not(.hidden)', picker).length).toBe(1589);
 
                 expect(view.emoji_picker_view.model.get('query')).toBeUndefined();
                 input.value = 'smiley';
@@ -166,7 +163,7 @@
 
                 await test_utils.waitForRoster(_converse, 'current');
                 const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',
@@ -180,7 +177,7 @@
                 let message = chat_content.querySelector('.chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
 
-                _converse.chatboxes.onMessage($msg({
+                _converse.handleMessageStanza($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',
@@ -221,6 +218,25 @@
                 expect(view.model.messages.models.length).toBe(3);
                 message = chat_content.querySelector('.message:last-child .chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
+
+                textarea.value = ':smile: Hello world!';
+                view.onKeyDown({
+                    target: textarea,
+                    preventDefault: function preventDefault () {},
+                    keyCode: 13 // Enter
+                });
+                await new Promise(resolve => view.once('messageInserted', resolve));
+
+                textarea.value = ':smile: :smiley: :imp:';
+                view.onKeyDown({
+                    target: textarea,
+                    preventDefault: function preventDefault () {},
+                    keyCode: 13 // Enter
+                });
+                await new Promise(resolve => view.once('messageInserted', resolve));
+
+                message = chat_content.querySelector('.message:last-child .chat-msg__text');
+                expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
                 done()
             }));
         });

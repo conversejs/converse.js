@@ -39,18 +39,12 @@
             let IQ_stanzas = _converse.connection.IQ_stanzas;
             await u.waitUntil(() => IQ_stanzas.length === 4);
 
-            let iq = IQ_stanzas.pop();
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
-
-            iq = IQ_stanzas[IQ_stanzas.length-1];
+            let iq = IQ_stanzas[IQ_stanzas.length-1];
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
-
             await test_utils.waitForRoster(_converse, 'current', 1);
-
             IQ_stanzas.pop();
+
             const disco_iq = IQ_stanzas.pop();
             expect(Strophe.serialize(disco_iq)).toBe(
                 `<iq from="romeo@montague.lit" id="${disco_iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
@@ -58,9 +52,13 @@
 
             iq = IQ_stanzas.pop();
             expect(Strophe.serialize(iq)).toBe(
-                `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
+            iq = IQ_stanzas.pop();
+            expect(Strophe.serialize(iq)).toBe(
+                `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
+                    `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
             expect(sent_stanzas.filter(s => (s.nodeName === 'r')).length).toBe(2);
             expect(_converse.session.get('unacked_stanzas').length).toBe(5);
@@ -104,7 +102,7 @@
             // test session resumption
             _converse.connection.IQ_stanzas = [];
             IQ_stanzas = _converse.connection.IQ_stanzas;
-            _converse.api.connection.reconnect();
+            await _converse.api.connection.reconnect();
             stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'resume')).pop());
 
             expect(Strophe.serialize(stanza)).toEqual('<resume h="2" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
@@ -120,9 +118,7 @@
 
             // Test that unacked stanzas get resent out
             iq = IQ_stanzas.pop();
-            expect(Strophe.serialize(iq)).toBe(
-                `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
+            expect(Strophe.serialize(iq)).toBe(`<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
 
             expect(IQ_stanzas.filter(iq => sizzle('query[xmlns="jabber:iq:roster"]', iq).pop()).length).toBe(0);
 
@@ -141,9 +137,6 @@
                 },
                 async function (done, _converse) {
 
-            const view = _converse.chatboxviews.get('controlbox');
-            spyOn(view, 'renderControlBoxPane').and.callThrough();
-
             _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
             const sent_stanzas = _converse.connection.sent_stanzas;
             let stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'enable')).pop());
@@ -154,7 +147,7 @@
             await test_utils.waitForRoster(_converse, 'current', 1);
 
             // test session resumption
-            _converse.api.connection.reconnect();
+            await _converse.api.connection.reconnect();
             stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'resume')).pop());
             expect(Strophe.serialize(stanza)).toEqual('<resume h="1" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
 

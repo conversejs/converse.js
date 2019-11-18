@@ -15,11 +15,11 @@
                 ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             _converse.api.trigger('rosterContactsFetched');
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            test_utils.openChatBoxFor(_converse, contact_jid);
+            await test_utils.openChatBoxFor(_converse, contact_jid);
             await u.waitUntil(() => _converse.chatboxes.length > 1);
             const view = _converse.chatboxviews.get(contact_jid);
             let show_modal_button = view.el.querySelector('.show-user-details-modal');
@@ -48,7 +48,7 @@
                 ['rosterGroupsFetched', 'emojisInitialized'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             _converse.api.trigger('rosterContactsFetched');
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -60,9 +60,8 @@
             const modal = view.user_details_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 2000);
             spyOn(window, 'confirm').and.returnValue(true);
-            spyOn(view.model.contact, 'removeFromRoster').and.callFake(function (callback, errback) {
-                errback();
-            });
+
+            spyOn(view.model.contact, 'removeFromRoster').and.callFake((callback, errback) => errback());
             let remove_contact_button = modal.el.querySelector('button.remove-contact');
             expect(u.isVisible(remove_contact_button)).toBeTruthy();
             remove_contact_button.click();

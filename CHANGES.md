@@ -3,16 +3,27 @@
 ## 6.0.0 (Unreleased)
 
 - #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
+- #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
 - #1089: When filtering the roster for `online` users, show all non-offline users.
 - #1691: Fix `collection.chatbox is undefined` errors
 - #1733: New message notifications for a minimized chat stack on top of each other
+- #1757: Chats are hidden behind the controlbox on mobile
+- #1772 `_converse.api.contact.add(jid, nick)` fails, says not a function
 - Prevent editing of sent file uploads.
 - Initial support for sending custom emojis. Currently only between Converse
   instances. Still working out a wire protocol for compatibility with other clients.
   To add custom emojis, edit the `emojis.json` file.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
+- New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
+- New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_filter)
+- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_show_avatar)
+
 
 ### Breaking changes
+
+- In contrast to sessionStorage and localStorage, IndexedDB is an asynchronous database.
+  A lot of code that relied on database access to be synchronous had to be
+  updated to work with asynchronous access via promises.
 
 - In order to add support for XEP-0156, the XMPP connection needs to be created
   only once we know the JID of the user that's logging in. This means that the
@@ -25,9 +36,14 @@
   * `_converse.api.chats.create`
   * `_converse.api.rooms.get`
   * `_converse.api.rooms.create`
+  * `_converse.api.roomviews.close`
 
+- `_converse.api.chats.get()` now only returns one-on-one chats, not the control box or headline notifications.
 - The `show_only_online_users` setting has been removed.
 - The order of certain events have now changed: `statusInitialized` is now triggered after `initialized` and `connected` and `reconnected`.
+- `_converse.api.alert.show` is now `_converse.api.show` and instead of taking
+  an integer for the `type`, "info", "warn" or "error" should be passed in.
+- The `converse-headline` plugin has been split up into `converse-headlines` and `converse-headlines-view`.
 
 ## 5.0.4 (2019-10-08)
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow-message-corrections)

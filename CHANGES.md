@@ -1,8 +1,12 @@
 # Changelog
 
-## 5.0.5
+## 5.0.5 (Unreleased)
 
 - Prevent editing of sent file uploads.
+- #1089: When filtering the roster for `online` users, show all non-offline users.
+- #1733: New message notifications for a minimized chat stack on top of each other
+- #1757: Chats are hidden behind the controlbox on mobile
+- #1760: Private messages no longer received after websocket reconnect
 
 ## 5.0.4 (2019-10-08)
 

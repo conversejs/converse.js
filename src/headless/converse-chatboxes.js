@@ -783,7 +783,7 @@ converse.plugins.add('converse-chatboxes', {
                     'origin_id': origin_id,
                     'fullname': _converse.xmppstatus.get('fullname'),
                     'from': _converse.bare_jid,
-                    'is_single_emoji': text ? u.isSingleEmoji(text) : false,
+                    'is_single_emoji': text ? u.isOnlyEmojis(text) : false,
                     'sender': 'me',
                     'time': (new Date()).toISOString(),
                     'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
@@ -846,7 +846,7 @@ converse.plugins.add('converse-chatboxes', {
                         'message': attrs.message,
                         'older_versions': older_versions,
                         'references': attrs.references,
-                        'is_single_emoji':  attrs.message ? u.isSingleEmoji(attrs.message) : false,
+                        'is_single_emoji':  attrs.message ? u.isOnlyEmojis(attrs.message) : false,
                         'origin_id': u.getUniqueId(),
                         'received': undefined
                     });
@@ -1025,7 +1025,7 @@ converse.plugins.add('converse-chatboxes', {
                     'chat_state': chat_state,
                     'is_archived': this.isArchived(original_stanza),
                     'is_delayed': !!delay,
-                    'is_single_emoji': text ? await u.isSingleEmoji(text) : false,
+                    'is_single_emoji': text ? await u.isOnlyEmojis(text) : false,
                     'is_spoiler': !!spoiler,
                     'message': text,
                     'msgid': msgid,

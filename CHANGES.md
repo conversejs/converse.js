@@ -8,7 +8,8 @@
 - #1691: Fix `collection.chatbox is undefined` errors
 - #1733: New message notifications for a minimized chat stack on top of each other
 - #1757: Chats are hidden behind the controlbox on mobile
-- #1772 `_converse.api.contact.add(jid, nick)` fails, says not a function
+- #1760: Private messages no longer received after websocket reconnect
+- #1772: `_converse.api.contact.add(jid, nick)` fails, says not a function
 - Prevent editing of sent file uploads.
 - Initial support for sending custom emojis. Currently only between Converse
   instances. Still working out a wire protocol for compatibility with other clients.
@@ -17,7 +18,6 @@
 - New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
 - New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_filter)
 - New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_show_avatar)
-
 
 ### Breaking changes
 
@@ -46,6 +46,7 @@
 - The `converse-headline` plugin has been split up into `converse-headlines` and `converse-headlines-view`.
 
 ## 5.0.4 (2019-10-08)
+
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow-message-corrections)
   which, if set to `last`, limits editing of sent messages to the last message sent.
 - Bugfix: Don't treat every duplicate message ID as a message correction; since some clients don't use globally unique ID's this causes false positives.

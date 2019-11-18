@@ -1280,7 +1280,7 @@ converse.plugins.add('converse-chat', {
 
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('chatBoxesFetched', autoJoinChats);
-        _converse.api.listen.on('presencesInitialized', (reconnecting) => (!reconnecting && registerMessageHandlers()));
+        _converse.api.listen.on('presencesInitialized', () => registerMessageHandlers());
 
         _converse.api.listen.on('clearSession', () => {
             if (_converse.shouldClearCache()) {

@@ -221,6 +221,25 @@
                 expect(view.model.messages.models.length).toBe(3);
                 message = chat_content.querySelector('.message:last-child .chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
+
+                textarea.value = ':smile: Hello world!';
+                view.onKeyDown({
+                    target: textarea,
+                    preventDefault: function preventDefault () {},
+                    keyCode: 13 // Enter
+                });
+                await new Promise(resolve => view.once('messageInserted', resolve));
+
+                textarea.value = ':smile: :smiley: :imp:';
+                view.onKeyDown({
+                    target: textarea,
+                    preventDefault: function preventDefault () {},
+                    keyCode: 13 // Enter
+                });
+                await new Promise(resolve => view.once('messageInserted', resolve));
+
+                message = chat_content.querySelector('.message:last-child .chat-msg__text');
+                expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
                 done()
             }));
         });

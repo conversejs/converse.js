@@ -736,7 +736,7 @@ converse.plugins.add('converse-muc', {
                     'origin_id': origin_id,
                     'from': `${this.get('jid')}/${this.get('nick')}`,
                     'fullname': this.get('nick'),
-                    'is_single_emoji': text ? u.isSingleEmoji(text) : false,
+                    'is_single_emoji': text ? u.isOnlyEmojis(text) : false,
                     'is_spoiler': is_spoiler,
                     'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
                     'nick': this.get('nick'),

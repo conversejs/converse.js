@@ -4,13 +4,8 @@
 
 - #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
 - #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
-- #1089: When filtering the roster for `online` users, show all non-offline users.
 - #1691: Fix `collection.chatbox is undefined` errors
-- #1733: New message notifications for a minimized chat stack on top of each other
-- #1757: Chats are hidden behind the controlbox on mobile
-- #1760: Private messages no longer received after websocket reconnect
 - #1772: `_converse.api.contact.add(jid, nick)` fails, says not a function
-- Prevent editing of sent file uploads.
 - Initial support for sending custom emojis. Currently only between Converse
   instances. Still working out a wire protocol for compatibility with other clients.
   To add custom emojis, edit the `emojis.json` file.
@@ -44,6 +39,14 @@
 - `_converse.api.alert.show` is now `_converse.api.show` and instead of taking
   an integer for the `type`, "info", "warn" or "error" should be passed in.
 - The `converse-headline` plugin has been split up into `converse-headlines` and `converse-headlines-view`.
+
+## 5.0.5 (2019-11-20)
+
+- Prevent editing of sent file uploads.
+- #1089: When filtering the roster for `online` users, show all non-offline users.
+- #1733: New message notifications for a minimized chat stack on top of each other
+- #1757: Chats are hidden behind the controlbox on mobile
+- #1760: Private messages no longer received after websocket reconnect
 
 ## 5.0.4 (2019-10-08)
 

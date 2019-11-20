@@ -330,7 +330,7 @@ converse.plugins.add('converse-emoji', {
              */
             isOnlyEmojis (text) {
                 const words = text.trim().split(/\s+/);
-                if (words.length === 0 || words.length > 6) {
+                if (words.length === 0 || words.length > 3) {
                     return false;
                 }
                 const rejects = words.filter(text => {

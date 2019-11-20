@@ -41,8 +41,7 @@
                 {[ if (o.editable) { ]}
                     <button class="chat-msg__action chat-msg__action-edit fa fa-pencil-alt" title="{{{o.__('Edit this message')}}}"></button>
                 {[ } ]}
-                <!-- FIXME -->
-                {[ if ((o.sender === 'me' || o.is_groupchat_message) && true) { ]}
+                {[ if (o.retractable) { ]}
                     <button class="chat-msg__action chat-msg__action-retract fa fa-trash-alt" title="{{{o.__('Retract this message')}}}"></button>
                 {[ } ]}
             </div>

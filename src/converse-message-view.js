@@ -242,15 +242,19 @@ converse.plugins.add('converse-message-view', {
                 const role = this.model.vcard ? this.model.vcard.get('role') : null;
                 const roles = role ? role.split(',') : [];
                 const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
-
+                const is_groupchat_message = this.model.get('type') === 'groupchat';
+                const is_own_message = this.model.get('sender') === 'me';
+                const chatbox = this.model.collection.chatbox;
+                const retractable= is_groupchat_message ? await chatbox.canRetractMessages() : is_own_message;
                 const msg = u.stringToElement(tpl_message(
                     Object.assign(
                         this.model.toJSON(), {
                          __,
+                        is_groupchat_message,
                         is_retracted,
-                        'extra_classes': this.getExtraMessageClasses(),
-                        'is_groupchat_message': this.model.get('type') === 'groupchat',
+                        retractable,
                         'is_me_message': this.model.isMeCommand(),
+                        'extra_classes': this.getExtraMessageClasses(),
                         'label_show': __('Show more'),
                         'occupant': this.model.occupant,
                         'pretty_time': time.format(_converse.time_format),

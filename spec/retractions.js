@@ -48,7 +48,8 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
                 const received_stanza = u.toStanza(`
                     <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.connection.getUniqueId()}'>
@@ -92,7 +93,8 @@
 
                 const date = (new Date()).toISOString();
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
                 const retraction_stanza = u.toStanza(`
                     <message type="groupchat" id='retraction-id-1' from="${muc_jid}/eve" to="${muc_jid}/romeo">
@@ -321,7 +323,8 @@
                         async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
 
                 const received_stanza = u.toStanza(`
                     <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.connection.getUniqueId()}'>
@@ -363,7 +366,9 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+
                 const view = _converse.api.chatviews.get(muc_jid);
                 const occupant = view.model.getOwnOccupant();
                 expect(occupant.get('role')).toBe('moderator');
@@ -439,6 +444,31 @@
                 done();
             }));
 
+            it("can not be retracted if the MUC doesn't support message moderation",
+                mock.initConverse(
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const view = _converse.api.chatviews.get(muc_jid);
+                const occupant = view.model.getOwnOccupant();
+                expect(occupant.get('role')).toBe('moderator');
+
+                const received_stanza = u.toStanza(`
+                    <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                        <body>Visit this site to get free Bitcoin!</body>
+                        <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
+                    </message>
+                `);
+                await view.model.onMessage(received_stanza);
+                await u.waitUntil(() => view.el.querySelector('.chat-msg__content'));
+                expect(view.el.querySelector('.chat-msg__content .chat-msg__action-retract')).toBe(null);
+                const result = await view.model.canRetractMessages();
+                expect(result).toBe(false);
+                done();
+            }));
+
 
             it("can be retracted by a moderator, with the retraction message received before the IQ response",
                 mock.initConverse(
@@ -446,7 +476,8 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
                 const view = _converse.api.chatviews.get(muc_jid);
                 const occupant = view.model.getOwnOccupant();
                 expect(occupant.get('role')).toBe('moderator');
@@ -514,7 +545,8 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
                 const view = _converse.api.chatviews.get(muc_jid);
                 const occupant = view.model.getOwnOccupant();
                 expect(occupant.get('role')).toBe('moderator');
@@ -565,7 +597,8 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
                 const view = _converse.api.chatviews.get(muc_jid);
                 const occupant = view.model.getOwnOccupant();
                 expect(occupant.get('role')).toBe('moderator');
@@ -615,7 +648,8 @@
                 _converse.STANZA_TIMEOUT = 1;
 
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
                 const view = _converse.api.chatviews.get(muc_jid);
                 const occupant = view.model.getOwnOccupant();
                 expect(occupant.get('role')).toBe('moderator');
@@ -740,7 +774,8 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 const sent_IQs = _converse.connection.IQ_stanzas;
@@ -816,7 +851,8 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
-                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 const sent_IQs = _converse.connection.IQ_stanzas;

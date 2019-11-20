@@ -69,6 +69,20 @@
     };
 
     const mock = {};
+
+    mock.default_muc_features = [
+        'http://jabber.org/protocol/muc',
+        'jabber:iq:register',
+        Strophe.NS.SID,
+        Strophe.NS.MAM,
+        'muc_passwordprotected',
+        'muc_hidden',
+        'muc_temporary',
+        'muc_open',
+        'muc_unmoderated',
+        'muc_anonymous'
+    ];
+
     mock.view_mode = 'overlayed';
 
     // Names from http://www.fakenamegenerator.com/

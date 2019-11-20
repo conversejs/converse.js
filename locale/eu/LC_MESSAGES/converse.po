@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-06-18 19:04+0000\n"
+"PO-Revision-Date: 2019-11-21 00:29+0000\n"
 "Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: dist/converse-no-dependencies.js:7899
 msgid "Uploading file:"
-msgstr ""
+msgstr "Fitxategia igotzen:"
 
 #: dist/converse-no-dependencies.js:8008
 msgid "This message has been edited"
@@ -47,33 +47,28 @@ msgid "The User's Profile Image"
 msgstr "Erabiltzailearen profileko argazkia"
 
 #: dist/converse-no-dependencies.js:8335
-#, fuzzy
 msgid "Full Name:"
-msgstr "Izen osoa"
+msgstr "Izen osoa:"
 
 #: dist/converse-no-dependencies.js:8341 dist/converse-no-dependencies.js:8517
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "XMPP Helbidea"
+msgstr "XMPP Helbidea:"
 
 #: dist/converse-no-dependencies.js:8349
-#, fuzzy
 msgid "Nickname:"
-msgstr "Ezizena"
+msgstr "Ezizena:"
 
 #: dist/converse-no-dependencies.js:8357
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: dist/converse-no-dependencies.js:8367
-#, fuzzy
 msgid "Email:"
-msgstr "Emaila"
+msgstr "Emaila:"
 
 #: dist/converse-no-dependencies.js:8377
-#, fuzzy
 msgid "Role:"
-msgstr "Rola"
+msgstr "Rola:"
 
 #: dist/converse-no-dependencies.js:8385
 msgid "OMEMO Fingerprints"
@@ -133,9 +128,8 @@ msgid "Search"
 msgstr "Bilatu"
 
 #: dist/converse-no-dependencies.js:8627
-#, fuzzy
 msgid "Search results"
-msgstr "Bilatu"
+msgstr "Bilaketa emaitzak"
 
 #: dist/converse-no-dependencies.js:8777
 msgid "Enter a new Groupchat"
@@ -148,21 +142,19 @@ msgstr "Ezizena"
 
 #: dist/converse-no-dependencies.js:8787
 msgid "This field is required"
-msgstr ""
+msgstr "Eremu hau beharrezkoa da"
 
 #: dist/converse-no-dependencies.js:8793
 msgid "Join"
 msgstr "Batu"
 
 #: dist/converse-no-dependencies.js:8833
-#, fuzzy
 msgid "You're not allowed to send messages in this room"
-msgstr "Ez duzu baimenik zure burua gela honetan erregistratzeko."
+msgstr "Ez duzu baimenik gela honetan mezuak bidaltzeko"
 
 #: dist/converse-no-dependencies.js:8847
-#, fuzzy
 msgid "This groupchat no longer exists"
-msgstr "Gela ez da gehiago existituko"
+msgstr "Talde berriketa hau jada ez da existitzen"
 
 #: dist/converse-no-dependencies.js:8853
 msgid "The conversation has moved. Click below to enter."
@@ -269,7 +261,6 @@ msgid "Not anonymous"
 msgstr "Ez-anonimoa"
 
 #: dist/converse-no-dependencies.js:8973 dist/converse-no-dependencies.js:9111
-#, fuzzy
 msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 "Gelako gainontzeko parte-hartzaileek zure XMPP erabiltzailea ikus dezakete"
@@ -280,9 +271,8 @@ msgid "Semi-anonymous"
 msgstr "Erdi-anonimoa"
 
 #: dist/converse-no-dependencies.js:8981 dist/converse-no-dependencies.js:9119
-#, fuzzy
 msgid "Only moderators can see your XMPP address"
-msgstr "Moderatzaileek soilik ikus dezakete zure XMPP erabiltzailea"
+msgstr "Moderatzaileek soilik ikus dezakete zure XMPP helbidea"
 
 #: dist/converse-no-dependencies.js:8987 dist/converse-no-dependencies.js:9129
 #: dist/converse-no-dependencies.js:47134
@@ -330,9 +320,8 @@ msgid "Cancel"
 msgstr "Utzi"
 
 #: dist/converse-no-dependencies.js:9312
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "Moderatzailea"
+msgstr "Moderatzaile tresnak"
 
 #: dist/converse-no-dependencies.js:9314
 msgid ""
@@ -341,6 +330,10 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Rolak erabiltzaileei egokitzen zaizkie erabiltzaile anitzeko berriketetan "
+"hainbat gaitasun eman edo ukatzeko. Esplizituki edo inplizituki esleitzen "
+"dira afiliazioaren baitan. Afiliazio bati ez dagokion rolak, "
+"erabiltzailearen saioan zehar bakarrik balio du."
 
 #: dist/converse-no-dependencies.js:9316 dist/converse-no-dependencies.js:49895
 msgid "Role"
@@ -351,39 +344,40 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Moderatzaileak pribilegiodun erabiltzaileak dira, beste erabiltzaile batzuen "
+"rolak alda ditzaketelarik.(administratzaile edo jabeenak izan ezik."
 
 #: dist/converse-no-dependencies.js:9334 dist/converse-no-dependencies.js:9358
 msgid "The default role, implies that you can read and write messages."
 msgstr ""
+"Lehenetsitako rolak, mezuak irakurri eta idatzi ditzakezula adierazten du."
 
 #: dist/converse-no-dependencies.js:9340 dist/converse-no-dependencies.js:9364
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Bisitariek ez dute baimenik moderaturiko erabiltzaile anitzeko berriketan "
+"mezurik idazteko."
 
 #: dist/converse-no-dependencies.js:9348 dist/converse-no-dependencies.js:9444
-#, fuzzy
 msgid "Show users"
-msgstr "Gelak erakutsi"
+msgstr "Erabiltzaileak erakutsi"
 
 #: dist/converse-no-dependencies.js:9374
-#, fuzzy
 msgid "No users with that role found."
-msgstr "Ez da erabiltzailerik aurkitu"
+msgstr "Ez da rol hori duen erabiltzailerik aurkitu."
 
 #: dist/converse-no-dependencies.js:9390
-#, fuzzy
 msgid "New Role"
-msgstr "Rola"
+msgstr "Rol Berria"
 
 #: dist/converse-no-dependencies.js:9404 dist/converse-no-dependencies.js:9504
 msgid "Reason"
-msgstr ""
+msgstr "Arrazoia"
 
 #: dist/converse-no-dependencies.js:9406
-#, fuzzy
 msgid "Change role"
-msgstr "Ezarpenak aldatu"
+msgstr "Rola aldatu"
 
 #: dist/converse-no-dependencies.js:9410
 msgid ""
@@ -394,7 +388,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9412
 msgid "Affiliation"
-msgstr ""
+msgstr "Afiliazioa"
 
 #: dist/converse-no-dependencies.js:9424 dist/converse-no-dependencies.js:9448
 msgid ""
@@ -414,16 +408,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9470
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "Ez da erabiltzailerik aurkitu afiliazio horrekin."
 
 #: dist/converse-no-dependencies.js:9490
 msgid "New affiliation"
-msgstr ""
+msgstr "Afiliazio berria"
 
 #: dist/converse-no-dependencies.js:9506
-#, fuzzy
 msgid "Change affiliation"
-msgstr "Aldatu erabiltzailearen afiliazioa administratzailera"
+msgstr "Aldatu afiliazioa"
 
 #: dist/converse-no-dependencies.js:9865
 msgid "Save and close"
@@ -435,7 +428,7 @@ msgstr "Gailu honen OMEMO hatz-marka"
 
 #: dist/converse-no-dependencies.js:9879
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "Gako eta hatz-marka berriak sortu"
 
 #: dist/converse-no-dependencies.js:9883
 msgid "Select all"
@@ -443,15 +436,15 @@ msgstr "Hautatu guztiak"
 
 #: dist/converse-no-dependencies.js:9885
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
-msgstr "Beste OMEMO gailuen hatz-markak hautatzeko koadroa"
+msgstr "Beste OMEMO gailuen hatz-markak hautatzeko laukia"
 
 #: dist/converse-no-dependencies.js:9887
 msgid "Other OMEMO-enabled devices"
-msgstr "Beste OMEMO-gai diren gailuak"
+msgstr "OMEMO gaiturik duten beste gailu batzuk"
 
 #: dist/converse-no-dependencies.js:9895 dist/converse-no-dependencies.js:9903
 msgid "Checkbox for selecting the following fingerprint"
-msgstr "Hurrengo hatz-marka hautatzeko koadroa"
+msgstr "Hurrengo hatz-marka hautatzeko laukia"
 
 #: dist/converse-no-dependencies.js:9905
 msgid "Device without a fingerprint"

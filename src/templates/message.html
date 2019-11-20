@@ -30,7 +30,7 @@
                         <div class="chat-msg__subject">{{{ o.subject }}}</div>
                     {[ } ]}
                     <div class="chat-msg__text
-                        {[ if (o.is_single_emoji) { ]} chat-msg__text--larger{[ } ]}
+                        {[ if (o.is_only_emojis) { ]} chat-msg__text--larger{[ } ]}
                         {[ if (o.is_spoiler) { ]} spoiler collapsed{[ } ]}"><!-- message gets added here via renderMessage --></div>
                     <div class="chat-msg__media"></div>
                 {[ } ]}

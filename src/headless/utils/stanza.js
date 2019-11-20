@@ -294,7 +294,7 @@ const stanza_utils = {
                 'chat_state': stanza_utils.getChatState(stanza),
                 'is_archived': stanza_utils.isArchived(original_stanza),
                 'is_delayed': !!delay,
-                'is_single_emoji': text ? await u.isOnlyEmojis(text) : false,
+                'is_only_emojis': text ? await u.isOnlyEmojis(text) : false,
                 'message': text,
                 'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
                 'references': stanza_utils.getReferences(stanza),

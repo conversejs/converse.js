@@ -1174,7 +1174,8 @@
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(4)'))).toBe(true);
             expect(chat_content.querySelector('.message:nth-child(4) .chat-msg__text').textContent).toBe(
                 "A delayed message, sent 5 minutes since we started");
-            expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(5)'))).toBe(true);
+
+            expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(5)'))).toBe(false);
             expect(chat_content.querySelector('.message:nth-child(5) .chat-msg__text').textContent).toBe(
                 "Another message 14 minutes since we started");
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(6)'))).toBe(true);
@@ -1207,7 +1208,7 @@
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(5)'))).toBe(false);
             expect(chat_content.querySelector('.message:nth-child(5) .chat-msg__text').textContent).toBe(
                 "A delayed message, sent 5 minutes since we started");
-            expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(6)'))).toBe(true);
+            expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(6)'))).toBe(false);
             expect(chat_content.querySelector('.message:nth-child(6) .chat-msg__text').textContent).toBe(
                 "Another message 14 minutes since we started");
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(7)'))).toBe(true);

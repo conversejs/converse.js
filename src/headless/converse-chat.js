@@ -849,7 +849,7 @@ converse.plugins.add('converse-chat', {
                     'origin_id': origin_id,
                     'fullname': _converse.xmppstatus.get('fullname'),
                     'from': _converse.bare_jid,
-                    'is_single_emoji': text ? u.isOnlyEmojis(text) : false,
+                    'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
                     'sender': 'me',
                     'time': (new Date()).toISOString(),
                     'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
@@ -912,7 +912,7 @@ converse.plugins.add('converse-chat', {
                         'message': attrs.message,
                         'older_versions': older_versions,
                         'references': attrs.references,
-                        'is_single_emoji':  attrs.message ? u.isOnlyEmojis(attrs.message) : false,
+                        'is_only_emojis':  attrs.is_only_emojis,
                         'origin_id': u.getUniqueId(),
                         'received': undefined
                     });

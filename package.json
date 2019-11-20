@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "5.0.4",
+  "version": "5.0.5",
   "description": "Browser based XMPP chat client",
   "browser": "dist/converse.js",
   "module": "src/converse.js",
@@ -9,10 +9,11 @@
     "LICENSE.txt",
     "README.md",
     "dist/",
-    "locale/",
-    "sass/",
+    "locale/converse.pot",
+    "locale/**/LC_MESSAGES/!(*~)",
+    "sass/**/!(*~)",
     "sounds/",
-    "src/"
+    "src/**/!(*~)"
   ],
   "scripts": {
     "serve": "webpack-dev-server --config webpack.serve.js",

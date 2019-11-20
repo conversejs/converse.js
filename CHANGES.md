@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.5 (Unreleased)
+## 5.0.5 (2019-11-20)
 
 - Prevent editing of sent file uploads.
 - #1089: When filtering the roster for `online` users, show all non-offline users.

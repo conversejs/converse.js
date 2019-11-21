@@ -473,6 +473,10 @@ bosh_service_url
 
 * Default: ``undefined``
 
+Example: ``http://xmpp.example.com:5280/bosh/``
+
+Example with reverse-proxy and TLS: ``https://xmpp.example.com/bosh/``
+
 To connect to an XMPP server over HTTP you need a `BOSH <https://en.wikipedia.org/wiki/BOSH>`_
 connection manager which acts as a middle man between the HTTP and XMPP
 protocols.
@@ -752,6 +756,8 @@ enable_smacks
 Determines whether `XEP-0198 Stream Management <https://xmpp.org/extensions/xep-0198.html>`_
 support is turned on or not.
 
+Recommended to set to ``true`` if a websocket connection is used. 
+Please see the :ref:`websocket-url` configuration setting.
 
 filter_by_resource
 ------------------
@@ -1702,6 +1708,10 @@ websocket_url
 -------------
 
 * Default: ``undefined``
+
+Example: ``ws://xmpp.example.com:5280/ws/``
+
+Example with reverse-proxy and TLS: ``wss://xmpp.example.com/ws/``
 
 This option is used to specify a
 `websocket <https://developer.mozilla.org/en/docs/WebSockets>`_ URI to which

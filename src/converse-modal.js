@@ -144,11 +144,8 @@ converse.plugins.add('converse-modal', {
 
 
         /************************ BEGIN Event Listeners ************************/
-        _converse.api.listen.on('afterTearDown', () => {
-            if (!_converse.chatboxviews) {
-                return;
-            }
-            const container = _converse.chatboxviews.el.querySelector("#converse-modals");
+        _converse.api.listen.on('disconnect', () => {
+            const container = document.querySelector("#converse-modals");
             if (container) {
                 container.innerHTML = '';
             }

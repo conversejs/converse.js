@@ -574,10 +574,12 @@
 
             it("shows join/leave messages when users enter or exit a groupchat",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
+                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
+
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 const chat_content = view.el.querySelector('.chat-content');
                 /* We don't show join/leave messages for existing occupants. We

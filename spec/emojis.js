@@ -105,7 +105,7 @@
 
             it("allows you to search for particular emojis",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';

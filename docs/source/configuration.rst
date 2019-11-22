@@ -149,6 +149,32 @@ allow_logout
 
 Determines whether the user is allowed to log out. If set to ``false``, there will be no logout button.
 
+
+.. _`allow_message_corrections`:
+
+allow_message_corrections
+-------------------------
+
+* Default:  ``'all'``
+* Possible values: ``'all'``, ``'last'``
+
+Configures the last message correction (LMC) feature of Converse. By default you can edit all of your own
+messages. Setting this to ``'last'`` will limit this feature to the message sent most recently as suggested by
+`XEP-0308: Last Message Correction <https://xmpp.org/extensions/xep-0308.html>`_.
+Setting it to anything else (including ``false``) will disable the ability to correct sent messages.
+
+
+allow_message_retraction
+------------------------
+
+* Default:  ``'all'``
+* Possible values: ``'all'``, ``'own'``, ``'moderator'``
+
+Determines who is allowed to retract messages. If set to ``'all'``, then normal
+users may retract their own messages and ``'moderators'`` may retract the messages of
+other users.
+
+
 allow_muc
 ---------
 
@@ -857,18 +883,6 @@ keepalive
 * Default:    ``true``
 
 Determines whether Converse will attempt to keep you logged in across page loads.
-
-.. _`allow_message_corrections`:
-
-allow_message_corrections
--------------------------
-
-* Default:  ``'all'``
-
-Configures the last message correction (LMC) feature of Converse. By default you can edit all of your own
-messages. Setting this to ``'last'`` will limit this feature to the message sent most recently as suggested by
-`XEP-0308: Last Message Correction <https://xmpp.org/extensions/xep-0308.html>`_.
-Setting it to anything else (including ``false``) will disable the ability to correct sent messages.
 
 .. _`locales`:
 

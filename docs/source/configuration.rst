@@ -625,16 +625,15 @@ a chat state indication of ``active`` will be sent out.
 
 A value of ``0`` means that this feature is disabled.
 
-.. _`debug`:
+.. _`loglevel`:
 
-debug
------
+loglevel
+--------
 
-* Default:  ``false``
+* Default:  ``'info'``
+* Allowed values: ``'debug'``, ``'info'``, ``'warn'``, ``'error'``, ``'fatal'``
 
-If set to ``true``, debugging output will be logged to the browser console.
-
-You can also set this value by changing the URL fragment to `#converse?debug=true` or `#converse?debug=false`.
+You can also set this value by changing a URL fragment `#converse?loglevel=debug`
 
 
 default_domain

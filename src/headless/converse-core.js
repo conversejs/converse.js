@@ -252,7 +252,7 @@ _converse.default_settings = {
     connection_options: {},
     credentials_url: null, // URL from where login credentials can be fetched
     csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
-    debug: false,
+    loglevel: 'info',
     default_state: 'online',
     discover_connection_methods: false,
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
@@ -279,13 +279,6 @@ _converse.default_settings = {
     websocket_url: undefined,
     whitelisted_plugins: []
 };
-
-const loglevel = _converse.debug ? Strophe.LogLevel.DEBUG : Strophe.LogLevel.INFO;
-log.initialize(loglevel);
-_converse.log = log.log;
-
-Strophe.log = function (level, msg) { log.log(level+' '+msg, level); };
-Strophe.error = function (msg) { log.log(msg, Strophe.LogLevel.ERROR); };
 
 
 /**
@@ -822,19 +815,18 @@ async function onConnected (reconnecting) {
 
 
 function setUpXMLLogging () {
-    Strophe.log = function (level, msg) {
-        log.log(msg, level);
-    };
-    _converse.connection.xmlInput = function (body) {
-        if (_converse.debug) {
-            log.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkgoldenrod');
-        }
-    };
-    _converse.connection.xmlOutput = function (body) {
-        if (_converse.debug) {
-            log.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkcyan');
-        }
-    };
+    const lmap = {}
+    lmap[Strophe.LogLevel.DEBUG] = 'debug';
+    lmap[Strophe.LogLevel.INFO] = 'info';
+    lmap[Strophe.LogLevel.WARN] = 'warn';
+    lmap[Strophe.LogLevel.ERROR] = 'error';
+    lmap[Strophe.LogLevel.FATAL] = 'fatal';
+
+    Strophe.log = (level, msg) => log.log(msg, lmap[level]);
+    Strophe.error = (msg) => log.error(msg);
+
+    _converse.connection.xmlInput = body => log.debug(body.outerHTML, 'color: darkgoldenrod');
+    _converse.connection.xmlOutput = body => log.debug(body.outerHTML, 'color: darkcyan');
 }
 
 
@@ -985,6 +977,9 @@ _converse.initialize = async function (settings, callback) {
     this.settings = {};
     _.assignIn(this.settings, _.pick(settings, Object.keys(this.default_settings)));
 
+    log.setLogLevel(_converse.loglevel);
+    _converse.log = log.log;
+
     if (this.authentication === _converse.ANONYMOUS) {
         if (this.auto_login && !this.jid) {
             throw new Error("Config Error: you need to provide the server's " +
@@ -993,13 +988,10 @@ _converse.initialize = async function (settings, callback) {
         }
     }
 
-    _converse.router.route(/^converse\?debug=(true|false)$/, 'debug', debug => {
-        if (debug === 'true') {
-            _converse.debug = true;
-        } else {
-            _converse.debug = false;
-        }
-    });
+    _converse.router.route(
+        /^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel',
+        l => log.setLogLevel(l)
+    );
 
     /* Localisation */
     if (i18n === undefined || _converse.isTestEnv()) {

@@ -1,7 +1,5 @@
-import * as strophe from 'strophe.js/src/core';
 import { get, isElement } from 'lodash';
 
-const Strophe = strophe.default.Strophe;
 
 const logger = Object.assign({
     'debug': get(console, 'log') ? console.log.bind(console) : function noop () {},
@@ -18,13 +16,15 @@ const logger = Object.assign({
 const log = {
 
     /**
-     * Initialize the logger by setting the loglevel
-     * @method log#initialize
-     * @param { string } message - The message to be logged
+     * The the log-level, which determines how verbose the logging is.
+     * @method log#setLogLevel
      * @param { integer } level - The loglevel which allows for filtering of log messages
      */
-    initialize (loglevel) {
-        this.loglevel = loglevel;
+    setLogLevel(level) {
+        if (!['debug', 'info', 'warn', 'error', 'fatal'].includes(level)) {
+            throw new Error(`Invalid loglevel: ${level}`);
+        }
+        this.loglevel = level;
     },
 
     /**
@@ -38,9 +38,9 @@ const log = {
      * @param { integer } level - The loglevel which allows for filtering of log messages
      */
     log (message, level, style='') {
-        if (level === Strophe.LogLevel.ERROR || level === Strophe.LogLevel.FATAL) {
+        if (level === 'error' || level === 'fatal') {
             style = style || 'color: maroon';
-        } else if (level === Strophe.LogLevel.DEBUG) {
+        } else if (level === 'debug') {
             style = style || 'color: green';
         }
 
@@ -50,37 +50,39 @@ const log = {
             message = message.outerHTML;
         }
         const prefix = style ? '%c' : '';
-        if (level === Strophe.LogLevel.ERROR) {
+        if (level === 'error') {
             logger.error(`${prefix} ERROR: ${message}`, style);
-        } else if (level === Strophe.LogLevel.WARN) {
+        } else if (level === 'warn') {
             logger.warn(`${prefix} ${(new Date()).toISOString()} WARNING: ${message}`, style);
-        } else if (level === Strophe.LogLevel.FATAL) {
+        } else if (level === 'fatal') {
             logger.error(`${prefix} FATAL: ${message}`, style);
-        } else if (this.loglevel === Strophe.LogLevel.DEBUG && level === Strophe.LogLevel.DEBUG) {
-            logger.debug(`${prefix} ${(new Date()).toISOString()} DEBUG: ${message}`, style);
-        } else if (this.loglevel === Strophe.LogLevel.INFO) {
+        } else if (level === 'debug') {
+            if (this.loglevel === 'debug') {
+                logger.debug(`${prefix} ${(new Date()).toISOString()} DEBUG: ${message}`, style);
+            }
+        } else if (this.loglevel === 'info') {
             logger.info(`${prefix} ${(new Date()).toISOString()} INFO: ${message}`, style);
         }
     },
 
-    debug (message) {
-        this.log(message, Strophe.LogLevel.DEBUG);
+    debug (message, style) {
+        this.log(message, 'debug', style);
     },
 
-    error (message) {
-        this.log(message, Strophe.LogLevel.ERROR);
+    error (message, style) {
+        this.log(message, 'error', style);
     },
 
-    info (message) {
-        this.log(message, Strophe.LogLevel.INFO);
+    info (message, style) {
+        this.log(message, 'info', style);
     },
 
-    warn (message) {
-        this.log(message, Strophe.LogLevel.WARN);
+    warn (message, style) {
+        this.log(message, 'warn', style);
     },
 
-    fatal (message) {
-        this.log(message, Strophe.LogLevel.FATAL);
+    fatal (message, style) {
+        this.log(message, 'fatal', style);
     }
 }
 

@@ -146,7 +146,7 @@ converse.plugins.add('converse-chat', {
             getMessageText () {
                 if (this.get('is_encrypted')) {
                     return this.get('plaintext') ||
-                           (_converse.debug ? __('Unencryptable OMEMO message') : null);
+                           (_converse.loglevel === 'debug' ? __('Unencryptable OMEMO message') : null);
                 }
                 return this.get('message');
             },

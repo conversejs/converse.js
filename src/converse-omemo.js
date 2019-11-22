@@ -306,7 +306,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             reportDecryptionError (e) {
-                if (_converse.debug) {
+                if (_converse.loglevel === 'debug') {
                     const { __ } = _converse;
                     this.messages.create({
                         'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,

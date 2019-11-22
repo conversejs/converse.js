@@ -228,7 +228,7 @@
             'animate': false,
             'auto_subscribe': false,
             'bosh_service_url': 'montague.lit/http-bind',
-            'debug': false,
+            'loglevel': 'warn',
             'i18n': 'en',
             'no_trimming': true,
             'play_sounds': false,

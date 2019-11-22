@@ -23,6 +23,8 @@
 
 ### Breaking changes
 
+- The ``debug`` configuration option has been replaced with [loglevel](https://conversejs.org/docs/html/configuration.html#loglevel).
+
 - In contrast to sessionStorage and localStorage, IndexedDB is an asynchronous database.
   A lot of code that relied on database access to be synchronous had to be
   updated to work with asynchronous access via promises.

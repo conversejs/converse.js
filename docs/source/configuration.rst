@@ -319,20 +319,20 @@ in to their XMPP account.
 
 .. note::
 
-The interaction between ``keepalive`` and ``auto_login`` is unfortunately
-inconsistent depending on the ``authentication`` method used.
+  The interaction between ``keepalive`` and ``auto_login`` is unfortunately
+  inconsistent depending on the ``authentication`` method used.
 
-If ``auto_login`` is set to ``false`` and ``authentication`` is set to
-``anonymous``, ``external`` or ``prebind``, then Converse won't automatically
-log the user in.
+  If ``auto_login`` is set to ``false`` and ``authentication`` is set to
+  ``anonymous``, ``external`` or ``prebind``, then Converse won't automatically
+  log the user in.
 
-If ``authentication`` set to ``login`` the situation is much more
-ambiguous, since we don't have a way to distinguish between wether we're
-restoring a previous session (``keepalive``) or whether we're
-automatically setting up a new session (``auto_login``).
+  If ``authentication`` set to ``login`` the situation is much more
+  ambiguous, since we don't have a way to distinguish between wether we're
+  restoring a previous session (``keepalive``) or whether we're
+  automatically setting up a new session (``auto_login``).
 
-So currently if EITHER ``keepalive`` or ``auto_login`` is ``true`` and
-``authentication`` is set to ``login``, then Converse will try to log the user in.
+  So currently if EITHER ``keepalive`` or ``auto_login`` is ``true`` and
+  ``authentication`` is set to ``login``, then Converse will try to log the user in.
 
 
 auto_away
@@ -693,19 +693,23 @@ The placeholder text shown in the domain input on the registration form.
 emoji_categories
 ----------------
 
-* Default:::
-  {
-    "smileys": ":grinning:",
-    "people": ":thumbsup:",
-    "activity": ":soccer:",
-    "travel": ":motorcycle:",
-    "objects": ":bomb:",
-    "nature": ":rainbow:",
-    "food": ":hotdog:",
-    "symbols": ":musical_note:",
-    "flags": ":flag_ac:",
-    "custom": ":converse:"
-  }
+* Default:
+
+::
+
+    {
+      "smileys": ":grinning:",
+      "people": ":thumbsup:",
+      "activity": ":soccer:",
+      "travel": ":motorcycle:",
+      "objects": ":bomb:",
+      "nature": ":rainbow:",
+      "food": ":hotdog:",
+      "symbols": ":musical_note:",
+      "flags": ":flag_ac:",
+      "custom": ":converse:"
+    }
+
 
 This setting lets you define the categories that are available in the emoji
 picker, as well as the default image that's shown for each category.
@@ -728,19 +732,23 @@ entries to the map under the  ``custom`` key.
 emoji_categories_label
 ----------------------
 
-* Default:::
-  {
-    "smileys": "Smileys and emotions",
-    "people": "People",
-    "activity": "Activities",
-    "travel": "Travel",
-    "objects": "Objects",
-    "nature": "Animals and nature",
-    "food": "Food and drink",
-    "symbols": "Symbols",
-    "flags": "Flags",
-    "custom": "Stickers"
-  }
+* Default:
+
+::
+
+    {
+      "smileys": "Smileys and emotions",
+      "people": "People",
+      "activity": "Activities",
+      "travel": "Travel",
+      "objects": "Objects",
+      "nature": "Animals and nature",
+      "food": "Food and drink",
+      "symbols": "Symbols",
+      "flags": "Flags",
+      "custom": "Stickers"
+    }
+
 
 This setting lets you pass in the text value that goes into the `title`
 attribute for the emoji categories. These strings will be translated, but for
@@ -901,9 +909,6 @@ therefore what may be given as value for the :ref:`i18n` option.
 
 Any other locales will be ignored.
 
-When self-hosting, also make sure that the locales are served and therefore
-fetchable (via ``XMLHttpRequest``) at the URL specified by :ref:`locales-url`.
-
 
 locked_domain
 -------------
@@ -960,15 +965,15 @@ muc_mention_autocomplete_filter
 
 * Default:  ``contains``
 
-The method used for filtering MUC participants when using auto-complete. 
+The method used for filtering MUC participants when using auto-complete.
 Valid values are ``contains`` and ``starts_with``.
 
 muc_mention_autocomplete_show_avatar
--------------------------------
+------------------------------------
 
 * Default:  ``true``
 
-Show avatars of MUC participants when using auto-complete. 
+Show avatars of MUC participants when using auto-complete.
 
 message_archiving
 -----------------
@@ -1265,8 +1270,7 @@ nickname is mentioned in a chatroom.
 Inside the ``./sounds`` directory of the Converse repo you'll see MP3 and Ogg
 formatted sound files. We need both, because neither format is supported by all browsers.
 
-You can set the URL where the sound files are hosted with the `sounds_path`_
-option.
+You can set the URL where the sound files are hosted with the `sounds_path`_ option.
 
 Requires the `src/converse-notification.js` plugin.
 
@@ -1323,10 +1327,12 @@ providers_link
 The hyperlink on the registration form which points to a directory of public
 XMPP servers.
 
+.. _`assets_path`:
+
 assets_path
 -----------
 
-* Default: The `publicPath <https://webpack.js.org/guides/public-path/>`_ value configured in the relevant Webpack configuration.
+* Default: ``'/dist/'`` or the `publicPath <https://webpack.js.org/guides/public-path/>`_ value as configured in the relevant Webpack configuration.
 
 Since version 5.0.0, Converse serves a smaller bundle by extracting various
 resources (for example emojis and translations) into separate files (aka

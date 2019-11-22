@@ -1138,10 +1138,14 @@ converse.plugins.add('converse-chat', {
 
             const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
             if (bare_forward) {
-                return rejectMessage(
-                    stanza,
-                    'Forwarded messages not part of an encapsulating protocol are not supported'
-                );
+                if (!_converse.whitelisted_plugins.includes('converse-forward-message')) {
+                    return rejectMessage(
+                        stanza,
+                        'Forwarded messages not part of an encapsulating protocol are not supported'
+                    );
+                } else {
+                    return;
+                }
             }
             let from_jid = stanza.getAttribute('from') || _converse.bare_jid;
             if (u.isCarbonMessage(stanza)) {

@@ -31,11 +31,11 @@
             </div>
             {[ if (o.received && !o.is_me_message && !o.is_groupchat_message) { ]} <span class="fa fa-check chat-msg__receipt"></span> {[ } ]}
             {[ if (o.edited) { ]} <i title="{{{o.__('This message has been edited')}}}" class="fa fa-edit chat-msg__edit-modal"></i> {[ } ]}
-            {[ if (o.editable) { ]}
-                <div class="chat-msg__actions">
+            <div class="chat-msg__actions">
+                {[ if (o.type !== 'headline' && o.sender === 'me') { ]}
                     <button class="chat-msg__action chat-msg__action-edit fa fa-pencil-alt" title="{{{o.__('Edit this message')}}}"></button>
-                </div>
-            {[ } ]}
+                {[ } ]}
+            </div>
         </div>
     </div>
 </div>

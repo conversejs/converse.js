@@ -217,8 +217,9 @@
                     width: 100%;
                 }
             }
-
+            
             .chat-msg__actions {
+                width: 50px;
                 .chat-msg__action {
                     height: var(--message-font-size);
                     font-size: var(--message-font-size);
@@ -227,10 +228,11 @@
                     border: none;
                     opacity: 0;
                     background: transparent;
+                    width: 10px;
                     cursor: pointer;
-                    &:focus {
-                        display: block;
-                    }
+                    display: block;
+                    margin: 0px 0px 0px 10px;
+                    float: right;
                 }
             }
 
@@ -309,6 +311,24 @@
             .chat-msg__receipt {
                 margin-right: 0.5em;
                 color: var(--message-receipt-color);
+            }
+
+            .forwarded-message {
+                white-space: normal;
+                background-color: lightblue;
+                border-radius: 5px;
+                padding: 5px;               
+                margin-left: 5px;
+            }
+
+            .forwarded-message__content {
+                background-color: white;
+                border-radius: 5px;
+                padding-left: 5px;
+            }
+
+            .forwarded-message__header {
+                font-size: 11px;
             }
         }
     }

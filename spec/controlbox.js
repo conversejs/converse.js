@@ -145,7 +145,7 @@
                     `<presence xmlns="jabber:client">`+
                         `<show>dnd</show>`+
                         `<priority>0</priority>`+
-                        `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                        `<c hash="sha-1" node="https://conversejs.org" ver="Js7MzULrV40dmSBGeP+rd0MNV9c=" xmlns="http://jabber.org/protocol/caps"/>`+
                     `</presence>`);
                 const first_child = view.el.querySelector('.xmpp-status span:first-child');
                 expect(u.hasClass('online', first_child)).toBe(false);
@@ -174,7 +174,7 @@
                     `<presence xmlns="jabber:client">`+
                         `<status>I am happy</status>`+
                         `<priority>0</priority>`+
-                        `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                        `<c hash="sha-1" node="https://conversejs.org" ver="Js7MzULrV40dmSBGeP+rd0MNV9c=" xmlns="http://jabber.org/protocol/caps"/>`+
                     `</presence>`);
 
                 const first_child = view.el.querySelector('.xmpp-status span:first-child');

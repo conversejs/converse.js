@@ -2,6 +2,7 @@
 
 ## 6.0.0 (Unreleased)
 
+- add message-forward (XEP-0297) capabilities
 - #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
 - #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
 - #1691: Fix `collection.chatbox is undefined` errors

@@ -68,7 +68,8 @@ converse.plugins.add('converse-message-view', {
 
 
         _converse.api.settings.update({
-            'show_images_inline': true
+            'show_images_inline': true,
+            'allow_message_retraction': 'all'
         });
 
         _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
@@ -245,7 +246,12 @@ converse.plugins.add('converse-message-view', {
                 const is_groupchat = this.model.get('type') === 'groupchat';
                 const is_own_message = this.model.get('sender') === 'me';
                 const chatbox = this.model.collection.chatbox;
-                const retractable= !is_retracted && (is_groupchat? await chatbox.canRetractMessages() : is_own_message);
+                const may_retract_own_message = is_own_message && ['all', 'own'].includes(_converse.allow_message_retraction);
+                const may_moderate_message = is_groupchat &&
+                    ['all', 'moderator'].includes(_converse.allow_message_retraction) &&
+                    await chatbox.canRetractMessages();
+
+                const retractable= !is_retracted && (may_moderate_message || may_retract_own_message);
                 const msg = u.stringToElement(tpl_message(
                     Object.assign(
                         this.model.toJSON(), {

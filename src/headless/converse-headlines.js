@@ -4,7 +4,7 @@
 // Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 /**
- * @module converse-headline
+ * @module converse-headlines
  */
 import "converse-chatview";
 import converse from "@converse/headless/converse-core";

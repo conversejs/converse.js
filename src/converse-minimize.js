@@ -32,7 +32,13 @@ converse.plugins.add('converse-minimize', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatview", "converse-controlbox", "converse-muc-views", "converse-headline", "converse-dragresize"],
+    dependencies: [
+        "converse-chatview",
+        "converse-controlbox",
+        "converse-muc-views",
+        "converse-headlines-view",
+        "converse-dragresize"
+    ],
 
     enabled (_converse) {
         return _converse.view_mode === 'overlayed';

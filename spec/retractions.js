@@ -265,7 +265,7 @@
                 expect(message.get('retracted')).toBeTruthy();
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
-                expect(msg_el.textContent.trim()).toBe('Mercutio has retracted this message');
+                expect(msg_el.textContent.trim()).toBe('Mercutio has removed this message');
                 expect(u.hasClass('chat-msg--followup', view.el.querySelector('.chat-msg--retracted'))).toBe(true);
                 done();
             }));
@@ -309,7 +309,7 @@
                 expect(message.get('retracted')).toBeTruthy();
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
-                expect(el.textContent.trim()).toBe('Romeo Montague has retracted this message');
+                expect(el.textContent.trim()).toBe('Romeo Montague has removed this message');
                 done();
             }));
         });
@@ -354,7 +354,7 @@
                 expect(view.model.messages.at(0).get('retracted')).toBeTruthy();
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
-                expect(msg_el.textContent.trim()).toBe('eve has retracted this message');
+                expect(msg_el.textContent.trim()).toBe('eve has removed this message');
                 expect(msg_el.querySelector('.chat-msg--retracted q')).toBe(null);
                 done();
             }));
@@ -421,7 +421,7 @@
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
 
                 const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
-                expect(msg_el.firstElementChild.textContent.trim()).toBe('romeo has retracted this message from mallory');
+                expect(msg_el.firstElementChild.textContent.trim()).toBe('romeo has removed this message');
 
                 const qel = msg_el.querySelector('q');
                 expect(qel.textContent.trim()).toBe('This content is inappropriate for this forum!');
@@ -522,7 +522,7 @@
                 expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
-                expect(msg_el.textContent).toBe('romeo has retracted this message from mallory');
+                expect(msg_el.textContent).toBe('romeo has removed this message');
                 const qel = view.el.querySelector('.chat-msg--retracted .chat-msg__message q');
                 expect(qel.textContent).toBe('This content is inappropriate for this forum!');
 
@@ -587,7 +587,7 @@
                 expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
-                expect(el.textContent).toBe('romeo has retracted this message');
+                expect(el.textContent).toBe('romeo has removed this message');
                 done();
             }));
 
@@ -609,7 +609,7 @@
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('retracted')).toBeTruthy();
                 const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
-                expect(el.textContent.trim()).toBe('romeo has retracted this message');
+                expect(el.textContent.trim()).toBe('romeo has removed this message');
 
                 const message = view.model.messages.at(0);
                 const stanza_id = message.get(`stanza_id ${view.model.get('jid')}`);
@@ -660,7 +660,7 @@
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('retracted')).toBeTruthy();
                 const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
-                expect(el.textContent.trim()).toBe('romeo has retracted this message');
+                expect(el.textContent.trim()).toBe('romeo has removed this message');
 
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
 
@@ -763,7 +763,7 @@
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
-                expect(el.textContent.trim()).toBe('Mercutio has retracted this message');
+                expect(el.textContent.trim()).toBe('Mercutio has removed this message');
                 expect(u.hasClass('chat-msg--followup', el.parentElement)).toBe(false);
                 done();
             }));
@@ -841,7 +841,7 @@
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
-                expect(el.textContent.trim()).toBe('eve has retracted this message');
+                expect(el.textContent.trim()).toBe('eve has removed this message');
                 done();
             }));
 
@@ -926,7 +926,7 @@
 
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
-                expect(el.textContent.trim()).toBe('A moderator has retracted this message from eve');
+                expect(el.textContent.trim()).toBe('A moderator has removed this message');
                 const qel = view.el.querySelector('.chat-msg--retracted .chat-msg__message q');
                 expect(qel.textContent.trim()).toBe('This message contains inappropriate content');
                 done();

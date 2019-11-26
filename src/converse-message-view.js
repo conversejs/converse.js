@@ -315,9 +315,9 @@ converse.plugins.add('converse-message-view', {
                             chatbox.occupants.findOccupant({'nick': Strophe.getResourceFromJid(retracted_by_mod)});
                     }
                     const modname = this.model.mod ? this.model.mod.getDisplayName() : 'A moderator';
-                    return __('%1$s has retracted this message', modname);
+                    return __('%1$s has removed this message', modname);
                 } else {
-                    return __('%1$s has retracted this message', this.model.getDisplayName());
+                    return __('%1$s has removed this message', this.model.getDisplayName());
                 }
             },
 

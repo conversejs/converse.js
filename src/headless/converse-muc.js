@@ -1621,6 +1621,7 @@ converse.plugins.add('converse-muc', {
              */
             handleModeration (attrs) {
                 const MODERATION_ATTRIBUTES = [
+                    'editable',
                     'moderated',
                     'moderated_by',
                     'moderated_id',

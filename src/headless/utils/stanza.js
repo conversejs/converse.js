@@ -130,6 +130,7 @@ const stanza_utils = {
                 const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
                 const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString();
                 return {
+                    'editable': false,
                     'retracted': time,
                     'retracted_id': applies_to_id
                 }
@@ -138,8 +139,9 @@ const stanza_utils = {
             const tombstone = sizzle(`> retracted[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
             if (tombstone) {
                 return {
-                    'retracted': tombstone.getAttribute('stamp'),
-                    'is_tombstone': true
+                    'editable': false,
+                    'is_tombstone': true,
+                    'retracted': tombstone.getAttribute('stamp')
                 }
             }
         }

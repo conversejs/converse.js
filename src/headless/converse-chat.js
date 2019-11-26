@@ -582,7 +582,7 @@ converse.plugins.add('converse-chat', {
              *  whether a message was retracted or not.
              */
             handleRetraction (attrs) {
-                const RETRACTION_ATTRIBUTES = ['retracted', 'retracted_id'];
+                const RETRACTION_ATTRIBUTES = ['retracted', 'retracted_id', 'editable'];
                 if (attrs.retracted) {
                     if (attrs.is_tombstone) {
                         return false;
@@ -877,7 +877,7 @@ converse.plugins.add('converse-chat', {
                     return;
                 }
                 if (_converse.allow_message_corrections === 'all') {
-                    attrs.editable = !(attrs.file || 'oob_url' in attrs);
+                    attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
                 } else if ((_converse.allow_message_corrections === 'last') &&
                            (send_time > this.get('time_sent'))) {
                     this.set({'time_sent': send_time});
@@ -885,7 +885,7 @@ converse.plugins.add('converse-chat', {
                     if (msg) {
                         msg.save({'editable': false});
                     }
-                    attrs.editable = !(attrs.file || 'oob_url' in attrs);
+                    attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
                 }
             },
 

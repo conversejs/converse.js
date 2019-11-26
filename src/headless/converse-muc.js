@@ -9,6 +9,7 @@
  * @description
  * Implements the non-view logic for XEP-0045 Multi-User Chat
  */
+import "./converse-chat";
 import "./converse-disco";
 import "./converse-emoji";
 import { clone, get, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";

@@ -247,7 +247,7 @@ converse.plugins.add('converse-message-view', {
                 const is_own_message = this.model.get('sender') === 'me';
                 const chatbox = this.model.collection.chatbox;
                 const may_retract_own_message = is_own_message && ['all', 'own'].includes(_converse.allow_message_retraction);
-                const may_moderate_message = is_groupchat &&
+                const may_moderate_message = !is_own_message && is_groupchat &&
                     ['all', 'moderator'].includes(_converse.allow_message_retraction) &&
                     await chatbox.canRetractMessages();
 
@@ -306,22 +306,19 @@ converse.plugins.add('converse-message-view', {
             },
 
             getRetractionText () {
-                const username = this.model.getDisplayName();
-                let retraction_text = __('%1$s has retracted this message', username);
-                if (this.model.get('type') === 'groupchat') {
+                if (this.model.get('type') === 'groupchat' && this.model.get('moderated_by')) {
                     const retracted_by_mod = this.model.get('moderated_by');
-                    if (retracted_by_mod) {
-                        const chatbox = this.model.collection.chatbox;
-                        if (!this.model.mod) {
-                            this.model.mod =
-                                chatbox.occupants.findOccupant({'jid': retracted_by_mod}) ||
-                                chatbox.occupants.findOccupant({'nick': Strophe.getResourceFromJid(retracted_by_mod)});
-                        }
-                        const modname = this.model.mod ? this.model.mod.getDisplayName() : 'A moderator';
-                        retraction_text = __('%1$s has retracted this message from %2$s', modname , username);
+                    const chatbox = this.model.collection.chatbox;
+                    if (!this.model.mod) {
+                        this.model.mod =
+                            chatbox.occupants.findOccupant({'jid': retracted_by_mod}) ||
+                            chatbox.occupants.findOccupant({'nick': Strophe.getResourceFromJid(retracted_by_mod)});
                     }
+                    const modname = this.model.mod ? this.model.mod.getDisplayName() : 'A moderator';
+                    return __('%1$s has retracted this message', modname);
+                } else {
+                    return __('%1$s has retracted this message', this.model.getDisplayName());
                 }
-                return retraction_text;
             },
 
             renderErrorMessage () {

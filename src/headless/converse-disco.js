@@ -8,11 +8,12 @@
  * @description
  * Converse plugin which add support for XEP-0030: Service Discovery
  */
+import { get, isEmpty, isObject } from "lodash";
 import converse from "./converse-core";
 import log from "./log";
 import sizzle from "sizzle";
 
-const { Backbone, Strophe, $iq, utils, _ } = converse.env;
+const { Backbone, Strophe, $iq, utils } = converse.env;
 
 converse.plugins.add('converse-disco', {
 
@@ -174,7 +175,7 @@ converse.plugins.add('converse-disco', {
             },
 
             async queryForItems () {
-                if (_.isEmpty(this.identities.where({'category': 'server'}))) {
+                if (isEmpty(this.identities.where({'category': 'server'}))) {
                     // Don't fetch features and items if this is not a
                     // server or a conference component.
                     return;
@@ -196,7 +197,7 @@ converse.plugins.add('converse-disco', {
                     const data = {};
                     sizzle('field', form).forEach(field => {
                         data[field.getAttribute('var')] = {
-                            'value': _.get(field.querySelector('value'), 'textContent'),
+                            'value': get(field.querySelector('value'), 'textContent'),
                             'type': field.getAttribute('type')
                         };
                     });
@@ -217,7 +218,7 @@ converse.plugins.add('converse-disco', {
                 sizzle('x[type="result"][xmlns="jabber:x:data"] field', stanza).forEach(field => {
                     this.fields.create({
                         'var': field.getAttribute('var'),
-                        'value': _.get(field.querySelector('value'), 'textContent'),
+                        'value': get(field.querySelector('value'), 'textContent'),
                         'from': stanza.getAttribute('from')
                     });
                 });
@@ -660,12 +661,9 @@ converse.plugins.add('converse-disco', {
                             return;
                         }
                         entity = await entity.waitUntilFeaturesDiscovered;
-                        const promises = _.concat(
-                            entity.items.map(item => item.hasFeature(feature)),
-                            entity.hasFeature(feature)
-                        );
+                        const promises = [...entity.items.map(i => i.hasFeature(feature)), entity.hasFeature(feature)];
                         const result = await Promise.all(promises);
-                        return _.filter(result, _.isObject);
+                        return result.filter(isObject);
                     }
                 },
 

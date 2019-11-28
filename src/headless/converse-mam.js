@@ -58,6 +58,7 @@ converse.plugins.add('converse-mam', {
             /**
              * Fetches messages that might have been archived *after*
              * the last archived message in our local cache.
+             * @private
              */
             fetchNewestMessages () {
                 if (this.disable_mam) {
@@ -165,8 +166,9 @@ converse.plugins.add('converse-mam', {
 
         Object.assign(_converse.ChatRoom.prototype, {
             fetchArchivedMessagesIfNecessary () {
-                if (this.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
-                        !this.get('mam_enabled') ||
+                const conn_status = this.get('connection_status');
+                if ((!_converse.muc_show_logs_before_join && conn_status !== converse.ROOMSTATUS.ENTERED) ||
+                        !this.features.get('mam_enabled') ||
                         this.get('mam_initialized')) {
                     return;
                 }
@@ -177,7 +179,7 @@ converse.plugins.add('converse-mam', {
 
 
         _converse.onMAMError = function (iq) {
-            if (iq.querySelectorAll('feature-not-implemented').length) {
+            if (iq && iq.querySelectorAll('feature-not-implemented').length) {
                 log.warn("Message Archive Management (XEP-0313) not supported by this server");
             } else {
                 log.error("An error occured while trying to set archiving preferences.");
@@ -232,7 +234,11 @@ converse.plugins.add('converse-mam', {
 
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
         _converse.api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
-        _converse.api.listen.on('enteredNewRoom', chat => chat.fetchNewestMessages());
+        _converse.api.listen.on('enteredNewRoom', room => room.features.get('mam_enabled') && room.fetchNewestMessages());
+        _converse.api.listen.on('chatRoomOpened', (view) => {
+            view.listenTo(view.model, 'change:connection_status', () => view.model.fetchArchivedMessagesIfNecessary());
+        });
+
         _converse.api.listen.on('chatReconnected', chat => {
             // XXX: For MUCs, we listen to enteredNewRoom instead
             if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE) {
@@ -249,11 +255,6 @@ converse.plugins.add('converse-mam', {
             if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE && !_converse.connection.restored) {
                 chat.fetchNewestMessages();
             }
-        });
-
-        _converse.api.listen.on('chatRoomOpened', (room) => {
-            room.on('change:mam_enabled', room.fetchArchivedMessagesIfNecessary, room);
-            room.on('change:connection_status', room.fetchArchivedMessagesIfNecessary, room);
         });
         /************************ END Event Handlers **************************/
 

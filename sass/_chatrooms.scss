@@ -316,6 +316,18 @@
             }
         }
 
+        .empty-history-feedback {
+            position: relative;
+            height: 100%;
+            color: var(--text-color-lighten-15-percent);
+            span {
+                width: 100%;
+                text-align: center;
+                position: absolute;
+                margin-top: 50%;
+            }
+        }
+
         .muc-bottom-panel {
             border-top: var(--message-input-border-top);
             height: 3em;
@@ -324,6 +336,20 @@
             font-size: var(--font-size-small);
             background-color: var(--chatroom-head-color);
             color: white;
+
+            &.muc-bottom-panel--nickname {
+                padding: 0;
+                height: 16em;
+
+                .chatroom-form-container {
+                    border-radius: 0 !important;
+
+                    .chatroom-form {
+                        padding-top: 2em;
+                        padding-bottom: 0;
+                    }
+                }
+            }
         }
 
         .sendXMPPMessage {

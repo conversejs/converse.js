@@ -979,7 +979,7 @@
                 await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
                     'hello z3r0 gibson sw0rdf1sh, how are you?', 500);
 
-                const correction = _converse.connection.send.calls.all()[2].args[0];
+                const correction = _converse.connection.send.calls.all()[3].args[0];
                 expect(correction.toLocaleString())
                     .toBe(`<message from="romeo@montague.lit/orchard" id="${correction.nodeTree.getAttribute("id")}" `+
                             `to="lounge@montague.lit" type="groupchat" `+

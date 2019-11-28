@@ -129,7 +129,8 @@ converse.plugins.add('converse-muc', {
             'muc_fetch_members': true,
             'muc_history_max_stanzas': undefined,
             'muc_instant_rooms': true,
-            'muc_nickname_from_jid': false
+            'muc_nickname_from_jid': false,
+            'muc_show_logs_before_join': false
         });
         _converse.api.promises.add(['roomsAutoJoined']);
 

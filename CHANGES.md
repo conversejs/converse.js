@@ -10,9 +10,10 @@
   To add custom emojis, edit the `emojis.json` file.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
 - New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
-- New config option [muc-mention-autocomplete-filter](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-filter)
-- New config option [muc-mention-autocomplete-show-avatar](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-show-avatar)
 - New config option [allow_message_retraction](https://conversejs.org/docs/html/configuration.html#allow-message-retraction)
+- New config option [muc-show-logs-before-join](https://conversejs.org/docs/html/configuration.html#muc-show-logs-before-join)
+_ New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_filter)
+_ New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_show_avatar)
 
 - #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
 - #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage

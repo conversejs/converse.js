@@ -27,7 +27,7 @@ import tpl_chatroom_features from "templates/chatroom_features.html";
 import tpl_chatroom_form from "templates/chatroom_form.html";
 import tpl_chatroom_head from "templates/chatroom_head.html";
 import tpl_chatroom_invite from "templates/chatroom_invite.html";
-import tpl_chatroom_nickname_form_modal from "templates/chatroom_nickname_form_modal.html";
+import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
 import tpl_chatroom_password_form from "templates/chatroom_password_form.html";
 import tpl_chatroom_sidebar from "templates/chatroom_sidebar.html";
 import tpl_info from "templates/info.html";
@@ -636,18 +636,20 @@ converse.plugins.add('converse-muc-views', {
                 'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                 'click .hide-occupants': 'hideOccupants',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
-                'click .occupant-nick': 'onOccupantClicked',
+                // Arrow functions don't work here because you can't bind a different `this` param to them.
+                'click .occupant-nick': function (ev) {this.insertIntoTextArea(ev.target.textContent) },
                 'click .send-button': 'onFormSubmitted',
                 'click .show-room-details-modal': 'showRoomDetailsModal',
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-occupants': 'toggleOccupants',
                 'click .upload-file': 'toggleFileUpload',
+                'dragover .chat-textarea': 'onDragOver',
+                'drop .chat-textarea': 'onDrop',
+                'input .chat-textarea': 'inputChanged',
                 'keydown .chat-textarea': 'onKeyDown',
                 'keyup .chat-textarea': 'onKeyUp',
                 'paste .chat-textarea': 'onPaste',
-                'input .chat-textarea': 'inputChanged',
-                'dragover .chat-textarea': 'onDragOver',
-                'drop .chat-textarea': 'onDrop',
+                'submit .muc-nickname-form': 'submitNickname'
             },
 
             initialize () {
@@ -696,8 +698,8 @@ converse.plugins.add('converse-muc-views', {
                 this.renderHeading();
                 this.renderChatArea();
                 this.renderBottomPanel();
-                if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
-                    this.showSpinner();
+                if (!_converse.muc_show_logs_before_join) {
+                    this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();
                 }
                 if (!this.model.get('hidden')) {
                     this.show();
@@ -716,9 +718,11 @@ converse.plugins.add('converse-muc-views', {
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
-                const can_edit = !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
-                container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit});
-                if (can_edit) {
+                const entered = this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED;
+                const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
+                const nickname = this.model.get('nickname');
+                container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit, entered, nickname});
+                if (entered && can_edit) {
                     this.renderMessageForm();
                     this.initMentionAutoComplete();
                 }
@@ -730,7 +734,11 @@ converse.plugins.add('converse-muc-views', {
                     const container_el = this.el.querySelector('.chatroom-body');
                     container_el.insertAdjacentHTML(
                         'beforeend',
-                        tpl_chatarea({'show_send_button': _converse.show_send_button})
+                        tpl_chatarea({
+                            __,
+                            'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
+                            'show_send_button': _converse.show_send_button
+                        })
                     );
                     this.content = this.el.querySelector('.chat-content');
                 }
@@ -797,6 +805,21 @@ converse.plugins.add('converse-muc-views', {
                     'item': this.getAutoCompleteListItem
                 });
                 this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
+            },
+
+            /**
+             * Get the nickname value from the form and then join the groupchat with it.
+             * @private
+             * @method _converse.ChatRoomView#submitNickname
+             * @param { Event }
+             */
+            submitNickname (ev) {
+                ev.preventDefault();
+                const nick = ev.target.nick.value.trim();
+                if (nick) {
+                    this.model.join(nick);
+                    this.model.set({'nickname': nick});
+                }
             },
 
             onKeyDown (ev) {
@@ -997,9 +1020,12 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            /**
+             * Returns the groupchat heading HTML to be rendered.
+             * @private
+             * @method _converse.ChatRoomView#generateHeadingHTML
+             */
             generateHeadingHTML () {
-                /* Returns the heading HTML to be rendered.
-                 */
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
                         'isOwner': this.model.getOwnAffiliation() === 'owner',
@@ -1028,7 +1054,7 @@ converse.plugins.add('converse-muc-views', {
             onConnectionStatusChanged () {
                 const conn_status = this.model.get('connection_status');
                 if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {
-                    this.renderNicknameButton();
+                    this.renderNicknameForm();
                 } else if (conn_status === converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                     this.renderPasswordForm();
                 } else if (conn_status === converse.ROOMSTATUS.CONNECTING) {
@@ -1083,10 +1109,13 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            /**
+             * Show or hide the right sidebar containing the chat
+             * occupants (and the invite widget).
+             * @private
+             * @method _converse.ChatRoomView#hideOccupants
+             */
             hideOccupants (ev) {
-                /* Show or hide the right sidebar containing the chat
-                 * occupants (and the invite widget).
-                 */
                 if (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
@@ -1095,23 +1124,19 @@ converse.plugins.add('converse-muc-views', {
                 this.scrollDown();
             },
 
+            /**
+             * Show or hide the right sidebar containing the chat
+             * occupants (and the invite widget).
+             * @private
+             * @method _converse.ChatRoomView#toggleOccupants
+             */
             toggleOccupants (ev) {
-                /* Show or hide the right sidebar containing the chat
-                 * occupants (and the invite widget).
-                 */
                 if (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
                 }
                 this.model.save({'hidden_occupants': !this.model.get('hidden_occupants')});
                 this.scrollDown();
-            },
-
-            onOccupantClicked (ev) {
-                /* When an occupant is clicked, insert their nickname into
-                 * the chat textarea input.
-                 */
-                this.insertIntoTextArea(ev.target.textContent);
             },
 
             verifyRoles (roles, occupant, show_error=true) {
@@ -1436,6 +1461,34 @@ converse.plugins.add('converse-muc-views', {
                 u.showElement(this.config_form.el);
             },
 
+            /**
+             * Renders a form which allows the user to choose theirnickname.
+             * @private
+             * @method _converse.ChatRoomView#renderNicknameForm
+             */
+            renderNicknameForm () {
+                const heading = _converse.muc_show_logs_before_join ?
+                    __('Choose a nickname to enter') :
+                    __('Please choose your nickname');
+
+                const html = tpl_chatroom_nickname_form({
+                    heading,
+                    'label_nickname': __('Nickname'),
+                    'label_join': __('Enter groupchat'),
+                    'nickname': this.model.get('nickname')
+                });
+                if (_converse.muc_show_logs_before_join) {
+                    const container = this.el.querySelector('.muc-bottom-panel');
+                    container.innerHTML = html;
+                    u.addClass('muc-bottom-panel--nickname', container);
+                } else {
+                    this.hideChatRoomContents();
+                    const container = this.el.querySelector('.chatroom-body');
+                    container.insertAdjacentHTML('beforeend', html);
+                }
+                u.safeSave(this.model, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
+            },
+
             closeForm () {
                 /* Remove the configuration form without submitting and
                  * return to the chat view.
@@ -1444,22 +1497,21 @@ converse.plugins.add('converse-muc-views', {
                 this.renderAfterTransition();
             },
 
+            /**
+             * Start the process of configuring a groupchat, either by
+             * rendering a configuration form, or by auto-configuring
+             * based on the "roomconfig" data stored on the
+             * {@link _converse.ChatRoom}.
+             * Stores the new configuration on the {@link _converse.ChatRoom}
+             * once completed.
+             * @private
+             * @method _converse.ChatRoomView#getAndRenderConfigurationForm
+             * @param { Event } ev - DOM event that might be passed in if this
+             *   method is called due to a user action. In this
+             *   case, auto-configure won't happen, regardless of
+             *   the settings.
+             */
             getAndRenderConfigurationForm () {
-                /* Start the process of configuring a groupchat, either by
-                 * rendering a configuration form, or by auto-configuring
-                 * based on the "roomconfig" data stored on the
-                 * Backbone.Model.
-                 *
-                 * Stores the new configuration on the Backbone.Model once
-                 * completed.
-                 *
-                 * Paremeters:
-                 *  (Event) ev: DOM event that might be passed in if this
-                 *      method is called due to a user action. In this
-                 *      case, auto-configure won't happen, regardless of
-                 *      the settings.
-                 */
-
                 if (!this.config_form || !u.isVisible(this.config_form.el)) {
                     this.showSpinner();
                     this.model.fetchRoomConfiguration()
@@ -1471,35 +1523,10 @@ converse.plugins.add('converse-muc-views', {
             },
 
             hideChatRoomContents () {
-                return;
-            },
-
-            renderNicknameButton () {
-                this.el.querySelector('.setNicknameButtonForm').classList.remove('hidden');
-                this.el.querySelector('.sendXMPPMessage').classList.add('hidden');
-                this.el.querySelector('.setNicknameButtonForm').addEventListener('submit', this.renderNicknameModal.bind(this), false);
-            },
-
-            renderNicknameModal (ev) {
-                /* Render a button which allows the user to get a modal to set their nickname.
-                 */
-                ev.preventDefault();
-                const message = this.model.get('nickname_validation_message');
-                this.model.save('nickname_validation_message', undefined);
-                if (this.nickname_form_modal === undefined) {
-                    this.nickname_form_modal = new _converse.NicknameFormModal({
-                        //'model': new Backbone.Model({'validation_message': message}),
-                        'model': this.model,
-                        'chatroomview': this,
-                    });
-                    const container_el = this.el.querySelector('.chatroom-body');
-                    container_el.insertAdjacentElement('beforeend', this.nickname_form_modal.el);
-                } else {
-                    this.nickname_form_modal.model.set('validation_message', message);
+                const container_el = this.el.querySelector('.chatroom-body');
+                if (container_el !== null) {
+                    [].forEach.call(container_el.children, child => child.classList.add('hidden'));
                 }
-                this.nickname_form_modal.show(ev);
-                console.log(this.nickname_form_modal);
-                u.safeSave(this.model, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
             },
 
             renderPasswordForm () {
@@ -1598,7 +1625,19 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            insertMessage (view) {
+                if (_converse.muc_show_logs_before_join &&
+                        this.content.firstElementChild.matches('.empty-history-feedback')) {
+                    this.content.removeChild(this.content.firstElementChild);
+                }
+                return _converse.ChatBoxView.prototype.insertMessage.call(this, view);
+            },
+
             insertNotification (message) {
+                if (_converse.muc_show_logs_before_join &&
+                        this.content.firstElementChild.matches('.empty-history-feedback')) {
+                    this.content.removeChild(this.content.firstElementChild);
+                }
                 this.content.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({
@@ -1777,13 +1816,16 @@ converse.plugins.add('converse-muc-views', {
                 this.scrollDown();
             },
 
+            /**
+             * Rerender the groupchat after some kind of transition. For
+             * example after the spinner has been removed or after a
+             * form has been submitted and removed.
+             * @private
+             * @method _converse.ChatRoomView#renderAfterTransition
+             */
             renderAfterTransition () {
-                /* Rerender the groupchat after some kind of transition. For
-                 * example after the spinner has been removed or after a
-                 * form has been submitted and removed.
-                 */
                 if (this.model.get('connection_status') == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
-                    this.renderNicknameButton();
+                    this.renderNicknameForm();
                 } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                     this.renderPasswordForm();
                 } else if (this.model.get('connection_status') == converse.ROOMSTATUS.ENTERED) {
@@ -1801,11 +1843,14 @@ converse.plugins.add('converse-muc-views', {
                 container_el.insertAdjacentHTML('afterbegin', tpl_spinner());
             },
 
+            /**
+             * Check if the spinner is being shown and if so, hide it.
+             * Also make sure then that the chat area and occupants
+             * list are both visible.
+             * @private
+             * @method _converse.ChatRoomView#hideSpinner
+             */
             hideSpinner () {
-                /* Check if the spinner is being shown and if so, hide it.
-                 * Also make sure then that the chat area and occupants
-                 * list are both visible.
-                 */
                 const spinner = this.el.querySelector('.spinner');
                 if (spinner !== null) {
                     u.removeElement(spinner);
@@ -1845,9 +1890,13 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
+        /**
+         * Backbone.NativeView which renders MUC section of the control box.
+         * @class
+         * @namespace _converse.RoomsPanel
+         * @memberOf _converse
+         */
         _converse.RoomsPanel = Backbone.NativeView.extend({
-            /* Backbone.NativeView which renders MUC section of the control box.
-             */
             tagName: 'div',
             className: 'controlbox-section',
             id: 'chatrooms',
@@ -1884,7 +1933,7 @@ converse.plugins.add('converse-muc-views', {
         _converse.MUCConfigForm = Backbone.VDOMView.extend({
             className: 'muc-config-form',
             events: {
-                'submit form': 'submitConfigForm',
+                'submit .chatroom-form': 'submitConfigForm',
                 'click .button-cancel': 'closeConfigForm'
             },
 
@@ -1957,55 +2006,6 @@ converse.plugins.add('converse-muc-views', {
                 const password = this.el.querySelector('input[type=password]').value;
                 this.chatroomview.model.join(this.chatroomview.model.get('nick'), password);
                 this.model.set('validation_message', null);
-            }
-        });
-
-
-        _converse.NicknameFormModal = _converse.BootstrapModal.extend({
-
-            events: {
-                'submit form': 'submitNickname',
-            },
-
-            initialize (attrs) {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.chatroomview = attrs.chatroomview;
-                this.listenTo(this.model, 'change:validation_message', this.render);
-                this.render();
-            },
-
-            toHTML () {
-                const err_msg = this.model.get('validation_message');
-                return tpl_chatroom_nickname_form_modal({
-                    '__': __,
-                    'heading': __('Please choose your nickname'),
-                    'label_nickname': __('Nickname'),
-                    'label_join': __('Enter groupchat'),
-                    'error_class': err_msg ? 'error' : '',
-                    'validation_message': err_msg,
-                    'nickname': this.model.get('nickname')
-                });
-            },
-
-            submitNickname (ev) {
-                /* Get the nickname value from the form and then join the
-                 * groupchat with it.
-                 */
-                ev.preventDefault();
-                const nick_el = ev.target.nick;
-                const nick = nick_el.value.trim();
-                if (nick) {
-                    this.chatroomview.model.join(nick);
-                    this.model.set({
-                        'validation_message': null,
-                        'nickname': nick
-                    });
-                } else {
-                    return this.model.set({
-                        'validation_message': __('You need to provide a nickname')
-                    });
-                }
-                this.modal.hide();
             }
         });
 

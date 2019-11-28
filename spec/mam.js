@@ -196,7 +196,7 @@
                     </iq>`);
                 _converse.connection._dataRecv(test_utils.createRequest(result));
                 await u.waitUntil(() => view.model.messages.length === 5);
-                expect(view.model.fetchArchivedMessages.calls.count()).toBe(3);
+                expect(view.model.fetchArchivedMessages.calls.count()).toBe(5);
                 const msg_els = view.content.querySelectorAll('.chat-msg__text');
                 expect(Array.from(msg_els).map(e => e.textContent).join(' ')).toBe("2nd Message 3rd Message 4th Message 5th Message 6th Message");
                 done();

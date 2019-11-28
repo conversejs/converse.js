@@ -1547,7 +1547,7 @@
                 expect(presencebroadcast.length).toBe(1);
                 presencebroadcast[0].value = ['moderator'];
 
-                view.el.querySelector('input[type="submit"]').click();
+                view.el.querySelector('.chatroom-form input[type="submit"]').click();
 
                 const sent_stanza = sent_IQ.nodeTree;
                 expect(sent_stanza.querySelector('field[var="muc#roomconfig_membersonly"] value').textContent.trim()).toBe('1');
@@ -2578,7 +2578,7 @@
                 expect(el.textContent.trim()).toBe("Configuration for room@conference.example.org");
                 sizzle('[name="muc#roomconfig_membersonly"]', chatroomview.el).pop().click();
                 sizzle('[name="muc#roomconfig_roomname"]', chatroomview.el).pop().value = "New room name"
-                chatroomview.el.querySelector('.btn-primary').click();
+                chatroomview.el.querySelector('.chatroom-form input[type="submit"]').click();
 
                 iq = await u.waitUntil(() => _.filter(IQs, iq => u.matchesSelector(iq, `iq[to="${jid}"][type="set"]`)).pop());
                 const result = $iq({

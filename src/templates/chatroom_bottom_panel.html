@@ -1,6 +1,10 @@
-{[ if (o.can_edit) { ]}
-<div class="emoji-picker__container dropup"></div>
-<div class="message-form-container">
+{[ if (o.entered) { ]}
+    {[ if (o.can_edit) { ]}
+        <div class="emoji-picker__container dropup"></div>
+        <div class="message-form-container">
+    {[ } else { ]}
+        <div class="muc-bottom-panel">{{{o.__("You're not allowed to send messages in this room")}}}</div>
+    {[ } ]}
 {[ } else { ]}
-<div class="muc-bottom-panel">{{{o.__("You're not allowed to send messages in this room")}}}</div>
+    <div class="muc-bottom-panel"></div>
 {[ } ]}

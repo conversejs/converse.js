@@ -19,7 +19,7 @@
     converse.initialize({
         auto_away: 300,
         auto_register_muc_nickname: true,
-        debug: true,
+        loglevel: 'debug',
         enable_smacks: true,
         i18n: 'en',
         message_archiving: 'always',
@@ -27,6 +27,7 @@
         muc_respect_autojoin: true,
         view_mode: 'fullscreen',
         websocket_url: 'ws://chat.example.org:5380/xmpp-websocket',
+        muc_show_logs_before_join: true,
         whitelisted_plugins: ['converse-debug'],
     });
 </script>

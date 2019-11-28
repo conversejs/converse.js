@@ -83,7 +83,7 @@
             expect(textarea.value).toBe('');
 
             const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
-            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
             let action = view.el.querySelector('.chat-msg .chat-msg__action');
             expect(action.getAttribute('title')).toBe('Edit this message');
 
@@ -160,7 +160,7 @@
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
             );
             await new Promise(resolve => view.once('messageInserted', resolve));
-            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
 
             // Test confirmation dialog
             spyOn(window, 'confirm').and.returnValue(true);
@@ -518,7 +518,7 @@
 
             // Ideally we wouldn't have to filter out headline
             // messages, but Prosody gives them the wrong 'type' :(
-            sinon.spy(_converse, 'log');
+            sinon.spy(converse.env.log, 'info');
             sinon.spy(_converse.api.chatboxes, 'get');
             sinon.spy(u, 'isHeadlineMessage');
             const msg = $msg({
@@ -528,15 +528,14 @@
                     id: (new Date()).getTime()
                 }).c('body').t("This headline message will not be shown").tree();
             await _converse.handleMessageStanza(msg);
-            expect(_converse.log.calledWith(
-                "onMessage: Ignoring incoming headline message from JID: montague.lit",
-                Strophe.LogLevel.INFO
+            expect(converse.env.log.info.calledWith(
+                "onMessage: Ignoring incoming headline message from JID: montague.lit"
             )).toBeTruthy();
             expect(u.isHeadlineMessage.called).toBeTruthy();
             expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
             expect(_converse.api.chatboxes.get.called).toBeFalsy();
             // Remove sinon spies
-            _converse.log.restore();
+            converse.env.log.info.restore();
             _converse.api.chatboxes.get.restore();
             u.isHeadlineMessage.restore();
             done();
@@ -1175,7 +1174,8 @@
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(4)'))).toBe(true);
             expect(chat_content.querySelector('.message:nth-child(4) .chat-msg__text').textContent).toBe(
                 "A delayed message, sent 5 minutes since we started");
-            expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(5)'))).toBe(true);
+
+            expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(5)'))).toBe(false);
             expect(chat_content.querySelector('.message:nth-child(5) .chat-msg__text').textContent).toBe(
                 "Another message 14 minutes since we started");
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(6)'))).toBe(true);
@@ -1208,7 +1208,7 @@
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(5)'))).toBe(false);
             expect(chat_content.querySelector('.message:nth-child(5) .chat-msg__text').textContent).toBe(
                 "A delayed message, sent 5 minutes since we started");
-            expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(6)'))).toBe(true);
+            expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(6)'))).toBe(false);
             expect(chat_content.querySelector('.message:nth-child(6) .chat-msg__text').textContent).toBe(
                 "Another message 14 minutes since we started");
             expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(7)'))).toBe(true);
@@ -1853,7 +1853,7 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
                 // Send a message from a different resource
-                spyOn(_converse, 'log');
+                spyOn(converse.env.log, 'info');
                 spyOn(_converse.api.chatboxes, 'create').and.callThrough();
                 _converse.filter_by_resource = true;
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1866,9 +1866,9 @@
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 await _converse.handleMessageStanza(msg);
 
-                expect(_converse.log).toHaveBeenCalledWith(
-                        "onMessage: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
-                        Strophe.LogLevel.INFO);
+                expect(converse.env.log.info).toHaveBeenCalledWith(
+                    "onMessage: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
+                );
                 expect(_converse.api.chatboxes.create).not.toHaveBeenCalled();
                 _converse.filter_by_resource = false;
 

@@ -2,24 +2,28 @@
 
 ## 6.0.0 (Unreleased)
 
-- #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
-- #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
-- #1089: When filtering the roster for `online` users, show all non-offline users.
-- #1691: Fix `collection.chatbox is undefined` errors
-- #1733: New message notifications for a minimized chat stack on top of each other
-- #1757: Chats are hidden behind the controlbox on mobile
-- #1772 `_converse.api.contact.add(jid, nick)` fails, says not a function
+- Add support for [XEP-0424 Message Retraction](http://localhost:3080/extensions/xep-0424.html)
+- Add support for [XEP-0425 Message Moderation](http://localhost:3080/extensions/xep-0425.html)
 - Prevent editing of sent file uploads.
 - Initial support for sending custom emojis. Currently only between Converse
   instances. Still working out a wire protocol for compatibility with other clients.
   To add custom emojis, edit the `emojis.json` file.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
 - New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
-- New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_filter)
-- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_show_avatar)
+- New config option [muc-mention-autocomplete-filter](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-filter)
+- New config option [muc-mention-autocomplete-show-avatar](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-show-avatar)
+- New config option [allow_message_retraction](https://conversejs.org/docs/html/configuration.html#allow-message-retraction)
 
+- #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
+- #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
+- #1691: Fix `collection.chatbox is undefined` errors
+- #1733: New message notifications for a minimized chat stack on top of each other
+- #1757: Chats are hidden behind the controlbox on mobile
+- #1772 `_converse.api.contact.add(jid, nick)` fails, says not a function
 
 ### Breaking changes
+
+- The ``debug`` configuration option has been replaced with [loglevel](https://conversejs.org/docs/html/configuration.html#loglevel).
 
 - In contrast to sessionStorage and localStorage, IndexedDB is an asynchronous database.
   A lot of code that relied on database access to be synchronous had to be
@@ -45,7 +49,16 @@
   an integer for the `type`, "info", "warn" or "error" should be passed in.
 - The `converse-headline` plugin has been split up into `converse-headlines` and `converse-headlines-view`.
 
+## 5.0.5 (2019-11-20)
+
+- Prevent editing of sent file uploads.
+- #1089: When filtering the roster for `online` users, show all non-offline users.
+- #1733: New message notifications for a minimized chat stack on top of each other
+- #1757: Chats are hidden behind the controlbox on mobile
+- #1760: Private messages no longer received after websocket reconnect
+
 ## 5.0.4 (2019-10-08)
+
 - New config option [allow_message_corrections](https://conversejs.org/docs/html/configuration.html#allow-message-corrections)
   which, if set to `last`, limits editing of sent messages to the last message sent.
 - Bugfix: Don't treat every duplicate message ID as a message correction; since some clients don't use globally unique ID's this causes false positives.

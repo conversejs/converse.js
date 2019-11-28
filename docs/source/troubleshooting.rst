@@ -12,7 +12,7 @@ General tips on debugging Converse
 Enabling debug output
 ---------------------
 
-Converse has a :ref:`debug` configuration setting which lets you to turn on
+Converse has a :ref:`loglevel` configuration setting which lets you to turn on
 debug logging in the browser's developer console.
 
 When debugging, you always want to make sure that this setting is set to
@@ -21,18 +21,18 @@ When debugging, you always want to make sure that this setting is set to
 You can also enable debug output via the URL, which is useful when you don't
 have access to the server where Converse is hosted.
 
-To do so, add ``#converse?debug=true`` to the URL in the browser's address bar.
+To do so, add ``#converse?loglevel=debug`` to the URL in the browser's address bar.
 Make sure to first remove any already existing URL fragment (the URL fragment
 is the part that starts with a ``#``).
 
-With debug mode on, you can open the browser's developer console and study the
+With debug logging on, you can open the browser's developer console and study the
 data that is logged to it.
 
 In Chrome you can right click in the developer console and save its contents to
 a file for later study.
 
-What is logged in debug mode?
------------------------------
+What is logged at the debug loglevel?
+-------------------------------------
 
 `Strope.js <http://strophe.im/>`_, the underlying XMPP library which Converse
 uses, swallows errors so that messaging can continue in cases where
@@ -50,7 +50,7 @@ Additionally, Converse will in debug mode also log all XMPP stanzas
 This is very useful for debugging issues relating to the XMPP protocol.
 
 For example, if a message or presence update doesn't appear, one of the first
-things you can do is to set ``debug: true`` and then to check in the console
+things you can do is to set ``loglevel: debug`` and then to check in the console
 whether the relevant XMPP stanzas are actually logged (which would mean that
 they were received by Converse). If they're not logged, then the problem is
 more likely on the XMPP server's end (perhaps a misconfiguration?). If they

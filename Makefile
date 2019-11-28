@@ -40,7 +40,7 @@ help:
 	@echo " check       Run all tests."
 	@echo " dev         Set up the development environment and build unminified resources. To force a fresh start, run 'make clean' first."
 	@echo " devserver   Set up the development environment and start the webpack dev server."
-	@echo " html        Make standalone HTML files of the documentation."
+	@echo " doc         Make standalone HTML files of the documentation."
 	@echo " po          Generate gettext PO files for each i18n language."
 	@echo " pot         Generate a gettext POT file to be used for translations."
 	@echo " release     Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
@@ -216,7 +216,10 @@ check: eslint dev
 docsdev: ./bin/activate .installed.cfg
 
 .PHONY: html
-html: stamp-npm docsdev apidoc
+html: doc
+
+.PHONY: doc
+doc: stamp-npm docsdev apidoc
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	make apidoc

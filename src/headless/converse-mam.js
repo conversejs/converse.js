@@ -13,6 +13,7 @@ import "./converse-disco";
 import "./converse-rsm";
 import { intersection, pick } from 'lodash'
 import converse from "./converse-core";
+import log from "./log";
 import sizzle from "sizzle";
 
 const { Strophe, $iq, dayjs } = converse.env;
@@ -37,16 +38,6 @@ converse.plugins.add('converse-mam', {
                     return this.findDuplicateFromArchiveID(stanza);
                 }
                 return message;
-            },
-
-            getUpdatedMessageAttributes (message, stanza) {
-                const attrs = this.__super__.getUpdatedMessageAttributes.apply(this, arguments);
-                if (message && !message.get('is_archived')) {
-                    return Object.assign(attrs, {
-                        'is_archived': this.isArchived(stanza)
-                    }, this.getStanzaIDs(stanza))
-                }
-                return attrs;
             }
         }
     },
@@ -64,7 +55,6 @@ converse.plugins.add('converse-mam', {
         });
 
         const MAMEnabledChat = {
-
             /**
              * Fetches messages that might have been archived *after*
              * the last archived message in our local cache.
@@ -131,7 +121,7 @@ converse.plugins.add('converse-mam', {
                     try {
                         await message_handler(message);
                     } catch (e) {
-                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        log.error(e);
                     }
                 }
 
@@ -188,14 +178,10 @@ converse.plugins.add('converse-mam', {
 
         _converse.onMAMError = function (iq) {
             if (iq.querySelectorAll('feature-not-implemented').length) {
-                _converse.log(
-                    "Message Archive Management (XEP-0313) not supported by this server",
-                    Strophe.LogLevel.WARN);
+                log.warn("Message Archive Management (XEP-0313) not supported by this server");
             } else {
-                _converse.log(
-                    "An error occured while trying to set archiving preferences.",
-                    Strophe.LogLevel.ERROR);
-                _converse.log(iq);
+                log.error("An error occured while trying to set archiving preferences.");
+                log.error(iq);
             }
         };
 
@@ -471,7 +457,7 @@ converse.plugins.add('converse-mam', {
                     const jid = attrs.to || _converse.bare_jid;
                     const supported = await _converse.api.disco.supports(Strophe.NS.MAM, jid);
                     if (!supported) {
-                        _converse.log(`Did not fetch MAM archive for ${jid} because it doesn't support ${Strophe.NS.MAM}`);
+                        log.warn(`Did not fetch MAM archive for ${jid} because it doesn't support ${Strophe.NS.MAM}`);
                         return {'messages': []};
                     }
 
@@ -513,11 +499,11 @@ converse.plugins.add('converse-mam', {
                         const from = stanza.getAttribute('from') || _converse.bare_jid;
                         if (options.groupchat) {
                             if (from !== options['with']) {
-                                _converse.log(`Ignoring alleged groupchat MAM message from ${stanza.getAttribute('from')}`, Strophe.LogLevel.WARN);
+                                log.warn(`Ignoring alleged groupchat MAM message from ${stanza.getAttribute('from')}`);
                                 return true;
                             }
                         } else if (from !== _converse.bare_jid) {
-                            _converse.log(`Ignoring alleged MAM message from ${stanza.getAttribute('from')}`, Strophe.LogLevel.WARN);
+                            log.warn(`Ignoring alleged MAM message from ${stanza.getAttribute('from')}`);
                             return true;
                         }
                         messages.push(stanza);
@@ -528,13 +514,13 @@ converse.plugins.add('converse-mam', {
                     const iq_result = await _converse.api.sendIQ(stanza, _converse.message_archiving_timeout, false)
                     if (iq_result === null) {
                         const err_msg = "Timeout while trying to fetch archived messages.";
-                        _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                        log.error(err_msg);
                         error = new _converse.TimeoutError(err_msg);
                         return { messages, error };
 
                     } else if (u.isErrorStanza(iq_result)) {
-                        _converse.log("Error stanza received while trying to fetch archived messages", Strophe.LogLevel.ERROR);
-                        _converse.log(iq_result, Strophe.LogLevel.ERROR);
+                        log.error("Error stanza received while trying to fetch archived messages");
+                        log.error(iq_result);
                         return { messages };
                     }
                     _converse.connection.deleteHandler(message_handler);

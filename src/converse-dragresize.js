@@ -36,7 +36,7 @@ converse.plugins.add('converse-dragresize', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatview", "converse-headline", "converse-muc-views"],
+    dependencies: ["converse-chatview", "converse-headlines-view", "converse-muc-views"],
 
     enabled (_converse) {
         return _converse.view_mode == 'overlayed';

@@ -14,6 +14,7 @@ import "converse-modal";
 import { debounce, get, isString } from "lodash";
 import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.html";
 import tpl_chatbox_head from "templates/chatbox_head.html";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
@@ -64,6 +65,7 @@ converse.plugins.add('converse-chatview', {
             'auto_focus': true,
             'message_limit': 0,
             'show_send_button': false,
+            'show_retraction_warning': true,
             'show_toolbar': true,
             'time_format': 'HH:mm',
             'visible_toolbar_buttons': {
@@ -184,7 +186,7 @@ converse.plugins.add('converse-chatview', {
                 try {
                     await _converse.api.vcard.update(this.model.contact.vcard, true);
                 } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.FATAL);
+                    log.fatal(e);
                     this.alert(__('Sorry, something went wrong while trying to refresh'), 'danger');
                 }
                 u.removeClass('fa-spin', refresh_icon);
@@ -199,7 +201,7 @@ converse.plugins.add('converse-chatview', {
                     this.model.contact.removeFromRoster(
                         () => this.model.contact.destroy(),
                         (err) => {
-                            _converse.log(err, Strophe.LogLevel.ERROR);
+                            log.error(err);
                             _converse.api.alert('error', __('Error'), [
                                 __('Sorry, there was an error while trying to remove %1$s as a contact.',
                                 this.model.contact.getDisplayName())
@@ -225,6 +227,7 @@ converse.plugins.add('converse-chatview', {
             events: {
                 'change input.fileupload': 'onFileSelection',
                 'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
+                'click .chat-msg__action-retract': 'onMessageRetractButtonClicked',
                 'click .chatbox-navback': 'showControlBox',
                 'click .close-chatbox-button': 'close',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
@@ -621,8 +624,8 @@ converse.plugins.add('converse-chatview', {
                         return this.trigger('messageInserted', view.el);
                     }
                 }
-                const current_msg_date = dayjs(view.model.get('time')).toDate() || new Date(),
-                      previous_msg_date = this.getLastMessageDate(current_msg_date);
+                const current_msg_date = dayjs(view.model.get('time')).toDate() || new Date();
+                const previous_msg_date = this.getLastMessageDate(current_msg_date);
 
                 if (previous_msg_date === null) {
                     this.content.insertAdjacentElement('afterbegin', view.el);
@@ -648,20 +651,20 @@ converse.plugins.add('converse-chatview', {
              * followup message or not.
              *
              * Followup messages are subsequent ones written by the same
-             * author with no other conversation elements inbetween and
-             * posted within 10 minutes of one another.
-             *
+             * author with no other conversation elements in between and
+             * which were posted within 10 minutes of one another.
              * @private
              * @method _converse.ChatBoxView#markFollowups
              * @param { HTMLElement } el - The message element
              */
             markFollowups (el) {
-                const from = el.getAttribute('data-from'),
-                      previous_el = el.previousElementSibling,
-                      date = dayjs(el.getAttribute('data-isodate')),
-                      next_el = el.nextElementSibling;
+                const from = el.getAttribute('data-from');
+                const previous_el = el.previousElementSibling;
+                const date = dayjs(el.getAttribute('data-isodate'));
+                const next_el = el.nextElementSibling;
 
                 if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) &&
+                        !u.hasClass('chat-info', el) && !u.hasClass('chat-info', previous_el) &&
                         previous_el.getAttribute('data-from') === from &&
                         date.isBefore(dayjs(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
                         el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
@@ -669,7 +672,7 @@ converse.plugins.add('converse-chatview', {
                 }
                 if (!next_el) { return; }
 
-                if (!u.hasClass('chat-msg--action', el) &&
+                if (!u.hasClass('chat-msg--action', el) && u.hasClass('chat-info', el) &&
                         next_el.getAttribute('data-from') === from &&
                         dayjs(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
                         el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
@@ -729,11 +732,9 @@ converse.plugins.add('converse-chatview', {
                     // We already have a view for this message
                     return;
                 }
-                if (!u.isNewMessage(message) && u.isEmptyMessage(message)) {
-                    // Ignore archived or delayed messages without any text to show.
-                    return message.destroy();
+                if (!message.get('dangling_retraction')) {
+                    await this.showMessage(message);
                 }
-                await this.showMessage(message);
                 /**
                  * Triggered once a message has been added to a chatbox.
                  * @event _converse#messageAdded
@@ -754,10 +755,13 @@ converse.plugins.add('converse-chatview', {
                     if (match[1] === "clear") {
                         this.clearMessages();
                         return true;
-                    }
-                    else if (match[1] === "help") {
+                    } else if (match[1] === "close") {
+                        this.close();
+                        return true;
+                    } else if (match[1] === "help") {
                         const msgs = [
                             `<strong>/clear</strong>: ${__('Remove messages')}`,
+                            `<strong>/close</strong>: ${__('Close this chat')}`,
                             `<strong>/me</strong>: ${__('Write in the third person')}`,
                             `<strong>/help</strong>: ${__('Show this menu')}`
                             ];
@@ -911,6 +915,45 @@ converse.plugins.add('converse-chatview', {
                     message.save('correcting', false);
                 }
                 this.insertIntoTextArea('', true, false);
+            },
+
+            /**
+             * Retract one of your messages in this chat
+             * @private
+             * @method _converse.ChatBoxView#retractOwnMessage
+             * @param { _converse.Message } message - The message which we're retracting.
+             */
+            retractOwnMessage(message) {
+                this.model.sendRetractionMessage(message);
+                message.save({
+                    'retracted': (new Date()).toISOString(),
+                    'retracted_id': message.get('origin_id'),
+                    'is_ephemeral': true
+                });
+            },
+
+            async onMessageRetractButtonClicked (ev) {
+                ev.preventDefault();
+                const msg_el = u.ancestor(ev.target, '.message');
+                const msgid = msg_el.getAttribute('data-msgid');
+                const time = msg_el.getAttribute('data-isodate');
+                const message = this.model.messages.findWhere({msgid, time});
+                if (message.get('sender') !== 'me') {
+                    return log.error("onMessageEditButtonClicked called for someone else's message!");
+                }
+                const retraction_warning =
+                    __("Be aware that other XMPP/Jabber clients (and servers) may "+
+                        "not yet support retractions and that this message may not "+
+                        "be removed everywhere.");
+
+                const messages = [__('Are you sure you want to retract this message?')];
+                if (_converse.show_retraction_warning) {
+                    messages[1] = retraction_warning;
+                }
+                const result = await _converse.api.confirm(__('Confirm'), messages);
+                if (result) {
+                    this.retractOwnMessage(message);
+                }
             },
 
             onMessageEditButtonClicked (ev) {

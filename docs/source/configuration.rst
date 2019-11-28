@@ -149,6 +149,32 @@ allow_logout
 
 Determines whether the user is allowed to log out. If set to ``false``, there will be no logout button.
 
+
+.. _`allow_message_corrections`:
+
+allow_message_corrections
+-------------------------
+
+* Default:  ``'all'``
+* Possible values: ``'all'``, ``'last'``
+
+Configures the last message correction (LMC) feature of Converse. By default you can edit all of your own
+messages. Setting this to ``'last'`` will limit this feature to the message sent most recently as suggested by
+`XEP-0308: Last Message Correction <https://xmpp.org/extensions/xep-0308.html>`_.
+Setting it to anything else (including ``false``) will disable the ability to correct sent messages.
+
+
+allow_message_retraction
+------------------------
+
+* Default:  ``'all'``
+* Possible values: ``'all'``, ``'own'``, ``'moderator'``
+
+Determines who is allowed to retract messages. If set to ``'all'``, then normal
+users may retract their own messages and ``'moderators'`` may retract the messages of
+other users.
+
+
 allow_muc
 ---------
 
@@ -293,20 +319,20 @@ in to their XMPP account.
 
 .. note::
 
-The interaction between ``keepalive`` and ``auto_login`` is unfortunately
-inconsistent depending on the ``authentication`` method used.
+  The interaction between ``keepalive`` and ``auto_login`` is unfortunately
+  inconsistent depending on the ``authentication`` method used.
 
-If ``auto_login`` is set to ``false`` and ``authentication`` is set to
-``anonymous``, ``external`` or ``prebind``, then Converse won't automatically
-log the user in.
+  If ``auto_login`` is set to ``false`` and ``authentication`` is set to
+  ``anonymous``, ``external`` or ``prebind``, then Converse won't automatically
+  log the user in.
 
-If ``authentication`` set to ``login`` the situation is much more
-ambiguous, since we don't have a way to distinguish between wether we're
-restoring a previous session (``keepalive``) or whether we're
-automatically setting up a new session (``auto_login``).
+  If ``authentication`` set to ``login`` the situation is much more
+  ambiguous, since we don't have a way to distinguish between wether we're
+  restoring a previous session (``keepalive``) or whether we're
+  automatically setting up a new session (``auto_login``).
 
-So currently if EITHER ``keepalive`` or ``auto_login`` is ``true`` and
-``authentication`` is set to ``login``, then Converse will try to log the user in.
+  So currently if EITHER ``keepalive`` or ``auto_login`` is ``true`` and
+  ``authentication`` is set to ``login``, then Converse will try to log the user in.
 
 
 auto_away
@@ -473,6 +499,10 @@ bosh_service_url
 
 * Default: ``undefined``
 
+Example: ``http://xmpp.example.com:5280/bosh/``
+
+Example with reverse-proxy and TLS: ``https://xmpp.example.com/bosh/``
+
 To connect to an XMPP server over HTTP you need a `BOSH <https://en.wikipedia.org/wiki/BOSH>`_
 connection manager which acts as a middle man between the HTTP and XMPP
 protocols.
@@ -595,16 +625,15 @@ a chat state indication of ``active`` will be sent out.
 
 A value of ``0`` means that this feature is disabled.
 
-.. _`debug`:
+.. _`loglevel`:
 
-debug
------
+loglevel
+--------
 
-* Default:  ``false``
+* Default:  ``'info'``
+* Allowed values: ``'debug'``, ``'info'``, ``'warn'``, ``'error'``, ``'fatal'``
 
-If set to ``true``, debugging output will be logged to the browser console.
-
-You can also set this value by changing the URL fragment to `#converse?debug=true` or `#converse?debug=false`.
+You can also set this value by changing a URL fragment `#converse?loglevel=debug`
 
 
 default_domain
@@ -667,19 +696,23 @@ The placeholder text shown in the domain input on the registration form.
 emoji_categories
 ----------------
 
-* Default:::
-  {
-    "smileys": ":grinning:",
-    "people": ":thumbsup:",
-    "activity": ":soccer:",
-    "travel": ":motorcycle:",
-    "objects": ":bomb:",
-    "nature": ":rainbow:",
-    "food": ":hotdog:",
-    "symbols": ":musical_note:",
-    "flags": ":flag_ac:",
-    "custom": ":converse:"
-  }
+* Default:
+
+::
+
+    {
+      "smileys": ":grinning:",
+      "people": ":thumbsup:",
+      "activity": ":soccer:",
+      "travel": ":motorcycle:",
+      "objects": ":bomb:",
+      "nature": ":rainbow:",
+      "food": ":hotdog:",
+      "symbols": ":musical_note:",
+      "flags": ":flag_ac:",
+      "custom": ":converse:"
+    }
+
 
 This setting lets you define the categories that are available in the emoji
 picker, as well as the default image that's shown for each category.
@@ -702,19 +735,23 @@ entries to the map under the  ``custom`` key.
 emoji_categories_label
 ----------------------
 
-* Default:::
-  {
-    "smileys": "Smileys and emotions",
-    "people": "People",
-    "activity": "Activities",
-    "travel": "Travel",
-    "objects": "Objects",
-    "nature": "Animals and nature",
-    "food": "Food and drink",
-    "symbols": "Symbols",
-    "flags": "Flags",
-    "custom": "Stickers"
-  }
+* Default:
+
+::
+
+    {
+      "smileys": "Smileys and emotions",
+      "people": "People",
+      "activity": "Activities",
+      "travel": "Travel",
+      "objects": "Objects",
+      "nature": "Animals and nature",
+      "food": "Food and drink",
+      "symbols": "Symbols",
+      "flags": "Flags",
+      "custom": "Stickers"
+    }
+
 
 This setting lets you pass in the text value that goes into the `title`
 attribute for the emoji categories. These strings will be translated, but for
@@ -752,6 +789,8 @@ enable_smacks
 Determines whether `XEP-0198 Stream Management <https://xmpp.org/extensions/xep-0198.html>`_
 support is turned on or not.
 
+Recommended to set to ``true`` if a websocket connection is used. 
+Please see the :ref:`websocket-url` configuration setting.
 
 filter_by_resource
 ------------------
@@ -852,18 +891,6 @@ keepalive
 
 Determines whether Converse will attempt to keep you logged in across page loads.
 
-.. _`allow_message_corrections`:
-
-allow_message_corrections
--------------------------
-
-* Default:  ``'all'``
-
-Configures the last message correction (LMC) feature of Converse. By default you can edit all of your own
-messages. Setting this to ``'last'`` will limit this feature to the message sent most recently as suggested by
-`XEP-0308: Last Message Correction <https://xmpp.org/extensions/xep-0308.html>`_.
-Setting it to anything else (including ``false``) will disable the ability to correct sent messages.
-
 .. _`locales`:
 
 locales
@@ -886,9 +913,6 @@ This setting restricts the locales that are supported by Converse and
 therefore what may be given as value for the :ref:`i18n` option.
 
 Any other locales will be ignored.
-
-When self-hosting, also make sure that the locales are served and therefore
-fetchable (via ``XMLHttpRequest``) at the URL specified by :ref:`locales-url`.
 
 
 locked_domain
@@ -946,15 +970,15 @@ muc_mention_autocomplete_filter
 
 * Default:  ``contains``
 
-The method used for filtering MUC participants when using auto-complete. 
+The method used for filtering MUC participants when using auto-complete.
 Valid values are ``contains`` and ``starts_with``.
 
 muc_mention_autocomplete_show_avatar
--------------------------------
+------------------------------------
 
 * Default:  ``true``
 
-Show avatars of MUC participants when using auto-complete. 
+Show avatars of MUC participants when using auto-complete.
 
 message_archiving
 -----------------
@@ -1251,8 +1275,7 @@ nickname is mentioned in a chatroom.
 Inside the ``./sounds`` directory of the Converse repo you'll see MP3 and Ogg
 formatted sound files. We need both, because neither format is supported by all browsers.
 
-You can set the URL where the sound files are hosted with the `sounds_path`_
-option.
+You can set the URL where the sound files are hosted with the `sounds_path`_ option.
 
 Requires the `src/converse-notification.js` plugin.
 
@@ -1309,10 +1332,12 @@ providers_link
 The hyperlink on the registration form which points to a directory of public
 XMPP servers.
 
+.. _`assets_path`:
+
 assets_path
 -----------
 
-* Default: The `publicPath <https://webpack.js.org/guides/public-path/>`_ value configured in the relevant Webpack configuration.
+* Default: ``'/dist/'`` or the `publicPath <https://webpack.js.org/guides/public-path/>`_ value as configured in the relevant Webpack configuration.
 
 Since version 5.0.0, Converse serves a smaller bundle by extracting various
 resources (for example emojis and translations) into separate files (aka
@@ -1468,6 +1493,26 @@ If set to ``all``, notifications will be shown even if the above conditions are
 not fulfilled.
 
 Requires the `src/converse-notification.js` plugin.
+
+show_retraction_warning
+-----------------------
+
+* Default: ``true``
+
+From `XEP-0424: Message Retraction <https://xmpp.org/extensions/xep-0424.html>`_:
+
+::
+  Due to the federated and extensible nature of XMPP it's not possible to remove a message with
+  full certainty and a retraction can only be considered an unenforceable request for such removal.
+  Clients which don't support message retraction are not obligated to enforce the request and
+  people could have seen or copied the message contents already.
+
+By default Converse shows a warning to users when they retract a message, to
+inform them that they don't have a guarantee that the message will be removed
+everywhere.
+
+This warning isn't applicable to all deployments of Converse and can therefore
+be turned off by setting this config variable to ``false``.
 
 use_system_emojis
 -----------------
@@ -1702,6 +1747,10 @@ websocket_url
 -------------
 
 * Default: ``undefined``
+
+Example: ``ws://xmpp.example.com:5280/ws/``
+
+Example with reverse-proxy and TLS: ``wss://xmpp.example.com/ws/``
 
 This option is used to specify a
 `websocket <https://developer.mozilla.org/en/docs/WebSockets>`_ URI to which

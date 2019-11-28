@@ -317,6 +317,16 @@ body.converse-fullscreen {
         color: var(--gray-color);
     }
 
+    q {
+      quotes: "“" "”" "‘" "’";
+    }
+    q:before {
+        content: open-quote;
+    }
+    q:after {
+        content: close-quote;
+    }
+
     .modal {
         background-color: rgba(0, 0, 0, 0.4);
 

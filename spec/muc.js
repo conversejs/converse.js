@@ -574,10 +574,12 @@
 
             it("shows join/leave messages when users enter or exit a groupchat",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
+                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
+
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 const chat_content = view.el.querySelector('.chat-content');
                 /* We don't show join/leave messages for existing occupants. We
@@ -4421,25 +4423,26 @@
                 var remove_absentees = false;
                 var new_list = [];
                 var old_list = [];
-                var delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                const muc_utils = converse.env.muc_utils;
+                var delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(0);
 
                 new_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
                 old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
-                delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(0);
 
                 // When remove_absentees is false, then affiliations in the old
                 // list which are not in the new one won't be removed.
                 old_list = [{'jid': 'oldhag666@shakespeare.lit', 'affiliation': 'owner'},
                             {'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
-                delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(0);
 
                 // With exclude_existing set to false, any changed affiliations
                 // will be included in the delta (i.e. existing affiliations are included in the comparison).
                 old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
-                delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(1);
                 expect(delta[0].jid).toBe('wiccarocks@shakespeare.lit');
                 expect(delta[0].affiliation).toBe('member');
@@ -4449,12 +4452,12 @@
                 remove_absentees = true;
                 old_list = [{'jid': 'oldhag666@shakespeare.lit', 'affiliation': 'owner'},
                             {'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
-                delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(1);
                 expect(delta[0].jid).toBe('oldhag666@shakespeare.lit');
                 expect(delta[0].affiliation).toBe('none');
 
-                delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, [], old_list);
+                delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, [], old_list);
                 expect(delta.length).toBe(2);
                 expect(delta[0].jid).toBe('oldhag666@shakespeare.lit');
                 expect(delta[0].affiliation).toBe('none');
@@ -4465,11 +4468,11 @@
                 // affiliation, we set 'exclude_existing' to true
                 exclude_existing = true;
                 old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
-                delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(0);
 
                 old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'admin'}];
-                delta = u.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                delta = muc_utils.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(0);
                 done();
             }));
@@ -5231,6 +5234,7 @@
                 const textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = 'Hello world';
                 view.onFormSubmitted(new Event('submit'));
+                await new Promise(resolve => view.once('messageInserted', resolve));
 
                 const stanza = u.toStanza(`
                     <message xmlns="jabber:client" type="error" to="troll@montague.lit/resource" from="trollbox@montague.lit">
@@ -5239,6 +5243,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 await new Promise(resolve => view.once('messageInserted', resolve));
+
                 expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
                     "Your message was not delivered because you're not allowed to send messages in this groupchat.");
                 done();

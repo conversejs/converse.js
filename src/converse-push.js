@@ -10,6 +10,7 @@
  * an "App Server" as defined in  XEP-0357
  */
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 
 const { Strophe, $iq, _ } = converse.env;
 
@@ -34,10 +35,8 @@ converse.plugins.add('converse-push', {
                 return;
             }
             if (!(await _converse.api.disco.supports(Strophe.NS.PUSH, domain || _converse.bare_jid))) {
-                return _converse.log(
-                    `Not disabling push app server "${push_app_server.jid}", no disco support from your server.`,
-                    Strophe.LogLevel.WARN
-                );
+                log.warn(`Not disabling push app server "${push_app_server.jid}", no disco support from your server.`);
+                return;
             }
             const stanza = $iq({'type': 'set'});
             if (domain !== _converse.bare_jid) {
@@ -52,8 +51,8 @@ converse.plugins.add('converse-push', {
             }
             _converse.api.sendIQ(stanza)
             .catch(e => {
-                _converse.log(`Could not disable push app server for ${push_app_server.jid}`, Strophe.LogLevel.ERROR);
-                _converse.log(e, Strophe.LogLevel.ERROR);
+                log.error(`Could not disable push app server for ${push_app_server.jid}`);
+                log.error(e);
             });
         }
 
@@ -63,9 +62,8 @@ converse.plugins.add('converse-push', {
             }
             const identity = await _converse.api.disco.getIdentity('pubsub', 'push', push_app_server.jid);
             if (!identity) {
-                return _converse.log(
-                    `Not enabling push the service "${push_app_server.jid}", it doesn't have the right disco identtiy.`,
-                    Strophe.LogLevel.WARN
+                return log.warn(
+                    `Not enabling push the service "${push_app_server.jid}", it doesn't have the right disco identtiy.`
                 );
             }
             const result = await Promise.all([
@@ -73,10 +71,8 @@ converse.plugins.add('converse-push', {
                 _converse.api.disco.supports(Strophe.NS.PUSH, domain)
             ]);
             if (!result[0] && !result[1]) {
-                return _converse.log(
-                    `Not enabling push app server "${push_app_server.jid}", no disco support from your server.`,
-                    Strophe.LogLevel.WARN
-                );
+                log.warn(`Not enabling push app server "${push_app_server.jid}", no disco support from your server.`);
+                return;
             }
             const stanza = $iq({'type': 'set'});
             if (domain !== _converse.bare_jid) {
@@ -110,8 +106,8 @@ converse.plugins.add('converse-push', {
             try {
                 await Promise.all(enabled.concat(disabled));
             } catch (e) {
-                _converse.log('Could not enable or disable push App Server', Strophe.LogLevel.ERROR);
-                if (e) _converse.log(e, Strophe.LogLevel.ERROR);
+                log.error('Could not enable or disable push App Server');
+                if (e) log.error(e);
             } finally {
                 push_enabled.push(domain);
             }

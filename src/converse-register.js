@@ -12,6 +12,7 @@
  */
 import "converse-controlbox";
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 import tpl_form_input from "templates/form_input.html";
 import tpl_form_username from "templates/form_username.html";
 import tpl_register_link from "templates/register_link.html";
@@ -142,7 +143,7 @@ converse.plugins.add('converse-register', {
             _converse.api.waitUntil('controlBoxInitialized').then(() => {
                 const controlbox = _converse.chatboxes.get('controlbox')
                 controlbox.set({'active-form': value});
-            }).catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
+            }).catch(e => log.fatal(e));
         }
         _converse.router.route('converse/login', () => setActiveForm('login'));
         _converse.router.route('converse/register', () => setActiveForm('register'));
@@ -402,7 +403,7 @@ converse.plugins.add('converse-register', {
              * @param { integer } status_code - The Strophe.Status status code
              */
             onConnectStatusChanged(status_code) {
-                _converse.log('converse-register: onConnectStatusChanged');
+                log.debug('converse-register: onConnectStatusChanged');
                 if (_.includes([
                             Strophe.Status.DISCONNECTED,
                             Strophe.Status.CONNFAIL,
@@ -411,13 +412,12 @@ converse.plugins.add('converse-register', {
                             Strophe.Status.CONFLICT
                         ], status_code)) {
 
-                    _converse.log(
-                        `Problem during registration: Strophe.Status is ${_converse.CONNECTION_STATUS[status_code]}`,
-                        Strophe.LogLevel.ERROR
+                    log.error(
+                        `Problem during registration: Strophe.Status is ${_converse.CONNECTION_STATUS[status_code]}`
                     );
                     this.abortRegistration();
                 } else if (status_code === Strophe.Status.REGISTERED) {
-                    _converse.log("Registered successfully.");
+                    log.debug("Registered successfully.");
                     _converse.connection.reset();
                     this.showSpinner();
 
@@ -645,7 +645,7 @@ converse.plugins.add('converse-register', {
                         this.fields[_var.toLowerCase()] = _.get(field.querySelector('value'), 'textContent', '');
                     } else {
                         // TODO: other option seems to be type="fixed"
-                        _converse.log("Found field we couldn't parse", Strophe.LogLevel.WARN);
+                        log.warn("Found field we couldn't parse");
                     }
                 });
                 this.form_type = 'xform';
@@ -661,7 +661,7 @@ converse.plugins.add('converse-register', {
              */
             _onRegisterIQ (stanza) {
                 if (stanza.getAttribute("type") === "error") {
-                    _converse.log("Registration failed.", Strophe.LogLevel.ERROR);
+                    log.error("Registration failed.");
                     this.reportErrors(stanza);
 
                     let error = stanza.getElementsByTagName("error");

@@ -12,6 +12,7 @@ import "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import { get } from "lodash";
+import log from "@converse/headless/log";
 import tpl_brand_heading from "templates/converse_brand_heading.html";
 import tpl_controlbox from "templates/controlbox.html";
 import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
@@ -514,7 +515,7 @@ converse.plugins.add('converse-controlbox', {
                 _converse.chatboxviews.insertRowColumn(this.render().el);
                 _converse.api.waitUntil('initialized')
                     .then(this.render.bind(this))
-                    .catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
+                    .catch(e => log.fatal(e));
             },
 
             render () {
@@ -597,7 +598,7 @@ converse.plugins.add('converse-controlbox', {
 
         _converse.api.waitUntil('chatBoxViewsInitialized')
            .then(addControlBox)
-           .catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
+           .catch(e => log.fatal(e));
 
         _converse.api.listen.on('chatBoxesFetched', () => {
             const controlbox = _converse.chatboxes.get('controlbox') || addControlBox();

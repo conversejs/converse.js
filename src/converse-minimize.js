@@ -9,14 +9,15 @@
 import "converse-chatview";
 import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 import tpl_chatbox_minimize from "templates/chatbox_minimize.html";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.html";
 import tpl_trimmed_chat from "templates/trimmed_chat.html";
 
-
-const { _ , Backbone, Strophe, dayjs } = converse.env;
+const { _ , Backbone, dayjs } = converse.env;
 const u = converse.env.utils;
+
 
 converse.plugins.add('converse-minimize', {
     /* Optional dependencies are other plugins which might be
@@ -31,7 +32,13 @@ converse.plugins.add('converse-minimize', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatview", "converse-controlbox", "converse-muc-views", "converse-headline", "converse-dragresize"],
+    dependencies: [
+        "converse-chatview",
+        "converse-controlbox",
+        "converse-muc-views",
+        "converse-headlines-view",
+        "converse-dragresize"
+    ],
 
     enabled (_converse) {
         return _converse.view_mode === 'overlayed';
@@ -572,8 +579,7 @@ converse.plugins.add('converse-minimize', {
              * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
              */
             _converse.api.trigger('minimizedChatsInitialized');
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-
+        }).catch(e => log.fatal(e));
 
         const debouncedTrimChats = _.debounce(() => _converse.chatboxviews.trimChats(), 250);
         _converse.api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));

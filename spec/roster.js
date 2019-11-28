@@ -39,7 +39,7 @@
             expect(_converse.roster.models.length).toBe(1);
             expect(_converse.roster.at(0).get('jid')).toBe(contact_jid);
 
-            spyOn(_converse, 'log');
+            spyOn(converse.env.log, 'warn');
             let roster_push = u.toStanza(`
                 <iq type="set" to="${_converse.jid}" from="eve@siacs.eu">
                     <query xmlns='jabber:iq:roster'>
@@ -47,10 +47,9 @@
                     </query>
                 </iq>`);
             _converse.connection._dataRecv(test_utils.createRequest(roster_push));
-            expect(_converse.log.calls.count()).toBe(2);
-            expect(_converse.log).toHaveBeenCalledWith(
-                `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`,
-                Strophe.LogLevel.WARN
+            expect(converse.env.log.warn.calls.count()).toBe(1);
+            expect(converse.env.log.warn).toHaveBeenCalledWith(
+                `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`
             );
             roster_push = u.toStanza(`
                 <iq type="set" to="${_converse.jid}" from="eve@siacs.eu">
@@ -59,10 +58,9 @@
                     </query>
                 </iq>`);
             _converse.connection._dataRecv(test_utils.createRequest(roster_push));
-            expect(_converse.log.calls.count()).toBe(4);
-            expect(_converse.log).toHaveBeenCalledWith(
-                `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`,
-                Strophe.LogLevel.WARN
+            expect(converse.env.log.warn.calls.count()).toBe(2);
+            expect(converse.env.log.warn).toHaveBeenCalledWith(
+                `Ignoring roster illegitimate roster push message from ${roster_push.getAttribute('from')}`
             );
             expect(_converse.roster.models.length).toBe(1);
             expect(_converse.roster.at(0).get('jid')).toBe(contact_jid);

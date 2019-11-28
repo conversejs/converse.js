@@ -8,10 +8,12 @@
  * @description
  * Converse plugin which add support for XEP-0030: Service Discovery
  */
+import { get, isEmpty, isObject } from "lodash";
 import converse from "./converse-core";
+import log from "./log";
 import sizzle from "sizzle";
 
-const { Backbone, Strophe, $iq, utils, _ } = converse.env;
+const { Backbone, Strophe, $iq, utils } = converse.env;
 
 converse.plugins.add('converse-disco', {
 
@@ -146,7 +148,7 @@ converse.plugins.add('converse-disco', {
                 try {
                     stanza = await _converse.api.disco.info(this.get('jid'), null);
                 } catch (iq) {
-                    _converse.log(iq, Strophe.LogLevel.ERROR);
+                    log.error(iq);
                     this.waitUntilFeaturesDiscovered.resolve(this);
                     return;
                 }
@@ -173,7 +175,7 @@ converse.plugins.add('converse-disco', {
             },
 
             async queryForItems () {
-                if (_.isEmpty(this.identities.where({'category': 'server'}))) {
+                if (isEmpty(this.identities.where({'category': 'server'}))) {
                     // Don't fetch features and items if this is not a
                     // server or a conference component.
                     return;
@@ -195,7 +197,7 @@ converse.plugins.add('converse-disco', {
                     const data = {};
                     sizzle('field', form).forEach(field => {
                         data[field.getAttribute('var')] = {
-                            'value': _.get(field.querySelector('value'), 'textContent'),
+                            'value': get(field.querySelector('value'), 'textContent'),
                             'type': field.getAttribute('type')
                         };
                     });
@@ -205,7 +207,7 @@ converse.plugins.add('converse-disco', {
                 if (stanza.querySelector(`feature[var="${Strophe.NS.DISCO_ITEMS}"]`)) {
                     this.queryForItems();
                 }
-                _.forEach(stanza.querySelectorAll('feature'), feature => {
+                Array.from(stanza.querySelectorAll('feature')).forEach(feature => {
                     this.features.create({
                         'var': feature.getAttribute('var'),
                         'from': stanza.getAttribute('from')
@@ -216,7 +218,7 @@ converse.plugins.add('converse-disco', {
                 sizzle('x[type="result"][xmlns="jabber:x:data"] field', stanza).forEach(field => {
                     this.fields.create({
                         'var': field.getAttribute('var'),
-                        'value': _.get(field.querySelector('value'), 'textContent'),
+                        'value': get(field.querySelector('value'), 'textContent'),
                         'from': stanza.getAttribute('from')
                     });
                 });
@@ -242,6 +244,7 @@ converse.plugins.add('converse-disco', {
             }
         });
 
+
         function addClientFeatures () {
             // See https://xmpp.org/registrar/disco-categories.html
             _converse.api.disco.own.identities.add('client', 'web', 'Converse');
@@ -262,38 +265,51 @@ converse.plugins.add('converse-disco', {
             return this;
         }
 
+
         function initStreamFeatures () {
-            const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
-            const id = `converse.stream-features-${bare_jid}`;
-            if (!_converse.stream_features || _converse.stream_features.browserStorage.name !== id) {
+            // Initialize the stream_features collection, and if we're
+            // re-attaching to a pre-existing BOSH session, we restore the
+            // features from cache.
+            // Otherwise the features will be created once we've received them
+            // from the server (see populateStreamFeatures).
+            if (!_converse.stream_features) {
+                const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
+                const id = `converse.stream-features-${bare_jid}`;
+                _converse.api.promises.add('streamFeaturesAdded');
                 _converse.stream_features = new _converse.Collection();
                 _converse.stream_features.browserStorage = _converse.createStore(id, "session");
-                _converse.stream_features.fetch({
-                    success (collection) {
-                        if (collection.length === 0 && _converse.connection.features) {
-                            Array.from(_converse.connection.features.childNodes)
-                                .forEach(feature => {
-                                    _converse.stream_features.create({
-                                        'name': feature.nodeName,
-                                        'xmlns': feature.getAttribute('xmlns')
-                                    });
-                                });
-                        }
-                        /**
-                         * Triggered as soon as Converse has processed the stream features as advertised by
-                         * the server. If you want to check whether a stream feature is supported before
-                         * proceeding, then you'll first want to wait for this event.
-                         * @event _converse#streamFeaturesAdded
-                         * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
-                         */
-                        _converse.api.trigger('streamFeaturesAdded');
-                    },
-                    error (m, e) {
-                        _converse.log(e, Strophe.LogLevel.ERROR);
-                    }
-                });
             }
         }
+
+
+        function populateStreamFeatures () {
+            // Strophe.js sets the <stream:features> element on the
+            // Strophe.Connection instance (_converse.connection).
+            //
+            // Once this is done, we populate the _converse.stream_features collection
+            // and trigger streamFeaturesAdded.
+            initStreamFeatures();
+            Array.from(_converse.connection.features.childNodes).forEach(feature => {
+                _converse.stream_features.create({
+                    'name': feature.nodeName,
+                    'xmlns': feature.getAttribute('xmlns')
+                });
+            });
+            notifyStreamFeaturesAdded();
+        }
+
+
+        function notifyStreamFeaturesAdded () {
+            /**
+             * Triggered as soon as the stream features are known.
+             * If you want to check whether a stream feature is supported before proceeding,
+             * then you'll first want to wait for this event.
+             * @event _converse#streamFeaturesAdded
+             * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
+             */
+            _converse.api.trigger('streamFeaturesAdded');
+        }
+
 
         const plugin = this;
         plugin._identities = [];
@@ -354,9 +370,15 @@ converse.plugins.add('converse-disco', {
 
         /******************** Event Handlers ********************/
 
-        // Re-create promise upon reconnection
-        _converse.api.listen.on('userSessionInitialized', initStreamFeatures);
-        _converse.api.listen.on('beforeResourceBinding', initStreamFeatures);
+        _converse.api.listen.on('userSessionInitialized', async () => {
+            initStreamFeatures();
+            if (_converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED) {
+                // When re-attaching to a BOSH session, we fetch the stream features from the cache.
+                await new Promise((success, error) => _converse.stream_features.fetch({ success, error }));
+                notifyStreamFeaturesAdded();
+            }
+        });
+        _converse.api.listen.on('beforeResourceBinding', populateStreamFeatures);
 
         _converse.api.listen.on('reconnected', initializeDisco);
         _converse.api.listen.on('connected', initializeDisco);
@@ -413,7 +435,7 @@ converse.plugins.add('converse-disco', {
                         if (_converse.stream_features === undefined && !_converse.api.connection.connected()) {
                             // Happens during tests when disco lookups happen asynchronously after teardown.
                             const msg = `Tried to get feature ${name} ${xmlns} but _converse.stream_features has been torn down`;
-                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            log.warn(msg);
                             return;
                         }
                         return _converse.stream_features.findWhere({'name': name, 'xmlns': xmlns});
@@ -573,7 +595,7 @@ converse.plugins.add('converse-disco', {
                         if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
                             // Happens during tests when disco lookups happen asynchronously after teardown.
                             const msg = `Tried to look up entity ${jid} but _converse.disco_entities has been torn down`;
-                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            log.warn(msg);
                             return;
                         }
                         const entity = _converse.disco_entities.get(jid);
@@ -635,16 +657,13 @@ converse.plugins.add('converse-disco', {
                         if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
                             // Happens during tests when disco lookups happen asynchronously after teardown.
                             const msg = `Tried to get feature ${feature} for ${jid} but _converse.disco_entities has been torn down`;
-                            _converse.log(msg, Strophe.LogLevel.WARN);
+                            log.warn(msg);
                             return;
                         }
                         entity = await entity.waitUntilFeaturesDiscovered;
-                        const promises = _.concat(
-                            entity.items.map(item => item.hasFeature(feature)),
-                            entity.hasFeature(feature)
-                        );
+                        const promises = [...entity.items.map(i => i.hasFeature(feature)), entity.hasFeature(feature)];
                         const result = await Promise.all(promises);
-                        return _.filter(result, _.isObject);
+                        return result.filter(isObject);
                     }
                 },
 
@@ -771,14 +790,14 @@ converse.plugins.add('converse-disco', {
                  *             // The entity DOES NOT have this identity
                  *         }
                  *     }
-                 * ).catch(e => _converse.log(e, Strophe.LogLevel.FATAL));
+                 * ).catch(e => log.error(e));
                  */
                 async getIdentity (category, type, jid) {
                     const e = await _converse.api.disco.entities.get(jid, true);
                     if (e === undefined && !_converse.api.connection.connected()) {
                         // Happens during tests when disco lookups happen asynchronously after teardown.
                         const msg = `Tried to look up category ${category} for ${jid} but _converse.disco_entities has been torn down`;
-                        _converse.log(msg, Strophe.LogLevel.WARN);
+                        log.warn(msg);
                         return;
                     }
                     return e.getIdentity(category, type);

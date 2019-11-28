@@ -9,6 +9,7 @@
 import * as strophe from 'strophe.js/src/core';
 import Backbone from "backbone";
 import _ from "../lodash.noconflict";
+import log from "@converse/headless/log";
 import sizzle from "sizzle";
 
 const Strophe = strophe.default.Strophe;
@@ -19,12 +20,6 @@ const Strophe = strophe.default.Strophe;
  */
 const u = {};
 
-u.logger = Object.assign({
-    'debug': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
-    'error': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
-    'info': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
-    'warn': _.get(console, 'log') ? console.log.bind(console) : function noop () {}
-}, console);
 
 u.isTagEqual = function (stanza, name) {
     if (stanza.nodeTree) {
@@ -643,7 +638,7 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
     const max_wait_timeout = setTimeout(() => {
         clearTimers(max_wait_timeout, interval);
         const err_msg = 'Wait until promise timed out';
-        u.logger.error(err_msg);
+        log.error(err_msg);
         promise.reject(new Error(err_msg));
     }, max_wait);
 

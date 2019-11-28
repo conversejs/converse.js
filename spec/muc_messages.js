@@ -6,10 +6,67 @@
         ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const { Promise, Strophe, $msg, $pres, sizzle } = converse.env;
+    const { Promise, Strophe, $msg, $pres, sizzle, stanza_utils } = converse.env;
     const u = converse.env.utils;
 
     describe("A Groupchat Message", function () {
+
+        describe("an info message", function () {
+
+            it("is not rendered as a followup message",
+                mock.initConverse(
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+
+                const view = _converse.api.chatviews.get(muc_jid);
+                const presence = u.toStanza(`
+                    <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <status code="201"/>
+                            <item role="moderator" affiliation="owner" jid="${_converse.jid}"/>
+                            <status code="110"/>
+                        </x>
+                    </presence>
+                `);
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 2);
+
+                const messages = view.el.querySelectorAll('.chat-info');
+                expect(u.hasClass('chat-msg--followup', messages[0])).toBe(false);
+                expect(u.hasClass('chat-msg--followup', messages[1])).toBe(false);
+                done();
+            }));
+
+            it("is not shown if its a duplicate",
+                mock.initConverse(
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const view = _converse.api.chatviews.get(muc_jid);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length);
+
+                const presence = u.toStanza(`
+                    <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <status code="201"/>
+                            <item role="moderator" affiliation="owner" jid="${_converse.jid}"/>
+                            <status code="110"/>
+                        </x>
+                    </presence>
+                `);
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length > 1);
+                expect(view.el.querySelectorAll('.chat-info').length).toBe(2);
+                done();
+            }));
+        });
+
 
         it("is rejected if it's an unencapsulated forwarded message",
             mock.initConverse(
@@ -35,11 +92,10 @@
             `);
             const view = _converse.api.chatviews.get(muc_jid);
             await view.model.onMessage(received_stanza);
-            spyOn(_converse, 'log');
+            spyOn(converse.env.log, 'warn');
             _converse.connection._dataRecv(test_utils.createRequest(received_stanza));
-            expect(_converse.log).toHaveBeenCalledWith(
-                'onMessage: Ignoring unencapsulated forwarded groupchat message',
-                Strophe.LogLevel.WARN
+            expect(converse.env.log.warn).toHaveBeenCalledWith(
+                'onMessage: Ignoring unencapsulated forwarded groupchat message'
             );
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
             expect(view.model.messages.length).toBe(0);
@@ -193,12 +249,11 @@
                         'type': 'groupchat'
                 }).c('body').t('I am groot').tree();
             const view = _converse.api.chatviews.get(muc_jid);
-            spyOn(_converse, 'log');
+            spyOn(converse.env.log, 'warn');
             await view.model.onMessage(msg);
-            expect(_converse.log).toHaveBeenCalledWith(
+            expect(converse.env.log.warn).toHaveBeenCalledWith(
                 'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
-                'according to the XEP groupchat messages SHOULD NOT be carbon copied',
-                Strophe.LogLevel.WARN
+                'according to the XEP groupchat messages SHOULD NOT be carbon copied'
             );
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
             expect(view.model.messages.length).toBe(0);
@@ -220,11 +275,11 @@
                 type: 'groupchat'
             }).c('body').t('I wrote this message!').tree();
             await view.model.onMessage(msg);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
             expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat moderator owner');
-
             let presence = $pres({
                     to:'romeo@montague.lit/orchard',
                     from:'lounge@montague.lit/romeo',
@@ -623,9 +678,9 @@
                     <origin-id xmlns="urn:xmpp:sid:0" id="CE08D448-5ED8-4B6A-BB5B-07ED9DFE4FF0"/>
                 </message>`);
             spyOn(_converse.api, "trigger").and.callThrough();
-            spyOn(view.model, "isReceipt").and.callThrough();
+            spyOn(stanza_utils, "isReceipt").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await u.waitUntil(() => view.model.isReceipt.calls.count() === 1);
+            await u.waitUntil(() => stanza_utils.isReceipt.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -659,9 +714,10 @@
                          from="lounge@montague.lit/some1" type="groupchat" xmlns="jabber:client">
                     <received xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
                 </message>`);
-            spyOn(view.model, "isChatMarker").and.callThrough();
+            const stanza_utils = converse.env.stanza_utils;
+            spyOn(stanza_utils, "isChatMarker").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await u.waitUntil(() => view.model.isChatMarker.calls.count() === 1);
+            await u.waitUntil(() => stanza_utils.isChatMarker.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -671,7 +727,7 @@
                     <displayed xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await u.waitUntil(() => view.model.isChatMarker.calls.count() === 2);
+            await u.waitUntil(() => stanza_utils.isChatMarker.calls.count() === 2);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -682,7 +738,7 @@
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-            await u.waitUntil(() => view.model.isChatMarker.calls.count() === 3);
+            await u.waitUntil(() => stanza_utils.isChatMarker.calls.count() === 3);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -693,7 +749,7 @@
                     <markable xmlns="urn:xmpp:chat-markers:0"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await u.waitUntil(() => view.model.isChatMarker.calls.count() === 4);
+            await u.waitUntil(() => stanza_utils.isChatMarker.calls.count() === 4);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             done();

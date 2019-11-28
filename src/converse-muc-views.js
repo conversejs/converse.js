@@ -15,6 +15,7 @@ import "formdata-polyfill";
 import "@converse/headless/utils/muc";
 import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
+import log from "@converse/headless/log";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.html";
 import tpl_chatarea from "templates/chatarea.html";
 import tpl_chatroom from "templates/chatroom.html";
@@ -39,7 +40,6 @@ import tpl_room_panel from "templates/room_panel.html";
 import tpl_rooms_results from "templates/rooms_results.html";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
-
 
 const { Backbone, Strophe, sizzle, _, $iq, $pres } = converse.env;
 const u = converse.env.utils;
@@ -107,6 +107,7 @@ converse.plugins.add('converse-muc-views', {
             'auto_list_rooms': false,
             'cache_muc_messages': true,
             'locked_muc_nickname': false,
+            'show_retraction_warning': true,
             'muc_disable_slash_commands': false,
             'muc_show_join_leave': true,
             'muc_show_join_leave_status': true,
@@ -219,7 +220,7 @@ converse.plugins.add('converse-muc-views', {
                 parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
                 _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null)
                     .then(stanza => insertRoomInfo(parent_el, stanza))
-                    .catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
+                    .catch(e => log.error(e));
             }
         }
 
@@ -353,7 +354,7 @@ converse.plugins.add('converse-muc-views', {
                     })
                     .catch(err => {
                         this.alert(__('Sorry, something went wrong while trying to set the affiliation'), 'danger');
-                        _converse.log(err, Strophe.LogLevel.ERROR);
+                        log.error(err);
                     });
             },
 
@@ -377,7 +378,7 @@ converse.plugins.add('converse-muc-views', {
                         } else {
                             this.alert(__('Sorry, something went wrong while trying to set the role'), 'danger');
                             if (u.isErrorObject(e)) {
-                                _converse.log(e, Strophe.LogLevel.ERROR);
+                                log.error(e);
                             }
                         }
                     }
@@ -615,15 +616,13 @@ converse.plugins.add('converse-muc-views', {
 
 
         /**
-         * The View of an open/ongoing groupchat conversation
+         * Backbone.NativeView which renders a groupchat, based upon
+         * { @link _converse.ChatBoxView } for normal one-on-one chat boxes.
          * @class
          * @namespace _converse.ChatRoomView
          * @memberOf _converse
          */
         _converse.ChatRoomView = _converse.ChatBoxView.extend({
-            /* Backbone.NativeView which renders a groupchat, based upon the view
-             * for normal one-on-one chat boxes.
-             */
             length: 300,
             tagName: 'div',
             className: 'chatbox chatroom hidden',
@@ -631,6 +630,7 @@ converse.plugins.add('converse-muc-views', {
             events: {
                 'change input.fileupload': 'onFileSelection',
                 'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
+                'click .chat-msg__action-retract': 'onMessageRetractButtonClicked',
                 'click .chatbox-navback': 'showControlBox',
                 'click .close-chatbox-button': 'close',
                 'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
@@ -699,6 +699,9 @@ converse.plugins.add('converse-muc-views', {
                 if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     this.showSpinner();
                 }
+                if (!this.model.get('hidden')) {
+                    this.show();
+                }
                 return this;
             },
 
@@ -722,8 +725,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             renderChatArea () {
-                /* Render the UI container in which groupchat messages will appear.
-                 */
+                // Render the UI container in which groupchat messages will appear.
                 if (this.el.querySelector('.chat-area') === null) {
                     const container_el = this.el.querySelector('.chatroom-body');
                     container_el.insertAdjacentHTML(
@@ -807,6 +809,101 @@ converse.plugins.add('converse-muc-views', {
             onKeyUp (ev) {
                 this.mention_auto_complete.evaluate(ev);
                 return _converse.ChatBoxView.prototype.onKeyUp.call(this, ev);
+            },
+
+            async onMessageRetractButtonClicked (ev) {
+                ev.preventDefault();
+                const msg_el = u.ancestor(ev.target, '.message');
+                const msgid = msg_el.getAttribute('data-msgid');
+                const time = msg_el.getAttribute('data-isodate');
+                const message = this.model.messages.findWhere({msgid, time});
+                const retraction_warning =
+                    __("Be aware that other XMPP/Jabber clients (and servers) may "+
+                        "not yet support retractions and that this message may not "+
+                        "be removed everywhere.");
+
+                if (message.get('sender') === 'me') {
+                    const messages = [__('Are you sure you want to retract this message?')];
+                    if (_converse.show_retraction_warning) {
+                        messages[1] = retraction_warning;
+                    }
+                    const result = await _converse.api.confirm(__('Confirm'), messages);
+                    if (result) {
+                        this.retractOwnMessage(message);
+                    }
+                } else {
+                    let messages = [
+                        __('You are about to retract this message.'),
+                        __('You may optionally include a message, explaining the reason for the retraction.')
+                    ];
+                    if (_converse.show_retraction_warning) {
+                        messages = [messages[0], retraction_warning, messages[1]]
+                    }
+                    const reason = await _converse.api.prompt(
+                        __('Message Retraction'),
+                        messages,
+                        __('Optional reason')
+                    );
+                    if (reason !== false) {
+                        this.retractOtherMessage(message, reason);
+                    }
+                }
+            },
+
+            /**
+             * Retract one of your messages in this groupchat.
+             * @private
+             * @method _converse.ChatRoomView#retractOwnMessage
+             * @param { _converse.Message } message - The message which we're retracting.
+             */
+            retractOwnMessage(message) {
+                this.model.sendRetractionMessage(message)
+                    .catch(e => {
+                        message.save({
+                            'retracted': undefined,
+                            'retracted_id': undefined
+                        });
+                        const errmsg = __('Sorry, something went wrong while trying to retract your message.');
+                        if (u.isErrorStanza(e)) {
+                            this.showErrorMessage(errmsg);
+                        } else {
+                            this.showErrorMessage(errmsg);
+                            this.showErrorMessage(e.message);
+                        }
+                        log.error(e);
+                    });
+                message.save({
+                    'retracted': (new Date()).toISOString(),
+                    'retracted_id': message.get('origin_id')
+                });
+            },
+
+            /**
+             * Retract someone else's message in this groupchat.
+             * @private
+             * @method _converse.ChatRoomView#retractOtherMessage
+             * @param { _converse.Message } message - The message which we're retracting.
+             * @param { string } [reason] - The reason for retracting the message.
+             */
+            async retractOtherMessage (message, reason) {
+                const result = await this.model.sendRetractionIQ(message, reason);
+                if (result === null) {
+                    const err_msg = __(`A timeout occurred while trying to retract the message`);
+                    _converse.api.alert('error', __('Error'), err_msg);
+                    _converse.log(err_msg, Strophe.LogLevel.WARN);
+                } else if (u.isErrorStanza(result)) {
+                    const err_msg = __(`Sorry, you're not allowed to retract this message.`);
+                    _converse.api.alert('error', __('Error'), err_msg);
+                    _converse.log(err_msg, Strophe.LogLevel.WARN);
+                    _converse.log(result, Strophe.LogLevel.WARN);
+                } else {
+                    message.save({
+                        'moderated': 'retracted',
+                        'moderated_by': _converse.bare_jid,
+                        'moderated_id': message.get('msgid'),
+                        'moderation_reason': reason
+                    });
+                }
             },
 
             showModeratorToolsModal (affiliation) {
@@ -1149,7 +1246,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onCommandError (err) {
-                _converse.log(err, Strophe.LogLevel.FATAL);
+                log.fatal(err);
                 this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."));
             },
 
@@ -1231,6 +1328,7 @@ converse.plugins.add('converse-muc-views', {
                             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
                             `<strong>/ban</strong>: ${__('Ban user by changing their affiliation to outcast')}`,
                             `<strong>/clear</strong>: ${__('Clear the chat area')}`,
+                            `<strong>/close</strong>: ${__('Close this groupchat')}`,
                             `<strong>/deop</strong>: ${__('Change user role to participant')}`,
                             `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
                             `<strong>/help</strong>: ${__('Show this menu')}`,
@@ -1366,7 +1464,7 @@ converse.plugins.add('converse-muc-views', {
                     this.showSpinner();
                     this.model.fetchRoomConfiguration()
                         .then(iq => this.renderConfigurationForm(iq))
-                        .catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
+                        .catch(e => log.error(e));
                 } else {
                     this.closeForm();
                 }
@@ -2125,7 +2223,7 @@ converse.plugins.add('converse-muc-views', {
                 // Features could have been added before the controlbox was
                 // initialized. We're only interested in MUC
                 _converse.disco_entities.each(entity => featureAdded(entity.features.findWhere({'var': Strophe.NS.MUC })));
-            }).catch(e => _converse.log(e, Strophe.LogLevel.ERROR));
+            }).catch(e => log.error(e));
         }
 
         function fetchAndSetMUCDomain (controlboxview) {
@@ -2150,13 +2248,14 @@ converse.plugins.add('converse-muc-views', {
             }
             _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
 
-            function addView (model) {
+            async function addView (model) {
                 const views = _converse.chatboxviews;
                 if (!views.get(model.get('id')) &&
                         model.get('type') === _converse.CHATROOMS_TYPE &&
                         model.isValid()
                 ) {
-                    return views.add(model.get('id'), new _converse.ChatRoomView({'model': model}));
+                    await model.initialized;
+                    return views.add(model.get('id'), new _converse.ChatRoomView({model}));
                 }
             }
             _converse.chatboxes.on('add', addView);
@@ -2190,7 +2289,7 @@ converse.plugins.add('converse-muc-views', {
              * @namespace _converse.api.roomviews
              * @memberOf _converse.api
              */
-            'roomviews': {
+            roomviews: {
                 /**
                  * Retrieves a groupchat (aka chatroom) view. The chat should already be open.
                  *

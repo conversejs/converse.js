@@ -6,7 +6,7 @@
 4. Do a `git diff` to check if things look sane.
 5. Do a quick manual test with the `dist` files (via `index.html`)
 6. `git commit -am "Release 6.0.0"`
-7. `git tag -s v6.0.0 m "Release 6.0.0"`
+7. `git tag -s v6.0.0 -m "Release 6.0.0"`
 8. Run `git push && git push --tags`
 9. Update https://conversejs.org
 10. Create `6.0.0` directory for the CDN.

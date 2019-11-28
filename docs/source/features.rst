@@ -137,10 +137,13 @@ For more info, refer to the :ref:`show-desktop-notifications` configuration sett
 Multilingual Support
 ====================
 
-Converse is translated into multiple languages. Translations are supplied in
-JSON format and are loaded on demand. Converse will expect to find the
-translations in the ``/locales`` path of your site. This can be changed via the
-:ref:`locales-url` configuration setting.
+Converse is translated into over 30 languages. Translations can be added or
+updated on `Weblate <https://hosted.weblate.org/projects/conversejs/>`_.
+
+Translations are supplied in JSON format and are loaded on demand. Converse will expect to find the
+translations in the ``/dist/locales`` path of your site. This path can be
+changed via the :ref:`assets_path` configuration setting.
+
 
 Moderating chatrooms
 ====================

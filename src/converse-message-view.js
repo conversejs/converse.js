@@ -12,6 +12,7 @@ import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
 import { debounce } from 'lodash'
 import filesize from "filesize";
+import log from "@converse/headless/log";
 import tpl_csn from "templates/csn.html";
 import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
@@ -20,7 +21,7 @@ import tpl_message_versions_modal from "templates/message_versions_modal.html";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
-const { dayjs } = converse.env;
+const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -67,7 +68,8 @@ converse.plugins.add('converse-message-view', {
 
 
         _converse.api.settings.update({
-            'show_images_inline': true
+            'show_images_inline': true,
+            'allow_message_retraction': 'all'
         });
 
         _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
@@ -128,7 +130,7 @@ converse.plugins.add('converse-message-view', {
                     this.renderChatStateNotification()
                 } else if (this.model.get('file') && !this.model.get('oob_url')) {
                     if (!this.model.file) {
-                        _converse.log("Attempted to render a file upload message with no file data");
+                        log.error("Attempted to render a file upload message with no file data");
                         return this.el;
                     }
                     this.renderFileUploadProgresBar();
@@ -139,22 +141,20 @@ converse.plugins.add('converse-message-view', {
                 } else {
                     await this.renderChatMessage();
                 }
-                if (is_followup) {
-                    u.addClass('chat-msg--followup', this.el);
-                }
+                is_followup && u.addClass('chat-msg--followup', this.el);
                 return this.el;
             },
 
             async onChanged (item) {
                 // Jot down whether it was edited because the `changed`
-                // attr gets removed when this.render() gets called further
-                // down.
+                // attr gets removed when this.render() gets called further down.
                 const edited = item.changed.edited;
                 if (this.model.changed.progress) {
                     return this.renderFileUploadProgresBar();
                 }
                 const isValidChange = prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop);
-                if (['correcting', 'message', 'type', 'upload', 'received', 'editable'].filter(isValidChange).length) {
+                const props = ['moderated', 'retracted', 'correcting', 'message', 'type', 'upload', 'received', 'editable'];
+                if (props.filter(isValidChange).length) {
                     await this.debouncedRender();
                 }
                 if (edited) {
@@ -242,19 +242,31 @@ converse.plugins.add('converse-message-view', {
                 const time = dayjs(this.model.get('time'));
                 const role = this.model.vcard ? this.model.vcard.get('role') : null;
                 const roles = role ? role.split(',') : [];
+                const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
+                const is_groupchat = this.model.get('type') === 'groupchat';
+                const is_own_message = this.model.get('sender') === 'me';
+                const chatbox = this.model.collection.chatbox;
+                const may_retract_own_message = is_own_message && ['all', 'own'].includes(_converse.allow_message_retraction);
+                const may_moderate_message = !is_own_message && is_groupchat &&
+                    ['all', 'moderator'].includes(_converse.allow_message_retraction) &&
+                    await chatbox.canRetractMessages();
 
+                const retractable= !is_retracted && (may_moderate_message || may_retract_own_message);
                 const msg = u.stringToElement(tpl_message(
                     Object.assign(
                         this.model.toJSON(), {
-                        '__': __,
-                        'is_groupchat_message': this.model.get('type') === 'groupchat',
-                        'occupant': this.model.occupant,
-                        'is_me_message': this.model.isMeCommand(),
-                        'roles': roles,
-                        'pretty_time': time.format(_converse.time_format),
-                        'time': time.toISOString(),
+                         __,
+                        is_retracted,
+                        retractable,
                         'extra_classes': this.getExtraMessageClasses(),
+                        'is_groupchat_message': is_groupchat,
+                        'is_me_message': this.model.isMeCommand(),
                         'label_show': __('Show more'),
+                        'occupant': this.model.occupant,
+                        'pretty_time': time.format(_converse.time_format),
+                        'retraction_text': is_retracted ? this.getRetractionText() : null,
+                        'roles': roles,
+                        'time': time.toISOString(),
                         'username': this.model.getDisplayName()
                     })
                 ));
@@ -264,11 +276,13 @@ converse.plugins.add('converse-message-view', {
                     msg.querySelector('.chat-msg__media').innerHTML = this.transformOOBURL(url);
                 }
 
-                const text = this.model.getMessageText();
-                const msg_content = msg.querySelector('.chat-msg__text');
-                if (text && text !== url) {
-                    msg_content.innerHTML = await this.transformBodyText(text);
-                    await u.renderImageURLs(_converse, msg_content);
+                if (!is_retracted) {
+                    const text = this.model.getMessageText();
+                    const msg_content = msg.querySelector('.chat-msg__text');
+                    if (text && text !== url) {
+                        msg_content.innerHTML = await this.transformBodyText(text);
+                        await u.renderImageURLs(_converse, msg_content);
+                    }
                 }
                 if (this.model.get('type') !== 'headline') {
                     this.renderAvatar(msg);
@@ -291,6 +305,22 @@ converse.plugins.add('converse-message-view', {
                 return this.replaceElement(msg);
             },
 
+            getRetractionText () {
+                if (this.model.get('type') === 'groupchat' && this.model.get('moderated_by')) {
+                    const retracted_by_mod = this.model.get('moderated_by');
+                    const chatbox = this.model.collection.chatbox;
+                    if (!this.model.mod) {
+                        this.model.mod =
+                            chatbox.occupants.findOccupant({'jid': retracted_by_mod}) ||
+                            chatbox.occupants.findOccupant({'nick': Strophe.getResourceFromJid(retracted_by_mod)});
+                    }
+                    const modname = this.model.mod ? this.model.mod.getDisplayName() : 'A moderator';
+                    return __('%1$s has removed this message', modname);
+                } else {
+                    return __('%1$s has removed this message', this.model.getDisplayName());
+                }
+            },
+
             renderErrorMessage () {
                 const msg = u.stringToElement(
                     tpl_info(Object.assign(this.model.toJSON(), {
@@ -303,8 +333,8 @@ converse.plugins.add('converse-message-view', {
 
             renderChatStateNotification () {
                 let text;
-                const from = this.model.get('from'),
-                      name = this.model.getDisplayName();
+                const from = this.model.get('from');
+                const name = this.model.getDisplayName();
 
                 if (this.model.get('chat_state') === _converse.COMPOSING) {
                     if (this.model.get('sender') === 'me') {
@@ -353,22 +383,25 @@ converse.plugins.add('converse-message-view', {
             },
 
             getExtraMessageClasses () {
-                let extra_classes = this.model.get('is_delayed') && 'delayed' || '';
-
+                const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
+                const extra_classes = [
+                    ...(this.model.get('is_delayed') ? ['delayed'] : []), ...(is_retracted ? ['chat-msg--retracted'] : [])
+                ];
                 if (this.model.get('type') === 'groupchat') {
                     if (this.model.occupant) {
-                        extra_classes += ` ${this.model.occupant.get('role') || ''} ${this.model.occupant.get('affiliation') || ''}`;
+                        extra_classes.push(this.model.occupant.get('role'));
+                        extra_classes.push(this.model.occupant.get('affiliation'));
                     }
                     if (this.model.get('sender') === 'them' && this.model.collection.chatbox.isUserMentioned(this.model)) {
                         // Add special class to mark groupchat messages
                         // in which we are mentioned.
-                        extra_classes += ' mentioned';
+                        extra_classes.push('mentioned');
                     }
                 }
                 if (this.model.get('correcting')) {
-                    extra_classes += ' correcting';
+                    extra_classes.push('correcting');
                 }
-                return extra_classes;
+                return extra_classes.filter(c => c).join(" ");
             }
         });
     }

@@ -8,6 +8,7 @@
  */
 import "@converse/headless/converse-status";
 import converse from "@converse/headless/converse-core";
+import log from "./log";
 
 const { Backbone, Strophe, $iq, $pres, dayjs, sizzle, _ } = converse.env;
 const u = converse.env.utils;
@@ -108,7 +109,7 @@ converse.plugins.add('converse-roster', {
                 await _converse.roster.fetchRosterContacts();
                 _converse.api.trigger('rosterContactsFetched');
             } catch (reason) {
-                _converse.log(reason, Strophe.LogLevel.ERROR);
+                log.error(reason);
             } finally {
                 _converse.sendInitialPresence();
             }
@@ -424,7 +425,7 @@ converse.plugins.add('converse-roster', {
                     });
                 });
                 if (u.isErrorObject(result)) {
-                    _converse.log(result, Strophe.LogLevel.ERROR);
+                    log.error(result);
                     // Force a full roster refresh
                     _converse.session.set('roster_cached', false)
                     this.data.save('version', undefined);
@@ -516,7 +517,7 @@ converse.plugins.add('converse-roster', {
                 try {
                     await this.sendContactAddIQ(jid, name, groups);
                 } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    log.error(e);
                     alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name || jid));
                     return e;
                 }
@@ -568,9 +569,8 @@ converse.plugins.add('converse-roster', {
                     // attribute (i.e., implicitly from the bare JID of the user's
                     // account) or it has a 'from' attribute whose value matches the
                     // user's bare JID <user@domainpart>.
-                    _converse.log(
-                        `Ignoring roster illegitimate roster push message from ${iq.getAttribute('from')}`,
-                        Strophe.LogLevel.WARN
+                    log.warn(
+                        `Ignoring roster illegitimate roster push message from ${iq.getAttribute('from')}`
                     );
                     return;
                 }
@@ -581,12 +581,12 @@ converse.plugins.add('converse-roster', {
 
                 const items = sizzle(`item`, query);
                 if (items.length > 1) {
-                    _converse.log(iq, Strophe.LogLevel.ERROR);
+                    log.error(iq);
                     throw new Error('Roster push query may not contain more than one "item" element.');
                 }
                 if (items.length === 0) {
-                    _converse.log(iq, Strophe.LogLevel.WARN);
-                    _converse.log('Received a roster push stanza without an "item" element.', Strophe.LogLevel.WARN);
+                    log.warn(iq);
+                    log.warn('Received a roster push stanza without an "item" element.');
                     return;
                 }
                 this.updateContact(items.pop());
@@ -628,8 +628,9 @@ converse.plugins.add('converse-roster', {
                     }
                 } else if (!u.isServiceUnavailableError(iq)) {
                     // Some unknown error happened, so we will try to fetch again if the page reloads.
-                    _converse.log(iq, Strophe.LogLevel.ERROR);
-                    return _converse.log("Error while trying to fetch roster from the server", Strophe.LogLevel.ERROR);
+                    log.error(iq);
+                    log.error("Error while trying to fetch roster from the server");
+                    return;
                 }
                 _converse.session.save('roster_cached', true);
                 /**

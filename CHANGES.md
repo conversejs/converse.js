@@ -4,22 +4,20 @@
 
 - Add support for [XEP-0424 Message Retraction](http://localhost:3080/extensions/xep-0424.html)
 - Add support for [XEP-0425 Message Moderation](http://localhost:3080/extensions/xep-0425.html)
-- Prevent editing of sent file uploads.
-- Initial support for sending custom emojis. Currently only between Converse
-  instances. Still working out a wire protocol for compatibility with other clients.
-  To add custom emojis, edit the `emojis.json` file.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
 - New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
 - New config option [allow_message_retraction](https://conversejs.org/docs/html/configuration.html#allow-message-retraction)
 - New config option [muc-show-logs-before-join](https://conversejs.org/docs/html/configuration.html#muc-show-logs-before-join)
-_ New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_filter)
-_ New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_show_avatar)
+- New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_filter)
+- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_show_avatar)
 
-- #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
+- Initial support for sending custom emojis. Currently only between Converse
+  instances. Still working out a wire protocol for compatibility with other clients.
+  To add custom emojis, edit the `emojis.json` file.
+
+- #129: Add support for [XEP-0156: Disovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html). Only XML is supported for now.
 - #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
 - #1691: Fix `collection.chatbox is undefined` errors
-- #1733: New message notifications for a minimized chat stack on top of each other
-- #1757: Chats are hidden behind the controlbox on mobile
 - #1772 `_converse.api.contact.add(jid, nick)` fails, says not a function
 
 ### Breaking changes

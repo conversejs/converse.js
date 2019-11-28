@@ -390,7 +390,6 @@ converse.plugins.add('converse-muc', {
                 this.registerHandlers();
 
                 await this.initOccupants();
-                await this.fetchMessages();
                 this.enterRoom();
                 this.initialized.resolve();
             },
@@ -405,12 +404,13 @@ converse.plugins.add('converse-muc', {
 
             async enterRoom () {
                 const conn_status = this.get('connection_status');
-                log.debug(`${this.get('jid')} initialized with connection_status ${conn_status}`);
                 if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
                     // We're not restoring a room from cache, so let's clear the potentially stale cache.
                     this.removeNonMembers();
                     await this.refreshRoomFeatures();
-                    if (_converse.clear_messages_on_reconnection) {
+                    if (_converse.muc_show_logs_before_join) {
+                        await this.fetchMessages();
+                    } else if (_converse.clear_messages_on_reconnection) {
                         await this.clearMessages();
                     }
                     if (!u.isPersistableModel(this)) {
@@ -421,6 +421,7 @@ converse.plugins.add('converse-muc', {
                     this.join();
                 } else if (!(await this.rejoinIfNecessary())) {
                     // We've restored the room from cache and we're still joined.
+                    await this.fetchMessages();
                     this.features.fetch();
                 }
             },

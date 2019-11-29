@@ -416,7 +416,8 @@ converse.plugins.add('converse-muc', {
                     this.join();
                 } else if (!(await this.rejoinIfNecessary())) {
                     // We've restored the room from cache and we're still joined.
-                    this.features.fetch();
+                    await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
+                    await this.fetchMessages();
                 }
             },
 

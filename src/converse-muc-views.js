@@ -720,8 +720,7 @@ converse.plugins.add('converse-muc-views', {
                 const container = this.el.querySelector('.bottom-panel');
                 const entered = this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED;
                 const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
-                const nickname = this.model.get('nickname');
-                container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit, entered, nickname});
+                container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit, entered});
                 if (entered && can_edit) {
                     this.renderMessageForm();
                     this.initMentionAutoComplete();
@@ -1060,6 +1059,7 @@ converse.plugins.add('converse-muc-views', {
                 } else if (conn_status === converse.ROOMSTATUS.CONNECTING) {
                     this.showSpinner();
                 } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
+                    this.renderBottomPanel();
                     this.hideSpinner();
                     if (_converse.auto_focus) {
                         this.focus();

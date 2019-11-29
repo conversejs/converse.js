@@ -65,7 +65,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   Message Moderation [XEP-425](https://xmpp.org/extensions/xep-0425.html)
 -   Translated into over 30 languages
 
-## Integration into other frameworks
+## Integration into other servers and frameworks
 
 -   **[Prosody](https://prosody.im/)**: [mod_conversejs](https://modules.prosody.im/mod_conversejs.html)
 -   **[Openfire](https://www.igniterealtime.org/projects/openfire/index.jsp)**: [inverse.jar](https://www.igniterealtime.org/projects/openfire/plugins.jsp)
@@ -78,6 +78,11 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   **[Alfresco](https://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
 -   **[Friendica](https://friendi.ca)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
 -   **[Tiki Wiki CMS Groupware](https://tiki.org)**: [built-in optional feature](https://doc.tiki.org/XMPP)
+
+## Stand-alone applications
+
+-   **[ConverseJS for Ubuntu-Touch](https://open-store.io/app/conversejs.povoq)**: [source code](https://github.com/poVoq/conversejs-ubports)
+-   **[Chimeverse for Mac OS X](https://github.com/nick-denry/Chimeverse)**: Electron based app
 
 ## Tests
 

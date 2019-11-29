@@ -2906,6 +2906,49 @@
                 expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy is no longer a member of this groupchat");
                 done();
             }));
+
+            it("notifies user of role and affiliation changes for members not in the groupchat",
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const view = _converse.api.chatviews.get(muc_jid);
+
+                let message = $msg({
+                    from: 'lounge@montague.lit',
+                    id: '2CF9013B-E8A8-42A1-9633-85AD7CA12F40',
+                    to: 'romeo@montague.lit'
+                })
+                .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                .c('item', {
+                    'jid': 'annoyingguy@montague.lit',
+                    'affiliation': 'member',
+                    'role': 'none'
+                });
+                _converse.connection._dataRecv(test_utils.createRequest(message));
+                await u.waitUntil(() => view.model.occupants.length > 1);
+                expect(view.model.occupants.length).toBe(2);
+                expect(view.model.occupants.findWhere({'jid': 'annoyingguy@montague.lit'}).get('affiliation')).toBe('member');
+
+                message = $msg({
+                    from: 'lounge@montague.lit',
+                    id: '2CF9013B-E8A8-42A1-9633-85AD7CA12F41',
+                    to: 'romeo@montague.lit'
+                })
+                .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                .c('item', {
+                    'jid': 'annoyingguy@montague.lit',
+                    'affiliation': 'none',
+                    'role': 'none'
+                });
+                _converse.connection._dataRecv(test_utils.createRequest(message));
+                expect(view.model.occupants.length).toBe(2);
+                expect(view.model.occupants.findWhere({'jid': 'annoyingguy@montague.lit'}).get('affiliation')).toBe('none');
+
+                done();
+            }));
         });
 
 

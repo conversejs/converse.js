@@ -504,6 +504,38 @@ converse.plugins.add('converse-muc', {
                     }, null, 'message', 'groupchat', null, room_jid,
                     {'matchBareFromJid': true}
                 );
+                this.muc_notifications_handler = _converse.connection.addHandler(stanza => {
+                    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
+
+                    if (item) {
+                        const from = stanza.getAttribute("from");
+                        const type = stanza.getAttribute("type");
+                        const affiliation = item.getAttribute('affiliation');
+                        const jid = item.getAttribute('jid');
+
+                        const data = {
+                          'from': from,
+                          'nick': Strophe.getNodeFromJid(jid),
+                          'type': type,
+                          'states': [],
+                          'show': type == 'unavailable' ? 'offline' : 'online',
+                          'affiliation': affiliation,
+                          'role': item.getAttribute('role'),
+                          'jid': Strophe.getBareJidFromJid(jid),
+                          'resource': Strophe.getResourceFromJid(jid)
+                        }
+
+                        const occupant = this.occupants.findOccupant({'jid': data.jid});
+
+                        if (occupant) {
+                          occupant.save(data);
+                        } else {
+                          this.occupants.create(data);
+                        }
+                    }
+                    return true;
+
+                }, Strophe.NS.MUC_USER, 'message', null, null, room_jid);
             },
 
             removeHandlers () {
@@ -520,6 +552,13 @@ converse.plugins.add('converse-muc', {
                         _converse.connection.deleteHandler(this.presence_handler);
                     }
                     delete this.presence_handler;
+                }
+
+                if (this.muc_notifications_handler) {
+                    if (_converse.connection) {
+                        _converse.connection.deleteHandler(this.muc_notifications_handler);
+                    }
+                  delete this.muc_notifications_handler;
                 }
                 return this;
             },

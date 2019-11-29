@@ -2,6 +2,7 @@
 
 ## 6.0.0 (Unreleased)
 
+- Add support for [notifications about affiliation change for users not in a room](https://xmpp.org/extensions/xep-0045.html#example-196)
 - Add support for [XEP-0424 Message Retraction](http://localhost:3080/extensions/xep-0424.html)
 - Add support for [XEP-0425 Message Moderation](http://localhost:3080/extensions/xep-0425.html)
 - Prevent editing of sent file uploads.

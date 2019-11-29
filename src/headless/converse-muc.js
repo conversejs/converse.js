@@ -508,7 +508,7 @@ converse.plugins.add('converse-muc', {
                     {'matchBareFromJid': true}
                 );
                 this.muc_notifications_handler = _converse.connection.addHandler(stanza => {
-                    const item = converse_muc_sizzle("x[xmlns=\"".concat(converse_muc_Strophe.NS.MUC_USER, "\"] item"), stanza).pop();
+                    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza).pop();
 
                     if (item) {
                         const from = stanza.getAttribute("from");
@@ -527,9 +527,10 @@ converse.plugins.add('converse-muc', {
                           'jid': jid
                         }
 
-                        console.debug("muc_handler - muc occupant push", data);
-
-                        const attributes = Object.assign(data, {'jid': converse_muc_Strophe.getBareJidFromJid(data.jid),'resource': converse_muc_Strophe.getResourceFromJid(data.jid)});
+                        const attributes = Object.assign(data, {
+                            'jid': converse_muc_Strophe.getBareJidFromJid(data.jid),
+                            'resource': converse_muc_Strophe.getResourceFromJid(data.jid)
+                        });
                         const occupant = this.occupants.findOccupant({'jid': data.jid});
 
                         if (occupant) {
@@ -540,7 +541,8 @@ converse.plugins.add('converse-muc', {
                     }
                     return true;
 
-                }, null, 'message', null, null, room_jid, {'matchBareFromJid': true });
+                }, null, 'message', null, null, room_jid,
+                {'matchBareFromJid': true });
             },
 
             removeHandlers () {

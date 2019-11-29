@@ -413,15 +413,9 @@ converse.plugins.add('converse-muc', {
                     } else if (_converse.clear_messages_on_reconnection) {
                         await this.clearMessages();
                     }
-                    if (!u.isPersistableModel(this)) {
-                        // XXX: Happens during tests, nothing to do if this
-                        // is a hanging chatbox (i.e. not in the collection anymore).
-                        return;
-                    }
                     this.join();
                 } else if (!(await this.rejoinIfNecessary())) {
                     // We've restored the room from cache and we're still joined.
-                    await this.fetchMessages();
                     this.features.fetch();
                 }
             },
@@ -431,6 +425,7 @@ converse.plugins.add('converse-muc', {
                     if (_converse.muc_fetch_members) {
                         await this.occupants.fetchMembers();
                     }
+                    await this.fetchMessages();
                     /**
                      * Triggered when the user has entered a new MUC
                      * @event _converse#enteredNewRoom

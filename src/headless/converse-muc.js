@@ -518,7 +518,7 @@ converse.plugins.add('converse-muc', {
 
                         const data = {
                           'from': from,
-                          'nick': converse_muc_Strophe.getNodeFromJid(jid),
+                          'nick': Strophe.getNodeFromJid(jid),
                           'type': type,
                           'states': [],
                           'show': type == 'unavailable' ? 'offline' : 'online',
@@ -528,8 +528,8 @@ converse.plugins.add('converse-muc', {
                         }
 
                         const attributes = Object.assign(data, {
-                            'jid': converse_muc_Strophe.getBareJidFromJid(data.jid),
-                            'resource': converse_muc_Strophe.getResourceFromJid(data.jid)
+                            'jid': Strophe.getBareJidFromJid(data.jid),
+                            'resource': Strophe.getResourceFromJid(data.jid)
                         });
                         const occupant = this.occupants.findOccupant({'jid': data.jid});
 

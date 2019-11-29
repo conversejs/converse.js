@@ -79,6 +79,11 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   **[Friendica](https://friendi.ca)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
 -   **[Tiki Wiki CMS Groupware](https://tiki.org)**: [built-in optional feature](https://doc.tiki.org/XMPP)
 
+## Stand alone applications
+
+-   **[ConverseJS for Ubuntu-Touch](https://open-store.io/app/conversejs.povoq)**: [source code](https://github.com/poVoq/conversejs-ubports)
+-   **[Chimeverse for Mac OS X](https://github.com/nick-denry/Chimeverse)**: Electron based app
+
 ## Tests
 
 We use behavior-driven tests written with [jasmine.js](https://jasmine.github.io/).

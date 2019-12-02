@@ -524,25 +524,21 @@ converse.plugins.add('converse-muc', {
                           'show': type == 'unavailable' ? 'offline' : 'online',
                           'affiliation': affiliation,
                           'role': item.getAttribute('role'),
-                          'jid': jid
+                          'jid': Strophe.getBareJidFromJid(jid),
+                          'resource': Strophe.getResourceFromJid(jid)
                         }
 
-                        const attributes = Object.assign(data, {
-                            'jid': Strophe.getBareJidFromJid(data.jid),
-                            'resource': Strophe.getResourceFromJid(data.jid)
-                        });
                         const occupant = this.occupants.findOccupant({'jid': data.jid});
 
                         if (occupant) {
-                          occupant.save(attributes);
+                          occupant.save(data);
                         } else {
-                          this.occupants.create(attributes);
+                          this.occupants.create(data);
                         }
                     }
                     return true;
 
-                }, null, 'message', null, null, room_jid,
-                {'matchBareFromJid': true });
+                }, Strophe.NS.MUC_USER, 'message', null, null, room_jid);
             },
 
             removeHandlers () {

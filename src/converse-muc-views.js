@@ -1575,7 +1575,7 @@ converse.plugins.add('converse-muc-views', {
                         this.model.save('jid', moved_jid);
                         container.innerHTML = '';
                         this.showSpinner();
-                        this.enterRoom();
+                        this.model.enterRoom();
                     });
                 }
                 u.showElement(container);

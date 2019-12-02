@@ -652,7 +652,7 @@ converse.plugins.add('converse-muc-views', {
                 'submit .muc-nickname-form': 'submitNickname'
             },
 
-            initialize () {
+            async initialize () {
                 this.initDebounced();
 
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
@@ -679,8 +679,8 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
 
                 this.render();
-                this.updateAfterMessagesFetched();
                 this.createOccupantsView();
+                await this.updateAfterMessagesFetched();
                 this.onConnectionStatusChanged();
                 /**
                  * Triggered once a groupchat has been opened

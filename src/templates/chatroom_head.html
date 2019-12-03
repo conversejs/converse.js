@@ -1,4 +1,6 @@
-<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>
+{[ if (!o._converse.singleton) { ]}
+    <div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>
+{[ } ]}
 <div class="chatbox-title">
     <div class="chat-title" {[ if (o._converse.locked_muc_domain !== 'hidden') { ]} title="{{{o.jid}}}" {[ } ]} >
         {{{ o.title }}}

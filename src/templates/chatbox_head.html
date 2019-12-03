@@ -1,5 +1,7 @@
 <div class="chat-head chat-head-chatbox row no-gutters">
-    <div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>
+    {[ if (!o._converse.singleton) { ]}
+        <div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>
+    {[ } ]}
     <div class="chatbox-title">
         <div class="row no-gutters">
             {[ if (o.type !== o._converse.HEADLINES_TYPE) { ]}

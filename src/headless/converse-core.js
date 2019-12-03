@@ -268,6 +268,7 @@ _converse.default_settings = {
     message_carbons: true,
     nickname: undefined,
     password: undefined,
+    persistent_store: 'localStorage',
     priority: 0,
     rid: undefined,
     root: window.document,
@@ -448,10 +449,11 @@ function initClientConfig () {
      * user sessions.
      */
     const id = 'converse.client-config';
+    const store_map = { 'localStorage': 'local', 'IndexedDB': 'indexed' };
     _converse.config = new Backbone.Model({
         'id': id,
         'trusted': _converse.trusted && true || false,
-        'storage': _converse.trusted ? 'local' : 'session'
+        'storage': _converse.trusted ? store_map[_converse.persistent_store] : 'session'
     });
     _converse.config.browserStorage = _converse.createStore(id, "session");
     _converse.config.fetch();
@@ -1397,7 +1399,8 @@ _converse.api = {
             }
 
             // See whether there is a BOSH session to re-attach to
-            if (_.invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
+            const bosh_plugin = _converse.pluggable.plugins['converse-bosh'];
+            if (bosh_plugin && bosh_plugin.enabled()) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
                 } else if (_converse.authentication === _converse.PREBIND && (!automatic || _converse.auto_login)) {

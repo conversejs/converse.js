@@ -652,7 +652,7 @@ converse.plugins.add('converse-muc-views', {
                 'submit .muc-nickname-form': 'submitNickname'
             },
 
-            initialize () {
+            async initialize () {
                 this.initDebounced();
 
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
@@ -679,8 +679,8 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
 
                 this.render();
-                this.updateAfterMessagesFetched();
                 this.createOccupantsView();
+                await this.updateAfterMessagesFetched();
                 this.onConnectionStatusChanged();
                 /**
                  * Triggered once a groupchat has been opened
@@ -720,8 +720,7 @@ converse.plugins.add('converse-muc-views', {
                 const container = this.el.querySelector('.bottom-panel');
                 const entered = this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED;
                 const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
-                const nickname = this.model.get('nickname');
-                container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit, entered, nickname});
+                container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit, entered});
                 if (entered && can_edit) {
                     this.renderMessageForm();
                     this.initMentionAutoComplete();
@@ -1039,12 +1038,15 @@ converse.plugins.add('converse-muc-views', {
                 }));
             },
 
+            /**
+             * Callback method that gets called after the chat has become visible.
+             * @private
+             * @method _converse.ChatRoomView#afterShown
+             */
             afterShown () {
-                /* Override from converse-chatview, specifically to avoid
-                 * the 'active' chat state from being sent out prematurely.
-                 *
-                 * This is instead done in `onConnectionStatusChanged` below.
-                 */
+                // Override from converse-chatview, specifically to avoid
+                // the 'active' chat state from being sent out prematurely.
+                // This is instead done in `onConnectionStatusChanged` below.
                 if (u.isPersistableModel(this.model)) {
                     this.model.clearUnreadMsgCounter();
                 }
@@ -1060,6 +1062,7 @@ converse.plugins.add('converse-muc-views', {
                 } else if (conn_status === converse.ROOMSTATUS.CONNECTING) {
                     this.showSpinner();
                 } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
+                    this.renderBottomPanel();
                     this.hideSpinner();
                     if (_converse.auto_focus) {
                         this.focus();
@@ -1471,12 +1474,12 @@ converse.plugins.add('converse-muc-views', {
                     __('Choose a nickname to enter') :
                     __('Please choose your nickname');
 
-                const html = tpl_chatroom_nickname_form({
+                const html = tpl_chatroom_nickname_form(Object.assign({
                     heading,
                     'label_nickname': __('Nickname'),
                     'label_join': __('Enter groupchat'),
-                    'nickname': this.model.get('nickname')
-                });
+                }, this.model.toJSON()));
+
                 if (_converse.muc_show_logs_before_join) {
                     const container = this.el.querySelector('.muc-bottom-panel');
                     container.innerHTML = html;
@@ -1575,7 +1578,7 @@ converse.plugins.add('converse-muc-views', {
                         this.model.save('jid', moved_jid);
                         container.innerHTML = '';
                         this.showSpinner();
-                        this.enterRoom();
+                        this.model.enterRoom();
                     });
                 }
                 u.showElement(container);

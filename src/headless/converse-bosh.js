@@ -90,7 +90,7 @@ converse.plugins.add('converse-bosh', {
 
         _converse.restoreBOSHSession = async function () {
             const jid = (await initBOSHSession()).get('jid');
-            if (jid) {
+            if (jid && (_converse.connection._proto instanceof Strophe.Bosh)) {
                 try {
                     _converse.connection.restore(jid, _converse.onConnectStatusChanged);
                     return true;

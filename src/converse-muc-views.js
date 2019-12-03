@@ -1038,12 +1038,15 @@ converse.plugins.add('converse-muc-views', {
                 }));
             },
 
+            /**
+             * Callback method that gets called after the chat has become visible.
+             * @private
+             * @method _converse.ChatRoomView#afterShown
+             */
             afterShown () {
-                /* Override from converse-chatview, specifically to avoid
-                 * the 'active' chat state from being sent out prematurely.
-                 *
-                 * This is instead done in `onConnectionStatusChanged` below.
-                 */
+                // Override from converse-chatview, specifically to avoid
+                // the 'active' chat state from being sent out prematurely.
+                // This is instead done in `onConnectionStatusChanged` below.
                 if (u.isPersistableModel(this.model)) {
                     this.model.clearUnreadMsgCounter();
                 }

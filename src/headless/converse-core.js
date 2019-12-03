@@ -1397,7 +1397,8 @@ _converse.api = {
             }
 
             // See whether there is a BOSH session to re-attach to
-            if (_.invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
+            const bosh_plugin = _converse.pluggable.plugins['converse-bosh'];
+            if (bosh_plugin && bosh_plugin.enabled()) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
                 } else if (_converse.authentication === _converse.PREBIND && (!automatic || _converse.auto_login)) {

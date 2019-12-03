@@ -2,9 +2,10 @@
 
 ## 6.0.0 (Unreleased)
 
+- [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks) is not set to `true` by default.
+- Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
 - Add support for [XEP-0424 Message Retraction](http://localhost:3080/extensions/xep-0424.html)
 - Add support for [XEP-0425 Message Moderation](http://localhost:3080/extensions/xep-0425.html)
-- Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
 - New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
 - New config option [allow_message_retraction](https://conversejs.org/docs/html/configuration.html#allow-message-retraction)
 - New config option [muc-show-logs-before-join](https://conversejs.org/docs/html/configuration.html#muc-show-logs-before-join)

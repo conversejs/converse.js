@@ -8,8 +8,9 @@
 - New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
 - New config option [allow_message_retraction](https://conversejs.org/docs/html/configuration.html#allow-message-retraction)
 - New config option [muc-show-logs-before-join](https://conversejs.org/docs/html/configuration.html#muc-show-logs-before-join)
-- New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_filter)
-- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc_mention_autocomplete_show_avatar)
+- New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-filter)
+- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-show_avatar)
+- New config option [persistent_store](https://conversejs.org/docs/html/configuration.html#persistent-store)
 
 - Initial support for sending custom emojis. Currently only between Converse
   instances. Still working out a wire protocol for compatibility with other clients.

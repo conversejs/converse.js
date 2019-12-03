@@ -17,8 +17,10 @@
 
 - #129: Add support for [XEP-0156: Disovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html). Only XML is supported for now.
 - #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
+- #1666: Allow scrolling of the OMEMO fingerprints list
 - #1691: Fix `collection.chatbox is undefined` errors
 - #1772: `_converse.api.contact.add(jid, nick)` fails, says not a function
+- #1792: Fix: modals don't have scrollbars
 - #1796: Don't show "back" arrow navigation (on mobile) in the chat header when in `singleton` mode
 
 ### Breaking changes

@@ -1474,12 +1474,12 @@ converse.plugins.add('converse-muc-views', {
                     __('Choose a nickname to enter') :
                     __('Please choose your nickname');
 
-                const html = tpl_chatroom_nickname_form({
+                const html = tpl_chatroom_nickname_form(Object.assign({
                     heading,
                     'label_nickname': __('Nickname'),
                     'label_join': __('Enter groupchat'),
-                    'nickname': this.model.get('nickname')
-                });
+                }, this.model.toJSON()));
+
                 if (_converse.muc_show_logs_before_join) {
                     const container = this.el.querySelector('.muc-bottom-panel');
                     container.innerHTML = html;

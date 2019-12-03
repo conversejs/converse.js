@@ -16,7 +16,7 @@
   To add custom emojis, edit the `emojis.json` file.
 
 - #129: Add support for [XEP-0156: Disovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html). Only XML is supported for now.
-- #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
+- #1105: Support for storing persistent data in IndexedDB
 - #1666: Allow scrolling of the OMEMO fingerprints list
 - #1691: Fix `collection.chatbox is undefined` errors
 - #1772: `_converse.api.contact.add(jid, nick)` fails, says not a function

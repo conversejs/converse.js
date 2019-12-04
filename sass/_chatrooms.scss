@@ -146,6 +146,8 @@
                     display: flex;
                     flex-direction: column;
                     word-wrap: break-word;
+                    flex: 0 1 100%; 
+                    min-width: 25%;
                     .new-msgs-indicator {
                         background-color: var(--chatroom-head-color);
                     }
@@ -164,7 +166,9 @@
                     border-left: var(--occupants-border-left);
                     border-bottom-right-radius: var(--chatbox-border-radius);
                     padding: 0.5em;
-                    max-width: var(--occupants-max-width);
+                    max-width: 75%;
+                    min-width: 20%;
+                    flex: 0 0 25%;
 
                     .occupants-header {
                         display: flex;

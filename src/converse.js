@@ -20,6 +20,7 @@ import "converse-fullscreen";
 import "converse-mam-views";
 import "converse-minimize";        // Allows chat boxes to be minimized
 import "converse-muc-views";       // Views related to MUC
+import "converse-mouse-events";
 import "converse-headlines-view";
 import "converse-notification";    // HTML5 Notifications
 import "converse-omemo";
@@ -50,6 +51,7 @@ const WHITELISTED_PLUGINS = [
     'converse-minimize',
     'converse-modal',
     'converse-muc-views',
+    'converse-mouse-events',
     'converse-headlines-view',
     'converse-notification',
     'converse-omemo',

@@ -386,7 +386,8 @@
                 height: 5px;
                 width: 100%;
             }
-            &-left {
+            &-left,
+            &-occupants-left {
                 cursor: w-resize;
                 width: 5px;
                 height: 100%;

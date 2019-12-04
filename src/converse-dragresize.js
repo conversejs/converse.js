@@ -36,7 +36,7 @@ converse.plugins.add('converse-dragresize', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatview", "converse-headlines-view", "converse-muc-views"],
+    dependencies: ["converse-chatview", "converse-headlines-view", "converse-muc-views", "converse-mouse-events"],
 
     enabled (_converse) {
         return _converse.view_mode == 'overlayed';
@@ -146,7 +146,6 @@ converse.plugins.add('converse-dragresize', {
             'allow_dragresize': true,
         });
 
-
         const dragResizable = {
 
             initDragResize () {
@@ -182,7 +181,7 @@ converse.plugins.add('converse-dragresize', {
                 return this;
             },
 
-            resizeChatBox (ev) {
+            resize (ev) {
                 let diff;
                 if (_converse.resizing.direction.indexOf('top') === 0) {
                     diff = ev.pageY - this.prev_pageY;
@@ -314,59 +313,7 @@ converse.plugins.add('converse-dragresize', {
         };
         Object.assign(_converse.ChatBoxView.prototype, dragResizable);
 
-
-        _converse.applyDragResistance = function (value, default_value) {
-            /* This method applies some resistance around the
-            * default_value. If value is close enough to
-            * default_value, then default_value is returned instead.
-            */
-            if (value === undefined) {
-                return undefined;
-            } else if (default_value === undefined) {
-                return value;
-            }
-            const resistance = 10;
-            if ((value !== default_value) &&
-                (Math.abs(value- default_value) < resistance)) {
-                return default_value;
-            }
-            return value;
-        };
-
-
-        /************************ BEGIN Event Handlers ************************/
-        function registerGlobalEventHandlers () {
-
-            document.addEventListener('mousemove', function (ev) {
-                if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
-                ev.preventDefault();
-                _converse.resizing.chatbox.resizeChatBox(ev);
-            });
-
-            document.addEventListener('mouseup', function (ev) {
-                if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
-                ev.preventDefault();
-                const height = _converse.applyDragResistance(
-                        _converse.resizing.chatbox.height,
-                        _converse.resizing.chatbox.model.get('default_height')
-                );
-                const width = _converse.applyDragResistance(
-                        _converse.resizing.chatbox.width,
-                        _converse.resizing.chatbox.model.get('default_width')
-                );
-                if (_converse.api.connection.connected()) {
-                    _converse.resizing.chatbox.model.save({'height': height});
-                    _converse.resizing.chatbox.model.save({'width': width});
-                } else {
-                    _converse.resizing.chatbox.model.set({'height': height});
-                    _converse.resizing.chatbox.model.set({'width': width});
-                }
-                _converse.resizing = null;
-            });
-        }
-        _converse.api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
         _converse.api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
         /************************ END Event Handlers ************************/
     }
 });
-

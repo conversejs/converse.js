@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // https://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /**
@@ -9,10 +9,11 @@
  */
 import "converse-chatview";
 import "converse-controlbox";
+import { debounce, get } from "lodash";
 import converse from "@converse/headless/converse-core";
 import tpl_dragresize from "templates/dragresize.html";
 
-const { _ } = converse.env;
+const u = converse.env.utils;
 
 function renderDragResizeHandles (_converse, view) {
     const flyout = view.el.querySelector('.box-flyout');
@@ -36,7 +37,7 @@ converse.plugins.add('converse-dragresize', {
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatview", "converse-headlines-view", "converse-muc-views", "converse-mouse-events"],
+    dependencies: ["converse-chatview", "converse-headlines-view", "converse-muc-views"],
 
     enabled (_converse) {
         return _converse.view_mode == 'overlayed';
@@ -48,16 +49,12 @@ converse.plugins.add('converse-dragresize', {
         // relevant objects or classes.
         ChatBox: {
             initialize () {
-                const { _converse } = this.__super__;
                 const result = this.__super__.initialize.apply(this, arguments);
                 const height = this.get('height'), width = this.get('width');
-                const save = this.get('id') === 'controlbox' ?
-                    (attrs) => this.set(attrs) :
-                    (attrs) => this.save(attrs);
-
+                const save = this.get('id') === 'controlbox' ? a => this.set(a) : a => this.save(a);
                 save({
-                    'height': _converse.applyDragResistance(height, this.get('default_height')),
-                    'width': _converse.applyDragResistance(width, this.get('default_width')),
+                    'height': u.applyDragResistance(height, this.get('default_height')),
+                    'width': u.applyDragResistance(width, this.get('default_width')),
                 });
                 return result;
             }
@@ -146,11 +143,12 @@ converse.plugins.add('converse-dragresize', {
             'allow_dragresize': true,
         });
 
+
         const dragResizable = {
 
             initDragResize () {
                 const view = this;
-                const debouncedSetDimensions = _.debounce(() => view.setDimensions());
+                const debouncedSetDimensions = debounce(() => view.setDimensions());
                 window.addEventListener('resize', view.debouncedSetDimensions)
                 this.listenTo(this.model, 'destroy', () => window.removeEventListener('resize', debouncedSetDimensions));
 
@@ -174,14 +172,14 @@ converse.plugins.add('converse-dragresize', {
                 // Initialize last known mouse position
                 this.prev_pageY = 0;
                 this.prev_pageX = 0;
-                if (_.get(_converse.connection, 'connected')) {
+                if (get(_converse.connection, 'connected')) {
                     this.height = this.model.get('height');
                     this.width = this.model.get('width');
                 }
                 return this;
             },
 
-            resize (ev) {
+            resizeChatBox (ev) {
                 let diff;
                 if (_converse.resizing.direction.indexOf('top') === 0) {
                     diff = ev.pageY - this.prev_pageY;
@@ -191,7 +189,7 @@ converse.plugins.add('converse-dragresize', {
                         this.setChatBoxHeight(this.height);
                     }
                 }
-                if (_.includes(_converse.resizing.direction, 'left')) {
+                if (_converse.resizing.direction.includes('left')) {
                     diff = this.prev_pageX - ev.pageX;
                     if (diff) {
                         this.width = ((this.width+diff) > (this.model.get('min_width') || 0)) ? (this.width+diff) : this.model.get('min_width');
@@ -218,7 +216,7 @@ converse.plugins.add('converse-dragresize', {
 
             setChatBoxHeight (height) {
                 if (height) {
-                    height = _converse.applyDragResistance(height, this.model.get('default_height'))+'px';
+                    height = u.applyDragResistance(height, this.model.get('default_height'))+'px';
                 } else {
                     height = "";
                 }
@@ -230,7 +228,7 @@ converse.plugins.add('converse-dragresize', {
 
             setChatBoxWidth (width) {
                 if (width) {
-                    width = _converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                    width = u.applyDragResistance(width, this.model.get('default_width'))+'px';
                 } else {
                     width = "";
                 }
@@ -313,6 +311,57 @@ converse.plugins.add('converse-dragresize', {
         };
         Object.assign(_converse.ChatBoxView.prototype, dragResizable);
 
+
+        u.applyDragResistance = function (value, default_value) {
+            /* This method applies some resistance around the
+            * default_value. If value is close enough to
+            * default_value, then default_value is returned instead.
+            */
+            if (value === undefined) {
+                return undefined;
+            } else if (default_value === undefined) {
+                return value;
+            }
+            const resistance = 10;
+            if ((value !== default_value) &&
+                (Math.abs(value- default_value) < resistance)) {
+                return default_value;
+            }
+            return value;
+        };
+
+
+        /************************ BEGIN Event Handlers ************************/
+        function registerGlobalEventHandlers () {
+
+            document.addEventListener('mousemove', function (ev) {
+                if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
+                ev.preventDefault();
+                _converse.resizing.chatbox.resizeChatBox(ev);
+            });
+
+            document.addEventListener('mouseup', function (ev) {
+                if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
+                ev.preventDefault();
+                const height = u.applyDragResistance(
+                        _converse.resizing.chatbox.height,
+                        _converse.resizing.chatbox.model.get('default_height')
+                );
+                const width = u.applyDragResistance(
+                        _converse.resizing.chatbox.width,
+                        _converse.resizing.chatbox.model.get('default_width')
+                );
+                if (_converse.api.connection.connected()) {
+                    _converse.resizing.chatbox.model.save({'height': height});
+                    _converse.resizing.chatbox.model.save({'width': width});
+                } else {
+                    _converse.resizing.chatbox.model.set({'height': height});
+                    _converse.resizing.chatbox.model.set({'width': width});
+                }
+                _converse.resizing = null;
+            });
+        }
+        _converse.api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
         _converse.api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
         /************************ END Event Handlers ************************/
     }

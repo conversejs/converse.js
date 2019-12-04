@@ -648,6 +648,7 @@ converse.plugins.add('converse-muc-views', {
                 'input .chat-textarea': 'inputChanged',
                 'keydown .chat-textarea': 'onKeyDown',
                 'keyup .chat-textarea': 'onKeyUp',
+                'mousedown .dragresize-occupants-left': 'onStartResizeOccupants',
                 'paste .chat-textarea': 'onPaste',
                 'submit .muc-nickname-form': 'submitNickname'
             },
@@ -677,6 +678,10 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
                 this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
                 this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
+
+                // Bind so that we can pass it to addEventListener and removeEventListener
+                this.onMouseMove =  this.onMouseMove.bind(this);
+                this.onMouseUp =  this.onMouseUp.bind(this);
 
                 this.render();
                 this.createOccupantsView();
@@ -746,9 +751,80 @@ converse.plugins.add('converse-muc-views', {
 
             createOccupantsView () {
                 this.model.occupants.chatroomview = this;
-                const view = new _converse.ChatRoomOccupantsView({'model': this.model.occupants});
+                this.occupants_view = new _converse.ChatRoomOccupantsView({'model': this.model.occupants});
                 const container_el = this.el.querySelector('.chatroom-body');
-                container_el.insertAdjacentElement('beforeend', view.el);
+                const occupants_width = this.model.get('occupants_width');
+                if (this.occupants_view && occupants_width !== undefined) {
+                    this.occupants_view.el.style.flex = "0 0 " + occupants_width + "px";
+                }
+                container_el.insertAdjacentElement('beforeend', this.occupants_view.el);
+            },
+
+            onStartResizeOccupants (ev) {
+                this.resizing = true;
+                this.el.addEventListener('mousemove', this.onMouseMove);
+                this.el.addEventListener('mouseup', this.onMouseUp);
+
+                const style = window.getComputedStyle(this.occupants_view.el);
+                this.width = parseInt(style.width.replace(/px$/, ''), 10);
+                this.prev_pageX = ev.pageX;
+            },
+
+            onMouseMove (ev) {
+                if (this.resizing) {
+                    ev.preventDefault();
+                    const delta = this.prev_pageX - ev.pageX;
+                    this.resizeOccupantsView(delta, ev.pageX);
+                    this.prev_pageX = ev.pageX;
+                }
+            },
+
+            onMouseUp (ev) {
+                if (this.resizing) {
+                    ev.preventDefault();
+                    this.resizing = false;
+                    this.el.removeEventListener('mousemove', this.onMouseMove);
+                    this.el.removeEventListener('mouseup', this.onMouseUp);
+                    const element_position = this.occupants_view.el.getBoundingClientRect();
+                    const occupants_width = this.calculateOccupantsWidth(element_position, 0);
+                    const attrs = {occupants_width};
+                    _converse.connection.connected ? this.model.save(attrs) : this.model.set(attrs);
+                }
+            },
+
+            resizeOccupantsView (delta, current_mouse_position) {
+                const element_position = this.occupants_view.el.getBoundingClientRect();
+                if (this.is_minimum) {
+                    this.is_minimum = element_position.left < current_mouse_position;
+                } else if (this.is_maximum) {
+                    this.is_maximum = element_position.left > current_mouse_position;
+                } else {
+                    const occupants_width = this.calculateOccupantsWidth(element_position, delta);
+                    this.occupants_view.el.style.flex = "0 0 " + occupants_width + "px";
+                }
+            },
+
+            calculateOccupantsWidth(element_position, delta) {
+                let occupants_width = element_position.width + delta;
+                const room_width = this.el.clientWidth;
+                // keeping display in boundaries
+                if (occupants_width < (room_width * 0.20)) {
+                    // set pixel to 20% width
+                    occupants_width = (room_width * 0.20);
+                    this.is_minimum = true;
+                } else if (occupants_width > (room_width * 0.75)) {
+                    // set pixel to 75% width
+                    occupants_width = (room_width * 0.75);
+                    this.is_maximum = true;
+                } else if ((room_width - occupants_width) < 250) {
+                    // resize occupants if chat-area becomes smaller than 250px (min-width property set in css)
+                    occupants_width = room_width - 250;
+                    this.is_maximum = true;
+                } else {
+                    this.is_maximum = false;
+                    this.is_minimum = false;
+                }
+                return occupants_width;
             },
 
             getAutoCompleteList () {
@@ -2052,9 +2128,6 @@ converse.plugins.add('converse-muc-views', {
             listItems: 'model',
             sortEvent: 'change:role',
             listSelector: '.occupant-list',
-            events: {
-                'mousedown .dragresize-occupants-left': 'onStartHorizontalResizeOccupants',
-            },
 
             ItemView: _converse.ChatRoomOccupantView,
 
@@ -2084,12 +2157,6 @@ converse.plugins.add('converse-muc-views', {
                     _converse.api.waitUntil('rosterContactsFetched').then(() => this.renderInviteWidget());
                 }
                 this.setVisibility();
-
-                this.renderDragResizeHandles();
-
-                this.is_maximum = false;
-                this.is_minimum = false;
-
                 return this.renderRoomFeatures();
             },
 
@@ -2218,76 +2285,6 @@ converse.plugins.add('converse-muc-views', {
                 });
             },
 
-            renderDragResizeHandles () {
-                const flyout = this.el;
-                const div = document.createElement('div');
-                div.innerHTML = '<div class="dragresize dragresize-occupants-left"></div>';
-                flyout.insertBefore(
-                    div,
-                    flyout.firstChild
-                );
-            },
-
-            onStartHorizontalResizeOccupants (ev) {
-                const flyout = this.el,
-                      style = window.getComputedStyle(flyout);
-                this.width = parseInt(style.width.replace(/px$/, ''), 10);
-                _converse.resizing = {
-                    'chatbox': this,
-                    'direction': 'left'
-                };
-                this.prev_pageX = ev.pageX;
-            },
-
-            resize (ev) {
-                if (_.includes(_converse.resizing.direction, 'left')) {
-                    this.change_in_pixel = (this.prev_pageX - ev.pageX);
-                    this.resizeOccupantsView(this.change_in_pixel, ev.pageX);
-                    this.prev_pageX = ev.pageX;
-                }
-            },
-
-            resizeOccupantsView (change_in_pixel, current_mouse_position) {
-                const element_position = this.el.getBoundingClientRect();
-
-                // has mouse reached the minimum to the right
-                if (this.is_minimum) {
-                    this.is_minimum = element_position.left < current_mouse_position;
-                } // has mouse reached the maximum to the left 
-                else if (this.is_maximum) {
-                    this.is_maximum = element_position.left > current_mouse_position;
-                } // Scale is within the boundaries
-                else {
-                    const occupants_width_pixel = this.calculateOccupantsWithInPixel(element_position, change_in_pixel);
-                    this.el.style.flex = "0 0 " + occupants_width_pixel + "px";
-                    _converse.resizing.width_occupants = occupants_width_pixel;
-                }
-            },
-
-            calculateOccupantsWithInPixel (element_position, change_in_pixel) {
-                let occupants_width_pixel = element_position.width + change_in_pixel;
-                const chatroom_width_pixel = this.el.parentElement.clientWidth;
-
-                // keeping display in boundaries
-                if (occupants_width_pixel < (chatroom_width_pixel * 0.20)) { 
-                    // set pixel to 20% width
-                    occupants_width_pixel = (chatroom_width_pixel * 0.20);
-                    this.is_minimum = true;
-                } else if (occupants_width_pixel > (chatroom_width_pixel * 0.75)) { 
-                    // set pixel to 75% width
-                    occupants_width_pixel = (chatroom_width_pixel * 0.75);
-                    this.is_maximum = true;
-                } else if ((chatroom_width_pixel - occupants_width_pixel) < 250) {
-                    // resize occupants if chat-area becomes smaller than 250px (min-width property set in css)
-                    occupants_width_pixel = chatroom_width_pixel - 250;
-                    this.is_maximum = true;
-                } else {
-                    this.is_maximum = false;
-                    this.is_minimum = false;
-                }
-
-                return occupants_width_pixel;
-            },
         });
 
 
@@ -2368,15 +2365,6 @@ converse.plugins.add('converse-muc-views', {
             }
             fetchAndSetMUCDomain(view);
             view.model.on('change:connected', () => fetchAndSetMUCDomain(view));
-        });
-
-
-        _converse.api.listen.on('beforeShowingChatView', (chatroomview) => {
-            const occupants_width_pixel = chatroomview.model.get('width_occupants');
-            const occupants_view = chatroomview.el.querySelector('.occupants');
-            if (occupants_view && occupants_width_pixel !== undefined) {
-                occupants_view.style.flex = "0 0 " + occupants_width_pixel + "px";
-            }
         });
         /************************ END Event Handlers ************************/
 

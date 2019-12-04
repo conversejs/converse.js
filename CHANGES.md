@@ -13,18 +13,18 @@
 - New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-show_avatar)
 - New config option [persistent_store](https://conversejs.org/docs/html/configuration.html#persistent-store)
 
-- Add: Resizing of the occupants-list in Multi-User-Chats
-- #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
-- #1105: Preliminary support for storing persistent data in IndexedDB instead of localStorage
-- #1666: Allow scrolling of the OMEMO fingerprints list
-- #1691: Fix `collection.chatbox is undefined` errors
-- #1772 `_converse.api.contact.add(jid, nick)` fails, says not a function
-- #1792: Fix: modals don't have scrollbars
-- #1796: Don't show "back" arrow navigation (on mobile) in the chat header when in `singleton` mode
 - Initial support for sending custom emojis. Currently only between Converse
   instances. Still working out a wire protocol for compatibility with other clients.
   To add custom emojis, edit the `emojis.json` file.
 
+- #129: Add support for [XEP-0156: Disovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html). Only XML is supported for now.
+- #1105: Support for storing persistent data in IndexedDB
+- #1640: Add the ability to resize the occupants sidebar in MUCs
+- #1666: Allow scrolling of the OMEMO fingerprints list
+- #1691: Fix `collection.chatbox is undefined` errors
+- #1772: `_converse.api.contact.add(jid, nick)` fails, says not a function
+- #1792: Fix: modals don't have scrollbars
+- #1796: Don't show "back" arrow navigation (on mobile) in the chat header when in `singleton` mode
 
 ### Breaking changes
 

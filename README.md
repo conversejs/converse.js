@@ -22,13 +22,32 @@ A demo showing anonymous login is available at [https://conversejs.org/demo/anon
 and a demo which shows how you can embed a single chat room into a page is
 avialable at [https://conversejs.org/demo/embedded.html](https://conversejs.org/demo/embedded.html).
 
-### Converse in overlay mode
+## Converse modes
 
-![Screenshot of Converse](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.15.16.png)
+### Overlay
 
-## Converse in fullpage mode
+![Screenshot of Converse in overlay mode](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.15.16.png)
+
+### Fullpage
 
 ![Screenshot of Converse in fullpage mode](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.16.46.png)
+
+## Stand-alone applications
+
+### ConverseJS for Ubuntu Touch
+
+* [Download and install from OpenStore](https://open-store.io/app/conversejs.povoq)
+* [Source code on GitHub](https://github.com/poVoq/conversejs-ubports)
+
+![Screenshot of Converse for Ubuntu Touch](https://opkode.com/img/Converse_for_Ubuntu_Touch.png)
+
+### Chimeverse for macOS
+
+Electron app for macOS
+
+[Chimeverse for macOS](https://github.com/nick-denry/Chimeverse) 
+
+![Screenshot of Chimeverse for macOS](https://opkode.com/img/Chimeverse_for_macOS.png)
 
 ## Documentation
 
@@ -74,15 +93,11 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
 -   **[Roundcube](https://roundcube.net)**: [roundcube-converse.js-xmpp-plugin](https://github.com/devurandom/roundcube-converse.js-xmpp-plugin)
 -   **[Wordpress](https://wordpress.org)**: [ConverseJS](https://wordpress.org/plugins/conversejs/)
+-   **[Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)**: [Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)
 -   **[Plone](https://plone.com)**: [collective.converse](https://github.com/collective/collective.converse)
 -   **[Alfresco](https://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
 -   **[Friendica](https://friendi.ca)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
 -   **[Tiki Wiki CMS Groupware](https://tiki.org)**: [built-in optional feature](https://doc.tiki.org/XMPP)
-
-## Stand-alone applications
-
--   **[ConverseJS for Ubuntu-Touch](https://open-store.io/app/conversejs.povoq)**: [source code](https://github.com/poVoq/conversejs-ubports)
--   **[Chimeverse for Mac OS X](https://github.com/nick-denry/Chimeverse)**: Electron based app
 
 ## Tests
 

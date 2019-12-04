@@ -39,7 +39,7 @@ avialable at [https://conversejs.org/demo/embedded.html](https://conversejs.org/
 * [Download and install from OpenStore](https://open-store.io/app/conversejs.povoq)
 * [Source code on GitHub](https://github.com/poVoq/conversejs-ubports)
 
-![Screenshot of Converse for Ubuntu Touch](https://opkode.com/img/Converse_for_Ubuntu_Touch.png)
+![Screenshot of Converse for Ubuntu Touch](https://github.com/conversejs/converse.js/Converse_for_Ubuntu_Touch.png)
 
 ### Chimeverse for macOS
 
@@ -47,7 +47,7 @@ Electron app for macOS
 
 [Chimeverse for macOS](https://github.com/nick-denry/Chimeverse) 
 
-![Screenshot of Chimeverse for macOS](https://opkode.com/img/Chimeverse_for_macOS.png)
+![Screenshot of Chimeverse for macOS](https://github.com/conversejs/converse.js/Chimeverse_for_macOS.png)
 
 ## Documentation
 

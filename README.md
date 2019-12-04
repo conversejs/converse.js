@@ -22,20 +22,32 @@ A demo showing anonymous login is available at [https://conversejs.org/demo/anon
 and a demo which shows how you can embed a single chat room into a page is
 avialable at [https://conversejs.org/demo/embedded.html](https://conversejs.org/demo/embedded.html).
 
-### Converse in overlay mode
-
-![Screenshot of Converse](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.15.16.png)
-
-## Converse in fullpage mode
-
-![Screenshot of Converse in fullpage mode](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.16.46.png)
-
 ## Documentation
 
 The developer/integrator documentation can be found at [https://conversejs.org/docs/html](https://conversejs.org/docs/html).
 
 You'll probably want to begin with the [quickstart guide](https://conversejs.org/docs/html/quickstart.html),
 which shows you how to use the CDN (content delivery network) to quickly get a demo up and running.
+
+## Converse modes
+
+### Overlay
+
+In overlay mode, Converse appears overlayed chats on top of the website.
+
+![Screenshot of Converse in overlay mode](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.15.16.png)
+
+### Fullpage
+
+In fullpage mode, Converse behaves like a single-page app that covers the whole browser viewport.
+
+![Screenshot of Converse in fullpage mode](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.16.46.png)
+
+### Embedded
+
+In embedded mode, Converse can be embedded into an element in the DOM.
+
+![Screenshot of Converse in embedded mode](https://opkode.com/img/Converse-embedded.png)
 
 ## Features
 -   Available as overlayed chat boxes or as a fullscreen application. See [inverse.chat](https://inverse.chat) for the fullscreen version.
@@ -74,15 +86,11 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
 -   **[Roundcube](https://roundcube.net)**: [roundcube-converse.js-xmpp-plugin](https://github.com/devurandom/roundcube-converse.js-xmpp-plugin)
 -   **[Wordpress](https://wordpress.org)**: [ConverseJS](https://wordpress.org/plugins/conversejs/)
+-   **[Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)**: [Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)
 -   **[Plone](https://plone.com)**: [collective.converse](https://github.com/collective/collective.converse)
 -   **[Alfresco](https://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
 -   **[Friendica](https://friendi.ca)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
 -   **[Tiki Wiki CMS Groupware](https://tiki.org)**: [built-in optional feature](https://doc.tiki.org/XMPP)
-
-## Stand-alone applications
-
--   **[ConverseJS for Ubuntu-Touch](https://open-store.io/app/conversejs.povoq)**: [source code](https://github.com/poVoq/conversejs-ubports)
--   **[Chimeverse for Mac OS X](https://github.com/nick-denry/Chimeverse)**: Electron based app
 
 ## Tests
 

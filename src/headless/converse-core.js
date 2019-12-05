@@ -926,6 +926,37 @@ async function getLoginCredentialsFromBrowser () {
     }
 }
 
+_converse.saveWindowState = function (ev) {
+    // XXX: eventually we should be able to just use
+    // document.visibilityState (when we drop support for older
+    // browsers).
+    let state;
+    const event_map = {
+        'focus': "visible",
+        'focusin': "visible",
+        'pageshow': "visible",
+        'blur': "hidden",
+        'focusout': "hidden",
+        'pagehide': "hidden"
+    };
+    ev = ev || document.createEvent('Events');
+    if (ev.type in event_map) {
+        state = event_map[ev.type];
+    } else {
+        state = document.hidden ? "hidden" : "visible";
+    }
+    _converse.windowState = state;
+    /**
+        * Triggered when window state has changed.
+        * Used to determine when a user left the page and when came back.
+        * @event _converse#windowStateChanged
+        * @type { object }
+        * @property{ string } state - Either "hidden" or "visible"
+        * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
+        */
+    _converse.api.trigger('windowStateChanged', {state});
+}
+
 
 function registerGlobalEventHandlers () {
     document.addEventListener("visibilitychange", _converse.saveWindowState);
@@ -1158,37 +1189,6 @@ _converse.initialize = async function (settings, callback) {
         }
     };
 
-    this.saveWindowState = function (ev) {
-        // XXX: eventually we should be able to just use
-        // document.visibilityState (when we drop support for older
-        // browsers).
-        let state;
-        const event_map = {
-            'focus': "visible",
-            'focusin': "visible",
-            'pageshow': "visible",
-            'blur': "hidden",
-            'focusout': "hidden",
-            'pagehide': "hidden"
-        };
-        ev = ev || document.createEvent('Events');
-        if (ev.type in event_map) {
-            state = event_map[ev.type];
-        } else {
-            state = document.hidden ? "hidden" : "visible";
-        }
-        _converse.windowState = state;
-        /**
-         * Triggered when window state has changed.
-         * Used to determine when a user left the page and when came back.
-         * @event _converse#windowStateChanged
-         * @type { object }
-         * @property{ string } state - Either "hidden" or "visible"
-         * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
-         */
-        _converse.api.trigger('windowStateChanged', {state});
-    };
-
     this.bindResource = async function () {
         /**
          * Synchronous event triggered before we send an IQ to bind the user's
@@ -1252,7 +1252,7 @@ _converse.api = {
         /**
          * Terminates the connection.
          *
-         * @method _converse.api.connection.disconnect
+         * @method _converse.api.connection.disconnectkjjjkk
          * @memberOf _converse.api.connection
          */
         disconnect () {

@@ -2255,6 +2255,12 @@ converse.plugins.add('converse-muc', {
             _converse.api.trigger('roomsAutoJoined');
         }
 
+        async function onWindowStateChanged (data) {
+            if (data.state === 'visible' && _converse.api.connection.connected()) {
+                const rooms = await _converse.api.rooms.get();
+                rooms.forEach(room => room.rejoinIfNecessary());
+            }
+        }
 
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('beforeTearDown', () => {
@@ -2262,6 +2268,7 @@ converse.plugins.add('converse-muc', {
             groupchats.forEach(gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
         });
 
+        _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
 
         _converse.api.listen.on('addClientFeatures', () => {
             if (_converse.allow_muc) {

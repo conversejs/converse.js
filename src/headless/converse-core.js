@@ -836,7 +836,7 @@ async function finishInitialization () {
     await initStorage();
     initClientConfig();
     initPlugins();
-    _converse.registerGlobalEventHandlers();
+    registerGlobalEventHandlers();
 
     if (!Backbone.History.started) {
         Backbone.history.start();
@@ -924,6 +924,21 @@ async function getLoginCredentialsFromBrowser () {
         await _converse.setUserJID(creds.id);
         return {'jid': creds.id, 'password': creds.password};
     }
+}
+
+
+function registerGlobalEventHandlers () {
+    document.addEventListener("visibilitychange", _converse.saveWindowState);
+    _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
+    /**
+     * Called once Converse has registered its global event handlers
+     * (for events such as window resize or unload).
+     * Plugins can listen to this event as cue to register their own
+     * global event handlers.
+     * @event _converse#registeredGlobalEventHandlers
+     * @example _converse.api.listen.on('registeredGlobalEventHandlers', () => { ... });
+     */
+    _converse.api.trigger('registeredGlobalEventHandlers');
 }
 
 
@@ -1172,20 +1187,6 @@ _converse.initialize = async function (settings, callback) {
          * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
          */
         _converse.api.trigger('windowStateChanged', {state});
-    };
-
-    this.registerGlobalEventHandlers = function () {
-        document.addEventListener("visibilitychange", _converse.saveWindowState);
-        _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
-        /**
-         * Called once Converse has registered its global event handlers
-         * (for events such as window resize or unload).
-         * Plugins can listen to this event as cue to register their own
-         * global event handlers.
-         * @event _converse#registeredGlobalEventHandlers
-         * @example _converse.api.listen.on('registeredGlobalEventHandlers', () => { ... });
-         */
-        _converse.api.trigger('registeredGlobalEventHandlers');
     };
 
     this.bindResource = async function () {

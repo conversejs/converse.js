@@ -331,37 +331,47 @@ converse.plugins.add('converse-dragresize', {
         };
 
 
+        function onMouseMove (ev) {
+            if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
+            ev.preventDefault();
+            _converse.resizing.chatbox.resizeChatBox(ev);
+        }
+
+
+        function onMouseUp (ev) {
+            if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
+            ev.preventDefault();
+            const height = u.applyDragResistance(
+                    _converse.resizing.chatbox.height,
+                    _converse.resizing.chatbox.model.get('default_height')
+            );
+            const width = u.applyDragResistance(
+                    _converse.resizing.chatbox.width,
+                    _converse.resizing.chatbox.model.get('default_width')
+            );
+            if (_converse.api.connection.connected()) {
+                _converse.resizing.chatbox.model.save({'height': height});
+                _converse.resizing.chatbox.model.save({'width': width});
+            } else {
+                _converse.resizing.chatbox.model.set({'height': height});
+                _converse.resizing.chatbox.model.set({'width': width});
+            }
+            _converse.resizing = null;
+        }
+
         /************************ BEGIN Event Handlers ************************/
         function registerGlobalEventHandlers () {
-
-            document.addEventListener('mousemove', function (ev) {
-                if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
-                ev.preventDefault();
-                _converse.resizing.chatbox.resizeChatBox(ev);
-            });
-
-            document.addEventListener('mouseup', function (ev) {
-                if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
-                ev.preventDefault();
-                const height = u.applyDragResistance(
-                        _converse.resizing.chatbox.height,
-                        _converse.resizing.chatbox.model.get('default_height')
-                );
-                const width = u.applyDragResistance(
-                        _converse.resizing.chatbox.width,
-                        _converse.resizing.chatbox.model.get('default_width')
-                );
-                if (_converse.api.connection.connected()) {
-                    _converse.resizing.chatbox.model.save({'height': height});
-                    _converse.resizing.chatbox.model.save({'width': width});
-                } else {
-                    _converse.resizing.chatbox.model.set({'height': height});
-                    _converse.resizing.chatbox.model.set({'width': width});
-                }
-                _converse.resizing = null;
-            });
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
         }
+
+        function unregisterGlobalEventHandlers () {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+
         _converse.api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
+        _converse.api.listen.on('unregisteredGlobalEventHandlers', unregisterGlobalEventHandlers);
         _converse.api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
         /************************ END Event Handlers ************************/
     }

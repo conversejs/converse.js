@@ -1,14 +1,26 @@
 #conversejs {
+
     #converse-modals {
-        .modal-body {
-            margin-bottom: 2em;
-            .confirm {
-                .form-group {
-                    p:first-child {
-                        font-size: 110%;
-                        font-weight: bold;
+        .modal {
+            background-color: rgba(0, 0, 0, 0.4);
+            .modal-body {
+                overflow-y: auto;
+                max-height: 75vh;
+                margin-bottom: 2em;
+                p {
+                    padding: 0.25rem 0;
+                }
+                .confirm {
+                    .form-group {
+                        p:first-child {
+                            font-size: 110%;
+                            font-weight: bold;
+                        }
                     }
                 }
+            }
+            .modal-footer {
+                justify-content: flex-start;
             }
         }
 

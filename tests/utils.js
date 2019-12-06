@@ -148,12 +148,14 @@
     utils.getRoomFeatures = async function (_converse, room, server, features=[]) {
         const muc_jid = `${room}@${server}`.toLowerCase();
         const stanzas = _converse.connection.IQ_stanzas;
-        const index = stanzas.length-1;
+        // XXX How necessary is this?
+        const index = stanzas.length-2;
         const stanza = await u.waitUntil(() => _.filter(
             stanzas.slice(index),
             iq => iq.querySelector(
                 `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
             )).pop());
+
 
         const features_stanza = $iq({
             'from': muc_jid,
@@ -308,6 +310,7 @@
         if (_converse.muc_fetch_members) {
             await utils.returnMemberLists(_converse, muc_jid, members);
         }
+        await view.model.messages.fetched;
     };
 
     utils.clearChatBoxMessages = function (converse, jid) {

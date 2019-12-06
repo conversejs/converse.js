@@ -1,6 +1,5 @@
 #conversejs.converse-embedded,
 #conversejs {
-
     .badge-room-color {
         background-color: var(--chatroom-head-color);
     }
@@ -9,17 +8,6 @@
         input[type="submit"],
         input[type="button"] {
             margin: 0.3em 0;
-        }
-    }
-
-    #list-chatrooms-modal {
-        .modal-body {
-			max-height: 70vh;
-            padding-bottom: 0; // When the list of chats overflows, we don't want bottom padding
-        }
-        .available-chatrooms {
-            overflow: auto;
-            padding-bottom: 1rem;
         }
     }
 

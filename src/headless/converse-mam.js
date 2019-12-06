@@ -165,16 +165,6 @@ converse.plugins.add('converse-mam', {
 
 
         Object.assign(_converse.ChatRoom.prototype, {
-            fetchArchivedMessagesIfNecessary () {
-                const conn_status = this.get('connection_status');
-                if ((!_converse.muc_show_logs_before_join && conn_status !== converse.ROOMSTATUS.ENTERED) ||
-                        !this.features.get('mam_enabled') ||
-                        this.get('mam_initialized')) {
-                    return;
-                }
-                this.fetchNewestMessages();
-                this.save({'mam_initialized': true});
-            }
         });
 
 
@@ -219,7 +209,6 @@ converse.plugins.add('converse-mam', {
             }
         };
 
-        /************************ BEGIN Event Handlers ************************/
         function getMAMPrefsFromFeature (feature) {
             const prefs = feature.get('preferences') || {};
             if (feature.get('var') !== Strophe.NS.MAM || _converse.message_archiving === undefined) {
@@ -232,12 +221,29 @@ converse.plugins.add('converse-mam', {
             }
         }
 
+        function preMUCJoinMAMFetch (room) {
+            if (!_converse.muc_show_logs_before_join ||
+                    !room.features.get('mam_enabled') ||
+                    room.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
+                    room.get('prejoin_mam_fetched')) {
+                return;
+            }
+            room.fetchNewestMessages();
+            room.save({'prejoin_mam_fetched': true});
+        }
+
+        /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
         _converse.api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
-        _converse.api.listen.on('enteredNewRoom', room => room.features.get('mam_enabled') && room.fetchNewestMessages());
-        _converse.api.listen.on('chatRoomOpened', (view) => {
-            view.listenTo(view.model, 'change:connection_status', () => view.model.fetchArchivedMessagesIfNecessary());
+        _converse.api.listen.on('chatRoomOpened', view => {
+            if (_converse.muc_show_logs_before_join) {
+                // If we want to show MAM logs before entering the MUC, we need
+                // to be informed once it's clear that this MUC supports MAM.
+                view.model.features.on('change:mam_enabled', preMUCJoinMAMFetch(view.model));
+            }
         });
+        _converse.api.listen.on('enteredNewRoom', room => room.features.get('mam_enabled') && room.fetchNewestMessages());
+
 
         _converse.api.listen.on('chatReconnected', chat => {
             // XXX: For MUCs, we listen to enteredNewRoom instead

@@ -390,7 +390,6 @@ converse.plugins.add('converse-muc', {
                 this.registerHandlers();
 
                 await this.initOccupants();
-                await this.fetchMessages();
                 this.enterRoom();
                 this.initialized.resolve();
             },
@@ -405,23 +404,20 @@ converse.plugins.add('converse-muc', {
 
             async enterRoom () {
                 const conn_status = this.get('connection_status');
-                log.debug(`${this.get('jid')} initialized with connection_status ${conn_status}`);
                 if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
                     // We're not restoring a room from cache, so let's clear the potentially stale cache.
                     this.removeNonMembers();
                     await this.refreshRoomFeatures();
-                    if (_converse.clear_messages_on_reconnection) {
+                    if (_converse.muc_show_logs_before_join) {
+                        await this.fetchMessages();
+                    } else if (_converse.clear_messages_on_reconnection) {
                         await this.clearMessages();
-                    }
-                    if (!u.isPersistableModel(this)) {
-                        // XXX: Happens during tests, nothing to do if this
-                        // is a hanging chatbox (i.e. not in the collection anymore).
-                        return;
                     }
                     this.join();
                 } else if (!(await this.rejoinIfNecessary())) {
                     // We've restored the room from cache and we're still joined.
-                    this.features.fetch();
+                    await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
+                    await this.fetchMessages();
                 }
             },
 
@@ -430,6 +426,7 @@ converse.plugins.add('converse-muc', {
                     if (_converse.muc_fetch_members) {
                         await this.occupants.fetchMembers();
                     }
+                    await this.fetchMessages();
                     /**
                      * Triggered when the user has entered a new MUC
                      * @event _converse#enteredNewRoom

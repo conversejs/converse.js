@@ -72,6 +72,7 @@ converse.plugins.add('converse-ping', {
         }, 1000);
 
 
+        /************************ BEGIN Event Handlers ************************/
         const onConnected = function () {
             // Wrapper so that we can spy on registerPingHandler in tests
             registerPongHandler();
@@ -81,16 +82,26 @@ converse.plugins.add('converse-ping', {
         _converse.api.listen.on('reconnected', onConnected);
 
 
+        function onWindowStateChanged (data) {
+            if (data.state === 'visible' && _converse.api.connection.connected()) {
+                _converse.api.ping(null, 5000);
+            }
+        }
+        _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
+        /************************ END Event Handlers ************************/
+
+
         /************************ BEGIN API ************************/
         Object.assign(_converse.api, {
             /**
-             * Pings the service represented by the passed in JID by sending an
-             * IQ stanza.
+             * Pings the service represented by the passed in JID by sending an IQ stanza.
              * @private
              * @method _converse.api.ping
-             * @param { string } [jid] - The JID of the service to ping
+             * @param { String } [jid] - The JID of the service to ping
+             * @param { Integer } [timeout] - The amount of time in
+             *  milliseconds to wait for a response. The default is 10000;
              */
-            async ping (jid) {
+            async ping (jid, timeout) {
                 // XXX: We could first check here if the server advertised that it supports PING.
                 // However, some servers don't advertise while still responding to pings
                 //
@@ -104,7 +115,7 @@ converse.plugins.add('converse-ping', {
                             'id': u.getUniqueId('ping')
                         }).c('ping', {'xmlns': Strophe.NS.PING});
 
-                    const result = await _converse.api.sendIQ(iq, 10000, false);
+                    const result = await _converse.api.sendIQ(iq, timeout || 10000, false);
                     if (result === null) {
                         log.warn(`Timeout while pinging ${jid}`);
                         if (jid === Strophe.getDomainFromJid(_converse.bare_jid)) {

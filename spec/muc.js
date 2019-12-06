@@ -2945,7 +2945,7 @@
                 });
                 _converse.connection._dataRecv(test_utils.createRequest(message));
                 expect(view.model.occupants.length).toBe(2);
-                expect(view.model.occupants.findWhere({'jid': 'annoyingguy@montague.lit'}).get('affiliation')).toBe('');
+                expect(view.model.occupants.findWhere({'jid': 'annoyingguy@montague.lit'}).get('affiliation')).toBe('none');
 
                 done();
             }));

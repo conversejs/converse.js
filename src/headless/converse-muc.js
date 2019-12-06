@@ -508,7 +508,7 @@ converse.plugins.add('converse-muc', {
                     {'matchBareFromJid': true}
                 );
                 this.muc_notifications_handler = _converse.connection.addHandler(stanza => {
-                    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza).pop();
+                    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
 
                     if (item) {
                         const from = stanza.getAttribute("from");

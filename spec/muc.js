@@ -2907,7 +2907,7 @@
                 done();
             }));
 
-            it("notifies user of role and affiliation changes for members not in the groupchat",
+            it("notifies users of role and affiliation changes for members not currently in the groupchat",
                 mock.initConverse(
                     ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -2923,14 +2923,14 @@
                 })
                 .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
                 .c('item', {
-                    'jid': 'annoyingguy@montague.lit',
+                    'jid': 'absentguy@montague.lit',
                     'affiliation': 'member',
                     'role': 'none'
                 });
                 _converse.connection._dataRecv(test_utils.createRequest(message));
                 await u.waitUntil(() => view.model.occupants.length > 1);
                 expect(view.model.occupants.length).toBe(2);
-                expect(view.model.occupants.findWhere({'jid': 'annoyingguy@montague.lit'}).get('affiliation')).toBe('member');
+                expect(view.model.occupants.findWhere({'jid': 'absentguy@montague.lit'}).get('affiliation')).toBe('member');
 
                 message = $msg({
                     from: 'lounge@montague.lit',
@@ -2939,13 +2939,13 @@
                 })
                 .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
                 .c('item', {
-                    'jid': 'annoyingguy@montague.lit',
+                    'jid': 'absentguy@montague.lit',
                     'affiliation': 'none',
                     'role': 'none'
                 });
                 _converse.connection._dataRecv(test_utils.createRequest(message));
                 expect(view.model.occupants.length).toBe(2);
-                expect(view.model.occupants.findWhere({'jid': 'annoyingguy@montague.lit'}).get('affiliation')).toBe('none');
+                expect(view.model.occupants.findWhere({'jid': 'absentguy@montague.lit'}).get('affiliation')).toBe('none');
 
                 done();
             }));

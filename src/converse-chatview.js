@@ -272,7 +272,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             initDebounced () {
-                this.scrollDown = debounce(this._scrollDown, 100);
+                this.scrollDown = debounce(this._scrollDown, 50);
                 this.markScrolled = debounce(this._markScrolled, 100);
             },
 
@@ -433,7 +433,7 @@ converse.plugins.add('converse-chatview', {
                 await Promise.all(this.model.messages.map(m => this.onMessageAdded(m)));
                 this.insertIntoDOM();
                 this.scrollDown();
-                this.content.addEventListener('scroll', this.markScrolled.bind(this));
+                this.content.addEventListener('scroll', () => this.markScrolled());
                 /**
                  * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
                  * `sessionStorage` but **NOT** from the server.
@@ -1261,14 +1261,17 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            _markScrolled: function (ev) {
-                /* Called when the chat content is scrolled up or down.
-                 * We want to record when the user has scrolled away from
-                 * the bottom, so that we don't automatically scroll away
-                 * from what the user is reading when new messages are
-                 * received.
-                 */
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
+            /**
+             * Called when the chat content is scrolled up or down.
+             * We want to record when the user has scrolled away from
+             * the bottom, so that we don't automatically scroll away
+             * from what the user is reading when new messages are received.
+             *
+             * Don't call this method directly, instead, call `markScrolled`,
+             * which debounces this method by 100ms.
+             * @private
+             */
+            _markScrolled: function () {
                 let scrolled = true;
                 const is_at_bottom =
                     (this.content.scrollTop + this.content.clientHeight) >=

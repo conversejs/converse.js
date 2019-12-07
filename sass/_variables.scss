@@ -150,7 +150,6 @@ $mobile_portrait_length: 480px !default;
 
     --occupants-padding: 1em;
     --occupants-background-color: white;
-    --occupants-max-width: inherit;
     --occupants-border-left: 1px solid var(--text-color);
     --occupants-border-bottom: 1px solid lightgrey;
     --occupants-features-display: block;
@@ -222,8 +221,6 @@ $mobile_portrait_length: 480px !default;
     --chatroom-badge-hover-color: #D24E2B; // $red
 
     --occupants-background-color: #F3F3F3;
-    /* TODO: find a way to allow that and reflow the chat-area properly.
-     * --occupants-max-width: 240px; */
     --occupants-border-left: 0px;
     --occupants-border-bottom: 0px;
     --occupants-features-display: none;

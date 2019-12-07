@@ -76,6 +76,39 @@
                 }
             }
 
+            .current-xmpp-contact {
+                margin: 0.25em 0;
+
+                .chat-status {
+                    vertical-align: middle;
+                    font-size: 0.6em;
+                    margin-right: 0;
+                    margin-left: -0.7em;
+                    margin-bottom: -1.5em;
+                    border-radius: 50%;
+                    border: 2px solid var(--occupants-background-color);
+                }
+                .chat-status--offline {
+                    margin-right: 0.8em;
+                }
+                .chat-status--online {
+                    color: var(--chat-status-online);
+                }
+                .chat-status--busy {
+                    color: var(--chat-status-busy);
+                }
+                .chat-status--away {
+                    color: var(--chat-status-away);
+                }
+                .chat-status--offline {
+                    display: none;
+                }
+                .far.fa-circle,
+                .fa-times-circle {
+                    color: var(--subdued-color);
+                }
+            }
+
             li {
                 &.requesting-xmpp-contact {
                     a {
@@ -117,27 +150,22 @@
                         &.unread-msgs {
                             max-width: 60%;
                         }
+                        &.contact-name--offline {
+                            margin-left: 0.7em;
+                        }
                     }
-
-                    .avatar {
-                        float: left;
-                        display: inline-block;
-                    }
-                }
-                &.current-xmpp-contact span {
-                    font-size: var(--font-size);
-                    margin-right: 0.3em;
-                    vertical-align: middle;
                 }
                 &.odd {
                     background-color: #DCEAC5;
                     /* Make this difference */
                 }
                 a, span {
-                    display: inline-block;
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
+                }
+                .span {
+                    display: inline-block;
                 }
                 .decline-xmpp-request {
                     margin-left: 5px;

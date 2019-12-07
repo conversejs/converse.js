@@ -1,6 +1,5 @@
 #conversejs.converse-embedded,
 #conversejs {
-
     .badge-room-color {
         background-color: var(--chatroom-head-color);
     }
@@ -9,17 +8,6 @@
         input[type="submit"],
         input[type="button"] {
             margin: 0.3em 0;
-        }
-    }
-
-    #list-chatrooms-modal {
-        .modal-body {
-			max-height: 70vh;
-            padding-bottom: 0; // When the list of chats overflows, we don't want bottom padding
-        }
-        .available-chatrooms {
-            overflow: auto;
-            padding-bottom: 1rem;
         }
     }
 
@@ -158,6 +146,8 @@
                     display: flex;
                     flex-direction: column;
                     word-wrap: break-word;
+                    flex: 0 1 100%;
+                    min-width: 25%;
                     .new-msgs-indicator {
                         background-color: var(--chatroom-head-color);
                     }
@@ -176,7 +166,9 @@
                     border-left: var(--occupants-border-left);
                     border-bottom-right-radius: var(--chatbox-border-radius);
                     padding: 0.5em;
-                    max-width: var(--occupants-max-width);
+                    max-width: 75%;
+                    min-width: 20%;
+                    flex: 0 0 25%;
 
                     .occupants-header {
                         display: flex;
@@ -316,6 +308,18 @@
             }
         }
 
+        .empty-history-feedback {
+            position: relative;
+            height: 100%;
+            color: var(--text-color-lighten-15-percent);
+            span {
+                width: 100%;
+                text-align: center;
+                position: absolute;
+                margin-top: 50%;
+            }
+        }
+
         .muc-bottom-panel {
             border-top: var(--message-input-border-top);
             height: 3em;
@@ -324,6 +328,20 @@
             font-size: var(--font-size-small);
             background-color: var(--chatroom-head-color);
             color: white;
+
+            &.muc-bottom-panel--nickname {
+                padding: 0;
+                height: 16em;
+
+                .chatroom-form-container {
+                    border-radius: 0 !important;
+
+                    .chatroom-form {
+                        padding-top: 2em;
+                        padding-bottom: 0;
+                    }
+                }
+            }
         }
 
         .sendXMPPMessage {

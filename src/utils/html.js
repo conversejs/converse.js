@@ -161,8 +161,35 @@ u.renderImageURL = function (_converse, url) {
 
 
 /**
+ * Applies some resistance to `value` around the `default_value`.
+ * If value is close enough to `default_value`, then it is returned, otherwise
+ * `value` is returned.
+ * @method u#applyDragResistance
+ * @param { Integer } value
+ * @param { Integer } default_value
+ * @returns { Integer }
+ */
+u.applyDragResistance = function (value, default_value) {
+    if (value === undefined) {
+        return undefined;
+    } else if (default_value === undefined) {
+        return value;
+    }
+    const resistance = 10;
+    if ((value !== default_value) &&
+        (Math.abs(value- default_value) < resistance)) {
+        return default_value;
+    }
+    return value;
+};
+
+
+/**
  * Returns a Promise which resolves once all images have been loaded.
- * @returns {Promise}
+ * @method u#renderImageURLs
+ * @param { _converse }
+ * @param { HTMLElement }
+ * @returns { Promise }
  */
 u.renderImageURLs = function (_converse, el) {
     if (!_converse.show_images_inline) {

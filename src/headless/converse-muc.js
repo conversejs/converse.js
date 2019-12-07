@@ -129,7 +129,8 @@ converse.plugins.add('converse-muc', {
             'muc_fetch_members': true,
             'muc_history_max_stanzas': undefined,
             'muc_instant_rooms': true,
-            'muc_nickname_from_jid': false
+            'muc_nickname_from_jid': false,
+            'muc_show_logs_before_join': false
         });
         _converse.api.promises.add(['roomsAutoJoined']);
 
@@ -389,7 +390,6 @@ converse.plugins.add('converse-muc', {
                 this.registerHandlers();
 
                 await this.initOccupants();
-                await this.fetchMessages();
                 this.enterRoom();
                 this.initialized.resolve();
             },
@@ -404,23 +404,20 @@ converse.plugins.add('converse-muc', {
 
             async enterRoom () {
                 const conn_status = this.get('connection_status');
-                log.debug(`${this.get('jid')} initialized with connection_status ${conn_status}`);
                 if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
                     // We're not restoring a room from cache, so let's clear the potentially stale cache.
                     this.removeNonMembers();
                     await this.refreshRoomFeatures();
-                    if (_converse.clear_messages_on_reconnection) {
+                    if (_converse.muc_show_logs_before_join) {
+                        await this.fetchMessages();
+                    } else if (_converse.clear_messages_on_reconnection) {
                         await this.clearMessages();
-                    }
-                    if (!u.isPersistableModel(this)) {
-                        // XXX: Happens during tests, nothing to do if this
-                        // is a hanging chatbox (i.e. not in the collection anymore).
-                        return;
                     }
                     this.join();
                 } else if (!(await this.rejoinIfNecessary())) {
                     // We've restored the room from cache and we're still joined.
-                    this.features.fetch();
+                    await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
+                    await this.fetchMessages();
                 }
             },
 
@@ -429,6 +426,7 @@ converse.plugins.add('converse-muc', {
                     if (_converse.muc_fetch_members) {
                         await this.occupants.fetchMembers();
                     }
+                    await this.fetchMessages();
                     /**
                      * Triggered when the user has entered a new MUC
                      * @event _converse#enteredNewRoom
@@ -482,17 +480,41 @@ converse.plugins.add('converse-muc', {
                 return this.occupants.fetched;
             },
 
+            handleAffiliationChangedMessage (stanza) {
+                const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
+                if (item) {
+                    const from = stanza.getAttribute("from");
+                    const type = stanza.getAttribute("type");
+                    const affiliation = item.getAttribute('affiliation');
+                    const jid = item.getAttribute('jid');
+                    const data = {
+                        from, type, affiliation,
+                        'nick': Strophe.getNodeFromJid(jid),
+                        'states': [],
+                        'show': type == 'unavailable' ? 'offline' : 'online',
+                        'role': item.getAttribute('role'),
+                        'jid': Strophe.getBareJidFromJid(jid),
+                        'resource': Strophe.getResourceFromJid(jid)
+                    }
+                    const occupant = this.occupants.findOccupant({'jid': data.jid});
+                    if (occupant) {
+                        occupant.save(data);
+                    } else {
+                        this.occupants.create(data);
+                    }
+                }
+            },
+
             registerHandlers () {
                 // Register presence and message handlers for this groupchat
                 const room_jid = this.get('jid');
                 this.removeHandlers();
-                this.presence_handler = _converse.connection.addHandler(stanza => {
-                        this.onPresence(stanza);
-                        return true;
-                    },
+                this.presence_handler = _converse.connection.addHandler(
+                    stanza => (this.onPresence(stanza) || true),
                     null, 'presence', null, null, room_jid,
                     {'ignoreNamespaceFragment': true, 'matchBareFromJid': true}
                 );
+
                 this.message_handler = _converse.connection.addHandler(stanza => {
                         if (sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop()) {
                             // MAM messages are handled in converse-mam.
@@ -506,22 +528,27 @@ converse.plugins.add('converse-muc', {
                     }, null, 'message', 'groupchat', null, room_jid,
                     {'matchBareFromJid': true}
                 );
+
+                this.affiliation_message_handler = _converse.connection.addHandler(
+                    stanza => (this.handleAffiliationChangedMessage(stanza) || true),
+                    Strophe.NS.MUC_USER, 'message', null, null, room_jid
+                );
             },
 
             removeHandlers () {
                 // Remove the presence and message handlers that were
                 // registered for this groupchat.
                 if (this.message_handler) {
-                    if (_converse.connection) {
-                        _converse.connection.deleteHandler(this.message_handler);
-                    }
+                    _converse.connection && _converse.connection.deleteHandler(this.message_handler);
                     delete this.message_handler;
                 }
                 if (this.presence_handler) {
-                    if (_converse.connection) {
-                        _converse.connection.deleteHandler(this.presence_handler);
-                    }
+                    _converse.connection && _converse.connection.deleteHandler(this.presence_handler);
                     delete this.presence_handler;
+                }
+                if (this.affiliation_message_handler) {
+                    _converse.connection && _converse.connection.deleteHandler(this.affiliation_message_handler);
+                    delete this.affiliation_message_handler;
                 }
                 return this;
             },
@@ -2257,6 +2284,12 @@ converse.plugins.add('converse-muc', {
             _converse.api.trigger('roomsAutoJoined');
         }
 
+        async function onWindowStateChanged (data) {
+            if (data.state === 'visible' && _converse.api.connection.connected()) {
+                const rooms = await _converse.api.rooms.get();
+                rooms.forEach(room => room.rejoinIfNecessary());
+            }
+        }
 
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('beforeTearDown', () => {
@@ -2264,6 +2297,7 @@ converse.plugins.add('converse-muc', {
             groupchats.forEach(gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
         });
 
+        _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
 
         _converse.api.listen.on('addClientFeatures', () => {
             if (_converse.allow_muc) {

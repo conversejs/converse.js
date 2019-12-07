@@ -19,7 +19,6 @@
             it("is queried when the user enters a new MUC",
                     mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (done, _converse) {
 
-                spyOn(_converse.ChatBox.prototype, 'fetchArchivedMessages').and.callThrough();
                 const sent_IQs = _converse.connection.IQ_stanzas;
                 const muc_jid = 'orchard@chat.shakespeare.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -196,7 +195,6 @@
                     </iq>`);
                 _converse.connection._dataRecv(test_utils.createRequest(result));
                 await u.waitUntil(() => view.model.messages.length === 5);
-                expect(view.model.fetchArchivedMessages.calls.count()).toBe(3);
                 const msg_els = view.content.querySelectorAll('.chat-msg__text');
                 expect(Array.from(msg_els).map(e => e.textContent).join(' ')).toBe("2nd Message 3rd Message 4th Message 5th Message 6th Message");
                 done();

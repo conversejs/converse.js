@@ -29,7 +29,7 @@ converse.plugins.add('converse-smacks', {
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
         _converse.api.settings.update({
-            'enable_smacks': false,
+            'enable_smacks': true,
             'smacks_max_unacked_stanzas': 5,
         });
 

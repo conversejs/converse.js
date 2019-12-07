@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2018-03-09 16:34+0000\n"
-"Last-Translator: Тони <toni@neshtoto.club>\n"
+"PO-Revision-Date: 2019-11-08 17:04+0000\n"
+"Last-Translator: Guybrush Threepwood <weblate.oleg@buda.cloud>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/bg/>\n"
 "Language: bg\n"
@@ -17,21 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.20-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: dist/converse-no-dependencies.js:7899
 msgid "Uploading file:"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:8008
-#, fuzzy
 msgid "This message has been edited"
-msgstr "Тази стая е модерирана"
+msgstr "Това съобщение е редактирано"
 
 #: dist/converse-no-dependencies.js:8014
-#, fuzzy
 msgid "Edit this message"
-msgstr "Скриване на скрито съобщение"
+msgstr "Редактирай това съобщение"
 
 #: dist/converse-no-dependencies.js:8030
 #, fuzzy

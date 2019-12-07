@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-07-21 20:07+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2019-10-27 20:53+0000\n"
+"Last-Translator: x0draude <eduardomedeirosrn2@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/conversejs/"
 "translations/pt/>\n"
 "Language: pt\n"
@@ -17,26 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9.1-dev\n"
 
 #: dist/converse-no-dependencies.js:7899
 msgid "Uploading file:"
 msgstr "Enviando ficheiro:"
 
 #: dist/converse-no-dependencies.js:8008
-#, fuzzy
 msgid "This message has been edited"
-msgstr "Essa sala começou a ser moderada"
+msgstr "Esta mensagem foi editada"
 
 #: dist/converse-no-dependencies.js:8014
-#, fuzzy
 msgid "Edit this message"
-msgstr "Mostrar o menu"
+msgstr "Editar esta mensagem"
 
 #: dist/converse-no-dependencies.js:8030
-#, fuzzy
 msgid "Message versions"
-msgstr "Arquivando mensagem"
+msgstr "Versões da mensagem"
 
 #: dist/converse-no-dependencies.js:8044 dist/converse-no-dependencies.js:8321
 #: dist/converse-no-dependencies.js:8435 dist/converse-no-dependencies.js:9009
@@ -50,9 +47,8 @@ msgid "The User's Profile Image"
 msgstr "Imagem de Perfil do Utilizador"
 
 #: dist/converse-no-dependencies.js:8335
-#, fuzzy
 msgid "Full Name:"
-msgstr "Nome"
+msgstr "Nome completo:"
 
 #: dist/converse-no-dependencies.js:8341 dist/converse-no-dependencies.js:8517
 #, fuzzy

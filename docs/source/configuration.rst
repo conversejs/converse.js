@@ -1349,6 +1349,23 @@ compile time.
 
 This configuration seting allows this value to be set at runtime as well.
 
+
+persistent_store
+----------------
+
+* Default: ``localStorage``
+* Valid options: ``localStorage``, ``IndexedDB``
+
+Determines which store is used for storing persistent data.
+
+From version 6.0.0 onwards, Converse supports storing data in
+`IndexedDB <https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Concepts_Behind_IndexedDB>`_.
+
+IndexedDB is not subjected to the same space constraints as localStorage and is
+also a requirement for progressive web apps which don't need persistent a
+internet connectivity to be functional.
+
+
 push_app_servers
 ----------------
 
@@ -1514,16 +1531,6 @@ everywhere.
 This warning isn't applicable to all deployments of Converse and can therefore
 be turned off by setting this config variable to ``false``.
 
-use_system_emojis
------------------
-* Default: ``true``
-
-Determines whether emojis should be rendered by the user's system.
-
-Not all operating systems support (all) emojis. So alternatively you can let
-Converse render the emojis with `Twemoji <https://twemoji.twitter.com/>`_.
-
-See also `emoji_image_path`_.
 
 send_chat_state_notifications
 -----------------------------
@@ -1635,8 +1642,7 @@ synchronize_availability
 ------------------------
 
 * Default: ``true``
-
-Valid options: ``true``, ``false``, ``a resource name``.
+* Valid options: ``true``, ``false``, ``a resource name``.
 
 This option lets you synchronize your chat status (`online`, `busy`, `away`) with other chat clients. In other words,
 if you change your status to ``busy`` in a different chat client, your status will change to ``busy`` in Converse as well.
@@ -1651,8 +1657,7 @@ theme
 -----
 
 * Default: ``default``
-
-Valid options: ``default``, ``concord``
+* Valid options: ``default``, ``concord``
 
 Let's you set a color theme for Converse.
 
@@ -1705,6 +1710,18 @@ for showing time. This option allows the configuration of the format in which ``
 description of time-format options available for ``DayJS`` you can check the
 `default formatting options <https://github.com/iamkun/dayjs/blob/dev/docs/en/API-reference.md#displaying>`_ and the
 `advanced options <https://github.com/iamkun/dayjs/blob/master/docs/en/Plugin.md#advancedformat>`_.
+
+use_system_emojis
+-----------------
+* Default: ``true``
+
+Determines whether emojis should be rendered by the user's system.
+
+Not all operating systems support (all) emojis. So alternatively you can let
+Converse render the emojis with `Twemoji <https://twemoji.twitter.com/>`_.
+
+See also `emoji_image_path`_.
+
 
 visible_toolbar_buttons
 -----------------------

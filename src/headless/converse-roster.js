@@ -7,10 +7,11 @@
  * @module converse-roster
  */
 import "@converse/headless/converse-status";
+import { get, invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash";
 import converse from "@converse/headless/converse-core";
 import log from "./log";
 
-const { Backbone, Strophe, $iq, $pres, dayjs, sizzle, _ } = converse.env;
+const { Backbone, Strophe, $iq, $pres, dayjs, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -134,7 +135,7 @@ converse.plugins.add('converse-roster', {
 
             onResourcesChanged () {
                 const hpr = this.getHighestPriorityResource();
-                const show = _.get(hpr, 'attributes.show', 'offline');
+                const show = get(hpr, 'attributes.show', 'offline');
                 if (this.get('show') !== show) {
                     this.save({'show': show});
                 }
@@ -160,12 +161,12 @@ converse.plugins.add('converse-roster', {
                 const jid = presence.getAttribute('from'),
                       name = Strophe.getResourceFromJid(jid),
                       delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop(),
-                      priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
+                      priority = propertyOf(presence.querySelector('priority'))('textContent') || 0,
                       resource = this.resources.get(name),
                       settings = {
                           'name': name,
-                          'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
-                          'show': _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                          'priority': isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
+                          'show': propertyOf(presence.querySelector('show'))('textContent') || 'online',
                           'timestamp': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString()
                        };
                 if (resource) {
@@ -216,7 +217,7 @@ converse.plugins.add('converse-roster', {
                 const { jid } = attributes;
                 const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
                 attributes.jid = bare_jid;
-                this.set(_.assignIn({
+                this.set(Object.assign({
                     'groups': [],
                     'id': bare_jid,
                     'jid': bare_jid,
@@ -493,7 +494,7 @@ converse.plugins.add('converse-roster', {
              * @param { Function } errback - A function to call if an error occurred
              */
             sendContactAddIQ (jid, name, groups) {
-                name = _.isEmpty(name) ? null : name;
+                name = isEmpty(name) ? null : name;
                 const iq = $iq({'type': 'set'})
                     .c('query', {'xmlns': Strophe.NS.ROSTER})
                     .c('item', { jid, name });
@@ -521,7 +522,7 @@ converse.plugins.add('converse-roster', {
                     alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name || jid));
                     return e;
                 }
-                return this.create(_.assignIn({
+                return this.create(Object.assign({
                     'ask': undefined,
                     'nickname': name,
                     groups,
@@ -542,14 +543,14 @@ converse.plugins.add('converse-roster', {
                             contact.authorize().subscribe();
                         }
                     }
-                    const nickname = _.get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
+                    const nickname = get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
                     this.addContactToRoster(bare_jid, nickname, [], {'subscription': 'from'}).then(handler, handler);
                 }
             },
 
             getNumOnlineContacts () {
                 const ignored = ['offline', 'unavailable'];
-                return _.sum(this.models.filter(m => !ignored.includes(m.presence.get('show'))));
+                return sum(this.models.filter(m => !ignored.includes(m.presence.get('show'))));
             },
 
             /**
@@ -689,7 +690,7 @@ converse.plugins.add('converse-roster', {
 
             createRequestingContact (presence) {
                 const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
-                      nickname = _.get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
+                      nickname = get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
                 const user_data = {
                     'jid': bare_jid,
                     'subscription': 'none',
@@ -749,10 +750,10 @@ converse.plugins.add('converse-roster', {
                     // Another resource has changed its status and
                     // synchronize_availability option set to update,
                     // we'll update ours as well.
-                    const show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
+                    const show = propertyOf(presence.querySelector('show'))('textContent') || 'online';
                     _converse.xmppstatus.save({'status': show}, {'silent': true});
 
-                    const status_message = _.propertyOf(presence.querySelector('status'))('textContent');
+                    const status_message = propertyOf(presence.querySelector('status'))('textContent');
                     if (status_message) {
                         _converse.xmppstatus.save({'status_message': status_message});
                     }
@@ -788,7 +789,7 @@ converse.plugins.add('converse-roster', {
                     return; // Ignore MUC
                 }
 
-                const status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
+                const status_message = propertyOf(presence.querySelector('status'))('textContent'),
                       contact = this.get(bare_jid);
 
                 if (contact && (status_message !== contact.get('status'))) {
@@ -817,7 +818,7 @@ converse.plugins.add('converse-roster', {
         _converse.RosterGroup = Backbone.Model.extend({
 
             initialize (attributes) {
-                this.set(_.assignIn({
+                this.set(Object.assign({
                     description: __('Click to hide these contacts'),
                     state: _converse.OPENED
                 }, attributes));
@@ -839,8 +840,8 @@ converse.plugins.add('converse-roster', {
                 a = a.get('name');
                 b = b.get('name');
                 const special_groups = Object.keys(HEADER_WEIGHTS);
-                const a_is_special = _.includes(special_groups, a);
-                const b_is_special = _.includes(special_groups, b);
+                const a_is_special = special_groups.includes(a);
+                const b_is_special = special_groups.includes(b);
                 if (!a_is_special && !b_is_special ) {
                     return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
                 } else if (a_is_special && b_is_special) {
@@ -927,7 +928,7 @@ converse.plugins.add('converse-roster', {
             clearPresences();
             if (_converse.shouldClearCache()) {
                 if (_converse.roster) {
-                    _.invoke(_converse, 'roster.data.destroy');
+                    invoke(_converse, 'roster.data.destroy');
                     _converse.roster.clearSession();
                     delete _converse.roster;
                 }
@@ -1059,11 +1060,12 @@ converse.plugins.add('converse-roster', {
                     const _getter = jid => _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (jids === undefined) {
                         jids = _converse.roster.pluck('jid');
-                    } else if (_.isString(jids)) {
+                    } else if (isString(jids)) {
                         return _getter(jids);
                     }
-                    return _.map(jids, _getter);
+                    return jids.map(_getter);
                 },
+
                 /**
                  * Add a contact.
                  *
@@ -1078,10 +1080,10 @@ converse.plugins.add('converse-roster', {
                  */
                 async add (jid, name) {
                     await _converse.api.waitUntil('rosterContactsFetched');
-                    if (!_.isString(jid) || !jid.includes('@')) {
+                    if (!isString(jid) || !jid.includes('@')) {
                         throw new TypeError('contacts.add: invalid jid');
                     }
-                    _converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
+                    _converse.roster.addAndSubscribe(jid, isEmpty(name)? jid: name);
                 }
             }
         });

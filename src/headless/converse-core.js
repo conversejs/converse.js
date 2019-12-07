@@ -268,6 +268,7 @@ _converse.default_settings = {
     message_carbons: true,
     nickname: undefined,
     password: undefined,
+    persistent_store: 'localStorage',
     priority: 0,
     rid: undefined,
     root: window.document,
@@ -448,10 +449,11 @@ function initClientConfig () {
      * user sessions.
      */
     const id = 'converse.client-config';
+    const store_map = { 'localStorage': 'local', 'IndexedDB': 'indexed' };
     _converse.config = new Backbone.Model({
         'id': id,
         'trusted': _converse.trusted && true || false,
-        'storage': _converse.trusted ? 'local' : 'session'
+        'storage': _converse.trusted ? store_map[_converse.persistent_store] : 'session'
     });
     _converse.config.browserStorage = _converse.createStore(id, "session");
     _converse.config.fetch();
@@ -834,7 +836,7 @@ async function finishInitialization () {
     await initStorage();
     initClientConfig();
     initPlugins();
-    _converse.registerGlobalEventHandlers();
+    registerGlobalEventHandlers();
 
     if (!Backbone.History.started) {
         Backbone.history.start();
@@ -922,6 +924,52 @@ async function getLoginCredentialsFromBrowser () {
         await _converse.setUserJID(creds.id);
         return {'jid': creds.id, 'password': creds.password};
     }
+}
+
+_converse.saveWindowState = function (ev) {
+    // XXX: eventually we should be able to just use
+    // document.visibilityState (when we drop support for older
+    // browsers).
+    let state;
+    const event_map = {
+        'focus': "visible",
+        'focusin': "visible",
+        'pageshow': "visible",
+        'blur': "hidden",
+        'focusout': "hidden",
+        'pagehide': "hidden"
+    };
+    ev = ev || document.createEvent('Events');
+    if (ev.type in event_map) {
+        state = event_map[ev.type];
+    } else {
+        state = document.hidden ? "hidden" : "visible";
+    }
+    _converse.windowState = state;
+    /**
+        * Triggered when window state has changed.
+        * Used to determine when a user left the page and when came back.
+        * @event _converse#windowStateChanged
+        * @type { object }
+        * @property{ string } state - Either "hidden" or "visible"
+        * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
+        */
+    _converse.api.trigger('windowStateChanged', {state});
+}
+
+
+function registerGlobalEventHandlers () {
+    document.addEventListener("visibilitychange", _converse.saveWindowState);
+    _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
+    /**
+     * Called once Converse has registered its global event handlers
+     * (for events such as window resize or unload).
+     * Plugins can listen to this event as cue to register their own
+     * global event handlers.
+     * @event _converse#registeredGlobalEventHandlers
+     * @example _converse.api.listen.on('registeredGlobalEventHandlers', () => { ... });
+     */
+    _converse.api.trigger('registeredGlobalEventHandlers');
 }
 
 
@@ -1141,51 +1189,6 @@ _converse.initialize = async function (settings, callback) {
         }
     };
 
-    this.saveWindowState = function (ev) {
-        // XXX: eventually we should be able to just use
-        // document.visibilityState (when we drop support for older
-        // browsers).
-        let state;
-        const event_map = {
-            'focus': "visible",
-            'focusin': "visible",
-            'pageshow': "visible",
-            'blur': "hidden",
-            'focusout': "hidden",
-            'pagehide': "hidden"
-        };
-        ev = ev || document.createEvent('Events');
-        if (ev.type in event_map) {
-            state = event_map[ev.type];
-        } else {
-            state = document.hidden ? "hidden" : "visible";
-        }
-        _converse.windowState = state;
-        /**
-         * Triggered when window state has changed.
-         * Used to determine when a user left the page and when came back.
-         * @event _converse#windowStateChanged
-         * @type { object }
-         * @property{ string } state - Either "hidden" or "visible"
-         * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
-         */
-        _converse.api.trigger('windowStateChanged', {state});
-    };
-
-    this.registerGlobalEventHandlers = function () {
-        document.addEventListener("visibilitychange", _converse.saveWindowState);
-        _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
-        /**
-         * Called once Converse has registered its global event handlers
-         * (for events such as window resize or unload).
-         * Plugins can listen to this event as cue to register their own
-         * global event handlers.
-         * @event _converse#registeredGlobalEventHandlers
-         * @example _converse.api.listen.on('registeredGlobalEventHandlers', () => { ... });
-         */
-        _converse.api.trigger('registeredGlobalEventHandlers');
-    };
-
     this.bindResource = async function () {
         /**
          * Synchronous event triggered before we send an IQ to bind the user's
@@ -1249,7 +1252,7 @@ _converse.api = {
         /**
          * Terminates the connection.
          *
-         * @method _converse.api.connection.disconnect
+         * @method _converse.api.connection.disconnectkjjjkk
          * @memberOf _converse.api.connection
          */
         disconnect () {
@@ -1397,7 +1400,8 @@ _converse.api = {
             }
 
             // See whether there is a BOSH session to re-attach to
-            if (_.invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
+            const bosh_plugin = _converse.pluggable.plugins['converse-bosh'];
+            if (bosh_plugin && bosh_plugin.enabled()) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
                 } else if (_converse.authentication === _converse.PREBIND && (!automatic || _converse.auto_login)) {

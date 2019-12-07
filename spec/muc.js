@@ -1547,7 +1547,7 @@
                 expect(presencebroadcast.length).toBe(1);
                 presencebroadcast[0].value = ['moderator'];
 
-                view.el.querySelector('input[type="submit"]').click();
+                view.el.querySelector('.chatroom-form input[type="submit"]').click();
 
                 const sent_stanza = sent_IQ.nodeTree;
                 expect(sent_stanza.querySelector('field[var="muc#roomconfig_membersonly"] value').textContent.trim()).toBe('1');
@@ -2578,7 +2578,7 @@
                 expect(el.textContent.trim()).toBe("Configuration for room@conference.example.org");
                 sizzle('[name="muc#roomconfig_membersonly"]', chatroomview.el).pop().click();
                 sizzle('[name="muc#roomconfig_roomname"]', chatroomview.el).pop().value = "New room name"
-                chatroomview.el.querySelector('.btn-primary').click();
+                chatroomview.el.querySelector('.chatroom-form input[type="submit"]').click();
 
                 iq = await u.waitUntil(() => _.filter(IQs, iq => u.matchesSelector(iq, `iq[to="${jid}"][type="set"]`)).pop());
                 const result = $iq({
@@ -2904,6 +2904,49 @@
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy is no longer a member of this groupchat");
+                done();
+            }));
+
+            it("notifies users of role and affiliation changes for members not currently in the groupchat",
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+                const view = _converse.api.chatviews.get(muc_jid);
+
+                let message = $msg({
+                    from: 'lounge@montague.lit',
+                    id: '2CF9013B-E8A8-42A1-9633-85AD7CA12F40',
+                    to: 'romeo@montague.lit'
+                })
+                .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                .c('item', {
+                    'jid': 'absentguy@montague.lit',
+                    'affiliation': 'member',
+                    'role': 'none'
+                });
+                _converse.connection._dataRecv(test_utils.createRequest(message));
+                await u.waitUntil(() => view.model.occupants.length > 1);
+                expect(view.model.occupants.length).toBe(2);
+                expect(view.model.occupants.findWhere({'jid': 'absentguy@montague.lit'}).get('affiliation')).toBe('member');
+
+                message = $msg({
+                    from: 'lounge@montague.lit',
+                    id: '2CF9013B-E8A8-42A1-9633-85AD7CA12F41',
+                    to: 'romeo@montague.lit'
+                })
+                .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                .c('item', {
+                    'jid': 'absentguy@montague.lit',
+                    'affiliation': 'none',
+                    'role': 'none'
+                });
+                _converse.connection._dataRecv(test_utils.createRequest(message));
+                expect(view.model.occupants.length).toBe(2);
+                expect(view.model.occupants.findWhere({'jid': 'absentguy@montague.lit'}).get('affiliation')).toBe('none');
+
                 done();
             }));
         });

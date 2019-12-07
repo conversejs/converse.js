@@ -327,20 +327,6 @@ body.converse-fullscreen {
         content: close-quote;
     }
 
-    .modal {
-        background-color: rgba(0, 0, 0, 0.4);
-
-        .modal-body {
-            p {
-                padding: 0.25rem 0;
-            }
-        }
-
-        .modal-footer {
-            justify-content: flex-start;
-        }
-    }
-
     .helptext {
         font-size: var(--font-size-tiny);
         color: var(--text-color-lighten-15-percent);

@@ -1649,12 +1649,11 @@ converse.plugins.add('converse-muc-views', {
                 });
                 const switch_el = container.querySelector('a.switch-chat');
                 if (switch_el) {
-                    switch_el.addEventListener('click', ev => {
+                    switch_el.addEventListener('click', async ev => {
                         ev.preventDefault();
-                        this.model.save('jid', moved_jid);
-                        container.innerHTML = '';
-                        this.showSpinner();
-                        this.model.enterRoom();
+                        const room = await _converse.api.rooms.get(moved_jid, null, true);
+                        room.maybeShow(true);
+                        this.model.destroy();
                     });
                 }
                 u.showElement(container);

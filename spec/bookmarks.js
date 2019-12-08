@@ -191,17 +191,18 @@
                     ['rosterGroupsFetched'], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilBookmarksReturned(_converse);
-                const room_jid = 'coven@chat.shakespeare.lit';
+                const muc_jid = 'coven@chat.shakespeare.lit';
                 _converse.bookmarks.create({
-                    'jid': room_jid,
+                    'jid': muc_jid,
                     'autojoin': false,
                     'name':  'The Play',
                     'nick': 'Othello'
                 });
-                const room = await _converse.api.rooms.open(room_jid);
-                spyOn(room, 'join').and.callThrough();
-                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
-                await u.waitUntil(() => room.join.calls.count());
+                spyOn(_converse.ChatRoom.prototype, 'getAndPersistNickname').and.callThrough();
+                const room_creation_promise = _converse.api.rooms.open(muc_jid);
+                await test_utils.getRoomFeatures(_converse, muc_jid);
+                const room = await room_creation_promise;
+                await u.waitUntil(() => room.getAndPersistNickname.calls.count());
                 expect(room.get('nick')).toBe('Othello');
                 done();
             }));

@@ -387,10 +387,13 @@ converse.plugins.add('converse-muc', {
                 this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
                 this.initMessages();
+                this.initOccupants();
                 this.registerHandlers();
 
-                await this.initOccupants();
-                this.enterRoom();
+                const restored = await this.restoreFromCache()
+                if (!restored) {
+                    this.join();
+                }
                 this.initialized.resolve();
             },
 
@@ -402,23 +405,83 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            async enterRoom () {
-                const conn_status = this.get('connection_status');
-                if (conn_status !==  converse.ROOMSTATUS.ENTERED) {
-                    // We're not restoring a room from cache, so let's clear the potentially stale cache.
-                    this.removeNonMembers();
-                    await this.refreshRoomFeatures();
-                    if (_converse.muc_show_logs_before_join) {
-                        await this.fetchMessages();
-                    } else if (_converse.clear_messages_on_reconnection) {
-                        await this.clearMessages();
-                    }
-                    this.join();
-                } else if (!(await this.rejoinIfNecessary())) {
+            /**
+             * Checks whether we're still joined and if so, restores the MUC state from cache.
+             * @private
+             * @method _converse.ChatRoom#restoreFromCache
+             * @returns { Boolean } Returns `true` if we're still joined, otherwise returns `false`.
+             */
+            async restoreFromCache () {
+                if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED && await this.isJoined()) {
                     // We've restored the room from cache and we're still joined.
                     await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
+                    await this.fetchOccupants();
                     await this.fetchMessages();
+                    return true;
+                } else {
+                    await this.clearCache();
+                    return false;
                 }
+            },
+
+            /**
+             * Join the MUC
+             * @private
+             * @method _converse.ChatRoom#join
+             * @param { String } nick - The user's nickname
+             * @param { String } [password] - Optional password, if required by the groupchat.
+             */
+            async join (nick, password) {
+                if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+                    // We have restored a groupchat from session storage,
+                    // so we don't send out a presence stanza again.
+                    return this;
+                }
+                await this.refreshRoomFeatures();
+                nick = await this.getAndPersistNickname(nick);
+                if (!nick) {
+                    u.safeSave(this, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
+                    if (_converse.muc_show_logs_before_join) {
+                        await this.fetchMessages();
+                    }
+                    return this;
+                }
+                const stanza = $pres({
+                    'from': _converse.connection.jid,
+                    'to': this.getRoomJIDAndNick()
+                }).c("x", {'xmlns': Strophe.NS.MUC})
+                  .c("history", {'maxstanzas': this.features.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas}).up();
+
+                if (password) {
+                    stanza.cnode(Strophe.xmlElement("password", [], password));
+                }
+                this.save('connection_status', converse.ROOMSTATUS.CONNECTING);
+                _converse.api.send(stanza);
+                return this;
+            },
+
+            async clearCache () {
+                this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                if (this.occupants.length) {
+                    // Remove non-members when reconnecting
+                    this.occupants.filter(o => !o.isMember()).forEach(o => o.destroy());
+                } else {
+                    // Looks like we haven't restored occupants from cache, so we clear it.
+                    this.occupants.clearSession();
+                }
+                if (_converse.clear_messages_on_reconnection) {
+                    await this.clearMessages();
+                }
+            },
+
+            /**
+             * Clear stale cache and re-join a MUC we've been in before.
+             * @private
+             * @method _converse.ChatRoom#rejoin
+             */
+            rejoin () {
+                this.clearCache();
+                return this.join();
             },
 
             async onConnectionStatusChanged () {
@@ -442,17 +505,9 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            removeNonMembers () {
-                const non_members = this.occupants.filter(o => !o.isMember());
-                if (non_members.length) {
-                    non_members.forEach(o => o.destroy());
-                }
-            },
-
             async onReconnection () {
-                this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                 this.registerHandlers();
-                await this.enterRoom();
+                await this.rejoin();
                 this.announceReconnection();
             },
 
@@ -468,7 +523,10 @@ converse.plugins.add('converse-muc', {
                 this.occupants = new _converse.ChatRoomOccupants();
                 const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
                 this.occupants.browserStorage = _converse.createStore(id, 'session');
-                this.occupants.chatroom  = this;
+                this.occupants.chatroom = this;
+            },
+
+            fetchOccupants () {
                 this.occupants.fetched = new Promise(resolve => {
                     this.occupants.fetch({
                         'add': true,
@@ -562,38 +620,6 @@ converse.plugins.add('converse-muc', {
                 } else {
                     return this.get('jid');
                 }
-            },
-
-            /**
-             * Join the groupchat.
-             * @private
-             * @method _converse.ChatRoom#join
-             * @param { String } nick - The user's nickname
-             * @param { String } [password] - Optional password, if required by the groupchat.
-             */
-            async join (nick, password) {
-                if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-                    // We have restored a groupchat from session storage,
-                    // so we don't send out a presence stanza again.
-                    return this;
-                }
-                nick = await this.getAndPersistNickname(nick);
-                if (!nick) {
-                    u.safeSave(this, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
-                    return this;
-                }
-                const stanza = $pres({
-                    'from': _converse.connection.jid,
-                    'to': this.getRoomJIDAndNick()
-                }).c("x", {'xmlns': Strophe.NS.MUC})
-                  .c("history", {'maxstanzas': this.features.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas}).up();
-
-                if (password) {
-                    stanza.cnode(Strophe.xmlElement("password", [], password));
-                }
-                this.save('connection_status', converse.ROOMSTATUS.CONNECTING);
-                _converse.api.send(stanza);
-                return this;
             },
 
             /**
@@ -1262,7 +1288,7 @@ converse.plugins.add('converse-muc', {
                     _converse.getDefaultMUCNickname();
 
                 if (nick) {
-                    this.save({'nick': nick}, {'silent': true});
+                    this.save({nick}, {'silent': true});
                 }
                 return nick;
             },
@@ -1581,10 +1607,8 @@ converse.plugins.add('converse-muc', {
              * @method _converse.ChatRoom#rejoinIfNecessary
              */
             async rejoinIfNecessary () {
-                const is_joined = await this.isJoined();
-                if (!is_joined) {
-                    this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                    this.enterRoom();
+                if (! await this.isJoined()) {
+                    this.rejoin();
                     return true;
                 }
             },
@@ -2231,7 +2255,7 @@ converse.plugins.add('converse-muc', {
             if (result === true) {
                 const chatroom = await openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
                 if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
-                    _converse.chatboxes.get(room_jid).join();
+                    _converse.chatboxes.get(room_jid).rejoin();
                 }
             }
         };

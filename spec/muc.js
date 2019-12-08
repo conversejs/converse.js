@@ -22,7 +22,11 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+
+                _converse.connection.IQ_stanzas = [];
                 await test_utils.openAndEnterChatRoom(_converse, 'leisure@montague.lit', 'romeo');
+
+                _converse.connection.IQ_stanzas = [];
                 await test_utils.openAndEnterChatRoom(_converse, 'news@montague.lit', 'romeo');
                 expect(u.isVisible(_converse.chatboxviews.get('lounge@montague.lit').el)).toBeTruthy();
                 expect(u.isVisible(_converse.chatboxviews.get('leisure@montague.lit').el)).toBeTruthy();
@@ -108,6 +112,7 @@
                 await test_utils.openControlBox(_converse);
                 await test_utils.waitForRoster(_converse, 'current');
                 await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group .group-toggle').length);
+
                 let room = await _converse.api.rooms.open(jid);
                 // Test on groupchat that's not yet open
                 expect(room instanceof Backbone.Model).toBeTruthy();
@@ -267,7 +272,7 @@
                     ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
-                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                let IQ_stanzas = _converse.connection.IQ_stanzas;
                 const muc_jid = 'lounge@montague.lit';
                 await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
 
@@ -291,6 +296,8 @@
                 input.value = 'nicky';
                 view.el.querySelector('input[type=submit]').click();
                 expect(view.model.join).toHaveBeenCalled();
+                _converse.connection.IQ_stanzas = [];
+                await test_utils.getRoomFeatures(_converse, muc_jid);
                 await u.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
 
                 // The user has just entered the room (because join was called)
@@ -334,7 +341,9 @@
                  *   <query xmlns="http://jabber.org/protocol/muc#owner"><x xmlns="jabber:x:data" type="submit"/></query>
                  * </iq>
                  */
-                const iq = IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop();
+                const selector = `query[xmlns="${Strophe.NS.MUC_OWNER}"]`;
+                IQ_stanzas = _converse.connection.IQ_stanzas;
+                const iq = await u.waitUntil(() => IQ_stanzas.filter(s => s.querySelector(selector)).pop());
                 expect(Strophe.serialize(iq)).toBe(
                     `<iq id="${iq.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#owner"><x type="submit" xmlns="jabber:x:data"/>`+
@@ -405,10 +414,8 @@
                             Strophe.NS.SID
                         ];
                         const nick = 'romeo';
-                        const room = Strophe.getNodeFromJid(muc_jid);
-                        const server = Strophe.getDomainFromJid(muc_jid);
                         await _converse.api.rooms.open(muc_jid);
-                        await test_utils.getRoomFeatures(_converse, room, server, features);
+                        await test_utils.getRoomFeatures(_converse, muc_jid, features);
                         await test_utils.waitForReservedNick(_converse, muc_jid, nick);
                         test_utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
                         const view = _converse.chatboxviews.get(muc_jid);
@@ -532,11 +539,9 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'coven@chat.shakespeare.lit';
-                const room = Strophe.getNodeFromJid(muc_jid);
-                const server = Strophe.getDomainFromJid(muc_jid);
                 const nick = 'romeo';
                 await _converse.api.rooms.open(muc_jid);
-                await test_utils.getRoomFeatures(_converse, room, server);
+                await test_utils.getRoomFeatures(_converse, muc_jid);
                 await test_utils.waitForReservedNick(_converse, muc_jid, nick);
 
                 const view = _converse.chatboxviews.get(muc_jid);
@@ -577,8 +582,9 @@
                     ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
                     async function (done, _converse) {
 
+                const muc_jid = 'coven@chat.shakespeare.lit';
                 await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
-                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
+                await test_utils.getRoomFeatures(_converse, muc_jid);
 
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 const chat_content = view.el.querySelector('.chat-content');
@@ -1633,13 +1639,8 @@
                 expect(view.model.occupants.length).toBe(9);
                 expect(view.model.occupants.filter(o => o.isMember()).length).toBe(8);
 
-
+                view.model.rejoin();
                 // Test that members aren't removed when we reconnect
-                // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                spyOn(view.model, 'removeNonMembers').and.callThrough();
-                view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                view.model.enterRoom();
-                expect(view.model.removeNonMembers).toHaveBeenCalled();
                 expect(view.model.occupants.length).toBe(8);
                 expect(occupants.querySelectorAll('li').length).toBe(8);
                 done();
@@ -1856,8 +1857,6 @@
                         .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
-                const view = _converse.chatboxviews.get('lounge@montague.lit');
-                spyOn(view.model, 'join').and.callThrough();
 
                 /* <iq from='hag66@shakespeare.lit/pda'
                  *     id='getnick1'
@@ -1890,6 +1889,7 @@
                  *     </query>
                  * </iq>
                  */
+                const view = _converse.chatboxviews.get('lounge@montague.lit');
                 stanza = $iq({
                     'type': 'result',
                     'id': iq.getAttribute('id'),
@@ -1898,8 +1898,6 @@
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
                 .c('identity', {'category': 'conference', 'name': 'thirdwitch', 'type': 'text'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                expect(view.model.join).toHaveBeenCalled();
 
                 // The user has just entered the groupchat (because join was called)
                 // and receives their own presence from the server.
@@ -2203,7 +2201,7 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'coven@chat.shakespeare.lit';
-                await test_utils.openAndEnterChatRoom(_converse, 'coven@chat.shakespeare.lit', 'romeo');
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
                 expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
                 await test_utils.sendMessage(view, 'hello world');
@@ -2238,8 +2236,9 @@
                 sent_stanzas = _converse.connection.sent_stanzas;
                 const index = sent_stanzas.length -1;
 
+                _converse.connection.IQ_stanzas = [];
                 _converse.connection._dataRecv(test_utils.createRequest(result));
-                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
+                await test_utils.getRoomFeatures(_converse, muc_jid);
 
                 const pres = await u.waitUntil(
                     () => sent_stanzas.slice(index).filter(s => s.nodeName === 'presence').pop());
@@ -4320,9 +4319,9 @@
                 const sent_IQs = _converse.connection.IQ_stanzas;
                 const muc_jid = 'coven@chat.shakespeare.lit';
 
-                await _converse.api.rooms.open(muc_jid, {'nick': 'romeo'});
+                const room_creation_promise = _converse.api.rooms.open(muc_jid, {'nick': 'romeo'});
 
-                // Check that the groupchat queried for the feautures.
+                // Check that the groupchat queried for the features.
                 let stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`)).pop());
                 expect(Strophe.serialize(stanza)).toBe(
                     `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute("id")}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
@@ -4350,6 +4349,8 @@
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
                 await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
                 expect(view.model.features.get('membersonly')).toBeTruthy();
+
+                await room_creation_promise;
 
                 await test_utils.createContacts(_converse, 'current');
 

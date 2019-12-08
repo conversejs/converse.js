@@ -279,7 +279,7 @@
             await test_utils.openControlBox(_converse);
             const room_jid = 'kitchen@conference.shakespeare.lit';
             await u.waitUntil(() => _converse.rooms_list_view !== undefined, 500);
-            await test_utils.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'romeo');
+            await test_utils.openAndEnterChatRoom(_converse, room_jid, 'romeo');
             const view = _converse.chatboxviews.get(room_jid);
             view.model.set({'minimized': true});
             const nick = mock.chatroom_names[0];

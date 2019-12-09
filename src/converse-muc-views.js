@@ -891,10 +891,7 @@ converse.plugins.add('converse-muc-views', {
             submitNickname (ev) {
                 ev.preventDefault();
                 const nick = ev.target.nick.value.trim();
-                if (nick) {
-                    this.model.join(nick);
-                    this.model.set({'nickname': nick});
-                }
+                nick && this.model.join(nick);
             },
 
             onKeyDown (ev) {

@@ -358,6 +358,21 @@
     }
 }
 
+#conversejs {
+    #controlbox {
+        #service-admin-panel {
+            .controlbox-heading--service-administration {
+                color: var(--service-administration-color);
+            }
+            .service-admin-selector {
+                color: var(--service-administration-color);
+            }
+            .service-admin-selector-caret {
+                color: var(--service-administration-color);
+            }
+        }
+    }
+}
 
 #conversejs.converse-overlayed {
     .toggle-controlbox {

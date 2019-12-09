@@ -2,6 +2,7 @@
 
 ## 6.0.0 (Unreleased)
 
+- Add Broadcast-Message (Announcements/MOTD) functionality
 - [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks) is not set to `true` by default.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
 

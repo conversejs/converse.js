@@ -8,6 +8,7 @@ $mobile_portrait_length: 480px !default;
     --redder-orange: #E77051;
     --orange: #E7A151;
     --light-blue: #578EA9;
+    --darker-blue: #3c8be0;
 
     --chat-status-online: var(--green);
     --chat-status-busy: var(--redder-orange);
@@ -125,6 +126,9 @@ $mobile_portrait_length: 480px !default;
 
     --headline-head-color: var(--orange);
     --headline-message-color: #D2842B;
+
+    --service-administration-color: var(--darker-blue);
+    --service-administration-chat-background-color: white;
 
     --chatbox-button-size: 14px;
     --fullpage-chatbox-button-size: 16px;

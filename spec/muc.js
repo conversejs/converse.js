@@ -292,13 +292,13 @@
                 spyOn(view.model, 'join').and.callThrough();
                 await test_utils.waitForReservedNick(_converse, muc_jid, '');
                 const input = await u.waitUntil(() => view.el.querySelector('input[name="nick"]'), 1000);
-                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.NICKNAME_REQUIRED);
+                expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.NICKNAME_REQUIRED);
                 input.value = 'nicky';
                 view.el.querySelector('input[type=submit]').click();
                 expect(view.model.join).toHaveBeenCalled();
                 _converse.connection.IQ_stanzas = [];
                 await test_utils.getRoomFeatures(_converse, muc_jid);
-                await u.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+                await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
 
                 // The user has just entered the room (because join was called)
                 // and receives their own presence from the server.
@@ -327,7 +327,7 @@
                 .c('status').attrs({code:'201'}).nodeTree;
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                await u.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED);
+                await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED);
                 await test_utils.returnMemberLists(_converse, muc_jid);
                 // await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 2);
 
@@ -419,7 +419,7 @@
                         await test_utils.waitForReservedNick(_converse, muc_jid, nick);
                         test_utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
                         const view = _converse.chatboxviews.get(muc_jid);
-                        await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+                        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
 
                         // Check in reverse order that we requested all three lists
                         const owner_iq = sent_IQs.pop();
@@ -2203,7 +2203,7 @@
                 const muc_jid = 'coven@chat.shakespeare.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
-                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+                expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
                 await test_utils.sendMessage(view, 'hello world');
 
                 const stanza = u.toStanza(`
@@ -2258,7 +2258,7 @@
                 const muc_jid = 'coven@chat.shakespeare.lit';
                 await test_utils.openAndEnterChatRoom(_converse, 'coven@chat.shakespeare.lit', 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
-                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+                expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
                 const stanza = u.toStanza(`
                     <message from='${muc_jid}'
@@ -2321,7 +2321,7 @@
                 const __ = _converse.__;
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'oldnick');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+                expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
                 const chat_content = view.el.querySelector('.chat-content');
 
                 await u.waitUntil(() => view.el.querySelectorAll('li .occupant-nick').length, 500);
@@ -2355,7 +2355,7 @@
                 expect(sizzle('div.chat-info:last').pop().textContent.trim()).toBe(
                     __(_converse.muc.new_nickname_messages["303"], "newnick")
                 );
-                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+                expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
                 occupants = view.el.querySelector('.occupant-list');
                 expect(occupants.childNodes.length).toBe(1);
@@ -2374,7 +2374,7 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+                expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
                 // XXX: currently we still have an additional "has entered the groupchat"
                 // notification for the new nickname. Ideally we'd not have
                 // that, but that's probably not possible without some
@@ -2450,7 +2450,7 @@
                         .c('feature', {'var': 'muc_nonanonymous'});
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
                 let view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+                await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
                 view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 expect(view.model.features.get('fetched')).toBeTruthy();
                 expect(view.model.features.get('passwordprotected')).toBe(true);
@@ -3898,7 +3898,7 @@
                 spyOn(_converse.api, "trigger").and.callThrough();
                 expect(_converse.chatboxes.length).toBe(2);
                 _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
-                await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
+                await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
                 await u.waitUntil(() => _converse.chatboxes.length === 1);
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 done();
@@ -3986,7 +3986,7 @@
                         .c('feature', {'var': 'muc_temporary'}).up()
                         .c('feature', {'var': 'muc_membersonly'}).up();
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-                await u.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+                await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
 
                 const presence = $pres().attrs({
                         from: `${muc_jid}/romeo`,
@@ -4031,7 +4031,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 const view = _converse.chatboxviews.get(muc_jid);
-                await u.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+                await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
 
                 const presence = $pres().attrs({
                         from: `${muc_jid}/romeo`,
@@ -4163,7 +4163,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 const view = _converse.chatboxviews.get(muc_jid);
-                await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+                await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
 
                 const presence = $pres().attrs({
                         from: `${muc_jid}/romeo`,
@@ -4204,7 +4204,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 const view = _converse.chatboxviews.get(muc_jid);
-                await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+                await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
 
                 const presence = $pres().attrs({
                         from: `${muc_jid}/romeo`,
@@ -4246,7 +4246,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 const view = _converse.chatboxviews.get(muc_jid);
-                await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+                await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
 
                 const presence = $pres().attrs({
                         from: `${muc_jid}/romeo`,
@@ -4288,7 +4288,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 const view = _converse.chatboxviews.get(muc_jid);
-                await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+                await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
 
                 const presence = $pres().attrs({
                         from: `${muc_jid}/romeo`,
@@ -4347,7 +4347,7 @@
                         .c('feature', {'var': 'muc_temporary'}).up()
                         .c('feature', {'var': 'muc_membersonly'}).up();
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-                await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+                await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
                 expect(view.model.features.get('membersonly')).toBeTruthy();
 
                 await room_creation_promise;

@@ -224,7 +224,7 @@ converse.plugins.add('converse-mam', {
         function preMUCJoinMAMFetch (room) {
             if (!_converse.muc_show_logs_before_join ||
                     !room.features.get('mam_enabled') ||
-                    room.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
+                    room.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
                     room.get('prejoin_mam_fetched')) {
                 return;
             }

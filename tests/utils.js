@@ -286,7 +286,6 @@
             }).up()
             .c('status').attrs({code:'110'});
         _converse.connection._dataRecv(utils.createRequest(presence));
-        // return utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
     };
 
 
@@ -302,7 +301,7 @@
 
         await room_creation_promise;
         const view = _converse.chatboxviews.get(muc_jid);
-        await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
         if (_converse.muc_fetch_members) {
             await utils.returnMemberLists(_converse, muc_jid, members);
         }

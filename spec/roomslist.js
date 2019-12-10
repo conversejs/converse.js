@@ -181,7 +181,7 @@
                         .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
                             .c('value').t(0);
             _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-            await u.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING)
+            await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING)
             let presence = $pres({
                     to: _converse.connection.jid,
                     from: 'coven@chat.shakespeare.lit/some1',

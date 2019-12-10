@@ -88,13 +88,6 @@ converse.plugins.add('converse-muc', {
     dependencies: ["converse-chatboxes", "converse-chat", "converse-disco", "converse-controlbox"],
 
     overrides: {
-        tearDown () {
-            const { _converse } = this.__super__;
-            const groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
-            groupchats.forEach(gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
-            this.__super__.tearDown.call(this, arguments);
-        },
-
         ChatBoxes: {
             model (attrs, options) {
                 const { _converse } = this.__super__;

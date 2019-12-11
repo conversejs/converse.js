@@ -384,7 +384,7 @@ converse.plugins.add('converse-muc', {
                 this.setVCard();
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
 
-                this.restoreSession();
+                await this.restoreSession();
                 this.initFeatures(); // sendChatState depends on this.features
                 this.on('change:chat_state', this.sendChatState, this);
                 this.session.on('change:connection_status', this.onConnectionStatusChanged, this);

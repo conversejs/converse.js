@@ -419,7 +419,7 @@ converse.plugins.add('converse-muc', {
              * @returns { Boolean } Returns `true` if we're still joined, otherwise returns `false`.
              */
             async restoreFromCache () {
-                if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED && await this.isJoined()) {
+                if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED && (await this.isJoined())) {
                     // We've restored the room from cache and we're still joined.
                     await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
                     await this.fetchOccupants();
@@ -1602,10 +1602,13 @@ converse.plugins.add('converse-muc', {
                 try {
                     await _converse.api.sendIQ(ping);
                 } catch (e) {
-                    const sel = `error not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`;
-                    if (isElement(e) && sizzle(sel, e).length) {
-                        return false;
+                    if (e === null) {
+                        log.error(`Timeout error while checking whether we're joined to MUC: ${this.get('jid')}`);
+                    } else {
+                        log.error(`Apparently we're no longer connected to MUC: ${this.get('jid')}`);
+                        log.error(e);
                     }
+                    return false;
                 }
                 return true;
             },

@@ -131,9 +131,6 @@ converse.plugins.add('converse-chatboxviews', {
             },
 
             closeAllChatBoxes () {
-                /* This method gets overridden in src/converse-controlbox.js if
-                 * the controlbox plugin is active.
-                 */
                 return Promise.all(this.map(v => v.close({'name': 'closeAllChatBoxes'})));
             }
         });

@@ -381,14 +381,10 @@ converse.plugins.add('converse-muc', {
             async initialize() {
                 this.initialized = u.getResolveablePromise();
 
-                const id = `muc.session-${this.get('jid')}`;
-                this.session = new MUCSession({id});
-                this.session.browserStorage = _converse.createStore(id, "session");
-                await new Promise(r => this.session.fetch({'success': r, 'error': r}));
-
                 this.setVCard();
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
 
+                this.restoreSession();
                 this.initFeatures(); // sendChatState depends on this.features
                 this.on('change:chat_state', this.sendChatState, this);
                 this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
@@ -516,6 +512,13 @@ converse.plugins.add('converse-muc', {
                 this.registerHandlers();
                 await this.rejoin();
                 this.announceReconnection();
+            },
+
+            restoreSession () {
+                const id = `muc.session-${_converse.bare_jid}-${this.get('jid')}`;
+                this.session = new MUCSession({id});
+                this.session.browserStorage = _converse.createStore(id, "session");
+                return new Promise(r => this.session.fetch({'success': r, 'error': r}));
             },
 
             initFeatures () {

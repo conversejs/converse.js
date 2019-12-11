@@ -23,7 +23,7 @@
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "devDependencies": {
     "backbone": "1.4",
-    "backbone.browserStorage": "conversejs/backbone.browserStorage#2d0ceaa2f38eedc60122bb0aa23c826dc37a9194",
+    "backbone.browserStorage": "conversejs/backbone.browserStorage#674ba3aa0e4d0f0b0dcac48fcc7dea531012828f",
     "filesize": "^4.1.2",
     "jed": "1.1.1",
     "localforage": "^1.7.3",

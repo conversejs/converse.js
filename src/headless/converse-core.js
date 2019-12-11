@@ -120,17 +120,15 @@ _converse.Collection = Backbone.Collection.extend({
     async clearSession (options={}) {
         await Promise.all(Array.from(this.models).map(m => {
             return new Promise(
-                success => m.destroy(
-                    Object.assign(options, {
-                        success,
-                        'error': (m, e) => {
-                            log.error(e);
-                            success()
-                        }
-                    })
-                )
+                resolve => {
+                    m.destroy(Object.assign(options, {
+                        'success': resolve,
+                        'error': (m, e) => { log.error(e); resolve() }
+                    }));
+                }
             );
         }));
+        await this.browserStorage.clear();
         this.reset();
     }
 });

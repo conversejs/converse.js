@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-11-02 03:04+0000\n"
+"PO-Revision-Date: 2019-12-15 23:21+0000\n"
 "Last-Translator: Antonio Morais <antoniomorais360@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
@@ -569,12 +569,10 @@ msgid "The groupchat configuration has changed"
 msgstr "A configuração da sala mudou"
 
 #: dist/converse-no-dependencies.js:28149
-#, fuzzy
 msgid "Groupchat logging is now enabled"
 msgstr "O log da sala está ativado"
 
 #: dist/converse-no-dependencies.js:28150
-#, fuzzy
 msgid "Groupchat logging is now disabled"
 msgstr "O log da sala está desativado"
 
@@ -659,15 +657,14 @@ msgid "%1$s has been removed for not being a member"
 msgstr "%1$s foi removido por não ser mais um membro"
 
 #: dist/converse-no-dependencies.js:29866
-#, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Você não tem permissão de criar novas salas."
+msgstr "Você não tem permissão de se registrar nessa sala."
 
 #: dist/converse-no-dependencies.js:29868
-#, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "Você não tem permissão de criar novas salas."
+msgstr ""
+"Você não tem permissão de entrar nessa sala porque ela é apenas para membros."
 
 #: dist/converse-no-dependencies.js:29914
 msgid ""
@@ -684,17 +681,17 @@ msgstr ""
 "inválido."
 
 #: dist/converse-no-dependencies.js:30299
-#, fuzzy
 msgid ""
 "Your message was not delivered because you're not allowed to send messages "
 "in this groupchat."
-msgstr "Você não tem permissão de criar novas salas."
+msgstr ""
+"Sua mensagem não foi entregue porque você não tem permissão para enviar "
+"mensagens nesta sala."
 
 #: dist/converse-no-dependencies.js:30301
-#, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "Você não tem permissão de criar novas salas."
+msgstr "Sua mensagem não foi entregue porque você não está presente na sala."
 
 #: dist/converse-no-dependencies.js:30498
 #: dist/converse-no-dependencies.js:48591
@@ -715,19 +712,16 @@ msgid ""
 msgstr "O apelido escolhido está atualmente em uso, por favor escolha outro."
 
 #: dist/converse-no-dependencies.js:30571
-#, fuzzy
 msgid "Password incorrect"
-msgstr "Protegido por senha"
+msgstr "Senha incorreta"
 
 #: dist/converse-no-dependencies.js:30577
-#, fuzzy
 msgid "You are not on the member list of this groupchat."
 msgstr "Você não é membro dessa sala."
 
 #: dist/converse-no-dependencies.js:30581
-#, fuzzy
 msgid "You have been banned from this groupchat."
-msgstr "Você foi banido dessa sala."
+msgstr "Você foi banido deste bate-papo em grupo."
 
 #: dist/converse-no-dependencies.js:30587
 #, fuzzy

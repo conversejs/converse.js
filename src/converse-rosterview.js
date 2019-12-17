@@ -10,6 +10,7 @@ import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
 import "formdata-polyfill";
+import { compact, debounce, has, isString, uniq, without } from "lodash";
 import { OrderedListView } from "backbone.overview";
 import SHA1 from 'strophe.js/src/sha1';
 import converse from "@converse/headless/converse-core";
@@ -22,7 +23,7 @@ import tpl_roster from "templates/roster.html";
 import tpl_roster_filter from "templates/roster_filter.html";
 import tpl_roster_item from "templates/roster_item.html";
 
-const { Backbone, Strophe, _ } = converse.env;
+const { Backbone, Strophe } = converse.env;
 const u = converse.env.utils;
 
 
@@ -82,7 +83,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             afterRender () {
-                if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
+                if (_converse.xhr_user_search_url && isString(_converse.xhr_user_search_url)) {
                     this.initXHRAutoComplete();
                 } else {
                     this.initJIDAutoComplete();
@@ -99,7 +100,7 @@ converse.plugins.add('converse-rosterview', {
                 this.jid_auto_complete = new _converse.AutoComplete(el, {
                     'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
                     'filter': _converse.FILTER_STARTSWITH,
-                    'list': _.uniq(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))
+                    'list': uniq(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))
                 });
             },
 
@@ -124,7 +125,7 @@ converse.plugins.add('converse-rosterview', {
                     }
                 };
                 const input_el = this.el.querySelector('input[name="name"]');
-                input_el.addEventListener('input', _.debounce(() => {
+                input_el.addEventListener('input', debounce(() => {
                     xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
                     xhr.send()
                 } , 300));
@@ -158,7 +159,7 @@ converse.plugins.add('converse-rosterview', {
 
             validateSubmission (jid) {
                 const el = this.el.querySelector('.invalid-feedback');
-                if (!jid || _.compact(jid.split('@')).length < 2) {
+                if (!jid || compact(jid.split('@')).length < 2) {
                     u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
                     u.addClass('d-block', el);
                     return false;
@@ -182,7 +183,7 @@ converse.plugins.add('converse-rosterview', {
                 const data = new FormData(ev.target),
                       jid = (data.get('jid') || '').trim();
 
-                if (!jid && _converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
+                if (!jid && _converse.xhr_user_search_url && isString(_converse.xhr_user_search_url)) {
                     const input_el = this.el.querySelector('input[name="name"]');
                     this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
                     this.xhr.send()
@@ -261,7 +262,7 @@ converse.plugins.add('converse-rosterview', {
                 }
             },
 
-            liveFilter: _.debounce(function () {
+            liveFilter: debounce(function () {
                 this.model.save({
                     'filter_text': this.el.querySelector('.roster-filter').value
                 });
@@ -415,7 +416,7 @@ converse.plugins.add('converse-rosterview', {
                     );
                 } else if (subscription === 'both' || subscription === 'to') {
                     this.el.classList.add('current-xmpp-contact');
-                    this.el.classList.remove(_.without(['both', 'to'], subscription)[0]);
+                    this.el.classList.remove(without(['both', 'to'], subscription)[0]);
                     this.el.classList.add(subscription);
                     this.renderRosterItem(this.model);
                 }
@@ -820,7 +821,7 @@ converse.plugins.add('converse-rosterview', {
                 this.filter_view.model.fetch();
             },
 
-            updateFilter: _.debounce(function () {
+            updateFilter: debounce(function () {
                 /* Filter the roster again.
                  * Called whenever the filter settings have been changed or
                  * when contacts have been added, removed or changed.
@@ -886,17 +887,17 @@ converse.plugins.add('converse-rosterview', {
 
             onContactChange (contact) {
                 this.update();
-                if (_.has(contact.changed, 'subscription')) {
+                if (has(contact.changed, 'subscription')) {
                     if (contact.changed.subscription === 'from') {
                         this.addContactToGroup(contact, _converse.HEADER_PENDING_CONTACTS);
                     } else if (['both', 'to'].includes(contact.get('subscription'))) {
                         this.addExistingContact(contact);
                     }
                 }
-                if (_.has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
+                if (has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
                     this.addContactToGroup(contact, _converse.HEADER_PENDING_CONTACTS);
                 }
-                if (_.has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
+                if (has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
                     this.addContactToGroup(contact, _converse.HEADER_REQUESTING_CONTACTS);
                 }
                 this.updateFilter();

@@ -200,7 +200,7 @@ converse.plugins.add('converse-rosterview', {
                 this.set({
                     'filter_text': '',
                     'filter_type': 'contacts',
-                    'chat_state': ''
+                    'chat_state': 'online'
                 });
             },
         });
@@ -242,9 +242,7 @@ converse.plugins.add('converse-rosterview', {
 
             changeChatStateFilter (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                this.model.save({
-                    'chat_state': this.el.querySelector('.state-type').value
-                });
+                this.model.save({'chat_state': this.el.querySelector('.state-type').value});
             },
 
             changeTypeFilter (ev) {
@@ -309,7 +307,7 @@ converse.plugins.add('converse-rosterview', {
                 if (!u.isVisible(this.el)) { return this; }
                 this.model.save({
                     'filter_text': '',
-                    'chat_state': ''
+                    'chat_state': 'online'
                 });
                 this.el.classList.add('hidden');
                 return this;
@@ -611,7 +609,7 @@ converse.plugins.add('converse-rosterview', {
                 let shown = 0;
                 this.model.contacts.forEach(contact => {
                     const contact_view = this.get(contact.get('id'));
-                    if (_.includes(contacts, contact)) {
+                    if (contacts.includes(contact)) {
                         u.hideElement(contact_view.el);
                     } else if (contact_view.mayBeShown()) {
                         u.showElement(contact_view.el);
@@ -644,17 +642,17 @@ converse.plugins.add('converse-rosterview', {
                         // When filtering by chat state, we still want to
                         // show requesting contacts, even though they don't
                         // have the state in question.
-                        matches = this.model.contacts.filter(c => !_.includes(c.presence.get('show'), q) && !c.get('requesting'));
+                        matches = this.model.contacts.filter(c => !c.presence.get('show').includes(q) && !c.get('requesting'));
                     } else if (q === 'unread_messages') {
                         matches = this.model.contacts.filter({'num_unread': 0});
                     } else if (q === 'online') {
                         matches = this.model.contacts.filter(c => ["offline", "unavailable"].includes(c.presence.get('show')));
                     } else {
-                        matches = this.model.contacts.filter(c => !_.includes(c.presence.get('show'), q));
+                        matches = this.model.contacts.filter(c => !c.presence.get('show').includes(q));
                     }
                 } else  {
                     matches = this.model.contacts.filter((contact) => {
-                        return !_.includes(contact.getDisplayName().toLowerCase(), q.toLowerCase());
+                        return !contact.getDisplayName().toLowerCase().includes(q.toLowerCase());
                     });
                 }
                 return matches;
@@ -685,7 +683,7 @@ converse.plugins.add('converse-rosterview', {
             async toggle (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
-                if (_.includes(icon_el.classList, "fa-caret-down")) {
+                if (u.hasClass("fa-caret-down", icon_el)) {
                     this.model.save({state: _converse.CLOSED});
                     await this.collapse();
                     icon_el.classList.remove("fa-caret-down");
@@ -701,7 +699,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             onContactGroupChange (contact) {
-                const in_this_group = _.includes(contact.get('groups'), this.model.get('name'));
+                const in_this_group = contact.get('groups').includes(this.model.get('name'));
                 const cid = contact.get('id');
                 const in_this_overview = !this.get(cid);
                 if (in_this_group && !in_this_overview) {
@@ -891,7 +889,7 @@ converse.plugins.add('converse-rosterview', {
                 if (_.has(contact.changed, 'subscription')) {
                     if (contact.changed.subscription === 'from') {
                         this.addContactToGroup(contact, _converse.HEADER_PENDING_CONTACTS);
-                    } else if (_.includes(['both', 'to'], contact.get('subscription'))) {
+                    } else if (['both', 'to'].includes(contact.get('subscription'))) {
                         this.addExistingContact(contact);
                     }
                 }

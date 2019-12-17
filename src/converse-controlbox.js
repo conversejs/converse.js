@@ -442,12 +442,12 @@ converse.plugins.add('converse-controlbox', {
                 if (_converse.trusted === 'on' || _converse.trusted === 'off') {
                     _converse.config.save({
                         'trusted': _converse.trusted === 'on',
-                        'storage': _converse.trusted === 'on' ? 'local' : 'session'
+                        'storage': _converse.trusted === 'on' ? 'persistent' : 'session'
                     });
                 } else {
                     _converse.config.save({
                         'trusted': form_data.get('trusted') && true || false,
-                        'storage': form_data.get('trusted') ? 'local' : 'session'
+                        'storage': form_data.get('trusted') ? 'persistent' : 'session'
                     });
                 }
 

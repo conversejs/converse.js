@@ -131,7 +131,7 @@ converse.plugins.add('converse-muc-views', {
                 this.roomspanel = new _converse.RoomsPanel({
                     'model': new (_converse.RoomsPanelModel.extend({
                         id,
-                        'browserStorage': _converse.createStore(id, _converse.config.get('storage'))
+                        'browserStorage': _converse.createStore(id)
                     }))()
                 });
                 this.roomspanel.model.fetch();

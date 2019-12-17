@@ -236,7 +236,8 @@ converse.plugins.add('converse-disco', {
                     this.fetch({
                         add: true,
                         success: resolve,
-                        error () {
+                        error (m, e) {
+                            log.error(e);
                             reject (new Error("Could not fetch disco entities"));
                         }
                     });

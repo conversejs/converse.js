@@ -359,33 +359,34 @@ _converse.isUniView = function () {
 };
 
 
-async function initStorage () {
+async function initSessionStorage () {
     await BrowserStorage.sessionStorageInitialized;
-
-    // Sets up Backbone.BrowserStorage and localForage for the 3 different stores.
-    _converse.localStorage = BrowserStorage.localForage.createInstance({
-        'name': 'local',
-        'description': 'localStorage instance',
-        'driver': [BrowserStorage.localForage.LOCALSTORAGE]
-    });
-
-    _converse.indexedDB = BrowserStorage.localForage.createInstance({
-        'name': 'indexed',
-        'description': 'indexedDB instance',
-        'driver': [BrowserStorage.localForage.INDEXEDDB]
-    });
-
-    _converse.sessionStorage = BrowserStorage.localForage.createInstance({
-        'name': 'session',
-        'description': 'sessionStorage instance',
-        'driver': ['sessionStorageWrapper']
-    });
-
     _converse.storage = {
-        'session': _converse.sessionStorage,
-        'local': _converse.localStorage,
-        'indexed': _converse.indexedDB
+        'session': BrowserStorage.localForage.createInstance({
+            'name': _converse.isTestEnv() ? 'converse-test-session' : 'converse-session',
+            'description': 'sessionStorage instance',
+            'driver': ['sessionStorageWrapper']
+        })
+    };
+}
+
+
+function initPersistentStorage () {
+    if (_converse.config.get('storage') !== 'persistent') {
+        return;
     }
+    const config = {
+        'name': _converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
+        'storeName': _converse.bare_jid
+    }
+    if (_converse.persistent_store === 'localStorage') {
+        config['description'] = 'localStorage instance';
+        config['driver'] = [BrowserStorage.localForage.LOCALSTORAGE];
+    } else if (_converse.persistent_store === 'IndexedDB') {
+        config['description'] = 'indexedDB instance';
+        config['driver'] = [BrowserStorage.localForage.INDEXEDDB];
+    }
+    _converse.storage['persistent'] = BrowserStorage.localForage.createInstance(config);
 }
 
 
@@ -447,11 +448,10 @@ function initClientConfig () {
      * user sessions.
      */
     const id = 'converse.client-config';
-    const store_map = { 'localStorage': 'local', 'IndexedDB': 'indexed' };
     _converse.config = new Backbone.Model({
         'id': id,
         'trusted': _converse.trusted && true || false,
-        'storage': _converse.trusted ? store_map[_converse.persistent_store] : 'session'
+        'storage': _converse.trusted ? 'persistent' : 'session'
     });
     _converse.config.browserStorage = _converse.createStore(id, "session");
     _converse.config.fetch();
@@ -684,6 +684,7 @@ async function initSession (jid) {
             _converse.session.save({id});
         }
         saveJIDtoSession(jid);
+        initPersistentStorage();
         /**
          * Triggered once the user's session has been initialized. The session is a
          * cache which stores information about the user's current session.
@@ -831,7 +832,7 @@ function setUpXMLLogging () {
 
 
 async function finishInitialization () {
-    await initStorage();
+    await initSessionStorage();
     initClientConfig();
     initPlugins();
     registerGlobalEventHandlers();
@@ -976,15 +977,10 @@ function unregisterGlobalEventHandlers () {
     _converse.api.trigger('unregisteredGlobalEventHandlers');
 }
 
-async function cleanup () {
+
+function cleanup () {
     // Make sure everything is reset in case this is a subsequent call to
     // convesre.initialize (happens during tests).
-    if (_converse.localStorage) {
-        await Promise.all([
-            BrowserStorage.localForage.dropInstance({'name': 'local'}),
-            BrowserStorage.localForage.dropInstance({'name': 'indexed'}),
-            BrowserStorage.localForage.dropInstance({'name': 'session'})]);
-    }
     Backbone.history.stop();
     unregisterGlobalEventHandlers();
     delete _converse.controlboxtoggle;
@@ -1000,7 +996,7 @@ async function cleanup () {
 
 
 _converse.initialize = async function (settings, callback) {
-    await cleanup();
+    cleanup();
 
     settings = settings !== undefined ? settings : {};
     PROMISES.forEach(addPromise);
@@ -1802,7 +1798,7 @@ Object.assign(window.converse, {
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
      */
-    'env': { $build, $iq, $msg, $pres, Backbone, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
+    'env': { $build, $iq, $msg, $pres, Backbone, BrowserStorage, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
 });
 
 /**

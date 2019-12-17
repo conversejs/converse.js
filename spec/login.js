@@ -29,9 +29,9 @@
             spyOn(cbview.loginpanel, 'connect');
             cbview.delegateEvents();
 
-            expect(_converse.config.get('storage')).toBe('local');
+            expect(_converse.config.get('storage')).toBe('persistent');
             cbview.el.querySelector('input[type="submit"]').click();
-            expect(_converse.config.get('storage')).toBe('local');
+            expect(_converse.config.get('storage')).toBe('persistent');
             expect(cbview.loginpanel.connect).toHaveBeenCalled();
 
             checkbox.click();
@@ -72,7 +72,7 @@
 
                 checkbox.click();
                 cbview.el.querySelector('input[type="submit"]').click();
-                expect(_converse.config.get('storage')).toBe('local');
+                expect(_converse.config.get('storage')).toBe('persistent');
                 done();
             });
         }));

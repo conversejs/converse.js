@@ -970,20 +970,19 @@ converse.plugins.add('converse-roster', {
             // Initialize the Bakcbone collections that represent the contats
             // roster and the roster groups.
             await _converse.api.waitUntil('VCardsInitialized');
-            const storage = _converse.config.get('storage');
             _converse.roster = new _converse.RosterContacts();
             let id = `converse.contacts-${_converse.bare_jid}`;
-            _converse.roster.browserStorage = _converse.createStore(id, storage);
+            _converse.roster.browserStorage = _converse.createStore(id);
 
             _converse.roster.data = new Backbone.Model();
             id = `converse-roster-model-${_converse.bare_jid}`;
             _converse.roster.data.id = id;
-            _converse.roster.data.browserStorage = _converse.createStore(id, storage);
+            _converse.roster.data.browserStorage = _converse.createStore(id);
             _converse.roster.data.fetch();
 
             id = `converse.roster.groups${_converse.bare_jid}`;
             _converse.rostergroups = new _converse.RosterGroups();
-            _converse.rostergroups.browserStorage = _converse.createStore(id, storage);
+            _converse.rostergroups.browserStorage = _converse.createStore(id);
             /**
              * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
              * been created, but not yet populated with data.

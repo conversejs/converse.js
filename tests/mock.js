@@ -5,6 +5,7 @@
     converse.load();
 
     const _ = converse.env._;
+    const u = converse.env.utils;
     const Promise = converse.env.Promise;
     const Strophe = converse.env.Strophe;
     const dayjs = converse.env.dayjs;
@@ -220,9 +221,30 @@
     Strophe.Connection = MockConnection;
 
 
+    function clearIndexedDB () {
+        const promise = u.getResolveablePromise();
+        const DBOpenRequest = window.indexedDB.open("converse-test-persistent");
+        DBOpenRequest.onsuccess = function () {
+            const db = DBOpenRequest.result;
+            const bare_jid = "romeo@montague.lit";
+            const objectStore = db.transaction([bare_jid], "readwrite").objectStore(bare_jid);
+            const objectStoreRequest = objectStore.clear();
+            objectStoreRequest.onsuccess = promise.resolve();
+            objectStoreRequest.onerror = promise.resolve();
+        };
+        return promise;
+    }
+
+    function clearStores () {
+        [localStorage, sessionStorage].forEach(
+            s => Object.keys(s).forEach(k => k.match(/^converse-test-/) && s.removeItem(k))
+        );
+    }
+
+
     async function initConverse (settings) {
-        window.localStorage.clear();
-        window.sessionStorage.clear();
+        clearStores();
+        await clearIndexedDB();
 
         const _converse = await converse.initialize(Object.assign({
             'animate': false,
@@ -230,6 +252,7 @@
             'bosh_service_url': 'montague.lit/http-bind',
             'enable_smacks': false,
             'i18n': 'en',
+            // 'persistent_store': 'IndexedDB',
             'loglevel': 'warn',
             'no_trimming': true,
             'play_sounds': false,
@@ -282,6 +305,7 @@
             promise_names = []
             settings = null;
         }
+
         return async done => {
             const _converse = await initConverse(settings);
             async function _done () {
@@ -301,7 +325,7 @@
             } catch(e) {
                 console.error(e);
                 fail(e);
-                _done();
+                await _done();
             }
         }
     };

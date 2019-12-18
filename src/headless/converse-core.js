@@ -327,11 +327,19 @@ const PROMISES = [
     'statusInitialized'
 ];
 
-function addPromise (promise) {
-    /* Private function, used to add a new promise to the ones already
-     * available via the `waitUntil` api method.
-     */
-    _converse.promises[promise] = u.getResolveablePromise();
+
+function replacePromise (name) {
+    const existing_promise = _converse.promises[name];
+    if (!existing_promise) {
+        throw new Error(`Tried to replace non-existing promise: ${name}`);
+    }
+    if (existing_promise.replace) {
+        const promise = u.getResolveablePromise();
+        promise.replace = existing_promise ? existing_promise.replace : replace;
+        _converse.promises[name] = promise;
+    } else {
+        log.debug(`Not replacing promise "${name}"`);
+    }
 }
 
 _converse.isTestEnv = function () {
@@ -999,7 +1007,7 @@ _converse.initialize = async function (settings, callback) {
     cleanup();
 
     settings = settings !== undefined ? settings : {};
-    PROMISES.forEach(addPromise);
+    PROMISES.forEach(name => _converse.api.promises.add(name));
 
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it
@@ -1417,7 +1425,7 @@ _converse.api = {
             const promise = u.getResolveablePromise();
             const complete = () => {
                 // Recreate all the promises
-                Object.keys(_converse.promises).forEach(addPromise);
+                Object.keys(_converse.promises).forEach(replacePromise);
                 /**
                  * Triggered once the user has logged out.
                  * @event _converse#logout
@@ -1549,11 +1557,16 @@ _converse.api = {
          *
          * @method _converse.api.promises.add
          * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
+         * @param {boolean} [replace=true] Whether this promise should be replaced with a new one when the user logs out.
          * @example _converse.api.promises.add('foo-completed');
          */
-        add (promises) {
+        add (promises, replace=true) {
             promises = Array.isArray(promises) ? promises : [promises];
-            promises.forEach(addPromise);
+            promises.forEach(name => {
+                const promise = u.getResolveablePromise();
+                promise.replace = replace;
+                _converse.promises[name] = promise;
+            });
         }
     },
 

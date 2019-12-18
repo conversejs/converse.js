@@ -103,10 +103,6 @@ converse.plugins.add('converse-message-view', {
                     }
                 }, 50);
 
-                if (this.model.vcard) {
-                    this.listenTo(this.model.vcard, 'change', this.debouncedRender);
-                }
-
                 if (this.model.rosterContactAdded) {
                     this.model.rosterContactAdded.then(() => {
                         this.listenTo(this.model.contact, 'change:nickname', this.debouncedRender);
@@ -122,6 +118,7 @@ converse.plugins.add('converse-message-view', {
 
                 this.listenTo(this.model, 'change', this.onChanged);
                 this.listenTo(this.model, 'destroy', this.fadeOut);
+                this.listenTo(this.model, 'vcard:change', this.debouncedRender);
             },
 
             async render () {

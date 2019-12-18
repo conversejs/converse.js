@@ -53,7 +53,13 @@ converse.plugins.add('converse-headlines-view', {
                 this.render().insertHeading()
                 this.updateAfterMessagesFetched();
                 this.insertIntoDOM().hide();
-                _converse.api.trigger('chatBoxInitialized', this);
+                /**
+                 * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
+                 * @event _converse#headlinesBoxViewInitialized
+                 * @type { _converse.HeadlinesBoxView }
+                 * @example _converse.api.listen.on('headlinesBoxViewInitialized', view => { ... });
+                 */
+                _converse.api.trigger('headlinesBoxViewInitialized', this);
             },
 
             render () {

@@ -339,14 +339,14 @@ converse.plugins.add('converse-rosterview', {
 
             async initialize () {
                 await this.model.initialized;
-                this.listenTo(this.model, "change", this.render);
-                this.listenTo(this.model, "highlight", this.highlight);
+                this.debouncedRender = debounce(this.render, 50);
+                this.listenTo(this.model, "change", this.debouncedRender);
                 this.listenTo(this.model, "destroy", this.remove);
+                this.listenTo(this.model, "highlight", this.highlight);
                 this.listenTo(this.model, "open", this.openChat);
                 this.listenTo(this.model, "remove", this.remove);
-
-                this.listenTo(this.model.presence, "change:show", this.render);
-                this.listenTo(this.model.vcard, 'change:fullname', this.render);
+                this.listenTo(this.model, 'vcard:change', this.debouncedRender);
+                this.listenTo(this.model.presence, "change:show", this.debouncedRender);
                 this.render();
             },
 

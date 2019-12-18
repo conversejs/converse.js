@@ -52,9 +52,14 @@
   * `_converse.api.rooms.create`
   * `_converse.api.roomviews.close`
 
+- Changes the events:
+  * The `chatBoxInitialized` event now triggers when a `_converse.ChatBox` (not the view) is opened.
+  * Renamed the old `chatBoxInitialized` to `chatBoxViewInitialized` and trigger only for `ChatBoxView` instances.
+  * Renamed `chatRoomOpened` event to `chatRoomViewInitialized`
+  * The order of certain events have now changed: `statusInitialized` is now triggered after `initialized` and `connected` and `reconnected`.
+
 - `_converse.api.chats.get()` now only returns one-on-one chats, not the control box or headline notifications.
 - The `show_only_online_users` setting has been removed.
-- The order of certain events have now changed: `statusInitialized` is now triggered after `initialized` and `connected` and `reconnected`.
 - `_converse.api.alert.show` is now `_converse.api.show` and instead of taking
   an integer for the `type`, "info", "warn" or "error" should be passed in.
 - The `converse-headline` plugin has been split up into `converse-headlines` and `converse-headlines-view`.

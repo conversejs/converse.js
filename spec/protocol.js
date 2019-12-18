@@ -360,7 +360,7 @@
                 expect(_converse.roster.updateContact).toHaveBeenCalled();
 
                 // The class on the contact will now have switched.
-                expect(u.hasClass('to', contacts[0])).toBe(false);
+                await u.waitUntil(() => !u.hasClass('to', contacts[0]));
                 expect(u.hasClass('both', contacts[0])).toBe(true);
                 done();
 

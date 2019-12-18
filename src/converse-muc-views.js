@@ -688,13 +688,12 @@ converse.plugins.add('converse-muc-views', {
                 await this.updateAfterMessagesFetched();
                 this.onConnectionStatusChanged();
                 /**
-                 * Triggered once a groupchat has been opened
-                 * @event _converse#chatRoomOpened
+                 * Triggered once a { @link _converse.ChatRoomView } has been opened
+                 * @event _converse#chatRoomViewInitialized
                  * @type { _converse.ChatRoomView }
-                 * @example _converse.api.listen.on('chatRoomOpened', view => { ... });
+                 * @example _converse.api.listen.on('chatRoomViewInitialized', view => { ... });
                  */
-                _converse.api.trigger('chatRoomOpened', this);
-                _converse.api.trigger('chatBoxInitialized', this);
+                _converse.api.trigger('chatRoomViewInitialized', this);
             },
 
             render () {
@@ -1707,7 +1706,7 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            insertDayIndicator (next_msg_el) {
+            insertDayIndicator () {
                 this.removeEmptyHistoryFeedback();
                 return _converse.ChatBoxView.prototype.insertDayIndicator.apply(this, arguments);
             },

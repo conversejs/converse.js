@@ -196,7 +196,6 @@ converse.plugins.add('converse-controlbox', {
                  * @example _converse.api.listen.on('controlBoxInitialized', view => { ... });
                  */
                 _converse.api.trigger('controlBoxInitialized', this);
-                _converse.api.trigger('chatBoxInitialized', this);
             },
 
             render () {

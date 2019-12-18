@@ -235,7 +235,7 @@ converse.plugins.add('converse-mam', {
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
         _converse.api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
-        _converse.api.listen.on('chatRoomOpened', view => {
+        _converse.api.listen.on('chatRoomViewInitialized', view => {
             if (_converse.muc_show_logs_before_join) {
                 // If we want to show MAM logs before entering the MUC, we need
                 // to be informed once it's clear that this MUC supports MAM.

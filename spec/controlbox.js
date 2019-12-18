@@ -106,8 +106,8 @@
                 expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('2');
                 expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');
                 chatview.model.set({'minimized': false});
-                expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
-                expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
+                expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count')).toBe(null);
+                await u.waitUntil(() => _converse.rosterview.el.querySelector('.msgs-indicator') === null);
                 done();
             }));
         });

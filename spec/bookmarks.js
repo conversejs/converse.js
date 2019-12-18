@@ -143,8 +143,8 @@
 
 
         it("will be automatically opened if 'autojoin' is set on the bookmark", mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+                ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
@@ -168,7 +168,7 @@
                 'name':  'The Play',
                 'nick': ' Othello'
             });
-            await new Promise(resolve => _converse.api.listen.once('chatBoxInitialized', resolve));
+            await new Promise(resolve => _converse.api.listen.once('chatRoomViewInitialized', resolve));
             expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBeFalsy();
 
             // Check that we don't auto-join if muc_respect_autojoin is false

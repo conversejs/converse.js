@@ -81,9 +81,8 @@ converse.plugins.add('converse-chatview', {
                 this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
 
                 this.debouncedRender = debounce(this.render, 50);
-                if (this.model.vcard) {
-                    this.listenTo(this.model.vcard, 'change', this.debouncedRender);
-                }
+                this.listenTo(this.model, 'vcard:change', this.debouncedRender);
+
                 if (this.model.contact) {
                     this.listenTo(this.model.contact, 'destroy', this.debouncedRender);
                 }
@@ -264,11 +263,11 @@ converse.plugins.add('converse-chatview', {
 
                 /**
                  * Triggered once the {@link _converse.ChatBoxView} has been initialized
-                 * @event _converse#chatBoxInitialized
-                 * @type { _converse.ChatBoxView | _converse.HeadlinesBoxView }
-                 * @example _converse.api.listen.on('chatBoxInitialized', view => { ... });
+                 * @event _converse#chatBoxViewInitialized
+                 * @type { _converse.HeadlinesBoxView }
+                 * @example _converse.api.listen.on('chatBoxViewInitialized', view => { ... });
                  */
-                _converse.api.trigger('chatBoxInitialized', this);
+                _converse.api.trigger('chatBoxViewInitialized', this);
             },
 
             initDebounced () {

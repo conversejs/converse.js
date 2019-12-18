@@ -249,8 +249,14 @@ converse.plugins.add('converse-muc', {
                 }
                 if (!this.setTimerForEphemeralMessage()) {
                     this.setOccupant();
-                    this.setVCard();
                 }
+                /**
+                 * Triggered once a {@link _converse.ChatRoomMessageInitialized} has been created and initialized.
+                 * @event _converse#chatRoomMessageInitialized
+                 * @type { _converse.ChatRoomMessages}
+                 * @example _converse.api.listen.on('chatRoomMessageInitialized', model => { ... });
+                 */
+                _converse.api.trigger('chatRoomMessageInitialized', this);
             },
 
             onOccupantRemoved () {
@@ -288,37 +294,7 @@ converse.plugins.add('converse-muc', {
                 } else {
                     this.listenTo(chatbox.occupants, 'add', this.onOccupantAdded);
                 }
-
-            },
-
-            getVCardForChatroomOccupant () {
-                const chatbox = get(this, 'collection.chatbox');
-                const nick = Strophe.getResourceFromJid(this.get('from'));
-
-                if (chatbox && chatbox.get('nick') === nick) {
-                    return _converse.xmppstatus.vcard;
-                } else {
-                    const jid = this.occupant && this.occupant.get('jid') || this.get('from');
-                    if (jid) {
-                        return _converse.vcards.findWhere({jid}) || _converse.vcards.create({jid});
-                    } else {
-                        log.error(`Could not assign VCard for message because no JID found! msgid: ${this.get('msgid')}`);
-                        return;
-                    }
-                }
-            },
-
-            async setVCard () {
-                await _converse.api.waitUntil('VCardsInitialized');
-                if (!_converse.vcards) {
-                    return; // VCards aren't supported
-                }
-                if (['error', 'info'].includes(this.get('type'))) {
-                    return;
-                } else {
-                    this.vcard = this.getVCardForChatroomOccupant();
-                }
-            },
+            }
         });
 
 
@@ -378,10 +354,9 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            async initialize() {
+            async initialize () {
                 this.initialized = u.getResolveablePromise();
 
-                this.setVCard();
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
 
                 await this.restoreSession();
@@ -397,15 +372,14 @@ converse.plugins.add('converse-muc', {
                 if (!restored) {
                     this.join();
                 }
+                /**
+                 * Triggered once a {@link _converse.ChatRoom} has been created and initialized.
+                 * @event _converse#chatRoomInitialized
+                 * @type { _converse.ChatRoom }
+                 * @example _converse.api.listen.on('chatRoomInitialized', model => { ... });
+                 */
+                await _converse.api.trigger('chatRoomInitialized', this, {'Synchronous': true});
                 this.initialized.resolve();
-            },
-
-            async setVCard () {
-                await _converse.api.waitUntil('VCardsInitialized');
-                if (_converse.vcards) {
-                    this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')}) ||
-                        _converse.vcards.create({'jid': this.get('jid')});
-                }
             },
 
             /**

@@ -89,6 +89,12 @@ converse.plugins.add('converse-chat', {
                     this.on('change:put', this.uploadFile, this);
                 }
                 this.setTimerForEphemeralMessage();
+                /**
+                 * Triggered once a {@link _converse.Message} has been created and initialized.
+                 * @event _converse#messageInitialized
+                 * @type { _converse.Message}
+                 * @example _converse.api.listen.on('messageInitialized', model => { ... });
+                 */
                 await _converse.api.trigger('messageInitialized', this, {'Synchronous': true});
                 this.initialized.resolve();
             },
@@ -298,9 +304,6 @@ converse.plugins.add('converse-chat', {
                 }
                 this.set({'box_id': `box-${btoa(jid)}`});
 
-                if (_converse.vcards) {
-                    this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
-                }
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                     this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
                     await this.setRosterContact(jid);
@@ -308,6 +311,13 @@ converse.plugins.add('converse-chat', {
                 this.on('change:chat_state', this.sendChatState, this);
                 this.initMessages();
                 await this.fetchMessages();
+                /**
+                 * Triggered once a {@link _converse.ChatBox} has been created and initialized.
+                 * @event _converse#chatBoxInitialized
+                 * @type { _converse.ChatBox}
+                 * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
+                 */
+                await _converse.api.trigger('chatBoxInitialized', this, {'Synchronous': true});
                 this.initialized.resolve();
             },
 

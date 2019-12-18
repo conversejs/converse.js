@@ -1700,19 +1700,25 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            insertMessage (view) {
+            removeEmptyHistoryFeedback () {
                 if (_converse.muc_show_logs_before_join &&
                         this.content.firstElementChild.matches('.empty-history-feedback')) {
                     this.content.removeChild(this.content.firstElementChild);
                 }
+            },
+
+            insertDayIndicator (next_msg_el) {
+                this.removeEmptyHistoryFeedback();
+                return _converse.ChatBoxView.prototype.insertDayIndicator.apply(this, arguments);
+            },
+
+            insertMessage (view) {
+                this.removeEmptyHistoryFeedback();
                 return _converse.ChatBoxView.prototype.insertMessage.call(this, view);
             },
 
             insertNotification (message) {
-                if (_converse.muc_show_logs_before_join &&
-                        this.content.firstElementChild.matches('.empty-history-feedback')) {
-                    this.content.removeChild(this.content.firstElementChild);
-                }
+                this.removeEmptyHistoryFeedback();
                 this.content.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({

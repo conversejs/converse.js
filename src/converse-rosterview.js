@@ -423,9 +423,12 @@ converse.plugins.add('converse-rosterview', {
                 return this;
             },
 
+            /**
+             * If appropriate, highlight the contact (by adding the 'open' class).
+             * @private
+             * @method _converse.RosterContactView#highlight
+             */
             highlight () {
-                /* If appropriate, highlight the contact (by adding the 'open' class).
-                 */
                 if (_converse.isUniView()) {
                     const chatbox = _converse.chatboxes.get(this.model.get('jid'));
                     if ((chatbox && chatbox.get('hidden')) || !chatbox) {
@@ -558,8 +561,23 @@ converse.plugins.add('converse-rosterview', {
 
             initialize () {
                 OrderedListView.prototype.initialize.apply(this, arguments);
-                this.listenTo(this.model.contacts, "change:subscription", this.onContactSubscriptionChange);
-                this.listenTo(this.model.contacts, "change:requesting", this.onContactRequestChange);
+
+                if (this.model.get('name') === _converse.HEADER_UNREAD) {
+                    this.listenTo(this.model.contacts, "change:num_unread",
+                        c => !this.model.get('unread_messages') && this.removeContact(c)
+                    );
+                }
+                if (this.model.get('name') === _converse.HEADER_REQUESTING_CONTACTS) {
+                    this.listenTo(this.model.contacts, "change:requesting",
+                        c => !c.get('requesting') && this.removeContact(c)
+                    );
+                }
+                if (this.model.get('name') === _converse.HEADER_PENDING_CONTACTS) {
+                    this.listenTo(this.model.contacts, "change:subscription",
+                        c => (c.get('subscription') !== 'from') && this.removeContact(c)
+                    );
+                }
+
                 this.listenTo(this.model.contacts, "remove", this.onRemove);
                 this.listenTo(_converse.roster, 'change:groups', this.onContactGroupChange);
 
@@ -639,11 +657,12 @@ converse.plugins.add('converse-rosterview', {
                 let matches;
                 q = q.toLowerCase();
                 if (type === 'state') {
-                    if (this.model.get('name') === _converse.HEADER_REQUESTING_CONTACTS) {
+                    const sticky_groups = [_converse.HEADER_REQUESTING_CONTACTS, _converse.HEADER_UNREAD];
+                    if (sticky_groups.includes(this.model.get('name'))) {
                         // When filtering by chat state, we still want to
-                        // show requesting contacts, even though they don't
-                        // have the state in question.
-                        matches = this.model.contacts.filter(c => !c.presence.get('show').includes(q) && !c.get('requesting'));
+                        // show sticky groups, even though they don't
+                        // match the state in question.
+                        return [];
                     } else if (q === 'unread_messages') {
                         matches = this.model.contacts.filter({'num_unread': 0});
                     } else if (q === 'online') {
@@ -706,18 +725,6 @@ converse.plugins.add('converse-rosterview', {
                 if (in_this_group && !in_this_overview) {
                     this.items.trigger('add', contact);
                 } else if (!in_this_group) {
-                    this.removeContact(contact);
-                }
-            },
-
-            onContactSubscriptionChange (contact) {
-                if ((this.model.get('name') === _converse.HEADER_PENDING_CONTACTS) && contact.get('subscription') !== 'from') {
-                    this.removeContact(contact);
-                }
-            },
-
-            onContactRequestChange (contact) {
-                if ((this.model.get('name') === _converse.HEADER_REQUESTING_CONTACTS) && !contact.get('requesting')) {
                     this.removeContact(contact);
                 }
             },
@@ -894,6 +901,9 @@ converse.plugins.add('converse-rosterview', {
                         this.addExistingContact(contact);
                     }
                 }
+                if (has(contact.changed, 'num_unread') && contact.get('num_unread')) {
+                    this.addContactToGroup(contact, _converse.HEADER_UNREAD);
+                }
                 if (has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
                     this.addContactToGroup(contact, _converse.HEADER_PENDING_CONTACTS);
                 }
@@ -930,6 +940,9 @@ converse.plugins.add('converse-rosterview', {
                     groups = (groups.length === 0) ? [_converse.HEADER_UNGROUPED] : groups;
                 } else {
                     groups = [_converse.HEADER_CURRENT_CONTACTS];
+                }
+                if (contact.get('num_unread')) {
+                    groups.append(_converse.HEADER_UNREAD);
                 }
                 groups.forEach(g => this.addContactToGroup(contact, g, options));
             },

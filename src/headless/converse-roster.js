@@ -44,12 +44,14 @@ converse.plugins.add('converse-roster', {
         _converse.HEADER_PENDING_CONTACTS = __('Pending contacts');
         _converse.HEADER_REQUESTING_CONTACTS = __('Contact requests');
         _converse.HEADER_UNGROUPED = __('Ungrouped');
+        _converse.HEADER_UNREAD = __('New messages');
 
         const HEADER_WEIGHTS = {};
-        HEADER_WEIGHTS[_converse.HEADER_REQUESTING_CONTACTS] = 0;
-        HEADER_WEIGHTS[_converse.HEADER_CURRENT_CONTACTS]    = 1;
-        HEADER_WEIGHTS[_converse.HEADER_UNGROUPED]           = 2;
-        HEADER_WEIGHTS[_converse.HEADER_PENDING_CONTACTS]    = 3;
+        HEADER_WEIGHTS[_converse.HEADER_UNREAD] = 0;
+        HEADER_WEIGHTS[_converse.HEADER_REQUESTING_CONTACTS] = 1;
+        HEADER_WEIGHTS[_converse.HEADER_CURRENT_CONTACTS]    = 2;
+        HEADER_WEIGHTS[_converse.HEADER_UNGROUPED]           = 3;
+        HEADER_WEIGHTS[_converse.HEADER_PENDING_CONTACTS]    = 4;
 
 
         _converse.registerPresenceHandler = function () {
@@ -839,17 +841,20 @@ converse.plugins.add('converse-roster', {
             comparator (a, b) {
                 a = a.get('name');
                 b = b.get('name');
+                const WEIGHTS =  HEADER_WEIGHTS;
                 const special_groups = Object.keys(HEADER_WEIGHTS);
                 const a_is_special = special_groups.includes(a);
                 const b_is_special = special_groups.includes(b);
                 if (!a_is_special && !b_is_special ) {
                     return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
                 } else if (a_is_special && b_is_special) {
-                    return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
+                    return WEIGHTS[a] < WEIGHTS[b] ? -1 : (WEIGHTS[a] > WEIGHTS[b] ? 1 : 0);
                 } else if (!a_is_special && b_is_special) {
-                    return (b === _converse.HEADER_REQUESTING_CONTACTS) ? 1 : -1;
+                    const a_header = _converse.HEADER_CURRENT_CONTACTS;
+                    return WEIGHTS[a_header] < WEIGHTS[b] ? -1 : (WEIGHTS[a_header] > WEIGHTS[b] ? 1 : 0);
                 } else if (a_is_special && !b_is_special) {
-                    return (a === _converse.HEADER_REQUESTING_CONTACTS) ? -1 : 1;
+                    const b_header = _converse.HEADER_CURRENT_CONTACTS;
+                    return WEIGHTS[a] < WEIGHTS[b_header] ? -1 : (WEIGHTS[a] > WEIGHTS[b_header] ? 1 : 0);
                 }
             },
 

@@ -1973,8 +1973,7 @@
                 let media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/video.html -->'+
-                    '<video controls="" src="https://montague.lit/video.mp4" style="max-height: 50vh"></video>'+
-                    '<a target="_blank" rel="noopener" href="https://montague.lit/video.mp4">Download video file "video.mp4"</a>');
+                    '<video controls="" preload="metadata" src="https://montague.lit/video.mp4" style="max-height: 50vh"></video>');
 
                 // If the <url> and <body> contents is the same, don't duplicate.
                 stanza = u.toStanza(`
@@ -1991,8 +1990,7 @@
                 media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/video.html -->'+
-                    '<video controls="" src="https://montague.lit/video.mp4" style="max-height: 50vh"></video>'+
-                    '<a target="_blank" rel="noopener" href="https://montague.lit/video.mp4">Download video file "video.mp4"</a>');
+                    '<video controls="" preload="metadata" src="https://montague.lit/video.mp4" style="max-height: 50vh"></video>');
                 done();
             }));
 

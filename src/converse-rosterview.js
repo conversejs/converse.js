@@ -942,7 +942,7 @@ converse.plugins.add('converse-rosterview', {
                     groups = [_converse.HEADER_CURRENT_CONTACTS];
                 }
                 if (contact.get('num_unread')) {
-                    groups.append(_converse.HEADER_UNREAD);
+                    groups.push(_converse.HEADER_UNREAD);
                 }
                 groups.forEach(g => this.addContactToGroup(contact, g, options));
             },

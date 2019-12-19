@@ -367,6 +367,9 @@ converse.plugins.add('converse-chatview', {
             },
 
             async addFileUploadButton () {
+                if (this.el.querySelector('.chat-toolbar .upload-file')) {
+                    return;
+                }
                 if (await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain)) {
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
                         'beforeend',

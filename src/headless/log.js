@@ -1,5 +1,12 @@
 import { get, isElement } from 'lodash';
 
+const LEVELS = {
+    'debug': 0,
+    'info': 1,
+    'warn': 2,
+    'error': 3,
+    'fatal': 4
+}
 
 const logger = Object.assign({
     'debug': get(console, 'log') ? console.log.bind(console) : function noop () {},
@@ -20,7 +27,7 @@ const log = {
      * @method log#setLogLevel
      * @param { integer } level - The loglevel which allows for filtering of log messages
      */
-    setLogLevel(level) {
+    setLogLevel (level) {
         if (!['debug', 'info', 'warn', 'error', 'fatal'].includes(level)) {
             throw new Error(`Invalid loglevel: ${level}`);
         }
@@ -38,6 +45,9 @@ const log = {
      * @param { integer } level - The loglevel which allows for filtering of log messages
      */
     log (message, level, style='') {
+        if (LEVELS[level] < LEVELS[this.loglevel]) {
+            return;
+        }
         if (level === 'error' || level === 'fatal') {
             style = style || 'color: maroon';
         } else if (level === 'debug') {
@@ -57,10 +67,8 @@ const log = {
         } else if (level === 'fatal') {
             logger.error(`${prefix} FATAL: ${message}`, style);
         } else if (level === 'debug') {
-            if (this.loglevel === 'debug') {
-                logger.debug(`${prefix} ${(new Date()).toISOString()} DEBUG: ${message}`, style);
-            }
-        } else if (this.loglevel === 'info') {
+            logger.debug(`${prefix} ${(new Date()).toISOString()} DEBUG: ${message}`, style);
+        } else {
             logger.info(`${prefix} ${(new Date()).toISOString()} INFO: ${message}`, style);
         }
     },

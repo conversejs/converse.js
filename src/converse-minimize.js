@@ -9,7 +9,6 @@
 import "converse-chatview";
 import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
-import log from "@converse/headless/log";
 import tpl_chatbox_minimize from "templates/chatbox_minimize.html";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.html";

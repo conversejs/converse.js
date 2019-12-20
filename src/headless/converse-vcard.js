@@ -7,9 +7,10 @@
  * @module converse-vcard
  */
 import "./converse-status";
-import converse from "./converse-core";
-import tpl_vcard from "./templates/vcard.html";
 import { get, has, isString } from "lodash";
+import converse from "./converse-core";
+import log from "@converse/headless/log";
+import tpl_vcard from "./templates/vcard.html";
 
 const { Backbone, Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;

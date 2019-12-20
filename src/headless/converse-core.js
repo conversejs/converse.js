@@ -335,7 +335,7 @@ function replacePromise (name) {
     }
     if (existing_promise.replace) {
         const promise = u.getResolveablePromise();
-        promise.replace = existing_promise ? existing_promise.replace : replace;
+        promise.replace = existing_promise.replace;
         _converse.promises[name] = promise;
     } else {
         log.debug(`Not replacing promise "${name}"`);

@@ -284,7 +284,7 @@ const stanza_utils = {
      * @param { _converse } _converse
      * @returns { Object }
      */
-    async getMessageAttributesFromStanza (stanza, original_stanza, chatbox, _converse) {
+    getMessageAttributesFromStanza (stanza, original_stanza, chatbox, _converse) {
         const is_muc = u.isChatRoom(chatbox);
         let attrs = Object.assign(
             stanza_utils.getStanzaIDs(stanza, original_stanza),

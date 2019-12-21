@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-09-11 15:37+0200\n"
+"PO-Revision-Date: 2019-12-22 07:21+0000\n"
 "Last-Translator: sergio <srg.dev@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.10\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: es\n"
 "Language-Code: es\n"
@@ -347,6 +347,10 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Los Roles son asignados a los usuarios para permitir o denegarles ciertas "
+"habilidades en las conversaciones en grupo. Estos son asignados "
+"explícitamente o implícitamente como parte de su afiliación. Un rol que no "
+"tiene afiliación, es solo válido mientras dure la sesión del usuario."
 
 #: dist/converse-no-dependencies.js:9316 dist/converse-no-dependencies.js:49895
 msgid "Role"
@@ -357,15 +361,19 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Los Moderadores son usuarios privilegiados que pueden cambiar los roles de "
+"otros usuarios (excepto aquellos que son administradores o propietarios)."
 
 #: dist/converse-no-dependencies.js:9334 dist/converse-no-dependencies.js:9358
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "El rol por defecto, implica que pueden leer y escribir mensajes."
 
 #: dist/converse-no-dependencies.js:9340 dist/converse-no-dependencies.js:9364
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Los visitantes no pueden escribir mensajes en una conversación en grupo "
+"moderada."
 
 #: dist/converse-no-dependencies.js:9348 dist/converse-no-dependencies.js:9444
 #, fuzzy
@@ -384,7 +392,7 @@ msgstr "Rol"
 
 #: dist/converse-no-dependencies.js:9404 dist/converse-no-dependencies.js:9504
 msgid "Reason"
-msgstr ""
+msgstr "Razón"
 
 #: dist/converse-no-dependencies.js:9406
 #, fuzzy
@@ -397,22 +405,30 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"Una afiliación es un derecho de larga duración que normalmente implica un "
+"cierto role que otorga privilegios y responsabilidades. Por ejemplo, los "
+"administradores y los propietarios automáticamente tiene el rol de moderador."
 
 #: dist/converse-no-dependencies.js:9412
 msgid "Affiliation"
-msgstr ""
+msgstr "Afiliación"
 
 #: dist/converse-no-dependencies.js:9424 dist/converse-no-dependencies.js:9448
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Propietario es la máxima afiliación. Los propietarios pueden modificar roles "
+"y afiliaciones de otros usuarios."
 
 #: dist/converse-no-dependencies.js:9430 dist/converse-no-dependencies.js:9454
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Administrador es la segunda máxima afiliación. Los administradores pueden "
+"modificar roles y afiliaciones para todos los usuarios excepto a "
+"propietarios."
 
 #: dist/converse-no-dependencies.js:9436 dist/converse-no-dependencies.js:9460
 #, fuzzy
@@ -421,11 +437,11 @@ msgstr "Expulse usuarios cambiando su afiliación a \"rechazado\""
 
 #: dist/converse-no-dependencies.js:9470
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "No se han encontrado usuarios con esa afiliación."
 
 #: dist/converse-no-dependencies.js:9490
 msgid "New affiliation"
-msgstr ""
+msgstr "Nueva afiliación"
 
 #: dist/converse-no-dependencies.js:9506
 #, fuzzy
@@ -517,43 +533,43 @@ msgstr "Espera, estamos recuperando el formulario de registro…"
 
 #: dist/converse-no-dependencies.js:27487
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Smileys y emoticonos"
 
 #: dist/converse-no-dependencies.js:27488
 msgid "People"
-msgstr ""
+msgstr "Personas"
 
 #: dist/converse-no-dependencies.js:27489
 msgid "Activities"
-msgstr ""
+msgstr "Actividades"
 
 #: dist/converse-no-dependencies.js:27490
 msgid "Travel"
-msgstr ""
+msgstr "Viajes"
 
 #: dist/converse-no-dependencies.js:27491
 msgid "Objects"
-msgstr ""
+msgstr "Objectos"
 
 #: dist/converse-no-dependencies.js:27492
 msgid "Animals and nature"
-msgstr ""
+msgstr "Animales y naturaleza"
 
 #: dist/converse-no-dependencies.js:27493
 msgid "Food and drink"
-msgstr ""
+msgstr "Comida y bebida"
 
 #: dist/converse-no-dependencies.js:27494
 msgid "Symbols"
-msgstr ""
+msgstr "Símbolos"
 
 #: dist/converse-no-dependencies.js:27495
 msgid "Flags"
-msgstr ""
+msgstr "Banderas"
 
 #: dist/converse-no-dependencies.js:27496
 msgid "Stickers"
-msgstr ""
+msgstr "Stickers"
 
 #: dist/converse-no-dependencies.js:28145
 msgid "This groupchat is not anonymous"
@@ -795,13 +811,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:31732
 msgid "Timeout Error"
-msgstr ""
+msgstr "Error de tiempo de espera"
 
 #: dist/converse-no-dependencies.js:31732
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"El servidor no devolvió tus marcadores en el tiempo establecido. Puedes "
+"recargar la página para realizar la petición de nuevo."
 
 #: dist/converse-no-dependencies.js:33481
 msgid "Unencryptable OMEMO message"
@@ -1168,7 +1186,7 @@ msgstr "Sin moderar"
 
 #: dist/converse-no-dependencies.js:47346
 msgid "Affiliation changed"
-msgstr ""
+msgstr "Afiliación cambiada"
 
 #: dist/converse-no-dependencies.js:47369
 #, fuzzy
@@ -1383,7 +1401,7 @@ msgstr "Conceder membresía a un usuario"
 
 #: dist/converse-no-dependencies.js:48325
 msgid "Opens up the moderator tools GUI"
-msgstr ""
+msgstr "Abre las herramientas del moderador"
 
 #: dist/converse-no-dependencies.js:48325
 msgid "Remove user's ability to post messages"

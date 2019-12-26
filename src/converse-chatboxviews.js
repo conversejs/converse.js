@@ -45,19 +45,6 @@ converse.plugins.add('converse-chatboxviews', {
 
     dependencies: ["converse-chatboxes", "converse-vcard"],
 
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-
-        initStatus: function (reconnecting) {
-            const { _converse } = this.__super__;
-            if (!reconnecting && _converse.chatboxviews) {
-                _converse.chatboxviews.closeAllChatBoxes();
-            }
-            return this.__super__.initStatus.apply(this, arguments);
-        }
-    },
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -144,9 +131,6 @@ converse.plugins.add('converse-chatboxviews', {
             },
 
             closeAllChatBoxes () {
-                /* This method gets overridden in src/converse-controlbox.js if
-                 * the controlbox plugin is active.
-                 */
                 return Promise.all(this.map(v => v.close({'name': 'closeAllChatBoxes'})));
             }
         });

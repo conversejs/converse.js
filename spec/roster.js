@@ -370,6 +370,70 @@
 
         describe("A Roster Group", function () {
 
+            it("is created to show contacts with unread messages",
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {'roster_groups': true},
+                    async function (done, _converse) {
+
+                spyOn(_converse.rosterview, 'update').and.callThrough();
+                _converse.rosterview.render();
+                await test_utils.openControlBox(_converse);
+                await test_utils.waitForRoster(_converse, 'all');
+                await test_utils.createContacts(_converse, 'requesting');
+
+
+                // Check that the groups appear alphabetically and that
+                // requesting and pending contacts are last.
+                await u.waitUntil(() => sizzle('.roster-group a.group-toggle', _converse.rosterview.el).length);
+                let group_titles = sizzle('.roster-group a.group-toggle', _converse.rosterview.el).map(o => o.textContent.trim());
+                expect(group_titles).toEqual([
+                    "Contact requests",
+                    "Colleagues",
+                    "Family",
+                    "friends & acquaintences",
+                    "ænemies",
+                    "Ungrouped",
+                    "Pending contacts"
+                ]);
+
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                const contact = await _converse.api.contacts.get(contact_jid);
+                contact.save({'num_unread': 5});
+
+                await u.waitUntil(() => sizzle('.roster-group a.group-toggle', _converse.rosterview.el).length === 8);
+                group_titles = sizzle('.roster-group a.group-toggle', _converse.rosterview.el).map(o => o.textContent.trim());
+
+                expect(group_titles).toEqual([
+                    "New messages",
+                    "Contact requests",
+                    "Colleagues",
+                    "Family",
+                    "friends & acquaintences",
+                    "ænemies",
+                    "Ungrouped",
+                    "Pending contacts"
+                ]);
+                const contacts = sizzle('.roster-group[data-group="New messages"] li', _converse.rosterview.el);
+                expect(contacts.length).toBe(1);
+                expect(contacts[0].querySelector('.contact-name').textContent).toBe("Mercutio");
+                expect(contacts[0].querySelector('.msgs-indicator').textContent).toBe("5");
+
+                contact.save({'num_unread': 0});
+                await u.waitUntil(() => sizzle('.roster-group a.group-toggle', _converse.rosterview.el).length === 7);
+                group_titles = sizzle('.roster-group a.group-toggle', _converse.rosterview.el).map(o => o.textContent.trim());
+                expect(group_titles).toEqual([
+                    "Contact requests",
+                    "Colleagues",
+                    "Family",
+                    "friends & acquaintences",
+                    "ænemies",
+                    "Ungrouped",
+                    "Pending contacts"
+                ]);
+                done();
+            }));
+
+
             it("can be used to organize existing contacts",
                 mock.initConverse(
                     ['rosterGroupsFetched'], {'roster_groups': true},
@@ -396,7 +460,7 @@
                 // Check that usernames appear alphabetically per group
                 Object.keys(mock.groups).forEach(name  => {
                     const contacts = sizzle('.roster-group[data-group="'+name+'"] ul', _converse.rosterview.el);
-                    const names = _.map(contacts, o => o.textContent.trim());
+                    const names = contacts.map(o => o.textContent.trim());
                     expect(names).toEqual(_.clone(names).sort());
                 });
                 done();

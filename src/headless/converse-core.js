@@ -120,17 +120,15 @@ _converse.Collection = Backbone.Collection.extend({
     async clearSession (options={}) {
         await Promise.all(Array.from(this.models).map(m => {
             return new Promise(
-                success => m.destroy(
-                    Object.assign(options, {
-                        success,
-                        'error': (m, e) => {
-                            log.error(e);
-                            success()
-                        }
-                    })
-                )
+                resolve => {
+                    m.destroy(Object.assign(options, {
+                        'success': resolve,
+                        'error': (m, e) => { log.error(e); resolve() }
+                    }));
+                }
             );
         }));
+        await this.browserStorage.clear();
         this.reset();
     }
 });
@@ -329,11 +327,19 @@ const PROMISES = [
     'statusInitialized'
 ];
 
-function addPromise (promise) {
-    /* Private function, used to add a new promise to the ones already
-     * available via the `waitUntil` api method.
-     */
-    _converse.promises[promise] = u.getResolveablePromise();
+
+function replacePromise (name) {
+    const existing_promise = _converse.promises[name];
+    if (!existing_promise) {
+        throw new Error(`Tried to replace non-existing promise: ${name}`);
+    }
+    if (existing_promise.replace) {
+        const promise = u.getResolveablePromise();
+        promise.replace = existing_promise.replace;
+        _converse.promises[name] = promise;
+    } else {
+        log.debug(`Not replacing promise "${name}"`);
+    }
 }
 
 _converse.isTestEnv = function () {
@@ -361,33 +367,34 @@ _converse.isUniView = function () {
 };
 
 
-async function initStorage () {
+async function initSessionStorage () {
     await BrowserStorage.sessionStorageInitialized;
-
-    // Sets up Backbone.BrowserStorage and localForage for the 3 different stores.
-    _converse.localStorage = BrowserStorage.localForage.createInstance({
-        'name': 'local',
-        'description': 'localStorage instance',
-        'driver': [BrowserStorage.localForage.LOCALSTORAGE]
-    });
-
-    _converse.indexedDB = BrowserStorage.localForage.createInstance({
-        'name': 'indexed',
-        'description': 'indexedDB instance',
-        'driver': [BrowserStorage.localForage.INDEXEDDB]
-    });
-
-    _converse.sessionStorage = BrowserStorage.localForage.createInstance({
-        'name': 'session',
-        'description': 'sessionStorage instance',
-        'driver': ['sessionStorageWrapper']
-    });
-
     _converse.storage = {
-        'session': _converse.sessionStorage,
-        'local': _converse.localStorage,
-        'indexed': _converse.indexedDB
+        'session': BrowserStorage.localForage.createInstance({
+            'name': _converse.isTestEnv() ? 'converse-test-session' : 'converse-session',
+            'description': 'sessionStorage instance',
+            'driver': ['sessionStorageWrapper']
+        })
+    };
+}
+
+
+function initPersistentStorage () {
+    if (_converse.config.get('storage') !== 'persistent') {
+        return;
     }
+    const config = {
+        'name': _converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
+        'storeName': _converse.bare_jid
+    }
+    if (_converse.persistent_store === 'localStorage') {
+        config['description'] = 'localStorage instance';
+        config['driver'] = [BrowserStorage.localForage.LOCALSTORAGE];
+    } else if (_converse.persistent_store === 'IndexedDB') {
+        config['description'] = 'indexedDB instance';
+        config['driver'] = [BrowserStorage.localForage.INDEXEDDB];
+    }
+    _converse.storage['persistent'] = BrowserStorage.localForage.createInstance(config);
 }
 
 
@@ -449,11 +456,10 @@ function initClientConfig () {
      * user sessions.
      */
     const id = 'converse.client-config';
-    const store_map = { 'localStorage': 'local', 'IndexedDB': 'indexed' };
     _converse.config = new Backbone.Model({
         'id': id,
         'trusted': _converse.trusted && true || false,
-        'storage': _converse.trusted ? store_map[_converse.persistent_store] : 'session'
+        'storage': _converse.trusted ? 'persistent' : 'session'
     });
     _converse.config.browserStorage = _converse.createStore(id, "session");
     _converse.config.fetch();
@@ -686,6 +692,7 @@ async function initSession (jid) {
             _converse.session.save({id});
         }
         saveJIDtoSession(jid);
+        initPersistentStorage();
         /**
          * Triggered once the user's session has been initialized. The session is a
          * cache which stores information about the user's current session.
@@ -833,7 +840,7 @@ function setUpXMLLogging () {
 
 
 async function finishInitialization () {
-    await initStorage();
+    await initSessionStorage();
     initClientConfig();
     initPlugins();
     registerGlobalEventHandlers();
@@ -978,15 +985,10 @@ function unregisterGlobalEventHandlers () {
     _converse.api.trigger('unregisteredGlobalEventHandlers');
 }
 
-async function cleanup () {
+
+function cleanup () {
     // Make sure everything is reset in case this is a subsequent call to
     // convesre.initialize (happens during tests).
-    if (_converse.localStorage) {
-        await Promise.all([
-            BrowserStorage.localForage.dropInstance({'name': 'local'}),
-            BrowserStorage.localForage.dropInstance({'name': 'indexed'}),
-            BrowserStorage.localForage.dropInstance({'name': 'session'})]);
-    }
     Backbone.history.stop();
     unregisterGlobalEventHandlers();
     delete _converse.controlboxtoggle;
@@ -1002,10 +1004,10 @@ async function cleanup () {
 
 
 _converse.initialize = async function (settings, callback) {
-    await cleanup();
+    cleanup();
 
     settings = settings !== undefined ? settings : {};
-    PROMISES.forEach(addPromise);
+    PROMISES.forEach(name => _converse.api.promises.add(name));
 
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it
@@ -1423,7 +1425,7 @@ _converse.api = {
             const promise = u.getResolveablePromise();
             const complete = () => {
                 // Recreate all the promises
-                Object.keys(_converse.promises).forEach(addPromise);
+                Object.keys(_converse.promises).forEach(replacePromise);
                 /**
                  * Triggered once the user has logged out.
                  * @event _converse#logout
@@ -1555,11 +1557,16 @@ _converse.api = {
          *
          * @method _converse.api.promises.add
          * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
+         * @param {boolean} [replace=true] Whether this promise should be replaced with a new one when the user logs out.
          * @example _converse.api.promises.add('foo-completed');
          */
-        add (promises) {
+        add (promises, replace=true) {
             promises = Array.isArray(promises) ? promises : [promises];
-            promises.forEach(addPromise);
+            promises.forEach(name => {
+                const promise = u.getResolveablePromise();
+                promise.replace = replace;
+                _converse.promises[name] = promise;
+            });
         }
     },
 
@@ -1804,7 +1811,7 @@ Object.assign(window.converse, {
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
      */
-    'env': { $build, $iq, $msg, $pres, Backbone, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
+    'env': { $build, $iq, $msg, $pres, Backbone, BrowserStorage, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
 });
 
 /**

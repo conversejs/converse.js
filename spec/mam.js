@@ -91,6 +91,7 @@
                 while (sent_IQs.length) { sent_IQs.pop(); }
 
                 await u.waitUntil(() => _converse.chatboxes.length === 1);
+
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 view = _converse.chatboxviews.get(muc_jid);
                 await u.waitUntil(() => view.model.messages.length);

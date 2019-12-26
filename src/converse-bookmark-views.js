@@ -308,8 +308,7 @@ converse.plugins.add('converse-bookmark-views', {
         }
 
         _converse.api.listen.on('bookmarksInitialized', initBookmarkViews);
-
-        _converse.api.listen.on('chatRoomOpened', view => view.setBookmarkState());
+        _converse.api.listen.on('chatRoomViewInitialized', view => view.setBookmarkState());
         /************************ END Event Handlers ************************/
     }
 });

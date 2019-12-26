@@ -202,7 +202,7 @@ converse.plugins.add('converse-emoji', {
             }
         });
 
-        _converse.api.promises.add(['emojisInitialized']);
+        _converse.api.promises.add('emojisInitialized', false);
         twemoji.default.base = _converse.emoji_image_path;
 
 

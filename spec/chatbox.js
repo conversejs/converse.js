@@ -136,7 +136,7 @@
 
                 const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve));
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await new Promise(resolve => _converse.api.listen.once('chatBoxInitialized', resolve));
+                await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
                 await u.waitUntil(() => message_promise);
                 expect(_converse.chatboxviews.keys().length).toBe(2);
                 done();
@@ -390,7 +390,7 @@
                 await u.waitUntil(() => _converse.chatboxes.length == 7)
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 expect(_converse.chatboxes.length).toEqual(7);
-                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxInitialized', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxViewInitialized', jasmine.any(Object));
                 await test_utils.closeAllChatBoxes(_converse);
 
                 expect(_converse.chatboxes.length).toEqual(1);
@@ -1427,7 +1427,7 @@
                 await u.waitUntil(() => chatbox.messages.length > 1);
                 expect(select_msgs_indicator().textContent).toBe('2');
                 view.model.maximize();
-                expect(select_msgs_indicator()).toBeUndefined();
+                u.waitUntil(() => typeof select_msgs_indicator() === 'undefined');
                 done();
             }));
 

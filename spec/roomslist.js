@@ -181,7 +181,7 @@
                         .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
                             .c('value').t(0);
             _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-            await u.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING)
+            await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING)
             let presence = $pres({
                     to: _converse.connection.jid,
                     from: 'coven@chat.shakespeare.lit/some1',
@@ -279,7 +279,7 @@
             await test_utils.openControlBox(_converse);
             const room_jid = 'kitchen@conference.shakespeare.lit';
             await u.waitUntil(() => _converse.rooms_list_view !== undefined, 500);
-            await test_utils.openAndEnterChatRoom(_converse, 'kitchen@conference.shakespeare.lit', 'romeo');
+            await test_utils.openAndEnterChatRoom(_converse, room_jid, 'romeo');
             const view = _converse.chatboxviews.get(room_jid);
             view.model.set({'minimized': true});
             const nick = mock.chatroom_names[0];

@@ -143,8 +143,8 @@
 
 
         it("will be automatically opened if 'autojoin' is set on the bookmark", mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+                ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
@@ -168,7 +168,7 @@
                 'name':  'The Play',
                 'nick': ' Othello'
             });
-            await new Promise(resolve => _converse.api.listen.once('chatBoxInitialized', resolve));
+            await new Promise(resolve => _converse.api.listen.once('chatRoomViewInitialized', resolve));
             expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBeFalsy();
 
             // Check that we don't auto-join if muc_respect_autojoin is false
@@ -191,17 +191,18 @@
                     ['rosterGroupsFetched'], {}, async function (done, _converse) {
 
                 await test_utils.waitUntilBookmarksReturned(_converse);
-                const room_jid = 'coven@chat.shakespeare.lit';
+                const muc_jid = 'coven@chat.shakespeare.lit';
                 _converse.bookmarks.create({
-                    'jid': room_jid,
+                    'jid': muc_jid,
                     'autojoin': false,
                     'name':  'The Play',
                     'nick': 'Othello'
                 });
-                const room = await _converse.api.rooms.open(room_jid);
-                spyOn(room, 'join').and.callThrough();
-                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
-                await u.waitUntil(() => room.join.calls.count());
+                spyOn(_converse.ChatRoom.prototype, 'getAndPersistNickname').and.callThrough();
+                const room_creation_promise = _converse.api.rooms.open(muc_jid);
+                await test_utils.getRoomFeatures(_converse, muc_jid);
+                const room = await room_creation_promise;
+                await u.waitUntil(() => room.getAndPersistNickname.calls.count());
                 expect(room.get('nick')).toBe('Othello');
                 done();
             }));

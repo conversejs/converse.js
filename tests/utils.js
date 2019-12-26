@@ -145,18 +145,15 @@
         return model;
     };
 
-    utils.getRoomFeatures = async function (_converse, room, server, features=[]) {
-        const muc_jid = `${room}@${server}`.toLowerCase();
+    utils.getRoomFeatures = async function (_converse, muc_jid, features=[]) {
+        const room = Strophe.getNodeFromJid(muc_jid);
+        muc_jid = muc_jid.toLowerCase();
         const stanzas = _converse.connection.IQ_stanzas;
-        // XXX How necessary is this?
-        const index = stanzas.length-2;
-        const stanza = await u.waitUntil(() => _.filter(
-            stanzas.slice(index),
+        const stanza = await u.waitUntil(() => stanzas.filter(
             iq => iq.querySelector(
                 `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-            )).pop());
-
-
+            )).pop()
+        );
         const features_stanza = $iq({
             'from': muc_jid,
             'id': stanza.getAttribute('id'),
@@ -183,7 +180,6 @@
 
 
     utils.waitForReservedNick = async function (_converse, muc_jid, nick) {
-        const view = _converse.chatboxviews.get(muc_jid);
         const stanzas = _converse.connection.IQ_stanzas;
         const selector = `iq[to="${muc_jid.toLowerCase()}"] query[node="x-roomuser-item"]`;
         const iq = await u.waitUntil(() => stanzas.filter(s => sizzle(selector, s).length).pop());
@@ -196,7 +192,7 @@
         const stanza = $iq({
             'type': 'result',
             'id': IQ_id,
-            'from': view.model.get('jid'),
+            'from': muc_jid,
             'to': _converse.connection.jid
         }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'});
         if (nick) {
@@ -204,7 +200,7 @@
         }
         _converse.connection._dataRecv(utils.createRequest(stanza));
         if (nick) {
-            return u.waitUntil(() => view.model.get('nick'));
+            return u.waitUntil(() => nick);
         }
     };
 
@@ -290,23 +286,22 @@
             }).up()
             .c('status').attrs({code:'110'});
         _converse.connection._dataRecv(utils.createRequest(presence));
-        // return utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
     };
 
 
     utils.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
         muc_jid = muc_jid.toLowerCase();
-        const room = Strophe.getNodeFromJid(muc_jid);
-        const server = Strophe.getDomainFromJid(muc_jid);
-        await _converse.api.rooms.open(muc_jid);
-        await utils.getRoomFeatures(_converse, room, server, features);
+        const room_creation_promise = _converse.api.rooms.open(muc_jid);
+        await utils.getRoomFeatures(_converse, muc_jid, features);
         await utils.waitForReservedNick(_converse, muc_jid, nick);
         // The user has just entered the room (because join was called)
         // and receives their own presence from the server.
         // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
         utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
+
+        await room_creation_promise;
         const view = _converse.chatboxviews.get(muc_jid);
-        await u.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
         if (_converse.muc_fetch_members) {
             await utils.returnMemberLists(_converse, muc_jid, members);
         }

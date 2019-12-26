@@ -22,6 +22,7 @@
 
 - #129: Add support for [XEP-0156: Disovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html). Only XML is supported for now.
 - #1105: Support for storing persistent data in IndexedDB
+- #1253: Show contacts with unread messages at the top of the roster
 - #1322 Display occupants’ avatars in the occupants list
 - #1640: Add the ability to resize the occupants sidebar in MUCs
 - #1666: Allow scrolling of the OMEMO fingerprints list
@@ -51,9 +52,14 @@
   * `_converse.api.rooms.create`
   * `_converse.api.roomviews.close`
 
+- Changes the events:
+  * The `chatBoxInitialized` event now triggers when a `_converse.ChatBox` (not the view) is opened.
+  * Renamed the old `chatBoxInitialized` to `chatBoxViewInitialized` and trigger only for `ChatBoxView` instances.
+  * Renamed `chatRoomOpened` event to `chatRoomViewInitialized`
+  * The order of certain events have now changed: `statusInitialized` is now triggered after `initialized` and `connected` and `reconnected`.
+
 - `_converse.api.chats.get()` now only returns one-on-one chats, not the control box or headline notifications.
 - The `show_only_online_users` setting has been removed.
-- The order of certain events have now changed: `statusInitialized` is now triggered after `initialized` and `connected` and `reconnected`.
 - `_converse.api.alert.show` is now `_converse.api.show` and instead of taking
   an integer for the `type`, "info", "warn" or "error" should be passed in.
 - The `converse-headline` plugin has been split up into `converse-headlines` and `converse-headlines-view`.

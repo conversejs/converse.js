@@ -112,10 +112,9 @@ converse.plugins.add('converse-bookmarks', {
                 this.on('remove', this.markRoomAsUnbookmarked, this);
                 this.on('remove', this.sendBookmarkStanza, this);
 
-                const storage = _converse.config.get('storage');
                 const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
                 this.fetched_flag = cache_key+'fetched';
-                this.browserStorage = _converse.createStore(cache_key, storage);
+                this.browserStorage = _converse.createStore(cache_key);
             },
 
             async openBookmarkedRoom (bookmark) {

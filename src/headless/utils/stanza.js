@@ -284,7 +284,7 @@ const stanza_utils = {
      * @param { _converse } _converse
      * @returns { Object }
      */
-    async getMessageAttributesFromStanza (stanza, original_stanza, chatbox, _converse) {
+    getMessageAttributesFromStanza (stanza, original_stanza, chatbox, _converse) {
         const is_muc = u.isChatRoom(chatbox);
         let attrs = Object.assign(
             stanza_utils.getStanzaIDs(stanza, original_stanza),
@@ -298,7 +298,7 @@ const stanza_utils = {
                 'chat_state': stanza_utils.getChatState(stanza),
                 'is_archived': stanza_utils.isArchived(original_stanza),
                 'is_delayed': !!delay,
-                'is_only_emojis': text ? await u.isOnlyEmojis(text) : false,
+                'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
                 'message': text,
                 'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
                 'references': stanza_utils.getReferences(stanza),

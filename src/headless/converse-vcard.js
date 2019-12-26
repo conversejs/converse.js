@@ -7,10 +7,12 @@
  * @module converse-vcard
  */
 import "./converse-status";
+import { get, has, isString } from "lodash";
 import converse from "./converse-core";
+import log from "@converse/headless/log";
 import tpl_vcard from "./templates/vcard.html";
 
-const { Backbone, Strophe, _, $iq, dayjs, } = converse.env;
+const { Backbone, Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -84,7 +86,7 @@ converse.plugins.add('converse-vcard', {
                 } else {
                     (attrs = {})[key] = val;
                 }
-                if (_.has(attrs, 'image') && !attrs['image']) {
+                if (has(attrs, 'image') && !attrs['image']) {
                     attrs['image'] = _converse.DEFAULT_IMAGE;
                     attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
                     return Backbone.Model.prototype.set.call(this, attrs, options);
@@ -116,13 +118,13 @@ converse.plugins.add('converse-vcard', {
             if (vcard !== null) {
                 result = {
                     'stanza': iq,
-                    'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
-                    'nickname': _.get(vcard.querySelector('NICKNAME'), 'textContent'),
-                    'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
-                    'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
-                    'url': _.get(vcard.querySelector('URL'), 'textContent'),
-                    'role': _.get(vcard.querySelector('ROLE'), 'textContent'),
-                    'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent'),
+                    'fullname': get(vcard.querySelector('FN'), 'textContent'),
+                    'nickname': get(vcard.querySelector('NICKNAME'), 'textContent'),
+                    'image': get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
+                    'image_type': get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
+                    'url': get(vcard.querySelector('URL'), 'textContent'),
+                    'role': get(vcard.querySelector('ROLE'), 'textContent'),
+                    'email': get(vcard.querySelector('EMAIL USERID'), 'textContent'),
                     'vcard_updated': (new Date()).toISOString(),
                     'vcard_error': undefined
                 };
@@ -135,6 +137,7 @@ converse.plugins.add('converse-vcard', {
             return result;
         }
 
+
         function createStanza (type, jid, vcard_el) {
             const iq = $iq(jid ? {'type': type, 'to': jid} : {'type': type});
             if (!vcard_el) {
@@ -144,6 +147,7 @@ converse.plugins.add('converse-vcard', {
             }
             return iq;
         }
+
 
         async function getVCard (_converse, jid) {
             const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
@@ -160,7 +164,54 @@ converse.plugins.add('converse-vcard', {
             return onVCardData(jid, iq);
         }
 
-        /************************ BEGIN Event Handlers ************************/
+
+        async function setVCardOnModel (model) {
+            let jid;
+            if (model instanceof _converse.Message) {
+                if (model.get('type') === 'error') {
+                    return;
+                }
+                jid = model.get('from');
+            } else {
+                jid = model.get('jid');
+            }
+            await _converse.api.waitUntil('VCardsInitialized');
+            model.vcard = _converse.vcards.findWhere({'jid': jid});
+            if (!model.vcard) {
+                model.vcard = _converse.vcards.create({'jid': jid});
+            }
+            model.vcard.on('change', () => model.trigger('vcard:change'));
+        }
+
+
+        function getVCardForChatroomOccupant (message) {
+            const chatbox = get(message, 'collection.chatbox');
+            const nick = Strophe.getResourceFromJid(message.get('from'));
+
+            if (chatbox && chatbox.get('nick') === nick) {
+                return _converse.xmppstatus.vcard;
+            } else {
+                const jid = message.occupant && message.occupant.get('jid') || message.get('from');
+                if (jid) {
+                    return _converse.vcards.findWhere({jid}) || _converse.vcards.create({jid});
+                } else {
+                    log.error(`Could not assign VCard for message because no JID found! msgid: ${message.get('msgid')}`);
+                    return;
+                }
+            }
+        }
+
+
+        async function setVCardOnMUCMessage (message) {
+            await _converse.api.waitUntil('VCardsInitialized');
+            if (['error', 'info'].includes(message.get('type'))) {
+                return;
+            } else {
+                message.vcard = getVCardForChatroomOccupant(message);
+            }
+        }
+
+
         _converse.initVCardCollection = async function () {
             _converse.vcards = new _converse.VCards();
             _converse.vcards.browserStorage = _converse.createStore(`${_converse.bare_jid}-converse.vcards`);
@@ -182,9 +233,8 @@ converse.plugins.add('converse-vcard', {
             _converse.api.trigger('VCardsInitialized');
         }
 
-        _converse.api.listen.on('statusInitialized', _converse.initVCardCollection);
 
-        _converse.api.listen.on('clearSession', () => {
+        function clearVCardsSession () {
             if (_converse.shouldClearCache()) {
                 _converse.api.promises.add('VCardsInitialized');
                 if (_converse.vcards) {
@@ -192,30 +242,19 @@ converse.plugins.add('converse-vcard', {
                     delete _converse.vcards;
                 }
             }
-        });
-
-
-        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.VCARD));
-
-
-        async function setVCardOnModel (model) {
-            let jid;
-            if (model instanceof _converse.Message) {
-                if (model.get('type') === 'error') {
-                    return;
-                }
-                jid = model.get('from');
-            } else {
-                jid = model.get('jid');
-            }
-            await _converse.api.waitUntil('VCardsInitialized');
-            model.vcard = _converse.vcards.findWhere({'jid': jid});
-            if (!model.vcard) {
-                model.vcard = _converse.vcards.create({'jid': jid});
-            }
         }
-        _converse.api.listen.on('rosterContactInitialized', m => setVCardOnModel(m));
+
+
+        /************************ BEGIN Event Handlers ************************/
+
+        _converse.api.listen.on('chatBoxInitialized', m => setVCardOnModel(m));
+        _converse.api.listen.on('chatRoomInitialized', m => setVCardOnModel(m));
+        _converse.api.listen.on('chatRoomMessageInitialized', m => setVCardOnMUCMessage(m));
+        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.VCARD));
+        _converse.api.listen.on('clearSession', () => clearVCardsSession());
         _converse.api.listen.on('messageInitialized', m => setVCardOnModel(m));
+        _converse.api.listen.on('rosterContactInitialized', m => setVCardOnModel(m));
+        _converse.api.listen.on('statusInitialized', _converse.initVCardCollection);
 
 
         /************************ BEGIN API ************************/
@@ -275,7 +314,7 @@ converse.plugins.add('converse-vcard', {
                  * });
                  */
                  get (model, force) {
-                    if (_.isString(model)) {
+                    if (isString(model)) {
                         return getVCard(_converse, model);
                     } else if (force ||
                             !model.get('vcard_updated') ||

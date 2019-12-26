@@ -9,7 +9,6 @@
 import "converse-chatview";
 import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
-import log from "@converse/headless/log";
 import tpl_chatbox_minimize from "templates/chatbox_minimize.html";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.html";
@@ -471,12 +470,11 @@ converse.plugins.add('converse-minimize', {
             },
 
             initToggle () {
-                const storage = _converse.config.get('storage'),
-                      id = `converse.minchatstoggle-${_converse.bare_jid}`;
+                const id = `converse.minchatstoggle-${_converse.bare_jid}`;
                 this.toggleview = new _converse.MinimizedChatsToggleView({
                     'model': new _converse.MinimizedChatsToggle({'id': id})
                 });
-                this.toggleview.model.browserStorage = _converse.createStore(id, storage);
+                this.toggleview.model.browserStorage = _converse.createStore(id);
                 this.toggleview.model.fetch();
             },
 
@@ -568,22 +566,22 @@ converse.plugins.add('converse-minimize', {
             }
         });
 
-        /************************ BEGIN Event Handlers ************************/
-        _converse.api.waitUntil('chatBoxViewsInitialized').then(() => {
-            _converse.minimized_chats = new _converse.MinimizedChats({
-                model: _converse.chatboxes
-            });
+        function initMinimizedChats () {
+            _converse.minimized_chats = new _converse.MinimizedChats({model: _converse.chatboxes});
             /**
              * Triggered once the _converse.MinimizedChats instance has been * initialized
              * @event _converse#minimizedChatsInitialized
              * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
              */
             _converse.api.trigger('minimizedChatsInitialized');
-        }).catch(e => log.fatal(e));
+        }
 
-        const debouncedTrimChats = _.debounce(() => _converse.chatboxviews.trimChats(), 250);
+        /************************ BEGIN Event Handlers ************************/
+        _converse.api.listen.on('userSessionInitialized', () => initMinimizedChats());
         _converse.api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
         _converse.api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
+
+        const debouncedTrimChats = _.debounce(() => _converse.chatboxviews.trimChats(), 250);
         _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));
         _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrimChats));
         /************************ END Event Handlers ************************/

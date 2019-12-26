@@ -131,7 +131,7 @@ converse.plugins.add('converse-muc-views', {
                 this.roomspanel = new _converse.RoomsPanel({
                     'model': new (_converse.RoomsPanelModel.extend({
                         id,
-                        'browserStorage': _converse.createStore(id, _converse.config.get('storage'))
+                        'browserStorage': _converse.createStore(id)
                     }))()
                 });
                 this.roomspanel.model.fetch();
@@ -664,7 +664,7 @@ converse.plugins.add('converse-muc-views', {
                 });
 
                 this.listenTo(this.model, 'change', this.renderHeading);
-                this.listenTo(this.model, 'change:connection_status', this.onConnectionStatusChanged);
+                this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
                 this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
                 this.listenTo(this.model, 'change:subject', this.setChatRoomSubject);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
@@ -688,13 +688,12 @@ converse.plugins.add('converse-muc-views', {
                 await this.updateAfterMessagesFetched();
                 this.onConnectionStatusChanged();
                 /**
-                 * Triggered once a groupchat has been opened
-                 * @event _converse#chatRoomOpened
+                 * Triggered once a { @link _converse.ChatRoomView } has been opened
+                 * @event _converse#chatRoomViewInitialized
                  * @type { _converse.ChatRoomView }
-                 * @example _converse.api.listen.on('chatRoomOpened', view => { ... });
+                 * @example _converse.api.listen.on('chatRoomViewInitialized', view => { ... });
                  */
-                _converse.api.trigger('chatRoomOpened', this);
-                _converse.api.trigger('chatBoxInitialized', this);
+                _converse.api.trigger('chatRoomViewInitialized', this);
             },
 
             render () {
@@ -704,7 +703,7 @@ converse.plugins.add('converse-muc-views', {
                 this.renderChatArea();
                 this.renderBottomPanel();
                 if (!_converse.muc_show_logs_before_join) {
-                    this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();
+                    this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();
                 }
                 if (!this.model.get('hidden')) {
                     this.show();
@@ -723,7 +722,7 @@ converse.plugins.add('converse-muc-views', {
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
-                const entered = this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED;
+                const entered = this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
                 const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
                 container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit, entered});
                 if (entered && can_edit) {
@@ -891,10 +890,7 @@ converse.plugins.add('converse-muc-views', {
             submitNickname (ev) {
                 ev.preventDefault();
                 const nick = ev.target.nick.value.trim();
-                if (nick) {
-                    this.model.join(nick);
-                    this.model.set({'nickname': nick});
-                }
+                nick && this.model.join(nick);
             },
 
             onKeyDown (ev) {
@@ -1130,7 +1126,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onConnectionStatusChanged () {
-                const conn_status = this.model.get('connection_status');
+                const conn_status = this.model.session.get('connection_status');
                 if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {
                     this.renderNicknameForm();
                 } else if (conn_status === converse.ROOMSTATUS.PASSWORD_REQUIRED) {
@@ -1565,7 +1561,7 @@ converse.plugins.add('converse-muc-views', {
                     const container = this.el.querySelector('.chatroom-body');
                     container.insertAdjacentHTML('beforeend', html);
                 }
-                u.safeSave(this.model, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
+                u.safeSave(this.model.session, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
             },
 
             closeForm () {
@@ -1626,7 +1622,7 @@ converse.plugins.add('converse-muc-views', {
                     this.password_form.model.set('validation_message', message);
                 }
                 u.showElement(this.password_form.el);
-                this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
+                this.model.session.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
             },
 
             showDestroyedMessage () {
@@ -1649,12 +1645,11 @@ converse.plugins.add('converse-muc-views', {
                 });
                 const switch_el = container.querySelector('a.switch-chat');
                 if (switch_el) {
-                    switch_el.addEventListener('click', ev => {
+                    switch_el.addEventListener('click', async ev => {
                         ev.preventDefault();
-                        this.model.save('jid', moved_jid);
-                        container.innerHTML = '';
-                        this.showSpinner();
-                        this.model.enterRoom();
+                        const room = await _converse.api.rooms.get(moved_jid, null, true);
+                        room.maybeShow(true);
+                        this.model.destroy();
                     });
                 }
                 u.showElement(container);
@@ -1704,19 +1699,25 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            insertMessage (view) {
+            removeEmptyHistoryFeedback () {
                 if (_converse.muc_show_logs_before_join &&
                         this.content.firstElementChild.matches('.empty-history-feedback')) {
                     this.content.removeChild(this.content.firstElementChild);
                 }
+            },
+
+            insertDayIndicator () {
+                this.removeEmptyHistoryFeedback();
+                return _converse.ChatBoxView.prototype.insertDayIndicator.apply(this, arguments);
+            },
+
+            insertMessage (view) {
+                this.removeEmptyHistoryFeedback();
                 return _converse.ChatBoxView.prototype.insertMessage.call(this, view);
             },
 
             insertNotification (message) {
-                if (_converse.muc_show_logs_before_join &&
-                        this.content.firstElementChild.matches('.empty-history-feedback')) {
-                    this.content.removeChild(this.content.firstElementChild);
-                }
+                this.removeEmptyHistoryFeedback();
                 this.content.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({
@@ -1738,7 +1739,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onOccupantRemoved (occupant) {
-                if (this.model.get('connection_status') ===  converse.ROOMSTATUS.ENTERED &&
+                if (this.model.session.get('connection_status') ===  converse.ROOMSTATUS.ENTERED &&
                         occupant.get('show') === 'online') {
                     this.showLeaveNotification(occupant);
                 }
@@ -1788,7 +1789,7 @@ converse.plugins.add('converse-muc-views', {
 
             showJoinNotification (occupant) {
                 if (!_converse.muc_show_join_leave ||
-                        this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                        this.model.session.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                     return;
                 }
                 const nick = occupant.get('nick'),
@@ -1903,11 +1904,12 @@ converse.plugins.add('converse-muc-views', {
              * @method _converse.ChatRoomView#renderAfterTransition
              */
             renderAfterTransition () {
-                if (this.model.get('connection_status') == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
+                const conn_status = this.model.session.get('connection_status')
+                if (conn_status == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
                     this.renderNicknameForm();
-                } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
+                } else if (conn_status == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                     this.renderPasswordForm();
-                } else if (this.model.get('connection_status') == converse.ROOMSTATUS.ENTERED) {
+                } else if (conn_status == converse.ROOMSTATUS.ENTERED) {
                     this.hideChatRoomContents();
                     u.showElement(this.el.querySelector('.chat-area'));
                     u.showElement(this.el.querySelector('.occupants'));

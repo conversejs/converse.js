@@ -223,11 +223,7 @@ u.renderImageURLs = function (_converse, el) {
 u.renderMovieURL = function (_converse, url) {
     const uri = new URI(url);
     if (u.isVideoURL(uri)) {
-        const { __ } = _converse;
-        return tpl_video({
-            'url': url,
-            'label_download': __('Download video file "%1$s"', decodeURI(uri.filename()))
-        })
+        return tpl_video({url});
     }
     return url;
 };

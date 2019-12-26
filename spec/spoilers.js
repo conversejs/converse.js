@@ -35,7 +35,7 @@
                     }).t(spoiler_hint)
                 .tree();
             _converse.connection._dataRecv(test_utils.createRequest(msg));
-            await new Promise(resolve => _converse.api.listen.once('chatBoxInitialized', resolve));
+            await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise(resolve => view.once('messageInserted', resolve));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
@@ -70,7 +70,7 @@
                       'xmlns': 'urn:xmpp:spoiler:0',
                     }).tree();
             _converse.connection._dataRecv(test_utils.createRequest(msg));
-            await new Promise(resolve => _converse.api.listen.once('chatBoxInitialized', resolve));
+            await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
             const view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => u.isVisible(view.el));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')

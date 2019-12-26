@@ -93,6 +93,7 @@ converse.plugins.add('converse-mam', {
              *  after which messages should be returned. Implies forward paging.
              * @param { string } [options.with] - The JID of the entity with
              *  which messages were exchanged.
+             * @param { boolean } [options.groupchat] - True if archive in groupchat.
              * @param { boolean } [page] - Whether this function should recursively
              *  page through the entire result set if a limited number of results
              *  were returned.
@@ -300,6 +301,7 @@ converse.plugins.add('converse-mam', {
                   * * `before`
                   * * `index`
                   * * `count`
+                  * * `groupchat`
                   * @throws {Error} An error is thrown if the XMPP server responds with an error.
                   * @returns { (Promise<Object> | _converse.TimeoutError) } A promise which resolves
                   * to an object which will have keys `messages` and `rsm` which contains a _converse.RSM
@@ -343,7 +345,7 @@ converse.plugins.add('converse-mam', {
                   * // For a particular room
                   * let result;
                   * try {
-                  *    result = await _converse.api.archive.query({'with': 'discuss@conference.doglovers.net'});
+                  *    result = await _converse.api.archive.query({'with': 'discuss@conference.doglovers.net', 'groupchat': true});
                   * } catch (e) {
                   *     // The query was not successful
                   * }

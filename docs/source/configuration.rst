@@ -265,7 +265,9 @@ auto_focus
 
 If set to ``true``, the textarea for composing chat messages will automatically
 become focused as soon as a chat is opened. This means you don't need to click
-the textarea first before starting to type a message.
+the textarea first before starting to type a message. This also applies to the
+username field which is automatically focused after the login controlbox is
+loaded.
 
 For applications where chat is not the main feature, automatic focus of the
 chat box might be undesired.
@@ -789,7 +791,7 @@ enable_smacks
 Determines whether `XEP-0198 Stream Management <https://xmpp.org/extensions/xep-0198.html>`_
 support is turned on or not.
 
-Recommended to set to ``true`` if a websocket connection is used. 
+Recommended to set to ``true`` if a websocket connection is used.
 Please see the :ref:`websocket-url` configuration setting.
 
 filter_by_resource

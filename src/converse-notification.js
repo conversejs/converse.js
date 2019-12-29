@@ -183,6 +183,13 @@ converse.plugins.add('converse-notification', {
             if (_converse.notification_delay) {
                 setTimeout(n.close.bind(n), _converse.notification_delay);
             }
+            n.onclick = function (event) {
+                event.preventDefault();
+                window.focus();
+                const chat = _converse.chatboxes.get(from_jid);
+                chat.maybeShow(true);
+            }
+            n.onclick.bind(_converse);
         };
 
         _converse.showChatStateNotification = function (contact) {

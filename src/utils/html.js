@@ -81,7 +81,11 @@ const isImage = function (url) {
 
 u.isAudioURL = function (url) {
     if (!(url instanceof URI)) {
-        url = new URI(url);
+        try {
+            url = new URI(url);
+        } catch (error) {
+            return false;
+        }
     }
     const filename = url.filename().toLowerCase();
     if (url.protocol().toLowerCase() !== "https") {
@@ -93,7 +97,11 @@ u.isAudioURL = function (url) {
 
 u.isImageURL = function (url) {
     if (!(url instanceof URI)) {
-        url = new URI(url);
+        try {
+            url = new URI(url);
+        } catch (error) {
+            return false;
+        }
     }
     const filename = url.filename().toLowerCase();
     if (window.location.protocol === 'https:' && url.protocol().toLowerCase() !== "https") {
@@ -108,7 +116,11 @@ u.isImageURL = function (url) {
 
 u.isVideoURL = function (url) {
     if (!(url instanceof URI)) {
-        url = new URI(url);
+        try {
+            url = new URI(url);
+        } catch (error) {
+            return false;
+        }
     }
     const filename = url.filename().toLowerCase();
     if (url.protocol().toLowerCase() !== "https") {
@@ -119,42 +131,54 @@ u.isVideoURL = function (url) {
 
 
 u.renderAudioURL = function (_converse, url) {
-    const uri = new URI(url);
-    if (u.isAudioURL(uri)) {
-        const { __ } = _converse;
-        return tpl_audio({
-            'url': url,
-            'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))
-        })
+    try {
+        const uri = new URI(url);
+        if (u.isAudioURL(uri)) {
+            const { __ } = _converse;
+            return tpl_audio({
+                'url': url,
+                'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))
+            })
+        }
+    } catch (error) {
+        // decodeURI may throw error in case of malformed URIs
     }
     return url;
 };
 
 
 u.renderFileURL = function (_converse, url) {
-    const uri = new URI(url);
-    if (u.isImageURL(uri) || u.isVideoURL(uri) || u.isAudioURL(uri)) {
+    try {
+        const uri = new URI(url);
+        if (u.isImageURL(uri) || u.isVideoURL(uri) || u.isAudioURL(uri)) {
+            return url;
+        }
+        const { __ } = _converse,
+              filename = uri.filename();
+        return tpl_file({
+            'url': url,
+            'label_download': __('Download file "%1$s"', decodeURI(filename))
+        })
+    } catch (error) {
         return url;
     }
-    const { __ } = _converse,
-          filename = uri.filename();
-    return tpl_file({
-        'url': url,
-        'label_download': __('Download file "%1$s"', decodeURI(filename))
-    })
 };
 
 u.renderImageURL = function (_converse, url) {
     if (!_converse.show_images_inline) {
         return u.addHyperlinks(url);
     }
-    const uri = new URI(url);
-    if (u.isImageURL(uri)) {
-        const { __ } = _converse;
-        return tpl_image({
-            'url': url,
-            'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
-        })
+    try {
+        const uri = new URI(url);
+        if (u.isImageURL(uri)) {
+            const { __ } = _converse;
+            return tpl_image({
+                'url': url,
+                'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
+            })
+        }
+    } catch (error) {
+        // decodeURI may throw error in case of malformed URIs
     }
     return url;
 };
@@ -221,9 +245,13 @@ u.renderImageURLs = function (_converse, el) {
 
 
 u.renderMovieURL = function (_converse, url) {
-    const uri = new URI(url);
-    if (u.isVideoURL(uri)) {
-        return tpl_video({url});
+    try {
+        const uri = new URI(url);
+        if (u.isVideoURL(uri)) {
+            return tpl_video({url});
+        }
+    } catch (error) {
+        // decodeURI may throw error in case of malformed URIs
     }
     return url;
 };
@@ -373,16 +401,20 @@ u.addMentionsMarkup = function (text, references, chatbox) {
 
 u.addHyperlinks = function (text) {
     return URI.withinString(text, url => {
-        const uri = new URI(url);
-        url = uri.normalize()._string;
-        const pretty_url = uri._parts.urn ? url : uri.readable();
-        if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
-            url = 'http://' + url;
+        try {
+            const uri = new URI(url);
+            url = uri.normalize()._string;
+            const pretty_url = uri._parts.urn ? url : uri.readable();
+            if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'http://' + url;
+            }
+            if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
+                return `<a target="_blank" rel="noopener" class="open-chatroom" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+            }
+            return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+        } catch (error) {
+            return url;
         }
-        if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
-            return `<a target="_blank" rel="noopener" class="open-chatroom" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
-        }
-        return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
     }, {
         'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
     });

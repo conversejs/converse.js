@@ -30,6 +30,7 @@
 - #1772: `_converse.api.contact.add(jid, nick)` fails, says not a function
 - #1792: Fix: modals don't have scrollbars
 - #1796: Don't show "back" arrow navigation (on mobile) in the chat header when in `singleton` mode
+- #1821: Errors caused by malformed URLs are now handled
 
 ### Breaking changes
 

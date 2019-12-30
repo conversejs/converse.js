@@ -237,18 +237,19 @@ converse.plugins.add('converse-bookmarks', {
                         [__("The server did not return your bookmarks within the allowed time. "+
                             "You can reload the page to request them again.")]
                     );
-                } else {
-                    log.error('Error while fetching bookmarks');
-                    log.error(iq);
-                }
-                if (deferred) {
+                } else if (deferred) {
                     if (iq.querySelector('error[type="cancel"] item-not-found')) {
                         // Not an exception, the user simply doesn't have any bookmarks.
                         window.sessionStorage.setItem(this.fetched_flag, true);
                         return deferred.resolve();
                     } else {
+                        log.error('Error while fetching bookmarks');
+                        log.error(iq);
                         return deferred.reject(new Error("Could not fetch bookmarks"));
                     }
+                } else {
+                    log.error('Error while fetching bookmarks');
+                    log.error(iq);
                 }
             },
 

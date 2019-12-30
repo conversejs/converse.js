@@ -110,6 +110,8 @@ converse.plugins.add('converse-muc-views', {
             'muc_mention_autocomplete_filter': 'contains',
             'muc_mention_autocomplete_show_avatar': true,
             'roomconfig_whitelist': [],
+            'muc_roomid_policy': null,
+            'muc_roomid_policy_hint': null,
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
             }
@@ -519,12 +521,15 @@ converse.plugins.add('converse-muc-views', {
         _converse.AddChatRoomModal = _converse.BootstrapModal.extend({
 
             events: {
-                'submit form.add-chatroom': 'openChatRoom'
+                'submit form.add-chatroom': 'openChatRoom',
+                'keyup .roomjid-input': 'checkRoomidPolicy',
+                'change .roomjid-input': 'checkRoomidPolicy'
             },
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change:muc_domain', this.render);
+                this.muc_roomid_policy_error_msg = null;
             },
 
             toHTML () {
@@ -537,7 +542,9 @@ converse.plugins.add('converse-muc-views', {
                     '__': _converse.__,
                     '_converse': _converse,
                     'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
-                    'chatroom_placeholder': placeholder
+                    'chatroom_placeholder': placeholder,
+                    'muc_roomid_policy_error_msg': this.muc_roomid_policy_error_msg,
+                    'muc_roomid_policy_hint': xss.filterXSS(_converse.muc_roomid_policy_hint, {'whiteList': {b: [], br: [], em: []}})
                 }));
             },
 
@@ -582,6 +589,24 @@ converse.plugins.add('converse-muc-views', {
                 _converse.api.rooms.open(jid, Object.assign(data, {jid}));
                 this.modal.hide();
                 ev.target.reset();
+            },
+
+            checkRoomidPolicy () {
+                if (_converse.muc_roomid_policy && _converse.muc_domain) {
+                    let jid = this.el.querySelector('.roomjid-input').value;
+                    if (converse.locked_muc_domain || !u.isValidJID(jid)) {
+                        jid = `${Strophe.escapeNode(jid)}@${_converse.muc_domain}`;
+                    }
+                    const roomid = Strophe.getNodeFromJid(jid);
+                    const roomdomain = Strophe.getDomainFromJid(jid);
+                    if (_converse.muc_domain !== roomdomain ||
+                        _converse.muc_roomid_policy.test(roomid)) {
+                        this.muc_roomid_policy_error_msg = null;
+                    } else {
+                        this.muc_roomid_policy_error_msg = __('Groupchat id is invalid.');
+                    }
+                    this.render();
+                }
             }
         });
 

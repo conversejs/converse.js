@@ -1150,6 +1150,50 @@ all MUCs with set autojoin flag in their respective bookmarks will be joined on
 startup of Converse. When set to ``false`` no MUCs are automatically joined based on
 their bookmarks.
 
+muc_roomid_policy
+-----------------
+
+* Default: ``null``
+
+This option defines the regular expression that a room id must satisfy to allow the
+room creation. Server administrators may want to impose restrictions on the minimum
+and maximum length and the allowed character set allowed for room ids. Otherwise
+users might create rooms which are difficult to handle.
+
+However, restricting that on the server only leads to bad UX as users might learn of
+the servers policy only after they have tried to create a room. Furthermore error
+messages from XMPP-servers might not be self-explanatory.
+
+Therefore this option allows converse to already check the policy and disallow the
+user from even trying to entering/creating such a room.
+
+As this only makes sense on your own server, the check is applied only if the domain
+part equals `muc_domain`_. If `muc_domain`_ is unset, then this check is disabled
+completely.
+
+Example:
+
+.. code-block:: javascript
+
+    muc_roomid_policy: /^[a-z0-9._-]{5,40}$/,
+
+See also: `muc_roomid_policy_hint`_
+
+muc_roomid_policy_hint
+----------------------
+
+* Default: ``null``
+
+This option can be used in conjuction with `muc_roomid_policy`_ in order to give
+a written explanation of the imposed room id policy. You can use the html-tags
+``<br>``, ``<b>``, and ``<em>`` to allow some basic styling.
+
+Example:
+
+.. code-block:: javascript
+
+    muc_roomid_policy_hint: '<br><b>Policy for groupchat id:</b><br>- between 5 and 40 characters,<br>- lowercase from a to z (no special characters) or<br>- digits or<br>- dots (.) or<br>- underlines (_) or<br>- hyphens (-),<br>- no spaces<br>',
+
 muc_show_join_leave
 -------------------
 

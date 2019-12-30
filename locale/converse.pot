@@ -181,6 +181,9 @@ msgstr ""
 msgid "Groupchat address (JID)"
 msgstr ""
 
+msgid "Groupchat id is invalid."
+msgstr ""
+
 #: dist/converse-no-dependencies.js:8955
 msgid "Description"
 msgstr ""

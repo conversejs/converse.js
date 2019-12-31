@@ -655,7 +655,6 @@ converse.plugins.add('converse-roster', {
              */
             updateContact (item) {
                 const jid = item.getAttribute('jid');
-                if (this.isSelf(jid)) { return; }
 
                 const contact = this.get(jid);
                 const subscription = item.getAttribute("subscription");

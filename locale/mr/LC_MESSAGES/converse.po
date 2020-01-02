@@ -8,64 +8,67 @@ msgstr ""
 "Project-Id-Version: Converse.js 5.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-01-03 19:21+0000\n"
+"Last-Translator: Prachi Joshi <josprachi@yahoo.com>\n"
+"Language-Team: Marathi <https://hosted.weblate.org/projects/conversejs/"
+"translations/mr/>\n"
 "Language: mr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.10\n"
 
 #: dist/converse-no-dependencies.js:7899
 msgid "Uploading file:"
-msgstr ""
+msgstr "फाइल अपलोड करीत आहे:"
 
 #: dist/converse-no-dependencies.js:8008
 msgid "This message has been edited"
-msgstr ""
+msgstr "हा संदेश संपादित केला गेला आहे"
 
 #: dist/converse-no-dependencies.js:8014
 msgid "Edit this message"
-msgstr ""
+msgstr "हा संदेश संपादित करा"
 
 #: dist/converse-no-dependencies.js:8030
 msgid "Message versions"
-msgstr ""
+msgstr "संदेश आवृत्त्या"
 
 #: dist/converse-no-dependencies.js:8044 dist/converse-no-dependencies.js:8321
 #: dist/converse-no-dependencies.js:8435 dist/converse-no-dependencies.js:9009
 #: dist/converse-no-dependencies.js:49890
 #: dist/converse-no-dependencies.js:49979
 msgid "Close"
-msgstr ""
+msgstr "बंद करा"
 
 #: dist/converse-no-dependencies.js:8325
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "वापरकर्त्याची प्रोफाइल प्रतिमा"
 
 #: dist/converse-no-dependencies.js:8335
 msgid "Full Name:"
-msgstr ""
+msgstr "पूर्ण नाव:"
 
 #: dist/converse-no-dependencies.js:8341 dist/converse-no-dependencies.js:8517
 msgid "XMPP Address:"
-msgstr ""
+msgstr "एक्सएमपीपी पत्ता:"
 
 #: dist/converse-no-dependencies.js:8349
 msgid "Nickname:"
-msgstr ""
+msgstr "टोपणनाव:"
 
 #: dist/converse-no-dependencies.js:8357
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: dist/converse-no-dependencies.js:8367
 msgid "Email:"
-msgstr ""
+msgstr "ईमेल:"
 
 #: dist/converse-no-dependencies.js:8377
 msgid "Role:"
-msgstr ""
+msgstr "भूमिका:"
 
 #: dist/converse-no-dependencies.js:8385
 msgid "OMEMO Fingerprints"
@@ -73,31 +76,31 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8409
 msgid "Trusted"
-msgstr ""
+msgstr "विश्वासु"
 
 #: dist/converse-no-dependencies.js:8423
 msgid "Untrusted"
-msgstr ""
+msgstr "अविश्वासू"
 
 #: dist/converse-no-dependencies.js:8437
 msgid "Refresh"
-msgstr ""
+msgstr "रीफ्रेश"
 
 #: dist/converse-no-dependencies.js:8441
 msgid "Remove as contact"
-msgstr ""
+msgstr "संपर्क म्हणून काढा"
 
 #: dist/converse-no-dependencies.js:8523
 msgid "Password:"
-msgstr ""
+msgstr "संकेतशब्द:"
 
 #: dist/converse-no-dependencies.js:8525
 msgid "password"
-msgstr ""
+msgstr "संकेतशब्द"
 
 #: dist/converse-no-dependencies.js:8535
 msgid "This is a trusted device"
-msgstr ""
+msgstr "हे एक विश्वसनीय डिव्हाइस आहे"
 
 #: dist/converse-no-dependencies.js:8537
 msgid ""
@@ -110,7 +113,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8541
 msgid "Log in"
-msgstr ""
+msgstr "लॉग इन करा"
 
 #: dist/converse-no-dependencies.js:8547
 msgid "Click here to log in anonymously"

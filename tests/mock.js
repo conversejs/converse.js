@@ -223,14 +223,19 @@
 
     function clearIndexedDB () {
         const promise = u.getResolveablePromise();
-        const DBOpenRequest = window.indexedDB.open("converse-test-persistent");
-        DBOpenRequest.onsuccess = function () {
-            const db = DBOpenRequest.result;
+        const db_request = window.indexedDB.open("converse-test-persistent");
+        db_request.onsuccess = function () {
+            const db = db_request.result;
             const bare_jid = "romeo@montague.lit";
-            const objectStore = db.transaction([bare_jid], "readwrite").objectStore(bare_jid);
-            const objectStoreRequest = objectStore.clear();
-            objectStoreRequest.onsuccess = promise.resolve();
-            objectStoreRequest.onerror = promise.resolve();
+            try {
+                const store= db.transaction([bare_jid], "readwrite").objectStore(bare_jid);
+            } catch (e) {
+                console.error(e);
+                return promise.resolve();
+            }
+            const request = store.clear();
+            request.onsuccess = promise.resolve();
+            request.onerror = promise.resolve();
         };
         return promise;
     }

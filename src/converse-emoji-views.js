@@ -327,9 +327,6 @@ converse.plugins.add('converse-emoji-views', {
                         ev.preventDefault();
                         ev.stopPropagation();
                         ev.target.blur();
-                        const category = this.model.get('current_category');
-                        // If there's no category, we're viewing search results.
-                        const selector = category ? `ul[data-category="${category}"]` : 'ul';
                         this.disableArrowNavigation();
                         this.navigator.enable();
                         this.navigator.handleKeydown(ev);

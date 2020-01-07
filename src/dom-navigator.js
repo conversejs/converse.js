@@ -4,7 +4,6 @@
  * This module started as a fork of Rubens Mariuzzo's dom-navigator.
  * @copyright Rubens Mariuzzo, JC Brand
  */
-import log from  "@converse/headless/log";
 import u from './utils/html';
 
 
@@ -105,6 +104,22 @@ class DOMNavigator {
         };
     }
 
+    static getClosestElement (els, getDistance) {
+        const next = els.reduce((prev, curr) => {
+            const current_distance = getDistance(curr);
+            if (current_distance < prev.distance) {
+                return {
+                    distance: current_distance,
+                    element: curr
+                };
+            }
+            return prev;
+        }, {
+            distance: Infinity
+        });
+        return next.element;
+    }
+
     /**
      * Create a new DOM Navigator.
      * @param { Element } container The container of the element to navigate.
@@ -187,22 +202,6 @@ class DOMNavigator {
         if (this.container.domNavigator) {
             delete this.container.domNavigator;
         }
-    }
-
-    getClosestElement (els, getDistance) {
-        const next = els.reduce((prev, curr) => {
-            const current_distance = getDistance(curr);
-            if (current_distance < prev.distance) {
-                return {
-                    distance: current_distance,
-                    element: curr
-                };
-            }
-            return prev;
-        }, {
-            distance: Infinity
-        });
-        return next.element;
     }
 
     /**

@@ -4,6 +4,7 @@
 
 - [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks) is not set to `true` by default.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
+- It's now possible to navigate the emoji-picker via the keyboard arrow keys.
 
 - Add support for [notifications about affiliation change for users not in a room](https://xmpp.org/extensions/xep-0045.html#example-196)
 - Add support for [XEP-0424 Message Retraction](http://localhost:3080/extensions/xep-0424.html)

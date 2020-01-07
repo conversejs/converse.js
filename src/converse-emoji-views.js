@@ -410,7 +410,8 @@ converse.plugins.add('converse-emoji-views', {
                 const el = this.el.querySelector('.emoji-picker__lists');
                 const heading = this.el.querySelector(`#emoji-picker-${category}`);
                 if (heading) {
-                    el.scrollTop = heading.offsetTop - heading.offsetHeight*3;
+                    // +4 due to 2px padding on list elements
+                    el.scrollTop = heading.offsetTop - heading.offsetHeight*3 + 4;
                 }
             },
 

@@ -223,13 +223,13 @@ class DOMNavigator {
                 const top = this.selected.offsetTop + this.selected.offsetHeight;
                 const els = this.elementsAfter(0, top);
                 const getDistance = el => Math.abs(el.offsetLeft - left) + Math.abs(el.offsetTop - top);
-                el = this.getClosestElement(els, getDistance);
+                el = DOMNavigator.getClosestElement(els, getDistance);
             } else if (direction == DOMNavigator.DIRECTION.up) {
                 const left = this.selected.offsetLeft;
                 const top = this.selected.offsetTop - 1;
                 const els = this.elementsBefore(Infinity, top);
                 const getDistance = el => Math.abs(left - el.offsetLeft) + Math.abs(top - el.offsetTop);
-                el = this.getClosestElement(els, getDistance);
+                el = DOMNavigator.getClosestElement(els, getDistance);
             } else {
                 throw new Error("getNextElement: invalid direction value");
             }

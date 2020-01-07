@@ -569,7 +569,7 @@ converse.plugins.add('converse-minimize', {
         function initMinimizedChats () {
             _converse.minimized_chats = new _converse.MinimizedChats({model: _converse.chatboxes});
             /**
-             * Triggered once the _converse.MinimizedChats instance has been * initialized
+             * Triggered once the _converse.MinimizedChats instance has been initialized
              * @event _converse#minimizedChatsInitialized
              * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
              */
@@ -577,7 +577,7 @@ converse.plugins.add('converse-minimize', {
         }
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('userSessionInitialized', () => initMinimizedChats());
+        _converse.api.listen.on('chatBoxViewsInitialized', () => initMinimizedChats());
         _converse.api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
         _converse.api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
 

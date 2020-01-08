@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-17 12:22+0200\n"
-"PO-Revision-Date: 2019-12-15 23:21+0000\n"
+"PO-Revision-Date: 2020-01-09 14:46+0000\n"
 "Last-Translator: Antonio Morais <antoniomorais360@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.10.1-dev\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -724,24 +724,20 @@ msgid "You have been banned from this groupchat."
 msgstr "Você foi banido deste bate-papo em grupo."
 
 #: dist/converse-no-dependencies.js:30587
-#, fuzzy
 msgid "You are not allowed to create new groupchats."
 msgstr "Você não tem permissão de criar novas salas."
 
 #: dist/converse-no-dependencies.js:30591
-#, fuzzy
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Seu apelido não está de acordo com as regras da sala."
 
 #: dist/converse-no-dependencies.js:30605
-#, fuzzy
 msgid "This groupchat does not (yet) exist."
-msgstr "A sala não existe (ainda)."
+msgstr "Esta sala não existe (ainda)."
 
 #: dist/converse-no-dependencies.js:30609
-#, fuzzy
 msgid "This groupchat has reached its maximum number of participants."
-msgstr "A sala atingiu o número máximo de ocupantes."
+msgstr "Esta sala atingiu o número máximo de ocupantes."
 
 #: dist/converse-no-dependencies.js:30613
 msgid "Remote server not found"
@@ -1253,7 +1249,7 @@ msgstr "%1$s se tornou um membro permanente desta sala"
 #: dist/converse-no-dependencies.js:47886
 #, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr "%1$s foi manido desta sala"
+msgstr "%1$s foi banido desta sala"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:47889

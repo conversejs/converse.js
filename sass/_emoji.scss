@@ -75,7 +75,6 @@
                     position: relative;
                     &.insert-emoji {
                         margin: 0;
-                        padding: 3px;
                         height: 30px;
                         width: 32px;
 
@@ -86,10 +85,11 @@
                             background-color: var(--highlight-color);
                         }
                         a {
+                            padding: 3px;
+                            font-size: var(--font-size-huge);
                             &:hover {
                                 background-color: var(--highlight-color);
                             }
-                            font-size: var(--font-size-huge);
                         }
                     }
                 }
@@ -111,6 +111,8 @@
                     flex-wrap: wrap;
 
                     .emoji-category {
+                        padding: 0.25em 0;
+                        font-size: var(--font-size-huge);
                         &.picked {
                             background-color: white;
                             border: 1px var(--chat-head-color) solid;
@@ -119,10 +121,11 @@
                         &.selected {
                             background-color: var(--highlight-color);
                         }
-                        padding: 0.25em;
-                        font-size: var(--font-size-huge);
                         &:hover {
                             background-color: var(--highlight-color);
+                        }
+                        a {
+                            padding: 0.25em;
                         }
                     }
                 }

@@ -143,7 +143,9 @@ converse.plugins.add('converse-emoji-views', {
 
             async initialize () {
                 this.onGlobalKeyDown = ev => this._onGlobalKeyDown(ev);
-                document.addEventListener('keydown', this.onGlobalKeyDown);
+
+                const body = document.querySelector('body');
+                body.addEventListener('keydown', this.onGlobalKeyDown);
 
                 this.search_results = [];
                 this.debouncedFilter = debounce(input => this.filter(input.value), 150);
@@ -180,7 +182,8 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             remove () {
-                document.removeEventListener('keydown', this.onGlobalKeyDown);
+                const body = document.querySelector('body');
+                body.removeEventListener('keydown', this.onGlobalKeyDown);
                 Backbone.VDOMView.prototype.remove.call(this);
             },
 
@@ -209,11 +212,25 @@ converse.plugins.add('converse-emoji-views', {
                                 return default_selector;
                             }
                         },
-                        'onSelected': el => el.matches('.insert-emoji') && this.setCategoryForElement(el.parentElement)
+                        'onSelected': el => {
+                            el.matches('.insert-emoji') && this.setCategoryForElement(el.parentElement);
+                            el.matches('.insert-emoji, .emoji-category') && el.firstElementChild.focus();
+                            el.matches('.emoji-search') && el.focus();
+                        }
                     };
                     this.navigator = new DOMNavigator(this.el, options);
                     this.listenTo(this.chatview.model, 'destroy', () => this.navigator.destroy());
                 }
+            },
+
+            enableArrowNavigation (ev) {
+                if (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                }
+                this.disableArrowNavigation();
+                this.navigator.enable();
+                this.navigator.handleKeydown(ev);
             },
 
             disableArrowNavigation () {
@@ -299,38 +316,29 @@ converse.plugins.add('converse-emoji-views', {
                 this.disableArrowNavigation();
             },
 
+            onEnterPressed (ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                if (_converse.emoji_shortnames.includes(ev.target.value)) {
+                    this.insertIntoTextArea(ev.target.value);
+                } else if (this.search_results.length === 1) {
+                    this.insertIntoTextArea(this.search_results[0].sn);
+                } else if (this.navigator.selected && this.navigator.selected.matches('.insert-emoji')) {
+                    this.insertIntoTextArea(this.navigator.selected.getAttribute('data-emoji'));
+                } else if (this.navigator.selected && this.navigator.selected.matches('.emoji-category')) {
+                    this.chooseCategory({'target': this.navigator.selected});
+                }
+            },
+
             _onGlobalKeyDown (ev) {
-                if (ev.keyCode === converse.keycodes.ENTER) {
-                    if (ev.target.matches('.emoji-search') || (
-                            ev.target.matches('body') &&
-                            u.isVisible(this.el) &&
-                            this.navigator.selected
-                    )) {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        if (_converse.emoji_shortnames.includes(ev.target.value)) {
-                            this.insertIntoTextArea(ev.target.value);
-                        } else if (this.search_results.length === 1) {
-                            this.insertIntoTextArea(this.search_results[0].sn);
-                        } else if (this.navigator.selected && this.navigator.selected.matches('.insert-emoji')) {
-                            this.insertIntoTextArea(this.navigator.selected.getAttribute('data-emoji'));
-                        } else if (this.navigator.selected && this.navigator.selected.matches('.emoji-category')) {
-                            this.chooseCategory({'target': this.navigator.selected});
-                        }
-                    }
-                } else if (ev.keyCode === converse.keycodes.DOWN_ARROW) {
-                    if (ev.target.matches('.emoji-search') || (
-                            !this.navigator.enabled &&
-                            (ev.target.matches('.pick-category') || ev.target.matches('body')) &&
-                            u.isVisible(this.el)
-                    )) {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        ev.target.blur();
-                        this.disableArrowNavigation();
-                        this.navigator.enable();
-                        this.navigator.handleKeydown(ev);
-                    }
+                if (ev.keyCode === converse.keycodes.ENTER &&
+                        this.navigator.selected &&
+                        u.isVisible(this.el)) {
+                    this.onEnterPressed(ev);
+                } else if (ev.keyCode === converse.keycodes.DOWN_ARROW &&
+                        !this.navigator.enabled &&
+                        u.isVisible(this.el)) {
+                    this.enableArrowNavigation(ev);
                 }
             },
 
@@ -342,9 +350,17 @@ converse.plugins.add('converse-emoji-views', {
                     const first_el = this.el.querySelector('.pick-category');
                     this.navigator.select(first_el, 'right');
                 } else if (ev.keyCode === converse.keycodes.TAB) {
-                    ev.preventDefault();
-                    const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
-                    match && this.filter(match, true);
+                    if (ev.target.value) {
+                        ev.preventDefault();
+                        const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
+                        match && this.filter(match, true);
+                    } else if (!this.navigator.enabled) {
+                        this.enableArrowNavigation(ev);
+                    }
+                } else if (ev.keyCode === converse.keycodes.DOWN_ARROW && !this.navigator.enabled) {
+                    this.enableArrowNavigation(ev);
+                } else if (ev.keyCode === converse.keycodes.ENTER) {
+                    this.onEnterPressed(ev);
                 } else if (
                     ev.keyCode !== converse.keycodes.ENTER &&
                     ev.keyCode !== converse.keycodes.DOWN_ARROW
@@ -399,9 +415,9 @@ converse.plugins.add('converse-emoji-views', {
                 ev.stopPropagation && ev.stopPropagation();
                 const input = this.el.querySelector('.emoji-search');
                 input.value = '';
-                const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-                this.setCategoryForElement(target);
-                this.navigator.select(target);
+                const el = ev.target.matches('li') ? ev.target : u.ancestor(ev.target, 'li');
+                this.setCategoryForElement(el);
+                this.navigator.select(el);
                 this.setScrollPosition();
             },
 

@@ -66,10 +66,12 @@ class DOMNavigator {
      */
     static get DIRECTION () {
         return {
+            down: 'down',
+            end: 'end',
+            home: 'home',
             left: 'left',
-            up: 'up',
             right: 'right',
-            down: 'down'
+            up: 'up'
         };
     }
 
@@ -90,17 +92,22 @@ class DOMNavigator {
      */
     static get DEFAULTS () {
         return {
-            down: 40,
+            home: [`${converse.keycodes.SHIFT}+${converse.keycodes.UP_ARROW}`],
+            end: [`${converse.keycodes.SHIFT}+${converse.keycodes.DOWN_ARROW}`],
+            up: [converse.keycodes.UP_ARROW],
+            down: [converse.keycodes.DOWN_ARROW],
+            left: [
+                converse.keycodes.LEFT_ARROW,
+                `${converse.keycodes.SHIFT}+${converse.keycodes.TAB}`
+            ],
+            right: [converse.keycodes.RIGHT_ARROW, converse.keycodes.TAB],
             getSelector: null,
             jump_to_picked: null,
             jump_to_picked_direction: null,
             jump_to_picked_selector: 'picked',
-            left: 37,
             onSelected: null,
-            right: 39,
             selected: 'selected',
             selector: 'li',
-            up: 38,
         };
     }
 
@@ -163,10 +170,12 @@ class DOMNavigator {
         this.elements = {};
         // Create hotkeys map.
         this.keys = {};
-        this.keys[this.options.left] = DOMNavigator.DIRECTION.left;
-        this.keys[this.options.up] = DOMNavigator.DIRECTION.up;
-        this.keys[this.options.right] = DOMNavigator.DIRECTION.right;
-        this.keys[this.options.down] = DOMNavigator.DIRECTION.down;
+        this.options.down.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.down);
+        this.options.end.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.end);
+        this.options.home.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.home);
+        this.options.left.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.left);
+        this.options.right.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.right);
+        this.options.up.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.up);
     }
 
     /**
@@ -211,7 +220,11 @@ class DOMNavigator {
      */
     getNextElement (direction) {
         let el;
-        if (this.selected) {
+        if (direction === DOMNavigator.DIRECTION.home) {
+            el = this.getElements(direction)[0];
+        } else if (direction  === DOMNavigator.DIRECTION.end) {
+            el = Array.from(this.getElements(direction)).pop();
+        } else if (this.selected) {
             if (direction === DOMNavigator.DIRECTION.right) {
                 const els = this.getElements(direction);
                 el = els.slice(els.indexOf(this.selected))[1];
@@ -396,21 +409,13 @@ class DOMNavigator {
      * @method DOMNavigator#handleKeydown
      * @param { Event } event The event object.
      */
-    handleKeydown (event) {
-        const direction = this.keys[event.which];
+    handleKeydown (ev) {
+        const keys = converse.keycodes;
+        const direction = ev.shiftKey ? this.keys[`${keys.SHIFT}+${ev.which}`] : this.keys[ev.which];
         if (direction) {
-            event.preventDefault();
-            event.stopPropagation();
-            let next;
-            if (event.shiftKey && direction === DOMNavigator.DIRECTION.up) {
-                // shift-up goes to the first element
-                next = this.getElements(direction)[0];
-            } else if (event.shiftKey && direction === DOMNavigator.DIRECTION.down) {
-                // shift-down goes to the last element
-                next = Array.from(this.getElements(direction)).pop();
-            } else {
-                next = this.getNextElement(direction, event);
-            }
+            ev.preventDefault();
+            ev.stopPropagation();
+            const next = this.getNextElement(direction, ev);
             this.select(next, direction);
         }
     }

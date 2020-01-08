@@ -170,12 +170,12 @@ class DOMNavigator {
         this.elements = {};
         // Create hotkeys map.
         this.keys = {};
-        this.options.down.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.down);
-        this.options.end.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.end);
-        this.options.home.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.home);
-        this.options.left.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.left);
-        this.options.right.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.right);
-        this.options.up.forEach(key => this.keys[key] = DOMNavigator.DIRECTION.up);
+        this.options.down.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.down));
+        this.options.end.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.end));
+        this.options.home.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.home));
+        this.options.left.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.left));
+        this.options.right.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.right));
+        this.options.up.forEach(key => (this.keys[key] = DOMNavigator.DIRECTION.up));
     }
 
     /**

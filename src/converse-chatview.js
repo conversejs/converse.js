@@ -367,10 +367,10 @@ converse.plugins.add('converse-chatview', {
             },
 
             async addFileUploadButton () {
-                if (this.el.querySelector('.chat-toolbar .upload-file')) {
-                    return;
-                }
                 if (await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain)) {
+                    if (this.el.querySelector('.chat-toolbar .upload-file')) {
+                        return;
+                    }
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
                         'beforeend',
                         tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));

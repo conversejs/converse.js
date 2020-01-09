@@ -94,9 +94,9 @@ function checkFileTypes (types, url) {
     return !!types.filter(ext => filename.endsWith(ext)).length;
 }
 
-const isAudioURL = url => checkFileTypes(['.ogg', '.mp3', '.m4a'], url);
-const isImageURL = url => checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
-const isVideoURL = url => checkFileTypes(['.mp4', '.webm'], url);
+u.isAudioURL = url => checkFileTypes(['.ogg', '.mp3', '.m4a'], url);
+u.isImageURL = url => checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
+u.isVideoURL = url => checkFileTypes(['.mp4', '.webm'], url);
 
 function getFileName (uri) {
     try {
@@ -146,11 +146,11 @@ u.getOOBURLMarkup = function (_converse, url) {
     if (uri === null) {
         return url;
     }
-    if (isVideoURL(uri)) {
+    if (u.isVideoURL(uri)) {
         return tpl_video({url})
-    } else if (isAudioURL(uri)) {
+    } else if (u.isAudioURL(uri)) {
         return renderAudioURL(_converse, uri);
-    } else if (isImageURL(uri)) {
+    } else if (u.isImageURL(uri)) {
         return renderImageURL(_converse, uri);
     } else {
         return renderFileURL(_converse, uri);
@@ -197,7 +197,7 @@ u.renderImageURLs = function (_converse, el) {
     return Promise.all(
         list.map(url =>
             new Promise((resolve) => {
-                if (isImageURL(url)) {
+                if (u.isImageURL(url)) {
                     return isImage(url).then(img => {
                         const i = new Image();
                         i.src = img.src;

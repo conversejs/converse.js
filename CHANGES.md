@@ -29,6 +29,7 @@
 - #1666: Allow scrolling of the OMEMO fingerprints list
 - #1691: Fix `collection.chatbox is undefined` errors
 - #1767: `credentials_url` is not called when logging out and then in again
+- #1764: Incorrect URI encoding in "mention" references
 - #1772: `_converse.api.contact.add(jid, nick)` fails, says not a function
 - #1791: `auto_focus` set to `false` is ignored when switching back to a MUC
 - #1792: Fix: modals don't have scrollbars

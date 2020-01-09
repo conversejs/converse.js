@@ -786,9 +786,9 @@ converse.plugins.add('converse-muc', {
                     'type': 'mention'
                 };
                 if (occupant.get('jid')) {
-                    obj.uri = `xmpp:${occupant.get('jid')}`;
+                    obj.uri = encodeURI(`xmpp:${occupant.get('jid')}`);
                 } else {
-                    obj.uri = `xmpp:${this.get('jid')}/${occupant.get('nick')}`;
+                    obj.uri = encodeURI(`xmpp:${this.get('jid')}/${occupant.get('nick')}`);
                 }
                 return obj;
             },

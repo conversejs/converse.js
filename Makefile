@@ -180,7 +180,7 @@ dist:: build
 
 .PHONY: build
 build:: stamp-npm
-	npm run dev && npm run build
+	npm run dev && npm run build && make dist/website.css && make dist/website.min.css
 
 .PHONY: cdn
 cdn:: stamp-npm

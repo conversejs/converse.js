@@ -351,17 +351,15 @@ converse.plugins.add('converse-muc', {
 
             async initialize () {
                 this.initialized = u.getResolveablePromise();
-
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
-
-                await this.restoreSession();
-                this.initFeatures(); // sendChatState depends on this.features
-                this.on('change:chat_state', this.sendChatState, this);
-                this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
-
                 this.initMessages();
                 this.initOccupants();
+                this.initFeatures(); // sendChatState depends on this.features
                 this.registerHandlers();
+
+                this.on('change:chat_state', this.sendChatState, this);
+                await this.restoreSession();
+                this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
 
                 const restored = await this.restoreFromCache()
                 if (!restored) {

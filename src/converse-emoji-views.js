@@ -331,6 +331,9 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             _onGlobalKeyDown (ev) {
+                if (!this.navigator) {
+                    return;
+                }
                 if (ev.keyCode === converse.keycodes.ENTER &&
                         this.navigator.selected &&
                         u.isVisible(this.el)) {

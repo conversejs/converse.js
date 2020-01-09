@@ -1214,6 +1214,10 @@ converse.plugins.add('converse-chatview', {
                 return this;
             },
 
+            maybeFocus () {
+                _converse.auto_focus && this.focus();
+            },
+
             hide () {
                 this.el.classList.add('hidden');
                 return this;
@@ -1223,16 +1227,12 @@ converse.plugins.add('converse-chatview', {
                 this.model.clearUnreadMsgCounter();
                 this.model.setChatState(_converse.ACTIVE);
                 this.scrollDown();
-                if (_converse.auto_focus) {
-                    this.focus();
-                }
+                this.maybeFocus();
             },
 
             show () {
                 if (u.isVisible(this.el)) {
-                    if (_converse.auto_focus) {
-                        this.focus();
-                    }
+                    this.maybeFocus();
                     return;
                 }
                 /**

@@ -30,6 +30,7 @@
 - #1691: Fix `collection.chatbox is undefined` errors
 - #1767: `credentials_url` is not called when logging out and then in again
 - #1772: `_converse.api.contact.add(jid, nick)` fails, says not a function
+- #1791: `auto_focus` set to `false` is ignored when switching back to a MUC
 - #1792: Fix: modals don't have scrollbars
 - #1796: Don't show "back" arrow navigation (on mobile) in the chat header when in `singleton` mode
 - #1821: Errors caused by malformed URLs are now handled

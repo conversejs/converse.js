@@ -1131,9 +1131,7 @@ converse.plugins.add('converse-muc-views', {
                 } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
                     this.renderBottomPanel();
                     this.hideSpinner();
-                    if (_converse.auto_focus) {
-                        this.focus();
-                    }
+                    this.maybeFocus();
                 } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
                     this.showDisconnectMessage();
                 } else if (conn_status === converse.ROOMSTATUS.DESTROYED) {

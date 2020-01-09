@@ -8,6 +8,7 @@
 
 import URI from "urijs";
 import _ from "../headless/lodash.noconflict";
+import log from '@converse/headless/log';
 import sizzle from "sizzle";
 import tpl_audio from  "../templates/audio.html";
 import tpl_file from "../templates/file.html";
@@ -32,13 +33,6 @@ function getAutoCompleteProperty (name, options) {
     }[name];
 }
 
-const logger = _.assign({
-    'debug': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
-    'error': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
-    'info': _.get(console, 'log') ? console.log.bind(console) : function noop () {},
-    'warn': _.get(console, 'log') ? console.log.bind(console) : function noop () {}
-}, console);
-
 const XFORM_TYPE_MAP = {
     'text-private': 'password',
     'text-single': 'text',
@@ -58,8 +52,7 @@ function slideOutWrapup (el) {
     el.style.height = "";
 }
 
-
-const isImage = function (url) {
+function isImage (url) {
     return new Promise((resolve, reject) => {
         var img = new Image();
         var timer = window.setTimeout(function () {
@@ -76,112 +69,93 @@ const isImage = function (url) {
         };
         img.src = url;
     });
-};
-
-
-u.isAudioURL = function (url) {
-    if (!(url instanceof URI)) {
-        try {
-            url = new URI(url);
-        } catch (error) {
-            return false;
-        }
-    }
-    const filename = url.filename().toLowerCase();
-    if (url.protocol().toLowerCase() !== "https") {
-        return false;
-    }
-    return filename.endsWith('.ogg') || filename.endsWith('.mp3') || filename.endsWith('.m4a');
 }
 
-
-u.isImageURL = function (url) {
-    if (!(url instanceof URI)) {
-        try {
-            url = new URI(url);
-        } catch (error) {
-            return false;
-        }
+function getURI (url) {
+    try {
+        return (url instanceof URI) ? url : (new URI(url));
+    } catch (error) {
+        log.debug(error);
+        return null;
     }
-    const filename = url.filename().toLowerCase();
-    if (window.location.protocol === 'https:' && url.protocol().toLowerCase() !== "https") {
-        return false;
-    }
-    return filename.endsWith('.jpg') || filename.endsWith('.jpeg') ||
-           filename.endsWith('.png') || filename.endsWith('.gif') ||
-           filename.endsWith('.bmp') || filename.endsWith('.tiff') ||
-           filename.endsWith('.svg');
-};
-
-
-u.isVideoURL = function (url) {
-    if (!(url instanceof URI)) {
-        try {
-            url = new URI(url);
-        } catch (error) {
-            return false;
-        }
-    }
-    const filename = url.filename().toLowerCase();
-    if (url.protocol().toLowerCase() !== "https") {
-        return false;
-    }
-    return filename.endsWith('.mp4') || filename.endsWith('.webm');
 }
 
+function checkTLS (uri) {
+    return window.location.protocol === 'http:' ||
+           window.location.protocol === 'https:' && uri.protocol().toLowerCase() === "https";
+}
 
-u.renderAudioURL = function (_converse, url) {
-    try {
-        const uri = new URI(url);
-        if (u.isAudioURL(uri)) {
-            const { __ } = _converse;
-            return tpl_audio({
-                'url': url,
-                'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))
-            })
-        }
-    } catch (error) {
-        // decodeURI may throw error in case of malformed URIs
+function checkFileTypes (types, url) {
+    const uri = getURI(url);
+    if (uri === null || !checkTLS(uri)) {
+        return false;
     }
-    return url;
-};
+    const filename = uri.filename().toLowerCase();
+    return !!types.filter(ext => filename.endsWith(ext)).length;
+}
 
+const isAudioURL = url => checkFileTypes(['.ogg', '.mp3', '.m4a'], url);
+const isImageURL = url => checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
+const isVideoURL = url => checkFileTypes(['.mp4', '.webm'], url);
 
-u.renderFileURL = function (_converse, url) {
+function getFileName (uri) {
     try {
-        const uri = new URI(url);
-        if (u.isImageURL(uri) || u.isVideoURL(uri) || u.isAudioURL(uri)) {
-            return url;
-        }
-        const { __ } = _converse,
-              filename = uri.filename();
-        return tpl_file({
-            'url': url,
-            'label_download': __('Download file "%1$s"', decodeURI(filename))
-        })
+        return decodeURI(uri.filename());
     } catch (error) {
+        log.debug(error);
+        return uri.filename();
+    }
+}
+
+function renderAudioURL (_converse, uri) {
+    const { __ } = _converse;
+    return tpl_audio({
+        'url': uri.toString(),
+        'label_download': __('Download audio file "%1$s"', getFileName(uri))
+    })
+}
+
+function renderImageURL (_converse, uri) {
+    if (!_converse.show_images_inline) {
+        return u.convertToHyperlink(uri);
+    }
+    const { __ } = _converse;
+    return tpl_image({
+        'url': uri.toString(),
+        'label_download': __('Download image "%1$s"', getFileName(uri))
+    })
+}
+
+function renderFileURL (_converse, uri) {
+    const { __ } = _converse;
+    return tpl_file({
+        'url': uri.toString(),
+        'label_download': __('Download file "%1$s"', getFileName(uri))
+    })
+}
+
+/**
+ * Returns the markup for a URL that points to a downloadable asset
+ * (such as a video, image or audio file).
+ * @method u#getOOBURLMarkup
+ * @param { String } url
+ * @returns { String }
+ */
+u.getOOBURLMarkup = function (_converse, url) {
+    const uri = getURI(url);
+    if (uri === null) {
         return url;
     }
-};
-
-u.renderImageURL = function (_converse, url) {
-    if (!_converse.show_images_inline) {
-        return u.addHyperlinks(url);
+    if (isVideoURL(uri)) {
+        return tpl_video({url})
+    } else if (isAudioURL(uri)) {
+        return renderAudioURL(_converse, uri);
+    } else if (isImageURL(uri)) {
+        return renderImageURL(_converse, uri);
+    } else {
+        return renderFileURL(_converse, uri);
     }
-    try {
-        const uri = new URI(url);
-        if (u.isImageURL(uri)) {
-            const { __ } = _converse;
-            return tpl_image({
-                'url': url,
-                'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
-            })
-        }
-    } catch (error) {
-        // decodeURI may throw error in case of malformed URIs
-    }
-    return url;
-};
+}
 
 
 /**
@@ -223,7 +197,7 @@ u.renderImageURLs = function (_converse, el) {
     return Promise.all(
         list.map(url =>
             new Promise((resolve) => {
-                if (u.isImageURL(url)) {
+                if (isImageURL(url)) {
                     return isImage(url).then(img => {
                         const i = new Image();
                         i.src = img.src;
@@ -241,19 +215,6 @@ u.renderImageURLs = function (_converse, el) {
             })
         )
     )
-};
-
-
-u.renderMovieURL = function (_converse, url) {
-    try {
-        const uri = new URI(url);
-        if (u.isVideoURL(uri)) {
-            return tpl_video({url});
-        }
-    } catch (error) {
-        // decodeURI may throw error in case of malformed URIs
-    }
-    return url;
 };
 
 
@@ -411,25 +372,28 @@ u.addMentionsMarkup = function (text, references, chatbox) {
 };
 
 
+u.convertToHyperlink = function (url) {
+    const uri = getURI(url);
+    if (uri === null) {
+        return url;
+    }
+    url = uri.normalize()._string;
+    const pretty_url = uri._parts.urn ? url : uri.readable();
+    if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'http://' + url;
+    }
+    if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
+        return `<a target="_blank" rel="noopener" class="open-chatroom" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+    }
+    return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+}
+
+
 u.addHyperlinks = function (text) {
-    return URI.withinString(text, url => {
-        try {
-            const uri = new URI(url);
-            url = uri.normalize()._string;
-            const pretty_url = uri._parts.urn ? url : uri.readable();
-            if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'http://' + url;
-            }
-            if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
-                return `<a target="_blank" rel="noopener" class="open-chatroom" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
-            }
-            return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
-        } catch (error) {
-            return url;
-        }
-    }, {
+    const parse_options = {
         'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
-    });
+    };
+    return URI.withinString(text, url => u.convertToHyperlink(url), parse_options);
 };
 
 
@@ -462,7 +426,7 @@ u.slideOut = function (el, duration=200) {
     return new Promise((resolve, reject) => {
         if (!el) {
             const err = "An element needs to be passed in to slideOut"
-            logger.warn(err);
+            log.warn(err);
             reject(new Error(err));
             return;
         }
@@ -521,7 +485,7 @@ u.slideIn = function (el, duration=200) {
     return new Promise((resolve, reject) => {
         if (!el) {
             const err = "An element needs to be passed in to slideIn";
-            logger.warn(err);
+            log.warn(err);
             return reject(new Error(err));
         } else if (_.includes(el.classList, 'collapsed')) {
             return resolve(el);
@@ -588,7 +552,7 @@ u.isVisible = function (el) {
 
 u.fadeIn = function (el, callback) {
     if (!el) {
-        logger.warn("An element needs to be passed in to fadeIn");
+        log.warn("An element needs to be passed in to fadeIn");
     }
     if (window.converse_disable_effects) {
         el.classList.remove('hidden');

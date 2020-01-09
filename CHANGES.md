@@ -1,6 +1,6 @@
 # Changelog
 
-## 6.0.0 (Unreleased)
+## 6.0.0 (2020-01-09)
 
 - [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks) is not set to `true` by default.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.

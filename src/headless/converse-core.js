@@ -112,7 +112,7 @@ const _converse = {
     'promises': {}
 }
 
-_converse.VERSION_NAME = "v5.0.5dev";
+_converse.VERSION_NAME = "v6.0.0";
 
 Object.assign(_converse, Backbone.Events);
 
@@ -245,7 +245,7 @@ _converse.default_settings = {
     keepalive: true,
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
-        'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'oc',
+        'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'mr', 'oc',
         'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
     ],
     message_carbons: true,

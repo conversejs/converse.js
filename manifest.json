@@ -1,0 +1,20 @@
+{
+  "short_name": "Converse",
+  "name": "Converse Chat",
+  "categories": ["social"],
+  "icons": [
+    {
+      "src": "logo/conversejs-filled.png",
+      "sizes": "72x72 96x96 128x128 192x192 256x256 512x512"
+    },
+    {
+      "src": "logo/conversejs-filled.svg",
+      "sizes": "72x72 96x96 128x128 192x192 256x256 512x512"
+    }
+  ],
+  "start_url": "/fullscreen.html",
+  "background_color": "#397491",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#397491"
+}

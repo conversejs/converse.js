@@ -1411,6 +1411,7 @@ _converse.api = {
             const complete = () => {
                 // Recreate all the promises
                 Object.keys(_converse.promises).forEach(replacePromise);
+                delete _converse.jid
                 /**
                  * Triggered once the user has logged out.
                  * @event _converse#logout

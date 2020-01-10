@@ -20,7 +20,7 @@ $mobile_portrait_length: 480px !default;
     --completion-dark-color: #D24E2B; // $dark-red
 
     --link-color: var(--light-blue);
-    --link-color-darken-20-percent: #345566; // darken($light-blue, 20%)
+    --link-hover-color: #345566;
     --link-color-lighten-10-percent: #79a5ba; // lighten($light-blue, 10%)
     --dark-link-color: #206485; // $dark-blue
     --global-background-color: #397491; // dark blue
@@ -198,7 +198,7 @@ $mobile_portrait_length: 480px !default;
     --chat-info-display: none;
     --chat-textarea-background-color: #F6F6F6;
     --chat-correcting-color: #FFFFC0;
-    --chat-head-text-color: #999;
+    --chat-head-text-color: #AAA;
 
     --chatbox-border-radius: 0px;
 
@@ -232,7 +232,7 @@ $mobile_portrait_length: 480px !default;
     --message-input-border-top: 1px solid #CCC;
     --message-input-color: #CCC;
 
-    --fullpage-chat-head-height: 40px;
+    --fullpage-chat-head-height: 62px;
     --fullpage-chatbox-button-size: 24px;
 
     --list-toggle-font-weight: bold;

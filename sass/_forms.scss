@@ -46,6 +46,7 @@
 
         &#converse-register,
         &#converse-login {
+            background: var(--controlbox-pane-background-color);
             legend {
                 width: 100%;
                 text-align: center;
@@ -71,7 +72,6 @@
 
 
         &.converse-form {
-            background: white;
             padding: 1.2rem;
             legend {
                 color: var(--text-color);

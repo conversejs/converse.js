@@ -12,7 +12,11 @@
     "locale/",
     "sass/",
     "sounds/",
-    "src/"
+    "src/*.js",
+    "src/utils/*.js",
+    "src/templates/*.html",
+    "src/templates/*.svg",
+    "src/headless/"
   ],
   "scripts": {
     "serve": "webpack-dev-server --config webpack.serve.js",

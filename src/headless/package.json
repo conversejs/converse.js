@@ -7,8 +7,12 @@
   "license": "MPL-2.0",
   "main": "dist/converse-headless.min.js",
   "files": [
-    "**/*.js",
-    "templates/*"
+    "*.js",
+    "*.json",
+    "README.md",
+    "utils/*.js",
+    "templates/*.html",
+    "templates/*.svg"
   ],
   "repository": {
     "type": "git",

@@ -260,12 +260,16 @@
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
                 border-bottom-radius: var(--chatbox-border-radius);
-                padding: 0.5em;
+                padding-left: 0.5em;
+                padding-right: 4.5em;
+                padding-top: 0.5em;
+                padding-bottom:0.5em;
                 width: 100%;
                 border: none;
                 min-height: var(--chat-textarea-height);
                 margin-bottom: -4px; // Not clear why this is necessar :(
                 resize: none;
+                 text-align: justify;
                 &:active, &:focus{
                     outline-color: var(--chat-head-color);
                 }
@@ -278,16 +282,17 @@
             }
 
             .send-button {
-                position: static;
-                left: var(--send-button-margin);
-                width: 100%;
+                border-radius: 0;
+                bottom: var(--send-button-bottom);
                 background-color: var(--chat-head-color);
                 color: var(--inverse-link-color);
-                font-size: 80%;
-                height: var(--send-button-height);
-                bottom: calc(-var(--send-button-height) - var(--send-button-margin));
-
             }
+
+            .chat-toolbar--container {
+                display: flex;
+                flex-wrap: nowrap;
+            }
+
             .chat-toolbar {
                 box-sizing: border-box;
                 margin: 0;

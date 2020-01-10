@@ -1,5 +1,8 @@
 # Changelog
 
+- #1313: Stylistic improvements to the send button
+- #1793: Send button doesn't appear in Firefox in 1:1 chats
+
 ## 6.0.0 (2020-01-09)
 
 - [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks) is not set to `true` by default.

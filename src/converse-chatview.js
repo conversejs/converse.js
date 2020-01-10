@@ -313,10 +313,10 @@ converse.plugins.add('converse-chatview', {
                 const form_container = this.el.querySelector('.message-form-container');
                 form_container.innerHTML = tpl_chatbox_message_form(
                     Object.assign(this.model.toJSON(), {
+                        '__': __,
                         'message_limit': _converse.message_limit,
                         'hint_value': get(this.el.querySelector('.spoiler-hint'), 'value'),
                         'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
-                        'label_send': __('Send'),
                         'label_spoiler_hint': __('Optional hint'),
                         'message_value': get(this.el.querySelector('.chat-textarea'), 'value'),
                         'show_send_button': _converse.show_send_button,

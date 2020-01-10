@@ -1167,6 +1167,16 @@ user joins or leaves the MUC. This setting only has an effect if
 
 See https://xmpp.org/extensions/xep-0045.html#changepres
 
+muc_show_logs_before_join
+-------------------------
+
+* Default: ``false``
+
+If set to ``true``, when opening a MUC for the first time (or if you don't have
+a nickname configured for it), you'll see the message history (if the
+server supports [XEP-0313 Message Archive Management](https://xmpp.org/extensions/xep-0313.html))
+and the nickname form at the bottom.
+
 .. _`nickname`:
 
 nickname

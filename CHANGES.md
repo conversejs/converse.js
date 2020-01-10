@@ -7,14 +7,14 @@
 - It's now possible to navigate the emoji-picker via the keyboard arrow keys.
 
 - Add support for [notifications about affiliation change for users not in a room](https://xmpp.org/extensions/xep-0045.html#example-196)
-- Add support for [XEP-0424 Message Retraction](http://localhost:3080/extensions/xep-0424.html)
-- Add support for [XEP-0425 Message Moderation](http://localhost:3080/extensions/xep-0425.html)
+- Add support for [XEP-0424 Message Retraction](http://xmpps.org/extensions/xep-0424.html)
+- Add support for [XEP-0425 Message Moderation](http://xmpps.org/extensions/xep-0425.html)
 
 - New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
 - New config option [allow_message_retraction](https://conversejs.org/docs/html/configuration.html#allow-message-retraction)
 - New config option [muc-show-logs-before-join](https://conversejs.org/docs/html/configuration.html#muc-show-logs-before-join)
 - New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-filter)
-- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-show_avatar)
+- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-show-avatar)
 - New config option [persistent_store](https://conversejs.org/docs/html/configuration.html#persistent-store)
 
 - Initial support for sending custom emojis. Currently only between Converse

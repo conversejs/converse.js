@@ -1468,6 +1468,51 @@ If set to ``true``, Converse will show any roster groups you might have configur
     Converse can only show users and groups that were previously configured
     elsewhere.
 
+
+send_chat_state_notifications
+-----------------------------
+
+* Default: ``true``
+
+Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_) should be sent out or not.
+
+Can also be set to an Array in order to allow only certain types of chat state notifications.
+
+For example:
+
+.. code-block:: javascript
+
+        converse.initialize({
+            'send_chat_state_notifications':  ['composing']
+        });
+
+Valid values are ``'active', 'composing', 'gone' 'inactive', 'paused'``
+
+
+show_images_inline
+------------------
+
+* Default:  ``true``
+
+If set to false, images won't be rendered in chats, instead only their links will be shown.
+
+
+singleton
+---------
+
+* Default:  ``false``
+
+If set to ``true``, then only one chat (one-on-one or groupchat) will be allowed.
+
+The chat must be specified with the `auto_join_rooms`_ or `auto_join_private_chats`_ options.
+
+This setting is useful together with `view_mode`_ set to ``embedded``, when you
+want to embed a chat into the page.
+
+Alternatively you could use it with `view_mode`_ set to ``overlayed`` to create
+a single helpdesk-type chat.
+
+
 show_chat_state_notifications
 -----------------------------
 
@@ -1541,48 +1586,13 @@ everywhere.
 This warning isn't applicable to all deployments of Converse and can therefore
 be turned off by setting this config variable to ``false``.
 
+show_send_button
+----------------
 
-send_chat_state_notifications
------------------------------
+* Default: ``false``
 
-* Default: ``true``
-
-Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_) should be sent out or not.
-
-Can also be set to an Array in order to allow only certain types of chat state notifications.
-
-For example:
-
-.. code-block:: javascript
-
-        converse.initialize({
-            'send_chat_state_notifications':  ['composing']
-        });
-
-Valid values are ``'active', 'composing', 'gone' 'inactive', 'paused'``
-
-show_images_inline
-------------------
-
-* Default:  ``true``
-
-If set to false, images won't be rendered in chats, instead only their links will be shown.
-
-
-singleton
----------
-
-* Default:  ``false``
-
-If set to ``true``, then only one chat (one-on-one or groupchat) will be allowed.
-
-The chat must be specified with the `auto_join_rooms`_ or `auto_join_private_chats`_ options.
-
-This setting is useful together with `view_mode`_ set to ``embedded``, when you
-want to embed a chat into the page.
-
-Alternatively you could use it with `view_mode`_ set to ``overlayed`` to create
-a single helpdesk-type chat.
+Adds a button to the chat which can be clicked or tapped in order to send the
+message.
 
 
 smacks_max_unacked_stanzas

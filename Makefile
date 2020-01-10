@@ -62,6 +62,10 @@ serve: stamp-npm
 serve_bg: stamp-npm
 	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1 -s &
 
+.PHONY: notemps
+notemps:
+	find -name "*~" -exec rm {} \;
+
 ########################################################################
 ## Translation machinery
 
@@ -98,6 +102,7 @@ release:
 	make pot
 	make po
 	make build
+	make notemps
 	npm pack
 
 .PHONY: postrelease

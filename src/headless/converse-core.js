@@ -112,7 +112,7 @@ const _converse = {
     'promises': {}
 }
 
-_converse.VERSION_NAME = "v6.0.0";
+_converse.VERSION_NAME = "v6.0.1dev";
 
 Object.assign(_converse, Backbone.Events);
 

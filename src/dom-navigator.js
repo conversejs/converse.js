@@ -78,7 +78,7 @@ class DOMNavigator {
     /**
      * The default options for the DOM navigator.
      * @returns {{
-     *     down: number
+     *     down: number,
      *     getSelector: null,
      *     jump_to_picked: null,
      *     jump_to_picked_direction: null,
@@ -87,7 +87,7 @@ class DOMNavigator {
      *     onSelected: null,
      *     right: number,
      *     selected: string,
-     *     up: number,
+     *     up: number
      * }}
      */
     static get DEFAULTS () {

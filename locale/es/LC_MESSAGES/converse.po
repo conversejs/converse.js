@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2019-12-22 07:21+0000\n"
+"PO-Revision-Date: 2020-01-12 07:21+0000\n"
 "Last-Translator: sergio <srg.dev@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10\n"
+"X-Generator: Weblate 3.10.1\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: es\n"
 "Language-Code: es\n"
@@ -29,7 +29,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:5695
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: dist/converse-no-dependencies.js:5697 dist/converse-no-dependencies.js:9249
 #: dist/converse-no-dependencies.js:10175
@@ -51,9 +51,8 @@ msgid "Edit this message"
 msgstr "Editar este mensaje"
 
 #: dist/converse-no-dependencies.js:7939
-#, fuzzy
 msgid "Retract this message"
-msgstr "Editar este mensaje"
+msgstr "Retractar este mensaje"
 
 #: dist/converse-no-dependencies.js:7955
 msgid "Message versions"
@@ -154,9 +153,8 @@ msgid "Search"
 msgstr "Búsqueda"
 
 #: dist/converse-no-dependencies.js:8680
-#, fuzzy
 msgid "Search results"
-msgstr "Búsqueda"
+msgstr "Resultados de la búsqueda"
 
 #: dist/converse-no-dependencies.js:8830
 msgid "Enter a new Groupchat"
@@ -177,7 +175,7 @@ msgstr "Unirse"
 
 #: dist/converse-no-dependencies.js:8866
 msgid "No message history available."
-msgstr ""
+msgstr "No hay historial de mensajes disponible."
 
 #: dist/converse-no-dependencies.js:8899
 msgid "You're not allowed to send messages in this room"
@@ -350,9 +348,8 @@ msgid "Save"
 msgstr "Guardar"
 
 #: dist/converse-no-dependencies.js:9386
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "Moderador"
+msgstr "Herramientas del moderador"
 
 #: dist/converse-no-dependencies.js:9388
 msgid ""
@@ -390,28 +387,24 @@ msgstr ""
 "moderada."
 
 #: dist/converse-no-dependencies.js:9422 dist/converse-no-dependencies.js:9518
-#, fuzzy
 msgid "Show users"
-msgstr "Mostrar salas"
+msgstr "Mostrar usuarios"
 
 #: dist/converse-no-dependencies.js:9448
-#, fuzzy
 msgid "No users with that role found."
-msgstr "No se encontraron usuarios"
+msgstr "No se encontraron usuarios con ese rol."
 
 #: dist/converse-no-dependencies.js:9464
-#, fuzzy
 msgid "New Role"
-msgstr "Rol"
+msgstr "Nuevo Rol"
 
 #: dist/converse-no-dependencies.js:9478 dist/converse-no-dependencies.js:9578
 msgid "Reason"
 msgstr "Razón"
 
 #: dist/converse-no-dependencies.js:9480
-#, fuzzy
 msgid "Change role"
-msgstr "Cambiar ajustes"
+msgstr "Cambiar rol"
 
 #: dist/converse-no-dependencies.js:9484
 msgid ""
@@ -445,9 +438,9 @@ msgstr ""
 "propietarios."
 
 #: dist/converse-no-dependencies.js:9510 dist/converse-no-dependencies.js:9534
-#, fuzzy
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr "Expulse usuarios cambiando su afiliación a \"rechazado\""
+msgstr ""
+"Para prohibir a un usuario, debes cambiar su afiliación a \"marginado\"."
 
 #: dist/converse-no-dependencies.js:9544
 msgid "No users with that affiliation found."
@@ -458,9 +451,8 @@ msgid "New affiliation"
 msgstr "Nueva afiliación"
 
 #: dist/converse-no-dependencies.js:9580
-#, fuzzy
 msgid "Change affiliation"
-msgstr "Cambiar la afiliación del usuario a administrador"
+msgstr "Cambiar afiliación"
 
 #: dist/converse-no-dependencies.js:9939
 msgid "Save and close"
@@ -660,14 +652,12 @@ msgid "The groupchat configuration has changed"
 msgstr "La configuración de la conversación en grupo ha cambiado"
 
 #: dist/converse-no-dependencies.js:30860
-#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr "el registro de la conversación grupo está ahora activado"
+msgstr "El registro de la conversación en grupo está ahora activado"
 
 #: dist/converse-no-dependencies.js:30861
-#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr "el registro de la conversación en grupo está ahora desactivado"
+msgstr "El registro de la conversación en grupo está ahora desactivado"
 
 #: dist/converse-no-dependencies.js:30862
 msgid "This groupchat is now no longer anonymous"
@@ -905,9 +895,9 @@ msgstr "Mostrar más"
 
 #: dist/converse-no-dependencies.js:39389
 #: dist/converse-no-dependencies.js:39391
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s ha sido eliminado por no ser un miembro"
+msgstr "%1$s ha eliminado este mensaje"
 
 #: dist/converse-no-dependencies.js:39408
 msgid "Typing from another device"
@@ -1004,9 +994,8 @@ msgid "Remove messages"
 msgstr "Eliminar mensajes"
 
 #: dist/converse-no-dependencies.js:40964
-#, fuzzy
 msgid "Close this chat"
-msgstr "Cerrar esta ventana de conversación"
+msgstr "Cerrar esta conversación"
 
 #: dist/converse-no-dependencies.js:40964
 msgid "Write in the third person"
@@ -1023,17 +1012,19 @@ msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
+"Tenga en cuenta que otros clientes (y servidores) de XMPP/Jabber pueden no "
+"soportar aún la funcionalidad de retractarse y que este mensaje puede no ser "
+"eliminado en todas partes."
 
 #: dist/converse-no-dependencies.js:41211
 #: dist/converse-no-dependencies.js:51233
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "¿Estás seguro de que quieres eliminar este contacto?"
+msgstr "¿Estás seguro de que quieres retractarte de este mensaje?"
 
 #: dist/converse-no-dependencies.js:41218
 #: dist/converse-no-dependencies.js:51240
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmar"
 
 #: dist/converse-no-dependencies.js:41252
 msgid ""
@@ -1077,9 +1068,8 @@ msgid "Ungrouped"
 msgstr "Sin grupo"
 
 #: dist/converse-no-dependencies.js:42949
-#, fuzzy
 msgid "New messages"
-msgstr "Eliminar mensajes"
+msgstr "Nuevos mensajes"
 
 #: dist/converse-no-dependencies.js:43590
 #, javascript-format
@@ -1234,24 +1224,21 @@ msgid "Affiliation changed"
 msgstr "Afiliación cambiada"
 
 #: dist/converse-no-dependencies.js:50599
-#, fuzzy
 msgid "Sorry, something went wrong while trying to set the affiliation"
-msgstr "Lo sentimos, algo salió mal mientras se trataba de actualizar"
+msgstr ""
+"Lo sentimos, algo salió mal mientras se trataba de cambiar la afiliación"
 
 #: dist/converse-no-dependencies.js:50615
-#, fuzzy
 msgid "Role changed"
-msgstr "Alternar contactos"
+msgstr "Rol cambiado"
 
 #: dist/converse-no-dependencies.js:50628
-#, fuzzy
 msgid "You're not allowed to make that change"
-msgstr "No estás autorizado para crear nuevas conversación en grupo."
+msgstr "No estás autorizado para hacer este cambio"
 
 #: dist/converse-no-dependencies.js:50630
-#, fuzzy
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr "Lo sentimos, algo salió mal mientras se trataba de actualizar"
+msgstr "Lo sentimos, algo salió mal mientras se trataba de cambiar el rol"
 
 #: dist/converse-no-dependencies.js:50660
 msgid "Query for Groupchats"
@@ -1295,43 +1282,39 @@ msgid "Groupchat info for %1$s"
 msgstr "Información de la conversación en grupo %1$s"
 
 #: dist/converse-no-dependencies.js:51253
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "Tienes mensajes sin leer"
+msgstr "Estás a punto de retractarte de este mensaje."
 
 #: dist/converse-no-dependencies.js:51253
-#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
-"Estás a punto de invitar a %1$s a la conversación en grupo \"%2$s\". "
-"Opcionalmente puede incluir un mensaje explicando la razón de tu invitación."
+"Opcionalmente, puedes incluir un mensaje explicando el motivo de la "
+"retractación."
 
 #: dist/converse-no-dependencies.js:51260
-#, fuzzy
 msgid "Message Retraction"
-msgstr "Versiones del mensaje"
+msgstr "Retractación del mensaje"
 
 #: dist/converse-no-dependencies.js:51260
-#, fuzzy
 msgid "Optional reason"
-msgstr "Pista opcional"
+msgstr "Razón (opcional)"
 
 #: dist/converse-no-dependencies.js:51299
-#, fuzzy
 msgid "Sorry, something went wrong while trying to retract your message."
-msgstr "Lo sentimos, algo salió mal mientras se trataba de actualizar"
+msgstr ""
+"Lo sentimos, algo salió mal mientras se trataba de retractar tu mensaje."
 
 #: dist/converse-no-dependencies.js:51341
-#, fuzzy
 msgid "A timeout occurred while trying to retract the message"
-msgstr "Lo sentimos, ocurrió un error mientras se eliminaban los dispositivos."
+msgstr ""
+"Se produjo un error de tiempo excedido mientras se intentaba retractar el "
+"mensaje"
 
 #: dist/converse-no-dependencies.js:51347
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "No estás autorizado para crear nuevas conversación en grupo."
+msgstr "Lo sentimos, no tienes permisos para retractarte de este mensaje."
 
 #: dist/converse-no-dependencies.js:51426
 #, javascript-format
@@ -1464,9 +1447,8 @@ msgid "Clear the chat area"
 msgstr "Vaciar el área de conversación"
 
 #: dist/converse-no-dependencies.js:51910
-#, fuzzy
 msgid "Close this groupchat"
-msgstr "Eliminar esta conversación en grupo"
+msgstr "Cerrar esta conversación"
 
 #: dist/converse-no-dependencies.js:51910
 msgid "Change user role to participant"
@@ -1539,9 +1521,8 @@ msgid "Error: invalid number of arguments"
 msgstr "Error: número de argumentos inválido"
 
 #: dist/converse-no-dependencies.js:52039
-#, fuzzy
 msgid "Choose a nickname to enter"
-msgstr "Elige un archivo para enviar"
+msgstr "Elige un alias para entrar"
 
 #: dist/converse-no-dependencies.js:52039
 msgid "Please choose your nickname"

@@ -491,7 +491,7 @@ async function attemptNonPreboundSession (credentials, automatic) {
             connect(await getLoginCredentials());
         } else if (_converse.jid && (_converse.password || _converse.connection.pass)) {
             connect();
-        } else if (!_converse.isTestEnv() && window.PasswordCredential) {
+        } else if (!_converse.isTestEnv() && 'credentials' in navigator) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
             log.warn("attemptNonPreboundSession: Could not find any credentials to log in with");
@@ -774,6 +774,7 @@ async function onConnected (reconnecting) {
     delete _converse.connection.reconnecting;
     _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
     await _converse.setUserJID(_converse.connection.jid);
+
     /**
      * Synchronous event triggered after we've sent an IQ to bind the
      * user's JID resource for this session.
@@ -912,10 +913,14 @@ async function getLoginCredentials () {
 }
 
 async function getLoginCredentialsFromBrowser () {
-    const creds = await navigator.credentials.get({'password': true});
-    if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-        await _converse.setUserJID(creds.id);
-        return {'jid': creds.id, 'password': creds.password};
+    try {
+        const creds = await navigator.credentials.get({'password': true});
+        if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
+            await _converse.setUserJID(creds.id);
+            return {'jid': creds.id, 'password': creds.password};
+        }
+    } catch (e) {
+        log.error(e);
     }
 }
 

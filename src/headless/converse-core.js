@@ -6,6 +6,7 @@
 /**
  * @module converse-core
  */
+import { assignIn, debounce, get, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import 'strophe.js/src/websocket';
 import './polyfill';
 import * as strophe from 'strophe.js/src/core';
@@ -348,7 +349,7 @@ _converse.isUniView = function () {
      * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
      * MultiView means that multiple chats may be visible simultaneously.
      */
-    return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
+    return ['mobile', 'fullscreen', 'embedded'].includes(_converse.view_mode);
 };
 
 
@@ -519,7 +520,7 @@ function connect (credentials) {
             BOSH_WAIT
         );
     } else if (_converse.authentication === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (_.get(_converse.connection, 'pass') || _converse.password);
+        const password = credentials ? credentials.password : (get(_converse.connection, 'pass') || _converse.password);
         if (!password) {
             if (_converse.auto_login) {
                 throw new Error("autoLogin: If you use auto_login and "+
@@ -556,7 +557,7 @@ async function reconnect () {
     return _converse.api.user.login();
 }
 
-const debouncedReconnect = _.debounce(reconnect, 2000);
+const debouncedReconnect = debounce(reconnect, 2000);
 
 
 _converse.shouldClearCache = () => (!_converse.config.get('trusted') || _converse.isTestEnv());
@@ -839,7 +840,7 @@ async function finishInitialization () {
         });
     }
     if (_converse.auto_login ||
-            _converse.keepalive && _.invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
+            _converse.keepalive && invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
         await _converse.api.user.login(null, null, true);
     }
 }
@@ -870,7 +871,7 @@ function finishDisconnection () {
 
 function fetchLoginCredentials (wait=0) {
     return new Promise(
-        _.debounce((resolve, reject) => {
+        debounce((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', _converse.credentials_url, true);
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
@@ -1006,11 +1007,11 @@ _converse.initialize = async function (settings, callback) {
         _converse.unloadevent = 'unload';
     }
 
-    _.assignIn(this, this.default_settings);
+    assignIn(this, this.default_settings);
     // Allow only whitelisted configuration attributes to be overwritten
-    _.assignIn(this, _.pick(settings, Object.keys(this.default_settings)));
+    assignIn(this, pick(settings, Object.keys(this.default_settings)));
     this.settings = {};
-    _.assignIn(this.settings, _.pick(settings, Object.keys(this.default_settings)));
+    assignIn(this.settings, pick(settings, Object.keys(this.default_settings)));
 
     log.setLogLevel(_converse.loglevel);
     _converse.log = log.log;
@@ -1090,7 +1091,7 @@ _converse.initialize = async function (settings, callback) {
                 return finishDisconnection();
             }
         } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-                (reason !== undefined && reason === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
+                (reason !== undefined && reason === get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
                 reason === "host-unknown" ||
                 reason === "remote-connection-failed" ||
                 !_converse.auto_reconnect) {
@@ -1166,7 +1167,7 @@ _converse.initialize = async function (settings, callback) {
             if (message === "host-unknown" || message == "remote-connection-failed") {
                 feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
                     `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
-            } else if (message !== undefined && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
+            } else if (message !== undefined && message === get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
                 feedback = __("The XMPP server did not offer a supported authentication mechanism");
             }
             _converse.setConnectionStatus(status, feedback);
@@ -1233,7 +1234,7 @@ _converse.api = {
          * @returns {boolean} Whether there is an established connection or not.
          */
         connected () {
-            return _.get(_converse, 'connection', {}).connected && true;
+            return get(_converse, 'connection', {}).connected && true;
         },
 
         /**
@@ -1468,7 +1469,7 @@ _converse.api = {
          * @example _converse.api.settings.get("play_sounds");
          */
         get (key) {
-            if (_.includes(Object.keys(_converse.default_settings), key)) {
+            if (Object.keys(_converse.default_settings).includes(key)) {
                 return _converse[key];
             }
         },
@@ -1492,11 +1493,11 @@ _converse.api = {
          */
         set (key, val) {
             const o = {};
-            if (_.isObject(key)) {
-                _.assignIn(_converse, _.pick(key, Object.keys(_converse.default_settings)));
-            } else if (_.isString('string')) {
+            if (isObject(key)) {
+                assignIn(_converse, pick(key, Object.keys(_converse.default_settings)));
+            } else if (isString('string')) {
                 o[key] = val;
-                _.assignIn(_converse, _.pick(o, Object.keys(_converse.default_settings)));
+                assignIn(_converse, pick(o, Object.keys(_converse.default_settings)));
             }
         }
     },
@@ -1612,7 +1613,7 @@ _converse.api = {
          * @param {function} handler The callback method to be called when the stanza appears
          */
         stanza (name, options, handler) {
-            if (_.isFunction(options)) {
+            if (isFunction(options)) {
                 handler = options;
                 options = {};
             } else {
@@ -1639,7 +1640,7 @@ _converse.api = {
      * @returns {Promise}
      */
     waitUntil (condition) {
-        if (_.isFunction(condition)) {
+        if (isFunction(condition)) {
             return u.waitUntil(condition);
         } else {
             const promise = _converse.promises[condition];
@@ -1667,7 +1668,7 @@ _converse.api = {
             log.warn(Strophe.serialize(stanza));
             return;
         }
-        if (_.isString(stanza)) {
+        if (isString(stanza)) {
             stanza = u.toStanza(stanza);
         }
         if (stanza.tagName === 'iq') {

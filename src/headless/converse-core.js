@@ -6,10 +6,10 @@
 /**
  * @module converse-core
  */
-import { assignIn, debounce, get, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import 'strophe.js/src/websocket';
 import './polyfill';
 import * as strophe from 'strophe.js/src/core';
+import { assignIn, debounce, get, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import Backbone from 'backbone';
 import BrowserStorage from 'backbone.browserStorage';
 import _ from './lodash.noconflict';

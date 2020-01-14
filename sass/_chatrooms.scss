@@ -40,7 +40,7 @@
         background-color: var(--chatroom-head-color);
         border-bottom: var(--chatroom-head-border-bottom);
 
-        .chatroom-description {
+        .chat-head__desc {
             color: var(--chatroom-head-description-color);
             display: var(--chatroom-head-description-display);
             font-size: var(--font-size);
@@ -73,7 +73,7 @@
                 color: var(--chatroom-head-button-color);
             }
         }
-        .chat-title {
+        .chatbox-title__text {
             display: var(--heading-display);
             font-weight: var(--chatroom-head-title-font-weight);
             padding-right: var(--chatroom-head-title-padding-right);
@@ -398,14 +398,15 @@
                 min-width: var(--chatroom-width) !important;
                 width: var(--chatroom-width);
             }
-            .chatbox-title {
+            .chatbox-title__text {
                 @include make-col(7);
-                .chatroom-description {
-                    font-size: 80%;
-                }
             }
-            .chatbox-buttons {
+            .chatbox-title__buttons {
                 @include make-col(5);
+            }
+
+            .chat-head__desc {
+                font-size: 80%;
             }
             .chatroom-body {
                 .occupants {
@@ -450,40 +451,6 @@
     }
 }
 
-
-#conversejs.converse-fullscreen {
-    .chatroom {
-        .box-flyout {
-            .chatbox-title {
-                @include make-col(9);
-            }
-            .chatbox-buttons {
-                @include make-col(3);
-            }
-        }
-    }
-}
-
-@include media-breakpoint-down(sm) {
-
-    #conversejs:not(.converse-embedded) {
-        .chatroom {
-            width: 100vw !important;
-            .box-flyout {
-                .chatbox-navback {
-                    @include make-col(2);
-                }
-                .chatbox-title {
-                    @include make-col(7);
-                }
-                .chatbox-buttons {
-                    @include make-col(3);
-                }
-            }
-        }
-    }
-}
-
 #conversejs.converse-embedded,
 #conversejs.converse-fullscreen,
 #conversejs.converse-mobile {
@@ -495,10 +462,8 @@
             border-top: 0.8em solid var(--chatroom-head-color);
             width: 100%;
 
-            .chatbox-title {
-                .chatroom-description {
-                    font-size: 70%;
-                }
+            .chat-head__desc {
+                font-size: 70%;
             }
 
             .chatroom-body {

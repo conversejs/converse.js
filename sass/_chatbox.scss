@@ -555,6 +555,27 @@
 
 }
 
+#conversejs {
+    #service-administration {
+        .flyout {
+            border-color: var(--service-administration-color);
+        }
+        .chat-head-chatbox {
+            background-color: var(--service-administration-color);
+        }
+        .chat-body {
+            background-color: var(--chat-textarea-background-color);
+            display: block;
+            padding: 1em;
+            overflow: auto;
+        }
+        .send-button {
+            margin-top: 1em;
+            width: 100%;
+        }
+    }
+}
+
 #conversejs.converse-embedded {
     .converse-chatboxes {
         z-index: 1031; // One more than bootstrap navbar

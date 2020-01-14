@@ -28,6 +28,7 @@ import "converse-push";            // XEP-0357 Push Notifications
 import "converse-register";        // XEP-0077 In-band registration
 import "converse-roomslist";       // Show currently open chat rooms
 import "converse-rosterview";
+import "converse-service-administration"; // adds Service-administration functionality (XEP-0133)
 import "converse-singleton";
 import "converse-uniview";
 /* END: Removable components */
@@ -58,6 +59,7 @@ const WHITELISTED_PLUGINS = [
     'converse-register',
     'converse-roomslist',
     'converse-rosterview',
+    'converse-service-administration',
     'converse-singleton',
     'converse-uniview'
 ];

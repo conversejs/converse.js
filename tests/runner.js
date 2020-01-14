@@ -39,6 +39,7 @@ var specs = [
     "spec/converse",
     "spec/bookmarks",
     "spec/headline",
+    "spec/announce",
     "spec/disco",
     "spec/protocol",
     "spec/presence",

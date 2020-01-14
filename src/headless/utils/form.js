@@ -34,4 +34,14 @@ u.webForm2xForm = function (field) {
         })
     );
 };
+
+u.getValueOfFieldElement = function (field) {
+    const values = field.getElementsByTagName('value');
+    if (values.length > 0) {
+        return values[0].innerHTML;
+    } else {
+        return '';
+    }
+};
+
 export default u;

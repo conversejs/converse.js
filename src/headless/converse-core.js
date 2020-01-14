@@ -37,6 +37,7 @@ dayjs.extend(advancedFormat);
 Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
 Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
 Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
+Strophe.addNamespace('COMMANDS', 'http://jabber.org/protocol/commands');
 Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
 Strophe.addNamespace('FASTEN', 'urn:xmpp:fasten:0');
 Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');

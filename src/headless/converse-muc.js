@@ -1477,7 +1477,7 @@ converse.plugins.add('converse-muc', {
              * @param { object } attrs - The message attributes
              */
             subjectChangeHandled (attrs) {
-                if (attrs.subject && !attrs.thread && !attrs.message) {
+                if (isString(attrs.subject) && !attrs.thread && !attrs.message) {
                     // https://xmpp.org/extensions/xep-0045.html#subject-mod
                     // -----------------------------------------------------
                     // The subject is changed by sending a message of type "groupchat" to the <room@service>,

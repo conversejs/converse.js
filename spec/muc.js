@@ -2167,12 +2167,22 @@
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise(resolve => view.once('messageInserted', resolve));
-                expect(sizzle('.chat-topic').length).toBe(1);
-                expect(sizzle('.chat-msg__subject').length).toBe(1);
-                expect(sizzle('.chat-msg__subject').pop().textContent.trim()).toBe('This is a message subject');
+                expect(sizzle('.chat-topic', view.el).length).toBe(1);
+                expect(sizzle('.chat-msg__subject', view.el).length).toBe(1);
+                expect(sizzle('.chat-msg__subject', view.el).pop().textContent.trim()).toBe('This is a message subject');
                 expect(sizzle('.chat-msg__text').length).toBe(1);
                 expect(sizzle('.chat-msg__text').pop().textContent.trim()).toBe('This is a message');
                 expect(view.el.querySelector('.chatroom-description').textContent.trim()).toBe(text);
+
+                // Removes current topic
+                stanza = u.toStanza(
+                    `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                         <subject/>
+                     </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await new Promise(resolve => view.model.once('change:subject', resolve));
+                expect(view.el.querySelector('.chatroom-description').textContent.trim()).toBe("");
+                expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
                 done();
             }));
 
@@ -3265,6 +3275,18 @@
                 expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
                     '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
                         '<subject xmlns="jabber:client">This is yet another subject</subject>'+
+                    '</message>');
+
+                // Check unsetting the topic
+                textarea.value = '/topic';
+                view.onKeyDown({
+                    target: textarea,
+                    preventDefault: function preventDefault () {},
+                    keyCode: 13
+                });
+                expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
+                    '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
+                        '<subject xmlns="jabber:client"></subject>'+
                     '</message>');
                 done();
             }));

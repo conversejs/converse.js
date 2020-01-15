@@ -2158,7 +2158,7 @@
                 await new Promise(resolve => view.model.once('change:subject', resolve));
                 expect(sizzle('.chat-event:last').pop().textContent.trim()).toBe('Topic set by ralphm');
                 expect(sizzle('.chat-topic:last').pop().textContent.trim()).toBe(text);
-                expect(view.el.querySelector('.chatroom-description').textContent.trim()).toBe(text);
+                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(text);
 
                 stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
@@ -2172,7 +2172,7 @@
                 expect(sizzle('.chat-msg__subject', view.el).pop().textContent.trim()).toBe('This is a message subject');
                 expect(sizzle('.chat-msg__text').length).toBe(1);
                 expect(sizzle('.chat-msg__text').pop().textContent.trim()).toBe('This is a message');
-                expect(view.el.querySelector('.chatroom-description').textContent.trim()).toBe(text);
+                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(text);
 
                 // Removes current topic
                 stanza = u.toStanza(
@@ -2181,7 +2181,7 @@
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise(resolve => view.model.once('change:subject', resolve));
-                expect(view.el.querySelector('.chatroom-description').textContent.trim()).toBe("");
+                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe("");
                 expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
                 done();
             }));

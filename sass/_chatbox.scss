@@ -38,7 +38,7 @@
 
     .chat-head {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         color: #ffffff;
         font-size: 100%;
         margin: 0;
@@ -432,6 +432,7 @@
 #conversejs.converse-embedded,
 #conversejs.converse-overlayed {
     .chat-head {
+        padding: 0.5em;
         border-top-left-radius: var(--chatbox-border-radius);
         border-top-right-radius: var(--chatbox-border-radius);
         @media screen and (max-height: $mobile-landscape-height) {
@@ -450,10 +451,6 @@
         .box-flyout {
             min-width: var(--overlayed-chat-width) !important;
             width: var(--overlayed-chat-width);
-        }
-
-        .chat-head {
-            padding: 0.5em;
         }
     }
 }

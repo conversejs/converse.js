@@ -43,13 +43,8 @@
         .chat-head__desc {
             color: var(--chatroom-head-description-color);
             display: var(--chatroom-head-description-display);
-            font-size: var(--font-size);
             font-size: 70%;
             margin-top: 3px;
-            overflow-y: hidden;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
             border-left: var(--chatroom-head-description-border-left);
             padding-left: var(--chatroom-head-description-padding-left);
             a {
@@ -145,9 +140,10 @@
                 .chat-area {
                     display: flex;
                     flex-direction: column;
-                    word-wrap: break-word;
                     flex: 0 1 100%;
+                    justify-content: flex-end;
                     min-width: 25%;
+                    word-wrap: break-word;
                     .new-msgs-indicator {
                         background-color: var(--chatroom-head-color);
                     }
@@ -388,6 +384,9 @@
 #conversejs.converse-overlayed {
     .chatbox {
         &.chatroom {
+            .chat-head {
+                padding-bottom: 1em;
+            }
             .chatroom-features {
                 display: none !important;
             }

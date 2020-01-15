@@ -814,16 +814,20 @@ converse.plugins.add('converse-chatview', {
                      */
                     _converse.api.trigger('messageSend', message);
                 }
-                const el = this.content.parentElement;
-                el.style.display = 'none';
+                if (_converse.view_mode === 'overlayed') {
+                    // XXX: Chrome flex bug workaround. The .chat-content area
+                    // doesn't resize when the textarea is resized to its original size.
+                    this.content.parentElement.style.display = 'none';
+                }
 
                 textarea.removeAttribute('disabled');
                 u.removeClass('disabled', textarea);
                 textarea.focus();
 
-                // XXX: Chrome flex bug workaround. The .chat-content area
-                // doesn't resize when the textarea is resized to its original size.
-                el.style.display = '';
+                if (_converse.view_mode === 'overlayed') {
+                    // XXX: Chrome flex bug workaround.
+                    this.content.parentElement.style.display = '';
+                }
 
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.

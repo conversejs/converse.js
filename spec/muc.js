@@ -2506,7 +2506,7 @@
                 expect(chatroomview.model.features.get('temporary')).toBe(true);
                 expect(chatroomview.model.features.get('unmoderated')).toBe(true);
                 expect(chatroomview.model.features.get('unsecured')).toBe(false);
-                expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('Room');
+                expect(chatroomview.el.querySelector('.chatbox-title__text').textContent.trim()).toBe('Room');
 
                 chatroomview.el.querySelector('.configure-chatroom-button').click();
 
@@ -2656,7 +2656,7 @@
                 expect(chatroomview.model.features.get('temporary')).toBe(true);
                 expect(chatroomview.model.features.get('unmoderated')).toBe(true);
                 expect(chatroomview.model.features.get('unsecured')).toBe(false);
-                expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('New room name');
+                expect(chatroomview.el.querySelector('.chatbox-title__text').textContent.trim()).toBe('New room name');
                 done();
             }));
 

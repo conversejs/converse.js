@@ -814,9 +814,17 @@ converse.plugins.add('converse-chatview', {
                      */
                     _converse.api.trigger('messageSend', message);
                 }
+                const el = this.content.parentElement;
+                el.style.display = 'none';
+
                 textarea.removeAttribute('disabled');
                 u.removeClass('disabled', textarea);
                 textarea.focus();
+
+                // XXX: Chrome flex bug workaround. The .chat-content area
+                // doesn't resize when the textarea is resized to its original size.
+                el.style.display = '';
+
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.
                 this.model.setChatState(_converse.ACTIVE, {'silent': true});

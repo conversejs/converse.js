@@ -1373,11 +1373,10 @@ converse.plugins.add('converse-muc-views', {
             },
 
             getAllowedCommands () {
-                // FIXME: The availability of some of these commands
-                // depend on the MUCs configuration (e.g. whether it's
-                // moderated or not). We need to take that into
-                // consideration.
-                let allowed_commands = ['clear', 'help', 'me', 'nick', 'subject', 'topic', 'register'];
+                let allowed_commands = ['clear', 'help', 'me', 'nick', 'register'];
+                if (this.model.config.get('changesubject') || this.model.getOwnAffiliation() === 'owner') {
+                    allowed_commands = [...allowed_commands, ...['subject', 'topic']];
+                }
                 const occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
                 if (this.verifyAffiliations(['owner'], occupant, false)) {
                     allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
@@ -1389,6 +1388,7 @@ converse.plugins.add('converse-muc-views', {
                 } else if (!this.verifyRoles(['visitor', 'participant', 'moderator'], occupant, false)) {
                     allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
                 }
+                allowed_commands.sort();
                 return allowed_commands;
             },
 

@@ -154,7 +154,7 @@ URL from which Converse should fetch the username and token.
 Keeping users logged-in across page reloads
 ===========================================
 
-If you're properly set up :ref:`shared session support <session-support>`, then
+If you've properly set up :ref:`shared session support <session-support>`, then
 your users will stay logged-in to the XMPP server upon page reloads.
 
 However, if users are logging in manually, then users might get logged out between requests.

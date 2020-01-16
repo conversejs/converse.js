@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2020-01-12 07:21+0000\n"
+"PO-Revision-Date: 2020-01-17 07:21+0000\n"
 "Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10.1\n"
+"X-Generator: Weblate 3.10.2-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1008,12 +1008,14 @@ msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
+"Beachten Sie, dass andere XMPP/Jabber-Clients (und Server) möglicherweise "
+"noch keinen Widerruf unterstützen und dass diese Nachricht möglicherweise "
+"nicht überall entfernt wird."
 
 #: dist/converse-no-dependencies.js:41211
 #: dist/converse-no-dependencies.js:51233
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "Möchten Sie diesen Kontakt wirklich entfernen?"
+msgstr "Sind Sie sicher, dass Sie diese Nachricht widerrufen wollen?"
 
 #: dist/converse-no-dependencies.js:41218
 #: dist/converse-no-dependencies.js:51240
@@ -1276,43 +1278,40 @@ msgid "Groupchat info for %1$s"
 msgstr "Gruppenchat-Benachrichtigung für %1$s"
 
 #: dist/converse-no-dependencies.js:51253
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "Sie haben ungelesene Nachrichten"
+msgstr "Sie sind dabei, diese Nachricht zu widerrufen."
 
 #: dist/converse-no-dependencies.js:51253
-#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
-"Sie sind dabei, %1$s in den Gruppenchat „%2$s” einzuladen. Optional können "
-"Sie eine Nachricht anfügen, in der Sie den Grund für die Einladung erläutern."
+"Sie können optional eine Nachricht mit einer Erklärung und Grund für den "
+"Widerruf einfügen."
 
 #: dist/converse-no-dependencies.js:51260
-#, fuzzy
 msgid "Message Retraction"
-msgstr "Nachrichtenarchivierung"
+msgstr "Nachricht Widerruf"
 
 #: dist/converse-no-dependencies.js:51260
 msgid "Optional reason"
 msgstr "Optionaler Grund"
 
 #: dist/converse-no-dependencies.js:51299
-#, fuzzy
 msgid "Sorry, something went wrong while trying to retract your message."
-msgstr "Leider ist bei der Aktualisierung etwas schief gelaufen"
+msgstr ""
+"Entschuldigung, etwas ist schiefgegangen, als Sie Ihre Nachricht widerrufen "
+"wollten."
 
 #: dist/converse-no-dependencies.js:51341
-#, fuzzy
 msgid "A timeout occurred while trying to retract the message"
 msgstr ""
-"Leider ist beim Versuch, die Geräte zu entfernen, ein Fehler aufgetreten."
+"Eine Zeitüberschreitung ist beim Versuch aufgetreten, die Nachricht zu "
+"widerrufen"
 
 #: dist/converse-no-dependencies.js:51347
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "Du darfst diese Änderung nicht vornehmen"
+msgstr "Es tut uns leid, Sie dürfen diese Nachricht nicht widerrufen."
 
 #: dist/converse-no-dependencies.js:51426
 #, javascript-format
@@ -1519,9 +1518,8 @@ msgid "Error: invalid number of arguments"
 msgstr "Fehler: ungültige Anzahl von Argumenten"
 
 #: dist/converse-no-dependencies.js:52039
-#, fuzzy
 msgid "Choose a nickname to enter"
-msgstr "Datei versenden"
+msgstr "Wählen Sie einen Spitznamen für die Eingabe"
 
 #: dist/converse-no-dependencies.js:52039
 msgid "Please choose your nickname"

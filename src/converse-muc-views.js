@@ -625,6 +625,7 @@ converse.plugins.add('converse-muc-views', {
                     this.model.toJSON(), {
                         '_': _,
                         '__': __,
+                        'config': this.model.config.toJSON(),
                         'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
                         'features': this.model.features.toJSON(),
                         'num_occupants': this.model.occupants.length,
@@ -1126,7 +1127,7 @@ converse.plugins.add('converse-muc-views', {
                         'info_close': __('Close and leave this groupchat'),
                         'info_configure': __('Configure this groupchat'),
                         'info_details': __('Show more details about this groupchat'),
-                        'description': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
+                        'subject': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
                 }));
             },
 
@@ -1365,7 +1366,10 @@ converse.plugins.add('converse-muc-views', {
 
             onCommandError (err) {
                 log.fatal(err);
-                this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."));
+                this.showErrorMessage(
+                    __("Sorry, an error happened while running the command.") + " " +
+                    __("Check your browser's developer console for details.")
+                );
             },
 
             getAllowedCommands () {
@@ -2063,9 +2067,20 @@ converse.plugins.add('converse-muc-views', {
                 });
             },
 
-            submitConfigForm (ev) {
+            async submitConfigForm (ev) {
                 ev.preventDefault();
-                this.model.saveConfiguration(ev.target).then(() => this.model.refreshRoomFeatures());
+                const inputs = sizzle(':input:not([type=button]):not([type=submit])', ev.target);
+                const configArray = inputs.map(u.webForm2xForm);
+                try {
+                    await this.model.sendConfiguration(configArray);
+                } catch (e) {
+                    log.error(e);
+                    this.showErrorMessage(
+                        __("Sorry, an error occurred while trying to submit the config form.") + " " +
+                        __("Check your browser's developer console for details.")
+                    );
+                }
+                await this.model.refreshDiscoInfo();
                 this.chatroomview.closeForm();
             },
 

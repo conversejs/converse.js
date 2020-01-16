@@ -102,10 +102,10 @@
                     ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                // Mock 'getRoomFeatures', otherwise the room won't be
+                // Mock 'getDiscoInfo', otherwise the room won't be
                 // displayed as it waits first for the features to be returned
                 // (when it's a new room being created).
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
 
                 let jid = 'lounge@montague.lit';
                 let chatroomview, IQ_id;
@@ -3009,13 +3009,13 @@
                 textarea.value = '/help';
                 view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info:not(.chat-event)', view.el);
-                expect(info_messages.length).toBe(19);
+                expect(info_messages.length).toBe(17);
                 let commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
                 expect(commands).toEqual([
                     "You can run the following commands",
                     "/admin", "/ban", "/clear", "/deop", "/destroy",
                     "/help", "/kick", "/me", "/member", "/modtools", "/mute", "/nick",
-                    "/op", "/register", "/revoke", "/subject", "/topic", "/voice"
+                    "/op", "/register", "/revoke", "/voice"
                 ]);
                 occupant.set('affiliation', 'member');
                 textarea.value = '/clear';
@@ -3025,12 +3025,26 @@
                 textarea.value = '/help';
                 view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);
-                expect(info_messages.length).toBe(11);
+                expect(info_messages.length).toBe(9);
                 commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
-                expect(commands).toEqual(["/clear", "/help", "/kick", "/me", "/modtools", "/mute", "/nick", "/register", "/subject", "/topic", "/voice"]);
+                expect(commands).toEqual(["/clear", "/help", "/kick", "/me", "/modtools", "/mute", "/nick", "/register", "/voice"]);
 
                 occupant.set('role', 'participant');
                 textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = '/clear';
+                view.onKeyDown(enter);
+                await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
+
+                textarea.value = '/help';
+                view.onKeyDown(enter);
+                info_messages = sizzle('.chat-info', view.el).slice(1);
+                expect(info_messages.length).toBe(5);
+                commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
+                expect(commands).toEqual(["/clear", "/help", "/me", "/nick", "/register"]);
+
+                // Test that /topic is available if all users may change the subject
+                // Note: we're making a shortcut here, this value should never be set manually
+                view.model.config.set('changesubject', true);
                 textarea.value = '/clear';
                 view.onKeyDown(enter);
                 await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
@@ -4572,7 +4586,7 @@
                 nick_input.value = 'romeo';
 
                 expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 modal.el.querySelector('input[name="chatroom"]').value = 'lounce@muc.montague.lit';
                 modal.el.querySelector('form input[type="submit"]').click();
@@ -4660,7 +4674,7 @@
                 const modal = roomspanel.add_room_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000)
                 expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 const label_name = modal.el.querySelector('label[for="chatroom"]');
                 expect(label_name.textContent.trim()).toBe('Groupchat name:');
@@ -4700,7 +4714,7 @@
                 const modal = roomspanel.add_room_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000)
                 expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 const label_name = modal.el.querySelector('label[for="chatroom"]');
                 expect(label_name.textContent.trim()).toBe('Groupchat name:');
@@ -4742,7 +4756,7 @@
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.list_rooms_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000);
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
                 // See: https://xmpp.org/extensions/xep-0045.html#disco-rooms
@@ -4836,7 +4850,7 @@
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.list_rooms_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000);
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
                 expect(modal.el.querySelector('input[name="server"]')).toBe(null);

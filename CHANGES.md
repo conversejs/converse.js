@@ -47,6 +47,7 @@
 - #1796: Don't show "back" arrow navigation (on mobile) in the chat header when in `singleton` mode
 - #1821: Errors caused by malformed URLs are now handled
 - #1819: Click on a desktop notification now opens corresponding chat.
+- #1836: MUC invites appear to come from the MUC name
 
 ### Breaking changes
 

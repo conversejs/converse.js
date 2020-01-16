@@ -2212,14 +2212,13 @@ converse.plugins.add('converse-muc', {
                 room_jid = x_el.getAttribute('jid'),
                 reason = x_el.getAttribute('reason');
 
-            let contact = _converse.roster.get(from),
-                result;
-
+            let result;
             if (_converse.auto_join_on_invite) {
                 result = true;
             } else {
                 // Invite request might come from someone not your roster list
-                contact = contact? contact.getDisplayName(): Strophe.getNodeFromJid(from);
+                let contact = _converse.roster.get(from);
+                contact = contact ? contact.getDisplayName(): from;
                 if (!reason) {
                     result = confirm(
                         __("%1$s has invited you to join a groupchat: %2$s", contact, room_jid)

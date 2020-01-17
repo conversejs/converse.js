@@ -5316,16 +5316,32 @@
                 view.onFormSubmitted(new Event('submit'));
                 await new Promise(resolve => view.once('messageInserted', resolve));
 
-                const stanza = u.toStanza(`
+                let stanza = u.toStanza(`
                     <message xmlns="jabber:client" type="error" to="troll@montague.lit/resource" from="trollbox@montague.lit">
                         <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await new Promise(resolve => view.once('messageInserted', resolve));
+                expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
+                    "Your message was not delivered because you weren't allowed to send it.");
 
+                textarea.value = 'Hello again';
+                view.onFormSubmitted(new Event('submit'));
                 await new Promise(resolve => view.once('messageInserted', resolve));
 
-                expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
-                    "Your message was not delivered because you're not allowed to send messages in this groupchat.");
+                stanza = u.toStanza(`
+                    <message xmlns="jabber:client" type="error" to="troll@montague.lit/resource" from="trollbox@montague.lit">
+                        <error type="auth">
+                            <forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                            <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Thou shalt not!</text>
+                        </error>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await new Promise(resolve => view.once('messageInserted', resolve));
+
+                expect(view.el.querySelector('.message:last-child').textContent.trim()).toBe(
+                    'Your message was not delivered because you weren\'t allowed to send it. '+
+                    'The message from the server is: "Thou shalt not!"')
                 done();
             }));
 

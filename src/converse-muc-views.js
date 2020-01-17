@@ -1963,6 +1963,9 @@ converse.plugins.add('converse-muc-views', {
             },
 
             setChatRoomSubject () {
+                if (!subject.text && !subject.author) {
+                    return; // Probably a new MUC
+                }
                 // For translators: the %1$s and %2$s parts will get
                 // replaced by the user and topic text respectively
                 // Example: Topic set by JC Brand to: Hello World!

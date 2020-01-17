@@ -803,7 +803,8 @@ converse.plugins.add('converse-chatview', {
                     hint_el.value = '';
                     textarea.value = '';
                     u.removeClass('correcting', textarea);
-                    textarea.style.height = 'auto'; // Fixes weirdness
+                    textarea.style.height = 'auto';
+                    this.updateCharCounter(textarea.value);
                 }
                 if (message) {
                     /**
@@ -815,23 +816,22 @@ converse.plugins.add('converse-chatview', {
                     _converse.api.trigger('messageSend', message);
                 }
                 if (_converse.view_mode === 'overlayed') {
-                    // XXX: Chrome flex bug workaround. The .chat-content area
+                    // XXX: Chrome flexbug workaround. The .chat-content area
                     // doesn't resize when the textarea is resized to its original size.
                     this.content.parentElement.style.display = 'none';
                 }
-
                 textarea.removeAttribute('disabled');
                 u.removeClass('disabled', textarea);
-                textarea.focus();
 
                 if (_converse.view_mode === 'overlayed') {
-                    // XXX: Chrome flex bug workaround.
+                    // XXX: Chrome flexbug workaround.
                     this.content.parentElement.style.display = '';
                 }
 
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.
                 this.model.setChatState(_converse.ACTIVE, {'silent': true});
+                textarea.focus();
             },
 
             updateCharCounter (chars) {

@@ -1963,16 +1963,17 @@ converse.plugins.add('converse-muc-views', {
             },
 
             setChatRoomSubject () {
+                const subject = this.model.get('subject');
                 if (!subject.text && !subject.author) {
                     return; // Probably a new MUC
                 }
-                // For translators: the %1$s and %2$s parts will get
-                // replaced by the user and topic text respectively
-                // Example: Topic set by JC Brand to: Hello World!
-                const subject = this.model.get('subject'),
-                      message = subject.text ? __('Topic set by %1$s', subject.author) :
-                                               __('Topic cleared by %1$s', subject.author),
-                      date = (new Date()).toISOString();
+                const author = subject.author;
+                // For translators: the %1$s part will get
+                // replaced by the user's name.
+                // Example: Topic set by JC Brand
+                const message = subject.text ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
+                const date = (new Date()).toISOString();
+
                 this.content.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({

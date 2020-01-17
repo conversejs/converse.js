@@ -1410,6 +1410,10 @@ converse.plugins.add('converse-muc-views', {
                         return false;
                     }
                 }
+                const allowed_commands = this.getAllowedCommands();
+                if (!allowed_commands.includes(command)) {
+                    return false;
+                }
 
                 switch (command) {
                     case 'admin': {
@@ -1444,7 +1448,6 @@ converse.plugins.add('converse-muc-views', {
                         break;
                     }
                     case 'help': {
-                        const allowed_commands = this.getAllowedCommands();
                         this.showHelpMessages([`<strong>${__("You can run the following commands")}</strong>`]);
                         this.showHelpMessages([
                             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,

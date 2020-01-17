@@ -1374,7 +1374,7 @@ converse.plugins.add('converse-muc-views', {
 
             getAllowedCommands () {
                 let allowed_commands = ['clear', 'help', 'me', 'nick', 'register'];
-                if (this.model.config.get('changesubject') || this.model.getOwnAffiliation() === 'owner') {
+                if (this.model.config.get('changesubject') || ['owner', 'admin'].includes(this.model.getOwnAffiliation())) {
                     allowed_commands = [...allowed_commands, ...['subject', 'topic']];
                 }
                 const occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});

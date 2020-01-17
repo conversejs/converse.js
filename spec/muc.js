@@ -3009,13 +3009,13 @@
                 textarea.value = '/help';
                 view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info:not(.chat-event)', view.el);
-                expect(info_messages.length).toBe(17);
+                expect(info_messages.length).toBe(19);
                 let commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
                 expect(commands).toEqual([
                     "You can run the following commands",
                     "/admin", "/ban", "/clear", "/deop", "/destroy",
                     "/help", "/kick", "/me", "/member", "/modtools", "/mute", "/nick",
-                    "/op", "/register", "/revoke", "/voice"
+                    "/op", "/register", "/revoke", "/subject", "/topic", "/voice"
                 ]);
                 occupant.set('affiliation', 'member');
                 textarea.value = '/clear';

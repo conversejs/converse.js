@@ -199,10 +199,7 @@ converse.plugins.add('converse-message-view', {
             },
 
             transformOOBURL (url) {
-                url = u.renderFileURL(_converse, url);
-                url = u.renderMovieURL(_converse, url);
-                url = u.renderAudioURL(_converse, url);
-                return u.renderImageURL(_converse, url);
+                return u.getOOBURLMarkup(_converse, url);
             },
 
             async transformBodyText (text) {

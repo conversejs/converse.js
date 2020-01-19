@@ -12,15 +12,23 @@
                 <form class="converse-form add-chatroom">
                     <div class="form-group">
                         <label for="chatroom">{{{o.label_room_address}}}:</label>
-                        <input type="text" required="required" name="chatroom" class="form-control" placeholder="{{{o.chatroom_placeholder}}}"/>
+                        {[ if (o.muc_roomid_policy_error_msg) { ]}
+                            <label class="roomid-policy-error">{{{o.muc_roomid_policy_error_msg}}}</label>
+                        {[ } ]}
+                        <input type="text" required="required" name="chatroom" class="form-control roomjid-input" placeholder="{{{o.chatroom_placeholder}}}"/>
                     </div>
+                    {[ if (o.muc_roomid_policy_hint) { ]}
+                        <div class="form-group">
+                            {{o.muc_roomid_policy_hint}}
+                        </div>
+                    {[ } ]}
                     {[ if (!o._converse.locked_muc_nickname) { ]}
                     <div class="form-group" >
                         <label for="nickname">{{{o.__('Nickname')}}}:</label>
                         <input type="text" pattern=".*\S+.*" title="{{{o.__('This field is required')}}}" required="required" name="nickname" value="{{{o.nick}}}" class="form-control"/>
                     </div>
                     {[ } ]}
-                    <input type="submit" class="btn btn-primary" name="join" value="{{{o.__('Join')}}}"/>
+                    <input type="submit" class="btn btn-primary" name="join" value="{{{o.__('Join')}}}" {[ if (o.muc_roomid_policy_error_msg) { ]} disabled=true {[ } ]}/>
                 </form>
             </div>
         </div>

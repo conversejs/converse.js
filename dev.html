@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Converse.js</title>
+    <title>Converse</title>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Converse.js: A free chat client for your website" />
+    <meta name="description" content="Converse XMPP/Jabber Chat" />
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
+    <link rel="manifest" href="./manifest.json">
     <link rel="shortcut icon" type="image/ico" href="images/favicon.ico"/>
     <link type="text/css" rel="stylesheet" media="screen" href="dist/converse.css" />
     <script src="3rdparty/libsignal-protocol.js"></script>
@@ -33,6 +34,8 @@
         //     'prosody@conference.prosody.im',
         //     'jdev@conference.jabber.org'
         // ],
+        theme: 'concord',
+        muc_show_logs_before_join: true,
         websocket_url: 'wss://conversejs.org/xmpp-websocket',
         bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
         whitelisted_plugins: ['converse-debug'],

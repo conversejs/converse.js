@@ -1,12 +1,8 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-singleton
- * @description
- * A plugin which restricts Converse to only one chat.
+ * @copyright JC Brand
+ * @license Mozilla Public License (MPLv2)
+ * @description A plugin which restricts Converse to only one chat.
  */
 import converse from "@converse/headless/converse-core";
 

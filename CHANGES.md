@@ -1,19 +1,31 @@
 # Changelog
 
-## 6.0.0 (Unreleased)
+## 6.0.1 (Unreleased)
+
+- Bugfix. Handle stanza that clears the MUC subject
+- #1313: Stylistic improvements to the send button
+- #1793: Send button doesn't appear in Firefox in 1:1 chats
+- #1822: Don't log error if user has no bookmarks
+- #1820: Set focus on jid field after controlbox is loaded
+- #1823: New config options [muc_roomid_policy](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy)
+    and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
+- #1826: A user can now add himself as a contact
+
+## 6.0.0 (2020-01-09)
 
 - [enable_smacks](https://conversejs.org/docs/html/configuration.html#enable-smacks) is not set to `true` by default.
 - Refactor some presence and status handling code from `converse-core` into `@converse/headless/converse-status`.
+- It's now possible to navigate the emoji-picker via the keyboard arrow keys.
 
 - Add support for [notifications about affiliation change for users not in a room](https://xmpp.org/extensions/xep-0045.html#example-196)
-- Add support for [XEP-0424 Message Retraction](http://localhost:3080/extensions/xep-0424.html)
-- Add support for [XEP-0425 Message Moderation](http://localhost:3080/extensions/xep-0425.html)
+- Add support for [XEP-0424 Message Retraction](http://xmpps.org/extensions/xep-0424.html)
+- Add support for [XEP-0425 Message Moderation](http://xmpps.org/extensions/xep-0425.html)
 
 - New API [\_converse.api.headlines](https://conversejs.org/docs/html/api/-_converse.api.headlines.html#.get)
 - New config option [allow_message_retraction](https://conversejs.org/docs/html/configuration.html#allow-message-retraction)
 - New config option [muc-show-logs-before-join](https://conversejs.org/docs/html/configuration.html#muc-show-logs-before-join)
 - New config option [muc_mention_autocomplete_filter](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-filter)
-- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-show_avatar)
+- New config option [muc_mention_autocomplete_show_avatar](https://conversejs.org/docs/html/configuration.html#muc-mention-autocomplete-show-avatar)
 - New config option [persistent_store](https://conversejs.org/docs/html/configuration.html#persistent-store)
 
 - Initial support for sending custom emojis. Currently only between Converse
@@ -27,9 +39,15 @@
 - #1640: Add the ability to resize the occupants sidebar in MUCs
 - #1666: Allow scrolling of the OMEMO fingerprints list
 - #1691: Fix `collection.chatbox is undefined` errors
+- #1767: `credentials_url` is not called when logging out and then in again
+- #1764: Incorrect URI encoding in "mention" references
 - #1772: `_converse.api.contact.add(jid, nick)` fails, says not a function
+- #1791: `auto_focus` set to `false` is ignored when switching back to a MUC
 - #1792: Fix: modals don't have scrollbars
 - #1796: Don't show "back" arrow navigation (on mobile) in the chat header when in `singleton` mode
+- #1821: Errors caused by malformed URLs are now handled
+- #1819: Click on a desktop notification now opens corresponding chat.
+- #1836: MUC invites appear to come from the MUC name
 
 ### Breaking changes
 

@@ -915,7 +915,50 @@
                 [text, references] = view.model.parseTextForReferences('nice website https://darnuria.eu/@darnuria');
                 expect(references.length).toBe(0);
                 expect(text).toBe('nice website https://darnuria.eu/@darnuria');
+                done();
+            }));
 
+
+            it("properly encodes the URIs in sent out references",
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+                const view = _converse.api.roomviews.get(muc_jid);
+                _converse.connection._dataRecv(test_utils.createRequest(
+                    $pres({
+                        'to': 'tom@montague.lit/resource',
+                        'from': `lounge@montague.lit/Link Mauve`
+                    })
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'role': 'participant'
+                    })));
+
+                const textarea = view.el.querySelector('textarea.chat-textarea');
+                textarea.value = 'hello @Link Mauve'
+                const enter_event = {
+                    'target': textarea,
+                    'preventDefault': function preventDefault () {},
+                    'stopPropagation': function stopPropagation () {},
+                    'keyCode': 13 // Enter
+                }
+                spyOn(_converse.connection, 'send');
+                view.onKeyDown(enter_event);
+                await new Promise(resolve => view.once('messageInserted', resolve));
+                const msg = _converse.connection.send.calls.all()[0].args[0];
+                expect(msg.toLocaleString())
+                    .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
+                            `to="lounge@montague.lit" type="groupchat" `+
+                            `xmlns="jabber:client">`+
+                                `<body>hello Link Mauve</body>`+
+                                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<reference begin="6" end="16" type="mention" uri="xmpp:lounge@montague.lit/Link%20Mauve" xmlns="urn:xmpp:reference:0"/>`+
+                                `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                            `</message>`);
                 done();
             }));
 

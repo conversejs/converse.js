@@ -102,10 +102,10 @@
                     ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                // Mock 'getRoomFeatures', otherwise the room won't be
+                // Mock 'getDiscoInfo', otherwise the room won't be
                 // displayed as it waits first for the features to be returned
                 // (when it's a new room being created).
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
 
                 let jid = 'lounge@montague.lit';
                 let chatroomview, IQ_id;
@@ -2158,7 +2158,7 @@
                 await new Promise(resolve => view.model.once('change:subject', resolve));
                 expect(sizzle('.chat-event:last').pop().textContent.trim()).toBe('Topic set by ralphm');
                 expect(sizzle('.chat-topic:last').pop().textContent.trim()).toBe(text);
-                expect(view.el.querySelector('.chatroom-description').textContent.trim()).toBe(text);
+                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(text);
 
                 stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
@@ -2167,12 +2167,22 @@
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise(resolve => view.once('messageInserted', resolve));
-                expect(sizzle('.chat-topic').length).toBe(1);
-                expect(sizzle('.chat-msg__subject').length).toBe(1);
-                expect(sizzle('.chat-msg__subject').pop().textContent.trim()).toBe('This is a message subject');
+                expect(sizzle('.chat-topic', view.el).length).toBe(1);
+                expect(sizzle('.chat-msg__subject', view.el).length).toBe(1);
+                expect(sizzle('.chat-msg__subject', view.el).pop().textContent.trim()).toBe('This is a message subject');
                 expect(sizzle('.chat-msg__text').length).toBe(1);
                 expect(sizzle('.chat-msg__text').pop().textContent.trim()).toBe('This is a message');
-                expect(view.el.querySelector('.chatroom-description').textContent.trim()).toBe(text);
+                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(text);
+
+                // Removes current topic
+                stanza = u.toStanza(
+                    `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                         <subject/>
+                     </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await new Promise(resolve => view.model.once('change:subject', resolve));
+                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe("");
+                expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
                 done();
             }));
 
@@ -2496,7 +2506,7 @@
                 expect(chatroomview.model.features.get('temporary')).toBe(true);
                 expect(chatroomview.model.features.get('unmoderated')).toBe(true);
                 expect(chatroomview.model.features.get('unsecured')).toBe(false);
-                expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('Room');
+                expect(chatroomview.el.querySelector('.chatbox-title__text').textContent.trim()).toBe('Room');
 
                 chatroomview.el.querySelector('.configure-chatroom-button').click();
 
@@ -2646,7 +2656,7 @@
                 expect(chatroomview.model.features.get('temporary')).toBe(true);
                 expect(chatroomview.model.features.get('unmoderated')).toBe(true);
                 expect(chatroomview.model.features.get('unsecured')).toBe(false);
-                expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('New room name');
+                expect(chatroomview.el.querySelector('.chatbox-title__text').textContent.trim()).toBe('New room name');
                 done();
             }));
 
@@ -3015,12 +3025,26 @@
                 textarea.value = '/help';
                 view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);
-                expect(info_messages.length).toBe(11);
+                expect(info_messages.length).toBe(9);
                 commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
-                expect(commands).toEqual(["/clear", "/help", "/kick", "/me", "/modtools", "/mute", "/nick", "/register", "/subject", "/topic", "/voice"]);
+                expect(commands).toEqual(["/clear", "/help", "/kick", "/me", "/modtools", "/mute", "/nick", "/register", "/voice"]);
 
                 occupant.set('role', 'participant');
                 textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = '/clear';
+                view.onKeyDown(enter);
+                await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
+
+                textarea.value = '/help';
+                view.onKeyDown(enter);
+                info_messages = sizzle('.chat-info', view.el).slice(1);
+                expect(info_messages.length).toBe(5);
+                commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
+                expect(commands).toEqual(["/clear", "/help", "/me", "/nick", "/register"]);
+
+                // Test that /topic is available if all users may change the subject
+                // Note: we're making a shortcut here, this value should never be set manually
+                view.model.config.set('changesubject', true);
                 textarea.value = '/clear';
                 view.onKeyDown(enter);
                 await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
@@ -3265,6 +3289,18 @@
                 expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
                     '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
                         '<subject xmlns="jabber:client">This is yet another subject</subject>'+
+                    '</message>');
+
+                // Check unsetting the topic
+                textarea.value = '/topic';
+                view.onKeyDown({
+                    target: textarea,
+                    preventDefault: function preventDefault () {},
+                    keyCode: 13
+                });
+                expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
+                    '<message from="romeo@montague.lit/orchard" to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">'+
+                        '<subject xmlns="jabber:client"></subject>'+
                     '</message>');
                 done();
             }));
@@ -4550,7 +4586,7 @@
                 nick_input.value = 'romeo';
 
                 expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 modal.el.querySelector('input[name="chatroom"]').value = 'lounce@muc.montague.lit';
                 modal.el.querySelector('form input[type="submit"]').click();
@@ -4638,7 +4674,7 @@
                 const modal = roomspanel.add_room_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000)
                 expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 const label_name = modal.el.querySelector('label[for="chatroom"]');
                 expect(label_name.textContent.trim()).toBe('Groupchat name:');
@@ -4678,7 +4714,7 @@
                 const modal = roomspanel.add_room_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000)
                 expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 const label_name = modal.el.querySelector('label[for="chatroom"]');
                 expect(label_name.textContent.trim()).toBe('Groupchat name:');
@@ -4720,7 +4756,7 @@
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.list_rooms_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000);
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
                 // See: https://xmpp.org/extensions/xep-0045.html#disco-rooms
@@ -4814,7 +4850,7 @@
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.list_rooms_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000);
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
                 expect(modal.el.querySelector('input[name="server"]')).toBe(null);
@@ -5280,16 +5316,32 @@
                 view.onFormSubmitted(new Event('submit'));
                 await new Promise(resolve => view.once('messageInserted', resolve));
 
-                const stanza = u.toStanza(`
+                let stanza = u.toStanza(`
                     <message xmlns="jabber:client" type="error" to="troll@montague.lit/resource" from="trollbox@montague.lit">
                         <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await new Promise(resolve => view.once('messageInserted', resolve));
+                expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
+                    "Your message was not delivered because you weren't allowed to send it.");
 
+                textarea.value = 'Hello again';
+                view.onFormSubmitted(new Event('submit'));
                 await new Promise(resolve => view.once('messageInserted', resolve));
 
-                expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
-                    "Your message was not delivered because you're not allowed to send messages in this groupchat.");
+                stanza = u.toStanza(`
+                    <message xmlns="jabber:client" type="error" to="troll@montague.lit/resource" from="trollbox@montague.lit">
+                        <error type="auth">
+                            <forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                            <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Thou shalt not!</text>
+                        </error>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await new Promise(resolve => view.once('messageInserted', resolve));
+
+                expect(view.el.querySelector('.message:last-child').textContent.trim()).toBe(
+                    'Your message was not delivered because you weren\'t allowed to send it. '+
+                    'The message from the server is: "Thou shalt not!"')
                 done();
             }));
 

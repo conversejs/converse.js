@@ -155,7 +155,7 @@ converse.plugins.add('converse-minimize', {
                 const html = this.__super__.generateHeadingHTML.apply(this, arguments);
                 const div = document.createElement('div');
                 div.innerHTML = html;
-                const buttons_row = div.querySelector('.chatbox-buttons')
+                const buttons_row = div.querySelector('.chatbox-title__buttons')
                 const button = buttons_row.querySelector('.close-chatbox-button');
                 const minimize_el = tpl_chatbox_minimize({'info_minimize': __('Minimize this chat box')})
                 if (button) {
@@ -569,7 +569,7 @@ converse.plugins.add('converse-minimize', {
         function initMinimizedChats () {
             _converse.minimized_chats = new _converse.MinimizedChats({model: _converse.chatboxes});
             /**
-             * Triggered once the _converse.MinimizedChats instance has been * initialized
+             * Triggered once the _converse.MinimizedChats instance has been initialized
              * @event _converse#minimizedChatsInitialized
              * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
              */
@@ -577,7 +577,7 @@ converse.plugins.add('converse-minimize', {
         }
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('userSessionInitialized', () => initMinimizedChats());
+        _converse.api.listen.on('chatBoxViewsInitialized', () => initMinimizedChats());
         _converse.api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
         _converse.api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
 

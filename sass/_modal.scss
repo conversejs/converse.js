@@ -22,6 +22,11 @@
             .modal-footer {
                 justify-content: flex-start;
             }
+            .roomid-policy-error {
+                color: var(--error-color);
+                font-size: var(--font-size-small);
+                float: right;
+            }
         }
 
         .scrollable-container {

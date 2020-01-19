@@ -313,10 +313,10 @@ converse.plugins.add('converse-chatview', {
                 const form_container = this.el.querySelector('.message-form-container');
                 form_container.innerHTML = tpl_chatbox_message_form(
                     Object.assign(this.model.toJSON(), {
+                        '__': __,
                         'message_limit': _converse.message_limit,
                         'hint_value': get(this.el.querySelector('.spoiler-hint'), 'value'),
                         'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
-                        'label_send': __('Send'),
                         'label_spoiler_hint': __('Optional hint'),
                         'message_value': get(this.el.querySelector('.chat-textarea'), 'value'),
                         'show_send_button': _converse.show_send_button,
@@ -367,10 +367,10 @@ converse.plugins.add('converse-chatview', {
             },
 
             async addFileUploadButton () {
-                if (this.el.querySelector('.chat-toolbar .upload-file')) {
-                    return;
-                }
                 if (await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain)) {
+                    if (this.el.querySelector('.chat-toolbar .upload-file')) {
+                        return;
+                    }
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
                         'beforeend',
                         tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
@@ -803,7 +803,8 @@ converse.plugins.add('converse-chatview', {
                     hint_el.value = '';
                     textarea.value = '';
                     u.removeClass('correcting', textarea);
-                    textarea.style.height = 'auto'; // Fixes weirdness
+                    textarea.style.height = 'auto';
+                    this.updateCharCounter(textarea.value);
                 }
                 if (message) {
                     /**
@@ -814,12 +815,23 @@ converse.plugins.add('converse-chatview', {
                      */
                     _converse.api.trigger('messageSend', message);
                 }
+                if (_converse.view_mode === 'overlayed') {
+                    // XXX: Chrome flexbug workaround. The .chat-content area
+                    // doesn't resize when the textarea is resized to its original size.
+                    this.content.parentElement.style.display = 'none';
+                }
                 textarea.removeAttribute('disabled');
                 u.removeClass('disabled', textarea);
-                textarea.focus();
+
+                if (_converse.view_mode === 'overlayed') {
+                    // XXX: Chrome flexbug workaround.
+                    this.content.parentElement.style.display = '';
+                }
+
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.
                 this.model.setChatState(_converse.ACTIVE, {'silent': true});
+                textarea.focus();
             },
 
             updateCharCounter (chars) {
@@ -869,29 +881,29 @@ converse.plugins.add('converse-chatview', {
                     return;
                 }
                 if (!ev.shiftKey && !ev.altKey && !ev.metaKey) {
-                    if (ev.keyCode === _converse.keycodes.FORWARD_SLASH) {
+                    if (ev.keyCode === converse.keycodes.FORWARD_SLASH) {
                         // Forward slash is used to run commands. Nothing to do here.
                         return;
-                    } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
+                    } else if (ev.keyCode === converse.keycodes.ESCAPE) {
                         return this.onEscapePressed(ev);
-                    } else if (ev.keyCode === _converse.keycodes.ENTER) {
+                    } else if (ev.keyCode === converse.keycodes.ENTER) {
                         return this.onEnterPressed(ev);
-                    } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
+                    } else if (ev.keyCode === converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
                         const textarea = this.el.querySelector('.chat-textarea');
                         if (!textarea.value || u.hasClass('correcting', textarea)) {
                             return this.editEarlierMessage();
                         }
-                    } else if (ev.keyCode === _converse.keycodes.DOWN_ARROW &&
+                    } else if (ev.keyCode === converse.keycodes.DOWN_ARROW &&
                             ev.target.selectionEnd === ev.target.value.length &&
                             u.hasClass('correcting', this.el.querySelector('.chat-textarea'))) {
                         return this.editLaterMessage();
                     }
                 }
-                if ([_converse.keycodes.SHIFT,
-                        _converse.keycodes.META,
-                        _converse.keycodes.META_RIGHT,
-                        _converse.keycodes.ESCAPE,
-                        _converse.keycodes.ALT].includes(ev.keyCode)) {
+                if ([converse.keycodes.SHIFT,
+                        converse.keycodes.META,
+                        converse.keycodes.META_RIGHT,
+                        converse.keycodes.ESCAPE,
+                        converse.keycodes.ALT].includes(ev.keyCode)) {
                     return;
                 }
                 if (this.model.get('chat_state') !== _converse.COMPOSING) {
@@ -1214,6 +1226,10 @@ converse.plugins.add('converse-chatview', {
                 return this;
             },
 
+            maybeFocus () {
+                _converse.auto_focus && this.focus();
+            },
+
             hide () {
                 this.el.classList.add('hidden');
                 return this;
@@ -1223,16 +1239,12 @@ converse.plugins.add('converse-chatview', {
                 this.model.clearUnreadMsgCounter();
                 this.model.setChatState(_converse.ACTIVE);
                 this.scrollDown();
-                if (_converse.auto_focus) {
-                    this.focus();
-                }
+                this.maybeFocus();
             },
 
             show () {
                 if (u.isVisible(this.el)) {
-                    if (_converse.auto_focus) {
-                        this.focus();
-                    }
+                    this.maybeFocus();
                     return;
                 }
                 /**

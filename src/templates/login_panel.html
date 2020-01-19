@@ -10,7 +10,7 @@
             {[ if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ]}
                 <div class="form-group">
                     <label for="converse-login-jid">{{{o.__("XMPP Address:")}}}</label>
-                    <input id="converse-login-jid" class="form-control" autofocus required="required" type="text" name="jid" placeholder="{{{o.placeholder_username}}}"/>
+                    <input id="converse-login-jid" class="form-control" required="required" type="text" name="jid" placeholder="{{{o.placeholder_username}}}"/>
                 </div>
                 {[ if (o.authentication !== o.EXTERNAL) { ]}
                 <div class="form-group">

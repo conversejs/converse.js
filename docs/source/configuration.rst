@@ -265,7 +265,9 @@ auto_focus
 
 If set to ``true``, the textarea for composing chat messages will automatically
 become focused as soon as a chat is opened. This means you don't need to click
-the textarea first before starting to type a message.
+the textarea first before starting to type a message. This also applies to the
+username field which is automatically focused after the login controlbox is
+loaded.
 
 For applications where chat is not the main feature, automatic focus of the
 chat box might be undesired.
@@ -789,7 +791,7 @@ enable_smacks
 Determines whether `XEP-0198 Stream Management <https://xmpp.org/extensions/xep-0198.html>`_
 support is turned on or not.
 
-Recommended to set to ``true`` if a websocket connection is used. 
+Recommended to set to ``true`` if a websocket connection is used.
 Please see the :ref:`websocket-url` configuration setting.
 
 filter_by_resource
@@ -1148,6 +1150,50 @@ all MUCs with set autojoin flag in their respective bookmarks will be joined on
 startup of Converse. When set to ``false`` no MUCs are automatically joined based on
 their bookmarks.
 
+muc_roomid_policy
+-----------------
+
+* Default: ``null``
+
+This option defines the regular expression that a room id must satisfy to allow the
+room creation. Server administrators may want to impose restrictions on the minimum
+and maximum length and the allowed character set allowed for room ids. Otherwise
+users might create rooms which are difficult to handle.
+
+However, restricting that on the server only leads to bad UX as users might learn of
+the servers policy only after they have tried to create a room. Furthermore error
+messages from XMPP-servers might not be self-explanatory.
+
+Therefore this option allows converse to already check the policy and disallow the
+user from even trying to entering/creating such a room.
+
+As this only makes sense on your own server, the check is applied only if the domain
+part equals `muc_domain`_. If `muc_domain`_ is unset, then this check is disabled
+completely.
+
+Example:
+
+.. code-block:: javascript
+
+    muc_roomid_policy: /^[a-z0-9._-]{5,40}$/,
+
+See also: `muc_roomid_policy_hint`_
+
+muc_roomid_policy_hint
+----------------------
+
+* Default: ``null``
+
+This option can be used in conjuction with `muc_roomid_policy`_ in order to give
+a written explanation of the imposed room id policy. You can use the html-tags
+``<br>``, ``<b>``, and ``<em>`` to allow some basic styling.
+
+Example:
+
+.. code-block:: javascript
+
+    muc_roomid_policy_hint: '<br><b>Policy for groupchat id:</b><br>- between 5 and 40 characters,<br>- lowercase from a to z (no special characters) or<br>- digits or<br>- dots (.) or<br>- underlines (_) or<br>- hyphens (-),<br>- no spaces<br>',
+
 muc_show_join_leave
 -------------------
 
@@ -1166,6 +1212,16 @@ user joins or leaves the MUC. This setting only has an effect if
 ``muc_show_join_leave`` is set to ``true``.
 
 See https://xmpp.org/extensions/xep-0045.html#changepres
+
+muc_show_logs_before_join
+-------------------------
+
+* Default: ``false``
+
+If set to ``true``, when opening a MUC for the first time (or if you don't have
+a nickname configured for it), you'll see the message history (if the
+server supports [XEP-0313 Message Archive Management](https://xmpp.org/extensions/xep-0313.html))
+and the nickname form at the bottom.
 
 .. _`nickname`:
 
@@ -1458,6 +1514,51 @@ If set to ``true``, Converse will show any roster groups you might have configur
     Converse can only show users and groups that were previously configured
     elsewhere.
 
+
+send_chat_state_notifications
+-----------------------------
+
+* Default: ``true``
+
+Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_) should be sent out or not.
+
+Can also be set to an Array in order to allow only certain types of chat state notifications.
+
+For example:
+
+.. code-block:: javascript
+
+        converse.initialize({
+            'send_chat_state_notifications':  ['composing']
+        });
+
+Valid values are ``'active', 'composing', 'gone' 'inactive', 'paused'``
+
+
+show_images_inline
+------------------
+
+* Default:  ``true``
+
+If set to false, images won't be rendered in chats, instead only their links will be shown.
+
+
+singleton
+---------
+
+* Default:  ``false``
+
+If set to ``true``, then only one chat (one-on-one or groupchat) will be allowed.
+
+The chat must be specified with the `auto_join_rooms`_ or `auto_join_private_chats`_ options.
+
+This setting is useful together with `view_mode`_ set to ``embedded``, when you
+want to embed a chat into the page.
+
+Alternatively you could use it with `view_mode`_ set to ``overlayed`` to create
+a single helpdesk-type chat.
+
+
 show_chat_state_notifications
 -----------------------------
 
@@ -1531,48 +1632,13 @@ everywhere.
 This warning isn't applicable to all deployments of Converse and can therefore
 be turned off by setting this config variable to ``false``.
 
+show_send_button
+----------------
 
-send_chat_state_notifications
------------------------------
+* Default: ``false``
 
-* Default: ``true``
-
-Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_) should be sent out or not.
-
-Can also be set to an Array in order to allow only certain types of chat state notifications.
-
-For example:
-
-.. code-block:: javascript
-
-        converse.initialize({
-            'send_chat_state_notifications':  ['composing']
-        });
-
-Valid values are ``'active', 'composing', 'gone' 'inactive', 'paused'``
-
-show_images_inline
-------------------
-
-* Default:  ``true``
-
-If set to false, images won't be rendered in chats, instead only their links will be shown.
-
-
-singleton
----------
-
-* Default:  ``false``
-
-If set to ``true``, then only one chat (one-on-one or groupchat) will be allowed.
-
-The chat must be specified with the `auto_join_rooms`_ or `auto_join_private_chats`_ options.
-
-This setting is useful together with `view_mode`_ set to ``embedded``, when you
-want to embed a chat into the page.
-
-Alternatively you could use it with `view_mode`_ set to ``overlayed`` to create
-a single helpdesk-type chat.
+Adds a button to the chat which can be clicked or tapped in order to send the
+message.
 
 
 smacks_max_unacked_stanzas

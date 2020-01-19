@@ -358,7 +358,8 @@ converse.plugins.add('converse-rosterview', {
                 const ask = this.model.get('ask'),
                     show = this.model.presence.get('show'),
                     requesting  = this.model.get('requesting'),
-                    subscription = this.model.get('subscription');
+                    subscription = this.model.get('subscription'),
+                    jid = this.model.get('jid');
 
                 const classes_to_remove = [
                     'current-xmpp-contact',
@@ -414,7 +415,7 @@ converse.plugins.add('converse-rosterview', {
                             'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                         })
                     );
-                } else if (subscription === 'both' || subscription === 'to') {
+                } else if (subscription === 'both' || subscription === 'to' || _converse.rosterview.isSelf(jid)) {
                     this.el.classList.add('current-xmpp-contact');
                     this.el.classList.remove(without(['both', 'to'], subscription)[0]);
                     this.el.classList.add(subscription);
@@ -947,13 +948,18 @@ converse.plugins.add('converse-rosterview', {
                 groups.forEach(g => this.addContactToGroup(contact, g, options));
             },
 
+            isSelf (jid) {
+                return u.isSameBareJID(jid, _converse.connection.jid);
+            },
+
             addRosterContact (contact, options) {
-                if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
+                const jid = contact.get('jid');
+                if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to' || this.isSelf(jid)) {
                     this.addExistingContact(contact, options);
                 } else {
                     if (!_converse.allow_contact_requests) {
                         log.debug(
-                            `Not adding requesting or pending contact ${contact.get('jid')} `+
+                            `Not adding requesting or pending contact ${jid} `+
                             `because allow_contact_requests is false`
                         );
                         return;

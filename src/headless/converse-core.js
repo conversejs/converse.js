@@ -9,6 +9,7 @@
 import 'strophe.js/src/websocket';
 import './polyfill';
 import * as strophe from 'strophe.js/src/core';
+import { assignIn, debounce, get, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import Backbone from 'backbone';
 import BrowserStorage from 'backbone.browserStorage';
 import _ from './lodash.noconflict';
@@ -112,7 +113,7 @@ const _converse = {
     'promises': {}
 }
 
-_converse.VERSION_NAME = "v5.0.5dev";
+_converse.VERSION_NAME = "v6.0.1dev";
 
 Object.assign(_converse, Backbone.Events);
 
@@ -148,21 +149,6 @@ _converse.IllegalMessage = IllegalMessage;
 
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');
-
-_converse.keycodes = {
-    TAB: 9,
-    ENTER: 13,
-    SHIFT: 16,
-    CTRL: 17,
-    ALT: 18,
-    ESCAPE: 27,
-    UP_ARROW: 38,
-    DOWN_ARROW: 40,
-    FORWARD_SLASH: 47,
-    AT: 50,
-    META: 91,
-    META_RIGHT: 93
-};
 
 // Module-level constants
 _converse.STATUS_WEIGHTS = {
@@ -260,7 +246,7 @@ _converse.default_settings = {
     keepalive: true,
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
-        'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'oc',
+        'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'mr', 'oc',
         'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
     ],
     message_carbons: true,
@@ -363,7 +349,7 @@ _converse.isUniView = function () {
      * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
      * MultiView means that multiple chats may be visible simultaneously.
      */
-    return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
+    return ['mobile', 'fullscreen', 'embedded'].includes(_converse.view_mode);
 };
 
 
@@ -505,7 +491,7 @@ async function attemptNonPreboundSession (credentials, automatic) {
             connect(await getLoginCredentials());
         } else if (_converse.jid && (_converse.password || _converse.connection.pass)) {
             connect();
-        } else if (!_converse.isTestEnv() && window.PasswordCredential) {
+        } else if (!_converse.isTestEnv() && 'credentials' in navigator) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
             log.warn("attemptNonPreboundSession: Could not find any credentials to log in with");
@@ -534,7 +520,7 @@ function connect (credentials) {
             BOSH_WAIT
         );
     } else if (_converse.authentication === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (_.get(_converse.connection, 'pass') || _converse.password);
+        const password = credentials ? credentials.password : (get(_converse.connection, 'pass') || _converse.password);
         if (!password) {
             if (_converse.auto_login) {
                 throw new Error("autoLogin: If you use auto_login and "+
@@ -571,7 +557,7 @@ async function reconnect () {
     return _converse.api.user.login();
 }
 
-const debouncedReconnect = _.debounce(reconnect, 2000);
+const debouncedReconnect = debounce(reconnect, 2000);
 
 
 _converse.shouldClearCache = () => (!_converse.config.get('trusted') || _converse.isTestEnv());
@@ -788,6 +774,7 @@ async function onConnected (reconnecting) {
     delete _converse.connection.reconnecting;
     _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
     await _converse.setUserJID(_converse.connection.jid);
+
     /**
      * Synchronous event triggered after we've sent an IQ to bind the
      * user's JID resource for this session.
@@ -854,7 +841,7 @@ async function finishInitialization () {
         });
     }
     if (_converse.auto_login ||
-            _converse.keepalive && _.invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
+            _converse.keepalive && invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
         await _converse.api.user.login(null, null, true);
     }
 }
@@ -885,7 +872,7 @@ function finishDisconnection () {
 
 function fetchLoginCredentials (wait=0) {
     return new Promise(
-        _.debounce((resolve, reject) => {
+        debounce((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', _converse.credentials_url, true);
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
@@ -926,10 +913,14 @@ async function getLoginCredentials () {
 }
 
 async function getLoginCredentialsFromBrowser () {
-    const creds = await navigator.credentials.get({'password': true});
-    if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-        await _converse.setUserJID(creds.id);
-        return {'jid': creds.id, 'password': creds.password};
+    try {
+        const creds = await navigator.credentials.get({'password': true});
+        if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
+            await _converse.setUserJID(creds.id);
+            return {'jid': creds.id, 'password': creds.password};
+        }
+    } catch (e) {
+        log.error(e);
     }
 }
 
@@ -1021,11 +1012,11 @@ _converse.initialize = async function (settings, callback) {
         _converse.unloadevent = 'unload';
     }
 
-    _.assignIn(this, this.default_settings);
+    assignIn(this, this.default_settings);
     // Allow only whitelisted configuration attributes to be overwritten
-    _.assignIn(this, _.pick(settings, Object.keys(this.default_settings)));
+    assignIn(this, pick(settings, Object.keys(this.default_settings)));
     this.settings = {};
-    _.assignIn(this.settings, _.pick(settings, Object.keys(this.default_settings)));
+    assignIn(this.settings, pick(settings, Object.keys(this.default_settings)));
 
     log.setLogLevel(_converse.loglevel);
     _converse.log = log.log;
@@ -1105,7 +1096,7 @@ _converse.initialize = async function (settings, callback) {
                 return finishDisconnection();
             }
         } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-                (reason !== undefined && reason === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
+                (reason !== undefined && reason === get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
                 reason === "host-unknown" ||
                 reason === "remote-connection-failed" ||
                 !_converse.auto_reconnect) {
@@ -1181,7 +1172,7 @@ _converse.initialize = async function (settings, callback) {
             if (message === "host-unknown" || message == "remote-connection-failed") {
                 feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
                     `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
-            } else if (message !== undefined && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
+            } else if (message !== undefined && message === get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
                 feedback = __("The XMPP server did not offer a supported authentication mechanism");
             }
             _converse.setConnectionStatus(status, feedback);
@@ -1248,7 +1239,7 @@ _converse.api = {
          * @returns {boolean} Whether there is an established connection or not.
          */
         connected () {
-            return _.get(_converse, 'connection', {}).connected && true;
+            return get(_converse, 'connection', {}).connected && true;
         },
 
         /**
@@ -1426,6 +1417,7 @@ _converse.api = {
             const complete = () => {
                 // Recreate all the promises
                 Object.keys(_converse.promises).forEach(replacePromise);
+                delete _converse.jid
                 /**
                  * Triggered once the user has logged out.
                  * @event _converse#logout
@@ -1482,7 +1474,7 @@ _converse.api = {
          * @example _converse.api.settings.get("play_sounds");
          */
         get (key) {
-            if (_.includes(Object.keys(_converse.default_settings), key)) {
+            if (Object.keys(_converse.default_settings).includes(key)) {
                 return _converse[key];
             }
         },
@@ -1506,11 +1498,11 @@ _converse.api = {
          */
         set (key, val) {
             const o = {};
-            if (_.isObject(key)) {
-                _.assignIn(_converse, _.pick(key, Object.keys(_converse.default_settings)));
-            } else if (_.isString('string')) {
+            if (isObject(key)) {
+                assignIn(_converse, pick(key, Object.keys(_converse.default_settings)));
+            } else if (isString('string')) {
                 o[key] = val;
-                _.assignIn(_converse, _.pick(o, Object.keys(_converse.default_settings)));
+                assignIn(_converse, pick(o, Object.keys(_converse.default_settings)));
             }
         }
     },
@@ -1626,7 +1618,7 @@ _converse.api = {
          * @param {function} handler The callback method to be called when the stanza appears
          */
         stanza (name, options, handler) {
-            if (_.isFunction(options)) {
+            if (isFunction(options)) {
                 handler = options;
                 options = {};
             } else {
@@ -1653,7 +1645,7 @@ _converse.api = {
      * @returns {Promise}
      */
     waitUntil (condition) {
-        if (_.isFunction(condition)) {
+        if (isFunction(condition)) {
             return u.waitUntil(condition);
         } else {
             const promise = _converse.promises[condition];
@@ -1681,7 +1673,7 @@ _converse.api = {
             log.warn(Strophe.serialize(stanza));
             return;
         }
-        if (_.isString(stanza)) {
+        if (isString(stanza)) {
             stanza = u.toStanza(stanza);
         }
         if (stanza.tagName === 'iq') {
@@ -1732,6 +1724,23 @@ window.converse = window.converse || {};
  * @namespace converse
  */
 Object.assign(window.converse, {
+    keycodes: {
+        TAB: 9,
+        ENTER: 13,
+        SHIFT: 16,
+        CTRL: 17,
+        ALT: 18,
+        ESCAPE: 27,
+        LEFT_ARROW: 37,
+        UP_ARROW: 38,
+        RIGHT_ARROW: 39,
+        DOWN_ARROW: 40,
+        FORWARD_SLASH: 47,
+        AT: 50,
+        META: 91,
+        META_RIGHT: 93
+    },
+
     /**
      * Public API method which initializes Converse.
      * This method must always be called when using Converse.

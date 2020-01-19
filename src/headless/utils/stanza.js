@@ -234,8 +234,12 @@ const stanza_utils = {
     getErrorMessage (stanza, is_muc, _converse) {
         const { __ } = _converse;
         if (is_muc) {
-            if (sizzle(`forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
-                return __("Your message was not delivered because you're not allowed to send messages in this groupchat.");
+            const forbidden = sizzle(`error forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).pop();
+            if (forbidden) {
+                const msg = __("Your message was not delivered because you weren't allowed to send it.");
+                const text = sizzle(`error text[xmlns="${Strophe.NS.STANZAS}"]`, stanza).pop();
+                const server_msg = text ? __('The message from the server is: "%1$s"', text.textContent) : '';
+                return server_msg ? `${msg} ${server_msg}` : msg;
             } else if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
                 return __("Your message was not delivered because you're not present in the groupchat.");
             }

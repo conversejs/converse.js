@@ -1,13 +1,8 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-muc-views
- * @description
- * XEP-0045 Multi-User Chat Views
+ * @copyright 2013-2019, the Converse.js developers
+ * @description XEP-0045 Multi-User Chat Views
+ * @license Mozilla Public License (MPLv2)
  */
 import "converse-modal";
 import "backbone.vdomview";
@@ -115,6 +110,8 @@ converse.plugins.add('converse-muc-views', {
             'muc_mention_autocomplete_filter': 'contains',
             'muc_mention_autocomplete_show_avatar': true,
             'roomconfig_whitelist': [],
+            'muc_roomid_policy': null,
+            'muc_roomid_policy_hint': null,
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
             }
@@ -524,12 +521,15 @@ converse.plugins.add('converse-muc-views', {
         _converse.AddChatRoomModal = _converse.BootstrapModal.extend({
 
             events: {
-                'submit form.add-chatroom': 'openChatRoom'
+                'submit form.add-chatroom': 'openChatRoom',
+                'keyup .roomjid-input': 'checkRoomidPolicy',
+                'change .roomjid-input': 'checkRoomidPolicy'
             },
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change:muc_domain', this.render);
+                this.muc_roomid_policy_error_msg = null;
             },
 
             toHTML () {
@@ -542,7 +542,9 @@ converse.plugins.add('converse-muc-views', {
                     '__': _converse.__,
                     '_converse': _converse,
                     'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
-                    'chatroom_placeholder': placeholder
+                    'chatroom_placeholder': placeholder,
+                    'muc_roomid_policy_error_msg': this.muc_roomid_policy_error_msg,
+                    'muc_roomid_policy_hint': xss.filterXSS(_converse.muc_roomid_policy_hint, {'whiteList': {b: [], br: [], em: []}})
                 }));
             },
 
@@ -587,6 +589,24 @@ converse.plugins.add('converse-muc-views', {
                 _converse.api.rooms.open(jid, Object.assign(data, {jid}));
                 this.modal.hide();
                 ev.target.reset();
+            },
+
+            checkRoomidPolicy () {
+                if (_converse.muc_roomid_policy && _converse.muc_domain) {
+                    let jid = this.el.querySelector('.roomjid-input').value;
+                    if (converse.locked_muc_domain || !u.isValidJID(jid)) {
+                        jid = `${Strophe.escapeNode(jid)}@${_converse.muc_domain}`;
+                    }
+                    const roomid = Strophe.getNodeFromJid(jid);
+                    const roomdomain = Strophe.getDomainFromJid(jid);
+                    if (_converse.muc_domain !== roomdomain ||
+                        _converse.muc_roomid_policy.test(roomid)) {
+                        this.muc_roomid_policy_error_msg = null;
+                    } else {
+                        this.muc_roomid_policy_error_msg = __('Groupchat id is invalid.');
+                    }
+                    this.render();
+                }
             }
         });
 
@@ -605,6 +625,7 @@ converse.plugins.add('converse-muc-views', {
                     this.model.toJSON(), {
                         '_': _,
                         '__': __,
+                        'config': this.model.config.toJSON(),
                         'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
                         'features': this.model.features.toJSON(),
                         'num_occupants': this.model.occupants.length,
@@ -1106,7 +1127,7 @@ converse.plugins.add('converse-muc-views', {
                         'info_close': __('Close and leave this groupchat'),
                         'info_configure': __('Configure this groupchat'),
                         'info_details': __('Show more details about this groupchat'),
-                        'description': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
+                        'subject': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
                 }));
             },
 
@@ -1136,9 +1157,7 @@ converse.plugins.add('converse-muc-views', {
                 } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
                     this.renderBottomPanel();
                     this.hideSpinner();
-                    if (_converse.auto_focus) {
-                        this.focus();
-                    }
+                    this.maybeFocus();
                 } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
                     this.showDisconnectMessage();
                 } else if (conn_status === converse.ROOMSTATUS.DESTROYED) {
@@ -1347,15 +1366,17 @@ converse.plugins.add('converse-muc-views', {
 
             onCommandError (err) {
                 log.fatal(err);
-                this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."));
+                this.showErrorMessage(
+                    __("Sorry, an error happened while running the command.") + " " +
+                    __("Check your browser's developer console for details.")
+                );
             },
 
             getAllowedCommands () {
-                // FIXME: The availability of some of these commands
-                // depend on the MUCs configuration (e.g. whether it's
-                // moderated or not). We need to take that into
-                // consideration.
-                let allowed_commands = ['clear', 'help', 'me', 'nick', 'subject', 'topic', 'register'];
+                let allowed_commands = ['clear', 'help', 'me', 'nick', 'register'];
+                if (this.model.config.get('changesubject') || ['owner', 'admin'].includes(this.model.getOwnAffiliation())) {
+                    allowed_commands = [...allowed_commands, ...['subject', 'topic']];
+                }
                 const occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
                 if (this.verifyAffiliations(['owner'], occupant, false)) {
                     allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
@@ -1367,6 +1388,7 @@ converse.plugins.add('converse-muc-views', {
                 } else if (!this.verifyRoles(['visitor', 'participant', 'moderator'], occupant, false)) {
                     allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
                 }
+                allowed_commands.sort();
                 return allowed_commands;
             },
 
@@ -1387,6 +1409,10 @@ converse.plugins.add('converse-muc-views', {
                     if (disabled_commands.includes(command)) {
                         return false;
                     }
+                }
+                const allowed_commands = this.getAllowedCommands();
+                if (!allowed_commands.includes(command)) {
+                    return false;
                 }
 
                 switch (command) {
@@ -1422,7 +1448,6 @@ converse.plugins.add('converse-muc-views', {
                         break;
                     }
                     case 'help': {
-                        const allowed_commands = this.getAllowedCommands();
                         this.showHelpMessages([`<strong>${__("You can run the following commands")}</strong>`]);
                         this.showHelpMessages([
                             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
@@ -1941,13 +1966,17 @@ converse.plugins.add('converse-muc-views', {
             },
 
             setChatRoomSubject () {
-                // For translators: the %1$s and %2$s parts will get
-                // replaced by the user and topic text respectively
-                // Example: Topic set by JC Brand to: Hello World!
-                const subject = this.model.get('subject'),
-                      message = subject.text ? __('Topic set by %1$s', subject.author) :
-                                               __('Topic cleared by %1$s', subject.author),
-                      date = (new Date()).toISOString();
+                const subject = this.model.get('subject');
+                if (!subject.text && !subject.author) {
+                    return; // Probably a new MUC
+                }
+                const author = subject.author;
+                // For translators: the %1$s part will get
+                // replaced by the user's name.
+                // Example: Topic set by JC Brand
+                const message = subject.text ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
+                const date = (new Date()).toISOString();
+
                 this.content.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({
@@ -2045,9 +2074,20 @@ converse.plugins.add('converse-muc-views', {
                 });
             },
 
-            submitConfigForm (ev) {
+            async submitConfigForm (ev) {
                 ev.preventDefault();
-                this.model.saveConfiguration(ev.target).then(() => this.model.refreshRoomFeatures());
+                const inputs = sizzle(':input:not([type=button]):not([type=submit])', ev.target);
+                const configArray = inputs.map(u.webForm2xForm);
+                try {
+                    await this.model.sendConfiguration(configArray);
+                } catch (e) {
+                    log.error(e);
+                    this.showErrorMessage(
+                        __("Sorry, an error occurred while trying to submit the config form.") + " " +
+                        __("Check your browser's developer console for details.")
+                    );
+                }
+                await this.model.refreshDiscoInfo();
                 this.chatroomview.closeForm();
             },
 

@@ -1,13 +1,8 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-muc
- * @description
- * Implements the non-view logic for XEP-0045 Multi-User Chat
+ * @copyright The Converse.js developers
+ * @license Mozilla Public License (MPLv2)
+ * @description Implements the non-view logic for XEP-0045 Multi-User Chat
  */
 import "./converse-chat";
 import "./converse-disco";
@@ -342,7 +337,6 @@ converse.plugins.add('converse-muc', {
 
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'description': '',
                     'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
                     'message_type': 'groupchat',
                     'name': '',
@@ -356,17 +350,15 @@ converse.plugins.add('converse-muc', {
 
             async initialize () {
                 this.initialized = u.getResolveablePromise();
-
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
-
-                await this.restoreSession();
-                this.initFeatures(); // sendChatState depends on this.features
-                this.on('change:chat_state', this.sendChatState, this);
-                this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
-
                 this.initMessages();
                 this.initOccupants();
+                this.initDiscoModels(); // sendChatState depends on this.features
                 this.registerHandlers();
+
+                this.on('change:chat_state', this.sendChatState, this);
+                await this.restoreSession();
+                this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
 
                 const restored = await this.restoreFromCache()
                 if (!restored) {
@@ -414,7 +406,7 @@ converse.plugins.add('converse-muc', {
                     // so we don't send out a presence stanza again.
                     return this;
                 }
-                await this.refreshRoomFeatures();
+                await this.refreshDiscoInfo();
                 nick = await this.getAndPersistNickname(nick);
                 if (!nick) {
                     u.safeSave(this.session, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
@@ -495,12 +487,16 @@ converse.plugins.add('converse-muc', {
                 return new Promise(r => this.session.fetch({'success': r, 'error': r}));
             },
 
-            initFeatures () {
-                const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
+            initDiscoModels () {
+                let id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
                 this.features = new Backbone.Model(
                     Object.assign({id}, zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(() => false)))
                 );
                 this.features.browserStorage = _converse.createStore(id, "session");
+
+                id = `converse.muc-config-{_converse.bare_jid}-${this.get('jid')}`;
+                this.config = new Backbone.Model();
+                this.config.browserStorage = _converse.createStore(id, "session");
             },
 
             initOccupants () {
@@ -791,9 +787,9 @@ converse.plugins.add('converse-muc', {
                     'type': 'mention'
                 };
                 if (occupant.get('jid')) {
-                    obj.uri = `xmpp:${occupant.get('jid')}`;
+                    obj.uri = encodeURI(`xmpp:${occupant.get('jid')}`);
                 } else {
-                    obj.uri = `xmpp:${this.get('jid')}/${occupant.get('nick')}`;
+                    obj.uri = encodeURI(`xmpp:${this.get('jid')}/${occupant.get('nick')}`);
                 }
                 return obj;
             },
@@ -924,10 +920,10 @@ converse.plugins.add('converse-muc', {
                  * After the user has sent out a direct invitation (as per XEP-0249),
                  * to a roster contact, asking them to join a room.
                  * @event _converse#chatBoxMaximized
-                 * @type { object }
-                 * @property { _converse.ChatRoom } room
-                 * @property { string } recipient - The JID of the person being invited
-                 * @property { string } reason - The original reason for the invitation
+                 * @type {object}
+                 * @property {_converse.ChatRoom} room
+                 * @property {string} recipient - The JID of the person being invited
+                 * @property {string} reason - The original reason for the invitation
                  * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
                  */
                 _converse.api.trigger('roomInviteSent', {
@@ -937,26 +933,63 @@ converse.plugins.add('converse-muc', {
                 });
             },
 
-            async refreshRoomFeatures () {
-                await _converse.api.disco.refreshFeatures(this.get('jid'));
-                return this.getRoomFeatures();
+            /**
+             * Refresh the disco identity, features and fields for this {@link _converse.ChatRoom}.
+             * *features* are stored on the features {@link Model} attribute on this {@link _converse.ChatRoom}.
+             * *fields* are stored on the config {@link Model} attribute on this {@link _converse.ChatRoom}.
+             * @private
+             * @returns {Promise}
+             */
+            refreshDiscoInfo () {
+                return _converse.api.disco.refresh(this.get('jid'))
+                    .then(() => this.getDiscoInfo())
+                    .catch(e => log.error(e));
             },
 
-            async getRoomFeatures () {
-                let identity;
-                try {
-                    identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid'));
-                } catch (e) {
-                    // Getting the identity probably failed because this room doesn't exist yet.
-                    return log.error(e);
-                }
-                const fields = await _converse.api.disco.getFields(this.get('jid'));
-                this.save({
-                        'name': identity && identity.get('name'),
-                        'description': get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value')
-                    }
-                );
+            /**
+             * Fetch the *extended* MUC info from the server and cache it locally
+             * https://xmpp.org/extensions/xep-0045.html#disco-roominfo
+             * @private
+             * @method _converse.ChatRoom#getDiscoInfo
+             * @returns {Promise}
+             */
+            getDiscoInfo () {
+                return _converse.api.disco.getIdentity('conference', 'text', this.get('jid'))
+                    .then(identity => this.save({'name': identity && identity.get('name')}))
+                    .then(() => this.getDiscoInfoFields())
+                    .then(() => this.getDiscoInfoFeatures())
+                    .catch(e => log.error(e));
+            },
 
+            /**
+             * Fetch the *extended* MUC info fields from the server and store them locally
+             * in the `config` {@link Model} attribute.
+             * See: https://xmpp.org/extensions/xep-0045.html#disco-roominfo
+             * @private
+             * @method _converse.ChatRoom#getDiscoInfoFields
+             * @returns {Promise}
+             */
+            async getDiscoInfoFields () {
+                const fields = await _converse.api.disco.getFields(this.get('jid'));
+                const config = fields.reduce((config, f) => {
+                    const name = f.get('var');
+                    if (name && name.startsWith('muc#roominfo_')) {
+                        config[name.replace('muc#roominfo_', '')] = f.get('value');
+                    }
+                    return config;
+                }, {});
+                this.config.save(config);
+            },
+
+            /**
+             * Use converse-disco to populate the features {@link Model} which
+             * is stored as an attibute on this {@link _converse.ChatRoom}.
+             * The results may be cached. If you want to force fetching the features from the
+             * server, call {@link _converse.ChatRoom#refreshDiscoInfo} instead.
+             * @private
+             * @returns {Promise}
+             */
+            async getDiscoInfoFeatures () {
                 const features = await _converse.api.disco.getFeatures(this.get('jid'));
                 const attrs = Object.assign(
                     zipObject(converse.ROOM_FEATURES, converse.ROOM_FEATURES.map(() => false)),
@@ -972,7 +1005,6 @@ converse.plugins.add('converse-muc', {
                     }
                     attrs[fieldname.replace('muc_', '')] = true;
                 });
-                attrs.description = get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value');
                 this.features.save(attrs);
             },
 
@@ -997,24 +1029,6 @@ converse.plugins.add('converse-muc', {
             setAffiliation (affiliation, members) {
                 members = members.filter(m => m.affiliation === undefined || m.affiliation === affiliation);
                 return Promise.all(members.map(m => this.sendAffiliationIQ(affiliation, m)));
-            },
-
-            /**
-             * Submit the groupchat configuration form by sending an IQ
-             * stanza to the server.
-             * @private
-             * @method _converse.ChatRoom#saveConfiguration
-             * @param { HTMLElement } form - The configuration form DOM element.
-             *      If no form is provided, the default configuration
-             *      values will be used.
-             * @returns { Promise<XMLElement> }
-             * Returns a promise which resolves once the XMPP server
-             * has return a response IQ.
-             */
-            saveConfiguration (form) {
-                const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [];
-                const configArray = inputs.map(u.webForm2xForm);
-                return this.sendConfiguration(configArray);
             },
 
             /**
@@ -1440,7 +1454,7 @@ converse.plugins.add('converse-muc', {
                 // 174: room now fully anonymous
                 const codes = ['104', '170', '171', '172', '173', '174'];
                 if (sizzle('status', stanza).filter(e => codes.includes(e.getAttribute('status'))).length) {
-                    this.refreshRoomFeatures();
+                    this.refreshDiscoInfo();
                 }
             },
 
@@ -1484,7 +1498,7 @@ converse.plugins.add('converse-muc', {
              * @param { object } attrs - The message attributes
              */
             subjectChangeHandled (attrs) {
-                if (attrs.subject && !attrs.thread && !attrs.message) {
+                if (isString(attrs.subject) && !attrs.thread && !attrs.message) {
                     // https://xmpp.org/extensions/xep-0045.html#subject-mod
                     // -----------------------------------------------------
                     // The subject is changed by sending a message of type "groupchat" to the <room@service>,
@@ -1990,10 +2004,10 @@ converse.plugins.add('converse-muc', {
                     const locked_room = stanza.querySelector("status[code='201']");
                     if (locked_room) {
                         if (this.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
+                            this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
                         } else if (_converse.muc_instant_rooms) {
                             // Accept default configuration
-                            this.saveConfiguration().then(() => this.refreshRoomFeatures());
+                            this.sendConfiguration().then(() => this.refreshDiscoInfo());
                         } else {
                             /**
                              * Triggered when a new room has been created which first needs to be configured
@@ -2013,9 +2027,9 @@ converse.plugins.add('converse-muc', {
                         // otherwise the features would have been fetched in
                         // the "initialize" method already.
                         if (this.getOwnAffiliation() === 'owner' && this.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
+                            this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
                         } else {
-                            this.getRoomFeatures();
+                            this.getDiscoInfo();
                         }
                     }
                 }
@@ -2219,14 +2233,13 @@ converse.plugins.add('converse-muc', {
                 room_jid = x_el.getAttribute('jid'),
                 reason = x_el.getAttribute('reason');
 
-            let contact = _converse.roster.get(from),
-                result;
-
+            let result;
             if (_converse.auto_join_on_invite) {
                 result = true;
             } else {
                 // Invite request might come from someone not your roster list
-                contact = contact? contact.getDisplayName(): Strophe.getNodeFromJid(from);
+                let contact = _converse.roster.get(from);
+                contact = contact ? contact.getDisplayName(): from;
                 if (!reason) {
                     result = confirm(
                         __("%1$s has invited you to join a groupchat: %2$s", contact, room_jid)

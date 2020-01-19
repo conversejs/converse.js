@@ -292,7 +292,7 @@ body.converse-fullscreen {
         color: var(--link-color);
         text-shadow: none;
         &:hover {
-            color: var(--link-color-darken-20-percent);
+            color: var(--link-hover-color);
             text-decoration: none;
             text-shadow: none;
         }

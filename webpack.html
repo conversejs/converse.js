@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Converse.js: A free chat client for your website" />
+    <link rel="manifest" href="./manifest.json">
     <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
 </head>
 <body class="reset"></body>
@@ -17,12 +18,14 @@
         }
     });
     converse.initialize({
+        show_send_button: true,
         auto_away: 300,
         auto_register_muc_nickname: true,
         loglevel: 'debug',
         enable_smacks: true,
         i18n: 'en',
         message_archiving: 'always',
+        persistent_store: 'IndexedDB',
         muc_domain: 'conference.chat.example.org',
         muc_respect_autojoin: true,
         view_mode: 'fullscreen',

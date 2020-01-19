@@ -9,7 +9,7 @@
                 color: var(--link-color);
                 font-size: var(--font-size-large);
                 &:hover {
-                    color: var(--link-color-darken-20-percent);
+                    color: var(--link-hover-color);
                 }
                 i {
                     color: var(--link-color);
@@ -308,7 +308,7 @@
             left: 0;
             text-align: left;
             overflow-x: hidden;
-            padding: 1em 0 1em 0;
+            padding: 0 0 1em 0;
 
             .controlbox-padded {
                 padding-left: 1em;
@@ -407,6 +407,7 @@
             flex-direction: row-reverse;
             flex-wrap: nowrap;
             justify-content: space-between;
+            min-height: 0;
 
             .brand-heading {
                 color: var(--text-color);
@@ -605,6 +606,12 @@
     }
 }
 
+#conversejs.converse-fullscreen {
+    .controlbox-panes {
+        padding-top: 1em;
+    }
+}
+
 #conversejs.converse-overlayed {
     .brand-heading {
         padding-top: 0.8rem;
@@ -617,6 +624,9 @@
     #controlbox {
         #converse-login-panel {
             height: 100%;
+        }
+        .controlbox-panes {
+            margin-top: 0.5em;
         }
     }
 }

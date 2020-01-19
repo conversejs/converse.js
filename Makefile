@@ -68,7 +68,7 @@ serve_bg: stamp-npm
 dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js stamp-npm @converse/headless
 	npm run nodeps
 
-GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=5.0.4 dist/converse-no-dependencies.js -c
+GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=6.0.0 dist/converse-no-dependencies.js -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies.js
@@ -180,7 +180,7 @@ dist:: build
 
 .PHONY: build
 build:: stamp-npm
-	npm run dev && npm run build
+	npm run dev && npm run build && make dist/website.css && make dist/website.min.css
 
 .PHONY: cdn
 cdn:: stamp-npm

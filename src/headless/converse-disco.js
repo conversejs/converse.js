@@ -692,18 +692,17 @@ converse.plugins.add('converse-disco', {
                 },
 
                 /**
-                 * Refresh the features (and fields and identities) associated with a
+                 * Refresh the features, fields and identities associated with a
                  * disco entity by refetching them from the server
-                 *
-                 * @method _converse.api.disco.refreshFeatures
+                 * @method _converse.api.disco.refresh
                  * @param {string} jid The JID of the entity whose features are refreshed.
                  * @returns {promise} A promise which resolves once the features have been refreshed
                  * @example
-                 * await _converse.api.disco.refreshFeatures('room@conference.example.org');
+                 * await _converse.api.disco.refresh('room@conference.example.org');
                  */
-                async refreshFeatures (jid) {
+                async refresh (jid) {
                     if (!jid) {
-                        throw new TypeError('api.disco.refreshFeatures: You need to provide an entity JID');
+                        throw new TypeError('api.disco.refresh: You need to provide an entity JID');
                     }
                     await _converse.api.waitUntil('discoInitialized');
                     let entity = await _converse.api.disco.entities.get(jid);
@@ -720,6 +719,14 @@ converse.plugins.add('converse-disco', {
                         entity = await _converse.api.disco.entities.create(jid, {'ignore_cache': true});
                     }
                     return entity.waitUntilFeaturesDiscovered;
+                },
+
+                /**
+                 * @deprecated Use {@link _converse.api.disco.refresh} instead.
+                 * @method _converse.api.disco.refreshFeatures
+                 */
+                refreshFeatures (jid) {
+                    return _converse.api.refresh(jid);
                 },
 
                 /**

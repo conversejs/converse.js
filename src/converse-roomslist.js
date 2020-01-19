@@ -134,7 +134,7 @@ converse.plugins.add('converse-roomslist', {
                     'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                 }
                 await _converse.api.rooms.open(jid, data, true);
-                _converse.api.chatviews.get(jid).focus();
+                _converse.api.chatviews.get(jid).maybeFocus();
             },
 
             closeRoom (ev) {

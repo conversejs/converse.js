@@ -1,15 +1,12 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-
 /**
  * @module converse-emoji-views
+ * @copyright 2013-2019, the Converse.js developers
+ * @license Mozilla Public License (MPLv2)
  */
 
 import "@converse/headless/converse-emoji";
-import { debounce, find } from "lodash";
+import { debounce, find, get } from "lodash";
+import DOMNavigator from "./dom-navigator";
 import bootstrap from "bootstrap.native";
 import tpl_emoji_button from "templates/emoji_button.html";
 import tpl_emojis from "templates/emojis.html";
@@ -46,8 +43,7 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             onKeyDown (ev) {
-                const { _converse } = this.__super__;
-                if (ev.keyCode === _converse.keycodes.TAB) {
+                if (ev.keyCode === converse.keycodes.TAB) {
                     const value = u.getCurrentWord(ev.target, null, /(:.*?:)/g);
                     if (value.startsWith(':')) {
                         ev.preventDefault();
@@ -95,6 +91,10 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             createEmojiPicker () {
+                if (this.emoji_picker_view) {
+                    this.insertEmojiPicker();
+                    return;
+                }
                 if (!_converse.emojipicker) {
                     const id = `converse.emoji-${_converse.bare_jid}`;
                     _converse.emojipicker = new _converse.EmojiPicker({'id': id});
@@ -134,18 +134,30 @@ converse.plugins.add('converse-emoji-views', {
         _converse.EmojiPickerView = Backbone.VDOMView.extend({
             className: 'emoji-picker',
             events: {
-                'click .emoji-picker__header li.emoji-category': 'chooseCategory',
+                'click .emoji-picker__header li.emoji-category .pick-category': 'chooseCategory',
                 'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone',
                 'click .insert-emoji': 'insertEmoji',
+                'focus .emoji-search': 'disableArrowNavigation',
                 'keydown .emoji-search': 'onKeyDown'
             },
 
             async initialize () {
+                this.onGlobalKeyDown = ev => this._onGlobalKeyDown(ev);
+
+                const body = document.querySelector('body');
+                body.addEventListener('keydown', this.onGlobalKeyDown);
+
                 this.search_results = [];
                 this.debouncedFilter = debounce(input => this.filter(input.value), 150);
                 this.listenTo(this.model, 'change:query', this.render)
                 this.listenTo(this.model, 'change:current_skintone', this.render)
-                this.listenTo(this.model, 'change:current_category', this.render)
+                this.listenTo(this.model, 'change:current_category', () => {
+                    this.render();
+                    const category = this.model.get('current_category');
+                    const el = this.el.querySelector(`.emoji-category[data-category="${category}"]`);
+                    this.navigator.select(el);
+                    !this.navigator.enabled && this.navigator.enable();
+                });
                 await _converse.api.waitUntil('emojisInitialized');
                 this.render();
             },
@@ -169,11 +181,60 @@ converse.plugins.add('converse-emoji-views', {
                 );
             },
 
+            remove () {
+                const body = document.querySelector('body');
+                body.removeEventListener('keydown', this.onGlobalKeyDown);
+                Backbone.VDOMView.prototype.remove.call(this);
+            },
+
             afterRender () {
                 this.initIntersectionObserver();
                 const textarea = this.el.querySelector('.emoji-search');
                 textarea.addEventListener('focus', ev => this.chatview.emitFocused(ev));
                 textarea.addEventListener('blur', ev => this.chatview.emitBlurred(ev));
+                this.initArrowNavigation();
+            },
+
+            initArrowNavigation () {
+                if (!this.navigator) {
+                    const default_selector = 'li:not(.hidden):not(.emoji-skintone), .emoji-search';
+                    const options = {
+                        'jump_to_picked': '.emoji-category',
+                        'jump_to_picked_selector': '.emoji-category.picked',
+                        'jump_to_picked_direction': DOMNavigator.DIRECTION.down,
+                        'picked_selector': '.picked',
+                        'scroll_container': this.el.querySelector('.emoji-picker__lists'),
+                        'getSelector': direction => {
+                            if (direction === DOMNavigator.DIRECTION.down) {
+                                const c = this.navigator.selected && this.navigator.selected.getAttribute('data-category');
+                                return c ? `ul[data-category="${c}"] li:not(.hidden):not(.emoji-skintone), .emoji-search` : default_selector;
+                            } else {
+                                return default_selector;
+                            }
+                        },
+                        'onSelected': el => {
+                            el.matches('.insert-emoji') && this.setCategoryForElement(el.parentElement);
+                            el.matches('.insert-emoji, .emoji-category') && el.firstElementChild.focus();
+                            el.matches('.emoji-search') && el.focus();
+                        }
+                    };
+                    this.navigator = new DOMNavigator(this.el, options);
+                    this.listenTo(this.chatview.model, 'destroy', () => this.navigator.destroy());
+                }
+            },
+
+            enableArrowNavigation (ev) {
+                if (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                }
+                this.disableArrowNavigation();
+                this.navigator.enable();
+                this.navigator.handleKeydown(ev);
+            },
+
+            disableArrowNavigation () {
+                this.navigator.disable();
             },
 
             filter (value, set_property) {
@@ -196,24 +257,34 @@ converse.plugins.add('converse-emoji-views', {
                 }
             },
 
-            setCategoryOnVisibilityChange (ev) {
-                const current = ev.filter(e => e.isIntersecting).pop();
-                if (current) {
-                    const category = current.target.getAttribute('data-category');
-                    const old_category = this.model.get('current_category');
-                    if (old_category !== category) {
-                        // XXX: Manually set the classes, it's quicker than using the VDOM
-                        this.model.set(
-                            {'current_category': category},
-                            {'silent': true}
-                        );
-                        const categories = sizzle('.emoji-picker__header .emoji-category', this.el);
-                        const new_el = categories.filter(el => el.getAttribute('data-category') === category).pop();
-                        const old_el = categories.filter(el => el.getAttribute('data-category') === old_category).pop();
-                        new_el && u.addClass('picked', new_el);
-                        old_el && u.removeClass('picked', old_el);
-                    }
+            setCategoryForElement (el) {
+                const category = el.getAttribute('data-category');
+                const old_category = this.model.get('current_category');
+                if (old_category !== category) {
+                    // XXX: Manually set the classes, it's quicker than using the VDOM
+                    this.model.set(
+                        {'current_category': category},
+                        {'silent': true}
+                    );
+                    const category_els = sizzle('.emoji-picker__header .emoji-category', this.el);
+                    category_els.forEach(el => u.removeClass('picked', el));
+                    const new_el = category_els.filter(el => el.getAttribute('data-category') === category).pop();
+                    new_el && u.addClass('picked', new_el);
                 }
+            },
+
+            setCategoryOnVisibilityChange (ev) {
+                const selected = this.navigator.selected;
+                const intersection_with_selected = ev.filter(i => i.target.contains(selected)).pop();
+                let current;
+                // Choose the intersection that contains the currently selected
+                // element, or otherwise the one with the largest ratio.
+                if (intersection_with_selected) {
+                    current = intersection_with_selected;
+                } else {
+                    current = ev.reduce((p, c) => c.intersectionRatio >= get(p, 'intersectionRatio', 0) ? c : p, null);
+                }
+                current && current.isIntersecting && this.setCategoryForElement(current.target);
             },
 
             initIntersectionObserver () {
@@ -225,10 +296,9 @@ converse.plugins.add('converse-emoji-views', {
                 } else {
                     const options = {
                         root: this.el.querySelector('.emoji-picker__lists'),
-                        rootMargin: '0px',
-                        threshold: [0.1, 0.2, 0.3, 0.4, 0.5]
+                        threshold: [0.1]
                     }
-                    const handler = debounce((ev) => this.setCategoryOnVisibilityChange(ev), 200);
+                    const handler = ev => this.setCategoryOnVisibilityChange(ev);
                     this.observer = new IntersectionObserver(handler, options);
                 }
                 sizzle('.emoji-picker', this.el).forEach(a => this.observer.observe(a));
@@ -243,24 +313,61 @@ converse.plugins.add('converse-emoji-views', {
                     this.chatview.emoji_dropdown.toggle();
                 }
                 this.filter('', true);
+                this.disableArrowNavigation();
+            },
+
+            onEnterPressed (ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                if (_converse.emoji_shortnames.includes(ev.target.value)) {
+                    this.insertIntoTextArea(ev.target.value);
+                } else if (this.search_results.length === 1) {
+                    this.insertIntoTextArea(this.search_results[0].sn);
+                } else if (this.navigator.selected && this.navigator.selected.matches('.insert-emoji')) {
+                    this.insertIntoTextArea(this.navigator.selected.getAttribute('data-emoji'));
+                } else if (this.navigator.selected && this.navigator.selected.matches('.emoji-category')) {
+                    this.chooseCategory({'target': this.navigator.selected});
+                }
+            },
+
+            _onGlobalKeyDown (ev) {
+                if (!this.navigator) {
+                    return;
+                }
+                if (ev.keyCode === converse.keycodes.ENTER &&
+                        this.navigator.selected &&
+                        u.isVisible(this.el)) {
+                    this.onEnterPressed(ev);
+                } else if (ev.keyCode === converse.keycodes.DOWN_ARROW &&
+                        !this.navigator.enabled &&
+                        u.isVisible(this.el)) {
+                    this.enableArrowNavigation(ev);
+                }
             },
 
             onKeyDown (ev) {
-                if (ev.keyCode === _converse.keycodes.TAB) {
-                    ev.preventDefault();
-                    const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
-                    if (match) {
-                        this.filter(match, true);
-                    }
-                } else if (ev.keyCode === _converse.keycodes.ENTER) {
+                if (ev.keyCode === converse.keycodes.RIGHT_ARROW) {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    if (_converse.emoji_shortnames.includes(ev.target.value)) {
-                        this.insertIntoTextArea(ev.target.value);
-                    } else if (this.search_results.length === 1) {
-                        this.insertIntoTextArea(this.search_results[0].sn);
+                    ev.target.blur();
+                    const first_el = this.el.querySelector('.pick-category');
+                    this.navigator.select(first_el, 'right');
+                } else if (ev.keyCode === converse.keycodes.TAB) {
+                    if (ev.target.value) {
+                        ev.preventDefault();
+                        const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
+                        match && this.filter(match, true);
+                    } else if (!this.navigator.enabled) {
+                        this.enableArrowNavigation(ev);
                     }
-                } else {
+                } else if (ev.keyCode === converse.keycodes.DOWN_ARROW && !this.navigator.enabled) {
+                    this.enableArrowNavigation(ev);
+                } else if (ev.keyCode === converse.keycodes.ENTER) {
+                    this.onEnterPressed(ev);
+                } else if (
+                    ev.keyCode !== converse.keycodes.ENTER &&
+                    ev.keyCode !== converse.keycodes.DOWN_ARROW
+                ) {
                     this.debouncedFilter(ev.target);
                 }
             },
@@ -307,14 +414,13 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             chooseCategory (ev) {
-                ev.preventDefault();
-                ev.stopPropagation();
-                const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-                const category = target.getAttribute("data-category").trim();
-                // XXX: See above
+                ev.preventDefault && ev.preventDefault();
+                ev.stopPropagation && ev.stopPropagation();
                 const input = this.el.querySelector('.emoji-search');
                 input.value = '';
-                this.model.save({'current_category': category, 'query': undefined});
+                const el = ev.target.matches('li') ? ev.target : u.ancestor(ev.target, 'li');
+                this.setCategoryForElement(el);
+                this.navigator.select(el);
                 this.setScrollPosition();
             },
 
@@ -322,7 +428,10 @@ converse.plugins.add('converse-emoji-views', {
                 const category = this.model.get('current_category');
                 const el = this.el.querySelector('.emoji-picker__lists');
                 const heading = this.el.querySelector(`#emoji-picker-${category}`);
-                el.scrollTop = heading.offsetTop - heading.offsetHeight*3;
+                if (heading) {
+                    // +4 due to 2px padding on list elements
+                    el.scrollTop = heading.offsetTop - heading.offsetHeight*3 + 4;
+                }
             },
 
             insertEmoji (ev) {
@@ -340,6 +449,9 @@ converse.plugins.add('converse-emoji-views', {
 
 
         /************************ BEGIN Event Handlers ************************/
+
+        _converse.api.listen.on('chatBoxClosed', view => view.emoji_picker_view && view.emoji_picker_view.remove());
+
         _converse.api.listen.on('renderToolbar', view => {
             if (_converse.visible_toolbar_buttons.emoji) {
                 const html = tpl_emoji_button({'tooltip_insert_smiley': __('Insert emojis')});

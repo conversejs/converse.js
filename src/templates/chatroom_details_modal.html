@@ -9,7 +9,7 @@
                 <div class="room-info">
                     <p class="room-info"><strong>{{{o.__('Name')}}}</strong>: {{{o.name}}}</p>
                     <p class="room-info"><strong>{{{o.__('Groupchat address (JID)')}}}</strong>: {{{o.jid}}}</p>
-                    <p class="room-info"><strong>{{{o.__('Description')}}}</strong>: {{{o.description}}}</p>
+                    <p class="room-info"><strong>{{{o.__('Description')}}}</strong>: {{{o.config.description}}}</p>
                     {[ if (o.subject) { ]}
                     <p class="room-info"><strong>{{{o.__('Topic')}}}</strong>: {{o.topic}}</p> <!-- Sanitized in converse-muc-views. We want to render links. -->
                         <p class="room-info"><strong>{{{o.__('Topic author')}}}</strong>: {{{o._.get(o.subject, 'author')}}}</p>

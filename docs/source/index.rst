@@ -44,6 +44,7 @@ Table of Contents
    quickstart
    features
    setup
+   session
    configuration
    development
    security

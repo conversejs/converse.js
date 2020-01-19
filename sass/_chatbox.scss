@@ -37,11 +37,13 @@
     }
 
     .chat-head {
-        flex-wrap: nowrap;
+        display: flex;
+        flex-direction: row;
         color: #ffffff;
         font-size: 100%;
         margin: 0;
-        padding: 0.5em;
+        padding: 0;
+        padding-bottom: 0.5em;
         position: relative;
 
         &.chat-head-chatbox {
@@ -49,20 +51,35 @@
         }
 
         .avatar {
-            height: 36px;
-            width: 36px;
             margin-right: 0.5em;
         }
 
-        .chatbox-title {
-            .chatroom-description {
-                font-size: 80%;
-            }
+        .chat-head__desc {
+            font-size: 80%;
         }
-        .chatbox-buttons {
+
+        .chatbox-title {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .chatbox-title--row {
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        .chatbox-title__text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chatbox-title__buttons {
+            display: flex;
             flex-direction: row-reverse;
-            @include make-col-ready();
-            @include make-col(3);
+            flex-wrap: nowrap;
             padding: 0;
         }
 
@@ -128,7 +145,7 @@
             background-color: var(--chat-head-color);
             box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
             z-index: 2;
-            overflow-y: hidden;
+            overflow: hidden;
             width: 100%;
 
             @media screen and (max-height: $mobile-landscape-height) {
@@ -260,12 +277,16 @@
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
                 border-bottom-radius: var(--chatbox-border-radius);
-                padding: 0.5em;
+                padding-left: 0.5em;
+                padding-right: 4.5em;
+                padding-top: 0.5em;
+                padding-bottom:0.5em;
                 width: 100%;
                 border: none;
                 min-height: var(--chat-textarea-height);
                 margin-bottom: -4px; // Not clear why this is necessar :(
                 resize: none;
+                 text-align: justify;
                 &:active, &:focus{
                     outline-color: var(--chat-head-color);
                 }
@@ -278,19 +299,21 @@
             }
 
             .send-button {
-                position: static;
-                left: var(--send-button-margin);
-                width: 100%;
+                border-radius: 0;
+                bottom: var(--send-button-bottom);
                 background-color: var(--chat-head-color);
                 color: var(--inverse-link-color);
-                font-size: 80%;
-                height: var(--send-button-height);
-                bottom: calc(-var(--send-button-height) - var(--send-button-margin));
-
             }
+
+            .chat-toolbar--container {
+                display: flex;
+                flex-wrap: nowrap;
+            }
+
             .chat-toolbar {
                 box-sizing: border-box;
                 margin: 0;
+                width: 100%;
                 padding: 0.25em;
                 display: block;
                 border-top: 4px solid var(--chat-head-color);
@@ -409,6 +432,7 @@
 #conversejs.converse-embedded,
 #conversejs.converse-overlayed {
     .chat-head {
+        padding: 0.5em;
         border-top-left-radius: var(--chatbox-border-radius);
         border-top-right-radius: var(--chatbox-border-radius);
         @media screen and (max-height: $mobile-landscape-height) {
@@ -419,12 +443,6 @@
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
-        .chatbox-title {
-            @include make-col(8);
-        }
-        .chatbox-buttons {
-            @include make-col(4);
-        }
     }
     .chatbox {
         min-width: var(--overlayed-chat-width) !important;
@@ -433,10 +451,6 @@
         .box-flyout {
             min-width: var(--overlayed-chat-width) !important;
             width: var(--overlayed-chat-width);
-
-            .chat-body {
-                height: calc(100% - var(--overlayed-chat-head-height));
-            }
         }
     }
 }
@@ -450,7 +464,7 @@
         min-height: calc(var(--overlayed-chat-height) / 2);
     }
     .chat-head {
-        height: var(--overlayed-chat-head-height);
+        min-height: var(--overlayed-chat-head-height);
     }
     .chat-textarea {
         max-height: var(--overlayed-max-chat-textarea-height);
@@ -491,17 +505,10 @@
 
     .chat-head {
         height: var(--fullpage-chat-head-height);
-        padding: 0;
         .user-custom-message {
             font-size: 70%;
             height: auto;
             line-height: var(--line-height);
-        }
-        .chatbox-title {
-            @include make-col(10);
-        }
-        .chatbox-buttons {
-            @include make-col(2);
         }
     }
 
@@ -528,7 +535,7 @@
             border: none !important;
         }
         .chat-head {
-            height: var(--fullpage-chat-head-height);
+            min-height: var(--fullpage-chat-head-height);
             padding: 0.5em;
         }
         .chatbox {
@@ -567,7 +574,7 @@
             width: 100%;
         }
 
-        .chat-title {
+        .chat-title--text {
             padding: 0.3em;
             font-size: 120%;
         }
@@ -601,7 +608,6 @@
             overflow: hidden;
         }
         .chat-body {
-            height: calc(100% - var(--fullpage-chat-head-height));
             background-color: var(--chat-head-color);
             border-top-left-radius: var(--chatbox-border-radius);
             border-top-right-radius: var(--chatbox-border-radius);
@@ -652,18 +658,12 @@
             .box-flyout {
                 .chatbox-navback {
                     display: flex;
-                    @include make-col(2);
+                    padding-right: 1em;
                     .fa-arrow-left {
                         &:before {
                             color: white;
                         }
                     }
-                }
-                .chatbox-title {
-                    @include make-col(7);
-                }
-                .chatbox-buttons {
-                    @include make-col(3);
                 }
             }
         }

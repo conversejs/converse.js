@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2019-12-29 15:21+0000\n"
-"Last-Translator: Balázs Úr <balazs@urbalazs.hu>\n"
+"PO-Revision-Date: 2020-01-21 10:21+0000\n"
+"Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
 "Language: hu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10\n"
+"X-Generator: Weblate 3.11-dev\n"
 "domain: converse\n"
 "lang: hu\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -46,9 +46,8 @@ msgid "Edit this message"
 msgstr "Üzenet szerkesztése"
 
 #: dist/converse-no-dependencies.js:7939
-#, fuzzy
 msgid "Retract this message"
-msgstr "Üzenet szerkesztése"
+msgstr "Üzenet visszavonása"
 
 #: dist/converse-no-dependencies.js:7955
 msgid "Message versions"
@@ -149,9 +148,8 @@ msgid "Search"
 msgstr "Keresés"
 
 #: dist/converse-no-dependencies.js:8680
-#, fuzzy
 msgid "Search results"
-msgstr "Keresés"
+msgstr "Keresés eredménye"
 
 #: dist/converse-no-dependencies.js:8830
 msgid "Enter a new Groupchat"
@@ -1829,15 +1827,14 @@ msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Sajnáljuk, de hiba történt az eszközök eltávolítása közben."
 
 #: dist/converse-no-dependencies.js:54202
-#, fuzzy
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
-"Biztos, hogy új OMEMO kulcsokat akarsz létrehozni? Ez eltávolítja a régi "
-"kulcsokat, valamint a korábban titkosított üzeneteid már nem lesznek "
-"titkosíthatók ezen az eszközön."
+"Biztos, hogy új OMEMO kulcsokat akar létrehozni? Ez eltávolítja a régi "
+"kulcsait, és minden korábbi titkosított üzenete visszafejthetetlenné válik "
+"ezen az eszközön."
 
 #: dist/converse-no-dependencies.js:54634
 #, javascript-format
@@ -1852,11 +1849,12 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Sajnáljuk, de nem tudunk elküldeni egy titkosított üzenetet, mivel a %1$s "
+"távoli szervere nem található"
 
 #: dist/converse-no-dependencies.js:54638
-#, fuzzy
 msgid "Unable to send an encrypted message due to an unexpected error."
-msgstr "Sajnáljuk, de nem lehet elküldeni az üzenetet egy hiba miatt."
+msgstr "Nem lehet elküldeni egy titkosított üzenetet egy váratlan hiba miatt."
 
 #: dist/converse-no-dependencies.js:54688
 msgid ""
@@ -1890,6 +1888,8 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"Úgy tűnik, hogy %1$s  egyik kliense sem támogatja az OMEMO-t . Titkosított "
+"beszélgetés már nem lesz lehetséges ezen a konferencián."
 
 #: dist/converse-no-dependencies.js:56762
 msgid " e.g. conversejs.org"
@@ -2008,7 +2008,7 @@ msgstr "Hozzáad"
 
 #: dist/converse-no-dependencies.js:57989
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "Sajnáljuk, de nem találunk csevegőpartnert ezzel a névvel."
 
 #: dist/converse-no-dependencies.js:58014
 #, fuzzy

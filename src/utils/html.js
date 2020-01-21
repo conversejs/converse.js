@@ -182,6 +182,18 @@ u.applyDragResistance = function (value, default_value) {
 };
 
 
+function renderImage (img_url, link_url, el, callback) {
+    if (u.isImageURL(img_url)) {
+        return isImage(img_url)
+            .then(() => sizzle(`a[href="${link_url}"]`, el).forEach(a => (a.outerHTML = tpl_image({'url': img_url}))))
+            .then(callback)
+            .catch(callback);
+    } else {
+        return callback();
+    }
+}
+
+
 /**
  * Returns a Promise which resolves once all images have been loaded.
  * @method u#renderImageURLs
@@ -197,20 +209,11 @@ u.renderImageURLs = function (_converse, el) {
     return Promise.all(
         list.map(url =>
             new Promise((resolve) => {
-                if (u.isImageURL(url)) {
-                    return isImage(url).then(img => {
-                        const i = new Image();
-                        i.src = img.src;
-                        i.addEventListener('load', resolve);
-                        // We also resolve (instead of reject) for non-images,
-                        // otherwise the Promise.all resolves prematurely.
-                        i.addEventListener('error', resolve);
-                        const { __ } = _converse;
-                        sizzle(`a[href="${url}"]`, el)
-                            .forEach(a => (a.outerHTML = tpl_image({url, 'label_download': __('Download')})));
-                    }).catch(resolve)
+                if (url.startsWith('https://imgur.com') && !u.isImageURL(url)) {
+                    const imgur_url = url + '.png';
+                    renderImage(imgur_url, url, el, resolve);
                 } else {
-                    return resolve();
+                    renderImage(url, url, el, resolve);
                 }
             })
         )

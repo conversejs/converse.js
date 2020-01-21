@@ -275,7 +275,9 @@ converse.plugins.add('converse-message-view', {
                     const msg_content = msg.querySelector('.chat-msg__text');
                     if (text && text !== url) {
                         msg_content.innerHTML = await this.transformBodyText(text);
-                        await u.renderImageURLs(_converse, msg_content);
+                        if (_converse.show_images_inline) {
+                            await u.renderImageURLs(_converse, msg_content);
+                        }
                     }
                 }
                 if (this.model.get('type') !== 'headline') {

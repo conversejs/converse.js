@@ -52,23 +52,6 @@ function slideOutWrapup (el) {
     el.style.height = "";
 }
 
-function isImage (url) {
-    return new Promise((resolve, reject) => {
-        const err_msg = `Could not determine whether it's an image: ${url}`;
-        const img = new Image();
-        const timer = window.setTimeout(() => reject(new Error(err_msg)), 3000);
-        img.onerror = img.onabort = function () {
-            clearTimeout(timer);
-            reject(new Error(err_msg));
-        };
-        img.onload = function () {
-            clearTimeout(timer);
-            resolve(img);
-        };
-        img.src = url;
-    });
-}
-
 function getURI (url) {
     try {
         return (url instanceof URI) ? url : (new URI(url));
@@ -180,11 +163,29 @@ u.applyDragResistance = function (value, default_value) {
 };
 
 
+function loadImage (url) {
+    return new Promise((resolve, reject) => {
+        const err_msg = `Could not determine whether it's an image: ${url}`;
+        const img = new Image();
+        const timer = window.setTimeout(() => reject(new Error(err_msg)), 20000);
+        img.onerror = img.onabort = function () {
+            clearTimeout(timer);
+            reject(new Error(err_msg));
+        };
+        img.onload = function () {
+            clearTimeout(timer);
+            resolve(img);
+        };
+        img.src = url;
+    });
+}
+
+
 async function renderImage (img_url, link_url, el, callback) {
     if (u.isImageURL(img_url)) {
         let img;
         try {
-            img = await isImage(img_url);
+            img = await loadImage(img_url);
         } catch (e) {
             log.error(e);
             return callback();

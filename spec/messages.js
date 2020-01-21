@@ -985,7 +985,7 @@
 
         it("will render images from their URLs",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -1033,7 +1033,7 @@
 
         it("will render the message time as configured",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -1059,7 +1059,7 @@
 
         it("will be correctly identified and rendered as a followup message",
             mock.initConverse(
-                ['rosterGroupsFetched', 'emojisInitialized'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -1381,7 +1381,7 @@
 
             it("will open a chatbox and be displayed inside it",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 const include_nick = false;
@@ -1427,7 +1427,7 @@
 
             it("will be trimmed of leading and trailing whitespace",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1, false);
@@ -1519,7 +1519,7 @@
 
                 it("the VCard for that user is fetched and the chatbox updated with the results",
                     mock.initConverse(
-                        ['rosterGroupsFetched', 'emojisInitialized'], {'allow_non_roster_messaging': true},
+                        ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 0);
@@ -1635,7 +1635,7 @@
 
                 it("will have the error message displayed after itself",
                     mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1847,7 +1847,7 @@
 
             it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -2098,7 +2098,7 @@
 
         it("is not sent when a markable message is received from someone not on the roster",
             mock.initConverse(
-                ['rosterGroupsFetched', 'emojisInitialized'], {'allow_non_roster_messaging': true},
+                ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current', 0);

@@ -171,9 +171,7 @@
             describe("A file upload toolbar button", function () {
 
                 it("does not appear in private chats",
-                    mock.initConverse(
-                        ['emojisInitialized'], {},
-                        async function (done, _converse) {
+                        mock.initConverse([], {}, async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 3);
                     test_utils.openControlBox(_converse);
@@ -461,9 +459,7 @@
                     }));
 
                     it("shows an error message if the file is too large",
-                        mock.initConverse(
-                            ['emojisInitialized'], {},
-                            async function (done, _converse) {
+                            mock.initConverse([], {}, async function (done, _converse) {
 
                         const IQ_stanzas = _converse.connection.IQ_stanzas;
                         const IQ_ids =  _converse.connection.IQ_ids;

@@ -38,7 +38,7 @@
 
             it("can be used to add contact and it checks for case-sensivity",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 spyOn(_converse.api, "trigger").and.callThrough();

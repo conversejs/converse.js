@@ -384,7 +384,7 @@ u.getResolveablePromise = function () {
         wrapper.resolve = resolve;
         wrapper.reject = reject;
     })
-    _.assign(promise, wrapper);
+    Object.assign(promise, wrapper);
     promise.then(
         function (v) {
             promise.isResolved = true;

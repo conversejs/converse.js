@@ -227,8 +227,9 @@
         db_request.onsuccess = function () {
             const db = db_request.result;
             const bare_jid = "romeo@montague.lit";
+            let store;
             try {
-                const store= db.transaction([bare_jid], "readwrite").objectStore(bare_jid);
+                store= db.transaction([bare_jid], "readwrite").objectStore(bare_jid);
             } catch (e) {
                 console.error(e);
                 return promise.resolve();

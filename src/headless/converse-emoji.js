@@ -14,121 +14,19 @@ const { Backbone } = converse.env;
 const u = converse.env.utils;
 
 const ASCII_LIST = {
-    '*\\0/*':'1f646',
-    '*\\O/*':'1f646',
-    '-___-':'1f611',
-    ':\'-)':'1f602',
-    '\':-)':'1f605',
-    '\':-D':'1f605',
-    '>:-)':'1f606',
-    '\':-(':'1f613',
-    '>:-(':'1f620',
-    ':\'-(':'1f622',
-    'O:-)':'1f607',
-    '0:-3':'1f607',
-    '0:-)':'1f607',
-    '0;^)':'1f607',
-    'O;-)':'1f607',
-    '0;-)':'1f607',
-    'O:-3':'1f607',
-    '-__-':'1f611',
-    ':-Þ':'1f61b',
-    '</3':'1f494',
-    ':\')':'1f602',
-    ':-D':'1f603',
-    '\':)':'1f605',
-    '\'=)':'1f605',
-    '\':D':'1f605',
-    '\'=D':'1f605',
-    '>:)':'1f606',
-    '>;)':'1f606',
-    '>=)':'1f606',
-    ';-)':'1f609',
-    '*-)':'1f609',
-    ';-]':'1f609',
-    ';^)':'1f609',
-    '\':(':'1f613',
-    '\'=(':'1f613',
-    ':-*':'1f618',
-    ':^*':'1f618',
-    '>:P':'1f61c',
-    'X-P':'1f61c',
-    '>:[':'1f61e',
-    ':-(':'1f61e',
-    ':-[':'1f61e',
-    '>:(':'1f620',
-    ':\'(':'1f622',
-    ';-(':'1f622',
-    '>.<':'1f623',
-    '#-)':'1f635',
-    '%-)':'1f635',
-    'X-)':'1f635',
-    '\\0/':'1f646',
-    '\\O/':'1f646',
-    '0:3':'1f607',
-    '0:)':'1f607',
-    'O:)':'1f607',
-    'O=)':'1f607',
-    'O:3':'1f607',
-    'B-)':'1f60e',
-    '8-)':'1f60e',
-    'B-D':'1f60e',
-    '8-D':'1f60e',
-    '-_-':'1f611',
-    '>:\\':'1f615',
-    '>:/':'1f615',
-    ':-/':'1f615',
-    ':-.':'1f615',
-    ':-P':'1f61b',
-    ':Þ':'1f61b',
-    ':-b':'1f61b',
-    ':-O':'1f62e',
-    'O_O':'1f62e',
-    '>:O':'1f62e',
-    ':-X':'1f636',
-    ':-#':'1f636',
-    ':-)':'1f642',
-    '(y)':'1f44d',
-    '<3':'2764',
-    ':D':'1f603',
-    '=D':'1f603',
-    ';)':'1f609',
-    '*)':'1f609',
-    ';]':'1f609',
-    ';D':'1f609',
-    ':*':'1f618',
-    '=*':'1f618',
-    ':(':'1f61e',
-    ':[':'1f61e',
-    '=(':'1f61e',
-    ':@':'1f620',
-    ';(':'1f622',
-    'D:':'1f628',
-    ':$':'1f633',
-    '=$':'1f633',
-    '#)':'1f635',
-    '%)':'1f635',
-    'X)':'1f635',
-    'B)':'1f60e',
-    '8)':'1f60e',
-    ':/':'1f615',
-    ':\\':'1f615',
-    '=/':'1f615',
-    '=\\':'1f615',
-    ':L':'1f615',
-    '=L':'1f615',
-    ':P':'1f61b',
-    '=P':'1f61b',
-    ':b':'1f61b',
-    ':O':'1f62e',
-    ':X':'1f636',
-    ':#':'1f636',
-    '=X':'1f636',
-    '=#':'1f636',
-    ':)':'1f642',
-    '=]':'1f642',
-    '=)':'1f642',
-    ':]':'1f642'
+    '*\\0/*':'1f646', '*\\O/*':'1f646', '-___-':'1f611', ':\'-)':'1f602', '\':-)':'1f605', '\':-D':'1f605', '>:-)':'1f606', '\':-(':'1f613',
+    '>:-(':'1f620', ':\'-(':'1f622', 'O:-)':'1f607', '0:-3':'1f607', '0:-)':'1f607', '0;^)':'1f607', 'O;-)':'1f607', '0;-)':'1f607', 'O:-3':'1f607',
+    '-__-':'1f611', ':-Þ':'1f61b', '</3':'1f494', ':\')':'1f602', ':-D':'1f603', '\':)':'1f605', '\'=)':'1f605', '\':D':'1f605', '\'=D':'1f605',
+    '>:)':'1f606', '>;)':'1f606', '>=)':'1f606', ';-)':'1f609', '*-)':'1f609', ';-]':'1f609', ';^)':'1f609', '\':(':'1f613', '\'=(':'1f613',
+    ':-*':'1f618', ':^*':'1f618', '>:P':'1f61c', 'X-P':'1f61c', '>:[':'1f61e', ':-(':'1f61e', ':-[':'1f61e', '>:(':'1f620', ':\'(':'1f622',
+    ';-(':'1f622', '>.<':'1f623', '#-)':'1f635', '%-)':'1f635', 'X-)':'1f635', '\\0/':'1f646', '\\O/':'1f646', '0:3':'1f607', '0:)':'1f607',
+    'O:)':'1f607', 'O=)':'1f607', 'O:3':'1f607', 'B-)':'1f60e', '8-)':'1f60e', 'B-D':'1f60e', '8-D':'1f60e', '-_-':'1f611', '>:\\':'1f615',
+    '>:/':'1f615', ':-/':'1f615', ':-.':'1f615', ':-P':'1f61b', ':Þ':'1f61b', ':-b':'1f61b', ':-O':'1f62e', 'O_O':'1f62e', '>:O':'1f62e',
+    ':-X':'1f636', ':-#':'1f636', ':-)':'1f642', '(y)':'1f44d', '<3':'2764', ':D':'1f603', '=D':'1f603', ';)':'1f609', '*)':'1f609',
+    ';]':'1f609', ';D':'1f609', ':*':'1f618', '=*':'1f618', ':(':'1f61e', ':[':'1f61e', '=(':'1f61e', ':@':'1f620', ';(':'1f622', 'D:':'1f628',
+    ':$':'1f633', '=$':'1f633', '#)':'1f635', '%)':'1f635', 'X)':'1f635', 'B)':'1f60e', '8)':'1f60e', ':/':'1f615', ':\\':'1f615', '=/':'1f615',
+    '=\\':'1f615', ':L':'1f615', '=L':'1f615', ':P':'1f61b', '=P':'1f61b', ':b':'1f61b', ':O':'1f62e', ':X':'1f636', ':#':'1f636', '=X':'1f636',
+    '=#':'1f636', ':)':'1f642', '=]':'1f642', '=)':'1f642', ':]':'1f642'
 };
 
 
@@ -202,6 +100,7 @@ converse.plugins.add('converse-emoji', {
             }
         });
 
+        _converse.emojis = {};
         _converse.api.promises.add('emojisInitialized', false);
         twemoji.default.base = _converse.emoji_image_path;
 
@@ -219,8 +118,6 @@ converse.plugins.add('converse-emoji', {
                 'scroll_position': 0
             }
         });
-
-        _converse.emojis = {};
 
         function getTonedEmojis () {
             if (!_converse.toned_emojis) {
@@ -366,26 +263,29 @@ converse.plugins.add('converse-emoji', {
         });
         /************************ END Utils ************************/
 
-        const { default: json } = await import(/*webpackChunkName: "emojis" */ './emojis.json');
-        _converse.emojis.json = json;
-        _converse.emojis.categories = Object.keys(_converse.emojis.json);
-        _converse.emojis_map = _converse.emojis.categories.reduce((result, cat) => Object.assign(result, _converse.emojis.json[cat]), {});
-        _converse.emojis_list = Object.values(_converse.emojis_map);
-        _converse.emojis_list.sort((a, b) => a.sn < b.sn ? -1 : (a.sn > b.sn ? 1 : 0));
-        _converse.emoji_shortnames = _converse.emojis_list.map(m => m.sn);
+        async function initializeEmojis () {
+            if (_converse.emojis.json) {
+                return;
+            }
+            const { default: json } = await import(/*webpackChunkName: "emojis" */ './emojis.json');
+            _converse.emojis.json = json;
+            _converse.emojis.categories = Object.keys(_converse.emojis.json);
+            _converse.emojis_map = _converse.emojis.categories.reduce((result, cat) => Object.assign(result, _converse.emojis.json[cat]), {});
+            _converse.emojis_list = Object.values(_converse.emojis_map);
+            _converse.emojis_list.sort((a, b) => a.sn < b.sn ? -1 : (a.sn > b.sn ? 1 : 0));
+            _converse.emoji_shortnames = _converse.emojis_list.map(m => m.sn);
 
-        const getShortNames = () => _converse.emoji_shortnames.map(s => s.replace(/[+]/g, "\\$&")).join('|');
-        _converse.emojis.shortnames_regex = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+getShortNames()+")", "gi");
+            const getShortNames = () => _converse.emoji_shortnames.map(s => s.replace(/[+]/g, "\\$&")).join('|');
+            _converse.emojis.shortnames_regex = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+getShortNames()+")", "gi");
 
-
-        _converse.emojis.toned = getTonedEmojis();
-
-        /**
-         * Triggered once the JSON file representing emoji data has been
-         * fetched and its save to start calling emoji utility methods.
-         * @event _converse#emojisInitialized
-         */
-        _converse.api.trigger('emojisInitialized');
+            _converse.emojis.toned = getTonedEmojis();
+            /**
+             * Triggered once the JSON file representing emoji data has been
+             * fetched and its save to start calling emoji utility methods.
+             * @event _converse#emojisInitialized
+             */
+            _converse.api.trigger('emojisInitialized');
+        }
 
 
         /************************ BEGIN Event Handlers ************************/
@@ -394,6 +294,13 @@ converse.plugins.add('converse-emoji', {
                 _converse.emojipicker.destroy();
                 delete _converse.emojipicker
             }
+        });
+
+        _converse.api.listen.on('chatBoxesInitialized', () => {
+            _converse.chatboxes.on(
+                'add',
+                chat => (chat.get('type') !== _converse.CONTROLBOX_TYPE) && initializeEmojis()
+            );
         });
         /************************ END Event Handlers ************************/
     }

@@ -269,7 +269,7 @@
 
             it("will be created when muc_instant_rooms is set to true",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 let IQ_stanzas = _converse.connection.IQ_stanzas;
@@ -507,7 +507,7 @@
 
             it("is opened when an xmpp: URI is clicked inside another groupchat",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -535,7 +535,7 @@
 
             it("shows a notification if it's not anonymous",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'coven@chat.shakespeare.lit';
@@ -579,7 +579,7 @@
 
             it("shows join/leave messages when users enter or exit a groupchat",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'coven@chat.shakespeare.lit';
@@ -1648,7 +1648,7 @@
 
             it("shows users currently present in the groupchat",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -2188,7 +2188,7 @@
 
             it("escapes the subject before rendering it, to avoid JS-injection attacks",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
@@ -2711,7 +2711,7 @@
 
             it("informs users if they have been kicked out of the groupchat",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 /*  <presence
@@ -3514,7 +3514,7 @@
 
             it("takes a /kick command to kick a user",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 let sent_IQ, IQ_id;
@@ -3956,7 +3956,7 @@
 
             it("will show an error message if the groupchat requires a password",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'protected';
@@ -4747,7 +4747,7 @@
 
             it("can be opened from a link in the \"Groupchats\" section of the controlbox",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.openControlBox(_converse);
@@ -4891,7 +4891,7 @@
 
             it("shows the number of unread mentions received",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {'allow_bookmarks': false},
+                    ['rosterGroupsFetched'], {'allow_bookmarks': false},
                     async function (done, _converse) {
 
                 await test_utils.openControlBox(_converse);

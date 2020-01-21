@@ -105,7 +105,7 @@
 
             it("allows you to search for particular emojis",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
@@ -158,7 +158,7 @@
         describe("A Chat Message", function () {
             it("will display larger if it's only emojis",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {'use_system_emojis': true},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {'use_system_emojis': true},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');

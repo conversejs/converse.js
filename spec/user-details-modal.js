@@ -11,9 +11,9 @@
     return describe("The User Details Modal", function () {
 
         it("can be used to remove a contact",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
-                async function (done, _converse) {
+                mock.initConverse(
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current', 1);
             _converse.api.trigger('rosterContactsFetched');
@@ -44,9 +44,7 @@
         }));
 
         it("shows an alert when an error happened while removing the contact",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'emojisInitialized'], {},
-                async function (done, _converse) {
+                mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current', 1);
             _converse.api.trigger('rosterContactsFetched');

@@ -59,7 +59,7 @@ function convert (unicode) {
 
 converse.plugins.add('converse-emoji', {
 
-    async initialize () {
+    initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */

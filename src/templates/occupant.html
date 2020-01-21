@@ -1,14 +1,14 @@
 <li class="occupant" id="{{{ o.id }}}"
     {[ if (o.role === "moderator") { ]}
-       title="{{{ o.jid }}} {{{ o.desc_moderator }}} {{{ o.hint_occupant }}}"
+       title="{{{ o.jid }}} {{{ o.__('This user is a moderator.') }}} {{{ o.hint_occupant }}}"
     {[ } ]}
     {[ if (o.role === "participant") { ]}
-       title="{{{ o.jid }}} {{{ o.desc_participant }}} {{{ o.hint_occupant }}}"
+       title="{{{ o.jid }}} {{{ o.__('This user can send messages in this groupchat.') }}} {{{ o.hint_occupant }}}"
     {[ } ]}
     {[ if (o.role === "visitor") { ]}
-       title="{{{ o.jid }}} {{{ o.desc_visitor }}} {{{ o.hint_occupant }}}"
+       title="{{{ o.jid }}} {{{ o.__('This user can NOT send messages in this groupchat.') }}} {{{ o.hint_occupant }}}"
     {[ } ]}
-    {[ if (!o._.includes(["visitor", "participant", "moderator"], o.role)) { ]}
+    {[ if (!["visitor", "participant", "moderator"].includes(o.role)) { ]}
        title="{{{ o.jid }}} {{{ o.hint_occupant }}}"
     {[ } ]}>
     <div class="row no-gutters">
@@ -19,20 +19,20 @@
             <span class="occupant-nick">{{{o.nick || o.jid}}}</span>
             <span class="occupant-badges">
                 {[ if (o.affiliation === "owner") { ]}
-                    <span class="badge badge-groupchat">{{{o.label_owner}}}</span>
+                    <span class="badge badge-groupchat">{{{o.__('Owner')}}}</span>
                 {[ } ]}
                 {[ if (o.affiliation === "admin") { ]}
-                    <span class="badge badge-info">{{{o.label_admin}}}</span>
+                    <span class="badge badge-info">{{{o.__('Admin')}}}</span>
                 {[ } ]}
                 {[ if (o.affiliation === "member") { ]}
-                    <span class="badge badge-info">{{{o.label_member}}}</span>
+                    <span class="badge badge-info">{{{o.__('Member')}}}</span>
                 {[ } ]}
 
                 {[ if (o.role === "moderator") { ]}
-                    <span class="badge badge-info">{{{o.label_moderator}}}</span>
+                    <span class="badge badge-info">{{{o.__('Moderator')}}}</span>
                 {[ } ]}
                 {[ if (o.role === "visitor") { ]}
-                    <span class="badge badge-secondary">{{{o.label_visitor}}}</span>
+                    <span class="badge badge-secondary">{{{o.__('Visitor')}}}</span>
                 {[ } ]}
             </span>
         </div>

@@ -12,7 +12,7 @@
                     <p class="room-info"><strong>{{{o.__('Description')}}}</strong>: {{{o.config.description}}}</p>
                     {[ if (o.subject) { ]}
                     <p class="room-info"><strong>{{{o.__('Topic')}}}</strong>: {{o.topic}}</p> <!-- Sanitized in converse-muc-views. We want to render links. -->
-                        <p class="room-info"><strong>{{{o.__('Topic author')}}}</strong>: {{{o._.get(o.subject, 'author')}}}</p>
+                        <p class="room-info"><strong>{{{o.__('Topic author')}}}</strong>: {{{o.subject && o.subject.author}}}</p>
                     {[ } ]}
                     <p class="room-info"><strong>{{{o.__('Online users')}}}</strong>: {{{o.num_occupants}}}</p>
                     <p class="room-info"><strong>{{{o.__('Features')}}}</strong>:

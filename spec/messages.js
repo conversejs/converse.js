@@ -1000,18 +1000,15 @@
             expect(view.model.sendMessage).toHaveBeenCalled();
             let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.trim()).toEqual(
-                '<!-- src/templates/image.html -->\n'+
-                '<a href="'+base_url+'/logo/conversejs-filled.svg" target="_blank" rel="noopener"><img class="chat-image img-thumbnail"'+
-                ' src="' + message + '"></a>');
+                `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg"><img src="${message}" class="chat-image img-thumbnail"></a>`);
             message += "?param1=val1&param2=val2";
             test_utils.sendMessage(view, message);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.trim()).toEqual(
-                '<!-- src/templates/image.html -->\n'+
-                '<a href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2" target="_blank" rel="noopener"><img'+
-                ' class="chat-image img-thumbnail" src="'+message.replace(/&/g, '&amp;')+'"></a>')
+                '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2"><img'+
+                ' src="'+message.replace(/&/g, '&amp;')+'" class="chat-image img-thumbnail"></a>')
 
             // Test now with two images in one message
             message += ' hello world '+base_url+"/logo/conversejs-filled.svg";

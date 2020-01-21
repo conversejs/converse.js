@@ -54,14 +54,12 @@ function slideOutWrapup (el) {
 
 function isImage (url) {
     return new Promise((resolve, reject) => {
-        var img = new Image();
-        var timer = window.setTimeout(function () {
-            reject(new Error("Could not determine whether it's an image"));
-            img = null;
-        }, 3000);
+        const err_msg = `Could not determine whether it's an image: ${url}`;
+        const img = new Image();
+        const timer = window.setTimeout(() => reject(new Error(err_msg)), 3000);
         img.onerror = img.onabort = function () {
             clearTimeout(timer);
-            reject(new Error("Could not determine whether it's an image"));
+            reject(new Error(err_msg));
         };
         img.onload = function () {
             clearTimeout(timer);
@@ -182,15 +180,23 @@ u.applyDragResistance = function (value, default_value) {
 };
 
 
-function renderImage (img_url, link_url, el, callback) {
+async function renderImage (img_url, link_url, el, callback) {
     if (u.isImageURL(img_url)) {
-        return isImage(img_url)
-            .then(() => sizzle(`a[href="${link_url}"]`, el).forEach(a => (a.outerHTML = tpl_image({'url': img_url}))))
-            .then(callback)
-            .catch(callback);
-    } else {
-        return callback();
+        let img;
+        try {
+            img = await isImage(img_url);
+        } catch (e) {
+            log.error(e);
+            return callback();
+        }
+        sizzle(`a[href="${link_url}"]`, el).forEach(a => {
+            a.innerHTML = "";
+            u.addClass('chat-image', img);
+            u.addClass('img-thumbnail', img);
+            a.insertAdjacentElement('afterBegin', img);
+        });
     }
+    callback();
 }
 
 
@@ -208,7 +214,7 @@ u.renderImageURLs = function (_converse, el) {
     const list = el.textContent.match(URL_REGEX) || [];
     return Promise.all(
         list.map(url =>
-            new Promise((resolve) => {
+            new Promise(resolve => {
                 if (url.startsWith('https://imgur.com') && !u.isImageURL(url)) {
                     const imgur_url = url + '.png';
                     renderImage(imgur_url, url, el, resolve);

@@ -276,7 +276,7 @@ converse.plugins.add('converse-message-view', {
                     if (text && text !== url) {
                         msg_content.innerHTML = await this.transformBodyText(text);
                         if (_converse.show_images_inline) {
-                            await u.renderImageURLs(_converse, msg_content);
+                            u.renderImageURLs(_converse, msg_content).then(() => this.triggerRendered());
                         }
                     }
                 }
@@ -284,6 +284,10 @@ converse.plugins.add('converse-message-view', {
                     this.renderAvatar(msg);
                 }
                 this.replaceElement(msg);
+                this.triggerRendered();
+            },
+
+            triggerRendered () {
                 if (this.model.collection) {
                     // If the model gets destroyed in the meantime, it no
                     // longer has a collection.

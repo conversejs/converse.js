@@ -16,7 +16,7 @@
             await test_utils.openControlBox(_converse);
             const controlbox = _converse.chatboxviews.get('controlbox');
             let list = controlbox.el.querySelector('.list-container--openrooms');
-            expect(_.includes(list.classList, 'hidden')).toBeTruthy();
+            expect(u.hasClass('hidden', list)).toBeTruthy();
             await test_utils.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
 
             const lview = _converse.rooms_list_view

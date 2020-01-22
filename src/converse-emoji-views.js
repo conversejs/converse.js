@@ -455,7 +455,7 @@ converse.plugins.add('converse-emoji-views', {
 
         _converse.api.listen.on('headlinesBoxInitialized', () => _converse.api.emojis.initialize());
         _converse.api.listen.on('chatRoomInitialized', () => _converse.api.emojis.initialize());
-        _converse.api.listen.on('chatBox', () => _converse.api.emojis.initialize());
+        _converse.api.listen.on('chatBoxInitialized', () => _converse.api.emojis.initialize());
 
         /************************ END Event Handlers ************************/
     }

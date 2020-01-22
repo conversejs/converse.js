@@ -264,21 +264,6 @@ converse.plugins.add('converse-emoji', {
         /************************ END Utils ************************/
 
 
-        function createEmojiPicker () {
-            if (!_converse.emojipicker) {
-                const id = `converse.emoji-${_converse.bare_jid}`;
-                _converse.emojipicker = new _converse.EmojiPicker({'id': id});
-                _converse.emojipicker.browserStorage = _converse.createStore(id);
-                _converse.emojipicker.fetch();
-            }
-        }
-
-        _converse.api.listen.on('logout', () => {
-            _converse.emojipicker.destroy();
-            delete _converse.emojipicker;
-        });
-
-
         /************************ BEGIN API ************************/
         // We extend the default converse.js API to add methods specific to MUC groupchats.
         Object.assign(_converse.api, {
@@ -296,8 +281,6 @@ converse.plugins.add('converse-emoji', {
                  * @returns {Promise}
                  */
                 async initialize () {
-                    createEmojiPicker();
-
                     if (_converse.emojis.initialized) {
                         return _converse.emojis.initialized;
                     }

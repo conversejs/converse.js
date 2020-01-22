@@ -52,6 +52,12 @@ converse.plugins.add('converse-headlines', {
          */
         const { _converse } = this;
 
+        /**
+         * Shows headline messages
+         * @class
+         * @namespace _converse.HeadlinesBox
+         * @memberOf _converse
+         */
         _converse.HeadlinesBox = _converse.ChatBox.extend({
             defaults () {
                 return {
@@ -67,6 +73,13 @@ converse.plugins.add('converse-headlines', {
             initialize () {
                 this.initMessages();
                 this.set({'box_id': `box-${btoa(this.get('jid'))}`});
+                /**
+                 * Triggered once a {@link _converse.HeadlinesBox} has been created and initialized.
+                 * @event _converse#headlinesBoxInitialized
+                 * @type { _converse.HeadlinesBox }
+                 * @example _converse.api.listen.on('headlinesBoxInitialized', model => { ... });
+                 */
+                _converse.api.trigger('headlinesBoxInitialized', this);
             }
         });
 

@@ -90,22 +90,26 @@ converse.plugins.add('converse-emoji-views', {
                 this.emoji_dropdown.toggle();
             },
 
-            async createEmojiPickerView () {
-                if (this.emoji_picker_view) {
-                    this.insertEmojiPicker();
-                    return;
-                } else {
-                    await _converse.api.emojis.initialize()
-                    this.emoji_picker_view = new _converse.EmojiPickerView({
-                        'model': _converse.emojipicker,
-                        'chatview': this
-                    });
-                    this.insertEmojiPicker();
-                }
+            async createEmojiPicker () {
+                await _converse.api.emojis.initialize()
+
+                const id = `converse.emoji-${_converse.bare_jid}-${this.model.get('jid')}`;
+                const emojipicker = new _converse.EmojiPicker({'id': id});
+                emojipicker.browserStorage = _converse.createStore(id);
+                await new Promise(resolve => emojipicker.fetch({ 'success': resolve, 'error': resolve}));
+
+                this.emoji_picker_view = new _converse.EmojiPickerView({
+                    'model': emojipicker,
+                    'chatview': this
+                });
+                const el = this.el.querySelector('.emoji-picker__container');
+                el.innerHTML = '';
+                el.appendChild(this.emoji_picker_view.el);
             },
 
-            createEmojiDropdown () {
+            async createEmojiDropdown () {
                 if (!this.emoji_dropdown) {
+                    await this.createEmojiPicker();
                     const el = this.el.querySelector('.emoji-picker');
                     this.emoji_dropdown = new bootstrap.Dropdown(el, true);
                     this.emoji_dropdown.el = el;
@@ -117,12 +121,6 @@ converse.plugins.add('converse-emoji-views', {
                 await this.createEmojiDropdown();
                 this.emoji_dropdown.toggle();
                 this.emoji_picker_view.setScrollPosition();
-            },
-
-            insertEmojiPicker () {
-                const el = this.el.querySelector('.emoji-picker__container');
-                el.innerHTML = '';
-                el.appendChild(this.emoji_picker_view.el);
             }
         };
         Object.assign(_converse.ChatBoxView.prototype, emoji_aware_chat_view);
@@ -258,8 +256,7 @@ converse.plugins.add('converse-emoji-views', {
                 const category = el.getAttribute('data-category');
                 const old_category = this.model.get('current_category');
                 if (old_category !== category) {
-                    // XXX: Manually set the classes, it's quicker than using the VDOM
-                    this.model.set(
+                    this.model.save(
                         {'current_category': category},
                         {'silent': true}
                     );
@@ -453,14 +450,12 @@ converse.plugins.add('converse-emoji-views', {
             if (_converse.visible_toolbar_buttons.emoji) {
                 const html = tpl_emoji_button({'tooltip_insert_smiley': __('Insert emojis')});
                 view.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
-                view.createEmojiPickerView();
             }
         });
 
-        // The headlines box doesn't have a toolbar and doesn't show an emoji
-        // picker, but we still need to make sure that emojis have been
-        // initialized in order to show emojis in messages.
-        _converse.api.listen.on('headlinesBoxViewInitialized', () => _converse.api.emojis.initialize());
+        _converse.api.listen.on('headlinesBoxInitialized', () => _converse.api.emojis.initialize());
+        _converse.api.listen.on('chatRoomInitialized', () => _converse.api.emojis.initialize());
+        _converse.api.listen.on('chatBox', () => _converse.api.emojis.initialize());
 
         /************************ END Event Handlers ************************/
     }

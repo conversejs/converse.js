@@ -230,6 +230,10 @@
                 color: var(--chat-head-color-dark);
             }
 
+            .controlbox-heading--headline {
+                color: var(--headline-head-color);
+            }
+
             .controlbox-heading__btn {
                 cursor: pointer;
                 font-size: 1em;

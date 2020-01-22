@@ -87,6 +87,79 @@
             done();
         }));
 
+        it("will show headline messages in the controlbox", mock.initConverse(
+            ['rosterGroupsFetched'], {}, async function (done, _converse) {
+
+            /* <message from='notify.example.com'
+             *          to='romeo@im.example.com'
+             *          type='headline'
+             *          xml:lang='en'>
+             *  <subject>SIEVE</subject>
+             *  <body>&lt;juliet@example.com&gt; You got mail.</body>
+             *  <x xmlns='jabber:x:oob'>
+             *      <url>
+             *      imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18
+             *      </url>
+             *  </x>
+             *  </message>
+             */
+            const stanza = $msg({
+                    'type': 'headline',
+                    'from': 'notify.example.com',
+                    'to': 'romeo@montague.lit',
+                    'xml:lang': 'en'
+                })
+                .c('subject').t('SIEVE').up()
+                .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
+                .c('x', {'xmlns': 'jabber:x:oob'})
+                    .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            const view = _converse.chatboxviews.get('controlbox');
+            await u.waitUntil(() => view.el.querySelectorAll(".open-headline").length);
+            expect(view.el.querySelectorAll('.open-headline').length).toBe(1);
+            expect(view.el.querySelector('.open-headline').text).toBe('notify.example.com');
+            done();
+        }));
+
+        it("will remove headline messages from the controlbox if closed", mock.initConverse(
+            ['rosterGroupsFetched'], {}, async function (done, _converse) {
+
+            /* <message from='notify.example.com'
+             *          to='romeo@im.example.com'
+             *          type='headline'
+             *          xml:lang='en'>
+             *  <subject>SIEVE</subject>
+             *  <body>&lt;juliet@example.com&gt; You got mail.</body>
+             *  <x xmlns='jabber:x:oob'>
+             *      <url>
+             *      imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18
+             *      </url>
+             *  </x>
+             *  </message>
+             */
+            const stanza = $msg({
+                    'type': 'headline',
+                    'from': 'notify.example.com',
+                    'to': 'romeo@montague.lit',
+                    'xml:lang': 'en'
+                })
+                .c('subject').t('SIEVE').up()
+                .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
+                .c('x', {'xmlns': 'jabber:x:oob'})
+                    .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            const cbview = _converse.chatboxviews.get('controlbox');
+            await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length);
+            const hlview = _converse.chatboxviews.get('notify.example.com');
+            const close_el = hlview.el.querySelector('.close-chatbox-button');
+            close_el.click();
+            await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length === 0);
+            expect(cbview.el.querySelectorAll('.open-headline').length).toBe(0);
+            done();
+        }));
+
         it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {

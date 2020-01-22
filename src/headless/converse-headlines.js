@@ -9,8 +9,10 @@
 import "converse-chatview";
 import converse from "@converse/headless/converse-core";
 import { isString } from "lodash";
+import tpl_headline_list from "templates/headline_list.html";
+import tpl_headline_panel from "templates/headline_panel.html";
 
-const { utils } = converse.env;
+const { Backbone, utils } = converse.env;
 
 
 converse.plugins.add('converse-headlines', {
@@ -42,7 +44,13 @@ converse.plugins.add('converse-headlines', {
                     return this.__super__.model.apply(this, arguments);
                 }
             },
-        }
+        },
+        ControlBoxView: {
+            renderControlBoxPane () {
+                this.__super__.renderControlBoxPane.apply(this, arguments);
+                this.renderHeadlinePanel();
+            },
+        },
     },
 
 
@@ -50,7 +58,33 @@ converse.plugins.add('converse-headlines', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
+        const { _converse } = this,
+              { __ } = _converse;
+
+        const viewWithHeadlinePanel = {
+            renderHeadlinePanel () {
+                if (this.headlinepanel && utils.isInDOM(this.headlinepanel.el)) {
+                    return this.headlinepanel;
+                }
+                this.headlinepanel = new _converse.HeadlinePanel();
+                this.el.querySelector('.controlbox-pane').insertAdjacentElement(
+                    'beforeEnd', this.headlinepanel.render().el);
+
+                return this.headlinepanel;
+            },
+
+            getHeadlinePanel () {
+                if (this.headlinepanel && utils.isInDOM(this.headlinepanel.el)) {
+                    return this.headlinepanel;
+                } else {
+                    return this.renderHeadlinePanel();
+                }
+            }
+        }
+
+        if (_converse.ControlBoxView) {
+            Object.assign(_converse.ControlBoxView.prototype, viewWithHeadlinePanel);
+        }
 
         /**
          * Shows headline messages
@@ -83,6 +117,26 @@ converse.plugins.add('converse-headlines', {
             }
         });
 
+        function getAllHeadlineBoxes (removedBox = null) {
+            const chatboxviews = _converse.chatboxviews.getAll();
+            return Object.keys(chatboxviews)
+                .filter(
+                    id => chatboxviews[id].el.classList.contains('headlines') &&
+                        id !== removedBox
+            );
+        }
+
+        function renderHeadlineList (removedBox = null) {
+            const controlboxview = _converse.chatboxviews.get('controlbox');
+            if (controlboxview !== undefined) {
+                const el = controlboxview.el.querySelector('.list-container--headline');
+                const headline_list = tpl_headline_list({
+                    'headlineboxes': getAllHeadlineBoxes(removedBox),
+                    'open_title': __('Click to open this server message'),
+                });
+                el && (el.outerHTML = headline_list);
+            }
+        }
 
         async function onHeadlineMessage (message) {
             // Handler method for all incoming messages of type "headline".
@@ -106,8 +160,44 @@ converse.plugins.add('converse-headlines', {
                 const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
                 await chatbox.messages.create(attrs);
                 _converse.api.trigger('message', {'chatbox': chatbox, 'stanza': message});
+                renderHeadlineList();
+                _converse.chatboxviews.get(from_jid).el
+                    .querySelector('.close-chatbox-button')
+                    .addEventListener("click",
+                        () => renderHeadlineList(from_jid)
+                );
             }
         }
+
+        /**
+         * Backbone.NativeView which renders headlines section of the control box.
+         * @class
+         * @namespace _converse.HeadlinePanel
+         * @memberOf _converse
+         */
+        _converse.HeadlinePanel = Backbone.NativeView.extend({
+            tagName: 'div',
+            className: 'controlbox-section',
+            id: 'headline',
+
+            events: {
+                'click .open-headline': 'openHeadline'
+            },
+
+            openHeadline (ev) {
+                ev.preventDefault();
+                const jid = ev.target.getAttribute('data-headline-jid');
+                const chat = _converse.chatboxes.get(jid);
+                chat.maybeShow(true);
+            },
+
+            render () {
+                this.el.innerHTML = tpl_headline_panel({
+                    'heading_headline': __('Server Messages')
+                });
+                return this;
+            }
+        });
 
 
         /************************ BEGIN Event Handlers ************************/

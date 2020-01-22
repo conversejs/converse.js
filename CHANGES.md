@@ -10,6 +10,7 @@
 - #1823: New config options [muc_roomid_policy](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy)
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact
+- #1839: Headline messages are shown in controlbox
 
 ## 6.0.0 (2020-01-09)
 

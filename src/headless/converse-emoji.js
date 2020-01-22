@@ -263,45 +263,66 @@ converse.plugins.add('converse-emoji', {
         });
         /************************ END Utils ************************/
 
-        async function initializeEmojis () {
-            if (_converse.emojis.json) {
-                return;
+
+        function createEmojiPicker () {
+            if (!_converse.emojipicker) {
+                const id = `converse.emoji-${_converse.bare_jid}`;
+                _converse.emojipicker = new _converse.EmojiPicker({'id': id});
+                _converse.emojipicker.browserStorage = _converse.createStore(id);
+                _converse.emojipicker.fetch();
             }
-            const { default: json } = await import(/*webpackChunkName: "emojis" */ './emojis.json');
-            _converse.emojis.json = json;
-            _converse.emojis.categories = Object.keys(_converse.emojis.json);
-            _converse.emojis_map = _converse.emojis.categories.reduce((result, cat) => Object.assign(result, _converse.emojis.json[cat]), {});
-            _converse.emojis_list = Object.values(_converse.emojis_map);
-            _converse.emojis_list.sort((a, b) => a.sn < b.sn ? -1 : (a.sn > b.sn ? 1 : 0));
-            _converse.emoji_shortnames = _converse.emojis_list.map(m => m.sn);
-
-            const getShortNames = () => _converse.emoji_shortnames.map(s => s.replace(/[+]/g, "\\$&")).join('|');
-            _converse.emojis.shortnames_regex = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+getShortNames()+")", "gi");
-
-            _converse.emojis.toned = getTonedEmojis();
-            /**
-             * Triggered once the JSON file representing emoji data has been
-             * fetched and its save to start calling emoji utility methods.
-             * @event _converse#emojisInitialized
-             */
-            _converse.api.trigger('emojisInitialized');
         }
 
+        _converse.api.listen.on('logout', () => {
+            _converse.emojipicker.destroy();
+            delete _converse.emojipicker;
+        });
 
-        /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('clearSession', () => {
-            if (_converse.emojipicker) {
-                _converse.emojipicker.destroy();
-                delete _converse.emojipicker
+
+        /************************ BEGIN API ************************/
+        // We extend the default converse.js API to add methods specific to MUC groupchats.
+        Object.assign(_converse.api, {
+            /**
+             * The "rooms" namespace groups methods relevant to chatrooms
+             * (aka groupchats).
+             *
+             * @namespace _converse.api.rooms
+             * @memberOf _converse.api
+             */
+            emojis: {
+                /**
+                 * Initializes Emoji support by downloading the emojis JSON (and any applicable images).
+                 * @method _converse.api.emojis.initialize
+                 * @returns {Promise}
+                 */
+                async initialize () {
+                    createEmojiPicker();
+
+                    if (_converse.emojis.initialized) {
+                        return _converse.emojis.initialized;
+                    }
+                    _converse.emojis.initialized = u.getResolveablePromise();
+                    const { default: json } = await import(/*webpackChunkName: "emojis" */ './emojis.json');
+                    _converse.emojis.json = json;
+                    _converse.emojis.categories = Object.keys(_converse.emojis.json);
+                    _converse.emojis_map = _converse.emojis.categories.reduce((result, cat) => Object.assign(result, _converse.emojis.json[cat]), {});
+                    _converse.emojis_list = Object.values(_converse.emojis_map);
+                    _converse.emojis_list.sort((a, b) => a.sn < b.sn ? -1 : (a.sn > b.sn ? 1 : 0));
+                    _converse.emoji_shortnames = _converse.emojis_list.map(m => m.sn);
+
+                    const getShortNames = () => _converse.emoji_shortnames.map(s => s.replace(/[+]/g, "\\$&")).join('|');
+                    _converse.emojis.shortnames_regex = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+getShortNames()+")", "gi");
+
+                    _converse.emojis.toned = getTonedEmojis();
+                    _converse.emojis.initialized.resolve();
+                    /**
+                     * Triggered once the JSON file representing emoji data has been
+                     * fetched and its save to start calling emoji utility methods.
+                     * @event _converse#emojisInitialized
+                     */
+                    _converse.api.trigger('emojisInitialized');
+                }
             }
         });
-
-        _converse.api.listen.on('chatBoxesInitialized', () => {
-            _converse.chatboxes.on(
-                'add',
-                chat => (chat.get('type') !== _converse.CONTROLBOX_TYPE) && initializeEmojis()
-            );
-        });
-        /************************ END Event Handlers ************************/
     }
 });

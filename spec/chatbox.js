@@ -440,6 +440,7 @@
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
+                    await u.waitUntil(() => view.el.querySelector('.emoji-picker'));
                     const toolbar = view.el.querySelector('.chat-toolbar');
                     const counter = toolbar.querySelector('.message-limit');
                     expect(counter.textContent).toBe('200');

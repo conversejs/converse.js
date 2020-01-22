@@ -23,6 +23,7 @@
                 const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
+                await u.waitUntil(() => view.el.querySelector('.emoji-picker'));
                 const toolbar = view.el.querySelector('ul.chat-toolbar');
                 expect(toolbar.querySelectorAll('li.toggle-smiley__container').length).toBe(1);
                 toolbar.querySelector('a.toggle-smiley').click();
@@ -43,6 +44,8 @@
                 const muc_jid = 'lounge@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
+                await u.waitUntil(() => view.el.querySelector('.emoji-picker'));
+
                 const textarea = view.el.querySelector('textarea.chat-textarea');
                 textarea.value = ':gri';
 

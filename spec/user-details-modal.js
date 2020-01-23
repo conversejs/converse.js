@@ -28,9 +28,7 @@
             const modal = view.user_details_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(window, 'confirm').and.returnValue(true);
-            spyOn(view.model.contact, 'removeFromRoster').and.callFake(function (callback) {
-                callback();
-            });
+            spyOn(view.model.contact, 'removeFromRoster').and.callFake(callback => callback());
             let remove_contact_button = modal.el.querySelector('button.remove-contact');
             expect(u.isVisible(remove_contact_button)).toBeTruthy();
             remove_contact_button.click();

@@ -17,7 +17,7 @@ import tpl_csn from "templates/csn.html";
 import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
-import tpl_message_versions_modal from "templates/message_versions_modal.html";
+import tpl_message_versions_modal from "templates/message_versions_modal.js";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
@@ -73,12 +73,9 @@ converse.plugins.add('converse-message-view', {
         });
 
         _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+            id: "message-versions-modal",
             toHTML () {
-                return tpl_message_versions_modal(Object.assign(
-                    this.model.toJSON(), {
-                    '__': __,
-                    'dayjs': dayjs
-                }));
+                return tpl_message_versions_modal(this.model.toJSON());
             }
         });
 

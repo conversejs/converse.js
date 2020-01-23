@@ -14,12 +14,12 @@ import { OrderedListView } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
-import tpl_add_chatroom_modal from "templates/add_chatroom_modal.html";
+import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
 import tpl_chatarea from "templates/chatarea.html";
 import tpl_chatroom from "templates/chatroom.html";
 import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
-import tpl_chatroom_details_modal from "templates/chatroom_details_modal.html";
+import tpl_chatroom_details_modal from "templates/chatroom_details_modal.js";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
 import tpl_chatroom_features from "templates/chatroom_features.html";
 import tpl_chatroom_form from "templates/chatroom_form.html";
@@ -29,8 +29,8 @@ import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
 import tpl_chatroom_password_form from "templates/chatroom_password_form.html";
 import tpl_chatroom_sidebar from "templates/chatroom_sidebar.html";
 import tpl_info from "templates/info.html";
-import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.html";
-import tpl_moderator_tools_modal from "templates/moderator_tools_modal.html";
+import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
+import tpl_moderator_tools_modal from "templates/moderator_tools_modal.js";
 import tpl_occupant from "templates/occupant.html";
 import tpl_room_description from "templates/room_description.html";
 import tpl_room_item from "templates/room_item.html";
@@ -226,7 +226,7 @@ converse.plugins.add('converse-muc-views', {
 
 
         _converse.ModeratorToolsModal = _converse.BootstrapModal.extend({
-
+            id: "converse-modtools-modal",
             events: {
                 'submit .affiliation-form': 'assignAffiliation',
                 'submit .role-form': 'assignRole',
@@ -271,7 +271,6 @@ converse.plugins.add('converse-muc-views', {
                 allowed_roles.sort();
 
                 return tpl_moderator_tools_modal(Object.assign(this.model.toJSON(), {
-                    __,
                     allowed_affiliations,
                     allowed_roles,
                     'affiliations': [...AFFILIATIONS, 'none'],
@@ -389,6 +388,7 @@ converse.plugins.add('converse-muc-views', {
 
 
         _converse.ListChatRoomsModal = _converse.BootstrapModal.extend({
+            id: "list-chatrooms-modal",
 
             events: {
                 'submit form': 'showRooms',
@@ -409,9 +409,6 @@ converse.plugins.add('converse-muc-views', {
             toHTML () {
                 const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
                 return tpl_list_chatrooms_modal(Object.assign(this.model.toJSON(), {
-                    'heading_list_chatrooms': __('Query for Groupchats'),
-                    'label_server_address': __('Server address'),
-                    'label_query': __('Show groupchats'),
                     'show_form': !_converse.locked_muc_domain,
                     'server_placeholder': muc_domain ? muc_domain : __('conference.example.org')
                 }));
@@ -523,6 +520,7 @@ converse.plugins.add('converse-muc-views', {
 
 
         _converse.AddChatRoomModal = _converse.BootstrapModal.extend({
+            id: 'add-chatroom-modal',
 
             events: {
                 'submit form.add-chatroom': 'openChatRoom',
@@ -543,7 +541,6 @@ converse.plugins.add('converse-muc-views', {
                     placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
                 }
                 return tpl_add_chatroom_modal(Object.assign(this.model.toJSON(), {
-                    '__': _converse.__,
                     '_converse': _converse,
                     'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
                     'chatroom_placeholder': placeholder,
@@ -616,6 +613,7 @@ converse.plugins.add('converse-muc-views', {
 
 
         _converse.RoomDetailsModal = _converse.BootstrapModal.extend({
+            id: "room-details-modal",
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
@@ -627,12 +625,10 @@ converse.plugins.add('converse-muc-views', {
             toHTML () {
                 return tpl_chatroom_details_modal(Object.assign(
                     this.model.toJSON(), {
-                        '__': __,
                         'config': this.model.config.toJSON(),
                         'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
                         'features': this.model.features.toJSON(),
                         'num_occupants': this.model.occupants.length,
-                        'topic': u.addHyperlinks(xss.filterXSS(get(this.model.get('subject'), 'text'), {'whiteList': {}}))
                     })
                 );
             }

@@ -88,6 +88,7 @@
     "jasmine-core": "2.99.1",
     "jsdoc": "^3.6.2",
     "lerna": "^3.20.2",
+    "lit-html": "^1.1.2",
     "lodash-template-webpack-loader": "jcbrand/lodash-template-webpack-loader",
     "mini-css-extract-plugin": "^0.7.0",
     "minimist": "^1.2.0",

@@ -1,10 +1,7 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-rosterview
+ * @copyright 2013-2019, the Converse.js developers
+ * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
@@ -16,7 +13,7 @@ import { OrderedListView } from "skeletor.js/src/overview";
 import SHA1 from 'strophe.js/src/sha1';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
-import tpl_add_contact_modal from "templates/add_contact_modal.html";
+import tpl_add_contact_modal from "templates/add_contact_modal.js";
 import tpl_group_header from "templates/group_header.html";
 import tpl_pending_contact from "templates/pending_contact.html";
 import tpl_requesting_contact from "templates/requesting_contact.html";
@@ -61,6 +58,7 @@ converse.plugins.add('converse-rosterview', {
 
 
         _converse.AddContactModal = _converse.BootstrapModal.extend({
+            id: "add-contact-modal",
             events: {
                 'submit form': 'addContactFromForm'
             },
@@ -74,12 +72,7 @@ converse.plugins.add('converse-rosterview', {
                 const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
                 return tpl_add_contact_modal(Object.assign(this.model.toJSON(), {
                     '_converse': _converse,
-                    'heading_new_contact': __('Add a Contact'),
-                    'label_xmpp_address': __('XMPP Address'),
                     'label_nickname': label_nickname,
-                    'contact_placeholder': __('name@example.org'),
-                    'label_add': __('Add'),
-                    'error_message': __('Please enter a valid XMPP address')
                 }));
             },
 

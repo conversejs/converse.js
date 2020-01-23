@@ -259,7 +259,7 @@
         "spaced-comment": "off",
         "strict": "off",
         "symbol-description": "error",
-        "template-curly-spacing": "error",
+        "template-curly-spacing": "off",
         "unicode-bom": [
             "error",
             "never"

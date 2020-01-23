@@ -3,8 +3,10 @@
  * @copyright The Converse.js developers
  * @license Mozilla Public License (MPLv2)
  */
+import { __, i18n } from './i18n';
 import { assignIn, debounce, get, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import { Collection } from "skeletor.js/src/collection";
+import { Events } from 'skeletor.js/src/events.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { Router } from 'skeletor.js/src/router.js';
 import 'strophe.js/src/websocket';
@@ -15,7 +17,6 @@ import Backbone from 'backbone';
 import Storage from 'skeletor.js/src/storage.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
-import i18n from './i18n';
 import log from '@converse/headless/log';
 import pluggable from 'pluggable.js/src/pluggable';
 import sizzle from 'sizzle';
@@ -114,7 +115,7 @@ const _converse = {
 
 _converse.VERSION_NAME = "v6.0.1dev";
 
-Object.assign(_converse, Backbone.Events);
+Object.assign(_converse, Events);
 
 _converse.router = new Router();
 
@@ -258,12 +259,7 @@ _converse.default_settings = {
  * @memberOf _converse
  * @param { String } str - The string to translate
  */
-_converse.__ = function (str) {
-    if (i18n === undefined) {
-        return str;
-    }
-    return i18n.translate.apply(i18n, arguments);
-};
+_converse.__ = __;
 
 
 /**
@@ -286,8 +282,6 @@ _converse.___ = function (str) {
     return str;
 }
 
-
-const __ = _converse.__;
 
 const PROMISES = [
     'afterResourceBinding',
@@ -1019,7 +1013,7 @@ _converse.initialize = async function (settings, callback) {
     );
 
     /* Localisation */
-    if (i18n === undefined || _converse.isTestEnv()) {
+    if (_converse.isTestEnv()) {
         _converse.locale = 'en';
     } else {
         try {
@@ -1027,6 +1021,7 @@ _converse.initialize = async function (settings, callback) {
             await i18n.fetchTranslations(_converse);
         } catch (e) {
             log.fatal(e.message);
+            _converse.locale = 'en';
         }
     }
 

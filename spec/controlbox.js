@@ -199,27 +199,25 @@
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
-            const sendIQ = _converse.connection.sendIQ;
-            let sent_stanza, IQ_id;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
+            expect(modal.el.querySelector('form.add-xmpp-contact')).not.toBe(null);
 
-            expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
             const input_jid = modal.el.querySelector('input[name="jid"]');
             const input_name = modal.el.querySelector('input[name="name"]');
             input_jid.value = 'someone@';
+
             const evt = new Event('input');
             input_jid.dispatchEvent(evt);
             expect(modal.el.querySelector('.suggestion-box li').textContent).toBe('someone@montague.lit');
             input_jid.value = 'someone@montague.lit';
             input_name.value = 'Someone';
             modal.el.querySelector('button[type="submit"]').click();
-            expect(sent_stanza.toLocaleString()).toEqual(
-            `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit" name="Someone"/></query>`+
-            `</iq>`);
+
+            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
+            expect(Strophe.serialize(sent_stanza)).toEqual(
+                `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                    `<query xmlns="jabber:iq:roster"><item jid="someone@montague.lit" name="Someone"/></query>`+
+                `</iq>`);
             done();
         }));
 
@@ -228,6 +226,7 @@
                 ['rosterGroupsFetched'], {'autocomplete_add_contact': false},
                 async function (done, _converse) {
 
+            await test_utils.waitForRoster(_converse, 'all', 0);
             test_utils.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
@@ -236,14 +235,14 @@
             expect(modal.name_auto_complete).toBe(undefined);
 
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
-            expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
+            expect(modal.el.querySelector('form.add-xmpp-contact')).not.toBe(null);
             const input_jid = modal.el.querySelector('input[name="jid"]');
             input_jid.value = 'someone@montague.lit';
             modal.el.querySelector('button[type="submit"]').click();
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             const sent_stanza = await u.waitUntil(
-                () => IQ_stanzas.filter(s => sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, s).length).pop()
+                () => IQ_stanzas.filter(s => sizzle(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`, s).length).pop()
             );
             expect(Strophe.serialize(sent_stanza)).toEqual(
                 `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
@@ -259,6 +258,8 @@
                 ['rosterGroupsFetched'],
                 { 'xhr_user_search_url': 'http://example.org/?' },
                 async function (done, _converse) {
+
+            await test_utils.waitForRoster(_converse, 'all', 0);
 
             const xhr = {
                 'open': function open () {},
@@ -287,12 +288,6 @@
             input_el.value = 'marty';
             input_el.dispatchEvent(new Event('input'));
             await u.waitUntil(() => modal.el.querySelector('.suggestion-box li'), 1000);
-            const sendIQ = _converse.connection.sendIQ;
-            let sent_stanza, IQ_id;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
             expect(modal.el.querySelectorAll('.suggestion-box li').length).toBe(1);
             const suggestion = modal.el.querySelector('.suggestion-box li');
             expect(suggestion.textContent).toBe('Marty McFly');
@@ -303,8 +298,11 @@
             expect(input_el.value).toBe('Marty McFly');
             expect(modal.el.querySelector('input[name="jid"]').value).toBe('marty@mcfly.net');
             modal.el.querySelector('button[type="submit"]').click();
-            expect(sent_stanza.toLocaleString()).toEqual(
-            `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+
+            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
+            expect(Strophe.serialize(sent_stanza)).toEqual(
+            `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                 `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>`+
             `</iq>`);
             window.XMLHttpRequest = XMLHttpRequestBackup;
@@ -355,13 +353,6 @@
             expect(modal.jid_auto_complete).toBe(undefined);
             expect(modal.name_auto_complete).toBe(undefined);
 
-            const sendIQ = _converse.connection.sendIQ;
-            let sent_stanza, IQ_id;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
-
             const input_el = modal.el.querySelector('input[name="name"]');
             input_el.value = 'ambiguous';
             modal.el.querySelector('button[type="submit"]').click();
@@ -382,8 +373,11 @@
 
             input_el.value = 'Marty McFly';
             modal.el.querySelector('button[type="submit"]').click();
-            expect(sent_stanza.toLocaleString()).toEqual(
-            `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+
+            const sent_IQs = _converse.connection.IQ_stanzas;
+            const sent_stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.ROSTER}"]`)).pop());
+            expect(Strophe.serialize(sent_stanza)).toEqual(
+            `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                 `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>`+
             `</iq>`);
             window.XMLHttpRequest = XMLHttpRequestBackup;

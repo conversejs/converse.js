@@ -8,16 +8,17 @@
  * @module converse-chatboxviews
  */
 import "@converse/headless/converse-chatboxes";
-import "backbone.nativeview";
+import { HTMLView } from 'skeletor.js/src/htmlview.js';
 import { Overview } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
+import { result } from "lodash";
 import converse from "@converse/headless/converse-core";
 import tpl_avatar from "templates/avatar.svg";
 import tpl_background_logo from "templates/background_logo.html";
 import tpl_chatboxes from "templates/chatboxes.html";
 
-const { Backbone, _, utils } = converse.env;
-const u = utils;
+const u = converse.env.utils;
+
 
 const AvatarMixin = {
 
@@ -65,7 +66,7 @@ converse.plugins.add('converse-chatboxviews', {
         });
 
         _converse.ViewWithAvatar = View.extend(AvatarMixin);
-        _converse.VDOMViewWithAvatar = Backbone.VDOMView.extend(AvatarMixin);
+        _converse.HTMLViewWithAvatar = HTMLView.extend(AvatarMixin);
 
 
         _converse.ChatBoxViews = Overview.extend({
@@ -91,7 +92,7 @@ converse.plugins.add('converse-chatboxviews', {
                     el.innerHTML = '';
                     this.setElement(el, false);
                 } else {
-                    this.setElement(_.result(this, 'el'), false);
+                    this.setElement(result(this, 'el'), false);
                 }
             },
 

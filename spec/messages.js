@@ -1506,7 +1506,7 @@
                 const older_msgs = modal.el.querySelectorAll('.older-msg');
                 expect(older_msgs.length).toBe(2);
                 expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
-                expect(older_msgs[0].childNodes[1].textContent).toBe(': But soft, what light through yonder airlock breaks?');
+                expect(older_msgs[0].childNodes[2].textContent).toBe('But soft, what light through yonder airlock breaks?');
                 expect(view.model.messages.models.length).toBe(1);
                 done();
             }));

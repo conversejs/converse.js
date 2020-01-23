@@ -1,6 +1,6 @@
 function CustomEvent ( event, params ) {
     params = params || { bubbles: false, cancelable: false, detail: undefined };
-    var evt = document.createEvent( 'CustomEvent' );
+    const evt = document.createEvent( 'CustomEvent' );
     evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
     return evt;
 }
@@ -25,12 +25,12 @@ if (!String.prototype.includes) {
 
 if (!String.prototype.endsWith) {
   String.prototype.endsWith = function (searchString, position) {
-      var subjectString = this.toString();
+      const subjectString = this.toString();
       if (position === undefined || position > subjectString.length) {
           position = subjectString.length;
       }
       position -= searchString.length;
-      var lastIndex = subjectString.indexOf(searchString, position);
+      const lastIndex = subjectString.indexOf(searchString, position);
       return lastIndex !== -1 && lastIndex === position;
   };
 }
@@ -44,7 +44,7 @@ if (!String.prototype.startsWith) {
 
 if (!String.prototype.splitOnce) {
     String.prototype.splitOnce = function (delimiter) {
-        var components = this.split(delimiter);
+        const components = this.split(delimiter);
         return [components.shift(), components.join(delimiter)];
     };
 }

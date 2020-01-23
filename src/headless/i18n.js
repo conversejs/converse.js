@@ -70,7 +70,7 @@ let jed_instance;
 /**
  * @namespace i18n
  */
-export default {
+export const i18n = {
 
     getLocale (preferred_locale, available_locales) {
         return getLocale(preferred_locale, preferred => isConverseLocale(preferred, available_locales));
@@ -105,3 +105,8 @@ export default {
         jed_instance = new Jed(data);
     }
 };
+
+
+export const __ = function () {
+    return i18n.translate.apply(i18n, arguments);
+}

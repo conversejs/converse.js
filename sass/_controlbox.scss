@@ -37,6 +37,12 @@
         }
     }
 
+    .set-xmpp-status {
+        .chat-status {
+            padding-right: 0.5em;
+        }
+    }
+
     .room-info {
         font-size: var(--font-size-small);
         font-style: normal;

@@ -516,6 +516,7 @@ converse.plugins.add('converse-roster', {
              * @param { Object } attributes - Any additional attributes to be stored on the user's model.
              */
             async addContactToRoster (jid, name, groups, attributes) {
+                await _converse.api.waitUntil('rosterContactsFetched');
                 groups = groups || [];
                 try {
                     await this.sendContactAddIQ(jid, name, groups);

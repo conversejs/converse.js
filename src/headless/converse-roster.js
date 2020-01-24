@@ -476,13 +476,11 @@ converse.plugins.add('converse-roster', {
              * @param { String } message - An optional message to explain the reason for the subscription request.
              * @param { Object } attributes - Any additional attributes to be stored on the user's model.
              */
-            addAndSubscribe (jid, name, groups, message, attributes) {
-                const handler = (contact) => {
-                    if (contact instanceof _converse.RosterContact) {
-                        contact.subscribe(message);
-                    }
+            async addAndSubscribe (jid, name, groups, message, attributes) {
+                const contact = await this.addContactToRoster(jid, name, groups, attributes);
+                if (contact instanceof _converse.RosterContact) {
+                    contact.subscribe(message);
                 }
-                this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
             },
 
             /**
@@ -535,19 +533,17 @@ converse.plugins.add('converse-roster', {
                 }, attributes), {'sort': false});
             },
 
-            subscribeBack (bare_jid, presence) {
+            async subscribeBack (bare_jid, presence) {
                 const contact = this.get(bare_jid);
                 if (contact instanceof _converse.RosterContact) {
                     contact.authorize().subscribe();
                 } else {
                     // Can happen when a subscription is retried or roster was deleted
-                    const handler = (contact) => {
-                        if (contact instanceof _converse.RosterContact) {
-                            contact.authorize().subscribe();
-                        }
-                    }
                     const nickname = get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
-                    this.addContactToRoster(bare_jid, nickname, [], {'subscription': 'from'}).then(handler, handler);
+                    const contact = await this.addContactToRoster(bare_jid, nickname, [], {'subscription': 'from'});
+                    if (contact instanceof _converse.RosterContact) {
+                        contact.authorize().subscribe();
+                    }
                 }
             },
 
@@ -1087,7 +1083,7 @@ converse.plugins.add('converse-roster', {
                     if (!isString(jid) || !jid.includes('@')) {
                         throw new TypeError('contacts.add: invalid jid');
                     }
-                    _converse.roster.addAndSubscribe(jid, isEmpty(name)? jid: name);
+                    return _converse.roster.addAndSubscribe(jid, isEmpty(name)? jid: name);
                 }
             }
         });

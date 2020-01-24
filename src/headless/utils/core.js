@@ -371,10 +371,12 @@ u.isPersistableModel = function (model) {
     return model.collection && model.collection.browserStorage;
 };
 
+/**
+ * Returns a promise object on which `resolve` or `reject` can be called.
+ * @private
+ * @method u#getResolveablePromise
+ */
 u.getResolveablePromise = function () {
-    /* Returns a promise object on which `resolve` or `reject` can be
-     * called.
-     */
     const wrapper = {
         isResolved: false,
         isPending: true,

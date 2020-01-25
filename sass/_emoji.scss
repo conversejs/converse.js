@@ -26,12 +26,19 @@
                 height: 8em;
                 overflow-y: auto;
                 .emoji-category__heading {
-                    cursor: auto;
+                    clear: both;
                     color: var(--subdued-color);
+                    cursor: auto;
+                    display: block;
                     font-size: var(--font-size);
                     margin: 0;
                     padding: 0.75em 0 0 0.5em;
                 }
+
+                .emoji-lists__container {
+                    overflow-x: hidden;
+                }
+
                 .emoji-picker {
                     li {
                         float: left;

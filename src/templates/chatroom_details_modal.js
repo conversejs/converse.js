@@ -8,7 +8,6 @@ import xss from "xss/dist/xss";
 const i18n_address =  __('Groupchat address (JID)');
 const i18n_archiving = __('Message archiving');
 const i18n_archiving_help = __('Messages are archived on the server');
-const i18n_close = __('Close');
 const i18n_desc = __('Description');
 const i18n_features = __('Features');
 const i18n_hidden = __('Hidden');

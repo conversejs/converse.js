@@ -448,7 +448,7 @@
 
                     toolbar.querySelector('a.toggle-smiley').click();
                     const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__lists'));
-                    const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
+                    const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji a'));
                     item.click()
                     expect(counter.textContent).toBe('179');
 

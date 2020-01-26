@@ -1,6 +1,6 @@
 /**
  * @module converse-disco
- * @copyright The Converse.js developers
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description Converse plugin which add support for XEP-0030: Service Discovery
  */

@@ -1,11 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// This is the utilities module.
-//
-// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
+/**
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ * @description This is the core utilities module.
+ */
 import * as strophe from 'strophe.js/src/core';
 import { Model } from 'skeletor.js/src/model.js';
 import _ from "../lodash.noconflict";

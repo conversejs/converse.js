@@ -1,6 +1,6 @@
 /**
  * @module converse-rsm
- * @copyright The Converse.js developers
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description XEP-0059 Result Set Management
  *   Some code taken from the Strophe RSM plugin, licensed under the MIT License

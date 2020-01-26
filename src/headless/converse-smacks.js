@@ -1,6 +1,6 @@
 /**
  * @module converse-smacks
- * @copyright The Converse.js developers
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description Converse.js plugin which adds support for XEP-0198: Stream Management
  */

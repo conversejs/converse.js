@@ -1,7 +1,7 @@
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2019, the Converse.js developers
+// Copyright (c) 2020, the Converse.js contributors
 // Licensed under the Mozilla Public License (MPLv2)
 //
 // Webpack entry file

@@ -1,13 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-bookmark-views
- * @description
- * Converse.js plugin which adds views for XEP-0048 bookmarks
+ * @description Converse.js plugin which adds views for XEP-0048 bookmarks
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-muc";
 import { Model } from 'skeletor.js/src/model.js';

@@ -1,6 +1,6 @@
 /**
  * @module converse-autocomplete
- * @copyright Lea Verou and the Converse.js developers
+ * @copyright Lea Verou and the Converse.js contributors
  * @description
  *  Converse.js plugin which started as a fork of Lea Verou's Awesomplete
  *  https://leaverou.github.io/awesomplete/

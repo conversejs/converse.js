@@ -1,11 +1,9 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// This is the internationalization module.
-//
-// Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
+/**
+ * @module i18n
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ * @description This is the internationalization module
+ */
 import Jed from "jed";
 import dayjs from "dayjs";
 

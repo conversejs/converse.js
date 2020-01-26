@@ -1,8 +1,3 @@
-// Converse.js
-// http://conversejs.org
-//
-// Copyright (c) 2013-2018, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-uniview
  * @description
@@ -12,6 +7,8 @@
  *
  * This plugin makes sense in mobile, embedded or fullscreen chat environments
  * (as configured by the `view_mode` setting).
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "converse-chatview";
 import converse from "@converse/headless/converse-core";

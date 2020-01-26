@@ -1,11 +1,7 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// Copyright (c) JC Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-fullscreen
+ * @license Mozilla Public License (MPLv2)
+ * @copyright 2020, the Converse.js contributors
  */
 import "@converse/headless/converse-muc";
 import "converse-chatview";

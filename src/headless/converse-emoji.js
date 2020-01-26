@@ -1,10 +1,7 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2012-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-emoji
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import { Model } from 'skeletor.js/src/model.js';
 import * as twemoji from "twemoji";

@@ -1,6 +1,6 @@
 /**
  * @module converse-muc
- * @copyright The Converse.js developers
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description Implements the non-view logic for XEP-0045 Multi-User Chat
  */

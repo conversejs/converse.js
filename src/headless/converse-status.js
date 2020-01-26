@@ -1,6 +1,6 @@
 /**
  * @module converse-status
- * @copyright The Converse.js developers
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import { get, isNaN, isObject, isString } from "lodash";

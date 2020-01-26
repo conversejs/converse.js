@@ -1,6 +1,6 @@
 /**
  * @module converse-core
- * @copyright The Converse.js developers
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import { __, i18n } from './i18n';

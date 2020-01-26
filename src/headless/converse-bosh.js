@@ -1,6 +1,6 @@
 /**
  * @module converse-bosh
- * @copyright The Converse.js developers
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description Converse.js plugin which add support for XEP-0206: XMPP Over BOSH
  */

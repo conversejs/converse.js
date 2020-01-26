@@ -1,13 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// Copyright (c) Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-mam
- * @description
- * XEP-0313 Message Archive Management
+ * @description XEP-0313 Message Archive Management
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "./converse-disco";
 import "./converse-rsm";

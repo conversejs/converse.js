@@ -1,6 +1,6 @@
 /**
  * @module converse-rosterview
- * @copyright 2013-2019, the Converse.js developers
+ * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-chatboxes";

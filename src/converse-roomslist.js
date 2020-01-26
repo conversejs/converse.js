@@ -1,13 +1,10 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-roomslist
  * @description
  * Converse.js plugin which shows a list of currently open
  * rooms in the "Rooms Panel" of the ControlBox.
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-muc";
 import { Model } from 'skeletor.js/src/model.js';

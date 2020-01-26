@@ -1,6 +1,6 @@
 /**
  * @module converse-vcard
- * @copyright The Converse.js developers
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import "./converse-status";

@@ -1,14 +1,10 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-register
  * @description
  * This is a Converse.js plugin which add support for in-band registration
  * as specified in XEP-0077.
+ *   * @copyright 2020, the Converse.js contributors
+ *   * @license Mozilla Public License (MPLv2)
  */
 import "converse-controlbox";
 import { View } from "skeletor.js/src/view";

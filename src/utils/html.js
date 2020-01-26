@@ -1,11 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// This is a form utilities module.
-//
-// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ * @description This is the DOM/HTML utilities module.
+ */
 import URI from "urijs";
 import _ from "../headless/lodash.noconflict";
 import log from '@converse/headless/log';

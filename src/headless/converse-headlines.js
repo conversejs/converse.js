@@ -1,6 +1,6 @@
 /**
  * @module converse-headlines
- * @copyright 2013-2019, the Converse.js developers
+ * @copyright 2020, the Converse.js contributors
  * @description XEP-0045 Multi-User Chat Views
  */
 import "converse-chatview";

@@ -1,9 +1,10 @@
-/* global libsignal, ArrayBuffer */
 /**
  * @module converse-omemo
- * @copyright The Converse.js developers
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+/* global libsignal, ArrayBuffer */
+
 import "converse-profile";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';

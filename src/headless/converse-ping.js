@@ -1,13 +1,10 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-ping
  * @description
  * Converse.js plugin which add support for application-level pings
  * as specified in XEP-0199 XMPP Ping.
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import converse from "./converse-core";
 import log from "./log";

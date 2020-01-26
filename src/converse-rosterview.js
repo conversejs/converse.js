@@ -3,6 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import "backbone.vdomview";
 import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";

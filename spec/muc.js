@@ -1528,9 +1528,8 @@
                             .c('value').t('cauldronburn');
                 _converse.connection._dataRecv(test_utils.createRequest(config_stanza));
 
-                await u.waitUntil(() => view.el.querySelectorAll('form.chatroom-form').length)
-                expect(view.el.querySelectorAll('form.chatroom-form').length).toBe(1);
-                expect(view.el.querySelectorAll('form.chatroom-form fieldset').length).toBe(2);
+                const form = await u.waitUntil(() => view.el.querySelector('.muc-config-form'));
+                expect(form.querySelectorAll('fieldset').length).toBe(2);
                 const membersonly = view.el.querySelectorAll('input[name="muc#roomconfig_membersonly"]');
                 expect(membersonly.length).toBe(1);
                 expect(membersonly[0].getAttribute('type')).toBe('checkbox');
@@ -2336,7 +2335,7 @@
 
                 await u.waitUntil(() => view.el.querySelectorAll('li .occupant-nick').length, 500);
                 let occupants = view.el.querySelector('.occupant-list');
-                expect(occupants.childNodes.length).toBe(1);
+                expect(occupants.childElementCount).toBe(1);
                 expect(occupants.firstElementChild.querySelector('.occupant-nick').textContent.trim()).toBe("oldnick");
 
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(1);
@@ -2368,7 +2367,7 @@
                 expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
 
                 occupants = view.el.querySelector('.occupant-list');
-                expect(occupants.childNodes.length).toBe(1);
+                expect(occupants.childElementCount).toBe(1);
 
                 presence = $pres().attrs({
                         from:'lounge@montague.lit/newnick',
@@ -2394,7 +2393,7 @@
                     __(_converse.muc.new_nickname_messages["303"], "newnick")
                 );
                 occupants = view.el.querySelector('.occupant-list');
-                expect(occupants.childNodes.length).toBe(1);
+                expect(occupants.childElementCount).toBe(1);
                 expect(sizzle('.occupant-nick:first', occupants).pop().textContent.trim()).toBe("newnick");
                 done();
             }));

@@ -145,15 +145,6 @@ _converse.STATUS_WEIGHTS = {
     'chat':         1, // We currently don't differentiate between "chat" and "online"
     'online':       1
 };
-_converse.PRETTY_CHAT_STATUS = {
-    'offline':      'Offline',
-    'unavailable':  'Unavailable',
-    'xa':           'Extended Away',
-    'away':         'Away',
-    'dnd':          'Do not disturb',
-    'chat':         'Chattty',
-    'online':       'Online'
-};
 _converse.ANONYMOUS = 'anonymous';
 _converse.CLOSED = 'closed';
 _converse.EXTERNAL = 'external';

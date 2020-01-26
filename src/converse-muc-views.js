@@ -5,12 +5,11 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-modal";
-import "backbone.vdomview";
 import "formdata-polyfill";
 import "@converse/headless/utils/muc";
-import { get, head, isString, isUndefined, pick } from "lodash";
+import { get, head, isString, isUndefined } from "lodash";
+import { HTMLView } from 'skeletor.js/src/htmlview.js';
 import { Model } from 'skeletor.js/src/model.js';
-import { OrderedListView } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
@@ -22,17 +21,15 @@ import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_details_modal from "templates/chatroom_details_modal.js";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
-import tpl_chatroom_features from "templates/chatroom_features.html";
-import tpl_chatroom_form from "templates/chatroom_form.html";
+import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_chatroom_head from "templates/chatroom_head.html";
 import tpl_chatroom_invite from "templates/chatroom_invite.html";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
-import tpl_chatroom_password_form from "templates/chatroom_password_form.html";
-import tpl_chatroom_sidebar from "templates/chatroom_sidebar.html";
+import tpl_muc_password_form from "templates/muc_password_form.js";
+import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_info from "templates/info.html";
 import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
 import tpl_moderator_tools_modal from "templates/moderator_tools_modal.js";
-import tpl_occupant from "templates/occupant.html";
 import tpl_room_description from "templates/room_description.html";
 import tpl_room_item from "templates/room_item.html";
 import tpl_room_panel from "templates/room_panel.html";
@@ -40,7 +37,7 @@ import tpl_rooms_results from "templates/rooms_results.html";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
-const { Backbone, Strophe, sizzle, $iq, $pres } = converse.env;
+const { Strophe, sizzle, $iq, $pres } = converse.env;
 const u = converse.env.utils;
 
 const ROLES = ['moderator', 'participant', 'visitor'];
@@ -1593,10 +1590,12 @@ converse.plugins.add('converse-muc-views', {
                 u.safeSave(this.model.session, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
             },
 
+            /**
+             * Remove the configuration form without submitting and return to the chat view.
+             * @private
+             * @method _converse.ChatRoomView#closeForm
+             */
             closeForm () {
-                /* Remove the configuration form without submitting and
-                 * return to the chat view.
-                 */
                 sizzle('.chatroom-form-container', this.el).forEach(e => u.addClass('hidden', e));
                 this.renderAfterTransition();
             },
@@ -2040,12 +2039,8 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.MUCConfigForm = Backbone.VDOMView.extend({
-            className: 'muc-config-form',
-            events: {
-                'submit .chatroom-form': 'submitConfigForm',
-                'click .button-cancel': 'closeConfigForm'
-            },
+        _converse.MUCConfigForm = HTMLView.extend({
+            className: 'chatroom-form-container muc-config-form',
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
@@ -2066,11 +2061,12 @@ converse.plugins.add('converse-muc-views', {
                     'new_password': !password_protected,
                     'fixed_username': this.model.get('jid')
                 };
-                return tpl_chatroom_form({
-                    '__': __,
-                    'title': get(stanza.querySelector('title'), 'textContent'),
+                return tpl_muc_config_form({
+                    'closeConfigForm': ev => this.closeConfigForm(ev),
+                    'fields': fields.map(f => u.xForm2webForm(f, stanza, options)),
                     'instructions': get(stanza.querySelector('instructions'), 'textContent'),
-                    'fields': fields.map(f => u.xForm2webForm(f, stanza, options))
+                    'submitConfigForm': ev => this.submitConfigForm(ev),
+                    'title': get(stanza.querySelector('title'), 'textContent')
                 });
             },
 
@@ -2098,11 +2094,8 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.MUCPasswordForm = Backbone.VDOMView.extend({
-            className: 'muc-password-form',
-            events: {
-                'submit form': 'submitPassword',
-            },
+        _converse.MUCPasswordForm = HTMLView.extend({
+            className: 'chatroom-form-container muc-password-form',
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
@@ -2111,14 +2104,10 @@ converse.plugins.add('converse-muc-views', {
             },
 
             toHTML () {
-                const err_msg = this.model.get('validation_message');
-                return tpl_chatroom_password_form({
+                return tpl_muc_password_form({
                     'jid': this.model.get('jid'),
-                    'heading': __('This groupchat requires a password'),
-                    'label_password': __('Password: '),
-                    'label_submit': __('Submit'),
-                    'error_class': err_msg ? 'error' : '',
-                    'validation_message': err_msg
+                    'submitPassword': ev => this.submitPassword(ev),
+                    'validation_message':  this.model.get('validation_message')
                 });
             },
 
@@ -2131,67 +2120,42 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.ChatRoomOccupantView = Backbone.VDOMView.extend({
-            tagName: 'li',
-            initialize () {
-                this.listenTo(this.model, 'change', this.render);
-            },
-
-            toHTML () {
-                const show = this.model.get('show');
-                return tpl_occupant(
-                    Object.assign({
-                        __,
-                        show,
-                        'jid': '',
-                        'hint_show': _converse.PRETTY_CHAT_STATUS[show],
-                        'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick'))
-                    }, this.model.toJSON())
-                );
-            },
-
-            destroy () {
-                this.el.parentElement.removeChild(this.el);
-            }
-        });
-
-
-        _converse.ChatRoomOccupantsView = OrderedListView.extend({
+        _converse.ChatRoomOccupantsView = HTMLView.extend({
             tagName: 'div',
             className: 'occupants col-md-3 col-4',
-            listItems: 'model',
-            sortEvent: 'change:role',
-            listSelector: '.occupant-list',
-
-            ItemView: _converse.ChatRoomOccupantView,
 
             async initialize () {
-                OrderedListView.prototype.initialize.apply(this, arguments);
-
-                this.listenTo(this.model, 'add', this.maybeRenderInviteWidget);
-                this.listenTo(this.model, 'change:affiliation', this.maybeRenderInviteWidget);
-
                 this.chatroomview = this.model.chatroomview;
-                this.listenTo(this.chatroomview.model.features, 'change', this.renderRoomFeatures);
+                this.listenTo(this.model, 'add', this.maybeRenderInviteWidget);
+                this.listenTo(this.model, 'add', this.render);
+                this.listenTo(this.model, 'remove', this.render);
+                this.listenTo(this.model, 'change', this.render);
+                this.listenTo(this.model, 'change:affiliation', this.maybeRenderInviteWidget);
+                this.listenTo(this.chatroomview.model.features, 'change', this.render);
                 this.listenTo(this.chatroomview.model.features, 'change:open', this.renderInviteWidget);
                 this.listenTo(this.chatroomview.model, 'change:hidden_occupants', this.setVisibility);
                 this.render();
                 await this.model.fetched;
-                this.sortAndPositionAllItems();
             },
 
-            render () {
-                this.el.innerHTML = tpl_chatroom_sidebar(
+            toHTML () {
+                return tpl_muc_sidebar(
                     Object.assign(this.chatroomview.model.toJSON(), {
                         'allow_muc_invitations': _converse.allow_muc_invitations,
-                        'label_occupants': __('Participants')
+                        'features': this.chatroomview.model.features,
+                        'label_occupants': __('Participants'),
+                        'occupants': this.model.models
                     })
                 );
+            },
+
+            afterRender () {
                 if (_converse.allow_muc_invitations) {
+                    // TODO: the invite widget needs to be rendered via a directive
                     _converse.api.waitUntil('rosterContactsFetched').then(() => this.renderInviteWidget());
                 }
                 this.setVisibility();
-                return this.renderRoomFeatures();
+                this.setOccupantsHeight();
             },
 
             setVisibility () {
@@ -2210,6 +2174,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             renderInviteWidget () {
+                // TODO: this needs to be rendered inside muc_sidebar.js
                 const widget = this.el.querySelector('.room-invite');
                 if (this.shouldInviteWidgetBeShown()) {
                     if (widget === null) {
@@ -2229,25 +2194,13 @@ converse.plugins.add('converse-muc-views', {
                 return this;
             },
 
-            renderRoomFeatures () {
-                const features = this.chatroomview.model.features,
-                      picks = pick(features.attributes, converse.ROOM_FEATURES),
-                      iteratee = (a, v) => a || v;
-
-                if (Object.values(picks).reduce(iteratee)) {
-                    const el = this.el.querySelector('.chatroom-features');
-                    el.innerHTML = tpl_chatroom_features(Object.assign(features.toJSON(), {__}));
-                    this.setOccupantsHeight();
-                }
-                return this;
-            },
-
             setOccupantsHeight () {
                 const el = this.el.querySelector('.chatroom-features');
-                this.el.querySelector('.occupant-list').style.cssText =
-                    `height: calc(100% - ${el.offsetHeight}px - 5em);`;
+                if (el) {
+                    this.el.querySelector('.occupant-list').style.cssText =
+                        `height: calc(100% - ${el.offsetHeight}px - 5em);`;
+                }
             },
-
 
             promptForInvite (suggestion) {
                 let reason = '';
@@ -2417,7 +2370,7 @@ converse.plugins.add('converse-muc-views', {
                  * @method _converse.api.roomviews.get
                  * @param {String|string[]} name - e.g. 'coven@conference.shakespeare.lit' or
                  *  ['coven@conference.shakespeare.lit', 'cave@conference.shakespeare.lit']
-                 * @returns {Backbone.View} Backbone.View representing the groupchat
+                 * @returns {View} View representing the groupchat
                  *
                  * @example
                  * // To return a single view, provide the JID of the groupchat

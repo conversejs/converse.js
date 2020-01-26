@@ -12,6 +12,7 @@ import { get, head, isString, isUndefined, pick } from "lodash";
 import { Model } from 'skeletor.js/src/model.js';
 import { OrderedListView } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
+import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
@@ -92,8 +93,7 @@ converse.plugins.add('converse-muc-views', {
     },
 
     initialize () {
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
 
         _converse.api.promises.add(['roomsPanelRendered']);
 

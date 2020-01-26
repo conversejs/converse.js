@@ -9,10 +9,11 @@
 import "@converse/headless/converse-muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { HTMLView } from 'skeletor.js/src/htmlview.js';
+import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import tpl_rooms_list from "templates/rooms_list.js";
 
-const { Strophe, } = converse.env;
+const { Strophe } = converse.env;
 const u = converse.env.utils;
 
 

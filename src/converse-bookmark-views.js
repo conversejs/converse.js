@@ -197,12 +197,6 @@ converse.plugins.add('converse-bookmark-views', {
 
         _converse.BookmarksView = HTMLView.extend({
             tagName: 'span',
-            events: {
-                'click .add-bookmark': 'addBookmark',
-                'click .bookmarks-toggle': 'toggleBookmarksList',
-                'click .remove-bookmark': 'removeBookmark',
-                'click .open-room': 'openRoom',
-            },
 
             initialize () {
                 this.listenTo(this.model, 'add', this.render);
@@ -223,14 +217,16 @@ converse.plugins.add('converse-bookmark-views', {
             },
 
             toHTML () {
+                const is_hidden = b => !!(_converse.hide_open_bookmarks && _converse.chatboxes.get(b.get('jid')));
                 return tpl_bookmarks_list({
                     '_converse': _converse,
                     'bookmarks': this.model,
-                    'toggle_state': this.list_model.get('toggle-state'),
-                    'is_bookmark_hidden': b => {
-                        return !!(_converse.hide_open_bookmarks && _converse.chatboxes.get(b.get('jid')))
-                    },
-                    'hidden': this.model.getUnopenedBookmarks().length && true
+                    'hidden': this.model.getUnopenedBookmarks().length && true,
+                    'is_hidden': is_hidden,
+                    'openRoom': ev => this.openRoom(ev),
+                    'removeBookmark': ev => this.removeBookmark(ev),
+                    'toggleBookmarksList': ev => this.toggleBookmarksList(ev),
+                    'toggle_state': this.list_model.get('toggle-state')
                 });
             },
 
@@ -253,7 +249,6 @@ converse.plugins.add('converse-bookmark-views', {
             },
 
             removeBookmark: _converse.removeBookmarkViaEvent,
-            addBookmark: _converse.addBookmarkViaEvent,
 
             toggleBookmarksList (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }

@@ -13,7 +13,7 @@ import tpl_bookmarks_list from "templates/bookmarks_list.js"
 import tpl_muc_bookmark_form from "templates/muc_bookmark_form.js";
 import tpl_chatroom_bookmark_toggle from "templates/chatroom_bookmark_toggle.html";
 
-const { Backbone, Strophe, _ } = converse.env;
+const { Strophe, _ } = converse.env;
 const u = converse.env.utils;
 
 

@@ -1,17 +1,18 @@
 /**
  * @module converse-roomslist
  * @description
- * Converse.js plugin which shows a list of currently open
- * rooms in the "Rooms Panel" of the ControlBox.
+ *  Converse.js plugin which shows a list of currently open
+ *  rooms in the "Rooms Panel" of the ControlBox.
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-muc";
 import { Model } from 'skeletor.js/src/model.js';
+import { HTMLView } from 'skeletor.js/src/htmlview.js';
 import converse from "@converse/headless/converse-core";
-import tpl_rooms_list from "templates/rooms_list.html";
+import tpl_rooms_list from "templates/rooms_list.js";
 
-const { Backbone, Strophe, } = converse.env;
+const { Strophe, } = converse.env;
 const u = converse.env.utils;
 
 
@@ -36,7 +37,6 @@ converse.plugins.add('converse-roomslist', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
-        const { __ } = _converse;
 
         // Promises exposed by this plugin
         _converse.api.promises.add('roomsListInitialized');
@@ -49,17 +49,8 @@ converse.plugins.add('converse-roomslist', {
         });
 
 
-        _converse.RoomsListView = Backbone.VDOMView.extend({
-            tagName: 'div',
-            className: 'list-container list-container--openrooms',
-            events: {
-                'click .add-bookmark': 'addBookmark',
-                'click .close-room': 'closeRoom',
-                'click .list-toggle': 'toggleRoomsList',
-                'click .remove-bookmark': 'removeBookmark',
-                'click .open-room': 'openRoom',
-                'click .room-info': 'showRoomDetailsModal'
-            },
+        _converse.RoomsListView = HTMLView.extend({
+            tagName: 'span',
 
             initialize () {
                 this.listenTo(this.model, 'add', this.renderIfChatRoom)
@@ -89,20 +80,18 @@ converse.plugins.add('converse-roomslist', {
 
             toHTML () {
                 return tpl_rooms_list({
-                    'rooms': this.model.filter(m => m.get('type') === _converse.CHATROOMS_TYPE),
-                    'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
-                    'collapsed': this.list_model.get('toggle-state') !== _converse.OPENED,
-                    'desc_rooms': __('Click to toggle the list of open groupchats'),
-                    'info_add_bookmark': __('Bookmark this groupchat'),
-                    'info_leave_room': __('Leave this groupchat'),
-                    'info_remove_bookmark': __('Unbookmark this groupchat'),
-                    'info_title': __('Show more information on this groupchat'),
-                    'open_title': __('Click to open this groupchat'),
-                    'currently_open': room => _converse.isUniView() && !room.get('hidden'),
-                    'toggle_state': this.list_model.get('toggle-state'),
-                    // Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
-                    'label_rooms': __('Open Groupchats'),
                     '_converse': _converse,
+                    'addBookmark': ev => this.addBookmark(ev),
+                    'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
+                    'closeRoom': ev => this.closeRoom(ev),
+                    'collapsed': this.list_model.get('toggle-state') !== _converse.OPENED,
+                    'currently_open': room => _converse.isUniView() && !room.get('hidden'),
+                    'openRoom': ev => this.openRoom(ev),
+                    'removeBookmark': ev => this.removeBookmark(ev),
+                    'rooms': this.model.filter(m => m.get('type') === _converse.CHATROOMS_TYPE),
+                    'showRoomDetailsModal': ev => this.showRoomDetailsModal(ev),
+                    'toggleRoomsList': ev => this.toggleRoomsList(ev),
+                    'toggle_state': this.list_model.get('toggle-state')
                 });
             },
 

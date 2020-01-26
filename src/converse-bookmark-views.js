@@ -6,9 +6,11 @@
  */
 import "@converse/headless/converse-muc";
 import { Model } from 'skeletor.js/src/model.js';
+import { HTMLView } from 'skeletor.js/src/htmlview.js';
+import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
-import tpl_bookmarks_list from "templates/bookmarks_list.html"
-import tpl_chatroom_bookmark_form from "templates/chatroom_bookmark_form.html";
+import tpl_bookmarks_list from "templates/bookmarks_list.js"
+import tpl_muc_bookmark_form from "templates/muc_bookmark_form.js";
 import tpl_chatroom_bookmark_toggle from "templates/chatroom_bookmark_toggle.html";
 
 const { Backbone, Strophe, _ } = converse.env;
@@ -54,8 +56,7 @@ converse.plugins.add('converse-bookmark-views', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
 
         // Configuration values for this plugin
         // ====================================
@@ -98,9 +99,6 @@ converse.plugins.add('converse-bookmark-views', {
                 if (this.el.querySelector('.chat-head .toggle-bookmark')) {
                     return;
                 }
-                const { _converse } = this.__super__,
-                      { __ } = _converse;
-
                 const bookmark_button = tpl_chatroom_bookmark_toggle(
                     _.assignIn(this.model.toJSON(), {
                         'info_toggle_bookmark': this.model.get('bookmarked') ?
@@ -118,9 +116,11 @@ converse.plugins.add('converse-bookmark-views', {
                 }
             },
 
+            /**
+             * Set whether the groupchat is bookmarked or not.
+             * @private
+             */
             setBookmarkState () {
-                /* Set whether the groupchat is bookmarked or not.
-                 */
                 if (_converse.bookmarks !== undefined) {
                     const models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                     if (!models.length) {
@@ -160,13 +160,8 @@ converse.plugins.add('converse-bookmark-views', {
         Object.assign(_converse.ChatRoomView.prototype, bookmarkableChatRoomView);
 
 
-        _converse.MUCBookmarkForm = Backbone.VDOMView.extend({
-            className: 'muc-bookmark-form',
-
-            events: {
-                'submit form': 'onBookmarkFormSubmitted',
-                'click .button-cancel': 'closeBookmarkForm'
-            },
+        _converse.MUCBookmarkForm = HTMLView.extend({
+            className: 'muc-bookmark-form chatroom-form-container',
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
@@ -174,16 +169,12 @@ converse.plugins.add('converse-bookmark-views', {
             },
 
             toHTML () {
-                return tpl_chatroom_bookmark_form({
-                    'default_nick': this.model.get('nick'),
-                    'heading': __('Bookmark this groupchat'),
-                    'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
-                    'label_cancel': __('Cancel'),
-                    'label_name': __('The name for this bookmark:'),
-                    'label_nick': __('What should your nickname for this groupchat be?'),
-                    'label_submit': __('Save'),
-                    'name': this.model.get('name')
-                });
+                return tpl_muc_bookmark_form(Object.assign(
+                    this.model.toJSON(), {
+                        'onCancel': ev => this.closeBookmarkForm(ev),
+                        'onSubmit': ev => this.onBookmarkFormSubmitted(ev)
+                    }
+                ));
             },
 
             onBookmarkFormSubmitted (ev) {
@@ -204,9 +195,8 @@ converse.plugins.add('converse-bookmark-views', {
         });
 
 
-        _converse.BookmarksView = Backbone.VDOMView.extend({
-            tagName: 'div',
-            className: 'bookmarks-list list-container rooms-list-container',
+        _converse.BookmarksView = HTMLView.extend({
+            tagName: 'span',
             events: {
                 'click .add-bookmark': 'addBookmark',
                 'click .bookmarks-toggle': 'toggleBookmarksList',
@@ -236,13 +226,6 @@ converse.plugins.add('converse-bookmark-views', {
                 return tpl_bookmarks_list({
                     '_converse': _converse,
                     'bookmarks': this.model,
-                    'desc_bookmarks': __('Click to toggle the bookmarks list'),
-                    'info_leave_room': __('Leave this groupchat'),
-                    'info_remove': __('Remove this bookmark'),
-                    'info_remove_bookmark': __('Unbookmark this groupchat'),
-                    'info_title': __('Show more information on this groupchat'),
-                    'label_bookmarks': __('Bookmarks'),
-                    'open_title': __('Click to open this groupchat'),
                     'toggle_state': this.list_model.get('toggle-state'),
                     'is_bookmark_hidden': b => {
                         return !!(_converse.hide_open_bookmarks && _converse.chatboxes.get(b.get('jid')))

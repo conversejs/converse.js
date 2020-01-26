@@ -86,7 +86,7 @@ converse.plugins.add('converse-emoji-views', {
                     'autocompleting': value,
                     'position': input.selectionStart
                 }, {'silent': true});
-                this.emoji_picker_view.filter(value, true);
+                this.emoji_picker_view.filter(value);
                 this.emoji_dropdown.toggle();
             },
 
@@ -158,7 +158,7 @@ converse.plugins.add('converse-emoji-views', {
                             'onCategoryPicked': ev => this.chooseCategory(ev),
                             'onSearchInputBlurred': ev => this.chatview.emitFocused(ev),
                             'onSearchInputKeyDown': ev => this.onKeyDown(ev),
-                            'onSearchInputFocus': ev => this.onSearchInputFocus(),
+                            'onSearchInputFocus': ev => this.onSearchInputFocus(ev),
                             'search_results': this.search_results,
                             'shouldBeHidden': shortname => this.shouldBeHidden(shortname),
                             'toned_emojis': _converse.emojis.toned,
@@ -222,7 +222,7 @@ converse.plugins.add('converse-emoji-views', {
                 this.navigator.disable();
             },
 
-            filter (value, set_property) {
+            filter (value) {
                 const old_query = this.model.get('query');
                 if (!value) {
                     this.search_results = [];
@@ -281,7 +281,7 @@ converse.plugins.add('converse-emoji-views', {
                 if (this.chatview.emoji_dropdown) {
                     this.chatview.emoji_dropdown.toggle();
                 }
-                this.filter('', true);
+                this.filter('');
                 this.disableArrowNavigation();
             },
 
@@ -327,7 +327,7 @@ converse.plugins.add('converse-emoji-views', {
                     if (ev.target.value) {
                         ev.preventDefault();
                         const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
-                        match && this.filter(match, true);
+                        match && this.filter(match);
                     } else if (!this.navigator.enabled) {
                         this.enableArrowNavigation(ev);
                     }
@@ -413,7 +413,7 @@ converse.plugins.add('converse-emoji-views', {
                 this.model.set({'autocompleting': null, 'position': null});
                 this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'), replace, false, position);
                 this.chatview.emoji_dropdown.toggle();
-                this.filter('', true);
+                this.filter('');
             }
         });
 

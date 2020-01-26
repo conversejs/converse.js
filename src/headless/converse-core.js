@@ -359,7 +359,6 @@ _converse.createStore = function (id, storage) {
 }
 
 
-
 function initPlugins () {
     // If initialize gets called a second time (e.g. during tests), then we
     // need to re-apply all plugins (for a new converse instance), and we

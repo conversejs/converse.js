@@ -26,7 +26,7 @@ import tpl_user_details_modal from "templates/user_details_modal.js";
 import xss from "xss/dist/xss";
 
 
-const { Backbone, Strophe, sizzle, dayjs } = converse.env;
+const { Strophe, sizzle, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -721,7 +721,7 @@ converse.plugins.add('converse-chatview', {
              * Handler that gets called when a new message object is created.
              * @private
              * @method _converse.ChatBoxView#onMessageAdded
-             * @param { object } message - The message Backbone object that was added.
+             * @param { object } message - The message object that was added.
              */
             async onMessageAdded (message) {
                 const id = message.get('id');

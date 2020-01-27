@@ -46,7 +46,7 @@ converse.plugins.add('converse-chatboxes', {
             if (title.search(/^Messages \(\d+\) /) === -1) {
                 document.title = `Messages (${msg_counter}) ${title}`;
             } else {
-                document.title = title.replace(/^Messages \(\d+\) /, `Messages (${msg_counter})`);
+                document.title = title.replace(/^Messages \(\d+\) /, `Messages (${msg_counter}) `);
             }
         };
 

@@ -23,7 +23,7 @@ import tpl_chatroom_details_modal from "templates/chatroom_details_modal.js";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
 import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_chatroom_head from "templates/chatroom_head.html";
-import tpl_chatroom_invite from "templates/chatroom_invite.html";
+import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
 import tpl_muc_password_form from "templates/muc_password_form.js";
 import tpl_muc_sidebar from "templates/muc_sidebar.js";
@@ -701,7 +701,7 @@ converse.plugins.add('converse-muc-views', {
                 this.onMouseUp =  this.onMouseUp.bind(this);
 
                 this.render();
-                this.createOccupantsView();
+                this.createSidebarView();
                 await this.updateAfterMessagesFetched();
                 this.onConnectionStatusChanged();
                 /**
@@ -770,15 +770,15 @@ converse.plugins.add('converse-muc-views', {
                 return this;
             },
 
-            createOccupantsView () {
+            createSidebarView () {
                 this.model.occupants.chatroomview = this;
-                this.occupants_view = new _converse.ChatRoomOccupantsView({'model': this.model.occupants});
+                this.sidebar_view = new _converse.MUCSidebar({'model': this.model.occupants});
                 const container_el = this.el.querySelector('.chatroom-body');
                 const occupants_width = this.model.get('occupants_width');
-                if (this.occupants_view && occupants_width !== undefined) {
-                    this.occupants_view.el.style.flex = "0 0 " + occupants_width + "px";
+                if (this.sidebar_view && occupants_width !== undefined) {
+                    this.sidebar_view.el.style.flex = "0 0 " + occupants_width + "px";
                 }
-                container_el.insertAdjacentElement('beforeend', this.occupants_view.el);
+                container_el.insertAdjacentElement('beforeend', this.sidebar_view.el);
             },
 
             onStartResizeOccupants (ev) {
@@ -786,7 +786,7 @@ converse.plugins.add('converse-muc-views', {
                 this.el.addEventListener('mousemove', this.onMouseMove);
                 this.el.addEventListener('mouseup', this.onMouseUp);
 
-                const style = window.getComputedStyle(this.occupants_view.el);
+                const style = window.getComputedStyle(this.sidebar_view.el);
                 this.width = parseInt(style.width.replace(/px$/, ''), 10);
                 this.prev_pageX = ev.pageX;
             },
@@ -795,7 +795,7 @@ converse.plugins.add('converse-muc-views', {
                 if (this.resizing) {
                     ev.preventDefault();
                     const delta = this.prev_pageX - ev.pageX;
-                    this.resizeOccupantsView(delta, ev.pageX);
+                    this.resizeSidebarView(delta, ev.pageX);
                     this.prev_pageX = ev.pageX;
                 }
             },
@@ -806,26 +806,26 @@ converse.plugins.add('converse-muc-views', {
                     this.resizing = false;
                     this.el.removeEventListener('mousemove', this.onMouseMove);
                     this.el.removeEventListener('mouseup', this.onMouseUp);
-                    const element_position = this.occupants_view.el.getBoundingClientRect();
-                    const occupants_width = this.calculateOccupantsWidth(element_position, 0);
+                    const element_position = this.sidebar_view.el.getBoundingClientRect();
+                    const occupants_width = this.calculateSidebarWidth(element_position, 0);
                     const attrs = {occupants_width};
                     _converse.connection.connected ? this.model.save(attrs) : this.model.set(attrs);
                 }
             },
 
-            resizeOccupantsView (delta, current_mouse_position) {
-                const element_position = this.occupants_view.el.getBoundingClientRect();
+            resizeSidebarView (delta, current_mouse_position) {
+                const element_position = this.sidebar_view.el.getBoundingClientRect();
                 if (this.is_minimum) {
                     this.is_minimum = element_position.left < current_mouse_position;
                 } else if (this.is_maximum) {
                     this.is_maximum = element_position.left > current_mouse_position;
                 } else {
-                    const occupants_width = this.calculateOccupantsWidth(element_position, delta);
-                    this.occupants_view.el.style.flex = "0 0 " + occupants_width + "px";
+                    const occupants_width = this.calculateSidebarWidth(element_position, delta);
+                    this.sidebar_view.el.style.flex = "0 0 " + occupants_width + "px";
                 }
             },
 
-            calculateOccupantsWidth(element_position, delta) {
+            calculateSidebarWidth(element_position, delta) {
                 let occupants_width = element_position.width + delta;
                 const room_width = this.el.clientWidth;
                 // keeping display in boundaries
@@ -2120,19 +2120,62 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.ChatRoomOccupantsView = HTMLView.extend({
+        _converse.MUCInviteModal = _converse.BootstrapModal.extend({
+            id: "muc-invite-modal",
+
+            initialize () {
+                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                this.listenTo(this.model, 'change', this.render);
+                this.initInviteWidget();
+            },
+
+            toHTML () {
+                return tpl_muc_invite_modal(Object.assign(
+                    this.model.toJSON(), {
+                        'submitInviteForm': ev => this.submitInviteForm(ev)
+                    })
+                );
+            },
+
+            initInviteWidget () {
+                if (this.invite_auto_complete) {
+                    this.invite_auto_complete.destroy();
+                }
+                const list = _converse.roster.map(i => ({'label': i.getDisplayName(), 'value': i.get('jid')}));
+                const el = this.el.querySelector('.suggestion-box').parentElement;
+                this.invite_auto_complete = new _converse.AutoComplete(el, {
+                    'min_chars': 1,
+                    'list': list
+                });
+            },
+
+            submitInviteForm (ev) {
+                ev.preventDefault();
+                // TODO: Add support for sending an invite to multiple JIDs
+                const data = new FormData(ev.target);
+                const jid = data.get('invitee_jids');
+                const reason = data.get('reason');
+                if (u.isValidJID(jid)) {
+                    // TODO: Create and use API here
+                    this.chatroomview.model.directInvite(jid, reason);
+                    this.modal.hide();
+                } else {
+                    this.model.set({'invalid_invite_jid': true});
+                }
+            }
+        });
+
+
+        _converse.MUCSidebar = HTMLView.extend({
             tagName: 'div',
             className: 'occupants col-md-3 col-4',
 
             async initialize () {
                 this.chatroomview = this.model.chatroomview;
-                this.listenTo(this.model, 'add', this.maybeRenderInviteWidget);
                 this.listenTo(this.model, 'add', this.render);
                 this.listenTo(this.model, 'remove', this.render);
                 this.listenTo(this.model, 'change', this.render);
-                this.listenTo(this.model, 'change:affiliation', this.maybeRenderInviteWidget);
                 this.listenTo(this.chatroomview.model.features, 'change', this.render);
-                this.listenTo(this.chatroomview.model.features, 'change:open', this.renderInviteWidget);
                 this.listenTo(this.chatroomview.model, 'change:hidden_occupants', this.setVisibility);
                 this.render();
                 await this.model.fetched;
@@ -2141,21 +2184,16 @@ converse.plugins.add('converse-muc-views', {
             toHTML () {
                 return tpl_muc_sidebar(
                     Object.assign(this.chatroomview.model.toJSON(), {
-                        'allow_muc_invitations': _converse.allow_muc_invitations,
                         'features': this.chatroomview.model.features,
-                        'label_occupants': __('Participants'),
-                        'occupants': this.model.models
+                        'occupants': this.model.models,
+                        'invitesAllowed': () => this.invitesAllowed(),
+                        'showInviteModal': ev => this.showInviteModal(ev)
                     })
                 );
             },
 
             afterRender () {
-                if (_converse.allow_muc_invitations) {
-                    // TODO: the invite widget needs to be rendered via a directive
-                    _converse.api.waitUntil('rosterContactsFetched').then(() => this.renderInviteWidget());
-                }
                 this.setVisibility();
-                this.setOccupantsHeight();
             },
 
             setVisibility () {
@@ -2167,34 +2205,18 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            maybeRenderInviteWidget (occupant) {
-                if (occupant.get('jid') === _converse.bare_jid) {
-                    this.renderInviteWidget();
+            showInviteModal (ev) {
+                ev.preventDefault();
+                if (this.muc_invite_modal === undefined) {
+                    this.muc_invite_modal = new _converse.MUCInviteModal({'model': new Model()});
+                    // TODO: remove once we have API for sending direct invite
+                    this.muc_invite_modal.chatroomview = this.chatroomview;
                 }
-            },
-
-            renderInviteWidget () {
-                // TODO: this needs to be rendered inside muc_sidebar.js
-                const widget = this.el.querySelector('.room-invite');
-                if (this.shouldInviteWidgetBeShown()) {
-                    if (widget === null) {
-                        const heading = this.el.querySelector('.occupants-heading');
-                        heading.insertAdjacentHTML(
-                            'afterend',
-                            tpl_chatroom_invite({
-                                'error_message': null,
-                                'label_invitation': __('Invite'),
-                            })
-                        );
-                        this.initInviteWidget();
-                    }
-                } else if (widget !== null) {
-                    widget.remove();
-                }
-                return this;
+                this.muc_invite_modal.show(ev);
             },
 
             setOccupantsHeight () {
+                // TODO: remove the features section in sidebar and then this as well
                 const el = this.el.querySelector('.chatroom-features');
                 if (el) {
                     this.el.querySelector('.occupant-list').style.cssText =
@@ -2202,74 +2224,12 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            promptForInvite (suggestion) {
-                let reason = '';
-                if (!_converse.auto_join_on_invite) {
-                    reason = prompt(
-                        __('You are about to invite %1$s to the groupchat "%2$s". '+
-                           'You may optionally include a message, explaining the reason for the invitation.',
-                           suggestion.text.label, this.chatroomview.model.getDisplayName())
-                    );
-                }
-                if (reason !== null) {
-                    this.chatroomview.model.directInvite(suggestion.text.value, reason);
-                }
-                const form = this.el.querySelector('.room-invite form'),
-                      input = form.querySelector('.invited-contact'),
-                      error = form.querySelector('.error');
-                if (error !== null) {
-                    error.parentNode.removeChild(error);
-                }
-                input.value = '';
-            },
-
-            inviteFormSubmitted (evt) {
-                evt.preventDefault();
-                const el = evt.target.querySelector('input.invited-contact');
-                const jid = el.value;
-                if (u.isValid(jid)) {
-                    this.promptForInvite({
-                        'target': el,
-                        'text': {'label': jid, 'value': jid}}
-                    );
-                } else {
-                    evt.target.outerHTML = tpl_chatroom_invite({
-                        'error_message': __('Please enter a valid XMPP address'),
-                        'label_invitation': __('Invite'),
-                    });
-                    this.initInviteWidget();
-                }
-            },
-
-            shouldInviteWidgetBeShown () {
+            invitesAllowed () {
                 return _converse.allow_muc_invitations &&
                     (this.chatroomview.model.features.get('open') ||
                         this.chatroomview.model.getOwnAffiliation() === "owner"
                     );
-            },
-
-            initInviteWidget () {
-                const form = this.el.querySelector('.room-invite form');
-                if (form === null) {
-                    return;
-                }
-                form.addEventListener('submit', this.inviteFormSubmitted.bind(this), false);
-                const list = _converse.roster.map(i => ({'label': i.getDisplayName(), 'value': i.get('jid')}));
-                const el = this.el.querySelector('.suggestion-box').parentElement;
-
-                if (this.invite_auto_complete) {
-                    this.invite_auto_complete.destroy();
-                }
-                this.invite_auto_complete = new _converse.AutoComplete(el, {
-                    'min_chars': 1,
-                    'list': list
-                });
-                this.invite_auto_complete.on('suggestion-box-selectcomplete', ev => this.promptForInvite(ev));
-                this.invite_auto_complete.on('suggestion-box-open', () => {
-                    this.invite_auto_complete.ul.setAttribute('style', `max-height: calc(${this.el.offsetHeight}px - 80px);`);
-                });
-            },
-
+            }
         });
 
 

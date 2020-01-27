@@ -1940,36 +1940,54 @@
                     'muc_anonymous'
                 ]
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo', features);
-                spyOn(_converse.api, "trigger").and.callThrough();
-                spyOn(window, 'prompt').and.callFake(() => "Please join!");
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-
                 expect(view.model.getOwnAffiliation()).toBe('owner');
                 expect(view.model.features.get('open')).toBe(false);
-                expect(view.el.querySelectorAll('input.invited-contact').length).toBe(1);
 
+                expect(view.el.querySelector('.occupants-header .fa-user-plus')).not.toBe(null);
+
+                // Members can't invite if the room isn't open
                 view.model.getOwnOccupant().set('affiliation', 'member');
-                await u.waitUntil(() => view.el.querySelectorAll('input.invited-contact').length === 0);
+                await u.waitUntil(() => view.el.querySelector('.occupants-header .fa-user-plus') === null);
 
                 view.model.features.set('open', 'true');
+                await u.waitUntil(() => view.el.querySelector('.occupants-header .fa-user-plus'));
+
+                view.el.querySelector('.occupants-header .fa-user-plus').click();
+                const modal = view.sidebar_view.muc_invite_modal;
+                await u.waitUntil(() => u.isVisible(modal.el), 1000)
+
+                expect(modal.el.querySelectorAll('#invitee_jids').length).toBe(1);
+                expect(modal.el.querySelectorAll('textarea').length).toBe(1);
+
                 spyOn(view.model, 'directInvite').and.callThrough();
-                await u.waitUntil(() => view.el.querySelectorAll('input.invited-contact').length);
-                const input = view.el.querySelector('input.invited-contact');
-                expect(input.getAttribute('placeholder')).toBe('Invite');
+
+                const input = modal.el.querySelector('#invitee_jids');
                 input.value = "Balt";
+                modal.el.querySelector('button[type="submit"]').click();
+
+                await u.waitUntil(() => modal.el.querySelector('.error'));
+
+                const error = modal.el.querySelector('.error');
+                expect(error.textContent).toBe('Please enter a valid XMPP address');
+
                 let evt = new Event('input');
                 input.dispatchEvent(evt);
 
                 let sent_stanza;
                 spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
-                const hint = await u.waitUntil(() => view.el.querySelector('.suggestion-box__results li'));
+                const hint = await u.waitUntil(() => modal.el.querySelector('.suggestion-box__results li'));
                 expect(input.value).toBe('Balt');
                 expect(hint.textContent.trim()).toBe('Balthasar');
 
                 evt = new Event('mousedown', {'bubbles': true});
                 evt.button = 0;
                 hint.dispatchEvent(evt);
-                expect(window.prompt).toHaveBeenCalled();
+
+                const textarea = modal.el.querySelector('textarea');
+                textarea.value = "Please join!";
+                modal.el.querySelector('button[type="submit"]').click();
+
                 expect(view.model.directInvite).toHaveBeenCalled();
                 expect(sent_stanza.toLocaleString()).toBe(
                     `<message from="romeo@montague.lit/orchard" `+

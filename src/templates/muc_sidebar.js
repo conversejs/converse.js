@@ -20,6 +20,7 @@ const i18n_archived = __('Message archiving');
 const i18n_archived_hint = __('Messages are archived on the server');
 const i18n_features = __('Features');
 const i18n_hidden = __('Hidden');
+const i18n_invite_hint = __('Invite people to join this groupchat');
 const i18n_members_only = __('Members only');
 const i18n_members_only_hint = __('this groupchat is restricted to members only');
 const i18n_moderated = __('Moderated');
@@ -32,6 +33,7 @@ const i18n_not_moderated = __('Not moderated');
 const i18n_not_searchable_hint = __('This groupchat is not publicly searchable');
 const i18n_open = __('Open');
 const i18n_open_hint = __('Anyone can join this groupchat');
+const i18n_participants = __('Participants');
 const i18n_password = __('Password protected')
 const i18n_password_hint = __('This groupchat requires a password before entry');
 const i18n_persistent = __('Persistent');
@@ -77,11 +79,27 @@ const tpl_features = (o) => html`
     </div>
 `;
 
+const invite_button = (o) => {
+   if (o.invitesAllowed()) {
+        return html`
+            <a class="fa fa-user-plus"
+               title="${i18n_invite_hint}"
+               @click=${o.showInviteModal}
+               data-toggle="modal"
+               data-target="#muc-invite-modal"></a>`;
+   } else {
+       return '';
+   }
+}
+
 
 export default (o) => html`
     <div class="occupants-header">
         <i class="hide-occupants fa fa-times"></i>
-        <p class="occupants-heading">${o.label_occupants}</p>
+        <div class="occupants-header--title">
+            <span class="occupants-heading">${i18n_participants}</span>
+            ${ invite_button(o) }
+        </div>
     </div>
     <div class="dragresize dragresize-occupants-left"></div>
     <ul class="occupant-list">

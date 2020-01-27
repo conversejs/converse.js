@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2019-11-09 18:04+0000\n"
+"PO-Revision-Date: 2020-01-27 16:40+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.11-dev\n"
 
 #: dist/converse-no-dependencies.js:5695
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: dist/converse-no-dependencies.js:5697 dist/converse-no-dependencies.js:9249
 #: dist/converse-no-dependencies.js:10175
@@ -43,9 +43,8 @@ msgid "Edit this message"
 msgstr "Editar esta mensaxe"
 
 #: dist/converse-no-dependencies.js:7939
-#, fuzzy
 msgid "Retract this message"
-msgstr "Editar esta mensaxe"
+msgstr "Eliminar esta mensaxe"
 
 #: dist/converse-no-dependencies.js:7955
 msgid "Message versions"
@@ -167,7 +166,7 @@ msgstr "Unirse"
 
 #: dist/converse-no-dependencies.js:8866
 msgid "No message history available."
-msgstr ""
+msgstr "Non está dispoñible o historial de mensaxes."
 
 #: dist/converse-no-dependencies.js:8899
 msgid "You're not allowed to send messages in this room"
@@ -871,9 +870,9 @@ msgstr "Mostrar máis"
 
 #: dist/converse-no-dependencies.js:39389
 #: dist/converse-no-dependencies.js:39391
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s foi eliminado por non ser membro"
+msgstr "%1$s foi eliminou esta mensaxe"
 
 #: dist/converse-no-dependencies.js:39408
 msgid "Typing from another device"
@@ -968,9 +967,8 @@ msgid "Remove messages"
 msgstr "Eliminar mensaxes"
 
 #: dist/converse-no-dependencies.js:40964
-#, fuzzy
 msgid "Close this chat"
-msgstr "Pechar esta ventá de conversa"
+msgstr "Pechar esta conversa"
 
 #: dist/converse-no-dependencies.js:40964
 msgid "Write in the third person"
@@ -987,17 +985,19 @@ msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
+"Ten en conta que outros clientes XMPP/Jabber (e servidores) poderían non ter "
+"soporte para retirar mensaxes polo que esta mensaxe podería non ser "
+"eliminada deles."
 
 #: dist/converse-no-dependencies.js:41211
 #: dist/converse-no-dependencies.js:51233
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "Seguro que quere eliminar este contacto?"
+msgstr "Seguro que queres eliminar esta mensaxe?"
 
 #: dist/converse-no-dependencies.js:41218
 #: dist/converse-no-dependencies.js:51240
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmar"
 
 #: dist/converse-no-dependencies.js:41252
 msgid ""
@@ -1040,9 +1040,8 @@ msgid "Ungrouped"
 msgstr "Sen agrupar"
 
 #: dist/converse-no-dependencies.js:42949
-#, fuzzy
 msgid "New messages"
-msgstr "Eliminar mensaxes"
+msgstr "Novas mensaxes"
 
 #: dist/converse-no-dependencies.js:43590
 #, javascript-format
@@ -1253,43 +1252,36 @@ msgid "Groupchat info for %1$s"
 msgstr "Info da conversa en grupo para %1$s"
 
 #: dist/converse-no-dependencies.js:51253
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "Ten mensaxes sen ler"
+msgstr "Vas a eliminar esta mensaxe."
 
 #: dist/converse-no-dependencies.js:51253
-#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
-"Vai convidar a %1$s a conversa en grupo \"%2$s\". Pode incluír unha mensaxe, "
-"explicando a razón para o convite."
+"De xeito opcional poderías deixar un aviso, explicando a razón de tela "
+"eliminado."
 
 #: dist/converse-no-dependencies.js:51260
-#, fuzzy
 msgid "Message Retraction"
-msgstr "Versións da mensaxe"
+msgstr "Eliminación da mensaxe"
 
 #: dist/converse-no-dependencies.js:51260
-#, fuzzy
 msgid "Optional reason"
-msgstr "Truco opcional"
+msgstr "Razón (optativo)"
 
 #: dist/converse-no-dependencies.js:51299
-#, fuzzy
 msgid "Sorry, something went wrong while trying to retract your message."
-msgstr "Lamentámolo, algo fallou ao intentar actualizar"
+msgstr "Lamentámolo, algo fallou ao intentar eliminar a mensaxe."
 
 #: dist/converse-no-dependencies.js:51341
-#, fuzzy
 msgid "A timeout occurred while trying to retract the message"
-msgstr "Lamentámolo, algo fallou ao intentar eliminar os dispositivos."
+msgstr "Caducou a solicitude de borrado da mensaxe"
 
 #: dist/converse-no-dependencies.js:51347
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "Non tes permiso para realizar ese cambio"
+msgstr "Desculpa, pero non tes permiso para borrar esta mensaxe."
 
 #: dist/converse-no-dependencies.js:51426
 #, javascript-format
@@ -1418,9 +1410,8 @@ msgid "Clear the chat area"
 msgstr "Limpar o área de conversa"
 
 #: dist/converse-no-dependencies.js:51910
-#, fuzzy
 msgid "Close this groupchat"
-msgstr "Eliminar esta conversa en grupo"
+msgstr "Pechar esta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:51910
 msgid "Change user role to participant"
@@ -1493,9 +1484,8 @@ msgid "Error: invalid number of arguments"
 msgstr "Fallo: número de argumentos non válido"
 
 #: dist/converse-no-dependencies.js:52039
-#, fuzzy
 msgid "Choose a nickname to enter"
-msgstr "Escolla o ficheiro a enviar"
+msgstr "Escolle un alcume para entrar"
 
 #: dist/converse-no-dependencies.js:52039
 msgid "Please choose your nickname"

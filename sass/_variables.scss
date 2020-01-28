@@ -43,7 +43,6 @@ $mobile_portrait_length: 480px !default;
     --send-button-height: 27px;
     --send-button-margin: 3px;
 
-    --controlbox-heading-top-margin: 0.75em;
     --inline-action-margin: 0.75em;
 
     --roster-height: 194px;
@@ -84,12 +83,17 @@ $mobile_portrait_length: 480px !default;
     --button-border-radius: 5px;
     --chatbox-border-radius: 4px;
 
+
+    --groupchats-header-color: var(--chatroom-head-bg-color);
+    --groupchats-header-color-dark: var(--chatroom-head-bg-color-dark);
+
     --controlbox-width: 250px;
     --controlbox-head-color: var(--light-blue);
-    --controlbox-head-color-lighten-45-percent: #eff4f7; // lighten($light-blue, 45%)
-    --controlbox-pane-background-color: white;
     --controlbox-heading-color: inherit;
     --controlbox-heading-font-weight: bold;
+    --controlbox-heading-top-margin: 0.75em;
+    --controlbox-pane-background-color: white;
+    --controlbox-pane-bg-hover-color: #eff4f7;
 
     --chat-gutter: 0.5em;
     --minimized-chats-width: 130px;
@@ -106,13 +110,13 @@ $mobile_portrait_length: 480px !default;
     --heading-display: block;
     --heading-color: white;
 
-    --chatroom-head-color: var(--redder-orange);
-    --chatroom-head-color-dark: #D24E2B; // $red
-    --chatroom-head-color-lighten-25-percent: #f6ccc1; // lighten($red, 25%)
-    --chatroom-head-button-color: var(--chatroom-head-color);
+    --chatroom-head-color: white;
+    --chatroom-head-bg-color: var(--redder-orange);
+    --chatroom-head-bg-color-dark: #D24E2B; // $red
+    --chatroom-head-button-color: var(--chatroom-head-bg-color);
     --chatroom-head-title-font-weight: normal;
     --chatroom-head-title-padding-right: 0px;
-    --chatroom-head-description-color: var(--chatroom-head-color-lighten-25-percent);
+    --chatroom-head-description-color: var(--chatroom-head-bg-color-lighten-25-percent);
     --chatroom-head-description-link-color: white;
     --chatroom-head-description-display: block;
     --chatroom-head-description-border-left: 0px;
@@ -120,8 +124,8 @@ $mobile_portrait_length: 480px !default;
     --chatroom-head-border-bottom: 0px;
     --chatroom-width: 500px;
     --chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
-    --chatroom-badge-color: var(--chatroom-head-color);
-    --chatroom-badge-hover-color: var(--chatroom-head-color-dark);
+    --chatroom-badge-color: var(--chatroom-head-bg-color);
+    --chatroom-badge-hover-color: var(--chatroom-head-bg-color-dark);
 
     --headline-head-color: var(--orange);
     --headline-message-color: #D2842B;
@@ -138,10 +142,10 @@ $mobile_portrait_length: 480px !default;
     --message-font-size: var(--font-size);
     --separator-text-color: var(--message-text-color);
     --chat-separator-border-bottom: 2px solid var(--chat-head-color);
-    --chatroom-separator-border-bottom: 2px solid var(--chatroom-head-color);
+    --chatroom-separator-border-bottom: 2px solid var(--chatroom-head-bg-color);
 
-    --message-input-border-top: 4px solid var(--chatroom-head-color);
-    --message-input-color: var(--chatroom-head-color);
+    --message-input-border-top: 4px solid var(--chatroom-head-bg-color);
+    --message-input-color: var(--chatroom-head-bg-color);
 
     --line-height-small: 14px;
     --line-height: 16px;
@@ -191,8 +195,10 @@ $mobile_portrait_length: 480px !default;
     --avatar-background-color: none;
 
     --controlbox-pane-background-color: #333;
+    --controlbox-pane-bg-hover-color: #464646;
     --controlbox-heading-color: #777;
     --controlbox-heading-font-weight: bold;
+    --groupchats-header-color: var(--redder-orange);
 
     --chat-topic-display: none;
     --chat-info-display: none;
@@ -203,10 +209,10 @@ $mobile_portrait_length: 480px !default;
     --chatbox-border-radius: 0px;
 
     --heading-display: inline;
-    --heading-color: #4F545C;
+    --heading-color: #9B4D;
 
-    --chatroom-head-color: white;
-    --chatroom-head-color-lighten-25-percent: blue;
+    --chatroom-head-color: #7E7E7E;
+    --chatroom-head-bg-color: white;
     --chatroom-head-button-color: #999;
     --chatroom-head-title-font-weight: bold;
     --chatroom-head-title-padding-right: 12px;

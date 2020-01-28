@@ -135,17 +135,17 @@
 
     .chatroom {
         .emoji-picker.toolbar-menu {
-            background-color: var(--chatroom-head-color);
+            background-color: var(--chatroom-head-bg-color);
             background: white;
             .emoji-skintone-picker {
-                background-color: var(--chatroom-head-color);
+                background-color: var(--chatroom-head-bg-color);
             }
             .emoji-picker__header {
-                background-color: var(--chatroom-head-color);
+                background-color: var(--chatroom-head-bg-color);
                 ul {
                     .emoji-category {
                         &.picked {
-                            border: 1px var(--chatroom-head-color) solid;
+                            border: 1px var(--chatroom-head-bg-color) solid;
                             border-bottom: none;
                         }
                     }

@@ -1,7 +1,7 @@
 #conversejs.converse-embedded,
 #conversejs {
     .badge-room-color {
-        background-color: var(--chatroom-head-color);
+        background-color: var(--chatroom-head-bg-color);
     }
 
     .add-chatroom {
@@ -37,7 +37,8 @@
 
 
     .chat-head-chatroom {
-        background-color: var(--chatroom-head-color);
+        color: var(--chatroom-head-color);
+        background-color: var(--chatroom-head-bg-color);
         border-bottom: var(--chatroom-head-border-bottom);
 
         .chat-head__desc {
@@ -89,7 +90,7 @@
 
         .box-flyout {
             overflow-y: hidden;
-            background-color: var(--chatroom-head-color);
+            background-color: var(--chatroom-head-bg-color);
 
             width: 100%;
             @media screen and (max-height: $mobile-landscape-height) {
@@ -117,11 +118,11 @@
                 .chat-topic {
                     display: var(--chat-topic-display);
                     font-weight: bold;
-                    color: var(--chatroom-head-color);
+                    color: var(--chatroom-head-bg-color);
                 }
                 .chat-info {
                     display: var(--chat-info-display);
-                    color: var(--chatroom-head-color);
+                    color: var(--chatroom-head-bg-color);
                     line-height: normal;
                     &.badge {
                         color: var(--chat-head-text-color);
@@ -145,7 +146,7 @@
                     min-width: 25%;
                     word-wrap: break-word;
                     .new-msgs-indicator {
-                        background-color: var(--chatroom-head-color);
+                        background-color: var(--chatroom-head-bg-color);
                     }
                     .chat-content {
                         height: 100%;
@@ -189,7 +190,7 @@
 
                     .occupants-heading {
                         font-family: var(--heading-font);
-                        color: var(--chatroom-head-color);
+                        color: var(--groupchats-header-color-dark);
                         padding-left: 0;
                         margin-right: 1em;
                     }
@@ -336,7 +337,7 @@
             padding: 0.5em;
             text-align: center;
             font-size: var(--font-size-small);
-            background-color: var(--chatroom-head-color);
+            background-color: var(--chatroom-head-bg-color);
             color: white;
 
             &.muc-bottom-panel--nickname {
@@ -371,7 +372,7 @@
 
             .chat-textarea {
                 &:active, &:focus{
-                    outline-color: var(--chatroom-head-color);
+                    outline-color: var(--chatroom-head-bg-color);
                 }
                 border-bottom-right-radius: 0;
                 &.correcting {
@@ -470,9 +471,9 @@
 
     .chatroom {
         .box-flyout {
-            background-color: var(--chatroom-head-color);
-            border: var(--flyout-padding) solid var(--chatroom-head-color);
-            border-top: 0.8em solid var(--chatroom-head-color);
+            background-color: var(--chatroom-head-bg-color);
+            border: var(--flyout-padding) solid var(--chatroom-head-bg-color);
+            border-top: 0.8em solid var(--chatroom-head-bg-color);
             width: 100%;
 
             .chat-head__desc {

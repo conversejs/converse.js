@@ -102,7 +102,7 @@
             }
 
             &:hover {
-                background-color: var(--controlbox-head-color-lighten-45-percent);
+                background-color: var(--controlbox-pane-bg-hover-color);
                 .fa, .far, .fas {
                     opacity: 1;
                 }

@@ -231,13 +231,15 @@
             try {
                 store= db.transaction([bare_jid], "readwrite").objectStore(bare_jid);
             } catch (e) {
-                console.error(e);
                 return promise.resolve();
             }
             const request = store.clear();
             request.onsuccess = promise.resolve();
             request.onerror = promise.resolve();
         };
+        db_request.onerror = function (ev) {
+            return promise.reject(ev.target.error);
+        }
         return promise;
     }
 
@@ -313,9 +315,10 @@
         }
 
         return async done => {
-            const _converse = await initConverse(settings);
+            let _converse;
+
             async function _done () {
-                if (_converse.api.connection.connected()) {
+                if (_converse && _converse.api.connection.connected()) {
                     await _converse.api.user.logout();
                 }
                 const el = document.querySelector('#conversejs');
@@ -325,8 +328,9 @@
                 document.title = "Converse Tests";
                 done();
             }
-            await Promise.all((promise_names || []).map(_converse.api.waitUntil));
             try {
+                _converse = await initConverse(settings);
+                await Promise.all((promise_names || []).map(_converse.api.waitUntil));
                 await func(_done, _converse);
             } catch(e) {
                 console.error(e);

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2020-01-27 16:40+0000\n"
+"PO-Revision-Date: 2020-01-30 07:50+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -1629,7 +1629,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:53319
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr "Notificación desde %1$s"
+msgstr "Notificación de %1$s"
 
 #: dist/converse-no-dependencies.js:53321
 #: dist/converse-no-dependencies.js:53331

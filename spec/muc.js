@@ -1944,16 +1944,16 @@
                 expect(view.model.getOwnAffiliation()).toBe('owner');
                 expect(view.model.features.get('open')).toBe(false);
 
-                expect(view.el.querySelector('.occupants-header .fa-user-plus')).not.toBe(null);
+                expect(view.el.querySelector('.open-invite-modal')).not.toBe(null);
 
                 // Members can't invite if the room isn't open
                 view.model.getOwnOccupant().set('affiliation', 'member');
-                await u.waitUntil(() => view.el.querySelector('.occupants-header .fa-user-plus') === null);
+                await u.waitUntil(() => view.el.querySelector('.open-invite-modal') === null);
 
                 view.model.features.set('open', 'true');
-                await u.waitUntil(() => view.el.querySelector('.occupants-header .fa-user-plus'));
+                await u.waitUntil(() => view.el.querySelector('.open-invite-modal'));
 
-                view.el.querySelector('.occupants-header .fa-user-plus').click();
+                view.el.querySelector('.open-invite-modal').click();
                 const modal = view.sidebar_view.muc_invite_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000)
 
@@ -2506,26 +2506,38 @@
                 ];
                 await test_utils.openAndEnterChatRoom(_converse, 'room@conference.example.org', 'romeo', features);
                 const jid = 'room@conference.example.org';
-                const chatroomview = _converse.chatboxviews.get(jid);
-                let features_list = chatroomview.el.querySelector('.features-list');
-                let features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
-                expect(_.difference(["Password protected", "Open", "Temporary", "Not anonymous", "Not moderated"], features_shown).length).toBe(0);
-                expect(chatroomview.model.features.get('hidden')).toBe(false);
-                expect(chatroomview.model.features.get('mam_enabled')).toBe(false);
-                expect(chatroomview.model.features.get('membersonly')).toBe(false);
-                expect(chatroomview.model.features.get('moderated')).toBe(false);
-                expect(chatroomview.model.features.get('nonanonymous')).toBe(true);
-                expect(chatroomview.model.features.get('open')).toBe(true);
-                expect(chatroomview.model.features.get('passwordprotected')).toBe(true);
-                expect(chatroomview.model.features.get('persistent')).toBe(false);
-                expect(chatroomview.model.features.get('publicroom')).toBe(true);
-                expect(chatroomview.model.features.get('semianonymous')).toBe(false);
-                expect(chatroomview.model.features.get('temporary')).toBe(true);
-                expect(chatroomview.model.features.get('unmoderated')).toBe(true);
-                expect(chatroomview.model.features.get('unsecured')).toBe(false);
-                expect(chatroomview.el.querySelector('.chatbox-title__text').textContent.trim()).toBe('Room');
+                const view = _converse.chatboxviews.get(jid);
 
-                chatroomview.el.querySelector('.configure-chatroom-button').click();
+                const info_el = view.el.querySelector(".show-room-details-modal");
+                info_el.click();
+                const  modal = view.model.room_details_modal;
+                await u.waitUntil(() => u.isVisible(modal.el), 1000);
+
+                let features_list = modal.el.querySelector('.features-list');
+                let features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
+
+                expect(features_shown.join(' ')).toBe(
+                    'Password protected - This groupchat requires a password before entry '+
+                    'Open - Anyone can join this groupchat '+
+                    'Temporary - This groupchat will disappear once the last person leaves '+
+                    'Not anonymous - All other groupchat participants can see your XMPP address '+
+                    'Not moderated - Participants entering this groupchat can write right away');
+                expect(view.model.features.get('hidden')).toBe(false);
+                expect(view.model.features.get('mam_enabled')).toBe(false);
+                expect(view.model.features.get('membersonly')).toBe(false);
+                expect(view.model.features.get('moderated')).toBe(false);
+                expect(view.model.features.get('nonanonymous')).toBe(true);
+                expect(view.model.features.get('open')).toBe(true);
+                expect(view.model.features.get('passwordprotected')).toBe(true);
+                expect(view.model.features.get('persistent')).toBe(false);
+                expect(view.model.features.get('publicroom')).toBe(true);
+                expect(view.model.features.get('semianonymous')).toBe(false);
+                expect(view.model.features.get('temporary')).toBe(true);
+                expect(view.model.features.get('unmoderated')).toBe(true);
+                expect(view.model.features.get('unsecured')).toBe(false);
+                expect(view.el.querySelector('.chatbox-title__text').textContent.trim()).toBe('Room');
+
+                view.el.querySelector('.configure-chatroom-button').click();
 
                 const IQs = _converse.connection.IQ_stanzas;
                 let iq = await u.waitUntil(() => _.filter(
@@ -2602,9 +2614,9 @@
                 _converse.connection._dataRecv(test_utils.createRequest(response_el));
                 const el = await u.waitUntil(() => document.querySelector('.chatroom-form legend'));
                 expect(el.textContent.trim()).toBe("Configuration for room@conference.example.org");
-                sizzle('[name="muc#roomconfig_membersonly"]', chatroomview.el).pop().click();
-                sizzle('[name="muc#roomconfig_roomname"]', chatroomview.el).pop().value = "New room name"
-                chatroomview.el.querySelector('.chatroom-form input[type="submit"]').click();
+                sizzle('[name="muc#roomconfig_membersonly"]', view.el).pop().click();
+                sizzle('[name="muc#roomconfig_roomname"]', view.el).pop().value = "New room name"
+                view.el.querySelector('.chatroom-form input[type="submit"]').click();
 
                 iq = await u.waitUntil(() => _.filter(IQs, iq => u.matchesSelector(iq, `iq[to="${jid}"][type="set"]`)).pop());
                 const result = $iq({
@@ -2656,24 +2668,30 @@
 
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
-                await u.waitUntil(() => new Promise(success => chatroomview.model.features.on('change', success)));
-                features_list = chatroomview.el.querySelector('.features-list');
+                await u.waitUntil(() => new Promise(success => view.model.features.on('change', success)));
+                features_list = modal.el.querySelector('.features-list');
                 features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
-                expect(_.difference(["Password protected", "Hidden", "Members only", "Temporary", "Not anonymous", "Not moderated"], features_shown).length).toBe(0);
-                expect(chatroomview.model.features.get('hidden')).toBe(true);
-                expect(chatroomview.model.features.get('mam_enabled')).toBe(false);
-                expect(chatroomview.model.features.get('membersonly')).toBe(true);
-                expect(chatroomview.model.features.get('moderated')).toBe(false);
-                expect(chatroomview.model.features.get('nonanonymous')).toBe(true);
-                expect(chatroomview.model.features.get('open')).toBe(false);
-                expect(chatroomview.model.features.get('passwordprotected')).toBe(true);
-                expect(chatroomview.model.features.get('persistent')).toBe(false);
-                expect(chatroomview.model.features.get('publicroom')).toBe(false);
-                expect(chatroomview.model.features.get('semianonymous')).toBe(false);
-                expect(chatroomview.model.features.get('temporary')).toBe(true);
-                expect(chatroomview.model.features.get('unmoderated')).toBe(true);
-                expect(chatroomview.model.features.get('unsecured')).toBe(false);
-                expect(chatroomview.el.querySelector('.chatbox-title__text').textContent.trim()).toBe('New room name');
+                expect(features_shown.join(' ')).toBe(
+                    'Password protected - This groupchat requires a password before entry '+
+                    'Hidden - This groupchat is not publicly searchable '+
+                    'Members only - This groupchat is restricted to members only '+
+                    'Temporary - This groupchat will disappear once the last person leaves '+
+                    'Not anonymous - All other groupchat participants can see your XMPP address '+
+                    'Not moderated - Participants entering this groupchat can write right away');
+                expect(view.model.features.get('hidden')).toBe(true);
+                expect(view.model.features.get('mam_enabled')).toBe(false);
+                expect(view.model.features.get('membersonly')).toBe(true);
+                expect(view.model.features.get('moderated')).toBe(false);
+                expect(view.model.features.get('nonanonymous')).toBe(true);
+                expect(view.model.features.get('open')).toBe(false);
+                expect(view.model.features.get('passwordprotected')).toBe(true);
+                expect(view.model.features.get('persistent')).toBe(false);
+                expect(view.model.features.get('publicroom')).toBe(false);
+                expect(view.model.features.get('semianonymous')).toBe(false);
+                expect(view.model.features.get('temporary')).toBe(true);
+                expect(view.model.features.get('unmoderated')).toBe(true);
+                expect(view.model.features.get('unsecured')).toBe(false);
+                expect(view.el.querySelector('.chatbox-title__text').textContent.trim()).toBe('New room name');
                 done();
             }));
 

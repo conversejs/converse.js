@@ -615,6 +615,7 @@ converse.plugins.add('converse-muc-views', {
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change', this.render);
+                this.listenTo(this.model.features, 'change', this.render);
                 this.listenTo(this.model.occupants, 'add', this.render);
                 this.listenTo(this.model.occupants, 'change', this.render);
             },

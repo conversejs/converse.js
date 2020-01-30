@@ -1,7 +1,10 @@
 # Changelog
 
-## 6.0.1 (Unreleased)
 
+## 7.0.0 (Unreleased)
+
+- Replace Backbone with [Skeletor](https://github.com/skeletorjs/skeletor)
+- Start using [lit-html](https://lit-html.polymer-project.org/) instead of lodash for templating.
 - Bugfix. Handle stanza that clears the MUC subject
 - #1313: Stylistic improvements to the send button
 - #1793: Send button doesn't appear in Firefox in 1:1 chats

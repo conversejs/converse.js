@@ -4,12 +4,11 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { Collection } from "skeletor.js/src/collection";
+import { HTMLView } from 'skeletor.js/src/htmlview.js';
 import { Model } from 'skeletor.js/src/model.js';
 import converse from "@converse/headless/converse-core";
 import hello from "hellojs";
-import tpl_oauth_providers from "templates/oauth_providers.html";
-
-const { _, Backbone } = converse.env;
+import tpl_oauth_providers from "templates/oauth_providers.js";
 
 
 // The following line registers your plugin.
@@ -91,17 +90,12 @@ converse.plugins.add("converse-oauth", {
         _converse.oauth_providers = new _converse.OAuthProviders();
 
 
-        _converse.OAuthProvidersView = Backbone.VDOMView.extend({
-            'events': {
-                'click .oauth-login': 'oauthLogin'
-            },
-
+        _converse.OAuthProvidersView = HTMLView.extend({
             toHTML () {
                 return tpl_oauth_providers(
                     Object.assign({
-                        '_': _,
-                        '__': _converse.__,
-                        'providers': this.model.toJSON()
+                        'providers': this.model.toJSON(),
+                        'oauthLogin': ev => this.oauthLogin(ev)
                     }));
             },
 

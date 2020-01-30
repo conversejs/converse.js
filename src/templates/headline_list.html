@@ -2,10 +2,10 @@
 <div class="items-list rooms-list headline-list">
     {[o.headlineboxes.forEach(function (headline) { ]}
         <div class="list-item controlbox-padded d-flex flex-row"
-            data-headline-jid="{{{headline}}}">
+            data-headline-jid="{{{headline.get('jid')}}}">
         <a class="list-item-link open-headline available-room w-100"
-            data-headline-jid="{{{headline}}}"
-            title="{{{o.open_title}}}" href="#">{{{headline}}}</a>
+            data-headline-jid="{{{headline.get('jid')}}}"
+            title="{{{o.open_title}}}" href="#">{{{headline.get('jid')}}}</a>
         </div>
     {[ }) ]}
 </div>

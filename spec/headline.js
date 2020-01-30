@@ -125,6 +125,7 @@
         it("will remove headline messages from the controlbox if closed", mock.initConverse(
             ['rosterGroupsFetched'], {}, async function (done, _converse) {
 
+            await test_utils.openControlBox(_converse);
             /* <message from='notify.example.com'
              *          to='romeo@im.example.com'
              *          type='headline'

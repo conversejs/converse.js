@@ -4,8 +4,12 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-chatview";
+import { View } from 'skeletor.js/src/view.js';
+import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.html";
+import tpl_headline_list from "templates/headline_list.html";
+import tpl_headline_panel from "templates/headline_panel.html";
 
 
 converse.plugins.add('converse-headlines-view', {
@@ -21,12 +25,86 @@ converse.plugins.add('converse-headlines-view', {
      */
     dependencies: ["converse-headlines", "converse-chatview"],
 
+    overrides: {
+        // Overrides mentioned here will be picked up by converse.js's
+        // plugin architecture they will replace existing methods on the
+        // relevant objects or classes.
+        //
+        // New functions which don't exist yet can also be added.
+
+        ControlBoxView: {
+            renderControlBoxPane () {
+                this.__super__.renderControlBoxPane.apply(this, arguments);
+                this.renderHeadlinePanel();
+            },
+        },
+    },
+
+
+
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+
+
+        const viewWithHeadlinePanel = {
+            renderHeadlinePanel () {
+                if (this.headlinepanel && u.isInDOM(this.headlinepanel.el)) {
+                    return this.headlinepanel;
+                }
+                this.headlinepanel = new _converse.HeadlinePanel();
+                this.el.querySelector('.controlbox-pane').insertAdjacentElement(
+                    'beforeEnd', this.headlinepanel.render().el);
+
+                return this.headlinepanel;
+            },
+
+            getHeadlinePanel () {
+                if (this.headlinepanel && u.isInDOM(this.headlinepanel.el)) {
+                    return this.headlinepanel;
+                } else {
+                    return this.renderHeadlinePanel();
+                }
+            }
+        }
+
+        if (_converse.ControlBoxView) {
+            Object.assign(_converse.ControlBoxView.prototype, viewWithHeadlinePanel);
+        }
+
+
+        /**
+         * View which renders headlines section of the control box.
+         * @class
+         * @namespace _converse.HeadlinePanel
+         * @memberOf _converse
+         */
+        _converse.HeadlinePanel = View.extend({
+            tagName: 'div',
+            className: 'controlbox-section',
+            id: 'headline',
+
+            events: {
+                'click .open-headline': 'openHeadline'
+            },
+
+            openHeadline (ev) {
+                ev.preventDefault();
+                const jid = ev.target.getAttribute('data-headline-jid');
+                const chat = _converse.chatboxes.get(jid);
+                chat.maybeShow(true);
+            },
+
+            render () {
+                this.el.innerHTML = tpl_headline_panel({
+                    'heading_headline': __('Announcements')
+                });
+                return this;
+            }
+        });
 
 
         _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
@@ -80,13 +158,30 @@ converse.plugins.add('converse-headlines-view', {
         });
 
 
+        async function renderHeadlineList (removedBox=null) {
+            const controlboxview = _converse.chatboxviews.get('controlbox');
+            if (controlboxview !== undefined) {
+                const headlineboxes = await _converse.api.headlines.get();
+                const el = controlboxview.el.querySelector('.list-container--headline');
+                const headline_list = tpl_headline_list({
+                    headlineboxes,
+                    'open_title': __('Click to open this server message'),
+                });
+                el && (el.outerHTML = headline_list);
+            }
+        }
+
+
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
             const views = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
                 if (!views.get(item.get('id')) && item.get('type') === _converse.HEADLINES_TYPE) {
                     views.add(item.get('id'), new _converse.HeadlinesBoxView({model: item}));
+                    renderHeadlineList();
                 }
             });
+
+            _converse.chatboxes.on('remove', () => renderHeadlineList());
         });
     }
 });

@@ -44,7 +44,7 @@
         }));
 
         it("will open and display headline messages", mock.initConverse(
-            ['rosterGroupsFetched'], {}, function (done, _converse) {
+                ['rosterGroupsFetched'], {}, async function (done, _converse) {
 
             /* <message from='notify.example.com'
              *          to='romeo@im.example.com'
@@ -72,15 +72,10 @@
                     .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
 
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(
-                _.includes(
-                    _converse.chatboxviews.keys(),
-                    'notify.example.com')
-                ).toBeTruthy();
+            await u.waitUntil(() => _converse.chatboxviews.keys().includes('notify.example.com'));
             expect(u.isHeadlineMessage.called).toBeTruthy();
             expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
             u.isHeadlineMessage.restore(); // unwraps
-            // Headlines boxes don't show an avatar
             const view = _converse.chatboxviews.get('notify.example.com');
             expect(view.model.get('show_avatar')).toBeFalsy();
             expect(view.el.querySelector('img.avatar')).toBe(null);

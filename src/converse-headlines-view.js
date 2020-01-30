@@ -8,8 +8,7 @@ import { View } from 'skeletor.js/src/view.js';
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.html";
-import tpl_headline_list from "templates/headline_list.js";
-import tpl_headline_panel from "templates/headline_panel.html";
+import tpl_headline_panel from "templates/headline_panel.js";
 
 const u = converse.env.utils;
 
@@ -37,7 +36,7 @@ converse.plugins.add('converse-headlines-view', {
         ControlBoxView: {
             renderControlBoxPane () {
                 this.__super__.renderControlBoxPane.apply(this, arguments);
-                this.renderHeadlinePanel();
+                this.renderHeadlinesPanel();
             },
         },
     },
@@ -50,15 +49,12 @@ converse.plugins.add('converse-headlines-view', {
         const { _converse } = this;
 
 
-        const viewWithHeadlinePanel = {
-            renderHeadlinePanel () {
+        const viewWithHeadlinesPanel = {
+            renderHeadlinesPanel () {
                 if (this.headlinepanel && u.isInDOM(this.headlinepanel.el)) {
                     return this.headlinepanel;
                 }
-                this.headlinepanel = new _converse.HeadlinePanel();
-                this.el.querySelector('.controlbox-pane').insertAdjacentElement(
-                    'beforeEnd', this.headlinepanel.render().el);
-
+                this.headlinepanel = new _converse.HeadlinesPanel({'model': _converse.chatboxes});
                 /**
                  * Triggered once the section of the { @link _converse.ControlBoxView }
                  * which shows announcements has been rendered.
@@ -71,23 +67,43 @@ converse.plugins.add('converse-headlines-view', {
         }
 
         if (_converse.ControlBoxView) {
-            Object.assign(_converse.ControlBoxView.prototype, viewWithHeadlinePanel);
+            Object.assign(_converse.ControlBoxView.prototype, viewWithHeadlinesPanel);
         }
 
 
         /**
          * View which renders headlines section of the control box.
          * @class
-         * @namespace _converse.HeadlinePanel
+         * @namespace _converse.HeadlinesPanel
          * @memberOf _converse
          */
-        _converse.HeadlinePanel = View.extend({
+        _converse.HeadlinesPanel = View.extend({
             tagName: 'div',
             className: 'controlbox-section',
             id: 'headline',
 
             events: {
                 'click .open-headline': 'openHeadline'
+            },
+
+            initialize () {
+                this.listenTo(this.model, 'add', this.renderIfHeadline)
+                this.listenTo(this.model, 'remove', this.renderIfHeadline)
+                this.listenTo(this.model, 'destroy', this.renderIfHeadline)
+                this.render();
+                this.insertIntoDOM();
+            },
+
+            toHTML () {
+                return tpl_headline_panel({
+                    'heading_headline': __('Announcements'),
+                    'headlineboxes': this.model.filter(m => m.get('type') === _converse.HEADLINES_TYPE),
+                    'open_title': __('Click to open this server message'),
+                });
+            },
+
+            renderIfHeadline (model) {
+                return (model && model.get('type') === _converse.HEADLINES_TYPE) && this.render();
             },
 
             openHeadline (ev) {
@@ -97,9 +113,9 @@ converse.plugins.add('converse-headlines-view', {
                 chat.maybeShow(true);
             },
 
-            render () {
-                this.el.innerHTML = tpl_headline_panel({'heading_headline': __('Announcements')});
-                return this;
+            insertIntoDOM () {
+                const view = _converse.chatboxviews.get('controlbox');
+                view && view.el.querySelector('.controlbox-pane').insertAdjacentElement('beforeEnd', this.el);
             }
         });
 
@@ -155,49 +171,7 @@ converse.plugins.add('converse-headlines-view', {
         });
 
 
-        _converse.HeadlinesListView = View.extend({
-            tagName: 'span',
-
-            initialize () {
-                this.listenTo(this.model, 'add', this.renderIfHeadline)
-                this.listenTo(this.model, 'remove', this.renderIfHeadline)
-                this.listenTo(this.model, 'destroy', this.renderIfHeadline)
-                this.render();
-                this.insertIntoControlBox();
-            },
-
-            toHTML () {
-                return tpl_headline_list({
-                    'headlineboxes': this.model.filter(m => m.get('type') === _converse.HEADLINES_TYPE),
-                    'open_title': __('Click to open this server message'),
-                });
-            },
-
-            renderIfHeadline (model) {
-                return (model && model.get('type') === _converse.HEADLINES_TYPE) && this.render();
-            },
-
-            insertIntoControlBox () {
-                const controlboxview = _converse.chatboxviews.get('controlbox');
-                if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
-                    const el = controlboxview.el.querySelector('.list-container--headline');
-                    el && el.parentNode.replaceChild(this.el, el);
-                }
-            }
-        });
-
-
-        const initHeadlinesListView = function () {
-            _converse.headlines_list = new _converse.HeadlinesListView({'model': _converse.chatboxes});
-            /**
-             * Triggered once the _converse.HeadlinesListView has been created and initialized.
-             * @event _converse#roomsListInitialized
-             * @example _converse.api.listen.on('roomsListInitialized', status => { ... });
-             */
-            _converse.api.trigger('headlinesListInitialized');
-        };
-
-
+        /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
             const views = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
@@ -206,15 +180,5 @@ converse.plugins.add('converse-headlines-view', {
                 }
             });
         });
-
-        _converse.api.listen.on('connected', async () =>  {
-            await Promise.all([
-                _converse.api.waitUntil('chatBoxesFetched'),
-                _converse.api.waitUntil('headlinesPanelRendered')
-            ]);
-            initHeadlinesListView();
-        });
-
-        _converse.api.listen.on('reconnected', initHeadlinesListView);
     }
 });

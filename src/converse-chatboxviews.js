@@ -4,7 +4,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-chatboxes";
-import { HTMLView } from 'skeletor.js/src/htmlview.js';
 import { Overview } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
 import { result } from "lodash";
@@ -62,7 +61,6 @@ converse.plugins.add('converse-chatboxviews', {
         });
 
         _converse.ViewWithAvatar = View.extend(AvatarMixin);
-        _converse.HTMLViewWithAvatar = HTMLView.extend(AvatarMixin);
 
 
         _converse.ChatBoxViews = Overview.extend({

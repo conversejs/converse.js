@@ -8,7 +8,6 @@ import "formdata-polyfill";
 import { get } from "lodash";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from "skeletor.js/src/view";
-import { HTMLView } from "skeletor.js/src/htmlview";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -362,7 +361,7 @@ converse.plugins.add('converse-controlbox', {
             }
         });
 
-        _converse.LoginPanel = HTMLView.extend({
+        _converse.LoginPanel = View.extend({
             tagName: 'div',
             id: "converse-login-panel",
             className: 'controlbox-pane fade-in row no-gutters',

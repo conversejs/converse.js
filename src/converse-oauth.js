@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { Collection } from "skeletor.js/src/collection";
-import { HTMLView } from 'skeletor.js/src/htmlview.js';
+import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
 import converse from "@converse/headless/converse-core";
 import hello from "hellojs";
@@ -90,7 +90,7 @@ converse.plugins.add("converse-oauth", {
         _converse.oauth_providers = new _converse.OAuthProviders();
 
 
-        _converse.OAuthProvidersView = HTMLView.extend({
+        _converse.OAuthProvidersView = View.extend({
             toHTML () {
                 return tpl_oauth_providers(
                     Object.assign({

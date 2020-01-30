@@ -8,9 +8,8 @@ import "converse-modal";
 import "formdata-polyfill";
 import "@converse/headless/utils/muc";
 import { get, head, isString, isUndefined } from "lodash";
-import { HTMLView } from 'skeletor.js/src/htmlview.js';
+import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
-import { View } from "skeletor.js/src/view";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -2040,7 +2039,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.MUCConfigForm = HTMLView.extend({
+        _converse.MUCConfigForm = View.extend({
             className: 'chatroom-form-container muc-config-form',
 
             initialize (attrs) {
@@ -2095,7 +2094,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.MUCPasswordForm = HTMLView.extend({
+        _converse.MUCPasswordForm = View.extend({
             className: 'chatroom-form-container muc-password-form',
 
             initialize (attrs) {
@@ -2167,7 +2166,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.MUCSidebar = HTMLView.extend({
+        _converse.MUCSidebar = View.extend({
             tagName: 'div',
             className: 'occupants col-md-3 col-4',
 

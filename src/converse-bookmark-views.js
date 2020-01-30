@@ -6,7 +6,7 @@
  */
 import "@converse/headless/converse-muc";
 import { Model } from 'skeletor.js/src/model.js';
-import { HTMLView } from 'skeletor.js/src/htmlview.js';
+import { View } from 'skeletor.js/src/view.js';
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import tpl_bookmarks_list from "templates/bookmarks_list.js"
@@ -160,7 +160,7 @@ converse.plugins.add('converse-bookmark-views', {
         Object.assign(_converse.ChatRoomView.prototype, bookmarkableChatRoomView);
 
 
-        _converse.MUCBookmarkForm = HTMLView.extend({
+        _converse.MUCBookmarkForm = View.extend({
             className: 'muc-bookmark-form chatroom-form-container',
 
             initialize (attrs) {
@@ -195,7 +195,7 @@ converse.plugins.add('converse-bookmark-views', {
         });
 
 
-        _converse.BookmarksView = HTMLView.extend({
+        _converse.BookmarksView = View.extend({
             tagName: 'span',
 
             initialize () {

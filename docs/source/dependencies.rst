@@ -73,15 +73,8 @@ Converse relies on the following dependencies:
 * `Strophe.js <http://strophe.im/>`_ maintains the XMPP session, is used to
   build XMPP stanzas, to send them, and to register handlers for received stanzas.
 * `lodash <https://lodash.com/>`_ provides very useful utility functions.
-* `Backbone <http://backbonejs.org/>`_ is used to model the data as Models and
-  Collections and to create Views that render the UI.
-* `backbone.overview <http://github.com/jcbrand/backbone.overview>`_ provides
-  ``Backbone.Overview``, which is to Views as Backbone Collection is to Models.
-  It also provides the ``Backbone.OrderedListView`` which is used to show
-  alphabetically sorted lists, such as your contacts roster.
-* `backbone.vdomview <http://github.com/jcbrand/backbone.vdomview>`_ provides
-  ``Backbone.VDOMView`` that uses the `Snabbdom <https://github.com/snabbdom/snabbdom>`_
-  virtual DOM for rendering DOM elements.
+* `Skeletor <https://github.com/skeletorjs/skeletor/>`_, a `Backbone <http://backbonejs.org/>`_ fork
+  which is used to model the data as Models and Collections and to create Views that render the UI.
 * `pluggable.js <https://github.com/jcbrand/pluggable.js>`_ provides the plugin
   architecture for Converse. It registers and initializes plugins and
   allows existing attributes, functions and objects on Converse to be

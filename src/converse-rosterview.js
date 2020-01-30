@@ -8,7 +8,7 @@ import "@converse/headless/converse-roster";
 import "converse-modal";
 import "formdata-polyfill";
 import { compact, debounce, has, isString, uniq, without } from "lodash";
-import { HTMLView } from 'skeletor.js/src/htmlview.js';
+import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { OrderedListView } from "skeletor.js/src/overview";
 import SHA1 from 'strophe.js/src/sha1';
@@ -201,7 +201,7 @@ converse.plugins.add('converse-rosterview', {
             },
         });
 
-        _converse.RosterFilterView = HTMLView.extend({
+        _converse.RosterFilterView = View.extend({
             tagName: 'span',
 
             initialize () {

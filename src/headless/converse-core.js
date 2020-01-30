@@ -13,7 +13,6 @@ import 'strophe.js/src/websocket';
 import './polyfill';
 import * as strophe from 'strophe.js/src/core';
 import _ from './lodash.noconflict';
-import Backbone from 'backbone';
 import Storage from 'skeletor.js/src/storage.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
@@ -29,7 +28,6 @@ const $iq = strophe.default.$iq;
 const $msg = strophe.default.$msg;
 const $pres = strophe.default.$pres;
 
-Backbone = Backbone.noConflict();
 
 dayjs.extend(advancedFormat);
 
@@ -1780,7 +1778,6 @@ Object.assign(window.converse, {
      * @property {function} converse.env.$iq       - Creates a Strophe.Builder with an <iq/> element as the root.
      * @property {function} converse.env.$msg      - Creates a Strophe.Builder with an <message/> element as the root.
      * @property {function} converse.env.$pres     - Creates a Strophe.Builder with an <presence/> element as the root.
-     * @property {object} converse.env.Backbone    - The [Backbone](http://backbonejs.org) object used by Converse to create models and views.
      * @property {function} converse.env.Promise   - The Promise implementation used by Converse.
      * @property {function} converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
      * @property {object} converse.env._           - The instance of [lodash](http://lodash.com) used by Converse.
@@ -1789,7 +1786,7 @@ Object.assign(window.converse, {
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
      */
-    'env': { $build, $iq, $msg, $pres, Backbone, Model, Collection, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
+    'env': { $build, $iq, $msg, $pres, Model, Collection, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
 });
 
 /**

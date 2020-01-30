@@ -3,7 +3,7 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { HTMLView } from 'skeletor.js/src/htmlview.js';
+import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { isString } from "lodash";
 import { render } from 'lit-html';
@@ -24,7 +24,7 @@ converse.plugins.add('converse-modal', {
         const { _converse } = this;
         const { __ } = _converse;
 
-        _converse.BootstrapModal = HTMLView.extend({
+        _converse.BootstrapModal = View.extend({
             className: "modal",
             events: {
                 'click  .nav-item .nav-link': 'switchTab'

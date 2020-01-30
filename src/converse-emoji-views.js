@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-emoji";
-import { HTMLView } from "skeletor.js/src/htmlview";
+import { View } from "skeletor.js/src/view";
 import { debounce, find, get } from "lodash";
 import DOMNavigator from "./dom-navigator";
 import bootstrap from "bootstrap.native";
@@ -126,7 +126,7 @@ converse.plugins.add('converse-emoji-views', {
         Object.assign(_converse.ChatBoxView.prototype, emoji_aware_chat_view);
 
 
-        _converse.EmojiPickerView = HTMLView.extend({
+        _converse.EmojiPickerView = View.extend({
             className: 'emoji-picker dropdown-menu toolbar-menu',
 
             initialize (config) {
@@ -177,7 +177,7 @@ converse.plugins.add('converse-emoji-views', {
             remove () {
                 const body = document.querySelector('body');
                 body.removeEventListener('keydown', this.onGlobalKeyDown);
-                HTMLView.prototype.remove.call(this);
+                View.prototype.remove.call(this);
             },
 
             initArrowNavigation () {

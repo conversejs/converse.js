@@ -8,7 +8,7 @@
  */
 import "@converse/headless/converse-muc";
 import { Model } from 'skeletor.js/src/model.js';
-import { HTMLView } from 'skeletor.js/src/htmlview.js';
+import { View } from 'skeletor.js/src/view.js';
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import tpl_rooms_list from "templates/rooms_list.js";
@@ -50,7 +50,7 @@ converse.plugins.add('converse-roomslist', {
         });
 
 
-        _converse.RoomsListView = HTMLView.extend({
+        _converse.RoomsListView = View.extend({
             tagName: 'span',
 
             initialize () {

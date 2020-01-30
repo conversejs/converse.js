@@ -195,7 +195,7 @@ converse.plugins.add('converse-profile', {
             }
         });
 
-        _converse.XMPPStatusView = _converse.HTMLViewWithAvatar.extend({
+        _converse.XMPPStatusView = _converse.ViewWithAvatar.extend({
             tagName: "div",
             events: {
                 "click a.show-profile": "showProfileModal",

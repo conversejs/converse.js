@@ -135,7 +135,7 @@ converse.plugins.add('converse-muc-views', {
                     'beforeEnd', this.roomspanel.render().el);
 
                 /**
-                 * Triggered once the section of the _converse.ControlBoxView
+                 * Triggered once the section of the { @link _converse.ControlBoxView }
                  * which shows gropuchats has been rendered.
                  * @event _converse#roomsPanelRendered
                  * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });

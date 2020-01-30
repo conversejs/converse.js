@@ -8,8 +8,10 @@ import { View } from 'skeletor.js/src/view.js';
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.html";
-import tpl_headline_list from "templates/headline_list.html";
+import tpl_headline_list from "templates/headline_list.js";
 import tpl_headline_panel from "templates/headline_panel.html";
+
+const u = converse.env.utils;
 
 
 converse.plugins.add('converse-headlines-view', {
@@ -41,8 +43,6 @@ converse.plugins.add('converse-headlines-view', {
     },
 
 
-
-
     initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
@@ -59,15 +59,14 @@ converse.plugins.add('converse-headlines-view', {
                 this.el.querySelector('.controlbox-pane').insertAdjacentElement(
                     'beforeEnd', this.headlinepanel.render().el);
 
+                /**
+                 * Triggered once the section of the { @link _converse.ControlBoxView }
+                 * which shows announcements has been rendered.
+                 * @event _converse#headlinesPanelRendered
+                 * @example _converse.api.listen.on('headlinesPanelRendered', () => { ... });
+                 */
+                _converse.api.trigger('headlinesPanelRendered');
                 return this.headlinepanel;
-            },
-
-            getHeadlinePanel () {
-                if (this.headlinepanel && u.isInDOM(this.headlinepanel.el)) {
-                    return this.headlinepanel;
-                } else {
-                    return this.renderHeadlinePanel();
-                }
             }
         }
 
@@ -99,9 +98,7 @@ converse.plugins.add('converse-headlines-view', {
             },
 
             render () {
-                this.el.innerHTML = tpl_headline_panel({
-                    'heading_headline': __('Announcements')
-                });
+                this.el.innerHTML = tpl_headline_panel({'heading_headline': __('Announcements')});
                 return this;
             }
         });
@@ -158,18 +155,47 @@ converse.plugins.add('converse-headlines-view', {
         });
 
 
-        async function renderHeadlineList (removedBox=null) {
-            const controlboxview = _converse.chatboxviews.get('controlbox');
-            if (controlboxview !== undefined) {
-                const headlineboxes = await _converse.api.headlines.get();
-                const el = controlboxview.el.querySelector('.list-container--headline');
-                const headline_list = tpl_headline_list({
-                    headlineboxes,
+        _converse.HeadlinesListView = View.extend({
+            tagName: 'span',
+
+            initialize () {
+                this.listenTo(this.model, 'add', this.renderIfHeadline)
+                this.listenTo(this.model, 'remove', this.renderIfHeadline)
+                this.listenTo(this.model, 'destroy', this.renderIfHeadline)
+                this.render();
+                this.insertIntoControlBox();
+            },
+
+            toHTML () {
+                return tpl_headline_list({
+                    'headlineboxes': this.model.filter(m => m.get('type') === _converse.HEADLINES_TYPE),
                     'open_title': __('Click to open this server message'),
                 });
-                el && (el.outerHTML = headline_list);
+            },
+
+            renderIfHeadline (model) {
+                return (model && model.get('type') === _converse.HEADLINES_TYPE) && this.render();
+            },
+
+            insertIntoControlBox () {
+                const controlboxview = _converse.chatboxviews.get('controlbox');
+                if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
+                    const el = controlboxview.el.querySelector('.list-container--headline');
+                    el && el.parentNode.replaceChild(this.el, el);
+                }
             }
-        }
+        });
+
+
+        const initHeadlinesListView = function () {
+            _converse.headlines_list = new _converse.HeadlinesListView({'model': _converse.chatboxes});
+            /**
+             * Triggered once the _converse.HeadlinesListView has been created and initialized.
+             * @event _converse#roomsListInitialized
+             * @example _converse.api.listen.on('roomsListInitialized', status => { ... });
+             */
+            _converse.api.trigger('headlinesListInitialized');
+        };
 
 
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
@@ -177,11 +203,18 @@ converse.plugins.add('converse-headlines-view', {
             _converse.chatboxes.on('add', item => {
                 if (!views.get(item.get('id')) && item.get('type') === _converse.HEADLINES_TYPE) {
                     views.add(item.get('id'), new _converse.HeadlinesBoxView({model: item}));
-                    renderHeadlineList();
                 }
             });
-
-            _converse.chatboxes.on('remove', () => renderHeadlineList());
         });
+
+        _converse.api.listen.on('connected', async () =>  {
+            await Promise.all([
+                _converse.api.waitUntil('chatBoxesFetched'),
+                _converse.api.waitUntil('headlinesPanelRendered')
+            ]);
+            initHeadlinesListView();
+        });
+
+        _converse.api.listen.on('reconnected', initHeadlinesListView);
     }
 });

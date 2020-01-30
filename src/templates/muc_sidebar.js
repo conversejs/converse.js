@@ -15,7 +15,8 @@ const PRETTY_CHAT_STATUS = {
 
 const occupant_hint = (occupant) => __('Click to mention %1$s in your message.', occupant.get('nick'))
 
-const i18n_invite_hint = __('Invite someone');
+const i18n_invite = (o) => o._converse.view_mode === 'overlayed' ? __('Invite') : __('Invite someone');
+const i18n_invite_hint = __('Invite someone to join this groupchat');
 const i18n_participants = __('Participants');
 
 
@@ -28,7 +29,7 @@ const invite_widget = (o) => {
               data-target="#muc-invite-modal"
               @click=${o.showInviteModal}>
             <i class="btn btn-primary btn-circle fa fa-user-plus"></i>
-            ${i18n_invite_hint}
+            ${i18n_invite(o)}
          </a>`;
    } else {
        return '';

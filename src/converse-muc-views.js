@@ -2184,6 +2184,7 @@ converse.plugins.add('converse-muc-views', {
             toHTML () {
                 return tpl_muc_sidebar(
                     Object.assign(this.chatroomview.model.toJSON(), {
+                        _converse,
                         'features': this.chatroomview.model.features,
                         'occupants': this.model.models,
                         'invitesAllowed': () => this.invitesAllowed(),

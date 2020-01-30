@@ -11,7 +11,6 @@ import { compact, debounce, has, isString, uniq, without } from "lodash";
 import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { OrderedListView } from "skeletor.js/src/overview";
-import SHA1 from 'strophe.js/src/sha1';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_contact_modal from "templates/add_contact_modal.js";
@@ -884,7 +883,7 @@ converse.plugins.add('converse-rosterview', {
                 if (view) {
                     return view.model;
                 }
-                return this.model.create({name, 'id': SHA1.b64_sha1(name)});
+                return this.model.create({name});
             },
 
             addContactToGroup (contact, name, options) {

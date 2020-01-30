@@ -109,7 +109,7 @@
 
         #converse-register {
             @include fade-in;
-            background: white;
+            background-color: var(--controlbox-pane-background-color);
             .title {
                 font-weight: bold;
             }

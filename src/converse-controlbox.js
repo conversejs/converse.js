@@ -5,18 +5,19 @@
  */
 import "converse-chatview";
 import "formdata-polyfill";
-import bootstrap from "bootstrap.native";
-import converse from "@converse/headless/converse-core";
 import { get } from "lodash";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from "skeletor.js/src/view";
+import { HTMLView } from "skeletor.js/src/htmlview";
+import bootstrap from "bootstrap.native";
+import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_brand_heading from "templates/converse_brand_heading.html";
 import tpl_controlbox from "templates/controlbox.html";
 import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
-import tpl_login_panel from "templates/login_panel.html";
+import tpl_login_panel from "templates/login_panel.js";
 
-const { Strophe, Backbone, dayjs } = converse.env;
+const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
 
 const CONNECTION_STATUS_CSS_CLASS = {
@@ -361,10 +362,10 @@ converse.plugins.add('converse-controlbox', {
             }
         });
 
-        _converse.LoginPanel = Backbone.VDOMView.extend({
+        _converse.LoginPanel = HTMLView.extend({
             tagName: 'div',
             id: "converse-login-panel",
-            className: 'controlbox-pane fade-in',
+            className: 'controlbox-pane fade-in row no-gutters',
             events: {
                 'submit form#converse-login': 'authenticate',
                 'change input': 'validate'
@@ -385,7 +386,6 @@ converse.plugins.add('converse-controlbox', {
                 }
                 return tpl_login_panel(
                     Object.assign(this.model.toJSON(), {
-                        '__': __,
                         '_converse': _converse,
                         'ANONYMOUS': _converse.ANONYMOUS,
                         'EXTERNAL': _converse.EXTERNAL,
@@ -634,7 +634,7 @@ converse.plugins.add('converse-controlbox', {
                 /**
                  * Returns the controlbox view.
                  * @method _converse.api.controlbox.get
-                 * @returns { Backbone.View } View representing the controlbox
+                 * @returns { View } View representing the controlbox
                  * @example const view = _converse.api.controlbox.get();
                  */
                 get () {

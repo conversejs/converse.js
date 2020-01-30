@@ -3,8 +3,8 @@
  * @description
  * This is a Converse.js plugin which add support for in-band registration
  * as specified in XEP-0077.
- *   * @copyright 2020, the Converse.js contributors
- *   * @license Mozilla Public License (MPLv2)
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "converse-controlbox";
 import { View } from "skeletor.js/src/view";
@@ -12,7 +12,6 @@ import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_form_input from "templates/form_input.html";
 import tpl_form_username from "templates/form_username.html";
-import tpl_register_link from "templates/register_link.html";
 import tpl_register_panel from "templates/register_panel.html";
 import tpl_registration_form from "templates/registration_form.html";
 import tpl_registration_request from "templates/registration_request.html";
@@ -20,7 +19,7 @@ import tpl_spinner from "templates/spinner.html";
 import utils from "@converse/headless/utils/form";
 
 // Strophe methods for building stanzas
-const { Strophe, Backbone, sizzle, $iq, _ } = converse.env;
+const { Strophe, sizzle, $iq, _ } = converse.env;
 const u = converse.env.utils;
 
 // Add Strophe Namespaces
@@ -36,23 +35,16 @@ Strophe.Status.NOTACCEPTABLE   = i + 5;
 
 converse.plugins.add('converse-register', {
 
-    'overrides': {
+    enabled () {
+        return true;
+    },
+
+    overrides: {
         // Overrides mentioned here will be picked up by converse.js's
         // plugin architecture they will replace existing methods on the
         // relevant objects or classes.
         //
         // New functions which don't exist yet can also be added.
-
-        LoginPanel: {
-            render () {
-                const { _converse } = this.__super__;
-                this.__super__.render.apply(this, arguments);
-                if (_converse.allow_registration && !_converse.auto_login) {
-                    this.insertRegisterLink();
-                }
-                return this;
-            }
-        },
 
         ControlBoxView: {
             renderLoginPanel () {
@@ -85,23 +77,6 @@ converse.plugins.add('converse-register', {
             'registration_domain': ''
         });
 
-
-        Object.assign(_converse.LoginPanel.prototype, {
-
-            insertRegisterLink () {
-                if (this.registerlinkview === undefined) {
-                    this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
-                    this.registerlinkview.render();
-                    const buttons = this.el.querySelector('.buttons');
-                    // Might not exist, if the spinner is currently
-                    // showing...
-                    if (buttons) {
-                        buttons.insertAdjacentElement('afterend', this.registerlinkview.el);
-                    }
-                }
-                this.registerlinkview.render();
-            }
-        });
 
         Object.assign(_converse.ControlBoxView.prototype, {
 
@@ -145,17 +120,6 @@ converse.plugins.add('converse-register', {
         _converse.router.route('converse/login', () => setActiveForm('login'));
         _converse.router.route('converse/register', () => setActiveForm('register'));
 
-
-        _converse.RegisterLinkView = Backbone.VDOMView.extend({
-            toHTML () {
-                return tpl_register_link(
-                    Object.assign(this.model.toJSON(), {
-                        '__': _converse.__,
-                        '_converse': _converse,
-                        'connection_status': _converse.connfeedback.get('connection_status'),
-                    }));
-            }
-        });
 
         /**
          * @class

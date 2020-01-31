@@ -328,18 +328,6 @@
             }
         }
 
-        .empty-history-feedback {
-            position: relative;
-            height: 100%;
-            color: var(--text-color-lighten-15-percent);
-            span {
-                width: 100%;
-                text-align: center;
-                position: absolute;
-                margin-top: 50%;
-            }
-        }
-
         .muc-bottom-panel {
             border-top: var(--message-input-border-top);
             height: 3em;

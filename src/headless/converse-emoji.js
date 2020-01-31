@@ -139,10 +139,11 @@ converse.plugins.add('converse-emoji', {
              * (based on the value of `use_system_emojis`).
              * @method u.addEmoji
              * @param {string} text = The text
-             * @returns {string} The text with shortnames replaced with emoji
-             *  unicodes or images.
+             * @returns {Promise} Promise which resolves with the text with
+             *  shortnames replaced with emoji unicodes or images.
              */
-            addEmoji (text) {
+            async addEmoji (text) {
+                await _converse.api.waitUntil('emojisInitialized');
                 return u.getEmojiRenderer()(text);
             },
 

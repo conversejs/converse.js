@@ -364,6 +364,11 @@ u.escapeHTML = function (string) {
 };
 
 
+u.isMeCommand = function (text) {
+    return text && text.startsWith('/me ');
+}
+
+
 u.addMentionsMarkup = function (text, references, chatbox) {
     if (chatbox.get('message_type') !== 'groupchat') {
         return text;

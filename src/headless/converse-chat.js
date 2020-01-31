@@ -7,6 +7,7 @@ import { find, get, isMatch, isObject, isString, pick } from "lodash";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import converse from "./converse-core";
+import dayjs from 'dayjs';
 import filesize from "filesize";
 import log from "./log";
 import stanza_utils from "./utils/stanza";
@@ -162,14 +163,6 @@ converse.plugins.add('converse-chat', {
                            (_converse.loglevel === 'debug' ? __('Unencryptable OMEMO message') : null);
                 }
                 return this.get('message');
-            },
-
-            isMeCommand () {
-                const text = this.getMessageText();
-                if (!text) {
-                    return false;
-                }
-                return text.startsWith('/me ');
             },
 
             sendSlotRequestStanza () {
@@ -387,8 +380,47 @@ converse.plugins.add('converse-chat', {
                         !u.isEmptyMessage(attrs)
                     ) {
                         const msg = this.handleCorrection(attrs) || this.messages.create(attrs);
+                        this.createDayIndicator(msg);
                         this.incrementUnreadMsgCounter(msg);
                     }
+                }
+            },
+
+            /**
+             * Inserts an indicator into the chat area, showing the
+             * day as given by the passed in date.
+             * The indicator is only inserted if necessary.
+             * @private
+             * @method _converse.ChatBoxView#createDayIndicator
+             * @param { HTMLElement } next_msg_el - The message element before
+             *      which the day indicator element must be inserted.
+             *      This element must have a "data-isodate" attribute
+             *      which specifies its creation date.
+             */
+            createDayIndicator (next_msg) {
+                if (next_msg.get('type') === 'date') {
+                    return;
+                }
+                const next_msg_date = next_msg.get('time');
+                const day_date = dayjs(next_msg_date).startOf('day');
+                const messages = this.messages.models;
+                const idx = messages.indexOf(next_msg);
+                const prev_msg = messages[idx-1];
+                if (!prev_msg) {
+                    return this.messages.create({
+                        'type': 'date',
+                        'time': day_date.toISOString(),
+                    });
+                }
+                const prev_msg_date = prev_msg ? prev_msg.get('time') : null;
+                if (prev_msg_date === null && next_msg_date === null) {
+                    return;
+                }
+                if ((prev_msg_date === null) || dayjs(next_msg_date).isAfter(prev_msg_date, 'day')) {
+                    this.messages.create({
+                        'type': 'date',
+                        'time': day_date.toISOString(),
+                    });
                 }
             },
 
@@ -1030,7 +1062,6 @@ converse.plugins.add('converse-chat', {
             },
 
             maybeShow () {
-                // Returns the chatbox
                 return this.trigger("show");
             },
 

@@ -45,7 +45,6 @@ const WHITELISTED_PLUGINS = [
     'converse-emoji-views',
     'converse-fullscreen',
     'converse-mam-views',
-    'converse-message-view',
     'converse-minimize',
     'converse-modal',
     'converse-muc-views',

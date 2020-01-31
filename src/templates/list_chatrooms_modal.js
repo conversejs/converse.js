@@ -8,7 +8,7 @@ const i18n_query = __('Show groupchats');
 
 
 const form = (o) => html`
-    <form class="converse-form list-chatrooms">
+    <form class="converse-form list-chatrooms" @submit=${o.showRooms}>
         <div class="form-group">
             <label for="chatroom">${i18n_server_address}:</label>
             <input type="text" value="${o.muc_domain}" required="required" name="server" class="form-control" placeholder="${o.server_placeholder}"/>

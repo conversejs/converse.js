@@ -5,14 +5,14 @@ import spinner from "./spinner.js";
 import { modal_close_button, modal_header_close_button } from "./buttons"
 
 
-const alt_avatar = __('Your avatar image');
-const heading_profile = __('Your Profile');
-const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following fingerprint');
+const i18n_alt_avatar = __('Your avatar image');
 const i18n_device_without_fingerprint = __('Device without a fingerprint');
 const i18n_email = __('Email');
 const i18n_fingerprint = __("This device's OMEMO fingerprint");
+const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following fingerprint');
 const i18n_fullname = __('Full Name');
 const i18n_generate = __('Generate new keys and fingerprint');
+const i18n_heading_profile = __('Your Profile');
 const i18n_jid = __('XMPP Address (JID)');
 const i18n_nickname = __('Nickname');
 const i18n_other_devices = __('Other OMEMO-enabled devices');
@@ -99,64 +99,73 @@ const omemo_page = (o) => html`
     </div>`;
 
 
-export default (o) => html`
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="user-profile-modal-label">${heading_profile}</h5>
-                ${modal_header_close_button}
-            </div>
-            <div class="modal-body">
-                <span class="modal-alert"></span>
-                ${o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse) && navigation}
-                <div class="tab-content">
-                    <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
-                        <form class="converse-form converse-form--modal profile-form" action="#">
-                            <div class="row">
-                                <div class="col-auto">
-                                    <a class="change-avatar" href="#">
-                                        ${o.image ? avatar(Object.assign({'alt_text': alt_avatar}, o)) : '<canvas class="avatar" height="100px" width="100px"></canvas>'}
-                                    </a>
-                                    <input class="hidden" name="image" type="file"/>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label class="col-form-label">${i18n_jid}:</label>
-                                        <div>${o.jid}</div>
+export default (o) => {
+    const avatar_data = Object.assign({
+        alt_text: i18n_alt_avatar,
+        extra_classes: '',
+        height: '100px',
+        width: '100px',
+    }, o);
+
+    return html`
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="user-profile-modal-label">${i18n_heading_profile}</h5>
+                    ${modal_header_close_button}
+                </div>
+                <div class="modal-body">
+                    <span class="modal-alert"></span>
+                    ${o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse) && navigation}
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
+                            <form class="converse-form converse-form--modal profile-form" action="#">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <a class="change-avatar" href="#">
+                                            ${o.image ? avatar(avatar_data) : '<canvas class="avatar" height="100px" width="100px"></canvas>'}
+                                        </a>
+                                        <input class="hidden" name="image" type="file"/>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label class="col-form-label">${i18n_jid}:</label>
+                                            <div>${o.jid}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="vcard-fullname" class="col-form-label">${i18n_fullname}:</label>
-                                <input id="vcard-fullname" type="text" class="form-control" name="fn" value="${o.fullname || ''}"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="vcard-nickname" class="col-form-label">${i18n_nickname}:</label>
-                                <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="${o.nickname || ''}"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="vcard-url" class="col-form-label">${i18n_url}:</label>
-                                <input id="vcard-url" type="url" class="form-control" name="url" value="${o.url || ''}"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="vcard-email" class="col-form-label">${i18n_email}:</label>
-                                <input id="vcard-email" type="email" class="form-control" name="email" value="${o.email || ''}"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="vcard-role" class="col-form-label">${i18n_role}:</label>
-                                <input id="vcard-role" type="text" class="form-control" name="role" value="${o.role || ''}" aria-describedby="vcard-role-help"/>
-                                <small id="vcard-role-help" class="form-text text-muted">${i18n_role_help}</small>
-                            </div>
-                            <hr/>
-                            <div class="form-group">
-                                <button type="submit" class="save-form btn btn-primary">${i18n_save}</button>
-                            </div>
-                        </form>
+                                <div class="form-group">
+                                    <label for="vcard-fullname" class="col-form-label">${i18n_fullname}:</label>
+                                    <input id="vcard-fullname" type="text" class="form-control" name="fn" value="${o.fullname || ''}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vcard-nickname" class="col-form-label">${i18n_nickname}:</label>
+                                    <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="${o.nickname || ''}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vcard-url" class="col-form-label">${i18n_url}:</label>
+                                    <input id="vcard-url" type="url" class="form-control" name="url" value="${o.url || ''}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vcard-email" class="col-form-label">${i18n_email}:</label>
+                                    <input id="vcard-email" type="email" class="form-control" name="email" value="${o.email || ''}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vcard-role" class="col-form-label">${i18n_role}:</label>
+                                    <input id="vcard-role" type="text" class="form-control" name="role" value="${o.role || ''}" aria-describedby="vcard-role-help"/>
+                                    <small id="vcard-role-help" class="form-text text-muted">${i18n_role_help}</small>
+                                </div>
+                                <hr/>
+                                <div class="form-group">
+                                    <button type="submit" class="save-form btn btn-primary">${i18n_save}</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     ${ o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse) && omemo_page(o) }
                 </div>
+                <div class="modal-footer">${modal_close_button}</div>
             </div>
-            <div class="modal-footer">${modal_close_button}</div>
         </div>
-    </div>
-`;
+    `;
+}

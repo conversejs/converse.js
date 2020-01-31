@@ -1768,6 +1768,7 @@ converse.plugins.add('converse-muc', {
 
                 if (attrs.nick && (attrs.is_tombstone || u.isNewMessage(attrs) || !u.isEmptyMessage(attrs))) {
                     const msg = this.handleCorrection(attrs) || await this.createMessageObject(attrs);
+                    this.createDayIndicator(msg);
                     this.incrementUnreadMsgCounter(msg);
                 }
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});

@@ -6,6 +6,13 @@ const i18n_cancel = __('Cancel');
 const i18n_ok = __('OK');
 
 
+const tpl_reason = (o) => html`
+    <div class="form-group">
+        <input type="text" name="reason" class="form-control" placeholder="${o.placeholder}"/>
+    </div>
+`;
+
+
 export default (o) => html`
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -21,11 +28,7 @@ export default (o) => html`
               <div class="form-group">
                   ${ o.messages.map(message => html`<p>${message}</p>`) }
               </div>
-              {[ if (o.type === 'prompt') { ]}
-                <div class="form-group">
-                    <input type="text" name="reason" class="form-control" placeholder="${o.placeholder}"/>
-                </div>
-              {[ } ]}
+              ${ (o.type === 'prompt') ? tpl_reason(o) : '' }
               <div class="form-group">
                   <button type="submit" class="btn btn-primary">${i18n_ok}</button>
                   <input type="button" class="btn btn-secondary" data-dismiss="modal" value="${i18n_cancel}"/>

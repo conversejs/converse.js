@@ -1,11 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// This is a form utilities module.
-//
-// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ * @description This is the DOM/HTML utilities module.
+ */
 import URI from "urijs";
 import _ from "../headless/lodash.noconflict";
 import log from '@converse/headless/log';
@@ -50,25 +47,6 @@ function slideOutWrapup (el) {
     el.classList.remove('collapsed');
     el.style.overflow = "";
     el.style.height = "";
-}
-
-function isImage (url) {
-    return new Promise((resolve, reject) => {
-        var img = new Image();
-        var timer = window.setTimeout(function () {
-            reject(new Error("Could not determine whether it's an image"));
-            img = null;
-        }, 3000);
-        img.onerror = img.onabort = function () {
-            clearTimeout(timer);
-            reject(new Error("Could not determine whether it's an image"));
-        };
-        img.onload = function () {
-            clearTimeout(timer);
-            resolve(img);
-        };
-        img.src = url;
-    });
 }
 
 function getURI (url) {
@@ -182,6 +160,44 @@ u.applyDragResistance = function (value, default_value) {
 };
 
 
+function loadImage (url) {
+    return new Promise((resolve, reject) => {
+        const err_msg = `Could not determine whether it's an image: ${url}`;
+        const img = new Image();
+        const timer = window.setTimeout(() => reject(new Error(err_msg)), 20000);
+        img.onerror = img.onabort = function () {
+            clearTimeout(timer);
+            reject(new Error(err_msg));
+        };
+        img.onload = function () {
+            clearTimeout(timer);
+            resolve(img);
+        };
+        img.src = url;
+    });
+}
+
+
+async function renderImage (img_url, link_url, el, callback) {
+    if (u.isImageURL(img_url)) {
+        let img;
+        try {
+            img = await loadImage(img_url);
+        } catch (e) {
+            log.error(e);
+            return callback();
+        }
+        sizzle(`a[href="${link_url}"]`, el).forEach(a => {
+            a.innerHTML = "";
+            u.addClass('chat-image', img);
+            u.addClass('img-thumbnail', img);
+            a.insertAdjacentElement('afterBegin', img);
+        });
+    }
+    callback();
+}
+
+
 /**
  * Returns a Promise which resolves once all images have been loaded.
  * @method u#renderImageURLs
@@ -196,21 +212,12 @@ u.renderImageURLs = function (_converse, el) {
     const list = el.textContent.match(URL_REGEX) || [];
     return Promise.all(
         list.map(url =>
-            new Promise((resolve) => {
-                if (u.isImageURL(url)) {
-                    return isImage(url).then(img => {
-                        const i = new Image();
-                        i.src = img.src;
-                        i.addEventListener('load', resolve);
-                        // We also resolve (instead of reject) for non-images,
-                        // otherwise the Promise.all resolves prematurely.
-                        i.addEventListener('error', resolve);
-                        const { __ } = _converse;
-                        sizzle(`a[href="${url}"]`, el)
-                            .forEach(a => (a.outerHTML = tpl_image({url, 'label_download': __('Download')})));
-                    }).catch(resolve)
+            new Promise(resolve => {
+                if (url.startsWith('https://imgur.com') && !u.isImageURL(url)) {
+                    const imgur_url = url + '.png';
+                    renderImage(imgur_url, url, el, resolve);
                 } else {
-                    return resolve();
+                    renderImage(url, url, el, resolve);
                 }
             })
         )

@@ -1,14 +1,14 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-
+/**
+ * @module converse-oauth
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ */
+import { Collection } from "skeletor.js/src/collection";
+import { View } from 'skeletor.js/src/view.js';
+import { Model } from 'skeletor.js/src/model.js';
 import converse from "@converse/headless/converse-core";
 import hello from "hellojs";
-import tpl_oauth_providers from "templates/oauth_providers.html";
-
-const { _, Backbone } = converse.env;
+import tpl_oauth_providers from "templates/oauth_providers.js";
 
 
 // The following line registers your plugin.
@@ -28,8 +28,8 @@ converse.plugins.add("converse-oauth", {
      */
     'optional_dependencies': ['converse-register'],
 
-    /* If you want to override some function or a Backbone model or
-     * view defined elsewhere in converse.js, then you do that under
+    /* If you want to override some function or a Model or
+     * View defined elsewhere in converse.js, then you do that under
      * the "overrides" namespace.
      */
     'overrides': {
@@ -75,12 +75,12 @@ converse.plugins.add("converse-oauth", {
             'oauth_providers': {},
         });
 
-        _converse.OAuthProviders = _converse.Collection.extend({
+        _converse.OAuthProviders = Collection.extend({
             'sync': function sync () {},
 
             initialize () {
                 _converse.user_settings.oauth_providers.forEach(provider => {
-                    const item = new Backbone.Model(Object.assign(provider, {
+                    const item = new Model(Object.assign(provider, {
                         'login_text': __('Log in with %1$s', provider.name)
                     }));
                     this.add(item, {'silent': true});
@@ -90,17 +90,12 @@ converse.plugins.add("converse-oauth", {
         _converse.oauth_providers = new _converse.OAuthProviders();
 
 
-        _converse.OAuthProvidersView = Backbone.VDOMView.extend({
-            'events': {
-                'click .oauth-login': 'oauthLogin'
-            },
-
+        _converse.OAuthProvidersView = View.extend({
             toHTML () {
                 return tpl_oauth_providers(
                     Object.assign({
-                        '_': _,
-                        '__': _converse.__,
-                        'providers': this.model.toJSON()
+                        'providers': this.model.toJSON(),
+                        'oauthLogin': ev => this.oauthLogin(ev)
                     }));
             },
 

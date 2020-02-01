@@ -1,18 +1,13 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-
 /**
  * @module converse-chatview
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
-import "backbone.nativeview";
 import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
 import { debounce, get, isString } from "lodash";
-import { Overview } from "backbone.overview";
+import { Overview } from "skeletor.js/src/overview";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.html";
@@ -27,11 +22,11 @@ import tpl_spoiler_button from "templates/spoiler_button.html";
 import tpl_status_message from "templates/status_message.html";
 import tpl_toolbar from "templates/toolbar.html";
 import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
-import tpl_user_details_modal from "templates/user_details_modal.html";
+import tpl_user_details_modal from "templates/user_details_modal.js";
 import xss from "xss/dist/xss";
 
 
-const { Backbone, Strophe, sizzle, dayjs } = converse.env;
+const { Strophe, sizzle, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -130,6 +125,7 @@ converse.plugins.add('converse-chatview', {
 
 
         _converse.UserDetailsModal = _converse.BootstrapModal.extend({
+            id: "user-details-modal",
 
             events: {
                 'click button.remove-contact': 'removeContact',
@@ -157,7 +153,6 @@ converse.plugins.add('converse-chatview', {
                 return tpl_user_details_modal(Object.assign(
                     this.model.toJSON(),
                     vcard_json, {
-                    '__': __,
                     'view': this,
                     '_converse': _converse,
                     'allow_contact_removal': _converse.allow_contact_removal,
@@ -616,7 +611,7 @@ converse.plugins.add('converse-chatview', {
              * content area of the chat box.
              * @private
              * @method _converse.ChatBoxView#insertMessage
-             * @param { Backbone.View } message - The message Backbone.View
+             * @param { View } message - The message View
              */
             insertMessage (view) {
                 if (view.model.get('type') === 'error') {
@@ -726,7 +721,7 @@ converse.plugins.add('converse-chatview', {
              * Handler that gets called when a new message object is created.
              * @private
              * @method _converse.ChatBoxView#onMessageAdded
-             * @param { object } message - The message Backbone object that was added.
+             * @param { object } message - The message object that was added.
              */
             async onMessageAdded (message) {
                 const id = message.get('id');
@@ -1173,7 +1168,7 @@ converse.plugins.add('converse-chatview', {
 
             async close (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (Backbone.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
+                if (_converse.router.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
                 }
                 if (_converse.api.connection.connected()) {
@@ -1386,8 +1381,7 @@ converse.plugins.add('converse-chatview', {
                   * Get the view of an already open chat.
                   * @method _converse.api.chatviews.get
                   * @param { Array.string | string } jids
-                  * @returns {ChatBoxView} A [Backbone.View](http://backbonejs.org/#View) instance.
-                  *     The chat should already be open, otherwise `undefined` will be returned.
+                  * @returns { _converse.ChatBoxView|undefined }  The chat should already be open, otherwise `undefined` will be returned.
                   * @example
                   * // To return a single view, provide the JID of the contact:
                   * _converse.api.chatviews.get('buddy@example.com')

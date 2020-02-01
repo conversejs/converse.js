@@ -11,9 +11,9 @@
     return describe("The User Details Modal", function () {
 
         it("can be used to remove a contact",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
-                async function (done, _converse) {
+                mock.initConverse(
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current', 1);
             _converse.api.trigger('rosterContactsFetched');
@@ -28,9 +28,7 @@
             const modal = view.user_details_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(window, 'confirm').and.returnValue(true);
-            spyOn(view.model.contact, 'removeFromRoster').and.callFake(function (callback) {
-                callback();
-            });
+            spyOn(view.model.contact, 'removeFromRoster').and.callFake(callback => callback());
             let remove_contact_button = modal.el.querySelector('button.remove-contact');
             expect(u.isVisible(remove_contact_button)).toBeTruthy();
             remove_contact_button.click();
@@ -44,9 +42,7 @@
         }));
 
         it("shows an alert when an error happened while removing the contact",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'emojisInitialized'], {},
-                async function (done, _converse) {
+                mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current', 1);
             _converse.api.trigger('rosterContactsFetched');

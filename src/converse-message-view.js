@@ -1,10 +1,7 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-message-view
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "./utils/html";
 import "@converse/headless/converse-emoji";
@@ -17,7 +14,7 @@ import tpl_csn from "templates/csn.html";
 import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
-import tpl_message_versions_modal from "templates/message_versions_modal.html";
+import tpl_message_versions_modal from "templates/message_versions_modal.js";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
@@ -73,12 +70,9 @@ converse.plugins.add('converse-message-view', {
         });
 
         _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+            id: "message-versions-modal",
             toHTML () {
-                return tpl_message_versions_modal(Object.assign(
-                    this.model.toJSON(), {
-                    '__': __,
-                    'dayjs': dayjs
-                }));
+                return tpl_message_versions_modal(this.model.toJSON());
             }
         });
 
@@ -275,13 +269,19 @@ converse.plugins.add('converse-message-view', {
                     const msg_content = msg.querySelector('.chat-msg__text');
                     if (text && text !== url) {
                         msg_content.innerHTML = await this.transformBodyText(text);
-                        await u.renderImageURLs(_converse, msg_content);
+                        if (_converse.show_images_inline) {
+                            u.renderImageURLs(_converse, msg_content).then(() => this.triggerRendered());
+                        }
                     }
                 }
                 if (this.model.get('type') !== 'headline') {
                     this.renderAvatar(msg);
                 }
                 this.replaceElement(msg);
+                this.triggerRendered();
+            },
+
+            triggerRendered () {
                 if (this.model.collection) {
                     // If the model gets destroyed in the meantime, it no
                     // longer has a collection.

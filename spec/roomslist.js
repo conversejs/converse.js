@@ -8,7 +8,7 @@
     describe("A list of open groupchats", function () {
 
         it("is shown in controlbox", mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
+                ['rosterGroupsFetched', 'chatBoxesFetched'],
                 { allow_bookmarks: false // Makes testing easier, otherwise we
                                          // have to mock stanza traffic.
                 }, async function (done, _converse) {
@@ -16,7 +16,7 @@
             await test_utils.openControlBox(_converse);
             const controlbox = _converse.chatboxviews.get('controlbox');
             let list = controlbox.el.querySelector('.list-container--openrooms');
-            expect(_.includes(list.classList, 'hidden')).toBeTruthy();
+            expect(u.hasClass('hidden', list)).toBeTruthy();
             await test_utils.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
 
             const lview = _converse.rooms_list_view
@@ -50,7 +50,7 @@
 
         it("uses bookmarks to determine groupchat names",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
+                ['rosterGroupsFetched', 'chatBoxesFetched'],
                 {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
 
@@ -110,7 +110,7 @@
     describe("A groupchat shown in the groupchats list", function () {
 
         it("is highlighted if it's currently open", mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
+                ['rosterGroupsFetched', 'chatBoxesFetched'],
                 { view_mode: 'fullscreen',
                 allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
                 }, async function (done, _converse) {
@@ -139,7 +139,7 @@
         }));
 
         it("has an info icon which opens a details modal when clicked", mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
+                ['rosterGroupsFetched', 'chatBoxesFetched'],
                 { whitelisted_plugins: ['converse-roomslist'],
                 allow_bookmarks: false // Makes testing easier, otherwise we
                                         // have to mock stanza traffic.
@@ -244,7 +244,7 @@
         }));
 
         it("can be closed", mock.initConverse(
-                ['rosterGroupsFetched', 'emojisInitialized'],
+                ['rosterGroupsFetched'],
                 { whitelisted_plugins: ['converse-roomslist'],
                 allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
                 },

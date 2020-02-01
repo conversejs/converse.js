@@ -1,20 +1,19 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-minimize
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "converse-chatview";
-import { Overview } from "backbone.overview";
+import { Model } from 'skeletor.js/src/model.js';
+import { Overview } from "skeletor.js/src/overview";
+import { View } from "skeletor.js/src/view";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox_minimize from "templates/chatbox_minimize.html";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.html";
 import tpl_trimmed_chat from "templates/trimmed_chat.html";
 
-const { _ , Backbone, dayjs } = converse.env;
+const { _ , dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -382,7 +381,7 @@ converse.plugins.add('converse-minimize', {
 
         _converse.api.promises.add('minimizedChatsInitialized');
 
-        _converse.MinimizedChatBoxView = Backbone.NativeView.extend({
+        _converse.MinimizedChatBoxView = View.extend({
             tagName: 'div',
             events: {
                 'click .close-chatbox-button': 'close',
@@ -531,7 +530,7 @@ converse.plugins.add('converse-minimize', {
         });
 
 
-        _converse.MinimizedChatsToggle = Backbone.Model.extend({
+        _converse.MinimizedChatsToggle = Model.extend({
             defaults: {
                 'collapsed': false,
                 'num_minimized': 0,
@@ -540,7 +539,7 @@ converse.plugins.add('converse-minimize', {
         });
 
 
-        _converse.MinimizedChatsToggleView = Backbone.NativeView.extend({
+        _converse.MinimizedChatsToggleView = View.extend({
             _setElement (){
                 this.el = _converse.root.querySelector('#toggle-minimized-chats');
             },

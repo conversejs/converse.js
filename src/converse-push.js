@@ -1,13 +1,10 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-push
  * @description
  * Converse.js plugin which add support for registering
  * an "App Server" as defined in  XEP-0357
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";

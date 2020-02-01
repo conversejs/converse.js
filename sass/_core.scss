@@ -541,6 +541,22 @@ body.converse-fullscreen {
         }
     }
 
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 0.5em 0;
+        font-size: var(--font-size-small);
+        line-height: 1.428571429;
+        border-radius: 50%;
+    }
+
+    .btn {
+      &.fa {
+        color: white !important;
+      }
+    }
+
     .badge-groupchat {
         background-color: var(--chatroom-badge-color);
         border-color: transparent;

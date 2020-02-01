@@ -985,7 +985,7 @@
 
         it("will render images from their URLs",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -1000,18 +1000,15 @@
             expect(view.model.sendMessage).toHaveBeenCalled();
             let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.trim()).toEqual(
-                '<!-- src/templates/image.html -->\n'+
-                '<a href="'+base_url+'/logo/conversejs-filled.svg" target="_blank" rel="noopener"><img class="chat-image img-thumbnail"'+
-                ' src="' + message + '"></a>');
+                `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg"><img src="${message}" class="chat-image img-thumbnail"></a>`);
             message += "?param1=val1&param2=val2";
             test_utils.sendMessage(view, message);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.trim()).toEqual(
-                '<!-- src/templates/image.html -->\n'+
-                '<a href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2" target="_blank" rel="noopener"><img'+
-                ' class="chat-image img-thumbnail" src="'+message.replace(/&/g, '&amp;')+'"></a>')
+                '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2"><img'+
+                ' src="'+message.replace(/&/g, '&amp;')+'" class="chat-image img-thumbnail"></a>')
 
             // Test now with two images in one message
             message += ' hello world '+base_url+"/logo/conversejs-filled.svg";
@@ -1033,7 +1030,7 @@
 
         it("will render the message time as configured",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -1059,7 +1056,7 @@
 
         it("will be correctly identified and rendered as a followup message",
             mock.initConverse(
-                ['rosterGroupsFetched', 'emojisInitialized'], {},
+                ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -1381,7 +1378,7 @@
 
             it("will open a chatbox and be displayed inside it",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 const include_nick = false;
@@ -1427,7 +1424,7 @@
 
             it("will be trimmed of leading and trailing whitespace",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1, false);
@@ -1509,7 +1506,7 @@
                 const older_msgs = modal.el.querySelectorAll('.older-msg');
                 expect(older_msgs.length).toBe(2);
                 expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
-                expect(older_msgs[0].childNodes[1].textContent).toBe(': But soft, what light through yonder airlock breaks?');
+                expect(older_msgs[0].childNodes[2].textContent).toBe('But soft, what light through yonder airlock breaks?');
                 expect(view.model.messages.models.length).toBe(1);
                 done();
             }));
@@ -1519,7 +1516,7 @@
 
                 it("the VCard for that user is fetched and the chatbox updated with the results",
                     mock.initConverse(
-                        ['rosterGroupsFetched', 'emojisInitialized'], {'allow_non_roster_messaging': true},
+                        ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 0);
@@ -1635,7 +1632,7 @@
 
                 it("will have the error message displayed after itself",
                     mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1847,7 +1844,7 @@
 
             it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -2098,7 +2095,7 @@
 
         it("is not sent when a markable message is received from someone not on the roster",
             mock.initConverse(
-                ['rosterGroupsFetched', 'emojisInitialized'], {'allow_non_roster_messaging': true},
+                ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current', 0);

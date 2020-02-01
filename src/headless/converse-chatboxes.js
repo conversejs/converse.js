@@ -1,12 +1,10 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2012-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-chatboxes
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "./converse-emoji";
+import { Collection } from "skeletor.js/src/collection";
 import converse from "./converse-core";
 import { isString } from "lodash";
 import log from "./log";
@@ -46,7 +44,7 @@ converse.plugins.add('converse-chatboxes', {
             if (title.search(/^Messages \(\d+\) /) === -1) {
                 document.title = `Messages (${msg_counter}) ${title}`;
             } else {
-                document.title = title.replace(/^Messages \(\d+\) /, `Messages (${msg_counter})`);
+                document.title = title.replace(/^Messages \(\d+\) /, `Messages (${msg_counter}) `);
             }
         };
 
@@ -62,7 +60,7 @@ converse.plugins.add('converse-chatboxes', {
         };
 
 
-        _converse.ChatBoxes = _converse.Collection.extend({
+        _converse.ChatBoxes = Collection.extend({
             comparator: 'time_opened',
 
             model (attrs, options) {
@@ -86,9 +84,7 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             onConnected (reconnecting) {
-                if (reconnecting) {
-                    return;
-                }
+                if (reconnecting) { return; }
                 this.browserStorage = _converse.createStore(`converse.chatboxes-${_converse.bare_jid}`);
                 this.fetch({
                     'add': true,
@@ -98,12 +94,12 @@ converse.plugins.add('converse-chatboxes', {
         });
 
 
-        async function createChatBox (jid, attrs, model) {
+        async function createChatBox (jid, attrs, Model) {
             jid = Strophe.getBareJidFromJid(jid.toLowerCase());
             Object.assign(attrs, {'jid': jid, 'id': jid});
             let chatbox;
             try {
-                chatbox = new model(attrs, {'collection': _converse.chatboxes});
+                chatbox = new Model(attrs, {'collection': _converse.chatboxes});
             } catch (e) {
                 log.error(e);
                 return null;
@@ -156,7 +152,7 @@ converse.plugins.add('converse-chatboxes', {
                  * @method _converse.api.chats.create
                  * @param { String|String[] } jids - A JID or array of JIDs
                  * @param { Object } [attrs] An object containing configuration attributes
-                 * @param { Backbone.Model } model - The type of chatbox that should be created
+                 * @param { Model } model - The type of chatbox that should be created
                  */
                 async create (jids=[], attrs={}, model) {
                     await _converse.api.waitUntil('chatBoxesFetched');

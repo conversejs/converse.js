@@ -1,9 +1,9 @@
 #conversejs {
     #controlbox {
         .bookmarks-toggle, .bookmarks-toggle .fa {
-            color: var(--chatroom-head-color) !important;
+            color: var(--chatroom-head-bg-color) !important;
             &:hover {
-                color: var(--chatroom-head-color-dark) !important;
+                color: var(--chatroom-head-bg-color-dark) !important;
             }
         }
     }

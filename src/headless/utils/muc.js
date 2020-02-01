@@ -1,11 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// This is the utilities module.
-//
-// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
+/**
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ * @description This is the MUC utilities module.
+ */
 import { difference, indexOf } from "lodash";
 import converse from "@converse/headless/converse-core";
 import u from "./core";

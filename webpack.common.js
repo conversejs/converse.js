@@ -16,10 +16,6 @@ module.exports = {
     module: {
         rules: [
         {
-            test: path.resolve(__dirname, "node_modules/backbone.vdomview/backbone.vdomview"),
-            use: 'imports-loader?backbone.nativeview'
-        },
-        {
             test: path.resolve(__dirname, "node_modules/xss/dist/xss"),
             use: "exports-loader?filterXSS,filterCSS"
         },
@@ -122,17 +118,7 @@ module.exports = {
             "IPv6":                     path.resolve(__dirname, "node_modules/urijs/src/IPv6"),
             "SecondLevelDomains":       path.resolve(__dirname, "node_modules/urijs/src/SecondLevelDomains"),
             "formdata-polyfill":        path.resolve(__dirname, "node_modules/formdata-polyfill/FormData"),
-            "jquery":                   path.resolve(__dirname, "src/jquery-stub"),
-            "punycode":                 path.resolve(__dirname, "node_modules/urijs/src/punycode"),
-            "snabbdom":                 path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom"),
-            "snabbdom-attributes":      path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-attributes"),
-            "snabbdom-class":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-class"),
-            "snabbdom-dataset":         path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-dataset"),
-            "snabbdom-eventlisteners":  path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-eventlisteners"),
-            "snabbdom-props":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-props"),
-            "snabbdom-style":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-style"),
-            "tovnode":                  path.resolve(__dirname, "node_modules/snabbdom/dist/tovnode"),
-            "underscore":               path.resolve(__dirname, "src/underscore-shim")
+            "punycode":                 path.resolve(__dirname, "node_modules/urijs/src/punycode")
         }
     }
 }

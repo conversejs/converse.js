@@ -214,9 +214,7 @@
         describe("The \"contacts\" API", function () {
 
             it("has a method 'get' which returns wrapped contacts",
-                mock.initConverse(
-                    ['emojisInitialized'], {},
-                    async function (done, _converse) {
+                    mock.initConverse([], {}, async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
                 let contact = await _converse.api.contacts.get('non-existing@jabber.org');

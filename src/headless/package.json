@@ -26,8 +26,7 @@
   },
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "devDependencies": {
-    "backbone": "1.4",
-    "backbone.browserStorage": "conversejs/backbone.browserStorage#674ba3aa0e4d0f0b0dcac48fcc7dea531012828f",
+    "skeletor.js": "skeletorjs/skeletor#5a95708a5fdec9029fc493c1df4bca337803f124",
     "filesize": "^4.1.2",
     "jed": "1.1.1",
     "localforage": "^1.7.3",

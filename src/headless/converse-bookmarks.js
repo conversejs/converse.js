@@ -1,20 +1,18 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /**
  * @module converse-bookmarks
  * @description
  * Converse.js plugin which adds views for bookmarks specified in XEP-0048.
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-muc";
 import converse from "@converse/headless/converse-core";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
 import { get } from "lodash";
 import log from "./log";
 
-const { Backbone, Strophe, $iq, sizzle } = converse.env;
+const { Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -93,13 +91,13 @@ converse.plugins.add('converse-bookmarks', {
             }
         }
 
-        _converse.Bookmark = Backbone.Model.extend({
+        _converse.Bookmark = Model.extend({
             getDisplayName () {
                 return Strophe.xmlunescape(this.get('name'));
             }
         });
 
-        _converse.Bookmarks = _converse.Collection.extend({
+        _converse.Bookmarks = Collection.extend({
             model: _converse.Bookmark,
             comparator: (item) => item.get('name').toLowerCase(),
 
@@ -258,7 +256,7 @@ converse.plugins.add('converse-bookmarks', {
             }
         });
 
-        _converse.BookmarksList = Backbone.Model.extend({
+        _converse.BookmarksList = Model.extend({
             defaults: {
                 "toggle-state":  _converse.OPENED
             }
@@ -292,7 +290,7 @@ converse.plugins.add('converse-bookmarks', {
 
         _converse.api.listen.on('clearSession', () => {
             if (_converse.bookmarks !== undefined) {
-                _converse.bookmarks.clearSession({'silent': true});
+                _converse.bookmarks.clearStore({'silent': true});
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
                 delete _converse.bookmarks;
             }

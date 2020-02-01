@@ -28,7 +28,7 @@
                 toolbar.querySelector('a.toggle-smiley').click();
                 await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
                 const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
-                const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
+                const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji a'));
                 item.click()
                 expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':smiley: ');
                 toolbar.querySelector('a.toggle-smiley').click(); // Close the panel again
@@ -43,6 +43,7 @@
                 const muc_jid = 'lounge@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.chatboxviews.get(muc_jid);
+
                 const textarea = view.el.querySelector('textarea.chat-textarea');
                 textarea.value = ':gri';
 
@@ -59,7 +60,7 @@
                 let picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
                 const input = picker.querySelector('.emoji-search');
                 expect(input.value).toBe(':gri');
-                let visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
+                let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
                 expect(visible_emojis.length).toBe(3);
                 expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
                 expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':grin:');
@@ -67,7 +68,7 @@
 
                 // Test that TAB autocompletes the to first match
                 view.emoji_picker_view.onKeyDown(tab_event);
-                visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
+                visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
                 expect(visible_emojis.length).toBe(1);
                 expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
                 expect(input.value).toBe(':grimacing:');
@@ -105,7 +106,7 @@
 
             it("allows you to search for particular emojis",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
@@ -129,7 +130,7 @@
                 };
                 view.emoji_picker_view.onKeyDown(event);
                 await u.waitUntil(() => view.emoji_picker_view.model.get('query') === 'smiley');
-                let visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
+                let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
                 expect(visible_emojis.length).toBe(2);
                 expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':smiley:');
                 expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':smiley_cat:');
@@ -143,7 +144,7 @@
                 const tab_event = Object.assign({}, event, {'keyCode': 9, 'key': 'Tab'});
                 view.emoji_picker_view.onKeyDown(tab_event);
                 expect(input.value).toBe(':smiley:');
-                visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
+                visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
                 expect(visible_emojis.length).toBe(1);
                 expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':smiley:');
 
@@ -158,7 +159,7 @@
         describe("A Chat Message", function () {
             it("will display larger if it's only emojis",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {'use_system_emojis': true},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {'use_system_emojis': true},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');

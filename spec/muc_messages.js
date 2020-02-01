@@ -430,6 +430,8 @@
                     'type': 'groupchat',
                     'id': msg_id,
                 }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder airlock breaks?');
@@ -463,10 +465,10 @@
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const older_msgs = modal.el.querySelectorAll('.older-msg');
             expect(older_msgs.length).toBe(2);
-            expect(older_msgs[0].childNodes[1].textContent).toBe(': But soft, what light through yonder airlock breaks?');
+            expect(older_msgs[0].childNodes[2].textContent).toBe('But soft, what light through yonder airlock breaks?');
             expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
             expect(older_msgs[1].childNodes[0].nodeName).toBe('TIME');
-            expect(older_msgs[1].childNodes[1].textContent).toBe(': But soft, what light through yonder chimney breaks?');
+            expect(older_msgs[1].childNodes[2].textContent).toBe('But soft, what light through yonder chimney breaks?');
             done();
         }));
 

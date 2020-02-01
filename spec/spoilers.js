@@ -74,7 +74,7 @@
             const view = _converse.chatboxviews.get(sender_jid);
             await u.waitUntil(() => u.isVisible(view.el));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
-            expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Mercutio')).toBeTruthy();
+            expect(view.el.querySelector('.chat-msg__author').textContent.includes('Mercutio')).toBeTruthy();
             const message_content = view.el.querySelector('.chat-msg__text');
             expect(message_content.textContent).toBe(spoiler);
             const spoiler_hint_el = view.el.querySelector('.spoiler-hint');

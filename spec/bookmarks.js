@@ -16,9 +16,7 @@
 
     describe("A chat room", function () {
 
-        it("can be bookmarked", mock.initConverse(
-                ['rosterGroupsFetched', 'emojisInitialized'], {},
-                async function (done, _converse) {
+        it("can be bookmarked", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,

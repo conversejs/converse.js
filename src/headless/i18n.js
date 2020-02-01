@@ -1,11 +1,9 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// This is the internationalization module.
-//
-// Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
+/**
+ * @module i18n
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ * @description This is the internationalization module
+ */
 import Jed from "jed";
 import dayjs from "dayjs";
 
@@ -70,7 +68,7 @@ let jed_instance;
 /**
  * @namespace i18n
  */
-export default {
+export const i18n = {
 
     getLocale (preferred_locale, available_locales) {
         return getLocale(preferred_locale, preferred => isConverseLocale(preferred, available_locales));
@@ -105,3 +103,8 @@ export default {
         jed_instance = new Jed(data);
     }
 };
+
+
+export const __ = function () {
+    return i18n.translate.apply(i18n, arguments);
+}

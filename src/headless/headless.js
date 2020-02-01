@@ -5,7 +5,7 @@
 import "./converse-bookmarks";   // XEP-0199 XMPP Ping
 import "./converse-bosh";        // XEP-0206 BOSH
 import "./converse-caps";        // XEP-0115 Entity Capabilities
-import "./converse-chatboxes";   // Backbone Collection and Models for chat boxes
+import "./converse-chatboxes";
 import "./converse-chat";        // Support for one-on-one chats
 import "./converse-disco";       // XEP-0030 Service discovery
 import "./converse-mam";         // XEP-0313 Message Archive Management

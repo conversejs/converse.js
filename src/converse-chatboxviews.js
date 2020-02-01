@@ -1,22 +1,19 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2012-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-
 /**
  * @module converse-chatboxviews
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-chatboxes";
-import "backbone.nativeview";
-import { Overview } from "backbone.overview";
+import { Overview } from "skeletor.js/src/overview";
+import { View } from "skeletor.js/src/view";
+import { result } from "lodash";
 import converse from "@converse/headless/converse-core";
 import tpl_avatar from "templates/avatar.svg";
 import tpl_background_logo from "templates/background_logo.html";
 import tpl_chatboxes from "templates/chatboxes.html";
 
-const { Backbone, _, utils } = converse.env;
-const u = utils;
+const u = converse.env.utils;
+
 
 const AvatarMixin = {
 
@@ -63,8 +60,7 @@ converse.plugins.add('converse-chatboxviews', {
             'theme': 'default'
         });
 
-        _converse.ViewWithAvatar = Backbone.NativeView.extend(AvatarMixin);
-        _converse.VDOMViewWithAvatar = Backbone.VDOMView.extend(AvatarMixin);
+        _converse.ViewWithAvatar = View.extend(AvatarMixin);
 
 
         _converse.ChatBoxViews = Overview.extend({
@@ -90,7 +86,7 @@ converse.plugins.add('converse-chatboxviews', {
                     el.innerHTML = '';
                     this.setElement(el, false);
                 } else {
-                    this.setElement(_.result(this, 'el'), false);
+                    this.setElement(result(this, 'el'), false);
                 }
             },
 

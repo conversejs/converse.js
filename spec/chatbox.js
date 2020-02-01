@@ -162,7 +162,7 @@
             }));
 
             it("can be trimmed to conserve space",
-                mock.initConverse(['rosterGroupsFetched', 'emojisInitialized'], {},
+                mock.initConverse(['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 spyOn(_converse.chatboxviews, 'trimChats');
@@ -448,7 +448,7 @@
 
                     toolbar.querySelector('a.toggle-smiley').click();
                     const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__lists'));
-                    const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji'));
+                    const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji a'));
                     item.click()
                     expect(counter.textContent).toBe('179');
 
@@ -523,7 +523,7 @@
 
                 it("does not open a new chatbox",
                     mock.initConverse(
-                        ['rosterGroupsFetched', 'emojisInitialized'], {},
+                        ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
                     await test_utils.waitForRoster(_converse, 'current');
@@ -884,7 +884,7 @@
 
                     it("is sent if the user has stopped typing since 2 minutes",
                         mock.initConverse(
-                            ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
                         const sent_stanzas = _converse.connection.sent_stanzas;
@@ -1190,7 +1190,7 @@
 
             it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1271,7 +1271,7 @@
             }));
 
             it("is incremeted when message is received, chatbox is scrolled down and the window is not focused",
-                mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
@@ -1291,7 +1291,7 @@
 
             it("is incremeted when message is received, chatbox is scrolled up and the window is not focused",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1309,7 +1309,7 @@
 
             it("is cleared when ChatBoxView was scrolled down and the window become focused",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1328,7 +1328,7 @@
 
             it("is not cleared when ChatBoxView was scrolled up and the windows become focused",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1433,7 +1433,7 @@
 
             it("is cleared when unread messages are viewed which were received in scrolled-up chatbox",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.openControlBox(_converse);
@@ -1458,7 +1458,7 @@
 
             it("is not cleared after user clicks on roster view when chatbox is already opened and scrolled up",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1485,7 +1485,7 @@
 
             it("is displayed when scrolled up chatbox is minimized after receiving unread messages",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
@@ -1513,7 +1513,7 @@
 
             it("is incremented when message is received and windows is not focused",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);

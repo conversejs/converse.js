@@ -26,12 +26,19 @@
                 height: 8em;
                 overflow-y: auto;
                 .emoji-category__heading {
-                    cursor: auto;
+                    clear: both;
                     color: var(--subdued-color);
+                    cursor: auto;
+                    display: block;
                     font-size: var(--font-size);
                     margin: 0;
                     padding: 0.75em 0 0 0.5em;
                 }
+
+                .emoji-lists__container {
+                    overflow-x: hidden;
+                }
+
                 .emoji-picker {
                     li {
                         float: left;
@@ -128,17 +135,17 @@
 
     .chatroom {
         .emoji-picker.toolbar-menu {
-            background-color: var(--chatroom-head-color);
+            background-color: var(--chatroom-head-bg-color);
             background: white;
             .emoji-skintone-picker {
-                background-color: var(--chatroom-head-color);
+                background-color: var(--chatroom-head-bg-color);
             }
             .emoji-picker__header {
-                background-color: var(--chatroom-head-color);
+                background-color: var(--chatroom-head-bg-color);
                 ul {
                     .emoji-category {
                         &.picked {
-                            border: 1px var(--chatroom-head-color) solid;
+                            border: 1px var(--chatroom-head-bg-color) solid;
                             border-bottom: none;
                         }
                     }

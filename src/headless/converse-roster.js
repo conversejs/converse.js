@@ -1,17 +1,16 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-roster
+ * @copyright The Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-status";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
 import { get, invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash";
 import converse from "@converse/headless/converse-core";
 import log from "./log";
 
-const { Backbone, Strophe, $iq, $pres, dayjs, sizzle } = converse.env;
+const { Strophe, $iq, $pres, dayjs, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -118,11 +117,11 @@ converse.plugins.add('converse-roster', {
             }
         };
 
-        const Resource = Backbone.Model.extend({'idAttribute': 'name'});
-        const Resources = _converse.Collection.extend({'model': Resource});
+        const Resource = Model.extend({'idAttribute': 'name'});
+        const Resources = Collection.extend({'model': Resource});
 
 
-        _converse.Presence = Backbone.Model.extend({
+        _converse.Presence = Model.extend({
             defaults: {
                 'show': 'offline'
             },
@@ -194,7 +193,7 @@ converse.plugins.add('converse-roster', {
         });
 
 
-        _converse.Presences = _converse.Collection.extend({
+        _converse.Presences = Collection.extend({
             model: _converse.Presence,
         });
 
@@ -204,7 +203,7 @@ converse.plugins.add('converse-roster', {
          * @namespace _converse.RosterContact
          * @memberOf _converse
          */
-        _converse.RosterContact = Backbone.Model.extend({
+        _converse.RosterContact = Model.extend({
             defaults: {
                 'chat_state': undefined,
                 'image': _converse.DEFAULT_IMAGE,
@@ -359,7 +358,7 @@ converse.plugins.add('converse-roster', {
          * @namespace _converse.RosterContacts
          * @memberOf _converse
          */
-        _converse.RosterContacts = _converse.Collection.extend({
+        _converse.RosterContacts = Collection.extend({
             model: _converse.RosterContact,
 
             comparator (contact1, contact2) {
@@ -476,13 +475,11 @@ converse.plugins.add('converse-roster', {
              * @param { String } message - An optional message to explain the reason for the subscription request.
              * @param { Object } attributes - Any additional attributes to be stored on the user's model.
              */
-            addAndSubscribe (jid, name, groups, message, attributes) {
-                const handler = (contact) => {
-                    if (contact instanceof _converse.RosterContact) {
-                        contact.subscribe(message);
-                    }
+            async addAndSubscribe (jid, name, groups, message, attributes) {
+                const contact = await this.addContactToRoster(jid, name, groups, attributes);
+                if (contact instanceof _converse.RosterContact) {
+                    contact.subscribe(message);
                 }
-                this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
             },
 
             /**
@@ -516,6 +513,7 @@ converse.plugins.add('converse-roster', {
              * @param { Object } attributes - Any additional attributes to be stored on the user's model.
              */
             async addContactToRoster (jid, name, groups, attributes) {
+                await _converse.api.waitUntil('rosterContactsFetched');
                 groups = groups || [];
                 try {
                     await this.sendContactAddIQ(jid, name, groups);
@@ -534,19 +532,17 @@ converse.plugins.add('converse-roster', {
                 }, attributes), {'sort': false});
             },
 
-            subscribeBack (bare_jid, presence) {
+            async subscribeBack (bare_jid, presence) {
                 const contact = this.get(bare_jid);
                 if (contact instanceof _converse.RosterContact) {
                     contact.authorize().subscribe();
                 } else {
                     // Can happen when a subscription is retried or roster was deleted
-                    const handler = (contact) => {
-                        if (contact instanceof _converse.RosterContact) {
-                            contact.authorize().subscribe();
-                        }
-                    }
                     const nickname = get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
-                    this.addContactToRoster(bare_jid, nickname, [], {'subscription': 'from'}).then(handler, handler);
+                    const contact = await this.addContactToRoster(bare_jid, nickname, [], {'subscription': 'from'});
+                    if (contact instanceof _converse.RosterContact) {
+                        contact.authorize().subscribe();
+                    }
                 }
             },
 
@@ -816,7 +812,7 @@ converse.plugins.add('converse-roster', {
         });
 
 
-        _converse.RosterGroup = Backbone.Model.extend({
+        _converse.RosterGroup = Model.extend({
 
             initialize (attributes) {
                 this.set(Object.assign({
@@ -834,7 +830,7 @@ converse.plugins.add('converse-roster', {
          * @namespace _converse.RosterGroups
          * @memberOf _converse
          */
-        _converse.RosterGroups = _converse.Collection.extend({
+        _converse.RosterGroups = Collection.extend({
             model: _converse.RosterGroup,
 
             comparator (a, b) {
@@ -922,7 +918,7 @@ converse.plugins.add('converse-roster', {
                 _converse.presences.forEach(p => {
                     p.resources.reject(r => r === undefined).forEach(r => r.destroy({'silent': true}));
                 });
-                _converse.presences.clearSession();
+                _converse.presences.clearStore();
             }
         }
 
@@ -933,11 +929,11 @@ converse.plugins.add('converse-roster', {
             if (_converse.shouldClearCache()) {
                 if (_converse.roster) {
                     invoke(_converse, 'roster.data.destroy');
-                    _converse.roster.clearSession();
+                    _converse.roster.clearStore();
                     delete _converse.roster;
                 }
                 if (_converse.rostergroups) {
-                    _converse.rostergroups.clearSession();
+                    _converse.rostergroups.clearStore();
                     delete _converse.rostergroups;
                 }
             }
@@ -978,7 +974,7 @@ converse.plugins.add('converse-roster', {
             let id = `converse.contacts-${_converse.bare_jid}`;
             _converse.roster.browserStorage = _converse.createStore(id);
 
-            _converse.roster.data = new Backbone.Model();
+            _converse.roster.data = new Model();
             id = `converse-roster-model-${_converse.bare_jid}`;
             _converse.roster.data.id = id;
             _converse.roster.data.browserStorage = _converse.createStore(id);
@@ -1086,7 +1082,7 @@ converse.plugins.add('converse-roster', {
                     if (!isString(jid) || !jid.includes('@')) {
                         throw new TypeError('contacts.add: invalid jid');
                     }
-                    _converse.roster.addAndSubscribe(jid, isEmpty(name)? jid: name);
+                    return _converse.roster.addAndSubscribe(jid, isEmpty(name)? jid: name);
                 }
             }
         });

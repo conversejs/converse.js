@@ -1,13 +1,10 @@
-// Converse.js (A browser based XMPP chat client)
-// https://conversejs.org
-//
-// This is the utilities module.
-//
-// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
+/**
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ * @description This is the core utilities module.
+ */
 import * as strophe from 'strophe.js/src/core';
-import Backbone from "backbone";
+import { Model } from 'skeletor.js/src/model.js';
 import _ from "../lodash.noconflict";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
@@ -120,14 +117,14 @@ u.isNewMessage = function (message) {
             sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length &&
             sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, message).length
         );
-    } else if (message instanceof Backbone.Model) {
+    } else if (message instanceof Model) {
         message = message.attributes;
     }
     return !(message['is_delayed'] && message['is_archived']);
 };
 
 u.isEmptyMessage = function (attrs) {
-    if (attrs instanceof Backbone.Model) {
+    if (attrs instanceof Model) {
         attrs = attrs.attributes;
     }
     return !attrs['oob_url'] &&
@@ -146,7 +143,7 @@ u.isOnlyChatStateNotification = function (msg) {
                     (msg.querySelector('paused') !== null) ||
                     (msg.querySelector('gone') !== null));
     }
-    if (msg instanceof Backbone.Model) {
+    if (msg instanceof Model) {
         msg = msg.attributes;
     }
     return msg['chat_state'] && u.isEmptyMessage(msg);
@@ -158,7 +155,7 @@ u.isOnlyMessageDeliveryReceipt = function (msg) {
         return (msg.querySelector('body') === null) &&
                     (msg.querySelector('received') !== null);
     }
-    if (msg instanceof Backbone.Model) {
+    if (msg instanceof Model) {
         msg = msg.attributes;
     }
     return msg['received'] && u.isEmptyMessage(msg);
@@ -371,10 +368,12 @@ u.isPersistableModel = function (model) {
     return model.collection && model.collection.browserStorage;
 };
 
+/**
+ * Returns a promise object on which `resolve` or `reject` can be called.
+ * @private
+ * @method u#getResolveablePromise
+ */
 u.getResolveablePromise = function () {
-    /* Returns a promise object on which `resolve` or `reject` can be
-     * called.
-     */
     const wrapper = {
         isResolved: false,
         isPending: true,
@@ -384,7 +383,7 @@ u.getResolveablePromise = function () {
         wrapper.resolve = resolve;
         wrapper.reject = reject;
     })
-    _.assign(promise, wrapper);
+    Object.assign(promise, wrapper);
     promise.then(
         function (v) {
             promise.isResolved = true;

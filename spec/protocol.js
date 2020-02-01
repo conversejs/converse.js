@@ -112,6 +112,7 @@
                  *   </query>
                  *   </iq>
                  */
+                await test_utils.waitForRoster(_converse, 'all', 0);
                 expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
                 expect(sent_stanza.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+

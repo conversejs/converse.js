@@ -1,29 +1,27 @@
-// Converse.js
-// https://conversejs.org
-//
-// Copyright (c) 2013-2019, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
 /**
  * @module converse-rosterview
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
 import "formdata-polyfill";
 import { compact, debounce, has, isString, uniq, without } from "lodash";
-import { OrderedListView } from "backbone.overview";
-import SHA1 from 'strophe.js/src/sha1';
+import { View } from 'skeletor.js/src/view.js';
+import { Model } from 'skeletor.js/src/model.js';
+import { OrderedListView } from "skeletor.js/src/overview";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
-import tpl_add_contact_modal from "templates/add_contact_modal.html";
+import tpl_add_contact_modal from "templates/add_contact_modal.js";
 import tpl_group_header from "templates/group_header.html";
 import tpl_pending_contact from "templates/pending_contact.html";
 import tpl_requesting_contact from "templates/requesting_contact.html";
 import tpl_roster from "templates/roster.html";
-import tpl_roster_filter from "templates/roster_filter.html";
+import tpl_roster_filter from "templates/roster_filter.js";
 import tpl_roster_item from "templates/roster_item.html";
 
-const { Backbone, Strophe } = converse.env;
+const { Strophe } = converse.env;
 const u = converse.env.utils;
 
 
@@ -60,6 +58,7 @@ converse.plugins.add('converse-rosterview', {
 
 
         _converse.AddContactModal = _converse.BootstrapModal.extend({
+            id: "add-contact-modal",
             events: {
                 'submit form': 'addContactFromForm'
             },
@@ -73,12 +72,7 @@ converse.plugins.add('converse-rosterview', {
                 const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
                 return tpl_add_contact_modal(Object.assign(this.model.toJSON(), {
                     '_converse': _converse,
-                    'heading_new_contact': __('Add a Contact'),
-                    'label_xmpp_address': __('XMPP Address'),
                     'label_nickname': label_nickname,
-                    'contact_placeholder': __('name@example.org'),
-                    'label_add': __('Add'),
-                    'error_message': __('Please enter a valid XMPP address')
                 }));
             },
 
@@ -196,7 +190,7 @@ converse.plugins.add('converse-rosterview', {
         });
 
 
-        _converse.RosterFilter = Backbone.Model.extend({
+        _converse.RosterFilter = Model.extend({
             initialize () {
                 this.set({
                     'filter_text': '',
@@ -206,16 +200,8 @@ converse.plugins.add('converse-rosterview', {
             },
         });
 
-        _converse.RosterFilterView = Backbone.VDOMView.extend({
-            tagName: 'form',
-            className: 'roster-filter-form',
-            events: {
-                "keydown .roster-filter": "liveFilter",
-                "submit": "submitFilter",
-                "click .clear-input": "clearFilter",
-                "click .filter-by span": "changeTypeFilter",
-                "change .state-type": "changeChatStateFilter"
-            },
+        _converse.RosterFilterView = View.extend({
+            tagName: 'span',
 
             initialize () {
                 this.listenTo(this.model, 'change:filter_type', this.render);
@@ -237,17 +223,22 @@ converse.plugins.add('converse-rosterview', {
                         label_busy: __('Busy'),
                         label_away: __('Away'),
                         label_xa: __('Extended Away'),
-                        label_offline: __('Offline')
+                        label_offline: __('Offline'),
+                        changeChatStateFilter: ev => this.changeChatStateFilter(ev),
+                        changeTypeFilter: ev => this.changeTypeFilter(ev),
+                        clearFilter: ev => this.clearFilter(ev),
+                        liveFilter: ev => this.liveFilter(ev),
+                        submitFilter: ev => this.submitFilter(ev),
                     }));
             },
 
             changeChatStateFilter (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                ev && ev.preventDefault();
                 this.model.save({'chat_state': this.el.querySelector('.state-type').value});
             },
 
             changeTypeFilter (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                ev && ev.preventDefault();
                 const type = ev.target.dataset.type;
                 if (type === 'state') {
                     this.model.save({
@@ -263,64 +254,30 @@ converse.plugins.add('converse-rosterview', {
             },
 
             liveFilter: debounce(function () {
-                this.model.save({
-                    'filter_text': this.el.querySelector('.roster-filter').value
-                });
+                this.model.save({'filter_text': this.el.querySelector('.roster-filter').value});
             }, 250),
 
             submitFilter (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                ev && ev.preventDefault();
                 this.liveFilter();
-                this.render();
             },
 
+            /**
+             * Returns true if the filter is enabled (i.e. if the user
+             * has added values to the filter).
+             * @private
+             * @method _converse.RosterFilterView#isActive
+             */
             isActive () {
-                /* Returns true if the filter is enabled (i.e. if the user
-                 * has added values to the filter).
-                 */
-                if (this.model.get('filter_type') === 'state' ||
-                    this.model.get('filter_text')) {
-                    return true;
-                }
-                return false;
+                return (this.model.get('filter_type') === 'state' || this.model.get('filter_text'));
             },
 
             shouldBeVisible () {
                 return _converse.roster && _converse.roster.length >= 5 || this.isActive();
             },
 
-            showOrHide () {
-                if (this.shouldBeVisible()) {
-                    this.show();
-                } else {
-                    this.hide();
-                }
-            },
-
-            show () {
-                if (u.isVisible(this.el)) { return this; }
-                this.el.classList.add('fade-in');
-                this.el.classList.remove('hidden');
-                return this;
-            },
-
-            hide () {
-                if (!u.isVisible(this.el)) { return this; }
-                this.model.save({
-                    'filter_text': '',
-                    'chat_state': 'online'
-                });
-                this.el.classList.add('hidden');
-                return this;
-            },
-
             clearFilter (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                    u.hideElement(this.el.querySelector('.clear-input'));
-                }
-                const roster_filter = this.el.querySelector('.roster-filter');
-                roster_filter.value = '';
+                ev && ev.preventDefault();
                 this.model.save({'filter_text': ''});
             }
         });
@@ -814,7 +771,7 @@ converse.plugins.add('converse-rosterview', {
 
             showAddContactModal (ev) {
                 if (this.add_contact_modal === undefined) {
-                    this.add_contact_modal = new _converse.AddContactModal({'model': new Backbone.Model()});
+                    this.add_contact_modal = new _converse.AddContactModal({'model': new Model()});
                 }
                 this.add_contact_modal.show(ev);
             },
@@ -824,7 +781,7 @@ converse.plugins.add('converse-rosterview', {
                 const model = new _converse.RosterFilter();
                 model.id = `_converse.rosterfilter-${_converse.bare_jid}`;
                 model.browserStorage = _converse.createStore(model.id);
-                this.filter_view = new _converse.RosterFilterView({'model': model});
+                this.filter_view = new _converse.RosterFilterView({model});
                 this.listenTo(this.filter_view.model, 'change', this.updateFilter);
                 this.filter_view.model.fetch();
             },
@@ -849,7 +806,7 @@ converse.plugins.add('converse-rosterview', {
                 if (!u.isVisible(this.roster_el)) {
                     u.showElement(this.roster_el);
                 }
-                this.filter_view.showOrHide();
+                this.filter_view.render();
                 return this;
             },
 
@@ -926,7 +883,7 @@ converse.plugins.add('converse-rosterview', {
                 if (view) {
                     return view.model;
                 }
-                return this.model.create({name, 'id': SHA1.b64_sha1(name)});
+                return this.model.create({name});
             },
 
             addContactToGroup (contact, name, options) {

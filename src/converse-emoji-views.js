@@ -1,17 +1,17 @@
 /**
  * @module converse-emoji-views
- * @copyright 2013-2019, the Converse.js developers
+ * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-
 import "@converse/headless/converse-emoji";
+import { View } from "skeletor.js/src/view";
 import { debounce, find, get } from "lodash";
 import DOMNavigator from "./dom-navigator";
 import bootstrap from "bootstrap.native";
+import emoji_picker from "templates/emoji_picker.js";
+import sizzle from 'sizzle';
 import tpl_emoji_button from "templates/emoji_button.html";
-import tpl_emojis from "templates/emojis.html";
 
-const { Backbone, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -86,29 +86,30 @@ converse.plugins.add('converse-emoji-views', {
                     'autocompleting': value,
                     'position': input.selectionStart
                 }, {'silent': true});
-                this.emoji_picker_view.filter(value, true);
+                this.emoji_picker_view.filter(value);
                 this.emoji_dropdown.toggle();
             },
 
-            createEmojiPicker () {
-                if (this.emoji_picker_view) {
-                    this.insertEmojiPicker();
-                    return;
-                }
-                if (!_converse.emojipicker) {
-                    const id = `converse.emoji-${_converse.bare_jid}`;
-                    _converse.emojipicker = new _converse.EmojiPicker({'id': id});
-                    _converse.emojipicker.browserStorage = _converse.createStore(id);
-                    _converse.emojipicker.fetch();
-                }
-                this.emoji_picker_view = new _converse.EmojiPickerView({'model': _converse.emojipicker});
-                this.emoji_picker_view.chatview = this;
-                this.insertEmojiPicker();
+            async createEmojiPicker () {
+                await _converse.api.emojis.initialize()
+
+                const id = `converse.emoji-${_converse.bare_jid}-${this.model.get('jid')}`;
+                const emojipicker = new _converse.EmojiPicker({'id': id});
+                emojipicker.browserStorage = _converse.createStore(id);
+                await new Promise(resolve => emojipicker.fetch({ 'success': resolve, 'error': resolve}));
+
+                this.emoji_picker_view = new _converse.EmojiPickerView({
+                    'model': emojipicker,
+                    'chatview': this
+                });
+                const el = this.el.querySelector('.emoji-picker__container');
+                el.innerHTML = '';
+                el.appendChild(this.emoji_picker_view.el);
             },
 
             async createEmojiDropdown () {
                 if (!this.emoji_dropdown) {
-                    await _converse.api.waitUntil('emojisInitialized');
+                    await this.createEmojiPicker();
                     const el = this.el.querySelector('.emoji-picker');
                     this.emoji_dropdown = new bootstrap.Dropdown(el, true);
                     this.emoji_dropdown.el = el;
@@ -120,79 +121,63 @@ converse.plugins.add('converse-emoji-views', {
                 await this.createEmojiDropdown();
                 this.emoji_dropdown.toggle();
                 this.emoji_picker_view.setScrollPosition();
-            },
-
-            insertEmojiPicker () {
-                const el = this.el.querySelector('.emoji-picker__container');
-                el.innerHTML = '';
-                el.appendChild(this.emoji_picker_view.el);
             }
         };
         Object.assign(_converse.ChatBoxView.prototype, emoji_aware_chat_view);
 
 
-        _converse.EmojiPickerView = Backbone.VDOMView.extend({
-            className: 'emoji-picker',
-            events: {
-                'click .emoji-picker__header li.emoji-category .pick-category': 'chooseCategory',
-                'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone',
-                'click .insert-emoji': 'insertEmoji',
-                'focus .emoji-search': 'disableArrowNavigation',
-                'keydown .emoji-search': 'onKeyDown'
-            },
+        _converse.EmojiPickerView = View.extend({
+            className: 'emoji-picker dropdown-menu toolbar-menu',
 
-            async initialize () {
+            initialize (config) {
+                this.chatview = config.chatview;
                 this.onGlobalKeyDown = ev => this._onGlobalKeyDown(ev);
 
                 const body = document.querySelector('body');
                 body.addEventListener('keydown', this.onGlobalKeyDown);
 
                 this.search_results = [];
-                this.debouncedFilter = debounce(input => this.filter(input.value), 150);
-                this.listenTo(this.model, 'change:query', this.render)
-                this.listenTo(this.model, 'change:current_skintone', this.render)
-                this.listenTo(this.model, 'change:current_category', () => {
-                    this.render();
-                    const category = this.model.get('current_category');
-                    const el = this.el.querySelector(`.emoji-category[data-category="${category}"]`);
-                    this.navigator.select(el);
-                    !this.navigator.enabled && this.navigator.enable();
-                });
-                await _converse.api.waitUntil('emojisInitialized');
+                this.debouncedFilter = debounce(input => this.filter(input.value), 250);
+                this.listenTo(this.model, 'change:query', this.render);
+                this.listenTo(this.model, 'change:current_skintone', this.render);
+                this.listenTo(this.model, 'change:current_category', this.render);
                 this.render();
+                this.initArrowNavigation();
+                this.initIntersectionObserver();
             },
 
             toHTML () {
-                return tpl_emojis(
+                return emoji_picker(
                     Object.assign(
                         this.model.toJSON(), {
-                            '__': __,
                             '_converse': _converse,
                             'emoji_categories': _converse.emoji_categories,
                             'emojis_by_category': _converse.emojis.json,
+                            'onSkintonePicked': ev => this.chooseSkinTone(ev),
+                            'onEmojiPicked': ev => this.insertEmoji(ev),
+                            'onCategoryPicked': ev => this.chooseCategory(ev),
+                            'onSearchInputBlurred': ev => this.chatview.emitFocused(ev),
+                            'onSearchInputKeyDown': ev => this.onKeyDown(ev),
+                            'onSearchInputFocus': ev => this.onSearchInputFocus(ev),
+                            'search_results': this.search_results,
                             'shouldBeHidden': shortname => this.shouldBeHidden(shortname),
-                            'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                             'toned_emojis': _converse.emojis.toned,
                             'transform': u.getEmojiRenderer(),
-                            'transformCategory': shortname => u.getEmojiRenderer()(this.getTonedShortname(shortname)),
-                            'search_results': this.search_results
+                            'transformCategory': shortname => u.getEmojiRenderer()(this.getTonedShortname(shortname))
                         }
                     )
                 );
             },
 
+            onSearchInputFocus (ev) {
+                this.chatview.emitBlurred(ev);
+                this.disableArrowNavigation();
+            },
+
             remove () {
                 const body = document.querySelector('body');
                 body.removeEventListener('keydown', this.onGlobalKeyDown);
-                Backbone.VDOMView.prototype.remove.call(this);
-            },
-
-            afterRender () {
-                this.initIntersectionObserver();
-                const textarea = this.el.querySelector('.emoji-search');
-                textarea.addEventListener('focus', ev => this.chatview.emitFocused(ev));
-                textarea.addEventListener('blur', ev => this.chatview.emitBlurred(ev));
-                this.initArrowNavigation();
+                View.prototype.remove.call(this);
             },
 
             initArrowNavigation () {
@@ -237,7 +222,7 @@ converse.plugins.add('converse-emoji-views', {
                 this.navigator.disable();
             },
 
-            filter (value, set_property) {
+            filter (value) {
                 const old_query = this.model.get('query');
                 if (!value) {
                     this.search_results = [];
@@ -247,29 +232,13 @@ converse.plugins.add('converse-emoji-views', {
                     this.search_results = _converse.emojis_list.filter(e => _converse.FILTER_CONTAINS(e.sn, value));
                 }
                 this.model.set({'query': value});
-                if (set_property) {
-                    // XXX: Ideally we would set `query` on the model and
-                    // then let the view re-render, instead of doing it
-                    // manually here. Snabbdom supports setting properties,
-                    // Backbone.VDOMView doesn't.
-                    const input = this.el.querySelector('.emoji-search');
-                    input.value = value;
-                }
             },
 
             setCategoryForElement (el) {
                 const category = el.getAttribute('data-category');
                 const old_category = this.model.get('current_category');
                 if (old_category !== category) {
-                    // XXX: Manually set the classes, it's quicker than using the VDOM
-                    this.model.set(
-                        {'current_category': category},
-                        {'silent': true}
-                    );
-                    const category_els = sizzle('.emoji-picker__header .emoji-category', this.el);
-                    category_els.forEach(el => u.removeClass('picked', el));
-                    const new_el = category_els.filter(el => el.getAttribute('data-category') === category).pop();
-                    new_el && u.addClass('picked', new_el);
+                    this.model.save({'current_category': category});
                 }
             },
 
@@ -312,7 +281,7 @@ converse.plugins.add('converse-emoji-views', {
                 if (this.chatview.emoji_dropdown) {
                     this.chatview.emoji_dropdown.toggle();
                 }
-                this.filter('', true);
+                this.filter('');
                 this.disableArrowNavigation();
             },
 
@@ -347,16 +316,18 @@ converse.plugins.add('converse-emoji-views', {
 
             onKeyDown (ev) {
                 if (ev.keyCode === converse.keycodes.RIGHT_ARROW) {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                    ev.target.blur();
-                    const first_el = this.el.querySelector('.pick-category');
-                    this.navigator.select(first_el, 'right');
+                    if (this.navigator.enabled) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        ev.target.blur();
+                        const first_el = this.el.querySelector('.pick-category');
+                        this.navigator.select(first_el, 'right');
+                    }
                 } else if (ev.keyCode === converse.keycodes.TAB) {
                     if (ev.target.value) {
                         ev.preventDefault();
                         const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
-                        match && this.filter(match, true);
+                        match && this.filter(match);
                     } else if (!this.navigator.enabled) {
                         this.enableArrowNavigation(ev);
                     }
@@ -416,11 +387,10 @@ converse.plugins.add('converse-emoji-views', {
             chooseCategory (ev) {
                 ev.preventDefault && ev.preventDefault();
                 ev.stopPropagation && ev.stopPropagation();
-                const input = this.el.querySelector('.emoji-search');
-                input.value = '';
                 const el = ev.target.matches('li') ? ev.target : u.ancestor(ev.target, 'li');
                 this.setCategoryForElement(el);
                 this.navigator.select(el);
+                !this.navigator.enabled && this.navigator.enable();
                 this.setScrollPosition();
             },
 
@@ -443,7 +413,7 @@ converse.plugins.add('converse-emoji-views', {
                 this.model.set({'autocompleting': null, 'position': null});
                 this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'), replace, false, position);
                 this.chatview.emoji_dropdown.toggle();
-                this.filter('', true);
+                this.filter('');
             }
         });
 
@@ -456,8 +426,13 @@ converse.plugins.add('converse-emoji-views', {
             if (_converse.visible_toolbar_buttons.emoji) {
                 const html = tpl_emoji_button({'tooltip_insert_smiley': __('Insert emojis')});
                 view.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
-                view.createEmojiPicker();
             }
         });
+
+        _converse.api.listen.on('headlinesBoxInitialized', () => _converse.api.emojis.initialize());
+        _converse.api.listen.on('chatRoomInitialized', () => _converse.api.emojis.initialize());
+        _converse.api.listen.on('chatBoxInitialized', () => _converse.api.emojis.initialize());
+
+        /************************ END Event Handlers ************************/
     }
 });

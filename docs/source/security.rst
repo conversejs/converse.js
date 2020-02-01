@@ -71,7 +71,7 @@ Other considerations
 Locally cached data
 -------------------
 
-Besides the "hot" data stored in Backbone models and collections, which are all
+Besides the "hot" data stored in models and collections, which are all
 encapsulated in the private ``_converse`` object, there is also the cached data
 stored in the browser's ``sessionStorage`` and ``localStorage`` stores.
 

@@ -164,7 +164,7 @@
             const muc_jid = 'room@muc.example.com';
             await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.api.chatviews.get(muc_jid);
-            spyOn(view.model, 'findDuplicateFromStanzaID').and.callThrough();
+            spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
             let stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                          from="room@muc.example.com/some1"
@@ -177,24 +177,28 @@
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
-            await u.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 1);
-            let result = await view.model.findDuplicateFromStanzaID.calls.all()[0].returnValue;
-            expect(result).toBe(undefined);
+            await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count() === 1);
+            let result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue;
+            expect(result).toBe(null);
 
             stanza = u.toStanza(`
                 <message xmlns="jabber:client"
-                         from="room@muc.example.com/some1"
-                         to="${_converse.connection.jid}"
-                         type="groupchat">
-                    <body>Typical body text</body>
-                    <stanza-id xmlns="urn:xmpp:sid:0"
-                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
-                               by="room@muc.example.com"/>
+                        to="${_converse.connection.jid}"
+                        from="room@muc.example.com">
+                    <result xmlns="urn:xmpp:mam:2" queryid="82d9db27-6cf8-4787-8c2c-5a560263d823" id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                            <message from="room@muc.example.com/some1" type="groupchat">
+                                <body>Typical body text</body>
+                            </message>
+                        </forwarded>
+                    </result>
                 </message>`);
+
             spyOn(view.model, 'updateMessage');
-            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await u.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 2);
-            result = await view.model.findDuplicateFromStanzaID.calls.all()[1].returnValue;
+            await view.model.onMessage(stanza);
+            await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count() === 2);
+            result = await view.model.findDuplicateFromArchiveID.calls.all()[1].returnValue;
             expect(result instanceof _converse.Message).toBe(true);
             expect(view.model.messages.length).toBe(1);
             await u.waitUntil(() => view.model.updateMessage.calls.count());

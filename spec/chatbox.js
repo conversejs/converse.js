@@ -1228,7 +1228,7 @@
                 // check that msg_counter is incremented from zero again
                 await _converse.handleMessageStanza(msgFactory());
                 view = _converse.chatboxviews.get(sender_jid);
-                expect(u.isVisible(view.el)).toBeTruthy();
+                await u.waitUntil(() => u.isVisible(view.el));
                 expect(document.title).toBe('Messages (1) Converse Tests');
                 done();
             }));

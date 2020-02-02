@@ -27,10 +27,10 @@ converse.plugins.add('converse-mam', {
         // plugin architecture they will replace existing methods on the
         // relevant objects or classes.
         ChatBox: {
-            async getDuplicateMessage (stanza) {
-                const message = await this.__super__.getDuplicateMessage.apply(this, arguments);
+            getDuplicateMessage (attrs) {
+                const message = this.__super__.getDuplicateMessage.apply(this, arguments);
                 if (!message) {
-                    return this.findDuplicateFromArchiveID(stanza);
+                    return this.findDuplicateFromArchiveID(attrs);
                 }
                 return message;
             }
@@ -141,21 +141,13 @@ converse.plugins.add('converse-mam', {
                 }
             },
 
-            async findDuplicateFromArchiveID (stanza) {
-                const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
-                if (!result) {
-                    return null;
-                }
-                const by_jid = stanza.getAttribute('from') || this.get('jid');
-                const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
-                if (!supported) {
-                    return null;
-                }
+            findDuplicateFromArchiveID (attrs) {
+                if (!attrs.is_archived) { return null; }
+                const key = `stanza_id ${this.get('jid')}`;
                 const query = {};
-                query[`stanza_id ${by_jid}`] = result.getAttribute('id');
+                query[key] = attrs[`stanza_id ${this.get('jid')}`];
                 return this.messages.findWhere(query);
-            },
-
+            }
         }
         Object.assign(_converse.ChatBox.prototype, MAMEnabledChat);
 

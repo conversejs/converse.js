@@ -707,6 +707,7 @@ converse.plugins.add('converse-muc-views', {
                 this.createSidebarView();
                 await this.updateAfterMessagesFetched();
                 this.onConnectionStatusChanged();
+                this.model.maybeShow();
                 /**
                  * Triggered once a { @link _converse.ChatRoomView } has been opened
                  * @event _converse#chatRoomViewInitialized

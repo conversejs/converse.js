@@ -141,6 +141,7 @@ converse.plugins.add('converse-headlines-view', {
                 this.render().insertHeading()
                 this.updateAfterMessagesFetched();
                 this.insertIntoDOM().hide();
+                this.model.maybeShow();
                 /**
                  * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
                  * @event _converse#headlinesBoxViewInitialized

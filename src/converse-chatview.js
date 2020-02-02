@@ -282,6 +282,7 @@ converse.plugins.add('converse-chatview', {
 
                 this.render();
                 await this.updateAfterMessagesFetched();
+                this.model.maybeShow();
                 /**
                  * Triggered once the {@link _converse.ChatBoxView} has been initialized
                  * @event _converse#chatBoxViewInitialized

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2019-06-18 19:04+0000\n"
-"Last-Translator: Cristiana Nicolae <eeaotly@yahoo.com>\n"
+"PO-Revision-Date: 2020-02-03 02:50+0000\n"
+"Last-Translator: Licaon Kter <licaon.kter@protonmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ro/>\n"
 "Language: ro\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 3.7\n"
+"X-Generator: Weblate 3.11-dev\n"
 
 #: dist/converse-no-dependencies.js:5695
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: dist/converse-no-dependencies.js:5697 dist/converse-no-dependencies.js:9249
 #: dist/converse-no-dependencies.js:10175
@@ -37,15 +37,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:7927
 msgid "This message has been edited"
-msgstr ""
+msgstr "Acest mesaj a fost editat"
 
 #: dist/converse-no-dependencies.js:7933
 msgid "Edit this message"
-msgstr ""
+msgstr "Editează acest mesaj"
 
 #: dist/converse-no-dependencies.js:7939
 msgid "Retract this message"
-msgstr ""
+msgstr "Retractează acest mesaj"
 
 #: dist/converse-no-dependencies.js:7955
 msgid "Message versions"
@@ -56,7 +56,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:53600
 #: dist/converse-no-dependencies.js:53689
 msgid "Close"
-msgstr ""
+msgstr "Închide"
 
 #: dist/converse-no-dependencies.js:8254
 msgid "The User's Profile Image"
@@ -64,7 +64,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8264
 msgid "Full Name:"
-msgstr ""
+msgstr "Nume intreg:"
 
 #: dist/converse-no-dependencies.js:8270 dist/converse-no-dependencies.js:8570
 msgid "XMPP Address:"
@@ -80,7 +80,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8296
 msgid "Email:"
-msgstr ""
+msgstr "Email:"
 
 #: dist/converse-no-dependencies.js:8306
 msgid "Role:"
@@ -100,7 +100,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8366
 msgid "Refresh"
-msgstr ""
+msgstr "Reînprospătează"
 
 #: dist/converse-no-dependencies.js:8370
 msgid "Remove as contact"
@@ -112,7 +112,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8578
 msgid "password"
-msgstr ""
+msgstr "parolă"
 
 #: dist/converse-no-dependencies.js:8588
 msgid "This is a trusted device"
@@ -137,11 +137,11 @@ msgstr "Faceți click aici pentru a vă autentifica anonim"
 
 #: dist/converse-no-dependencies.js:8646
 msgid "Search"
-msgstr ""
+msgstr "Caută"
 
 #: dist/converse-no-dependencies.js:8680
 msgid "Search results"
-msgstr ""
+msgstr "Rezultatele căutării"
 
 #: dist/converse-no-dependencies.js:8830
 msgid "Enter a new Groupchat"
@@ -154,7 +154,7 @@ msgstr "Pseudonim"
 
 #: dist/converse-no-dependencies.js:8840
 msgid "This field is required"
-msgstr ""
+msgstr "Acest câmp este obligatoriu"
 
 #: dist/converse-no-dependencies.js:8846
 msgid "Join"
@@ -180,7 +180,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8947
 msgid "Name"
-msgstr ""
+msgstr "Nume"
 
 #: dist/converse-no-dependencies.js:8951
 msgid "Groupchat address (JID)"
@@ -188,7 +188,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8955
 msgid "Description"
-msgstr ""
+msgstr "Descriere"
 
 #: dist/converse-no-dependencies.js:8961
 msgid "Topic"
@@ -200,7 +200,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8971
 msgid "Online users"
-msgstr ""
+msgstr "Utilizatori conectați"
 
 #: dist/converse-no-dependencies.js:8975 dist/converse-no-dependencies.js:9115
 msgid "Features"
@@ -216,7 +216,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8987
 msgid "No password required"
-msgstr ""
+msgstr "Nu este necesară o parolă"
 
 #: dist/converse-no-dependencies.js:8989 dist/converse-no-dependencies.js:9127
 msgid "This groupchat does not require a password upon entry"
@@ -242,7 +242,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9011 dist/converse-no-dependencies.js:9153
 msgid "Members only"
-msgstr ""
+msgstr "Doar pentru membrii"
 
 #: dist/converse-no-dependencies.js:9013
 msgid "This groupchat is restricted to members only"
@@ -259,7 +259,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9027 dist/converse-no-dependencies.js:9169
 msgid "Persistent"
-msgstr ""
+msgstr "Persistent"
 
 #: dist/converse-no-dependencies.js:9029 dist/converse-no-dependencies.js:9167
 msgid "This groupchat persists even if it's unoccupied"

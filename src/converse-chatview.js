@@ -220,6 +220,7 @@ converse.plugins.add('converse-chatview', {
                 this.listenTo(this.model.presence, 'change:show', this.onPresenceChanged);
                 this.render();
                 await this.updateAfterMessagesFetched();
+                this.model.maybeShow();
                 /**
                  * Triggered once the {@link _converse.ChatBoxView} has been initialized
                  * @event _converse#chatBoxViewInitialized

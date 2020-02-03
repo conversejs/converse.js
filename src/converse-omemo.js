@@ -323,7 +323,7 @@ converse.plugins.add('converse-omemo', {
                 this.save('omemo_supported', true);
                 let device = devicelist.get(encrypted.device_id);
                 if (!device) {
-                    device = devicelist.devices.create({'id': encrypted.device_id, 'jid': attrs.from});
+                    device = await devicelist.devices.create({'id': encrypted.device_id, 'jid': attrs.from}, {'promise': true});
                 }
                 if (encrypted.payload) {
                     const key = key_and_tag.slice(0, 16);
@@ -887,12 +887,7 @@ converse.plugins.add('converse-omemo', {
                 const keys = await Promise.all(_.range(0, _converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id)));
                 keys.forEach(k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
                 const devicelist = _converse.devicelists.get(_converse.bare_jid);
-                const device = await new Promise((success, error) => {
-                    devicelist.devices.create(
-                        {'id': bundle.device_id, 'jid': _converse.bare_jid},
-                        {success, 'error': (m, e) => error(e)}
-                    );
-                });
+                const device = await devicelist.devices.create({'id': bundle.device_id, 'jid': _converse.bare_jid}, {'promise': true});
                 const marshalled_keys = keys.map(k => ({'id': k.keyId, 'key': u.arrayBufferToBase64(k.keyPair.pubKey)}));
                 bundle['prekeys'] = marshalled_keys;
                 device.save('bundle', bundle);
@@ -1054,11 +1049,9 @@ converse.plugins.add('converse-omemo', {
                 }
                 const selector = `list[xmlns="${Strophe.NS.OMEMO}"] device`;
                 const device_ids = sizzle(selector, iq).map(d => d.getAttribute('id'));
-                const deviceFactory = (id, success, error) => {
-                    this.devices.create({id, 'jid': this.get('jid')}, {success, 'error': (m, e) => error(e)})
-                }
-                const promises = device_ids.map(id => new Promise((resolve, reject) => deviceFactory(id, resolve, reject)));
-                await Promise.all(promises);
+                await Promise.all(
+                    device_ids.map(id => this.devices.create({id, 'jid': this.get('jid')}, {'promise': true}))
+                );
                 return device_ids;
             },
 
@@ -1108,7 +1101,7 @@ converse.plugins.add('converse-omemo', {
             if (own_devicelist) {
                 own_devicelist.fetchDevices();
             } else {
-                own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
+                own_devicelist = await _converse.devicelists.create({'jid': _converse.bare_jid}, {'promise': true});
             }
             return own_devicelist._devices_promise;
         }

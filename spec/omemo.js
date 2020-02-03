@@ -6,31 +6,29 @@
 
 
     async function deviceListFetched (_converse, jid) {
-        const stanza = await u.waitUntil(() => _.filter(
-            _converse.connection.IQ_stanzas,
-            iq => iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`)
-        ).pop());
+        const selector = `iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`;
+        const stanza = await u.waitUntil(
+            () => Array.from(_converse.connection.IQ_stanzas).filter(iq => iq.querySelector(selector)).pop()
+        );
         await u.waitUntil(() => _converse.devicelists.get(jid));
         return stanza;
     }
 
     function ownDeviceHasBeenPublished (_converse) {
         return _.filter(
-            _converse.connection.IQ_stanzas,
+            Array.from(_converse.connection.IQ_stanzas),
             iq => iq.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]')
         ).pop();
     }
 
     function bundleHasBeenPublished (_converse) {
-        return _.filter(
-            _converse.connection.IQ_stanzas,
-            iq => iq.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]')
-        ).pop();
+        const selector = 'publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]';
+        return Array.from(_converse.connection.IQ_stanzas).filter(iq => iq.querySelector(selector)).pop();
     }
 
     function bundleFetched (_converse, jid, device_id) {
         return _.filter(
-            _converse.connection.IQ_stanzas,
+            Array.from(_converse.connection.IQ_stanzas),
             iq => iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
         ).pop();
     }

@@ -11,6 +11,17 @@
         }
     }
 
+    #list-chatrooms-modal {
+        .available-chatroom {
+            display: flex;
+            justify-content: space-between;
+        }
+        div.room-info {
+            margin-top: 0.75em;
+        }
+    }
+
+
     #room-details-modal {
         .features-list {
             margin-left: 1em;

@@ -4,6 +4,7 @@ import { BootstrapModal } from "../converse-modal.js";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import dayjs from 'dayjs';
+import tpl_csn from "./csn.js";
 import tpl_info from "./info.js";
 import tpl_message from "./message.js";
 import tpl_message_versions_modal from "./message_versions_modal.js";

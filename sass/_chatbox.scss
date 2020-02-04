@@ -486,6 +486,9 @@
                 }
             }
         }
+        .chat-body {
+            height: calc(100% - var(--overlayed-chat-head-height));
+        }
     }
 }
 

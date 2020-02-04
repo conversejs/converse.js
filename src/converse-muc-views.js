@@ -15,8 +15,7 @@ import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
-import tpl_chatarea from "templates/chatarea.html";
-import tpl_chatroom from "templates/chatroom.html";
+import tpl_chatroom from "templates/chatroom.js";
 import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_details_modal from "templates/chatroom_details_modal.js";
@@ -644,9 +643,13 @@ converse.plugins.add('converse-muc-views', {
 
             render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
-                this.el.innerHTML = tpl_chatroom();
+                const result = tpl_chatroom({
+                    'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
+                    'show_send_button': _converse.show_send_button
+                });
+                render(result, this.el);
+                this.content = this.el.querySelector('.chat-content');
                 this.renderHeading();
-                this.renderChatArea();
                 this.renderChatContent();
                 this.renderBottomPanel();
                 if (!_converse.muc_show_logs_before_join) {
@@ -678,23 +681,6 @@ converse.plugins.add('converse-muc-views', {
                     this.renderMessageForm();
                     this.initMentionAutoComplete();
                 }
-            },
-
-            renderChatArea () {
-                // Render the UI container in which groupchat messages will appear.
-                if (this.el.querySelector('.chat-area') === null) {
-                    const container_el = this.el.querySelector('.chatroom-body');
-                    container_el.insertAdjacentHTML(
-                        'beforeend',
-                        tpl_chatarea({
-                            __,
-                            'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
-                            'show_send_button': _converse.show_send_button
-                        })
-                    );
-                    this.content = this.el.querySelector('.chat-content');
-                }
-                return this;
             },
 
             createSidebarView () {
@@ -1852,10 +1838,10 @@ converse.plugins.add('converse-muc-views', {
                         occupant.get('states').includes('307')) {
                     return;
                 }
-                const nick = occupant.get('nick'),
-                      stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
-                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
-                      dataset = get(prev_info_el, 'dataset', {});
+                const nick = occupant.get('nick');
+                const stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null;
+                const prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick);
+                const dataset = get(prev_info_el, 'dataset', {});
 
                 if (dataset.join === nick) {
                     let message;
@@ -1895,7 +1881,8 @@ converse.plugins.add('converse-muc-views', {
                         this.insertInfoMessage('beforeEnd', data);
                     } else {
                         this.insertInfoMessage('beforeEnd', data);
-                        this.insertDayIndicator(this.content.lastElementChild);
+                        // TODO: create day indicator
+                        // this.insertDayIndicator(this.content.lastElementChild);
                     }
                 }
                 this.scrollDown();

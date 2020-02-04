@@ -94,7 +94,7 @@ export const transformBodyText = directive((_converse, model) => async part => {
      * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
      */
     await _converse.api.trigger('afterMessageBodyTransformed', model, text, {'Synchronous': true});
-    part.setValue(text);
+    part.setValue(unsafeHTML(text));
     part.commit();
     model.collection && model.collection.trigger('rendered', model);
 });

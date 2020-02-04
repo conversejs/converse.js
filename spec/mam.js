@@ -255,7 +255,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(iq_result));
 
                     const view = _converse.chatboxviews.get(contact_jid);
-                    await new Promise(resolve => view.once('messageInserted', resolve));
+                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     expect(view.model.messages.length).toBe(1);
                     expect(view.model.messages.at(0).get('message')).toBe("Thrice the brinded cat hath mew'd.");
                     done();

@@ -643,7 +643,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             expect(view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(0);
 
             const msg_obj = view.model.messages.at(0);
@@ -721,7 +721,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
 
             const msg_obj = view.model.messages.at(0);
@@ -757,7 +757,7 @@
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelector('.chat-msg .chat-msg__body').textContent.trim())
                 .toBe("But soft, what light through yonder airlock breaks?");
@@ -1002,7 +1002,7 @@
                 }
                 spyOn(_converse.connection, 'send');
                 view.onKeyDown(enter_event);
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 const msg = _converse.connection.send.calls.all()[0].args[0];
                 expect(msg.toLocaleString())
                     .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
@@ -1048,7 +1048,7 @@
                 }
                 spyOn(_converse.connection, 'send');
                 view.onKeyDown(enter_event);
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 const msg = _converse.connection.send.calls.all()[0].args[0];
                 expect(msg.toLocaleString())
                     .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+

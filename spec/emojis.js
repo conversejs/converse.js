@@ -173,7 +173,7 @@
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                 await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
                 const view = _converse.api.chatviews.get(sender_jid);
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 const chat_content = view.el.querySelector('.chat-content');
                 let message = chat_content.querySelector('.chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
@@ -185,7 +185,7 @@
                         'id': _converse.connection.getUniqueId()
                     }).c('body').t('😇 Hello world! 😇 😇').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 message = chat_content.querySelector('.message:last-child .chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
 
@@ -198,7 +198,7 @@
                     preventDefault: function preventDefault () {},
                     keyCode: 13 // Enter
                 });
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
                 expect(chat_content.querySelector('.message:last-child .chat-msg__text').textContent).toBe('💩 😇');
                 expect(textarea.value).toBe('');
@@ -226,7 +226,7 @@
                     preventDefault: function preventDefault () {},
                     keyCode: 13 // Enter
                 });
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
                 textarea.value = ':smile: :smiley: :imp:';
                 view.onKeyDown({
@@ -234,7 +234,7 @@
                     preventDefault: function preventDefault () {},
                     keyCode: 13 // Enter
                 });
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
                 message = chat_content.querySelector('.message:last-child .chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);

@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import converse from  "@converse/headless/converse-core";
 
 
+const { Strophe } = converse.env;
 const u = converse.env.utils;
 
 const i18n_edit_message = __('Edit this message');

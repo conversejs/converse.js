@@ -263,12 +263,13 @@ converse.plugins.add('converse-chatview', {
                 this.debouncedMsgsRender = debounce(changed => this.renderChatContent(changed), 25);
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'change', this.debouncedMsgsRender);
-                this.listenTo(this.model.messages, 'destroy', this.fadeOut);
+                this.listenTo(this.model.messages, 'destroy', this.debouncedMsgsRender);
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.listenTo(this.model.messages, 'vcard:change', this.debouncedMsgsRender);
                 this.listenTo(this.model.messages, 'reset', () => {
                     this.content.innerHTML = '';
                     this.removeAll();
+                    this.debouncedMsgsRender();
                 });
 
                 this.listenTo(this.model.presence, 'change:show', this.onPresenceChanged);

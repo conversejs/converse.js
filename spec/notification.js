@@ -67,7 +67,7 @@
                                 type: 'groupchat'
                             }).c('body').t(message).tree();
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
-                        await new Promise(resolve => view.once('messageInserted', resolve));
+                        await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
                         await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
@@ -96,7 +96,7 @@
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
                         await u.waitUntil(() => _converse.chatboxviews.keys().length);
                         const view = _converse.chatboxviews.get('notify.example.com');
-                        await new Promise(resolve => view.once('messageInserted', resolve));
+                        await new Promise(resolve => view.model.messages.once('rendered', resolve));
                         expect(
                             _.includes(_converse.chatboxviews.keys(),
                                 'notify.example.com')

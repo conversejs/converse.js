@@ -201,7 +201,7 @@
                             .up().up()
                         .c('payload').t(obj.payload);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             expect(view.model.messages.length).toBe(2);
             expect(view.el.querySelectorAll('.chat-msg__body')[1].textContent.trim())
                 .toBe('This is an encrypted message from the contact');
@@ -220,7 +220,7 @@
                         .up().up()
                     .c('payload').t(obj.payload);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => view.model.messages.length > 1);
             expect(view.model.messages.length).toBe(3);
             expect(view.el.querySelectorAll('.chat-msg__body')[2].textContent.trim())
@@ -438,7 +438,7 @@
                 </message>
             `);
             _converse.connection._dataRecv(test_utils.createRequest(carbon));
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             expect(view.model.messages.length).toBe(1);
             expect(view.el.querySelector('.chat-msg__body').textContent.trim())
                 .toBe('This is an encrypted carbon message from another device of mine');

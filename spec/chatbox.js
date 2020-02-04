@@ -64,7 +64,7 @@
 
                 await _converse.handleMessageStanza(msg);
                 const view = _converse.chatboxviews.get(sender_jid);
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
                 expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Mercutio')).toBeTruthy();
                 expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
@@ -459,7 +459,7 @@
                         keyCode: 13 // Enter
                     };
                     view.onKeyDown(ev);
-                    await new Promise(resolve => view.once('messageInserted', resolve));
+                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     view.onKeyUp(ev);
                     expect(counter.textContent).toBe('200');
 
@@ -1138,7 +1138,7 @@
                 spyOn(_converse, 'clearMsgCounter').and.callThrough();
 
                 await _converse.handleMessageStanza(msg);
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(_converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
                 expect(document.title).toBe('Messages (1) Converse Tests');

@@ -598,13 +598,14 @@ converse.plugins.add('converse-muc-views', {
 
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'change', this.debouncedMsgsRender);
-                this.listenTo(this.model.messages, 'destroy', this.fadeOut);
+                this.listenTo(this.model.messages, 'destroy', this.debouncedMsgsRender);
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.listenTo(this.model.messages, 'vcard:change', this.debouncedMsgsRender);
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.listenTo(this.model.messages, 'reset', () => {
                     this.content.innerHTML = '';
                     this.removeAll();
+                    this.debouncedMsgsRender();
                 });
 
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);

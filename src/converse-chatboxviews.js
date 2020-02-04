@@ -60,6 +60,7 @@ converse.plugins.add('converse-chatboxviews', {
             'theme': 'default'
         });
 
+
         _converse.ViewWithAvatar = View.extend(AvatarMixin);
 
 

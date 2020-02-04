@@ -49,7 +49,6 @@ converse.plugins.add('converse-chatview', {
         "converse-chatboxviews",
         "converse-chat",
         "converse-disco",
-        "converse-message-view",
         "converse-modal"
     ],
 

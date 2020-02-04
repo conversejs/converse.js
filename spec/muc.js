@@ -497,7 +497,7 @@
 
                 await view.model.onMessage(msg);
                 await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                expect(view.chat_content.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
                 spyOn(view.model, 'clearMessages').and.callThrough();
                 await view.model.close();
                 await u.waitUntil(() => view.model.clearMessages.calls.count());
@@ -529,8 +529,8 @@
                     }).c('body').t(message).tree();
 
                 await view.model.onMessage(msg);
-                await u.waitUntil(()  => view.el.querySelector('.chat-msg__text a'));
-                view.el.querySelector('.chat-msg__text a').click();
+                await u.waitUntil(()  => view.content.querySelector('.chat-msg__text a'));
+                view.content.querySelector('.chat-msg__text a').click();
                 await u.waitUntil(() => _converse.chatboxes.length === 3)
                 expect(_converse.chatboxes.pluck('id').includes('coven@chat.shakespeare.lit')).toBe(true);
                 done()
@@ -2093,7 +2093,7 @@
                 await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
                 expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', jasmine.any(_converse.Message));
-                expect(view.chat_content.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
                 // Let's check that if we receive the same message again, it's
                 // not shown.
@@ -2109,8 +2109,8 @@
                         <origin-id xmlns="urn:xmpp:sid:0" id="${view.model.messages.at(0).get('origin_id')}"/>
                     </message>`);
                 await view.model.onMessage(stanza);
-                expect(view.chat_content.querySelectorAll('.chat-msg').length).toBe(1);
-                const text_el = view.chat_content.querySelector('.chat-msg__text:last-child');
+                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+                const text_el = view.content.querySelector('.chat-msg__text:last-child');
                 expect(text_el.textContent.trim()).toBe(text);
                 expect(view.model.messages.length).toBe(1);
                 // We don't emit an event if it's our own message

@@ -64,7 +64,10 @@ export const renderRetractionLink = directive(o => async part => {
 });
 
 
-export const transformBodyText = directive((_converse, model) => async part => {
+export const transformBodyText = directive(component => async part => {
+    const model = component.model;
+    const _converse = component._converse;
+
     let text = model.getMessageText();
     /**
      * Synchronous event which provides a hook for transforming a chat message's body text
@@ -97,6 +100,8 @@ export const transformBodyText = directive((_converse, model) => async part => {
     part.setValue(unsafeHTML(text));
     part.commit();
     model.collection && model.collection.trigger('rendered', model);
+
+    component.registerClickHandlers();
 });
 
 

@@ -653,7 +653,6 @@ converse.plugins.add('converse-muc-views', {
                 this.content = this.el.querySelector('.chat-content');
                 this.renderHeading();
                 this.renderChatContent();
-                this.chat_content = this.el.querySelector('converse-chat-content').shadowRoot;
                 this.renderBottomPanel();
                 if (!_converse.muc_show_logs_before_join) {
                     this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();
@@ -2225,13 +2224,6 @@ converse.plugins.add('converse-muc-views', {
 
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
-
-            function openChatRoomFromURIClicked (ev) {
-                ev.preventDefault();
-                _converse.api.rooms.open(ev.target.href);
-            }
-            _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
-
             async function addView (model) {
                 const views = _converse.chatboxviews;
                 if (!views.get(model.get('id')) &&

@@ -144,4 +144,5 @@ const tpl_no_msgs = html`<div class="empty-history-feedback"><span>${i18n_no_his
 export default (o) => html`
     ${repeat(o.messages, msg => msg.get('id'), (msg, idx) => renderMessage(o._converse, msg)) }
     ${ !o.messages.length ? tpl_no_msgs : '' }
+    <chat-notification></chat-notification>
 `;

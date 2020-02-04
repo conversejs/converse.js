@@ -11,6 +11,7 @@ import { BootstrapModal } from "./converse-modal.js";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
 import { render } from "lit-html";
+import { setNotification } from "components/chat_notification.js";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -1711,12 +1712,13 @@ converse.plugins.add('converse-muc-views', {
             },
 
             insertNotification (message) {
-                this.removeEmptyHistoryFeedback();
-                this.insertInfoMessage('beforeEnd', {
-                    'isodate': (new Date()).toISOString(),
-                    'extra_classes': 'chat-event',
-                    'message': message
-                });
+                setNotification(message);
+                // this.removeEmptyHistoryFeedback();
+                // this.insertInfoMessage('beforeEnd', {
+                //     'isodate': (new Date()).toISOString(),
+                //     'extra_classes': 'chat-event',
+                //     'message': message
+                // });
             },
 
             onOccupantAdded (occupant) {

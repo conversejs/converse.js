@@ -260,7 +260,7 @@ converse.plugins.add('converse-chatview', {
 
             async initialize () {
                 this.initDebounced();
-                this.debouncedMsgsRender = debounce(() => this.renderChatContent(), 25);
+                this.debouncedMsgsRender = debounce(changed => this.renderChatContent(changed), 25);
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'change', this.debouncedMsgsRender);
                 this.listenTo(this.model.messages, 'destroy', this.fadeOut);
@@ -309,15 +309,17 @@ converse.plugins.add('converse-chatview', {
                 render(result, this.el);
                 this.content = this.el.querySelector('.chat-content');
                 this.renderChatContent();
+                this.chat_content = this.el.querySelector('converse-chat-content').shadowRoot;
                 this.renderMessageForm();
                 this.insertHeading();
                 return this;
             },
 
-            renderChatContent () {
+            renderChatContent (changed={}) {
                 const result = tpl_chat_content({
                     '_converse': _converse,
-                    'messages': this.model.messages
+                    'model': this.model,
+                    'changed': changed
                 });
                 render(result, this.content);
             },
@@ -617,39 +619,6 @@ converse.plugins.add('converse-chatview', {
             },
 
             /**
-             * Given a view representing a message, insert it into the
-             * content area of the chat box.
-             * @private
-             * @method _converse.ChatBoxView#insertMessage
-             * @param { View } message - The message View
-             */
-            insertMessage (view) {
-                if (view.model.get('type') === 'error') {
-                    const previous_msg_el = this.content.querySelector(`[data-msgid="${view.model.get('msgid')}"]`);
-                    if (previous_msg_el) {
-                        previous_msg_el.insertAdjacentElement('afterend', view.el);
-                        return this.trigger('messageInserted', view.el);
-                    }
-                }
-                const current_msg_date = dayjs(view.model.get('time')).toDate() || new Date();
-                const previous_msg_date = this.getLastMessageDate(current_msg_date);
-
-                if (previous_msg_date === null) {
-                    this.content.insertAdjacentElement('afterbegin', view.el);
-                } else {
-                    const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date.toISOString()}"]:last`, this.content).pop();
-                    if (view.model.get('type') === 'error' &&
-                            u.hasClass('chat-error', previous_msg_el) &&
-                            previous_msg_el.textContent === view.model.get('message')) {
-                        // We don't show a duplicate error message
-                        return;
-                    }
-                    previous_msg_el.insertAdjacentElement('afterend', view.el);
-                }
-                return this.trigger('messageInserted', view.el);
-            },
-
-            /**
              * Handler that gets called when a new message object is created.
              * @private
              * @method _converse.ChatBoxView#onMessageAdded
@@ -681,7 +650,7 @@ converse.plugins.add('converse-chatview', {
                 if (message.get('correcting')) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                 }
-                this.debouncedMsgsRender();
+                this.debouncedMsgsRender({'messages_count': this.model.messages.length});
                 /**
                  * Triggered once a message has been added to a chatbox.
                  * @event _converse#messageAdded

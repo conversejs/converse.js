@@ -126,7 +126,10 @@ export default (o) => {
                     ${ (o.received && !o.is_me_message && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
                     ${ (o.edited) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${o.showMessageVersionsModal}></i>` : '' }
                     <div class="chat-msg__actions">
-                        ${ o.editable ? html`<button class="chat-msg__action chat-msg__action-edit fa fa-pencil-alt" title="${i18n_edit_message}"></button>` : '' }
+                        ${ o.editable ?
+                            html`<button class="chat-msg__action chat-msg__action-edit" title="${i18n_edit_message}">
+                                <fa-icon class="fas fa-pencil-alt" path-prefix="/node_modules" color="var(--text-color-lighten-15-percent)" size="1em"></fa-icon>
+                            </button>` : '' }
                         ${ renderRetractionLink(o) }
                     </div>
                 </div>

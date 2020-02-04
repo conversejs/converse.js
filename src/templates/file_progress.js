@@ -1,6 +1,6 @@
 import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
-import { renderAvatar, renderRetractionLink, transformBodyText } from './directives';
+import { renderAvatar } from './directives';
 
 const i18n_uploading = __('Uploading file');
 

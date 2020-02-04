@@ -594,7 +594,7 @@ converse.plugins.add('converse-muc-views', {
 
             async initialize () {
                 this.initDebounced();
-                this.debouncedMsgsRender = debounce(() => this.renderChatContent(), 25);
+                this.debouncedMsgsRender = debounce(changed => this.renderChatContent(changed), 25);
 
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'change', this.debouncedMsgsRender);
@@ -652,6 +652,7 @@ converse.plugins.add('converse-muc-views', {
                 this.content = this.el.querySelector('.chat-content');
                 this.renderHeading();
                 this.renderChatContent();
+                this.chat_content = this.el.querySelector('converse-chat-content').shadowRoot;
                 this.renderBottomPanel();
                 if (!_converse.muc_show_logs_before_join) {
                     this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();

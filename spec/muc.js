@@ -2088,11 +2088,10 @@
                     preventDefault: function preventDefault () {},
                     keyCode: 13
                 });
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
                 expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', jasmine.any(_converse.Message));
-                const chat_content = view.el.querySelector('.chat-content');
-                expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.chat_content.querySelectorAll('.chat-msg').length).toBe(1);
 
                 // Let's check that if we receive the same message again, it's
                 // not shown.
@@ -2108,8 +2107,9 @@
                         <origin-id xmlns="urn:xmpp:sid:0" id="${view.model.messages.at(0).get('origin_id')}"/>
                     </message>`);
                 await view.model.onMessage(stanza);
-                expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
-                expect(sizzle('.chat-msg__text:last').pop().textContent.trim()).toBe(text);
+                expect(view.chat_content.querySelectorAll('.chat-msg').length).toBe(1);
+                const text_el = view.chat_content.querySelector('.chat-msg__text:last-child');
+                expect(text_el.textContent.trim()).toBe(text);
                 expect(view.model.messages.length).toBe(1);
                 // We don't emit an event if it's our own message
                 expect(_converse.api.trigger.calls.count(), 1);

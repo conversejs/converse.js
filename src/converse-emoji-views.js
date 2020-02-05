@@ -184,9 +184,6 @@ converse.plugins.add('converse-emoji-views', {
 
             afterRender () {
                 this.initIntersectionObserver();
-                const textarea = this.el.querySelector('.emoji-search');
-                textarea.addEventListener('focus', ev => this.chatview.emitFocused(ev));
-                textarea.addEventListener('blur', ev => this.chatview.emitBlurred(ev));
                 this.initArrowNavigation();
             },
 

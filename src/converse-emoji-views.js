@@ -320,15 +320,7 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             onKeyDown (ev) {
-                if (ev.keyCode === converse.keycodes.RIGHT_ARROW) {
-                    if (this.navigator.enabled) {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        ev.target.blur();
-                        const first_el = this.el.querySelector('.pick-category');
-                        this.navigator.select(first_el, 'right');
-                    }
-                } else if (ev.keyCode === converse.keycodes.TAB) {
+                if (ev.keyCode === converse.keycodes.TAB) {
                     if (ev.target.value) {
                         ev.preventDefault();
                         const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));

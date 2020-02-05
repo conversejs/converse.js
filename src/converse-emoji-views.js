@@ -169,6 +169,10 @@ converse.plugins.add('converse-emoji-views', {
                 );
             },
 
+            afterRender () {
+                this.setScrollPosition();
+            },
+
             onSearchInputFocus (ev) {
                 this.chatview.emitBlurred(ev);
                 this.disableArrowNavigation();
@@ -178,11 +182,6 @@ converse.plugins.add('converse-emoji-views', {
                 const body = document.querySelector('body');
                 body.removeEventListener('keydown', this.onGlobalKeyDown);
                 View.prototype.remove.call(this);
-            },
-
-            afterRender () {
-                this.initIntersectionObserver();
-                this.initArrowNavigation();
             },
 
             initArrowNavigation () {
@@ -388,12 +387,11 @@ converse.plugins.add('converse-emoji-views', {
                 this.setCategoryForElement(el);
                 this.navigator.select(el);
                 !this.navigator.enabled && this.navigator.enable();
-                this.setScrollPosition();
             },
 
             setScrollPosition () {
                 const category = this.model.get('current_category');
-                const el = this.el.querySelector('.emoji-picker__lists');
+                const el = this.el.querySelector('.emoji-lists__container--browse');
                 const heading = this.el.querySelector(`#emoji-picker-${category}`);
                 if (heading) {
                     // +4 due to 2px padding on list elements

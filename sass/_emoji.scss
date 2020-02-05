@@ -85,13 +85,13 @@
                         height: 30px;
                         width: 32px;
                         &.selected a {
-                            background-color: var(--highlight-color);
+                            background-color: var(--highlight-color-darker);
                         }
                         a {
                             padding: 3px;
                             font-size: var(--font-size-huge);
                             &:hover {
-                                background-color: var(--highlight-color);
+                                background-color: var(--highlight-color-darker);
                             }
                         }
                     }
@@ -122,7 +122,7 @@
                             border-bottom: none;
                         }
                         &.selected a, &:hover a {
-                            background-color: var(--highlight-color);
+                            background-color: var(--highlight-color-darker);
                         }
                         a {
                             padding: 0.25em;

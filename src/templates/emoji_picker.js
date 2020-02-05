@@ -13,7 +13,7 @@ const emoji_category = (o) => {
     const category_emoji = xss.filterXSS(o.transformCategory(o.emoji_categories[o.category]), {'whitelist': {'img': []}});
     return html`
         <li data-category="${o.category}"
-            class="emoji-category ${o.current_category} ${o.category} ${(o.current_category === o.category) ? 'picked' : ''}"
+            class="emoji-category ${o.category} ${(o.current_category === o.category) ? 'picked' : ''}"
             title="${__(o._converse.emoji_category_labels[o.category])}">
 
             <a class="pick-category"
@@ -79,7 +79,7 @@ const skintone_emoji = (o) => {
 
 
 const all_emojis = (o) => html`
-    <span ?hidden=${o.query} class="emoji-lists__container">
+    <span ?hidden=${o.query} class="emoji-lists__container emoji-lists__container--browse">
         ${Object.keys(o.emoji_categories).map(category => (o.emoji_categories[category] ? emojis_for_category(Object.assign({category}, o)) : ''))}
     </span>
 `;

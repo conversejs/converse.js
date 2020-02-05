@@ -318,9 +318,8 @@ converse.plugins.add('converse-chatview', {
                         'show_toolbar': _converse.show_toolbar,
                         'unread_msgs': __('You have unread messages')
                     }));
-                const textarea = this.el.querySelector('.chat-textarea');
-                textarea.addEventListener('focus', ev => this.emitFocused(ev));
-                textarea.addEventListener('blur', ev => this.emitBlurred(ev));
+                this.el.addEventListener('focusin', ev => this.emitFocused(ev));
+                this.el.addEventListener('focusout', ev => this.emitBlurred(ev));
                 this.renderToolbar();
             },
 
@@ -1190,7 +1189,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             emitBlurred (ev) {
-                if (this.el.contains(document.activeElement)) {
+                if (this.el.contains(document.activeElement) || this.el.contains(ev.relatedTarget)) {
                     // Something else in this chatbox is still focused
                     return;
                 }
@@ -1204,6 +1203,10 @@ converse.plugins.add('converse-chatview', {
             },
 
             emitFocused (ev) {
+                if (this.el.contains(ev.relatedTarget)) {
+                    // Something else in this chatbox was already focused
+                    return;
+                }
                 /**
                  * Triggered when the focus has been moved to a particular chat.
                  * @event _converse#chatBoxFocused

@@ -180,6 +180,11 @@ converse.plugins.add('converse-emoji-views', {
                 View.prototype.remove.call(this);
             },
 
+            afterRender () {
+                this.initIntersectionObserver();
+                this.initArrowNavigation();
+            },
+
             initArrowNavigation () {
                 if (!this.navigator) {
                     const default_selector = 'li:not(.hidden):not(.emoji-skintone), .emoji-search';

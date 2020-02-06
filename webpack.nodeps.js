@@ -47,13 +47,6 @@ module.exports = merge(common, {
         }]
     },
     externals: [{
-        "backbone": "backbone",
-        "backbone.nativeview": "backbone.nativeview",
-        "backbone.vdomview": "backbone.vdomview",
-        "backbone.browserStorage": "backbone.browserStorage",
-        "backbone.overview": "backbone.overview",
-        "es6-promise": "es6-promise",
-        "formdata-polyfill": "formdata-polyfill",
         "lodash": "lodash",
         "lodash.noconflict": "lodash.noconflict",
         "strophe": "strophe",

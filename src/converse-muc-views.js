@@ -5,7 +5,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-modal";
-import "formdata-polyfill";
 import "@converse/headless/utils/muc";
 import { get, head, isString, isUndefined } from "lodash";
 import { View } from 'skeletor.js/src/view.js';

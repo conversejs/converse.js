@@ -77,7 +77,6 @@
     "exports-loader": "^0.7.0",
     "fast-text-encoding": "^1.0.0",
     "file-loader": "^4.0.0",
-    "formdata-polyfill": "^3.0.18",
     "html-webpack-plugin": "^3.2.0",
     "http-server": "^0.11.1",
     "imports-loader": "^0.8.0",

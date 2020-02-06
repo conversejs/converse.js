@@ -8,23 +8,23 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2018-02-13 19:39+0000\n"
-"Last-Translator: Максим Якимчук <xpinovo@gmail.com>\n"
+"PO-Revision-Date: 2020-02-07 02:50+0000\n"
+"Last-Translator: Tymofij Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
 "translations/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.19-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "domain: converse\n"
 "lang: uk\n"
 
 #: dist/converse-no-dependencies.js:5695
 msgid "OK"
-msgstr ""
+msgstr "ОК"
 
 #: dist/converse-no-dependencies.js:5697 dist/converse-no-dependencies.js:9249
 #: dist/converse-no-dependencies.js:10175
@@ -35,97 +35,90 @@ msgstr "Відміна"
 
 #: dist/converse-no-dependencies.js:7803
 msgid "Uploading file:"
-msgstr ""
+msgstr "Завантажуваний файл:"
 
 #: dist/converse-no-dependencies.js:7927
-#, fuzzy
 msgid "This message has been edited"
-msgstr "Цей користувач є модератором"
+msgstr "Це повідомлення було відредаговано"
 
 #: dist/converse-no-dependencies.js:7933
-#, fuzzy
 msgid "Edit this message"
-msgstr "Показати це меню"
+msgstr "Редагувати повідомлення"
 
 #: dist/converse-no-dependencies.js:7939
-#, fuzzy
 msgid "Retract this message"
-msgstr "Показати це меню"
+msgstr "Прибрати це повідомлення"
 
 #: dist/converse-no-dependencies.js:7955
-#, fuzzy
 msgid "Message versions"
-msgstr "Повідомлення"
+msgstr "Видозміни повідомлення"
 
 #: dist/converse-no-dependencies.js:7969 dist/converse-no-dependencies.js:8250
 #: dist/converse-no-dependencies.js:8364 dist/converse-no-dependencies.js:9081
 #: dist/converse-no-dependencies.js:53600
 #: dist/converse-no-dependencies.js:53689
 msgid "Close"
-msgstr ""
+msgstr "Закрити"
 
 #: dist/converse-no-dependencies.js:8254
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "Зображення користувача"
 
 #: dist/converse-no-dependencies.js:8264
 msgid "Full Name:"
-msgstr ""
+msgstr "Ім'я:"
 
 #: dist/converse-no-dependencies.js:8270 dist/converse-no-dependencies.js:8570
 msgid "XMPP Address:"
-msgstr ""
+msgstr "XMPP адреса:"
 
 #: dist/converse-no-dependencies.js:8278
-#, fuzzy
 msgid "Nickname:"
-msgstr "Прізвисько"
+msgstr "Прізвисько:"
 
 #: dist/converse-no-dependencies.js:8286
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: dist/converse-no-dependencies.js:8296
 msgid "Email:"
-msgstr ""
+msgstr "Е-пошта:"
 
 #: dist/converse-no-dependencies.js:8306
 msgid "Role:"
-msgstr ""
+msgstr "Роля:"
 
 #: dist/converse-no-dependencies.js:8314
 msgid "OMEMO Fingerprints"
-msgstr ""
+msgstr "Відбитки OMEMO"
 
 #: dist/converse-no-dependencies.js:8338
 msgid "Trusted"
-msgstr ""
+msgstr "Надійний"
 
 #: dist/converse-no-dependencies.js:8352
 msgid "Untrusted"
-msgstr ""
+msgstr "Ненадійний"
 
 #: dist/converse-no-dependencies.js:8366
 msgid "Refresh"
-msgstr ""
+msgstr "Оновити"
 
 #: dist/converse-no-dependencies.js:8370
-#, fuzzy
 msgid "Remove as contact"
-msgstr "Додати контакт"
+msgstr "Видалити з контактів"
 
 #: dist/converse-no-dependencies.js:8576
 msgid "Password:"
 msgstr "Пароль:"
 
 #: dist/converse-no-dependencies.js:8578
-#, fuzzy
 msgid "password"
-msgstr "Пароль:"
+msgstr "Пароль"
 
 #: dist/converse-no-dependencies.js:8588
 msgid "This is a trusted device"
-msgstr ""
+msgstr "Це надійний пристрій"
 
 #: dist/converse-no-dependencies.js:8590
 msgid ""
@@ -135,30 +128,31 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
+"Для підвищення плідності ми кешуємо Ваші дані в цьому переглядачі. Зніміть "
+"цей прапорець, якщо це загальнодоступний комп'ютер або якщо Ви хочете, щоб "
+"Ваші дані були видалені під час виходу. Важливо, щоб ви явно вийшли з "
+"системи, інакше не всі кешовані дані можуть бути видалені. Зверніть увагу, "
+"що при використанні ненадійного пристрою шифрування OMEMO НЕ доступне."
 
 #: dist/converse-no-dependencies.js:8594
-#, fuzzy
 msgid "Log in"
-msgstr "Ввійти"
+msgstr "Увійти"
 
 #: dist/converse-no-dependencies.js:8600
-#, fuzzy
 msgid "Click here to log in anonymously"
-msgstr "Ця кімната не є анонімною"
+msgstr "Натисніть тут, щоб увійти таємно"
 
 #: dist/converse-no-dependencies.js:8646
 msgid "Search"
 msgstr "Пошук"
 
 #: dist/converse-no-dependencies.js:8680
-#, fuzzy
 msgid "Search results"
-msgstr "Пошук"
+msgstr "Підсумки пошуку"
 
 #: dist/converse-no-dependencies.js:8830
-#, fuzzy
 msgid "Enter a new Groupchat"
-msgstr "Увійти в кімнату"
+msgstr "Увійти в нову кімнату"
 
 #: dist/converse-no-dependencies.js:8838 dist/converse-no-dependencies.js:52042
 #: dist/converse-no-dependencies.js:53604
@@ -167,82 +161,71 @@ msgstr "Прізвисько"
 
 #: dist/converse-no-dependencies.js:8840
 msgid "This field is required"
-msgstr ""
+msgstr "Це поле обов'язкове"
 
 #: dist/converse-no-dependencies.js:8846
-#, fuzzy
 msgid "Join"
-msgstr "Приєднатися до кімнати"
+msgstr "Приєднатися"
 
 #: dist/converse-no-dependencies.js:8866
 msgid "No message history available."
-msgstr ""
+msgstr "Немає дієпису повідомлень."
 
 #: dist/converse-no-dependencies.js:8899
-#, fuzzy
 msgid "You're not allowed to send messages in this room"
-msgstr "Вам не дозволено створювати нові кімнати"
+msgstr "Вам не дозволяється надсилати повідомлення в цій кімнаті"
 
 #: dist/converse-no-dependencies.js:8919
-#, fuzzy
 msgid "This groupchat no longer exists"
-msgstr "Ця кімната не є анонімною"
+msgstr "Ця кімната більше не існує"
 
 #: dist/converse-no-dependencies.js:8925
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "Бесіду переміщено. Натисніть нижче, щоб увійти."
 
 #: dist/converse-no-dependencies.js:8947
 msgid "Name"
-msgstr ""
+msgstr "Ім'я"
 
 #: dist/converse-no-dependencies.js:8951
-#, fuzzy
 msgid "Groupchat address (JID)"
-msgstr "Назва кімнати"
+msgstr "Адреса кімнати (JID)"
 
 #: dist/converse-no-dependencies.js:8955
-#, fuzzy
 msgid "Description"
-msgstr "Опис:"
+msgstr "Опис"
 
 #: dist/converse-no-dependencies.js:8961
 msgid "Topic"
-msgstr ""
+msgstr "Тема"
 
 #: dist/converse-no-dependencies.js:8965
 msgid "Topic author"
-msgstr ""
+msgstr "Творець теми"
 
 #: dist/converse-no-dependencies.js:8971
-#, fuzzy
 msgid "Online users"
-msgstr "На зв'язку"
+msgstr "Присутні"
 
 #: dist/converse-no-dependencies.js:8975 dist/converse-no-dependencies.js:9115
-#, fuzzy
 msgid "Features"
-msgstr "Особливості:"
+msgstr "Особливості"
 
 #: dist/converse-no-dependencies.js:8979 dist/converse-no-dependencies.js:9121
-#, fuzzy
 msgid "Password protected"
-msgstr "Пароль:"
+msgstr "Пароль захищено"
 
 #: dist/converse-no-dependencies.js:8981 dist/converse-no-dependencies.js:9119
-#, fuzzy
 msgid "This groupchat requires a password before entry"
-msgstr "Ця кімната вимагає ввести пароль перед входом"
+msgstr "Ця кімната потребує пароль перед входом"
 
 #: dist/converse-no-dependencies.js:8987
-#, fuzzy
 msgid "No password required"
-msgstr "Пароль:"
+msgstr "Пароль не потрібен"
 
 #: dist/converse-no-dependencies.js:8989 dist/converse-no-dependencies.js:9127
-#, fuzzy
 msgid "This groupchat does not require a password upon entry"
-msgstr "Ця кімната вимагає пароль"
+msgstr "Ця кімната не вимагає пароль при вході"
 
 #: dist/converse-no-dependencies.js:8995 dist/converse-no-dependencies.js:9137
 #: dist/converse-no-dependencies.js:50362
@@ -250,9 +233,8 @@ msgid "Hidden"
 msgstr "Прихована"
 
 #: dist/converse-no-dependencies.js:8997 dist/converse-no-dependencies.js:9135
-#, fuzzy
 msgid "This groupchat is not publicly searchable"
-msgstr "Ця кімната не є анонімною"
+msgstr "Ця кімната не для прилюдного пошуку"
 
 #: dist/converse-no-dependencies.js:9003 dist/converse-no-dependencies.js:9145
 #: dist/converse-no-dependencies.js:50368
@@ -260,18 +242,16 @@ msgid "Public"
 msgstr "Публічна"
 
 #: dist/converse-no-dependencies.js:9005 dist/converse-no-dependencies.js:9143
-#, fuzzy
 msgid "This groupchat is publicly searchable"
-msgstr "Ця кімната не є анонімною"
+msgstr "Ця кімната доступна для прилюдного пошуку"
 
 #: dist/converse-no-dependencies.js:9011 dist/converse-no-dependencies.js:9153
 msgid "Members only"
-msgstr ""
+msgstr "Тільки для учасників"
 
 #: dist/converse-no-dependencies.js:9013
-#, fuzzy
 msgid "This groupchat is restricted to members only"
-msgstr "Ця кімната досягнула максимуму учасників"
+msgstr "Ця кімната тільки для учасників"
 
 #: dist/converse-no-dependencies.js:9019 dist/converse-no-dependencies.js:9161
 #: dist/converse-no-dependencies.js:50366
@@ -280,13 +260,12 @@ msgid "Open"
 msgstr "Увійти в кімнату"
 
 #: dist/converse-no-dependencies.js:9021 dist/converse-no-dependencies.js:9159
-#, fuzzy
 msgid "Anyone can join this groupchat"
-msgstr "Клацніть, щоб увійти в цю кімнату"
+msgstr "Будь-хто може приєднатися до цієї кімнати"
 
 #: dist/converse-no-dependencies.js:9027 dist/converse-no-dependencies.js:9169
 msgid "Persistent"
-msgstr ""
+msgstr "Стійкий"
 
 #: dist/converse-no-dependencies.js:9029 dist/converse-no-dependencies.js:9167
 msgid "This groupchat persists even if it's unoccupied"

@@ -87,6 +87,11 @@
                         &.selected a {
                             background-color: var(--highlight-color-darker);
                         }
+                        img {
+                            margin-top: 3px;
+                            height: var(--font-size-huge);
+                            width: var(--font-size-huge);
+                        }
                         a {
                             padding: 3px;
                             font-size: var(--font-size-huge);
@@ -126,6 +131,10 @@
                         }
                         a {
                             padding: 0.25em;
+                        }
+                        img {
+                            height: var(--font-size-huge);
+                            width: var(--font-size-huge);
                         }
                     }
                 }

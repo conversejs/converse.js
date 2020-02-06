@@ -10,7 +10,7 @@ const skintones = ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'];
 
 
 const emoji_category = (o) => {
-    const category_emoji = xss.filterXSS(o.transformCategory(o.emoji_categories[o.category]), {'whitelist': {'img': []}});
+    const category_emoji = unsafeHTML(xss.filterXSS(o.transformCategory(o.emoji_categories[o.category]), {'whitelist': {'img': []}}));
     return html`
         <li data-category="${o.category}"
             class="emoji-category ${o.category} ${(o.current_category === o.category) ? 'picked' : ''}"
@@ -19,7 +19,7 @@ const emoji_category = (o) => {
             <a class="pick-category"
                @click=${o.onCategoryPicked}
                href="#emoji-picker-${o.category}"
-               data-category="${o.category}">${unsafeHTML(category_emoji)} </a>
+               data-category="${o.category}">${category_emoji} </a>
         </li>
     `;
 }
@@ -34,8 +34,6 @@ const emoji_picker_header = (o) => html`
 const emoji_item = (o) => {
     let emoji;
     if (o._converse.use_system_emojis) {
-        emoji = o.transform(o.emoji.sn);
-    } else {
         emoji = unsafeHTML(xss.filterXSS(o.transform(o.emoji.sn), {'whitelist': {'img': []}}));
     }
     return html`
@@ -66,8 +64,6 @@ const skintone_emoji = (o) => {
     const shortname = ':'+o.skintone+':';
     let emoji;
     if (o._converse.use_system_emojis) {
-        emoji = o.transform(shortname);
-    } else {
         emoji = unsafeHTML(xss.filterXSS(o.transform(shortname), {'whitelist': {'img': []}}));
     }
     return html`

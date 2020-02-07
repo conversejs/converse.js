@@ -3,7 +3,6 @@
         display: none;
     }
     .flyout {
-        border-radius: var(--chatbox-border-radius);
         position: absolute;
 
         @media screen and (max-height: $mobile-landscape-height) {
@@ -42,8 +41,7 @@
         color: #ffffff;
         font-size: 100%;
         margin: 0;
-        padding: 0;
-        padding-bottom: 0.5em;
+        padding: 1em;;
         position: relative;
 
         &.chat-head-chatbox {
@@ -498,13 +496,12 @@
 #conversejs.converse-fullscreen  {
     .flyout {
         border-radius: 0;
-        border-top: 0.8em solid var(--chat-head-color);
-        border: var(--flyout-padding) solid var(--chat-head-color);
+        border:none;
         bottom: 0;
     }
 
     .chat-head {
-        height: var(--fullpage-chat-head-height);
+        min-height: var(--fullpage-chat-head-height);
         .user-custom-message {
             font-size: 70%;
             height: auto;
@@ -609,12 +606,6 @@
         }
         .chat-body {
             background-color: var(--chat-head-color);
-            border-top-left-radius: var(--chatbox-border-radius);
-            border-top-right-radius: var(--chatbox-border-radius);
-        }
-        .chat-content {
-            border-top-left-radius: var(--chatbox-border-radius);
-            border-top-right-radius: var(--chatbox-border-radius);
         }
         .chat-title {
             font-size: var(--font-size-huge);

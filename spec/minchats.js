@@ -4,7 +4,6 @@
     const _ = converse.env._;
     const  $msg = converse.env.$msg;
     const u = converse.env.utils;
-    const Strophe = converse.env.Strophe;
 
     describe("The Minimized Chats Widget", function () {
 

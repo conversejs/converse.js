@@ -6,9 +6,10 @@
  */
 import "converse-modal";
 import "@converse/headless/utils/muc";
-import { get, head, isString, isUndefined } from "lodash";
-import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
+import { View } from 'skeletor.js/src/view.js';
+import { get, head, isString, isUndefined } from "lodash";
+import { html, render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -20,7 +21,7 @@ import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_details_modal from "templates/chatroom_details_modal.js";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
 import tpl_muc_config_form from "templates/muc_config_form.js";
-import tpl_chatroom_head from "templates/chatroom_head.html";
+import tpl_chatroom_head from "templates/chatroom_head.js";
 import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
 import tpl_muc_password_form from "templates/muc_password_form.js";
@@ -737,7 +738,7 @@ converse.plugins.add('converse-muc-views', {
                 const changed = item === null ? [] : Object.keys(item.changed);
                 const keys = ['affiliation', 'bookmarked', 'jid', 'name', 'description', 'subject'];
                 if (item === null || changed.filter(v => keys.includes(v)).length) {
-                    this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
+                    render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatroom'));
                 }
             },
 
@@ -1112,22 +1113,38 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            getHeadingButtons () {
+                const buttons = [];
+                if (!_converse.singleton) {
+                    const info_close = __('Close and leave this groupchat');
+                    const template = html`<a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="${info_close}"></a>`;
+                    template.name = 'signout';
+                    buttons.push(template);
+                }
+                if (this.model.getOwnAffiliation() === 'owner') {
+                    const info_configure = __('Configure this groupchat');
+                    const template = html`<a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="${info_configure} "></a>`
+                    template.name = 'configure';
+                    buttons.push(template);
+                }
+                const info_details = __('Show more details about this groupchat');
+                const template = html`<a class="chatbox-btn show-room-details-modal fa fa-info-circle" title="${info_details}"></a>`;
+                template.name = 'details';
+                buttons.push(template);
+                return buttons;
+            },
+
             /**
              * Returns the groupchat heading HTML to be rendered.
              * @private
-             * @method _converse.ChatRoomView#generateHeadingHTML
+             * @method _converse.ChatRoomView#generateHeadingTemplate
              */
-            generateHeadingHTML () {
+            generateHeadingTemplate () {
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
-                        'isOwner': this.model.getOwnAffiliation() === 'owner',
+                        _converse,
+                        'buttons': this.getHeadingButtons(),
                         'title': this.model.getDisplayName(),
-                        'Strophe': Strophe,
-                        '_converse': _converse,
-                        'info_close': __('Close and leave this groupchat'),
-                        'info_configure': __('Configure this groupchat'),
-                        'info_details': __('Show more details about this groupchat'),
-                        'subject': u.addHyperlinks(xss.filterXSS(get(this.model.get('subject'), 'text'), {'whiteList': {}})),
                 }));
             },
 

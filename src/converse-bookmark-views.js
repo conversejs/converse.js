@@ -7,6 +7,7 @@
 import "@converse/headless/converse-muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
+import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import tpl_bookmarks_list from "templates/bookmarks_list.js"
@@ -39,15 +40,21 @@ converse.plugins.add('converse-bookmark-views', {
             events: {
                 'click .toggle-bookmark': 'toggleBookmark'
             },
-            async renderHeading () {
-                this.__super__.renderHeading.apply(this, arguments);
+            getHeadingButtons () {
                 const { _converse } = this.__super__;
+                const buttons = this.__super__.getHeadingButtons.call(this);
                 if (_converse.allow_bookmarks) {
-                    const supported = await _converse.checkBookmarksSupport();
-                    if (supported) {
-                        this.renderBookmarkToggle();
-                    }
+                    const supported = _converse.checkBookmarksSupport();
+                    const info_minimize = __('Minimize this chat box');
+                    const info_toggle_bookmark = this.model.get('bookmarked') ? __('Unbookmark this groupchat') : __('Bookmark this groupchat');
+                    const bookmarked = this.model.get('bookmarked');
+                    const template = html`<a class="chatbox-btn toggle-bookmark fa fa-bookmark ${bookmarked ? 'button-on' : ''}" title="${info_toggle_bookmark}"></a>`;
+                    const names = buttons.map(t => t.name);
+                    const idx = names.indexOf('configure');
+                    const template_promise = supported.then(s => s ? template : '');
+                    return idx > -1 ? [...buttons.slice(0, idx), template_promise, ...buttons.slice(idx)] : [template_promise, ...buttons];
                 }
+                return buttons;
             }
         }
     },
@@ -96,9 +103,6 @@ converse.plugins.add('converse-bookmark-views', {
         const bookmarkableChatRoomView = {
 
             renderBookmarkToggle () {
-                if (this.el.querySelector('.chat-head .toggle-bookmark')) {
-                    return;
-                }
                 const bookmark_button = tpl_chatroom_bookmark_toggle(
                     _.assignIn(this.model.toJSON(), {
                         'info_toggle_bookmark': this.model.get('bookmarked') ?

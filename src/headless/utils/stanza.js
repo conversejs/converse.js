@@ -46,23 +46,26 @@ const stanza_utils = {
      */
     getStanzaIDs (stanza, original_stanza) {
         const attrs = {};
-        const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
-        if (stanza_ids.length) {
-            stanza_ids.forEach(s => (attrs[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id')));
-        }
+        // Store generic stanza ids
+        const sids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
+        const sid_attrs = sids.reduce((acc, s) => {
+            acc[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id');
+            return acc;
+        }, {});
+        Object.assign(attrs, sid_attrs);
+
+        // Store the archive id
         const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
         if (result) {
             const by_jid = original_stanza.getAttribute('from');
             attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
         }
 
+        // Store the origin id
         const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
         if (origin_id) {
             attrs['origin_id'] = origin_id.getAttribute('id');
         }
-        // We prefer to use one of the XEP-0359 unique and stable stanza IDs
-        // as the Model id, to avoid duplicates.
-        attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${attrs.from}`] || u.getUniqueId();
         return attrs;
     },
 
@@ -172,6 +175,7 @@ const stanza_utils = {
             const nick = Strophe.unescapeNode(Strophe.getResourceFromJid(from));
             return {
                 'from':  from,
+                'from_muc': Strophe.getBareJidFromJid(from),
                 'nick': nick,
                 'sender': nick === chatbox.get('nick') ? 'me': 'them',
                 'received': (new Date()).toISOString(),
@@ -317,6 +321,9 @@ const stanza_utils = {
             stanza_utils.getSpoilerAttributes(stanza),
             stanza_utils.getCorrectionAttributes(stanza, original_stanza)
         )
+        // We prefer to use one of the XEP-0359 unique and stable stanza IDs
+        // as the Model id, to avoid duplicates.
+        attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${(attrs.from_muc || attrs.from)}`] || u.getUniqueId();
         return attrs;
     }
 }

@@ -45,7 +45,6 @@ converse.plugins.add('converse-bookmark-views', {
                 const buttons = this.__super__.getHeadingButtons.call(this);
                 if (_converse.allow_bookmarks) {
                     const supported = _converse.checkBookmarksSupport();
-                    const info_minimize = __('Minimize this chat box');
                     const info_toggle_bookmark = this.model.get('bookmarked') ? __('Unbookmark this groupchat') : __('Bookmark this groupchat');
                     const bookmarked = this.model.get('bookmarked');
                     const template = html`<a class="chatbox-btn toggle-bookmark fa fa-bookmark ${bookmarked ? 'button-on' : ''}" title="${info_toggle_bookmark}"></a>`;

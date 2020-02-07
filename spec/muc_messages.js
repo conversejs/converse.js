@@ -213,7 +213,7 @@
             const muc_jid = 'room@muc.example.com';
             await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.api.chatviews.get(muc_jid);
-            spyOn(view.model, 'findDuplicateFromStanzaID').and.callThrough();
+            spyOn(view.model, 'getStanzaIdQueryAttrs').and.callThrough();
             let stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                          from="room@muc.example.com/some1"
@@ -226,8 +226,8 @@
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
-            await u.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 1);
-            let result = await view.model.findDuplicateFromStanzaID.calls.all()[0].returnValue;
+            await u.waitUntil(() => view.model.getStanzaIdQueryAttrs.calls.count() === 1);
+            let result = await view.model.getStanzaIdQueryAttrs.calls.all()[0].returnValue;
             expect(result instanceof Array).toBe(true);
             expect(result[0] instanceof Object).toBe(true);
             expect(result[0]['stanza_id room@muc.example.com']).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");

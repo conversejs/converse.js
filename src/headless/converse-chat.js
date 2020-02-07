@@ -671,20 +671,20 @@ converse.plugins.add('converse-chat', {
              * @returns {Promise<_converse.Message>}
              */
             getDuplicateMessage (attrs) {
-                const predicates = [
-                        ...this.findDuplicateFromStanzaID(attrs),
-                        this.findDuplicateFromOriginID(attrs),
-                        this.findDuplicateFromMessage(attrs)
+                const queries = [
+                        ...this.getStanzaIdQueryAttrs(attrs),
+                        this.getOriginIdQueryAttrs(attrs),
+                        this.getMessageBodyQueryAttrs(attrs)
                     ].filter(s => s);
                 const msgs = this.messages.models;
-                return find(msgs, m => predicates.reduce((out, p) => (out || isMatch(m.attributes, p)), false));
+                return find(msgs, m => queries.reduce((out, q) => (out || isMatch(m.attributes, q)), false));
             },
 
-            findDuplicateFromOriginID (attrs) {
+            getOriginIdQueryAttrs (attrs) {
                 return attrs.origin_id && {'origin_id': attrs.origin_id, 'from': attrs.from};
             },
 
-            findDuplicateFromStanzaID (attrs) {
+            getStanzaIdQueryAttrs (attrs) {
                 const keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id '));
                 return keys.map(key => {
                     const by_jid = key.replace(/^stanza_id /, '');
@@ -694,7 +694,7 @@ converse.plugins.add('converse-chat', {
                 });
             },
 
-            findDuplicateFromMessage (attrs) {
+            getMessageBodyQueryAttrs (attrs) {
                 if (attrs.message && attrs.msgid) {
                     return {
                         'message': attrs.message,

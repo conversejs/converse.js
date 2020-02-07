@@ -96,7 +96,7 @@ converse.plugins.add('converse-chatview', {
             toHTML () {
                 const vcard = get(this.model, 'vcard');
                 const vcard_json = vcard ? vcard.toJSON() : {};
-                render(tpl_chatbox_head(
+                return tpl_chatbox_head(
                     Object.assign(
                         vcard_json,
                         this.model.toJSON(),
@@ -105,7 +105,7 @@ converse.plugins.add('converse-chatview', {
                           'display_name': this.model.getDisplayName()
                         }
                     )
-                ), this.el);
+                );
             },
 
             getHeadingButtons () {

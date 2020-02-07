@@ -14,14 +14,12 @@ const avatar_data = {
 
 export default (o) => {
     return html`
-        <div class="chat-head chat-head-chatbox row no-gutters">
-            <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
-                <div class="chatbox-title--row">
-                    ${ (!o._converse.singleton) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
-                    ${ (o.type !== o._converse.HEADLINES_TYPE) ? avatar(Object.assign({}, o, avatar_data)) : '' }
-                    <div class="chatbox-title__text" title="${o.jid}">
-                        ${ o.url ? html`<a href="${o.url}" target="_blank" rel="noopener" class="user">${o.display_name}</a>` : o.display_name}
-                    </div>
+        <div class="chatbox-title">
+            <div class="chatbox-title--row">
+                ${ (!o._converse.singleton) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
+                ${ (o.type !== o._converse.HEADLINES_TYPE) ? avatar(Object.assign({}, o, avatar_data)) : '' }
+                <div class="chatbox-title__text" title="${o.jid}">
+                    ${ o.url ? html`<a href="${o.url}" target="_blank" rel="noopener" class="user"> ${ o.display_name } </a>` : o.display_name }
                 </div>
                 <div class="chatbox-title__buttons row no-gutters">${ o.buttons.map(b => until(b, '')) }</div>
             </div>

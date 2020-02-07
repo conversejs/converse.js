@@ -3,7 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { get, isObject, isString, pick } from "lodash";
+import { find, get, isMatch, isObject, isString, pick } from "lodash";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import converse from "./converse-core";
@@ -371,7 +371,7 @@ converse.plugins.add('converse-chat', {
 
             async onMessage (stanza, original_stanza, from_jid) {
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
-                const message = await this.getDuplicateMessage(attrs);
+                const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, original_stanza);
                 } else if (
@@ -661,29 +661,47 @@ converse.plugins.add('converse-chat', {
                 return message;
             },
 
+            /**
+             * Returns an already cached message (if it exists) based on the
+             * passed in attributes map.
+             * @private
+             * @method _converse.ChatBox#getDuplicateMessage
+             * @param { object } attrs - Attributes representing a received
+             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             * @returns {Promise<_converse.Message>}
+             */
             getDuplicateMessage (attrs) {
-                return this.findDuplicateFromOriginID(attrs) || this.findDuplicateFromMessage(attrs);
+                const predicates = [
+                        ...this.findDuplicateFromStanzaID(attrs),
+                        this.findDuplicateFromOriginID(attrs),
+                        this.findDuplicateFromMessage(attrs)
+                    ].filter(s => s);
+                const msgs = this.messages.models;
+                return find(msgs, m => predicates.reduce((out, p) => (out || isMatch(m.attributes, p)), false));
             },
 
             findDuplicateFromOriginID (attrs) {
-                if (!attrs.origin_id) {
-                    return null;
-                }
-                return this.messages.findWhere({
-                    'origin_id': attrs.origin_id,
-                    'from': attrs.from
+                return attrs.origin_id && {'origin_id': attrs.origin_id, 'from': attrs.from};
+            },
+
+            findDuplicateFromStanzaID (attrs) {
+                const keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id '));
+                return keys.map(key => {
+                    const by_jid = key.replace(/^stanza_id /, '');
+                    const query = {};
+                    query[`stanza_id ${by_jid}`] = attrs[key];
+                    return query;
                 });
             },
 
             findDuplicateFromMessage (attrs) {
-                if (!attrs.message || !attrs.msgid) {
-                    return null;
+                if (attrs.message && attrs.msgid) {
+                    return {
+                        'message': attrs.message,
+                        'from': attrs.from,
+                        'msgid': attrs.msgid
+                    }
                 }
-                return this.messages.findWhere({
-                    'message': attrs.message,
-                    'from': attrs.from,
-                    'msgid': attrs.msgid
-                });
             },
 
             /**

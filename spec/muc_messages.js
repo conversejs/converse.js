@@ -156,7 +156,7 @@
             done();
         }));
 
-        it("is ignored if it has the same stanza-id of an already received on",
+        it("is ignored if it has the same archive-id of an already received one",
             mock.initConverse(
                 ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
@@ -164,7 +164,7 @@
             const muc_jid = 'room@muc.example.com';
             await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.api.chatviews.get(muc_jid);
-            spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
+            spyOn(view.model, 'getDuplicateMessage').and.callThrough();
             let stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                          from="room@muc.example.com/some1"
@@ -177,9 +177,9 @@
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await u.waitUntil(() => view.model.messages.length === 1);
-            await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count() === 1);
-            let result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue;
-            expect(result).toBe(null);
+            await u.waitUntil(() => view.model.getDuplicateMessage.calls.count() === 1);
+            let result = await view.model.getDuplicateMessage.calls.all()[0].returnValue;
+            expect(result).toBe(undefined);
 
             stanza = u.toStanza(`
                 <message xmlns="jabber:client"
@@ -197,8 +197,56 @@
 
             spyOn(view.model, 'updateMessage');
             await view.model.onMessage(stanza);
-            await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count() === 2);
-            result = await view.model.findDuplicateFromArchiveID.calls.all()[1].returnValue;
+            await u.waitUntil(() => view.model.getDuplicateMessage.calls.count() === 2);
+            result = await view.model.getDuplicateMessage.calls.all()[1].returnValue;
+            expect(result instanceof _converse.Message).toBe(true);
+            expect(view.model.messages.length).toBe(1);
+            await u.waitUntil(() => view.model.updateMessage.calls.count());
+            done();
+        }));
+
+        it("is ignored if it has the same stanza-id of an already received one",
+            mock.initConverse(
+                ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            const muc_jid = 'room@muc.example.com';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
+            spyOn(view.model, 'findDuplicateFromStanzaID').and.callThrough();
+            let stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="room@muc.example.com/some1"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>Typical body text</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="room@muc.example.com"/>
+                </message>`);
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await u.waitUntil(() => view.model.messages.length === 1);
+            await u.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 1);
+            let result = await view.model.findDuplicateFromStanzaID.calls.all()[0].returnValue;
+            expect(result instanceof Array).toBe(true);
+            expect(result[0] instanceof Object).toBe(true);
+            expect(result[0]['stanza_id room@muc.example.com']).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
+
+            stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="room@muc.example.com/some1"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>Typical body text</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="room@muc.example.com"/>
+                </message>`);
+            spyOn(view.model, 'updateMessage');
+            spyOn(view.model, 'getDuplicateMessage').and.callThrough();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
+            result = await view.model.getDuplicateMessage.calls.all()[0].returnValue;
             expect(result instanceof _converse.Message).toBe(true);
             expect(view.model.messages.length).toBe(1);
             await u.waitUntil(() => view.model.updateMessage.calls.count());

@@ -22,20 +22,6 @@ converse.plugins.add('converse-mam', {
 
     dependencies: ['converse-rsm', 'converse-disco', 'converse-muc'],
 
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        ChatBox: {
-            getDuplicateMessage (attrs) {
-                const message = this.__super__.getDuplicateMessage.apply(this, arguments);
-                if (!message) {
-                    return this.findDuplicateFromArchiveID(attrs);
-                }
-                return message;
-            }
-        }
-    },
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -139,14 +125,6 @@ converse.plugins.add('converse-mam', {
                     // render as a link to fetch further messages, either
                     // to fetch older messages or to fill in a gap.
                 }
-            },
-
-            findDuplicateFromArchiveID (attrs) {
-                if (!attrs.is_archived) { return null; }
-                const key = `stanza_id ${this.get('jid')}`;
-                const query = {};
-                query[key] = attrs[`stanza_id ${this.get('jid')}`];
-                return this.messages.findWhere(query);
             }
         }
         Object.assign(_converse.ChatBox.prototype, MAMEnabledChat);

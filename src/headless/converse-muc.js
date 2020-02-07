@@ -1748,7 +1748,7 @@ converse.plugins.add('converse-muc', {
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
-                const message = await this.getDuplicateMessage(attrs);
+                const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, original_stanza);
                 }

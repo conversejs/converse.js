@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2020-01-21 10:21+0000\n"
+"PO-Revision-Date: 2020-02-08 05:17+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:5695
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: dist/converse-no-dependencies.js:5697 dist/converse-no-dependencies.js:9249
 #: dist/converse-no-dependencies.js:10175
@@ -170,17 +170,15 @@ msgstr "Csatlakozás"
 
 #: dist/converse-no-dependencies.js:8866
 msgid "No message history available."
-msgstr ""
+msgstr "Nem található előzmény."
 
 #: dist/converse-no-dependencies.js:8899
-#, fuzzy
 msgid "You're not allowed to send messages in this room"
-msgstr "Nem regisztrálhatod magad ebben a konferenciában."
+msgstr "Nem regisztrálhatod magad ebben a szobában."
 
 #: dist/converse-no-dependencies.js:8919
-#, fuzzy
 msgid "This groupchat no longer exists"
-msgstr "Ez a szoba nem létezik többé"
+msgstr "Ez a szoba nem létezik többé."
 
 #: dist/converse-no-dependencies.js:8925
 msgid "The conversation has moved. Click below to enter."
@@ -287,7 +285,6 @@ msgid "Not anonymous"
 msgstr "Nem névtelen"
 
 #: dist/converse-no-dependencies.js:9045 dist/converse-no-dependencies.js:9183
-#, fuzzy
 msgid "All other groupchat participants can see your XMPP address"
 msgstr "Minden konferencia-résztvevő láthatja az XMPP felhasználónevét"
 
@@ -297,7 +294,6 @@ msgid "Semi-anonymous"
 msgstr "Félig névtelen"
 
 #: dist/converse-no-dependencies.js:9053 dist/converse-no-dependencies.js:9191
-#, fuzzy
 msgid "Only moderators can see your XMPP address"
 msgstr "Csak a moderátorok láthatják az Ön XMPP felhasználónevét"
 
@@ -341,9 +337,8 @@ msgid "Save"
 msgstr "Mentés"
 
 #: dist/converse-no-dependencies.js:9386
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "Moderátor"
+msgstr "Moderátor Eszközök"
 
 #: dist/converse-no-dependencies.js:9388
 msgid ""

@@ -116,7 +116,7 @@
             const nick = mock.chatroom_names[0],
                 msg = $msg({
                     from: 'lounge@montague.lit/'+nick,
-                    id: (new Date()).getTime(),
+                    id: u.getUniqueId(),
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(message).tree();
@@ -322,7 +322,7 @@
             const view = _converse.api.chatviews.get(muc_jid);
             let msg = $msg({
                 from: 'lounge@montague.lit/romeo',
-                id: (new Date()).getTime(),
+                id: u.getUniqueId(),
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('I wrote this message!').tree();
@@ -348,7 +348,7 @@
 
             msg = $msg({
                 from: 'lounge@montague.lit/romeo',
-                id: (new Date()).getTime(),
+                id: u.getUniqueId(),
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('Another message!').tree();
@@ -383,7 +383,7 @@
             const add_events = view.model.occupants._events.add.length;
             msg = $msg({
                 from: 'lounge@montague.lit/some1',
-                id: (new Date()).getTime(),
+                id: u.getUniqueId(),
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('Message from someone not in the MUC right now').tree();
@@ -447,7 +447,7 @@
             const view = _converse.api.chatviews.get(muc_jid);
             const msg = $msg({
                     from: 'lounge@montague.lit/romeo',
-                    id: (new Date()).getTime(),
+                    id: u.getUniqueId(),
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('I wrote this message!').tree();
@@ -599,7 +599,7 @@
             // Check that messages from other users are skipped
             await view.model.onMessage($msg({
                 'from': muc_jid+'/someone-else',
-                'id': (new Date()).getTime(),
+                'id': u.getUniqueId(),
                 'to': 'romeo@montague.lit',
                 'type': 'groupchat'
             }).c('body').t('Hello world').tree());
@@ -835,7 +835,7 @@
                 });
                 const msg = $msg({
                         from: 'lounge@montague.lit/gibson',
-                        id: (new Date()).getTime(),
+                        id: u.getUniqueId(),
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t('hello z3r0 tom mr.robot, how are you?').up()

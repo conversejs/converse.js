@@ -155,7 +155,7 @@
                     'from': contact_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
-                    'id': (new Date()).getTime()
+                    'id': u.getUniqueId()
                 }).c('body').t('Hello').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
             );
@@ -525,7 +525,7 @@
                     from: 'montague.lit',
                     to: _converse.bare_jid,
                     type: 'chat',
-                    id: (new Date()).getTime()
+                    id: u.getUniqueId()
                 }).c('body').t("This headline message will not be shown").tree();
             await _converse.handleMessageStanza(msg);
             expect(converse.env.log.info.calledWith(
@@ -556,7 +556,7 @@
             const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg = $msg({
                     'from': _converse.bare_jid,
-                    'id': (new Date()).getTime(),
+                    'id': u.getUniqueId(),
                     'to': _converse.connection.jid,
                     'type': 'chat',
                     'xmlns': 'jabber:client'
@@ -607,7 +607,7 @@
             const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg = $msg({
                     'from': _converse.bare_jid,
-                    'id': (new Date()).getTime(),
+                    'id': u.getUniqueId(),
                     'to': _converse.connection.jid,
                     'type': 'chat',
                     'xmlns': 'jabber:client'
@@ -663,7 +663,7 @@
             const impersonated_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg = $msg({
                     'from': sender_jid,
-                    'id': (new Date()).getTime(),
+                    'id': u.getUniqueId(),
                     'to': _converse.connection.jid,
                     'type': 'chat',
                     'xmlns': 'jabber:client'
@@ -714,7 +714,7 @@
                 from: sender_jid,
                 to: _converse.connection.jid,
                 type: 'chat',
-                id: (new Date()).getTime()
+                id: u.getUniqueId()
             }).c('body').t(message).up()
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
             await _converse.handleMessageStanza(msg);
@@ -733,7 +733,7 @@
                     from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     to: _converse.connection.jid,
                     type: 'chat',
-                    id: (new Date()).getTime()
+                    id: u.getUniqueId()
                 }).c('body').t('This message is also sent to a minimized chatbox').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
             );
@@ -1076,7 +1076,7 @@
                     'from': sender_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
-                    'id': (new Date()).getTime()
+                    'id': u.getUniqueId()
                 }).c('body').t('A message').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
@@ -1088,7 +1088,7 @@
                     'from': sender_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
-                    'id': (new Date()).getTime()
+                    'id': u.getUniqueId()
                 }).c('body').t("Another message 3 minutes later").up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => view.once('messageInserted', resolve));
@@ -1098,7 +1098,7 @@
                     'from': sender_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
-                    'id': (new Date()).getTime()
+                    'id': u.getUniqueId()
                 }).c('body').t("Another message 14 minutes since we started").up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => view.once('messageInserted', resolve));
@@ -1395,7 +1395,7 @@
                         'from': sender_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',
-                        'id': (new Date()).getTime()
+                        'id': u.getUniqueId()
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                 );
@@ -1436,7 +1436,7 @@
                         'from': sender_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',
-                        'id': (new Date()).getTime()
+                        'id': u.getUniqueId()
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                 );
@@ -1537,7 +1537,7 @@
                             from: sender_jid,
                             to: _converse.connection.jid,
                             type: 'chat',
-                            id: (new Date()).getTime()
+                            id: u.getUniqueId()
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
@@ -1585,7 +1585,7 @@
                             from: sender_jid,
                             to: _converse.connection.jid,
                             type: 'chat',
-                            id: (new Date()).getTime()
+                            id: u.getUniqueId()
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
@@ -1823,7 +1823,7 @@
                         from: sender_jid,
                         to: _converse.connection.jid,
                         type: 'chat',
-                        id: (new Date()).getTime()
+                        id: u.getUniqueId()
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                 await new Promise(resolve => view.once('messageInserted', resolve));
@@ -1858,7 +1858,7 @@
                         from: sender_jid,
                         to: _converse.bare_jid+"/some-other-resource",
                         type: 'chat',
-                        id: (new Date()).getTime()
+                        id: u.getUniqueId()
                     }).c('body').t("This message will not be shown").up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 await _converse.handleMessageStanza(msg);

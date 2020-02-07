@@ -55,7 +55,7 @@ const device_with_fingerprint = (o) => html`
 `;
 
 
-const device_without_fingerprint = () => html`
+const device_without_fingerprint = (o) => html`
     <li class="fingerprint-removal-item list-group-item nopadding">
         <label>
         <input type="checkbox" value="${o.device.get('id')}"

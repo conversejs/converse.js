@@ -6,7 +6,6 @@
 import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
-import "formdata-polyfill";
 import { compact, debounce, has, isString, uniq, without } from "lodash";
 import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';

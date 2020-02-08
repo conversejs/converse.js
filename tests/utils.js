@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(['es6-promise',  'mock'], factory);
-}(this, function (Promise, mock) {
+    define(['mock'], factory);
+}(this, function (mock) {
     const _ = converse.env._;
     const $msg = converse.env.$msg;
     const $pres = converse.env.$pres;

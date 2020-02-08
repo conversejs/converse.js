@@ -7,11 +7,13 @@ import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
 import { debounce, get, isString } from "lodash";
+import { View } from "skeletor.js/src/view";
 import { Overview } from "skeletor.js/src/overview";
+import { html, render } from "lit-html";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.html";
-import tpl_chatbox_head from "templates/chatbox_head.html";
+import tpl_chatbox_head from "templates/chatbox_head.js";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
 import tpl_error_message from "templates/error_message.html";
 import tpl_help_message from "templates/help_message.html";
@@ -71,7 +73,7 @@ converse.plugins.add('converse-chatview', {
         });
 
 
-        _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
+        _converse.ChatBoxHeading = View.extend({
             initialize () {
                 this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
 
@@ -92,18 +94,32 @@ converse.plugins.add('converse-chatview', {
             render () {
                 const vcard = get(this.model, 'vcard');
                 const vcard_json = vcard ? vcard.toJSON() : {};
-                this.el.innerHTML = tpl_chatbox_head(
+                render(tpl_chatbox_head(
                     Object.assign(
                         vcard_json,
                         this.model.toJSON(),
                         { '_converse': _converse,
-                          'info_close': __('Close this chat box'),
+                          'buttons': this.getHeadingButtons(),
                           'display_name': this.model.getDisplayName()
                         }
                     )
-                );
-                this.renderAvatar();
+                ), this.el);
                 return this;
+            },
+
+            getHeadingButtons () {
+                const buttons = [];
+                if (!_converse.singleton) {
+                    const info_close = __('Close this chat box');
+                    const template = html`<a class="chatbox-btn close-chatbox-button fa fa-times" title="${info_close}"></a>`;
+                    template.name = 'close';
+                    buttons.push(template);
+                }
+                const info_details = __('Show more details about this groupchat');
+                const template = html`<a class="chatbox-btn show-user-details-modal fa fa-id-card" title="${info_details}"></a>`;
+                template.name = 'details';
+                buttons.push(template);
+                return buttons;
             },
 
             onStatusMessageChanged (item) {
@@ -318,9 +334,8 @@ converse.plugins.add('converse-chatview', {
                         'show_toolbar': _converse.show_toolbar,
                         'unread_msgs': __('You have unread messages')
                     }));
-                const textarea = this.el.querySelector('.chat-textarea');
-                textarea.addEventListener('focus', ev => this.emitFocused(ev));
-                textarea.addEventListener('blur', ev => this.emitBlurred(ev));
+                this.el.addEventListener('focusin', ev => this.emitFocused(ev));
+                this.el.addEventListener('focusout', ev => this.emitBlurred(ev));
                 this.renderToolbar();
             },
 
@@ -1190,7 +1205,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             emitBlurred (ev) {
-                if (this.el.contains(document.activeElement)) {
+                if (this.el.contains(document.activeElement) || this.el.contains(ev.relatedTarget)) {
                     // Something else in this chatbox is still focused
                     return;
                 }
@@ -1204,6 +1219,10 @@ converse.plugins.add('converse-chatview', {
             },
 
             emitFocused (ev) {
+                if (this.el.contains(ev.relatedTarget)) {
+                    // Something else in this chatbox was already focused
+                    return;
+                }
                 /**
                  * Triggered when the focus has been moved to a particular chat.
                  * @event _converse#chatBoxFocused

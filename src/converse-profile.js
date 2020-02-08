@@ -6,7 +6,6 @@
 import "@converse/headless/converse-status";
 import "@converse/headless/converse-vcard";
 import "converse-modal";
-import "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";

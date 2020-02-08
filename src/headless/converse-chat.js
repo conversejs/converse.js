@@ -3,7 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { get, isObject, isString, pick } from "lodash";
+import { find, get, isMatch, isObject, isString, pick } from "lodash";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import converse from "./converse-core";
@@ -370,14 +370,14 @@ converse.plugins.add('converse-chat', {
             },
 
             async onMessage (stanza, original_stanza, from_jid) {
-                const message = await this.getDuplicateMessage(stanza);
+                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, original_stanza);
                 } else if (
                     !this.handleReceipt (stanza, from_jid) &&
                     !this.handleChatMarker(stanza, from_jid)
                 ) {
-                    const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                     if (this.handleRetraction(attrs)) {
                         return;
                     }
@@ -661,47 +661,47 @@ converse.plugins.add('converse-chat', {
                 return message;
             },
 
-            async getDuplicateMessage (stanza) {
-                return this.findDuplicateFromOriginID(stanza) ||
-                    await this.findDuplicateFromStanzaID(stanza) ||
-                    this.findDuplicateFromMessage(stanza);
+            /**
+             * Returns an already cached message (if it exists) based on the
+             * passed in attributes map.
+             * @private
+             * @method _converse.ChatBox#getDuplicateMessage
+             * @param { object } attrs - Attributes representing a received
+             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             * @returns {Promise<_converse.Message>}
+             */
+            getDuplicateMessage (attrs) {
+                const queries = [
+                        ...this.getStanzaIdQueryAttrs(attrs),
+                        this.getOriginIdQueryAttrs(attrs),
+                        this.getMessageBodyQueryAttrs(attrs)
+                    ].filter(s => s);
+                const msgs = this.messages.models;
+                return find(msgs, m => queries.reduce((out, q) => (out || isMatch(m.attributes, q)), false));
             },
 
-            findDuplicateFromOriginID  (stanza) {
-                const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-                if (!origin_id) {
-                    return null;
-                }
-                return this.messages.findWhere({
-                    'origin_id': origin_id.getAttribute('id'),
-                    'from': stanza.getAttribute('from')
+            getOriginIdQueryAttrs (attrs) {
+                return attrs.origin_id && {'origin_id': attrs.origin_id, 'from': attrs.from};
+            },
+
+            getStanzaIdQueryAttrs (attrs) {
+                const keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id '));
+                return keys.map(key => {
+                    const by_jid = key.replace(/^stanza_id /, '');
+                    const query = {};
+                    query[`stanza_id ${by_jid}`] = attrs[key];
+                    return query;
                 });
             },
 
-            async findDuplicateFromStanzaID (stanza) {
-                const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-                if (!stanza_id) {
-                    return false;
+            getMessageBodyQueryAttrs (attrs) {
+                if (attrs.message && attrs.msgid) {
+                    return {
+                        'message': attrs.message,
+                        'from': attrs.from,
+                        'msgid': attrs.msgid
+                    }
                 }
-                const by_jid = stanza_id.getAttribute('by');
-                if (!(await _converse.api.disco.supports(Strophe.NS.SID, by_jid))) {
-                    return false;
-                }
-                const query = {};
-                query[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
-                return this.messages.findWhere(query);
-            },
-
-            findDuplicateFromMessage (stanza) {
-                const text = stanza_utils.getMessageBody(stanza) || undefined;
-                if (!text) { return false; }
-                const id = stanza.getAttribute('id');
-                if (!id) { return false; }
-                return this.messages.findWhere({
-                    'message': text,
-                    'from': stanza.getAttribute('from'),
-                    'msgid': id
-                });
             },
 
             /**

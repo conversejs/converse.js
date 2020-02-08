@@ -27,7 +27,7 @@
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
-                                id: (new Date()).getTime()
+                                id: u.getUniqueId()
                             }).c('body').t(message).up()
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                         await _converse.handleMessageStanza(msg); // This will emit 'message'
@@ -62,7 +62,7 @@
                         const nick = mock.chatroom_names[0],
                             msg = $msg({
                                 from: 'lounge@montague.lit/'+nick,
-                                id: (new Date()).getTime(),
+                                id: u.getUniqueId(),
                                 to: 'romeo@montague.lit',
                                 type: 'groupchat'
                             }).c('body').t(message).tree();

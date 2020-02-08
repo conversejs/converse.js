@@ -7,7 +7,6 @@ import { modal_close_button, modal_header_close_button } from "./buttons"
 
 const alt_avatar = __('Your avatar image');
 const heading_profile = __('Your Profile');
-const i18n_close = __('Close');
 const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following fingerprint');
 const i18n_device_without_fingerprint = __('Device without a fingerprint');
 const i18n_email = __('Email');
@@ -55,7 +54,7 @@ const device_with_fingerprint = (o) => html`
 `;
 
 
-const device_without_fingerprint = () => html`
+const device_without_fingerprint = (o) => html`
     <li class="fingerprint-removal-item list-group-item nopadding">
         <label>
         <input type="checkbox" value="${o.device.get('id')}"

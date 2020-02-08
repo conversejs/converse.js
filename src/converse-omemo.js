@@ -294,13 +294,13 @@ converse.plugins.add('converse-omemo', {
             },
 
             async decryptMessage (obj) {
-                const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt','decrypt']),
-                      cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag),
-                      algo = {
-                          'name': "AES-GCM",
-                          'iv': u.base64ToArrayBuffer(obj.iv),
-                          'tagLength': TAG_LENGTH
-                      }
+                const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt','decrypt']);
+                const cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag);
+                const algo = {
+                    'name': "AES-GCM",
+                    'iv': u.base64ToArrayBuffer(obj.iv),
+                    'tagLength': TAG_LENGTH
+                };
                 return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
             },
 
@@ -316,53 +316,53 @@ converse.plugins.add('converse-omemo', {
             },
 
             async handleDecryptedWhisperMessage (attrs, key_and_tag) {
-                const encrypted = attrs.encrypted,
-                      devicelist = _converse.devicelists.getDeviceList(this.get('jid'));
+                const encrypted = attrs.encrypted;
+                const devicelist = _converse.devicelists.getDeviceList(this.get('jid'));
+                await devicelist._devices_promise;
 
                 this.save('omemo_supported', true);
                 let device = devicelist.get(encrypted.device_id);
                 if (!device) {
-                    device = devicelist.devices.create({'id': encrypted.device_id, 'jid': attrs.from});
+                    device = await devicelist.devices.create({'id': encrypted.device_id, 'jid': attrs.from}, {'promise': true});
                 }
                 if (encrypted.payload) {
-                    const key = key_and_tag.slice(0, 16),
-                          tag = key_and_tag.slice(16);
+                    const key = key_and_tag.slice(0, 16);
+                    const tag = key_and_tag.slice(16);
                     const result = await this.decryptMessage(Object.assign(encrypted, {'key': key, 'tag': tag}));
                     device.save('active', true);
                     return result;
                 }
             },
 
-            decrypt (attrs) {
+            async decrypt (attrs) {
                 const session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
 
                 // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
+                const key = u.base64ToArrayBuffer(attrs.encrypted.key);
                 if (attrs.encrypted.prekey === true) {
-                    let plaintext;
-                    return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
-                        .then(key_and_tag => this.handleDecryptedWhisperMessage(attrs, key_and_tag))
-                        .then(pt => {
-                            plaintext = pt;
-                            return _converse.omemo_store.generateMissingPreKeys();
-                        }).then(() => _converse.omemo_store.publishBundle())
-                          .then(() => {
-                            if (plaintext) {
-                                return Object.assign(attrs, {'plaintext': plaintext});
-                            } else {
-                                return Object.assign(attrs, {'is_only_key': true});
-                            }
-                        }).catch(e => {
-                            this.reportDecryptionError(e);
-                            return attrs;
-                        });
+                    try {
+                        const key_and_tag = await session_cipher.decryptPreKeyWhisperMessage(key, 'binary');
+                        const plaintext = await this.handleDecryptedWhisperMessage(attrs, key_and_tag);
+                        await _converse.omemo_store.generateMissingPreKeys();
+                        await _converse.omemo_store.publishBundle();
+                        if (plaintext) {
+                            return Object.assign(attrs, {'plaintext': plaintext});
+                        } else {
+                            return Object.assign(attrs, {'is_only_key': true});
+                        }
+                    } catch (e) {
+                        this.reportDecryptionError(e);
+                        return attrs;
+                    }
                 } else {
-                    return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
-                        .then(key_and_tag => this.handleDecryptedWhisperMessage(attrs, key_and_tag))
-                        .then(plaintext => Object.assign(attrs, {'plaintext': plaintext}))
-                        .catch(e => {
-                            this.reportDecryptionError(e);
-                            return attrs;
-                        });
+                    try {
+                        const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary')
+                        const plaintext = await this.handleDecryptedWhisperMessage(attrs, key_and_tag);
+                        return Object.assign(attrs, {'plaintext': plaintext});
+                    } catch (e) {
+                        this.reportDecryptionError(e);
+                        return attrs;
+                    }
                 }
             },
 
@@ -887,7 +887,7 @@ converse.plugins.add('converse-omemo', {
                 const keys = await Promise.all(_.range(0, _converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id)));
                 keys.forEach(k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
                 const devicelist = _converse.devicelists.get(_converse.bare_jid);
-                const device = devicelist.devices.create({'id': bundle.device_id, 'jid': _converse.bare_jid});
+                const device = await devicelist.devices.create({'id': bundle.device_id, 'jid': _converse.bare_jid}, {'promise': true});
                 const marshalled_keys = keys.map(k => ({'id': k.keyId, 'key': u.arrayBufferToBase64(k.keyPair.pubKey)}));
                 bundle['prekeys'] = marshalled_keys;
                 device.save('bundle', bundle);
@@ -981,6 +981,7 @@ converse.plugins.add('converse-omemo', {
                 const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
                 this.devices.browserStorage = _converse.createStore(id);
                 this.fetchDevices();
+
             },
 
             async onDevicesFound (collection) {
@@ -1046,8 +1047,11 @@ converse.plugins.add('converse-omemo', {
                     log.error(e);
                     return [];
                 }
-                const device_ids = sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq).map(dev => dev.getAttribute('id'));
-                _.forEach(device_ids, id => this.devices.create({'id': id, 'jid': this.get('jid')}));
+                const selector = `list[xmlns="${Strophe.NS.OMEMO}"] device`;
+                const device_ids = sizzle(selector, iq).map(d => d.getAttribute('id'));
+                await Promise.all(
+                    device_ids.map(id => this.devices.create({id, 'jid': this.get('jid')}, {'promise': true}))
+                );
                 return device_ids;
             },
 
@@ -1094,10 +1098,12 @@ converse.plugins.add('converse-omemo', {
         async function fetchOwnDevices () {
             await fetchDeviceLists();
             let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
-            if (!own_devicelist) {
-                own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
+            if (own_devicelist) {
+                own_devicelist.fetchDevices();
+            } else {
+                own_devicelist = await _converse.devicelists.create({'jid': _converse.bare_jid}, {'promise': true});
             }
-            return own_devicelist.fetchDevices();
+            return own_devicelist._devices_promise;
         }
 
         function updateBundleFromStanza (stanza) {

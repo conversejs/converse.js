@@ -47,7 +47,7 @@ $mobile_portrait_length: 480px !default;
 
     --roster-height: 194px;
 
-    --flyout-padding: 1.2em;
+    --flyout-padding: 0.5em;
 
     --chat-head-color: var(--green);
     --chat-head-color-dark: #1E9652;
@@ -62,6 +62,7 @@ $mobile_portrait_length: 480px !default;
     --chat-info-display: block;
 
     --highlight-color: #DCF9F6;
+    --highlight-color-darker: #B0E8E2;
 
     --primary-color: var(--light-blue);
     --primary-color-dark:  #397491;
@@ -190,7 +191,7 @@ $mobile_portrait_length: 480px !default;
 }
 
 #conversejs.theme-concord {
-    --avatar-border-radius: 100%;
+    --avatar-border-radius: 10%;
     --avatar-border: 0px;
     --avatar-background-color: none;
 

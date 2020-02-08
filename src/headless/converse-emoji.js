@@ -191,7 +191,7 @@ converse.plugins.add('converse-emoji', {
                     } else if (unicode_only) {
                         return shortname;
                     } else {
-                        return `<img class="emoji" draggable="false" alt="${shortname}" src="${_converse.emojis_map[shortname].url}"/>`;
+                        return `<img class="emoji" draggable="false" alt="${shortname}" src="${_converse.emojis_map[shortname].url}">`;
                     }
                 });
                 // Also replace ASCII smileys

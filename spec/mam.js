@@ -294,12 +294,12 @@
                                 </forwarded>
                             </result>
                         </message>`);
-                    spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
+                    spyOn(view.model, 'getDuplicateMessage').and.callThrough();
                     spyOn(view.model, 'updateMessage').and.callThrough();
                     view.model.onMessage(stanza);
-                    await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
-                    expect(view.model.findDuplicateFromArchiveID.calls.count()).toBe(1);
-                    const result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue
+                    await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
+                    expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
+                    const result = view.model.getDuplicateMessage.calls.all()[0].returnValue
                     expect(result instanceof _converse.Message).toBe(true);
                     expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
@@ -339,11 +339,11 @@
                                 </forwarded>
                             </result>
                         </message>`);
-                    spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
+                    spyOn(view.model, 'getDuplicateMessage').and.callThrough();
                     view.model.onMessage(stanza);
-                    await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
-                    expect(view.model.findDuplicateFromArchiveID.calls.count()).toBe(1);
-                    const result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue
+                    await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
+                    expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
+                    const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
                     expect(result instanceof _converse.Message).toBe(true);
                     expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
                     done();
@@ -389,11 +389,11 @@
                             </result>
                         </message>`);
 
-                    spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
+                    spyOn(view.model, 'getDuplicateMessage').and.callThrough();
                     view.model.onMessage(stanza);
-                    await u.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
-                    expect(view.model.findDuplicateFromArchiveID.calls.count()).toBe(1);
-                    const result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue
+                    await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
+                    expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
+                    const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
                     expect(result instanceof _converse.Message).toBe(true);
                     expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
                     done();

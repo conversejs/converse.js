@@ -85,7 +85,7 @@
                         from: sender_jid,
                         to: _converse.connection.jid,
                         type: 'chat',
-                        id: (new Date()).getTime()
+                        id: u.getUniqueId()
                     }).c('body').t('hello').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.handleMessageStanza(msg);
@@ -98,7 +98,7 @@
                         from: sender_jid,
                         to: _converse.connection.jid,
                         type: 'chat',
-                        id: (new Date()).getTime()
+                        id: u.getUniqueId()
                     }).c('body').t('hello again').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.handleMessageStanza(msg);

@@ -7,8 +7,9 @@ import "converse-chatview";
 import { Model } from 'skeletor.js/src/model.js';
 import { Overview } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
+import { __ } from '@converse/headless/i18n';
+import { html } from "lit-html";
 import converse from "@converse/headless/converse-core";
-import tpl_chatbox_minimize from "templates/chatbox_minimize.html";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.html";
 import tpl_trimmed_chat from "templates/trimmed_chat.html";
@@ -116,21 +117,13 @@ converse.plugins.add('converse-minimize', {
         },
 
         ChatBoxHeading: {
-            render () {
-                const { _converse } = this.__super__;
-                const { __ } = _converse;
-
-                this.__super__.render.apply(this, arguments);
-                const new_html = tpl_chatbox_minimize({
-                    'info_minimize': __('Minimize this chat box')
-                });
-                const el = this.el.querySelector('.toggle-chatbox-button');
-                if (el) {
-                    el.outerHTML = new_html;
-                } else {
-                    const button = this.el.querySelector('.close-chatbox-button');
-                    button.insertAdjacentHTML('afterEnd', new_html);
-                }
+            getHeadingButtons () {
+                const buttons = this.__super__.getHeadingButtons.call(this);
+                const info_minimize = __('Minimize this chat box');
+                const template = html`<a class="chatbox-btn toggle-chatbox-button fa fa-minus" title="${info_minimize}"></a>`;
+                const names = buttons.map(t => t.name);
+                const idx = names.indexOf('close');
+                return idx > -1 ? [...buttons.slice(0, idx+1), template, ...buttons.slice(idx+1)] : [template, ...buttons];
             }
         },
 
@@ -148,21 +141,13 @@ converse.plugins.add('converse-minimize', {
                 return result;
             },
 
-            generateHeadingHTML () {
-                const { _converse } = this.__super__,
-                    { __ } = _converse;
-                const html = this.__super__.generateHeadingHTML.apply(this, arguments);
-                const div = document.createElement('div');
-                div.innerHTML = html;
-                const buttons_row = div.querySelector('.chatbox-title__buttons')
-                const button = buttons_row.querySelector('.close-chatbox-button');
-                const minimize_el = tpl_chatbox_minimize({'info_minimize': __('Minimize this chat box')})
-                if (button) {
-                    button.insertAdjacentHTML('afterend', minimize_el);
-                } else {
-                    buttons_row.insertAdjacentHTML('beforeEnd', minimize_el);
-                }
-                return div.innerHTML;
+            getHeadingButtons () {
+                const buttons = this.__super__.getHeadingButtons.call(this);
+                const info_minimize = __('Minimize this groupchat');
+                const template = html`<a class="chatbox-btn toggle-chatbox-button fa fa-minus" title="${info_minimize}"></a>`;
+                const names = buttons.map(t => t.name);
+                const idx = names.indexOf('signout');
+                return idx > -1 ? [...buttons.slice(0, idx+1), template, ...buttons.slice(idx+1)] : [template, ...buttons];
             }
         }
     },

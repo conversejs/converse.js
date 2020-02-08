@@ -4,7 +4,6 @@
     const _ = converse.env._;
     const  $msg = converse.env.$msg;
     const u = converse.env.utils;
-    const Strophe = converse.env.Strophe;
 
     describe("The Minimized Chats Widget", function () {
 
@@ -70,7 +69,7 @@
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            await test_utils.waitForRoster(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current', 4);
             await test_utils.openControlBox(_converse);
             _converse.minimized_chats.initToggle();
 
@@ -84,61 +83,61 @@
                 contact_jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 test_utils.openChatBoxFor(_converse, contact_jid);
             }
-            u.waitUntil(() => _converse.chatboxes.length == 4).then(() => {
-                for (i=0; i<3; i++) {
-                    chatview = _converse.chatboxviews.get(contact_jid);
-                    chatview.model.set({'minimized': true});
-                    msg = $msg({
-                        from: contact_jid,
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: (new Date()).getTime()
-                    }).c('body').t('This message is sent to a minimized chatbox').up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    _converse.handleMessageStanza(msg);
-                }
-                return u.waitUntil(() => chatview.model.messages.length);
-            }).then(() => {
-                expect(u.isVisible(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count'))).toBeTruthy();
-                expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((3).toString());
-                // Chat state notifications don't increment the unread messages counter
-                // <composing> state
-                _converse.handleMessageStanza($msg({
-                    from: contact_jid,
-                    to: _converse.connection.jid,
-                    type: 'chat',
-                    id: (new Date()).getTime()
-                }).c('composing', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-                expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
+            await u.waitUntil(() => _converse.chatboxes.length == 4);
 
-                // <paused> state
-                _converse.handleMessageStanza($msg({
+            chatview = _converse.chatboxviews.get(contact_jid);
+            chatview.model.set({'minimized': true});
+            for (i=0; i<3; i++) {
+                msg = $msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',
-                    id: (new Date()).getTime()
-                }).c('paused', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-                expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
+                    id: u.getUniqueId()
+                }).c('body').t('This message is sent to a minimized chatbox').up()
+                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                _converse.handleMessageStanza(msg);
+            }
+            await u.waitUntil(() => chatview.model.messages.length === 3, 500);
 
-                // <gone> state
-                _converse.handleMessageStanza($msg({
-                    from: contact_jid,
-                    to: _converse.connection.jid,
-                    type: 'chat',
-                    id: (new Date()).getTime()
-                }).c('gone', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-                expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
+            expect(u.isVisible(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count'))).toBeTruthy();
+            expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((3).toString());
+            // Chat state notifications don't increment the unread messages counter
+            // <composing> state
+            _converse.handleMessageStanza($msg({
+                from: contact_jid,
+                to: _converse.connection.jid,
+                type: 'chat',
+                id: u.getUniqueId()
+            }).c('composing', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
 
-                // <inactive> state
-                _converse.handleMessageStanza($msg({
-                    from: contact_jid,
-                    to: _converse.connection.jid,
-                    type: 'chat',
-                    id: (new Date()).getTime()
-                }).c('inactive', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-                expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
-                done();
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            // <paused> state
+            _converse.handleMessageStanza($msg({
+                from: contact_jid,
+                to: _converse.connection.jid,
+                type: 'chat',
+                id: u.getUniqueId()
+            }).c('paused', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
+
+            // <gone> state
+            _converse.handleMessageStanza($msg({
+                from: contact_jid,
+                to: _converse.connection.jid,
+                type: 'chat',
+                id: u.getUniqueId()
+            }).c('gone', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
+
+            // <inactive> state
+            _converse.handleMessageStanza($msg({
+                from: contact_jid,
+                to: _converse.connection.jid,
+                type: 'chat',
+                id: u.getUniqueId()
+            }).c('inactive', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe((i).toString());
+            done();
         }));
 
         it("shows the number messages received to minimized groupchats",
@@ -154,7 +153,7 @@
             const nick = mock.chatroom_names[0];
             const msg = $msg({
                     from: muc_jid+'/'+nick,
-                    id: (new Date()).getTime(),
+                    id: u.getUniqueId(),
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(message).tree();

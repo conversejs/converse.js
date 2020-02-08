@@ -490,7 +490,7 @@
                         nick = mock.chatroom_names[0],
                         msg = $msg({
                         'from': 'lounge@montague.lit/'+nick,
-                        'id': (new Date()).getTime(),
+                        'id': u.getUniqueId(),
                         'to': 'romeo@montague.lit',
                         'type': 'groupchat'
                     }).c('body').t(message).tree();
@@ -521,12 +521,13 @@
                         nick = mock.chatroom_names[0],
                         msg = $msg({
                         'from': 'lounge@montague.lit/'+nick,
-                        'id': (new Date()).getTime(),
+                        'id': u.getUniqueId(),
                         'to': 'romeo@montague.lit',
                         'type': 'groupchat'
                     }).c('body').t(message).tree();
 
                 await view.model.onMessage(msg);
+                await u.waitUntil(()  => view.el.querySelector('.chat-msg__text a'));
                 view.el.querySelector('.chat-msg__text a').click();
                 await u.waitUntil(() => _converse.chatboxes.length === 3)
                 expect(_.includes(_converse.chatboxes.pluck('id'), 'coven@chat.shakespeare.lit')).toBe(true);
@@ -643,7 +644,7 @@
 
                 const msg = $msg({
                     'from': 'coven@chat.shakespeare.lit/some1',
-                    'id': (new Date()).getTime(),
+                    'id': u.getUniqueId(),
                     'to': 'romeo@montague.lit',
                     'type': 'groupchat'
                 }).c('body').t('hello world').tree();
@@ -1108,7 +1109,7 @@
                 const view = _converse.chatboxviews.get('conversations@conference.siacs.eu');
                 const msg = $msg({
                         'from': 'conversations@conference.siacs.eu/romeo',
-                        'id': (new Date()).getTime(),
+                        'id': u.getUniqueId(),
                         'to': 'romeo@montague.lit',
                         'type': 'groupchat'
                     }).c('body').t('Some message').tree();
@@ -1324,7 +1325,7 @@
                 const nick = mock.chatroom_names[0];
                 let msg = $msg({
                         'from': 'lounge@montague.lit/'+nick,
-                        'id': (new Date()).getTime(),
+                        'id': u.getUniqueId(),
                         'to': 'romeo@montague.lit',
                         'type': 'groupchat'
                     }).c('body').t(message).tree();
@@ -1335,7 +1336,7 @@
                 message = '/me is as well';
                 msg = $msg({
                     from: 'lounge@montague.lit/Romeo Montague',
-                    id: (new Date()).getTime(),
+                    id: u.getUniqueId(),
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(message).tree();
@@ -2133,7 +2134,7 @@
                                 from: 'lounge@montague.lit/someone',
                                 to: 'romeo@montague.lit.com',
                                 type: 'groupchat',
-                                id: (new Date()).getTime(),
+                                id: u.getUniqueId(),
                             }).c('body').t('Message: '+i).tree())
                     );
                 }
@@ -2146,7 +2147,7 @@
                             from: 'lounge@montague.lit/someone',
                             to: 'romeo@montague.lit.com',
                             type: 'groupchat',
-                            id: (new Date()).getTime(),
+                            id: u.getUniqueId(),
                         }).c('body').t(message).tree());
                     // Now check that the message appears inside the chatbox in the DOM
                     const chat_content = view.el.querySelector('.chat-content');
@@ -4947,7 +4948,7 @@
 
                 await view.model.onMessage($msg({
                         from: muc_jid+'/'+nick,
-                        id: (new Date()).getTime(),
+                        id: u.getUniqueId(),
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t(message).tree());
@@ -4958,7 +4959,7 @@
 
                 await view.model.onMessage($msg({
                     'from': muc_jid+'/'+nick,
-                    'id': (new Date()).getTime(),
+                    'id': u.getUniqueId(),
                     'to': 'romeo@montague.lit',
                     'type': 'groupchat'
                 }).c('body').t(message).tree());
@@ -5077,7 +5078,7 @@
                     // <composing> state
                     let msg = $msg({
                             from: muc_jid+'/newguy',
-                            id: (new Date()).getTime(),
+                            id: u.getUniqueId(),
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
@@ -5102,7 +5103,7 @@
                     // Check that it doesn't appear twice
                     msg = $msg({
                             from: muc_jid+'/newguy',
-                            id: (new Date()).getTime(),
+                            id: u.getUniqueId(),
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
@@ -5122,7 +5123,7 @@
                     // <composing> state for a different occupant
                     msg = $msg({
                             from: muc_jid+'/nomorenicks',
-                            id: (new Date()).getTime(),
+                            id: u.getUniqueId(),
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
@@ -5142,7 +5143,7 @@
                     // Check that new messages appear under the chat state notifications
                     msg = $msg({
                         from: `${muc_jid}/some1`,
-                        id: (new Date()).getTime(),
+                        id: u.getUniqueId(),
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t('hello world').tree();
@@ -5247,7 +5248,7 @@
                     // <composing> state
                     var msg = $msg({
                             from: muc_jid+'/newguy',
-                            id: (new Date()).getTime(),
+                            id: u.getUniqueId(),
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
@@ -5268,7 +5269,7 @@
                     // Check that it doesn't appear twice
                     msg = $msg({
                             from: muc_jid+'/newguy',
-                            id: (new Date()).getTime(),
+                            id: u.getUniqueId(),
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
@@ -5287,7 +5288,7 @@
                     // <composing> state for a different occupant
                     msg = $msg({
                             from: muc_jid+'/nomorenicks',
-                            id: (new Date()).getTime(),
+                            id: u.getUniqueId(),
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
@@ -5310,7 +5311,7 @@
                     // <paused> state from occupant who typed first
                     msg = $msg({
                             from: muc_jid+'/newguy',
-                            id: (new Date()).getTime(),
+                            id: u.getUniqueId(),
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();

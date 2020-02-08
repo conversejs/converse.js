@@ -37,7 +37,7 @@
                         from: contact_jid,
                         to: _converse.connection.jid,
                         type: 'chat',
-                        id: (new Date()).getTime()
+                        id: u.getUniqueId()
                     }).c('body').t('hello world').tree();
                 await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
@@ -58,7 +58,7 @@
                         from: sender_jid,
                         to: _converse.connection.jid,
                         type: 'chat',
-                        id: (new Date()).getTime()
+                        id: u.getUniqueId()
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
@@ -535,7 +535,7 @@
                             'from': sender_jid,
                             'to': _converse.connection.jid,
                             'type': 'chat',
-                            'id': (new Date()).getTime()
+                            'id': u.getUniqueId()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
                     spyOn(_converse.api, "trigger").and.callThrough();
@@ -685,7 +685,7 @@
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
-                                id: (new Date()).getTime()
+                                id: u.getUniqueId()
                             }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
                         spyOn(_converse.api, "trigger").and.callThrough();
@@ -703,7 +703,7 @@
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
-                                id: (new Date()).getTime()
+                                id: u.getUniqueId()
                             }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.handleMessageStanza(msg);
                         const events = view.el.querySelectorAll('.chat-state-notification');
@@ -725,7 +725,7 @@
                         const view = await test_utils.openChatBoxFor(_converse, recipient_jid);
                         const msg = $msg({
                                 'from': _converse.bare_jid,
-                                'id': (new Date()).getTime(),
+                                'id': u.getUniqueId(),
                                 'to': _converse.connection.jid,
                                 'type': 'chat',
                                 'xmlns': 'jabber:client'
@@ -829,7 +829,7 @@
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
-                                id: (new Date()).getTime()
+                                id: u.getUniqueId()
                             }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.handleMessageStanza(msg);
                         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -852,7 +852,7 @@
                         const view = await test_utils.openChatBoxFor(_converse, recipient_jid);
                         const msg = $msg({
                                 'from': _converse.bare_jid,
-                                'id': (new Date()).getTime(),
+                                'id': u.getUniqueId(),
                                 'to': _converse.connection.jid,
                                 'type': 'chat',
                                 'xmlns': 'jabber:client'
@@ -1021,7 +1021,7 @@
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
-                                id: (new Date()).getTime()
+                                id: u.getUniqueId()
                             }).c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.handleMessageStanza(msg);
                         await u.waitUntil(() => (view.model.messages.length > 1));
@@ -1048,7 +1048,7 @@
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
-                                id: (new Date()).getTime()
+                                id: u.getUniqueId()
                             }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.handleMessageStanza(msg);
                         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -1128,7 +1128,7 @@
                         from: sender_jid,
                         to: _converse.connection.jid,
                         type: 'chat',
-                        id: (new Date()).getTime()
+                        id: u.getUniqueId()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 _converse.windowState = 'hidden';
@@ -1179,7 +1179,7 @@
                         from: sender_jid,
                         to: _converse.connection.jid,
                         type: 'chat',
-                        id: (new Date()).getTime()
+                        id: u.getUniqueId()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 await _converse.handleMessageStanza(msg);
@@ -1203,7 +1203,7 @@
                             from: sender_jid,
                             to: _converse.connection.jid,
                             type: 'chat',
-                            id: (new Date()).getTime()
+                            id: u.getUniqueId()
                         })
                         .c('body').t(message).up()
                         .c('active', {'xmlns': Strophe.NS.CHATSTATES})
@@ -1228,7 +1228,7 @@
                 // check that msg_counter is incremented from zero again
                 await _converse.handleMessageStanza(msgFactory());
                 view = _converse.chatboxviews.get(sender_jid);
-                expect(u.isVisible(view.el)).toBeTruthy();
+                await u.waitUntil(() => u.isVisible(view.el));
                 expect(document.title).toBe('Messages (1) Converse Tests');
                 done();
             }));

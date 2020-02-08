@@ -4,7 +4,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-chatview";
-import "formdata-polyfill";
 import { get } from "lodash";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from "skeletor.js/src/view";

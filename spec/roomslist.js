@@ -286,7 +286,7 @@
             await view.model.onMessage(
                 $msg({
                     from: room_jid+'/'+nick,
-                    id: (new Date()).getTime(),
+                    id: u.getUniqueId(),
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('foo').tree());
@@ -300,7 +300,7 @@
             await view.model.onMessage(
                 $msg({
                     from: room_jid+'/'+nick,
-                    id: (new Date()).getTime(),
+                    id: u.getUniqueId(),
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('romeo: Your attention is required').tree()
@@ -313,7 +313,7 @@
             await view.model.onMessage(
                 $msg({
                     from: room_jid+'/'+nick,
-                    id: (new Date()).getTime(),
+                    id: u.getUniqueId(),
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('romeo: and another thing...').tree()

@@ -106,7 +106,6 @@
             .chatroom-body {
                 flex-direction: row;
                 flex-flow: nowrap;
-                border-bottom-radius: var(--chatbox-border-radius);
                 background-color: white;
                 border-top: 0;
                 width: 100%;
@@ -161,7 +160,6 @@
                     vertical-align: top;
                     background-color: var(--occupants-background-color);
                     border-left: var(--occupants-border-left);
-                    border-bottom-right-radius: var(--chatbox-border-radius);
                     padding: 0.5em;
                     max-width: 75%;
                     min-width: 20%;
@@ -288,8 +286,6 @@
                 }
                 .chatroom-form-container {
                     background-color: white;
-                    border-bottom-left-radius: var(--chatbox-border-radius);
-                    border-bottom-right-radius: var(--chatbox-border-radius);
                     border: 0;
                     color: var(--text-color);
                     font-size: var(--font-size);
@@ -345,8 +341,6 @@
                 height: 16em;
 
                 .chatroom-form-container {
-                    border-radius: 0 !important;
-
                     .chatroom-form {
                         padding-top: 2em;
                         padding-bottom: 0;
@@ -471,9 +465,6 @@
 
     .chatroom {
         .box-flyout {
-            background-color: var(--chatroom-head-bg-color);
-            border: var(--flyout-padding) solid var(--chatroom-head-bg-color);
-            border-top: 0.8em solid var(--chatroom-head-bg-color);
             width: 100%;
 
             .chat-head__desc {
@@ -481,15 +472,7 @@
             }
 
             .chatroom-body {
-                border-top-radius: var(--chatbox-border-radius);
-                .chatroom-form-container {
-                    border-radius: var(--chatbox-border-radius);
-                }
                 .chat-area {
-                    border-top-left-radius: var(--chatbox-border-radius);
-                    .chat-content {
-                        border-top-left-radius: var(--chatbox-border-radius);
-                    }
                     &.full {
                         .new-msgs-indicator {
                             max-width: 100%;
@@ -497,7 +480,6 @@
                     }
                 }
                 .occupants {
-                    border-top-right-radius: var(--chatbox-border-radius);
                     padding: var(--occupants-padding);
                     .occupants-heading {
                         font-size: var(--font-size-large);

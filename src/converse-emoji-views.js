@@ -169,6 +169,10 @@ converse.plugins.add('converse-emoji-views', {
                 );
             },
 
+            afterRender () {
+                this.setScrollPosition();
+            },
+
             onSearchInputFocus (ev) {
                 this.chatview.emitBlurred(ev);
                 this.disableArrowNavigation();
@@ -315,15 +319,7 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             onKeyDown (ev) {
-                if (ev.keyCode === converse.keycodes.RIGHT_ARROW) {
-                    if (this.navigator.enabled) {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        ev.target.blur();
-                        const first_el = this.el.querySelector('.pick-category');
-                        this.navigator.select(first_el, 'right');
-                    }
-                } else if (ev.keyCode === converse.keycodes.TAB) {
+                if (ev.keyCode === converse.keycodes.TAB) {
                     if (ev.target.value) {
                         ev.preventDefault();
                         const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
@@ -391,12 +387,11 @@ converse.plugins.add('converse-emoji-views', {
                 this.setCategoryForElement(el);
                 this.navigator.select(el);
                 !this.navigator.enabled && this.navigator.enable();
-                this.setScrollPosition();
             },
 
             setScrollPosition () {
                 const category = this.model.get('current_category');
-                const el = this.el.querySelector('.emoji-picker__lists');
+                const el = this.el.querySelector('.emoji-lists__container--browse');
                 const heading = this.el.querySelector(`#emoji-picker-${category}`);
                 if (heading) {
                     // +4 due to 2px padding on list elements

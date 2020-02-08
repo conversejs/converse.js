@@ -1747,7 +1747,8 @@ converse.plugins.add('converse-muc', {
                 this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
-                const message = await this.getDuplicateMessage(original_stanza);
+                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, original_stanza);
                 }
@@ -1755,7 +1756,6 @@ converse.plugins.add('converse-muc', {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
 
-                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                 if (this.handleRetraction(attrs) ||
                         this.handleModeration(attrs) ||
                         this.subjectChangeHandled(attrs) ||

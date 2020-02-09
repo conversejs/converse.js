@@ -8,21 +8,21 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2019-08-07 10:15+0200\n"
-"Last-Translator: Станислав Соколко <s.sokolko@gmail.com>\n"
+"PO-Revision-Date: 2020-02-10 03:50+0000\n"
+"Last-Translator: Антон <vooooggg@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.11-dev\n"
 
 #: dist/converse-no-dependencies.js:5695
 msgid "OK"
-msgstr ""
+msgstr "Подтвердить"
 
 #: dist/converse-no-dependencies.js:5697 dist/converse-no-dependencies.js:9249
 #: dist/converse-no-dependencies.js:10175
@@ -44,9 +44,8 @@ msgid "Edit this message"
 msgstr "Отредактировать сообщение"
 
 #: dist/converse-no-dependencies.js:7939
-#, fuzzy
 msgid "Retract this message"
-msgstr "Отредактировать сообщение"
+msgstr "Отменить сообщение"
 
 #: dist/converse-no-dependencies.js:7955
 msgid "Message versions"
@@ -147,9 +146,8 @@ msgid "Search"
 msgstr "Поиск"
 
 #: dist/converse-no-dependencies.js:8680
-#, fuzzy
 msgid "Search results"
-msgstr "Поиск"
+msgstr "Поиск результатов"
 
 #: dist/converse-no-dependencies.js:8830
 msgid "Enter a new Groupchat"
@@ -170,12 +168,11 @@ msgstr "Присоединиться"
 
 #: dist/converse-no-dependencies.js:8866
 msgid "No message history available."
-msgstr ""
+msgstr "Нет доступной истории сообщений"
 
 #: dist/converse-no-dependencies.js:8899
-#, fuzzy
 msgid "You're not allowed to send messages in this room"
-msgstr "Вам не разрешено создавать новые комнаты."
+msgstr "Вам не разрешено писать сообщения в этой комнате"
 
 #: dist/converse-no-dependencies.js:8919
 msgid "This groupchat no longer exists"
@@ -183,7 +180,7 @@ msgstr "Эта комната больше не существует"
 
 #: dist/converse-no-dependencies.js:8925
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "Разговор был перенесен. Нажмите снизу что бы продолжить"
 
 #: dist/converse-no-dependencies.js:8947
 msgid "Name"
@@ -340,9 +337,8 @@ msgid "Save"
 msgstr "Сохранить"
 
 #: dist/converse-no-dependencies.js:9386
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "Модератор"
+msgstr "Инстурменты модератора"
 
 #: dist/converse-no-dependencies.js:9388
 msgid ""
@@ -351,6 +347,10 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Роли присваиваются пользователям, чтобы предоставить или запретить им "
+"определенные способности в многопользовательском чате. Они назначаются либо "
+"явно, либо неявно как часть членства. Роль, которая не обусловлена "
+"принадлежностью, действительна только в течение сессии пользователя."
 
 #: dist/converse-no-dependencies.js:9390 dist/converse-no-dependencies.js:53605
 msgid "Role"
@@ -361,39 +361,40 @@ msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Модераторы - это привилегированные пользователи, которые могут менять роли "
+"других пользователей (за исключением тех, которые связаны с администратором "
+"или владельцем."
 
 #: dist/converse-no-dependencies.js:9408 dist/converse-no-dependencies.js:9432
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "Стандартная роль подразумевает что Вы можете читать и писать сообщения."
 
 #: dist/converse-no-dependencies.js:9414 dist/converse-no-dependencies.js:9438
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Посетителям не разрешается писать сообщения в модерируемом "
+"многопользовательском чате."
 
 #: dist/converse-no-dependencies.js:9422 dist/converse-no-dependencies.js:9518
-#, fuzzy
 msgid "Show users"
-msgstr "Показать чаты"
+msgstr "Показать пользователей"
 
 #: dist/converse-no-dependencies.js:9448
-#, fuzzy
 msgid "No users with that role found."
-msgstr "Пользователи не найдены"
+msgstr "Пользователи с этой ролью не найдены."
 
 #: dist/converse-no-dependencies.js:9464
-#, fuzzy
 msgid "New Role"
-msgstr "Роль"
+msgstr "Новая роль"
 
 #: dist/converse-no-dependencies.js:9478 dist/converse-no-dependencies.js:9578
 msgid "Reason"
-msgstr ""
+msgstr "Причина"
 
 #: dist/converse-no-dependencies.js:9480
-#, fuzzy
 msgid "Change role"
-msgstr "Изменить настройки"
+msgstr "Изменить роль"
 
 #: dist/converse-no-dependencies.js:9484
 msgid ""
@@ -401,48 +402,56 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"Принадлежность - это долгосрочное право, которое обычно подразумевает "
+"определенную роль и предоставляет привилегии и обязанности. Например, "
+"администраторы и владельцы автоматически получают роль модератора."
 
 #: dist/converse-no-dependencies.js:9486
 msgid "Affiliation"
-msgstr ""
+msgstr "Принадлежность"
 
 #: dist/converse-no-dependencies.js:9498 dist/converse-no-dependencies.js:9522
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Статус владельца обладает неограниченным правом. Владелец может менять роли "
+"и права всех пользователей. "
 
 #: dist/converse-no-dependencies.js:9504 dist/converse-no-dependencies.js:9528
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Администратор - вторая по преимуществу принадлежность. Администраторы могут "
+"изменять роли и принадлежности других пользователей, за исключением "
+"владельцев."
 
 #: dist/converse-no-dependencies.js:9510 dist/converse-no-dependencies.js:9534
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr ""
+"Чтобы забанить пользователя, Вы присваиваете ему принадлежность \"изгнанный\""
+"."
 
 #: dist/converse-no-dependencies.js:9544
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "Пользователи с этой принадлежностью не найдены."
 
 #: dist/converse-no-dependencies.js:9564
 msgid "New affiliation"
-msgstr ""
+msgstr "Новая принадлежность"
 
 #: dist/converse-no-dependencies.js:9580
-#, fuzzy
 msgid "Change affiliation"
-msgstr "Дать права администратора"
+msgstr "Изменить принадлежность"
 
 #: dist/converse-no-dependencies.js:9939
 msgid "Save and close"
 msgstr "Сохранить и закрыть"
 
 #: dist/converse-no-dependencies.js:9943
-#, fuzzy
 msgid "This device's OMEMO fingerprint"
-msgstr "Отпечаток OMEMO этого устройства"
+msgstr "OMEMO-Отпечаток этого устройства"
 
 #: dist/converse-no-dependencies.js:9953
 msgid "Generate new keys and fingerprint"
@@ -454,15 +463,15 @@ msgstr "Выбрать всё"
 
 #: dist/converse-no-dependencies.js:9959
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
-msgstr ""
+msgstr "Флаг для выбора отпечатков всех других OMEMO устройств"
 
 #: dist/converse-no-dependencies.js:9961
 msgid "Other OMEMO-enabled devices"
-msgstr ""
+msgstr "Другие устройства с включенным OMEMO"
 
 #: dist/converse-no-dependencies.js:9969 dist/converse-no-dependencies.js:9977
 msgid "Checkbox for selecting the following fingerprint"
-msgstr ""
+msgstr "Флаг для выбора следующих отпечатков"
 
 #: dist/converse-no-dependencies.js:9979
 msgid "Device without a fingerprint"
@@ -519,17 +528,18 @@ msgid "Hold tight, we're fetching the registration form…"
 msgstr "Подождите немного, мы получаем регистрационную форму…"
 
 #: dist/converse-no-dependencies.js:23312
-#, fuzzy
 msgid ""
 "Your message was not delivered because you're not allowed to send messages "
 "in this groupchat."
-msgstr "Извините, вам запрещенна регистрация в этой комнате."
+msgstr ""
+"Ваше сообщение не было доставлено потому что Вам не разрешено отправлять "
+"сообщения в этом групповом чате."
 
 #: dist/converse-no-dependencies.js:23314
-#, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "Вам не разрешено создавать новые комнаты."
+msgstr ""
+"Ваше сообщение не было отправлено потому что Вы не состоите в групповом чате."
 
 #: dist/converse-no-dependencies.js:23319
 msgid "Sorry, an error occurred:"
@@ -574,19 +584,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:30197
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Смайлы и эмоции"
 
 #: dist/converse-no-dependencies.js:30198
 msgid "People"
-msgstr ""
+msgstr "Люди"
 
 #: dist/converse-no-dependencies.js:30199
 msgid "Activities"
-msgstr ""
+msgstr "Занятия"
 
 #: dist/converse-no-dependencies.js:30200
 msgid "Travel"
-msgstr ""
+msgstr "Путешествие"
 
 #: dist/converse-no-dependencies.js:30201
 msgid "Objects"

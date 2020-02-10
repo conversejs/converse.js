@@ -310,13 +310,13 @@ converse.plugins.add('converse-chat', {
                     return;
                 }
                 this.set({'box_id': `box-${btoa(jid)}`});
+                this.initMessages();
 
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                     this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
                     await this.setRosterContact(jid);
                 }
                 this.on('change:chat_state', this.sendChatState, this);
-                this.initMessages();
                 await this.fetchMessages();
                 /**
                  * Triggered once a {@link _converse.ChatBox} has been created and initialized.

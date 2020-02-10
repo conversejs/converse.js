@@ -74,10 +74,6 @@ converse.plugins.add('converse-minimize', {
         },
 
         ChatBoxView: {
-            events: {
-                'click .toggle-chatbox-button': 'minimize',
-            },
-
             initialize () {
                 this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
                 return this.__super__.initialize.apply(this, arguments);
@@ -119,19 +115,19 @@ converse.plugins.add('converse-minimize', {
         ChatBoxHeading: {
             getHeadingButtons () {
                 const buttons = this.__super__.getHeadingButtons.call(this);
-                const info_minimize = __('Minimize this chat box');
-                const template = html`<a class="chatbox-btn toggle-chatbox-button fa fa-minus" title="${info_minimize}"></a>`;
+                const data = {
+                    'i18n_title': __('Minimize this chat box'),
+                    'handler': ev => this.minimize(ev),
+                    'icon_class': "fa-minus",
+                    'name': 'minimize'
+                }
                 const names = buttons.map(t => t.name);
                 const idx = names.indexOf('close');
-                return idx > -1 ? [...buttons.slice(0, idx+1), template, ...buttons.slice(idx+1)] : [template, ...buttons];
+                return idx > -1 ? [...buttons.slice(0, idx+1), data, ...buttons.slice(idx+1)] : [data, ...buttons];
             }
         },
 
         ChatRoomView: {
-            events: {
-                'click .toggle-chatbox-button': 'minimize',
-            },
-
             initialize () {
                 this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
                 const result = this.__super__.initialize.apply(this, arguments);
@@ -143,11 +139,15 @@ converse.plugins.add('converse-minimize', {
 
             getHeadingButtons () {
                 const buttons = this.__super__.getHeadingButtons.call(this);
-                const info_minimize = __('Minimize this groupchat');
-                const template = html`<a class="chatbox-btn toggle-chatbox-button fa fa-minus" title="${info_minimize}"></a>`;
+                const data = {
+                    'i18n_title': __('Minimize this groupchat'),
+                    'handler': ev => this.minimize(ev),
+                    'icon_class': "fa-minus",
+                    'name': 'minimize'
+                }
                 const names = buttons.map(t => t.name);
                 const idx = names.indexOf('signout');
-                return idx > -1 ? [...buttons.slice(0, idx+1), template, ...buttons.slice(idx+1)] : [template, ...buttons];
+                return idx > -1 ? [...buttons.slice(0, idx+1), data, ...buttons.slice(idx+1)] : [data, ...buttons];
             }
         }
     },

@@ -41,7 +41,7 @@
         color: #ffffff;
         font-size: 100%;
         margin: 0;
-        padding: 1rem;;
+        padding: 0;
         position: relative;
 
         &.chat-head-chatbox {
@@ -54,20 +54,25 @@
 
         .chat-head__desc {
             color: var(--chat-head-color-lighten-50-percent);
-            font-size: 75%;
-            font-size: 80%;
+            font-size: var(--font-size-small);
             margin: 0;
             overflow: hidden;
-            padding: 0;
+            padding: 0.5rem 1rem 1rem 1rem;
             text-overflow: ellipsis;
             white-space: nowrap;
+            width: 100%;
         }
 
         .chatbox-title {
+            padding: 0.75rem 1rem 0 1rem;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             width: 100%;
+        }
+
+        .chatbox-title--no-desc {
+            padding: 0.75rem 1rem;
         }
 
         .chatbox-title--row {
@@ -79,13 +84,6 @@
         .chatbox-title__text {
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        .chatbox-title__buttons {
-            display: flex;
-            flex-direction: row-reverse;
-            flex-wrap: nowrap;
-            padding: 0;
         }
 
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {
@@ -495,12 +493,6 @@
         border-radius: 0;
         border:none;
         bottom: 0;
-    }
-
-    .chat-head {
-        .chat-head__desc {
-            font-size: 70%;
-        }
     }
 
     .chatbox {

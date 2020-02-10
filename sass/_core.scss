@@ -193,6 +193,20 @@ body.converse-fullscreen {
         }
     }
 
+    .dropdown-item {
+      padding: 0.5rem 1rem;
+      .fa {
+        margin-right: 0.75rem;
+      }
+      &:active, &.selected {
+        color: white !important;
+        background-color: var(--list-item-open-color);
+        .fa {
+          color: white !important;
+        }
+      }
+    }
+
     .popover {
         position: fixed;
     }
@@ -352,6 +366,10 @@ body.converse-fullscreen {
         .fa, .far, .fas {
             color: #fff;
             margin-right: 0.5em;
+
+            &.only-icon {
+              margin-right: 0;
+            }
         }
     }
 
@@ -501,9 +519,9 @@ body.converse-fullscreen {
     }
 
     .avatar-autocomplete {
-        margin-right: 0.5em; 
+        margin-right: 0.5em;
         vertical-align: middle;
-    } 
+    }
 
     .activated {
         display: block !important;
@@ -539,6 +557,11 @@ body.converse-fullscreen {
             background-color: var(--primary-color-dark) !important;
             border-color: transparent !important;
         }
+    }
+
+    .btn--transparent {
+        background: transparent;
+        border: none;
     }
 
     .btn-circle {

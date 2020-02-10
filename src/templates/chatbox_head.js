@@ -2,8 +2,6 @@ import { html } from "lit-html";
 import { until } from 'lit-html/directives/until.js';
 import { __ } from '@converse/headless/i18n';
 import avatar from "./avatar.js";
-import converse from "@converse/headless/converse-core";
-import xss from "xss/dist/xss";
 
 const i18n_profile = __('The User\'s Profile Image');
 
@@ -17,7 +15,7 @@ const avatar_data = {
 export default (o) => {
     return html`
         <div class="chat-head chat-head-chatbox row no-gutters">
-            <div class="chatbox-title">
+            <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
                 <div class="chatbox-title--row">
                     ${ (!o._converse.singleton) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
                     ${ (o.type !== o._converse.HEADLINES_TYPE) ? avatar(Object.assign({}, o, avatar_data)) : '' }
@@ -27,7 +25,7 @@ export default (o) => {
                 </div>
                 <div class="chatbox-title__buttons row no-gutters">${ o.buttons.map(b => until(b, '')) }</div>
             </div>
-            <p class="chat-head__desc">${ o.status }</p>
+            ${ o.status ? html`<p class="chat-head__desc">${ o.status }</p>` : '' }
         </div>
     `;
 }

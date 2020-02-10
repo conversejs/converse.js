@@ -7,7 +7,6 @@
 import "@converse/headless/converse-muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
-import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import tpl_bookmarks_list from "templates/bookmarks_list.js"
@@ -45,13 +44,17 @@ converse.plugins.add('converse-bookmark-views', {
                 const buttons = this.__super__.getHeadingButtons.call(this);
                 if (_converse.allow_bookmarks) {
                     const supported = _converse.checkBookmarksSupport();
-                    const info_toggle_bookmark = this.model.get('bookmarked') ? __('Unbookmark this groupchat') : __('Bookmark this groupchat');
                     const bookmarked = this.model.get('bookmarked');
-                    const template = html`<a class="chatbox-btn toggle-bookmark fa fa-bookmark ${bookmarked ? 'button-on' : ''}" title="${info_toggle_bookmark}"></a>`;
+                    const data = {
+                        'i18n_title': this.model.get('bookmarked') ? __('Unbookmark') : __('Bookmark'),
+                        'handler': ev => this.toggleBookmark(ev),
+                        'icon_class': 'fa-bookmark',
+                        'name': 'bookmark'
+                    }
                     const names = buttons.map(t => t.name);
                     const idx = names.indexOf('configure');
-                    const template_promise = supported.then(s => s ? template : '');
-                    return idx > -1 ? [...buttons.slice(0, idx), template_promise, ...buttons.slice(idx)] : [template_promise, ...buttons];
+                    const data_promise = supported.then(s => s ? data : '');
+                    return idx > -1 ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)] : [data_promise, ...buttons];
                 }
                 return buttons;
             }
@@ -100,25 +103,6 @@ converse.plugins.add('converse-bookmark-views', {
         });
 
         const bookmarkableChatRoomView = {
-
-            renderBookmarkToggle () {
-                const bookmark_button = tpl_chatroom_bookmark_toggle(
-                    _.assignIn(this.model.toJSON(), {
-                        'info_toggle_bookmark': this.model.get('bookmarked') ?
-                            __('Unbookmark this groupchat') :
-                            __('Bookmark this groupchat'),
-                        'bookmarked': this.model.get('bookmarked')
-                    }));
-
-                const buttons_row = this.el.querySelector('.chatbox-title__buttons')
-                const close_button = buttons_row.querySelector('.close-chatbox-button');
-                if (close_button) {
-                    close_button.insertAdjacentHTML('afterend', bookmark_button);
-                } else {
-                    buttons_row.insertAdjacentHTML('beforeEnd', bookmark_button);
-                }
-            },
-
             /**
              * Set whether the groupchat is bookmarked or not.
              * @private

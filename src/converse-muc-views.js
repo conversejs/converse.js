@@ -734,12 +734,8 @@ converse.plugins.add('converse-muc-views', {
              * @method _converse.ChatRoomView#renderHeading
              * @param { _converse.ChatRoom } [item]
              */
-            renderHeading (item=null) {
-                const changed = item === null ? [] : Object.keys(item.changed);
-                const keys = ['affiliation', 'bookmarked', 'jid', 'name', 'description', 'subject'];
-                if (item === null || changed.filter(v => keys.includes(v)).length) {
-                    render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatroom'));
-                }
+            renderHeading () {
+                render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatroom'));
             },
 
             renderBottomPanel () {

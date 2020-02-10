@@ -60,7 +60,13 @@ const fingerprints = (o) => {
     `;
 }
 
-const remove_button = html`<button type="button" class="btn btn-danger remove-contact"><i class="far fa-trash-alt"> </i>${i18n_remove_contact}</button>`;
+const remove_button = (o) => {
+    return html`
+        <button type="button" @click="${o.removeContact}" class="btn btn-danger remove-contact">
+            <i class="far fa-trash-alt"></i>${i18n_remove_contact}
+        </button>
+    `;
+}
 
 
 export default (o) => html`
@@ -84,7 +90,7 @@ export default (o) => html`
             <div class="modal-footer">
                 ${modal_close_button}
                 <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>${i18n_refresh}</button>
-                ${ (o.allow_contact_removal && o.is_roster_contact) ? remove_button : '' }
+                ${ (o.allow_contact_removal && o.is_roster_contact) ? remove_button(o) : '' }
 
             </div>
         </div>

@@ -61,6 +61,10 @@
     "@babel/preset-env": "^7.5.4",
     "@converse/headless": "file:src/headless",
     "@fortawesome/fontawesome-free": "5.9.0",
+    "@lit-element-bootstrap/button": "^1.0.0",
+    "@lit-element-bootstrap/button-group": "^1.0.0",
+    "@lit-element-bootstrap/dropdown": "^1.0.0-alpha.4",
+    "@open-wc/building-webpack": "^2.12.0",
     "autoprefixer": "^9.6.1",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
@@ -75,6 +79,7 @@
     "eslint": "^6.3.0",
     "eslint-plugin-lodash": "^5.1.0",
     "exports-loader": "^0.7.0",
+    "fa-icons": "^0.1.9",
     "fast-text-encoding": "^1.0.0",
     "file-loader": "^4.0.0",
     "html-webpack-plugin": "^3.2.0",
@@ -109,6 +114,5 @@
     "webpack-dev-server": "^3.8.0",
     "webpack-merge": "^4.2.1",
     "xss": "^1.0.6"
-  },
-  "dependencies": {}
+  }
 }

@@ -1390,9 +1390,7 @@
                     }).up()
                     .c('status', {code: '110'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(u.isVisible(view.el.querySelector('.toggle-chatbox-button'))).toBeTruthy();
-                await u.waitUntil(() => !_.isNull(view.el.querySelector('.configure-chatroom-button')))
-                expect(u.isVisible(view.el.querySelector('.configure-chatroom-button'))).toBeTruthy();
+                await u.waitUntil(() => view.el.querySelector('.configure-chatroom-button') !== null);
                 view.el.querySelector('.configure-chatroom-button').click();
 
                 /* Check that an IQ is sent out, asking for the
@@ -1949,13 +1947,14 @@
 
                 // Members can't invite if the room isn't open
                 view.model.getOwnOccupant().set('affiliation', 'member');
+
                 await u.waitUntil(() => view.el.querySelector('.open-invite-modal') === null);
 
                 view.model.features.set('open', 'true');
                 await u.waitUntil(() => view.el.querySelector('.open-invite-modal'));
 
                 view.el.querySelector('.open-invite-modal').click();
-                const modal = view.sidebar_view.muc_invite_modal;
+                const modal = view.muc_invite_modal;
                 await u.waitUntil(() => u.isVisible(modal.el), 1000)
 
                 expect(modal.el.querySelectorAll('#invitee_jids').length).toBe(1);
@@ -2174,8 +2173,8 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                 await new Promise(resolve => view.model.once('change:subject', resolve));
-                expect(sizzle('.chat-event:last').pop().textContent.trim()).toBe('Topic set by ralphm');
-                expect(sizzle('.chat-topic:last').pop().textContent.trim()).toBe(text);
+
+                expect(sizzle('.chat-event:last', view.el).pop().textContent.trim()).toBe('Topic set by ralphm');
                 expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(text);
 
                 stanza = u.toStanza(
@@ -2185,7 +2184,6 @@
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise(resolve => view.once('messageInserted', resolve));
-                expect(sizzle('.chat-topic', view.el).length).toBe(1);
                 expect(sizzle('.chat-msg__subject', view.el).length).toBe(1);
                 expect(sizzle('.chat-msg__subject', view.el).pop().textContent.trim()).toBe('This is a message subject');
                 expect(sizzle('.chat-msg__text').length).toBe(1);
@@ -2199,7 +2197,7 @@
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise(resolve => view.model.once('change:subject', resolve));
-                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe("");
+                expect(view.el.querySelector('.chat-head__desc')).toBe(null);
                 expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
                 done();
             }));
@@ -2218,7 +2216,7 @@
                     'author': 'ralphm'
                 }});
                 expect(sizzle('.chat-event:last').pop().textContent.trim()).toBe('Topic set by ralphm');
-                expect(sizzle('.chat-topic:last').pop().textContent.trim()).toBe(subject);
+                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(subject);
                 done();
             }));
 
@@ -2875,8 +2873,9 @@
                 spyOn(_converse.api, "trigger").and.callThrough();
                 spyOn(view.model, 'leave');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
                 view.el.querySelector('.close-chatbox-button').click();
-                expect(view.close).toHaveBeenCalled();
+                await u.waitUntil(() => view.close.calls.count());
                 expect(view.model.leave).toHaveBeenCalled();
                 await u.waitUntil(() => _converse.api.trigger.calls.count());
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
@@ -4853,7 +4852,7 @@
                 await u.waitUntil(() => _converse.chatboxes.length > 1);
                 expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
                 var view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
-                expect(view.el.querySelector('.chat-head-chatroom').textContent.trim()).toBe("Macbeth's Castle");
+                expect(view.el.querySelector('.chatbox-title__text').textContent.trim()).toBe("Macbeth's Castle");
                 done();
             }));
 

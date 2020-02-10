@@ -131,8 +131,7 @@ u.shouldCreateMessage = function (attrs) {
 
 u.shouldCreateGroupchatMessage = function (attrs) {
     return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
-},
-
+}
 
 u.isEmptyMessage = function (attrs) {
     if (attrs instanceof Model) {

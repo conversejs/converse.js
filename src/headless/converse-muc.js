@@ -340,7 +340,6 @@ converse.plugins.add('converse-muc', {
                     // mention the user and `num_unread_general` to indicate
                     // generally unread messages (which *includes* mentions!).
                     'num_unread_general': 0,
-
                     'bookmarked': false,
                     'chat_state': undefined,
                     'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
@@ -348,8 +347,8 @@ converse.plugins.add('converse-muc', {
                     'name': '',
                     'num_unread': 0,
                     'roomconfig': {},
-                    'time_sent': (new Date(0)).toISOString(),
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
+                    'time_sent': (new Date(0)).toISOString(),
                     'type': _converse.CHATROOMS_TYPE
                 }
             },
@@ -595,6 +594,13 @@ converse.plugins.add('converse-muc', {
                     delete this.affiliation_message_handler;
                 }
                 return this;
+            },
+
+            invitesAllowed () {
+                return _converse.allow_muc_invitations &&
+                    (this.features.get('open') ||
+                        this.getOwnAffiliation() === "owner"
+                    );
             },
 
             getDisplayName () {
@@ -1510,7 +1516,10 @@ converse.plugins.add('converse-muc', {
                     // The subject is changed by sending a message of type "groupchat" to the <room@service>,
                     // where the <message/> MUST contain a <subject/> element that specifies the new subject but
                     // MUST NOT contain a <body/> element (or a <thread/> element).
-                    u.safeSave(this, {'subject': {'author': attrs.nick, 'text': attrs.subject || ''}});
+                    u.safeSave(this, {
+                        'subject': {'author': attrs.nick, 'text': attrs.subject || ''},
+                        'hide_subject': attrs.subject ? false : this.get('hide_subject')
+                    });
                     return true;
                 }
                 return false;

@@ -149,6 +149,7 @@
             const cbview = _converse.chatboxviews.get('controlbox');
             await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length);
             const hlview = _converse.chatboxviews.get('notify.example.com');
+            await u.isVisible(hlview.el);
             const close_el = hlview.el.querySelector('.close-chatbox-button');
             close_el.click();
             await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length === 0);

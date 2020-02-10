@@ -138,7 +138,8 @@ converse.plugins.add('converse-headlines-view', {
                 this.listenTo(this.model, 'destroy', this.hide);
                 this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged);
 
-                this.render().insertHeading()
+                this.render();
+                this.renderHeading();
                 this.updateAfterMessagesFetched();
                 this.insertIntoDOM().hide();
                 /**

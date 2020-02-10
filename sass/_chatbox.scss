@@ -41,7 +41,7 @@
         color: #ffffff;
         font-size: 100%;
         margin: 0;
-        padding: 1rem;;
+        padding: 0;
         position: relative;
 
         &.chat-head-chatbox {
@@ -54,20 +54,25 @@
 
         .chat-head__desc {
             color: var(--chat-head-color-lighten-50-percent);
-            font-size: 75%;
-            font-size: 80%;
+            font-size: var(--font-size-small);
             margin: 0;
             overflow: hidden;
-            padding: 0;
+            padding: 0.5rem 1rem 1rem 1rem;
             text-overflow: ellipsis;
             white-space: nowrap;
+            width: 100%;
         }
 
         .chatbox-title {
+            padding: 0.75rem 1rem 0 1rem;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             width: 100%;
+        }
+
+        .chatbox-title--no-desc {
+            padding: 0.75rem 1rem;
         }
 
         .chatbox-title--row {
@@ -137,7 +142,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            background-color: var(--chat-head-color);
             box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
             z-index: 2;
             overflow: hidden;
@@ -175,7 +179,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 100%;
             background-color: var(--chat-head-color);
             border-bottom-left-radius: var(--chatbox-border-radius);
             border-bottom-right-radius: var(--chatbox-border-radius);
@@ -426,8 +429,10 @@
 
 #conversejs.converse-embedded,
 #conversejs.converse-overlayed {
-    .chat-head {
+    .controlbox-head {
         padding: 0.5em;
+    }
+    .chat-head {
         border-top-left-radius: var(--chatbox-border-radius);
         border-top-right-radius: var(--chatbox-border-radius);
         @media screen and (max-height: $mobile-landscape-height) {
@@ -474,6 +479,22 @@
                 }
             }
         }
+        .chat-body {
+            height: calc(100% - var(--overlayed-chat-head-height));
+        }
+
+        .chatbox-title {
+            padding: 0.5rem 0.75rem 0 0.75rem;
+        }
+        .chatbox-title--no-desc {
+            padding: 0.5rem 0.75rem;
+        }
+
+        converse-dropdown {
+            .btn--standalone {
+                padding: 0 0 0 0.5em;
+            }
+        }
     }
 }
 
@@ -495,12 +516,6 @@
         border-radius: 0;
         border:none;
         bottom: 0;
-    }
-
-    .chat-head {
-        .chat-head__desc {
-            font-size: 70%;
-        }
     }
 
     .chatbox {
@@ -590,7 +605,6 @@
     }
     .chatbox {
         .box-flyout {
-            background-color: var(--chat-head-color);
             box-shadow: none;
             height: var(--fullpage-chat-height);
             min-height: calc(var(--fullpage-chat-height) / 2);
@@ -598,6 +612,7 @@
             overflow: hidden;
         }
         .chat-body {
+            height: calc(100% - var(--fullpage-chat-head-height));
             background-color: var(--chat-head-color);
         }
         .chat-title {

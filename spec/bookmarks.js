@@ -36,7 +36,7 @@
             const view = _converse.chatboxviews.get(jid);
             spyOn(view, 'renderBookmarkForm').and.callThrough();
             spyOn(view, 'closeForm').and.callThrough();
-            await u.waitUntil(() => !_.isNull(view.el.querySelector('.toggle-bookmark')));
+            await u.waitUntil(() => view.el.querySelector('.toggle-bookmark') !== null);
             let toggle = view.el.querySelector('.toggle-bookmark');
             expect(toggle.title).toBe('Bookmark this groupchat');
             toggle.click();
@@ -216,8 +216,7 @@
                 );
                 await _converse.api.rooms.open(`lounge@montague.lit`);
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                let bookmark_icon = await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
-                expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
+                expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
                 _converse.bookmarks.create({
                     'jid': view.model.get('jid'),
                     'autojoin': false,
@@ -225,11 +224,9 @@
                     'nick': ' some1'
                 });
                 view.model.set('bookmarked', true);
-                bookmark_icon = await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
-                expect(_.includes(bookmark_icon.classList, 'button-on')).toBeTruthy();
+                expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).not.toBe(null);
                 view.model.set('bookmarked', false);
-                bookmark_icon = await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
-                expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
+                expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
                 done();
             }));
 
@@ -256,14 +253,12 @@
                 expect(_converse.bookmarks.length).toBe(1);
                 await u.waitUntil(() => _converse.chatboxes.length >= 1);
                 expect(view.model.get('bookmarked')).toBeTruthy();
-                let bookmark_icon = await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
-                expect(u.hasClass('button-on', bookmark_icon)).toBeTruthy();
-
+                expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).not.toBe(null);
                 spyOn(_converse.connection, 'getUniqueId').and.callThrough();
+                const bookmark_icon = view.el.querySelector('.toggle-bookmark');
                 bookmark_icon.click();
-                bookmark_icon = await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(view.toggleBookmark).toHaveBeenCalled();
-                expect(u.hasClass('button-on', bookmark_icon)).toBeFalsy();
+                expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
                 expect(_converse.bookmarks.length).toBe(0);
 
                 // Check that an IQ stanza is sent out, containing no

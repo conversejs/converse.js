@@ -9,7 +9,7 @@ import "@converse/headless/utils/muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
 import { get, head, isString, isUndefined } from "lodash";
-import { html, render } from "lit-html";
+import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -649,14 +649,11 @@ converse.plugins.add('converse-muc-views', {
                 'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
                 'click .chat-msg__action-retract': 'onMessageRetractButtonClicked',
                 'click .chatbox-navback': 'showControlBox',
-                'click .close-chatbox-button': 'close',
-                'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                 'click .hide-occupants': 'hideOccupants',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 // Arrow functions don't work here because you can't bind a different `this` param to them.
                 'click .occupant-nick': function (ev) {this.insertIntoTextArea(ev.target.textContent) },
                 'click .send-button': 'onFormSubmitted',
-                'click .show-room-details-modal': 'showRoomDetailsModal',
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-occupants': 'toggleOccupants',
                 'click .upload-file': 'toggleFileUpload',
@@ -689,6 +686,7 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model, 'show', this.show);
 
                 this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
+                this.listenTo(this.model.features, 'change:open', this.renderHeading);
 
                 this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
                 this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
@@ -737,6 +735,7 @@ converse.plugins.add('converse-muc-views', {
             renderHeading () {
                 render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatroom'));
             },
+
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
@@ -1110,39 +1109,99 @@ converse.plugins.add('converse-muc-views', {
             },
 
             getHeadingButtons () {
-                const buttons = [];
-                if (!_converse.singleton) {
-                    const info_close = __('Close and leave this groupchat');
-                    const template = html`<a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="${info_close}"></a>`;
-                    template.name = 'signout';
-                    buttons.push(template);
+                const buttons = [{
+                    'i18n_text': __('Details'),
+                    'i18n_title': __('Show more information about this groupchat'),
+                    'handler': ev => this.showRoomDetailsModal(ev),
+                    'a_class': 'show-room-details-modal',
+                    'icon_class': 'fa-info-circle',
+                    'name': 'details'
+                }];
+                if (this.model.invitesAllowed()) {
+                    buttons.push({
+                        'i18n_text': __('Invite'),
+                        'i18n_title': __('Invite someone to join this groupchat'),
+                        'handler': ev => this.showInviteModal(ev),
+                        'a_class': 'open-invite-modal',
+                        'icon_class': 'fa-user-plus',
+                        'name': 'invite'
+                    });
                 }
                 if (this.model.getOwnAffiliation() === 'owner') {
-                    const info_configure = __('Configure this groupchat');
-                    const template = html`<a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="${info_configure} "></a>`
-                    template.name = 'configure';
-                    buttons.push(template);
+                    buttons.push({
+                        'i18n_text': __('Configure'),
+                        'i18n_title': __('Configure this groupchat'),
+                        'handler': ev => this.getAndRenderConfigurationForm(ev),
+                        'a_class': 'configure-chatroom-button',
+                        'icon_class': 'fa-wrench',
+                        'name': 'configure'
+                    });
                 }
-                const info_details = __('Show more details about this groupchat');
-                const template = html`<a class="chatbox-btn show-room-details-modal fa fa-info-circle" title="${info_details}"></a>`;
-                template.name = 'details';
-                buttons.push(template);
+
+                if (this.model.get('subject')) {
+                    buttons.push({
+                        'i18n_text': this.model.get('hide_subject') ? __('Show topic') : __('Hide topic'),
+                        'i18n_title': this.model.get('hide_subject') ?
+                            __('Show the topic message in the heading') :
+                            __('Hide the topic in the heading'),
+                        'handler': ev => this.toggleTopic(ev),
+                        'a_class': '',
+                        'icon_class': 'fa-minus-square',
+                        'name': 'toggle-topic'
+                    });
+                }
+
+                if (!_converse.singleton) {
+                    buttons.push({
+                        'i18n_text': __('Leave'),
+                        'i18n_title': __('Leave and close this groupchat'),
+                        'handler': async ev => {
+                            const messages = [__('Are you sure you want to leave this groupchat?')];
+                            const result = await _converse.api.confirm(__('Confirm'), messages);
+                            result && this.close(ev);
+                        },
+                        'a_class': 'close-chatbox-button',
+                        'standalone': _converse.view_mode === 'overlayed',
+                        'icon_class': 'fa-sign-out-alt',
+                        'name': 'signout'
+                    });
+                }
                 return buttons;
             },
 
             /**
-             * Returns the groupchat heading HTML to be rendered.
+             * Returns the groupchat heading TemplateResult to be rendered.
              * @private
              * @method _converse.ChatRoomView#generateHeadingTemplate
              */
             generateHeadingTemplate () {
+                const heading_btns = this.getHeadingButtons();
+                const standalone_btns = heading_btns.filter(b => b.standalone);
+                const dropdown_btns = heading_btns.filter(b => !b.standalone);
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
                         _converse,
-                        'buttons': this.getHeadingButtons(),
+                        'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
+                        'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
                         'title': this.model.getDisplayName(),
                 }));
             },
+
+            toggleTopic () {
+                this.model.save('hide_subject', !this.model.get('hide_subject'));
+            },
+
+
+            showInviteModal (ev) {
+                ev.preventDefault();
+                if (this.muc_invite_modal === undefined) {
+                    this.muc_invite_modal = new _converse.MUCInviteModal({'model': new Model()});
+                    // TODO: remove once we have API for sending direct invite
+                    this.muc_invite_modal.chatroomview = this;
+                }
+                this.muc_invite_modal.show(ev);
+            },
+
 
             /**
              * Callback method that gets called after the chat has become visible.
@@ -1217,8 +1276,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             /**
-             * Show or hide the right sidebar containing the chat
-             * occupants (and the invite widget).
+             * Hide the right sidebar containing the chat occupants.
              * @private
              * @method _converse.ChatRoomView#hideOccupants
              */
@@ -1232,8 +1290,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             /**
-             * Show or hide the right sidebar containing the chat
-             * occupants (and the invite widget).
+             * Show or hide the right sidebar containing the chat occupants.
              * @private
              * @method _converse.ChatRoomView#toggleOccupants
              */
@@ -1986,26 +2043,13 @@ converse.plugins.add('converse-muc-views', {
                 // replaced by the user's name.
                 // Example: Topic set by JC Brand
                 const message = subject.text ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
-                const date = (new Date()).toISOString();
-
                 this.content.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({
-                        'isodate': date,
+                        'isodate': (new Date()).toISOString(),
                         'extra_classes': 'chat-event',
                         'message': message
                     }));
-
-                if (subject.text) {
-                    this.content.insertAdjacentHTML(
-                        'beforeend',
-                        tpl_info({
-                            'isodate': date,
-                            'extra_classes': 'chat-topic',
-                            'message': u.addHyperlinks(xss.filterXSS(get(this.model.get('subject'), 'text'), {'whiteList': {}})),
-                            'render_message': true
-                        }));
-                }
                 this.scrollDown();
             }
         });
@@ -2198,9 +2242,7 @@ converse.plugins.add('converse-muc-views', {
                     Object.assign(this.chatroomview.model.toJSON(), {
                         _converse,
                         'features': this.chatroomview.model.features,
-                        'occupants': this.model.models,
-                        'invitesAllowed': () => this.invitesAllowed(),
-                        'showInviteModal': ev => this.showInviteModal(ev)
+                        'occupants': this.model.models
                     })
                 );
             },
@@ -2218,16 +2260,6 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            showInviteModal (ev) {
-                ev.preventDefault();
-                if (this.muc_invite_modal === undefined) {
-                    this.muc_invite_modal = new _converse.MUCInviteModal({'model': new Model()});
-                    // TODO: remove once we have API for sending direct invite
-                    this.muc_invite_modal.chatroomview = this.chatroomview;
-                }
-                this.muc_invite_modal.show(ev);
-            },
-
             setOccupantsHeight () {
                 // TODO: remove the features section in sidebar and then this as well
                 const el = this.el.querySelector('.chatroom-features');
@@ -2235,13 +2267,6 @@ converse.plugins.add('converse-muc-views', {
                     this.el.querySelector('.occupant-list').style.cssText =
                         `height: calc(100% - ${el.offsetHeight}px - 5em);`;
                 }
-            },
-
-            invitesAllowed () {
-                return _converse.allow_muc_invitations &&
-                    (this.chatroomview.model.features.get('open') ||
-                        this.chatroomview.model.getOwnAffiliation() === "owner"
-                    );
             }
         });
 

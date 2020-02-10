@@ -7,7 +7,6 @@ import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
 import { debounce, get, isString } from "lodash";
-import { View } from "skeletor.js/src/view";
 import { Overview } from "skeletor.js/src/overview";
 import { html, render } from "lit-html";
 import converse from "@converse/headless/converse-core";
@@ -73,78 +72,10 @@ converse.plugins.add('converse-chatview', {
         });
 
 
-        _converse.ChatBoxHeading = View.extend({
-            initialize () {
-                this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
-
-                this.debouncedRender = debounce(this.render, 50);
-                this.listenTo(this.model, 'vcard:change', this.debouncedRender);
-
-                if (this.model.contact) {
-                    this.listenTo(this.model.contact, 'destroy', this.debouncedRender);
-                }
-                if (this.model.rosterContactAdded) {
-                    this.model.rosterContactAdded.then(() => {
-                        this.listenTo(this.model.contact, 'change:nickname', this.debouncedRender);
-                        this.debouncedRender();
-                    });
-                }
-            },
-
-            render () {
-                const vcard = get(this.model, 'vcard');
-                const vcard_json = vcard ? vcard.toJSON() : {};
-                render(tpl_chatbox_head(
-                    Object.assign(
-                        vcard_json,
-                        this.model.toJSON(),
-                        { '_converse': _converse,
-                          'buttons': this.getHeadingButtons(),
-                          'display_name': this.model.getDisplayName()
-                        }
-                    )
-                ), this.el);
-                return this;
-            },
-
-            getHeadingButtons () {
-                const buttons = [];
-                if (!_converse.singleton) {
-                    const info_close = __('Close this chat box');
-                    const template = html`<a class="chatbox-btn close-chatbox-button fa fa-times" title="${info_close}"></a>`;
-                    template.name = 'close';
-                    buttons.push(template);
-                }
-                const info_details = __('Show more details about this groupchat');
-                const template = html`<a class="chatbox-btn show-user-details-modal fa fa-id-card" title="${info_details}"></a>`;
-                template.name = 'details';
-                buttons.push(template);
-                return buttons;
-            },
-
-            onStatusMessageChanged (item) {
-                this.debouncedRender();
-                /**
-                 * When a contact's custom status message has changed.
-                 * @event _converse#contactStatusMessageChanged
-                 * @type {object}
-                 * @property { object } contact - The chat buddy
-                 * @property { string } message - The message text
-                 * @example _converse.api.listen.on('contactStatusMessageChanged', obj => { ... });
-                 */
-                _converse.api.trigger('contactStatusMessageChanged', {
-                    'contact': item.attributes,
-                    'message': item.get('status')
-                });
-            }
-        });
-
-
         _converse.UserDetailsModal = _converse.BootstrapModal.extend({
             id: "user-details-modal",
 
             events: {
-                'click button.remove-contact': 'removeContact',
                 'click button.refresh-contact': 'refreshContact',
                 'click .fingerprint-trust .btn input': 'toggleDeviceTrust'
             },
@@ -169,11 +100,12 @@ converse.plugins.add('converse-chatview', {
                 return tpl_user_details_modal(Object.assign(
                     this.model.toJSON(),
                     vcard_json, {
-                    'view': this,
                     '_converse': _converse,
                     'allow_contact_removal': _converse.allow_contact_removal,
                     'display_name': this.model.getDisplayName(),
                     'is_roster_contact': this.model.contact !== undefined,
+                    'removeContact': ev => this.removeContact(ev),
+                    'view': this,
                     'utils': u
                 }));
             },
@@ -208,16 +140,22 @@ converse.plugins.add('converse-chatview', {
                 const result = confirm(__("Are you sure you want to remove this contact?"));
                 if (result === true) {
                     this.modal.hide();
-                    this.model.contact.removeFromRoster(
-                        () => this.model.contact.destroy(),
-                        (err) => {
-                            log.error(err);
-                            _converse.api.alert('error', __('Error'), [
-                                __('Sorry, there was an error while trying to remove %1$s as a contact.',
-                                this.model.contact.getDisplayName())
-                            ]);
-                        }
-                    );
+                    // XXX: This is annoying but necessary to get tests to pass.
+                    // The `dismissHandler` in bootstrap.native tries to
+                    // reference the remove button after it's been cleared from
+                    // the DOM, so we delay removing the contact to give it time.
+                    setTimeout(() => {
+                        this.model.contact.removeFromRoster(
+                            () => this.model.contact.destroy(),
+                            (err) => {
+                                log.error(err);
+                                _converse.api.alert('error', __('Error'), [
+                                    __('Sorry, there was an error while trying to remove %1$s as a contact.',
+                                    this.model.contact.getDisplayName())
+                                ]);
+                            }
+                        );
+                    }, 1);
                 }
             },
         });
@@ -239,10 +177,8 @@ converse.plugins.add('converse-chatview', {
                 'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
                 'click .chat-msg__action-retract': 'onMessageRetractButtonClicked',
                 'click .chatbox-navback': 'showControlBox',
-                'click .close-chatbox-button': 'close',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 'click .send-button': 'onFormSubmitted',
-                'click .show-user-details-modal': 'showUserDetailsModal',
                 'click .spoiler-toggle': 'toggleSpoilerMessage',
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-clear': 'clearMessages',
@@ -258,6 +194,7 @@ converse.plugins.add('converse-chatview', {
 
             async initialize () {
                 this.initDebounced();
+
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
@@ -265,13 +202,24 @@ converse.plugins.add('converse-chatview', {
                     this.removeAll();
                 });
 
-                this.listenTo(this.model, 'show', this.show);
+                this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
                 this.listenTo(this.model, 'destroy', this.remove);
+                this.listenTo(this.model, 'show', this.show);
+                this.listenTo(this.model, 'vcard:change', this.renderHeading);
+
+                if (this.model.contact) {
+                    this.listenTo(this.model.contact, 'destroy', this.renderHeading);
+                }
+                if (this.model.rosterContactAdded) {
+                    this.model.rosterContactAdded.then(() => {
+                        this.listenTo(this.model.contact, 'change:nickname', this.renderHeading);
+                        this.renderHeading();
+                    });
+                }
 
                 this.listenTo(this.model.presence, 'change:show', this.onPresenceChanged);
                 this.render();
                 await this.updateAfterMessagesFetched();
-
                 /**
                  * Triggered once the {@link _converse.ChatBoxView} has been initialized
                  * @event _converse#chatBoxViewInitialized
@@ -295,7 +243,7 @@ converse.plugins.add('converse-chatview', {
                 );
                 this.content = this.el.querySelector('.chat-content');
                 this.renderMessageForm();
-                this.insertHeading();
+                this.renderHeading();
                 return this;
             },
 
@@ -413,13 +361,67 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            insertHeading () {
-                this.heading = new _converse.ChatBoxHeading({'model': this.model});
-                this.heading.render();
-                this.heading.chatview = this;
-                const flyout = this.el.querySelector('.flyout');
-                flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
-                return this;
+            renderHeading () {
+                render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatbox'));
+            },
+
+            async getHeadingStandaloneButton (promise_or_data) {
+                const data = await promise_or_data;
+                return html`<a href="#"
+                    class="chatbox-btn ${data.a_class} fa ${data.icon_class}"
+                    @click=${data.handler}
+                    title="${data.i18n_title}"></a>`;
+            },
+
+            async getHeadingDropdownItem (promise_or_data) {
+                const data = await promise_or_data;
+                return html`<a href="#"
+                    class="dropdown-item ${data.a_class}"
+                    @click=${data.handler}
+                    title="${data.i18n_title}"><i class="fa ${data.icon_class}"></i>${data.i18n_text}</a>`;
+            },
+
+            generateHeadingTemplate () {
+                const vcard = get(this.model, 'vcard');
+                const vcard_json = vcard ? vcard.toJSON() : {};
+                const heading_btns = this.getHeadingButtons();
+                const standalone_btns = heading_btns.filter(b => b.standalone);
+                const dropdown_btns = heading_btns.filter(b => !b.standalone);
+                return tpl_chatbox_head(
+                    Object.assign(
+                        vcard_json,
+                        this.model.toJSON(), {
+                            '_converse': _converse,
+                            'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
+                            'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
+                            'display_name': this.model.getDisplayName()
+                        }
+                    )
+                );
+            },
+
+            getHeadingButtons () {
+                const buttons = [{
+                    'a_class': 'show-user-details-modal',
+                    'handler': ev => this.showUserDetailsModal(ev),
+                    'i18n_text': __('Details'),
+                    'i18n_title': __('See more information about this person'),
+                    'icon_class': 'fa-id-card',
+                    'name': 'details',
+                    'standalone': _converse.view_mode === 'overlayed',
+                }];
+                if (!_converse.singleton) {
+                    buttons.push({
+                        'a_class': 'close-chatbox-button',
+                        'handler': ev => this.close(ev),
+                        'i18n_text': __('Close'),
+                        'i18n_title': __('Close and end this conversation'),
+                        'icon_class': 'fa-times',
+                        'name': 'close',
+                        'standalone': _converse.view_mode === 'overlayed',
+                    });
+                }
+                return buttons;
             },
 
             getToolbarOptions () {
@@ -596,6 +598,22 @@ converse.plugins.add('converse-chatview', {
                 } else {
                     this.scrollDown();
                 }
+            },
+
+            onStatusMessageChanged (item) {
+                this.renderHeading();
+                /**
+                 * When a contact's custom status message has changed.
+                 * @event _converse#contactStatusMessageChanged
+                 * @type {object}
+                 * @property { object } contact - The chat buddy
+                 * @property { string } message - The message text
+                 * @example _converse.api.listen.on('contactStatusMessageChanged', obj => { ... });
+                 */
+                _converse.api.trigger('contactStatusMessageChanged', {
+                    'contact': item.attributes,
+                    'message': item.get('status')
+                });
             },
 
             showHelpMessages (msgs, type='info', spinner) {

@@ -14,6 +14,8 @@
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact
 - #1839: Headline messages are shown in controlbox
+- Allow ignore bootstrap modules at build using environment variable: BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown".
+  example: export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist
 
 ## 6.0.0 (2020-01-09)
 

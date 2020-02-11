@@ -1129,7 +1129,7 @@ _converse.initialize = async function (settings, callback) {
             _converse.setConnectionStatus(status);
         } else if (status === Strophe.Status.AUTHFAIL) {
             if (!message) {
-                message = __('Your Jabber ID and/or password is incorrect. Please try again.');
+                message = __('Your XMPP address and/or password is incorrect. Please try again.');
             }
             _converse.setConnectionStatus(status, message);
             _converse.setDisconnectionCause(status, message, true);

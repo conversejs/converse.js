@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-09 17:08+0100\n"
-"PO-Revision-Date: 2019-11-06 14:43+0000\n"
+"PO-Revision-Date: 2020-02-11 08:50+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,14 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.11-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
 #: dist/converse-no-dependencies.js:5695
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: dist/converse-no-dependencies.js:5697 dist/converse-no-dependencies.js:9249
 #: dist/converse-no-dependencies.js:10175
@@ -46,9 +46,8 @@ msgid "Edit this message"
 msgstr "Wysig hierdie boodskap"
 
 #: dist/converse-no-dependencies.js:7939
-#, fuzzy
 msgid "Retract this message"
-msgstr "Wysig hierdie boodskap"
+msgstr "Herroep hierdie boodskap"
 
 #: dist/converse-no-dependencies.js:7955
 msgid "Message versions"
@@ -171,7 +170,7 @@ msgstr "Betree"
 
 #: dist/converse-no-dependencies.js:8866
 msgid "No message history available."
-msgstr ""
+msgstr "Geen boodskappe beskikbaar."
 
 #: dist/converse-no-dependencies.js:8899
 msgid "You're not allowed to send messages in this room"
@@ -887,9 +886,9 @@ msgstr "Wys meer"
 
 #: dist/converse-no-dependencies.js:39389
 #: dist/converse-no-dependencies.js:39391
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s is nie 'n lid nie, en dus verwyder"
+msgstr "%1$s het hierdie boodskap verwyder"
 
 #: dist/converse-no-dependencies.js:39408
 msgid "Typing from another device"
@@ -985,9 +984,8 @@ msgid "Remove messages"
 msgstr "Verwyder boodskappe"
 
 #: dist/converse-no-dependencies.js:40964
-#, fuzzy
 msgid "Close this chat"
-msgstr "Sluit hierdie kletskas"
+msgstr "Sluit hierdie klets"
 
 #: dist/converse-no-dependencies.js:40964
 msgid "Write in the third person"
@@ -1005,17 +1003,19 @@ msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
+"Wees bedag dat ander XMPP/Jabber kliënte (en bedieners) dalk nog nie "
+"boodskap-herroepings ondersteun nie en dat hierdie boodskap nie noodwendig "
+"orals verwyder sal word nie."
 
 #: dist/converse-no-dependencies.js:41211
 #: dist/converse-no-dependencies.js:51233
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "Is u seker u wil hierdie kontak verwyder?"
+msgstr "Is u seker u wil hierdie boodskap herroep?"
 
 #: dist/converse-no-dependencies.js:41218
 #: dist/converse-no-dependencies.js:51240
 msgid "Confirm"
-msgstr ""
+msgstr "Bevestig"
 
 #: dist/converse-no-dependencies.js:41252
 msgid ""
@@ -1060,9 +1060,8 @@ msgid "Ungrouped"
 msgstr "Ongegroepeer"
 
 #: dist/converse-no-dependencies.js:42949
-#, fuzzy
 msgid "New messages"
-msgstr "Verwyder boodskappe"
+msgstr "Nuwe boodskappe"
 
 #: dist/converse-no-dependencies.js:43590
 #, javascript-format
@@ -1274,43 +1273,35 @@ msgid "Groupchat info for %1$s"
 msgstr "Kennisgewing van %1$s"
 
 #: dist/converse-no-dependencies.js:51253
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "U het ongelese boodskappe"
+msgstr "U is op die punt om hierdie boodskap te herroep."
 
 #: dist/converse-no-dependencies.js:51253
-#, fuzzy
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
-"U is op die drumpel om %1$s na die groepgesprek \"%2$s\" uit te nooi. U mag "
-"na keuse 'n boodskap insluit, om bv. 'n rede vir die uitnodiging te gee."
+"U kan opsioneel 'n verklaring insluit wat die rede vir die herroeping bevat."
 
 #: dist/converse-no-dependencies.js:51260
-#, fuzzy
 msgid "Message Retraction"
-msgstr "Boodskap weergawes"
+msgstr "Boodskap Herroeping"
 
 #: dist/converse-no-dependencies.js:51260
-#, fuzzy
 msgid "Optional reason"
-msgstr "Opsionele wenk"
+msgstr "Opsionele rede"
 
 #: dist/converse-no-dependencies.js:51299
-#, fuzzy
 msgid "Sorry, something went wrong while trying to retract your message."
-msgstr "Jammer, 'n fout het voorgekom tydens verfrissing"
+msgstr "Jammer, 'n fout het voorgekom tydens die herroeping van u boodskap."
 
 #: dist/converse-no-dependencies.js:51341
-#, fuzzy
 msgid "A timeout occurred while trying to retract the message"
-msgstr "A fout het voorgekom tydens verwydering van die apparate."
+msgstr "Die tyd is verstreke tydens die herroeping van die boodskap"
 
 #: dist/converse-no-dependencies.js:51347
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "U word nie toegelaat om daardie verandering te maak nie"
+msgstr "Jammer, u word nie toegelaat om die boodskap te herroep nie."
 
 #: dist/converse-no-dependencies.js:51426
 #, javascript-format
@@ -1438,9 +1429,8 @@ msgid "Clear the chat area"
 msgstr "Vee die kletsarea uit"
 
 #: dist/converse-no-dependencies.js:51910
-#, fuzzy
 msgid "Close this groupchat"
-msgstr "Verwyder hierdie groepgesprek"
+msgstr "Sluit hierdie groepsgesprek"
 
 #: dist/converse-no-dependencies.js:51910
 msgid "Change user role to participant"
@@ -1513,9 +1503,8 @@ msgid "Error: invalid number of arguments"
 msgstr "Fout: ongeldige aantal argumente"
 
 #: dist/converse-no-dependencies.js:52039
-#, fuzzy
 msgid "Choose a nickname to enter"
-msgstr "Kies 'n lêer om te stuur"
+msgstr "Kies 'n bynaam om in te voer"
 
 #: dist/converse-no-dependencies.js:52039
 msgid "Please choose your nickname"

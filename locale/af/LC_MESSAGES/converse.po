@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-02-11 08:50+0000\n"
+"PO-Revision-Date: 2020-04-07 11:23+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -39,9 +39,8 @@ msgid "Retract this message"
 msgstr "Herroep hierdie boodskap"
 
 #: dist/converse-no-dependencies.js:10792
-#, fuzzy
 msgid "Send the message"
-msgstr "Wysig hierdie boodskap"
+msgstr "Stuur die boodskap"
 
 #: dist/converse-no-dependencies.js:11114
 msgid "No message history available."
@@ -107,16 +106,15 @@ msgid "Cancel"
 msgstr "Kanseleer"
 
 #: dist/converse-no-dependencies.js:27593
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
-"U boodskap is nie afgelewer nie want u word nie toegelaat om boodskappe in "
-"hierdie groepgesprek te stuur nie."
+"U boodskap is nie afgelewer nie want u word nie toegelaat om dit te stuur "
+"nie."
 
 #: dist/converse-no-dependencies.js:27596
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The message from the server is: \"%1$s\""
-msgstr "Die gegewe rede is: \"%1$s\"."
+msgstr "Die boodskap van die bediener is: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:27599
 msgid ""
@@ -138,9 +136,8 @@ msgid "An error occurred while connecting to the chat server."
 msgstr "A fout het voorgekom tydens verbinding met die gesprekbediener."
 
 #: dist/converse-no-dependencies.js:29484
-#, fuzzy
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr "U Jabber ID en/of wagwoord is verkeerd. Probeer asseblief weer."
+msgstr "U XMPP adres en/of wagwoord is verkeerd. Probeer asseblief weer."
 
 #: dist/converse-no-dependencies.js:29496
 #, javascript-format
@@ -676,9 +673,8 @@ msgid "Untrusted"
 msgstr "Onvertroud"
 
 #: dist/converse-no-dependencies.js:51782
-#, fuzzy
 msgid "No OMEMO-enabled devices found"
-msgstr "Ander OMEMO-ondersteunende apparate"
+msgstr "Geen OMEMO-ondersteunende apparate gevind nie"
 
 #: dist/converse-no-dependencies.js:51982
 msgid "Close this chat box"
@@ -816,7 +812,7 @@ msgstr "Klik hier om anoniem in te log"
 
 #: dist/converse-no-dependencies.js:53881
 msgid "Disconnected"
-msgstr ""
+msgstr "Ontkoppel"
 
 #: dist/converse-no-dependencies.js:53883
 msgid "Log in"
@@ -827,9 +823,8 @@ msgid "Don't have a chat account?"
 msgstr "Het u nie 'n chat-rekening nie?"
 
 #: dist/converse-no-dependencies.js:53887
-#, fuzzy
 msgid "Password"
-msgstr "Wagwoord:"
+msgstr "Wagwoord"
 
 #: dist/converse-no-dependencies.js:53889
 msgid "This is a trusted device"
@@ -893,9 +888,8 @@ msgid "Minimize this chat box"
 msgstr "Minimeer hierdie kletskas"
 
 #: dist/converse-no-dependencies.js:56986
-#, fuzzy
 msgid "Minimize this groupchat"
-msgstr "Minimeer hierdie kletskas"
+msgstr "Minimeer hierdie groepsgesprek"
 
 #: dist/converse-no-dependencies.js:57303
 msgid "Click to restore this chat"
@@ -1066,19 +1060,16 @@ msgid "Invite"
 msgstr "Nooi uit"
 
 #: dist/converse-no-dependencies.js:57991
-#, fuzzy
 msgid "Invite someone to this groupchat"
-msgstr "Verwyder hierdie groepgesprek"
+msgstr "Nooi iemand uit na hierdie groepsgesprek"
 
 #: dist/converse-no-dependencies.js:57993
-#, fuzzy
 msgid "user@example.org"
-msgstr "naam@voorbeeld.org"
+msgstr "gebruiker@voorbeeld.org"
 
 #: dist/converse-no-dependencies.js:57999
-#, fuzzy
 msgid "Optional reason for the invitation"
-msgstr "Opsionele rede"
+msgstr "Opsionele rede vir die uitnodiging"
 
 #: dist/converse-no-dependencies.js:58034
 msgid "This groupchat requires a password"
@@ -1130,14 +1121,12 @@ msgid "Click to mention %1$s in your message."
 msgstr "Klik om %1$s in u boodskap te noem."
 
 #: dist/converse-no-dependencies.js:58201
-#, fuzzy
 msgid "Invite someone"
-msgstr "Nooi uit"
+msgstr "Nooi iemand uit"
 
 #: dist/converse-no-dependencies.js:58204
-#, fuzzy
 msgid "Invite someone to join this groupchat"
-msgstr "Enige iemand kan hierdie groepgesprek bytree"
+msgstr "Nooi iemand uit om hierdie groepsgesprek by te tree"
 
 #: dist/converse-no-dependencies.js:58206
 msgid "Participants"
@@ -1344,9 +1333,8 @@ msgid "Groupchat address"
 msgstr "groepgesprek-adres"
 
 #: dist/converse-no-dependencies.js:59360
-#, fuzzy
 msgid "Groupchat id is invalid."
-msgstr "Groepgesprek log is nou aangeskakel"
+msgstr "Groepsgesprek id is ongeldig."
 
 #: dist/converse-no-dependencies.js:59380
 #, javascript-format
@@ -1484,13 +1472,11 @@ msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr "Fout: verskeie gesprek-deelnemers gevind gebaseer op die kriteria"
 
 #: dist/converse-no-dependencies.js:60335
-#, fuzzy
 msgid "Sorry, an error happened while running the command."
-msgstr "Jammer, 'n fout het voorgekom tydens storing van u profieldata."
+msgstr "Jammer, 'n fout het voorgekom tydens die uitvoering van die opdrag."
 
 #: dist/converse-no-dependencies.js:60335
 #: dist/converse-no-dependencies.js:61164
-#, fuzzy
 msgid "Check your browser's developer console for details."
 msgstr "U kan die webblaaier se ontwikkelaarkonsole bekyk vir foute."
 
@@ -1662,18 +1648,16 @@ msgid "Query for groupchats"
 msgstr "Soek vir groepgesprekke"
 
 #: dist/converse-no-dependencies.js:61164
-#, fuzzy
 msgid "Sorry, an error occurred while trying to submit the config form."
-msgstr "A fout het voorgekom tydens verwydering van die apparate."
+msgstr "A fout het voorgekom tydens indiening van die konfigurasievorm."
 
 #: dist/converse-no-dependencies.js:61735
 msgid "Announcements"
-msgstr ""
+msgstr "Aankondigings"
 
 #: dist/converse-no-dependencies.js:61739
-#, fuzzy
 msgid "Click to open this server message"
-msgstr "Klik om hierdie groepgesprek te open"
+msgstr "Klik om hierdie bediener-boodskap te open"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:61966
@@ -1798,12 +1782,11 @@ msgstr "Gebruik kommas om rolle te onderskei. Rolle word langs u naam op."
 
 #: dist/converse-no-dependencies.js:62413
 msgid "OMEMO"
-msgstr ""
+msgstr "OMEMO"
 
 #: dist/converse-no-dependencies.js:62415
-#, fuzzy
 msgid "Profile"
-msgstr "U profiel"
+msgstr "Profiel"
 
 #: dist/converse-no-dependencies.js:62577
 msgid "Sorry, an error happened while trying to save your profile data."

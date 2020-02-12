@@ -65,7 +65,7 @@
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "bootstrap": "^4.3.1",
-    "bootstrap.native": "^2.0.26",
+    "bootstrap.native": "^2.0.27",
     "bootstrap.native-loader": "2.0.0",
     "clean-css-cli": "^4.3.0",
     "clean-webpack-plugin": "^3.0.0",

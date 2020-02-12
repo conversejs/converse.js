@@ -98,7 +98,7 @@
     "requirejs": "2.3.6",
     "run-headless-chromium": "^0.1.1",
     "sass-loader": "^7.1.0",
-    "sinon": "^7.3.2",
+    "sinon": "^8.1.1",
     "sizzle": "^2.3.4",
     "style-loader": "^0.23.1",
     "uglify-es": "^3.3.9",

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-02-07 02:50+0000\n"
+"PO-Revision-Date: 2020-02-13 23:50+0000\n"
 "Last-Translator: Tymofij Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
 "translations/uk/>\n"
@@ -16,8 +16,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 3.11-dev\n"
 "domain: converse\n"
 "lang: uk\n"
@@ -39,9 +39,8 @@ msgid "Retract this message"
 msgstr "Прибрати це повідомлення"
 
 #: dist/converse-no-dependencies.js:10792
-#, fuzzy
 msgid "Send the message"
-msgstr "Редагувати повідомлення"
+msgstr "Надіслати повідомлення"
 
 #: dist/converse-no-dependencies.js:11114
 msgid "No message history available."
@@ -61,7 +60,7 @@ msgstr "Бесіду переміщено. Натисніть нижче, щоб
 
 #: dist/converse-no-dependencies.js:11374
 msgid "Messages are being sent in plaintext"
-msgstr ""
+msgstr "Повідомлення надсилаються в простому тексті"
 
 #: dist/converse-no-dependencies.js:11388
 msgid "Create your account"
@@ -69,17 +68,17 @@ msgstr "Створити свій обліковий запис"
 
 #: dist/converse-no-dependencies.js:11390
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "Введіть постачальника XMPP, щоб зареєструватися:"
 
 #: dist/converse-no-dependencies.js:11408
 #: dist/converse-no-dependencies.js:11442
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "У вас вже є обліківка бесіди?"
 
 #: dist/converse-no-dependencies.js:11410
 #: dist/converse-no-dependencies.js:11444
 msgid "Log in here"
-msgstr ""
+msgstr "Увійти тут"
 
 #: dist/converse-no-dependencies.js:11426
 msgid "Account Registration:"
@@ -95,7 +94,7 @@ msgstr "Виберіть іншого провайдера"
 
 #: dist/converse-no-dependencies.js:11458
 msgid "Hold tight, we're fetching the registration form…"
-msgstr ""
+msgstr "Хвильку, ми отримуємо реєстраційну форму…"
 
 #: dist/converse-no-dependencies.js:11462
 #: dist/converse-no-dependencies.js:48432
@@ -106,24 +105,26 @@ msgid "Cancel"
 msgstr "Відміна"
 
 #: dist/converse-no-dependencies.js:27593
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr "Вам не дозволено створювати нові кімнати"
+msgstr ""
+"Ваше повідомлення не було доставлено, оскільки вам не дозволили його "
+"надіслати."
 
 #: dist/converse-no-dependencies.js:27596
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The message from the server is: \"%1$s\""
-msgstr "Причиною вказано: \""
+msgstr "Повідомлення від сервера: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:27599
-#, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "Вам не дозволено створювати нові кімнати"
+msgstr ""
+"Ваше повідомлення не було доставлено, оскільки ви не присутні в гуртовій "
+"бесіді."
 
 #: dist/converse-no-dependencies.js:27604
 msgid "Sorry, an error occurred:"
-msgstr ""
+msgstr "На жаль, сталася помилка:"
 
 #: dist/converse-no-dependencies.js:28450
 msgid "The connection has dropped, attempting to reconnect."
@@ -136,27 +137,28 @@ msgstr "Під час підключення до сервера чату ста
 #: dist/converse-no-dependencies.js:29484
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
+"Ваша XMPP-адреса та/або пароль неправильні. Будь ласка спробуйте ще раз."
 
 #: dist/converse-no-dependencies.js:29496
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr ""
+msgstr "На жаль, не вдалося підключитися до хоста XMPP з доменом: %1$s"
 
 #: dist/converse-no-dependencies.js:29498
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "Сервер XMPP не пропонує підтримуваний механізм автентифікації"
 
 #: dist/converse-no-dependencies.js:30655
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "Нешифроване повідомлення OMEMO"
 
 #: dist/converse-no-dependencies.js:30714
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "На жаль, не вдалося визначити URL-адресу для завантаження."
 
 #: dist/converse-no-dependencies.js:30736
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "На жаль, не вдалося визначити URL-адресу для завантаження файлу."
 
 #: dist/converse-no-dependencies.js:30785
 #, javascript-format
@@ -164,15 +166,16 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
 msgstr ""
+"На жаль, не вдалося завантажити файл. Відповідь вашого сервера: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:30787
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "На жаль, не вдалося завантажити файл."
 
 #: dist/converse-no-dependencies.js:31810
 #: dist/converse-no-dependencies.js:31830
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "На жаль, схоже, що завантаження файлів не підтримується вашим сервером."
 
 #: dist/converse-no-dependencies.js:31840
 #, javascript-format
@@ -180,126 +183,114 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Розмір вашого файлу, %1$s, перевищує щонайбільш дозволений вашим сервером, "
+"який становить %2$s."
 
 #: dist/converse-no-dependencies.js:34346
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Усмішки та почуття"
 
 #: dist/converse-no-dependencies.js:34347
 msgid "People"
-msgstr ""
+msgstr "Люди"
 
 #: dist/converse-no-dependencies.js:34348
 msgid "Activities"
-msgstr ""
+msgstr "Діяльності"
 
 #: dist/converse-no-dependencies.js:34349
 msgid "Travel"
-msgstr ""
+msgstr "Подорожі"
 
 #: dist/converse-no-dependencies.js:34350
 msgid "Objects"
-msgstr ""
+msgstr "Речі"
 
 #: dist/converse-no-dependencies.js:34351
 msgid "Animals and nature"
-msgstr ""
+msgstr "Тварини та природа"
 
 #: dist/converse-no-dependencies.js:34352
 msgid "Food and drink"
-msgstr ""
+msgstr "Їжа та напої"
 
 #: dist/converse-no-dependencies.js:34353
 msgid "Symbols"
-msgstr ""
+msgstr "Знаки"
 
 #: dist/converse-no-dependencies.js:34354
 msgid "Flags"
-msgstr ""
+msgstr "Прапори"
 
 #: dist/converse-no-dependencies.js:34355
 msgid "Stickers"
-msgstr ""
+msgstr "Наліпки"
 
 #: dist/converse-no-dependencies.js:35045
-#, fuzzy
 msgid "This groupchat is not anonymous"
-msgstr "Ця кімната не є анонімною"
+msgstr "Ця бесіда не таємна"
 
 #: dist/converse-no-dependencies.js:35046
-#, fuzzy
 msgid "This groupchat now shows unavailable members"
-msgstr "Ця кімната вже показує недоступних учасників"
+msgstr "Тепер бесіда показує недоступних членів"
 
 #: dist/converse-no-dependencies.js:35047
-#, fuzzy
 msgid "This groupchat does not show unavailable members"
-msgstr "Ця кімната не показує недоступних учасників"
+msgstr "Ця кімната не показує недоступних членів"
 
 #: dist/converse-no-dependencies.js:35048
-#, fuzzy
 msgid "The groupchat configuration has changed"
-msgstr "Змінено конфігурацію кімнати, не повязану з приватністю"
+msgstr "Змінено конфігурацію кімнати"
 
 #: dist/converse-no-dependencies.js:35049
-#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr "Журналювання кімнати тепер ввімкнено"
+msgstr "Часопис кімнати тепер увімкнено"
 
 #: dist/converse-no-dependencies.js:35050
-#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr "Журналювання кімнати тепер вимкнено"
+msgstr "Часопис кімнати тепер вимкнено"
 
 #: dist/converse-no-dependencies.js:35051
-#, fuzzy
 msgid "This groupchat is now no longer anonymous"
-msgstr "Ця кімната тепер не-анонімна"
+msgstr "Ця кімната тепер не таємна"
 
 #: dist/converse-no-dependencies.js:35052
-#, fuzzy
 msgid "This groupchat is now semi-anonymous"
-msgstr "Ця кімната тепер напів-анонімна"
+msgstr "Ця кімната тепер напівтаємна"
 
 #: dist/converse-no-dependencies.js:35053
-#, fuzzy
 msgid "This groupchat is now fully-anonymous"
-msgstr "Ця кімната тепер повністю анонімна"
+msgstr "Ця кімната тепер повністю таємна"
 
 #: dist/converse-no-dependencies.js:35054
-#, fuzzy
 msgid "A new groupchat has been created"
 msgstr "Створено нову кімнату"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:35058
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr "Ваше прізвисько було автоматично змінене на: %1$s"
+msgstr "Ваше прізвисько було самочинно змінене на: %1$s"
 
 #: dist/converse-no-dependencies.js:35059
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "Ваше прізвисько було змінене на: %1$s"
 
 #: dist/converse-no-dependencies.js:35062
-#, fuzzy
 msgid "You have been banned from this groupchat"
 msgstr "Вам заблокували доступ до цієї кімнати"
 
 #: dist/converse-no-dependencies.js:35063
-#, fuzzy
 msgid "You have been kicked from this groupchat"
 msgstr "Вас викинули з цієї кімнати"
 
 #: dist/converse-no-dependencies.js:35064
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "Вас видалено з кімнати у зв'язку зі змінами власності кімнати"
 
 #: dist/converse-no-dependencies.js:35065
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"

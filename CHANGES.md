@@ -1,6 +1,6 @@
 # Changelog
 
-## 6.0.1 (Unreleased)
+## 6.0.1 (2020-02-13)
 
 - Bugfix. Handle stanza that clears the MUC subject
 - #1313: Stylistic improvements to the send button

@@ -19,7 +19,6 @@ SASS			?= ./node_modules/.bin/node-sass
 SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS		=
-UGLIFYJS		?= node_modules/.bin/uglifyjs
 XGETTEXT		= xgettext
 
 

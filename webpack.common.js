@@ -1,5 +1,6 @@
 /* global __dirname, module */
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
 bootstrap_ignore_modules = ['carousel', 'scrollspy'];
 
@@ -16,6 +17,10 @@ module.exports = {
     externals: [{
         "window": "window"
     }],
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin()]
+    },
     watchOptions: {
         ignored: [/dist/, /spec/, /.*\~/]
     },

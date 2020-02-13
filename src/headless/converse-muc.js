@@ -256,6 +256,10 @@ converse.plugins.add('converse-muc', {
                 _converse.api.trigger('chatRoomMessageInitialized', this);
             },
 
+            validate (attrs) {
+                return !u.shouldCreateGroupchatMessage(attrs);
+            },
+
             onOccupantRemoved () {
                 this.stopListening(this.occupant);
                 delete this.occupant;
@@ -1710,15 +1714,6 @@ converse.plugins.add('converse-muc', {
                 return false;
             },
 
-            createMessageObject (attrs) {
-                return new Promise((success, reject) => {
-                    this.messages.create(
-                        attrs,
-                        { success, 'error': (m, e) => reject(e) }
-                    )
-                });
-            },
-
             /**
              * Handler for all MUC messages sent to this groupchat.
              * @private
@@ -1764,13 +1759,12 @@ converse.plugins.add('converse-muc', {
                 }
                 this.setEditable(attrs, attrs.time);
 
-                if (attrs.nick && (attrs.is_tombstone || u.isNewMessage(attrs) || !u.isEmptyMessage(attrs))) {
-                    const msg = this.handleCorrection(attrs) || await this.createMessageObject(attrs);
+                if (u.shouldCreateGroupchatMessage(attrs)) {
+                    const msg = this.handleCorrection(attrs) || await this.messages.create(attrs, {promise: true});
                     this.incrementUnreadMsgCounter(msg);
                 }
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});
             },
-
 
             handleModifyError(pres) {
                 const text = get(pres.querySelector('error text'), 'textContent');

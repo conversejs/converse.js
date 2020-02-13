@@ -87,7 +87,10 @@ converse.plugins.add('converse-chat', {
 
             async initialize () {
                 this.initialized = u.getResolveablePromise();
-
+                this.on('invalid', () => {
+                    log.error("Message not created due to validation error!");
+                    log.error(this.toJSON());
+                });
                 if (this.get('type') === 'chat') {
                     ModelWithContact.prototype.initialize.apply(this, arguments);
                     this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
@@ -104,6 +107,10 @@ converse.plugins.add('converse-chat', {
                  */
                 await _converse.api.trigger('messageInitialized', this, {'Synchronous': true});
                 this.initialized.resolve();
+            },
+
+            validate (attrs) {
+                return !u.shouldCreateMessage(attrs);
             },
 
             /**
@@ -382,10 +389,7 @@ converse.plugins.add('converse-chat', {
                         return;
                     }
                     this.setEditable(attrs, attrs.time, stanza);
-                    if (attrs['chat_state'] ||
-                        attrs['retracted'] || // Retraction received *before* the message
-                        !u.isEmptyMessage(attrs)
-                    ) {
+                    if (u.shouldCreateMessage(attrs)) {
                         const msg = this.handleCorrection(attrs) || this.messages.create(attrs);
                         this.incrementUnreadMsgCounter(msg);
                     }

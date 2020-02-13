@@ -14,8 +14,10 @@ module.exports = merge(common, {
         filename: 'converse.min.js',
     },
     plugins: [
+        new CleanWebpackPlugin({
+            cleanStaleWebpackAssets: false // resolves conflict with CopyWebpackPlugin
+        }),
         new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
-        new CleanWebpackPlugin(),
         new CopyWebpackPlugin([
             {from: 'images/favicon.ico'},
             {from: 'images/custom_emojis', to: 'custom_emojis'},

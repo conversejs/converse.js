@@ -11,6 +11,9 @@ module.exports = merge(prod, {
         publicPath: ASSET_PATH,
         filename: 'converse.js',
     },
+    optimization: {
+        minimize: false,
+    },
     devtool: 'source-map',
     plugins: [
         new MiniCssExtractPlugin({filename: '../dist/converse.css'}),

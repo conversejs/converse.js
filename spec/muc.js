@@ -3512,20 +3512,23 @@
                     `</iq>`);
 
                 presence = $pres({
-                        'from': 'lounge@montague.lit/annoyingGuy',
-                        'id':'27C55F89-1C6A-459A-9EB5-77690145D628',
-                        'to': 'romeo@montague.lit/desktop'
-                    })
-                    .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
-                        .c('item', {
-                            'jid': 'annoyingguy@montague.lit',
-                            'affiliation': 'outcast',
-                            'role': 'participant'
-                        });
-                _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.el.querySelectorAll('.chat-info')[3].textContent.trim()).toBe(
-                    "annoyingGuy has been banned from this groupchat");
+                    'from': 'lounge@montague.lit/annoyingGuy',
+                    'id':'27C55F89-1C6A-459A-9EB5-77690145D628',
+                    'to': 'romeo@montague.lit/desktop'
+                }).c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                    .c('item', {
+                        'jid': 'annoyingguy@montague.lit',
+                        'affiliation': 'outcast',
+                        'role': 'participant'
+                    }).c('actor', {'nick': 'romeo'}).up()
+                        .c('reason').t("You're annoying").up().up()
+                    .c('status', {'code': '301'});
 
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 4);
+                expect(view.el.querySelectorAll('.chat-info__message')[2].textContent.trim()).toBe("annoyingGuy has been banned by romeo");
+                expect(view.el.querySelector('.chat-info:last-child q').textContent.trim()).toBe("You're annoying");
                 presence = $pres({
                         'from': 'lounge@montague.lit/joe2',
                         'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
@@ -3628,13 +3631,14 @@
                         .c('item', {
                             'affiliation': 'none',
                             'role': 'none'
-                        }).up()
+                        }).c('actor', {'nick': 'romeo'}).up()
+                          .c('reason').t("You're annoying").up().up()
                         .c('status', {'code': '307'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 4);
-                expect(view.el.querySelectorAll('.chat-info')[3].textContent.trim()).toBe("annoying guy has been kicked out");
-                expect(view.el.querySelectorAll('.chat-info').length).toBe(4);
+                expect(view.el.querySelectorAll('.chat-info__message')[2].textContent.trim()).toBe("annoying guy has been kicked out by romeo");
+                expect(view.el.querySelector('.chat-info:last-child q').textContent.trim()).toBe("You're annoying");
                 done();
             }));
 

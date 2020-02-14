@@ -1064,13 +1064,10 @@ converse.plugins.add('converse-muc-views', {
                 } else if (previous_affiliation === 'outcast') {
                     this.showChatEvent(__("%1$s is no longer banned from this groupchat", occupant.get('nick')))
                 }
-
                 if (current_affiliation === 'none' && previous_affiliation === 'member') {
                     this.showChatEvent(__("%1$s is no longer a member of this groupchat", occupant.get('nick')))
                 } if (current_affiliation === 'member') {
                     this.showChatEvent(__("%1$s is now a member of this groupchat", occupant.get('nick')))
-                } else if (current_affiliation === 'outcast') {
-                    this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')))
                 } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
                     // For example: AppleJack is now an (admin|owner) of this groupchat
                     this.showChatEvent(__('%1$s is now an %2$s of this groupchat', occupant.get('nick'), current_affiliation))

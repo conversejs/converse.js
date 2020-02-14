@@ -315,10 +315,9 @@
         }
 
         return async done => {
-            let _converse;
-
+            const _converse = await initConverse(settings);
             async function _done () {
-                if (_converse && _converse.api.connection.connected()) {
+                if (_converse.api.connection.connected()) {
                     await _converse.api.user.logout();
                 }
                 const el = document.querySelector('#conversejs');
@@ -328,9 +327,8 @@
                 document.title = "Converse Tests";
                 done();
             }
+            await Promise.all((promise_names || []).map(_converse.api.waitUntil));
             try {
-                _converse = await initConverse(settings);
-                await Promise.all((promise_names || []).map(_converse.api.waitUntil));
                 await func(_done, _converse);
             } catch(e) {
                 console.error(e);

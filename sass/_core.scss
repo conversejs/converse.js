@@ -333,6 +333,9 @@ body.converse-fullscreen {
 
     q {
       quotes: "“" "”" "‘" "’";
+      &.reason {
+        display: block;
+      }
     }
     q:before {
         content: open-quote;

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-01-12 07:21+0000\n"
+"PO-Revision-Date: 2020-02-16 06:50+0000\n"
 "Last-Translator: sergio <srg.dev@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10.1\n"
+"X-Generator: Weblate 3.11-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: es\n"
 "Language-Code: es\n"
@@ -44,9 +44,8 @@ msgid "Retract this message"
 msgstr "Retractar este mensaje"
 
 #: dist/converse-no-dependencies.js:10792
-#, fuzzy
 msgid "Send the message"
-msgstr "Editar este mensaje"
+msgstr "Enviar el mensaje"
 
 #: dist/converse-no-dependencies.js:11114
 msgid "No message history available."
@@ -111,16 +110,13 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: dist/converse-no-dependencies.js:27593
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
-"No se entregó tu mensaje porque no tienes permitido enviar mensajes en esta "
-"conversación en grupo."
+msgstr "Tu mensaje no fue enviado porque no tienes permitido enviar mensajes."
 
 #: dist/converse-no-dependencies.js:27596
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The message from the server is: \"%1$s\""
-msgstr "La razón dada es: %1$s."
+msgstr "El mensaje desde el servidor es: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:27599
 msgid ""
@@ -142,17 +138,16 @@ msgid "An error occurred while connecting to the chat server."
 msgstr "Ocurrió un error mientras se conectaba al servidor de chat."
 
 #: dist/converse-no-dependencies.js:29484
-#, fuzzy
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
-"Tu usuario de Jabber y/o tu contraseña no es correcta. Por favor, inténtelo "
-"de nuevo."
+"Tu dirección XMPP y/o tu contraseña no es correcta. Por favor, inténtalo de "
+"nuevo."
 
 #: dist/converse-no-dependencies.js:29496
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
-"Lo sentimos, no pudimos conectarnos al servidor XMPP con el dominio:  %1$s"
+"Lo sentimos, no pudimos conectarnos al servidor XMPP con el dominio: %1$s"
 
 #: dist/converse-no-dependencies.js:29498
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -682,9 +677,8 @@ msgid "Untrusted"
 msgstr "No es de confianza"
 
 #: dist/converse-no-dependencies.js:51782
-#, fuzzy
 msgid "No OMEMO-enabled devices found"
-msgstr "Otros dispositivos habilitados para OMEMO"
+msgstr "No se han encontrado dispositivos habilitados para OMEMO"
 
 #: dist/converse-no-dependencies.js:51982
 msgid "Close this chat box"
@@ -832,9 +826,8 @@ msgid "Don't have a chat account?"
 msgstr "¿No tienes una cuenta?"
 
 #: dist/converse-no-dependencies.js:53887
-#, fuzzy
 msgid "Password"
-msgstr "Contraseña:"
+msgstr "Contraseña"
 
 #: dist/converse-no-dependencies.js:53889
 msgid "This is a trusted device"
@@ -898,9 +891,8 @@ msgid "Minimize this chat box"
 msgstr "Minimizar esta ventana de conversación"
 
 #: dist/converse-no-dependencies.js:56986
-#, fuzzy
 msgid "Minimize this groupchat"
-msgstr "Minimizar esta ventana de conversación"
+msgstr "Minimizar esta conversación en grupo"
 
 #: dist/converse-no-dependencies.js:57303
 msgid "Click to restore this chat"
@@ -1074,19 +1066,16 @@ msgid "Invite"
 msgstr "Invitar"
 
 #: dist/converse-no-dependencies.js:57991
-#, fuzzy
 msgid "Invite someone to this groupchat"
-msgstr "Eliminar esta conversación en grupo"
+msgstr "Invitar a alguien a esta conversación en grupo"
 
 #: dist/converse-no-dependencies.js:57993
-#, fuzzy
 msgid "user@example.org"
 msgstr "usuario@ejemplo.org"
 
 #: dist/converse-no-dependencies.js:57999
-#, fuzzy
 msgid "Optional reason for the invitation"
-msgstr "Razón (opcional)"
+msgstr "Razón para la invitación (opcional)"
 
 #: dist/converse-no-dependencies.js:58034
 msgid "This groupchat requires a password"
@@ -1138,14 +1127,12 @@ msgid "Click to mention %1$s in your message."
 msgstr "Haz clic para mencionar a %1$s en tu mensaje."
 
 #: dist/converse-no-dependencies.js:58201
-#, fuzzy
 msgid "Invite someone"
-msgstr "Invitar"
+msgstr "Invitar a alguien"
 
 #: dist/converse-no-dependencies.js:58204
-#, fuzzy
 msgid "Invite someone to join this groupchat"
-msgstr "Cualquiera puede unirse a esta conversación en grupo"
+msgstr "Invitar a algiuen para que se una a esta conversación en grupo"
 
 #: dist/converse-no-dependencies.js:58206
 msgid "Participants"
@@ -1353,9 +1340,8 @@ msgid "Groupchat address"
 msgstr "Dirección de la conversación en grupo"
 
 #: dist/converse-no-dependencies.js:59360
-#, fuzzy
 msgid "Groupchat id is invalid."
-msgstr "El registro de la conversación en grupo está ahora activado"
+msgstr "El identificador de esta conversación es inválido."
 
 #: dist/converse-no-dependencies.js:59380
 #, javascript-format
@@ -1500,19 +1486,13 @@ msgstr ""
 "sus argumentos"
 
 #: dist/converse-no-dependencies.js:60335
-#, fuzzy
 msgid "Sorry, an error happened while running the command."
-msgstr ""
-"Lo sentimos, algo salió mal mientras se trataba de guardar tus datos de "
-"perfil."
+msgstr "Lo sentimos, algo salió mal mientras se ejecutaba el comando."
 
 #: dist/converse-no-dependencies.js:60335
 #: dist/converse-no-dependencies.js:61164
-#, fuzzy
 msgid "Check your browser's developer console for details."
-msgstr ""
-"Puedes comprobar cualquier error en la consola de desarrollador del "
-"navegador."
+msgstr "Comprueba la consola de desarrollador del navegador para más detalles."
 
 #: dist/converse-no-dependencies.js:60441
 msgid "You can run the following commands"
@@ -1682,18 +1662,18 @@ msgid "Query for groupchats"
 msgstr "Búsqueda de conversaciones en grupo"
 
 #: dist/converse-no-dependencies.js:61164
-#, fuzzy
 msgid "Sorry, an error occurred while trying to submit the config form."
-msgstr "Lo sentimos, ocurrió un error mientras se eliminaban los dispositivos."
+msgstr ""
+"Lo sentimos, ocurrió un error mientras se intentaba enviar el formulario de "
+"configuración."
 
 #: dist/converse-no-dependencies.js:61735
 msgid "Announcements"
-msgstr ""
+msgstr "Anuncios"
 
 #: dist/converse-no-dependencies.js:61739
-#, fuzzy
 msgid "Click to open this server message"
-msgstr "Pulse para abrir esta conversación en grupo"
+msgstr "Pulsa para abrir este mensaje del servidor"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:61966
@@ -1823,12 +1803,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62413
 msgid "OMEMO"
-msgstr ""
+msgstr "OMEMO"
 
 #: dist/converse-no-dependencies.js:62415
-#, fuzzy
 msgid "Profile"
-msgstr "Tu Perfil"
+msgstr "Perfil"
 
 #: dist/converse-no-dependencies.js:62577
 msgid "Sorry, an error happened while trying to save your profile data."

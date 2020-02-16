@@ -19,6 +19,7 @@ module.exports = merge(common, {
         }),
         new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
         new CopyWebpackPlugin([
+            {from: 'sounds'},
             {from: 'images/favicon.ico'},
             {from: 'images/custom_emojis', to: 'custom_emojis'},
             {from: 'sass/webfonts', to: 'webfonts'}

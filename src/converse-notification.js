@@ -31,7 +31,7 @@ converse.plugins.add('converse-notification', {
             chatstate_notification_blacklist: [],
             // ^ a list of JIDs to ignore concerning chat state notifications
             play_sounds: true,
-            sounds_path: 'sounds/',
+            sounds_path: _converse.assets_path+'/sounds/',
             notification_icon: 'logo/conversejs-filled.svg',
             notification_delay: 5000
         });

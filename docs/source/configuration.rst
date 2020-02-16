@@ -1653,7 +1653,7 @@ server for acknowledgement of those stanzas.
 sounds_path
 -----------
 
-* Default: ``sounds/``
+* Default: ``${assets_path}/sounds/``
 
 This option only makes sense in conjunction with the `play_sounds`_ option and
 specifies the URL of the sound files to be played (exluding the file names

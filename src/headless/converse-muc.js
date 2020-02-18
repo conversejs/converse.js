@@ -2398,6 +2398,21 @@ converse.plugins.add('converse-muc', {
         _converse.api.listen.on('chatBoxesFetched', autoJoinRooms);
 
 
+        _converse.api.listen.on('beforeResourceBinding', () => {
+            _converse.connection.addHandler(stanza => {
+                const muc_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
+                if (!_converse.chatboxes.get(muc_jid)) {
+                    _converse.api.waitUntil('chatBoxesFetched')
+                        .then(() => {
+                            const muc = _converse.chatboxes.get(muc_jid);
+                            muc && muc.message_handler.run(stanza);
+                        });
+                }
+                return true;
+            }, null, 'message', 'groupchat')
+        });
+
+
         function disconnectChatRooms () {
             /* When disconnecting, mark all groupchats as
              * disconnected, so that they will be properly entered again

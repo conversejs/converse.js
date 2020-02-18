@@ -155,6 +155,8 @@
     };
 
 
+    let _converse;
+
     const OriginalConnection = Strophe.Connection;
 
     function MockConnection (service, options) {
@@ -210,7 +212,9 @@
         this.bind = () => {
             this.authenticated = true;
             this.authenticated = true;
-            this._changeConnectStatus(Strophe.Status.CONNECTED);
+            if (!_converse.no_connection_on_bind) {
+                this._changeConnectStatus(Strophe.Status.CONNECTED);
+            }
         };
 
         this._proto._disconnect = () => this._onDisconnectTimeout();
@@ -254,7 +258,7 @@
         clearStores();
         await clearIndexedDB();
 
-        const _converse = await converse.initialize(Object.assign({
+        _converse = await converse.initialize(Object.assign({
             'animate': false,
             'auto_subscribe': false,
             'bosh_service_url': 'montague.lit/http-bind',

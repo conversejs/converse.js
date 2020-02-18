@@ -130,10 +130,6 @@ converse.plugins.add('converse-mam', {
         Object.assign(_converse.ChatBox.prototype, MAMEnabledChat);
 
 
-        Object.assign(_converse.ChatRoom.prototype, {
-        });
-
-
         _converse.onMAMError = function (iq) {
             if (iq && iq.querySelectorAll('feature-not-implemented').length) {
                 log.warn("Message Archive Management (XEP-0313) not supported by this server");

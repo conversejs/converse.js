@@ -15,7 +15,7 @@ const tpl_standalone_btns = (o) => o.standalone_btns.reverse().map(b => until(b,
 
 export default (o) => {
     const subject = o.subject ? u.addHyperlinks(xss.filterXSS(o.subject.text, {'whiteList': {}})) : '';
-    const show_subject = (subject && !o.hide_subject);
+    const show_subject = (subject && !o.subject_hidden);
     return html`
         <div class="chatbox-title ${ show_subject ? '' :  "chatbox-title--no-desc"}">
             ${ (o._converse.standalone) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }

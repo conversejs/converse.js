@@ -1123,8 +1123,8 @@ converse.plugins.add('converse-muc-views', {
 
                 if (this.model.get('subject')) {
                     buttons.push({
-                        'i18n_text': this.model.get('hide_subject') ? __('Show topic') : __('Hide topic'),
-                        'i18n_title': this.model.get('hide_subject') ?
+                        'i18n_text': this.model.get('subject_hidden') ? __('Show topic') : __('Hide topic'),
+                        'i18n_title': this.model.get('subject_hidden') ?
                             __('Show the topic message in the heading') :
                             __('Hide the topic in the heading'),
                         'handler': ev => this.toggleTopic(ev),
@@ -1171,7 +1171,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             toggleTopic () {
-                this.model.save('hide_subject', !this.model.get('hide_subject'));
+                this.model.save('subject_hidden', !this.model.get('subject_hidden'));
             },
 
 

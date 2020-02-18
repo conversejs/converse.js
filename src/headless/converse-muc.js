@@ -1568,7 +1568,7 @@ converse.plugins.add('converse-muc', {
                     // MUST NOT contain a <body/> element (or a <thread/> element).
                     u.safeSave(this, {
                         'subject': {'author': attrs.nick, 'text': attrs.subject || ''},
-                        'hide_subject': attrs.subject ? false : this.get('hide_subject')
+                        'subject_hidden': attrs.subject ? false : this.get('subject_hidden')
                     });
                     return true;
                 }

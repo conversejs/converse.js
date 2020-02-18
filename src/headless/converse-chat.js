@@ -709,6 +709,22 @@ converse.plugins.add('converse-chat', {
             },
 
             /**
+             * Retract one of your messages in this chat
+             * @private
+             * @method _converse.ChatBoxView#retractOwnMessage
+             * @param { _converse.Message } message - The message which we're retracting.
+             */
+            retractOwnMessage(message) {
+                this.sendRetractionMessage(message)
+                message.save({
+                    'retracted': (new Date()).toISOString(),
+                    'retracted_id': message.get('origin_id'),
+                    'is_ephemeral': true,
+                    'editable': false
+                });
+            },
+
+            /**
              * Sends a message stanza to retract a message in this chat
              * @private
              * @method _converse.ChatBox#sendRetractionMessage
@@ -899,8 +915,7 @@ converse.plugins.add('converse-chat', {
                 }
                 if (_converse.allow_message_corrections === 'all') {
                     attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
-                } else if ((_converse.allow_message_corrections === 'last') &&
-                           (send_time > this.get('time_sent'))) {
+                } else if ((_converse.allow_message_corrections === 'last') && (send_time > this.get('time_sent'))) {
                     this.set({'time_sent': send_time});
                     const msg = this.messages.findWhere({'editable': true});
                     if (msg) {

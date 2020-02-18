@@ -960,21 +960,6 @@ converse.plugins.add('converse-chatview', {
                 this.insertIntoTextArea('', true, false);
             },
 
-            /**
-             * Retract one of your messages in this chat
-             * @private
-             * @method _converse.ChatBoxView#retractOwnMessage
-             * @param { _converse.Message } message - The message which we're retracting.
-             */
-            retractOwnMessage(message) {
-                this.model.sendRetractionMessage(message);
-                message.save({
-                    'retracted': (new Date()).toISOString(),
-                    'retracted_id': message.get('origin_id'),
-                    'is_ephemeral': true
-                });
-            },
-
             async onMessageRetractButtonClicked (ev) {
                 ev.preventDefault();
                 const msg_el = u.ancestor(ev.target, '.message');
@@ -995,7 +980,7 @@ converse.plugins.add('converse-chatview', {
                 }
                 const result = await _converse.api.confirm(__('Confirm'), messages);
                 if (result) {
-                    this.retractOwnMessage(message);
+                    this.model.retractOwnMessage(message);
                 }
             },
 

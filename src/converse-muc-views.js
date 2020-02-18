@@ -969,12 +969,8 @@ converse.plugins.add('converse-muc-views', {
              * @param { _converse.Message } message - The message which we're retracting.
              */
             retractOwnMessage(message) {
-                this.model.sendRetractionMessage(message)
+                this.model.retractOwnMessage(message)
                     .catch(e => {
-                        message.save({
-                            'retracted': undefined,
-                            'retracted_id': undefined
-                        });
                         const errmsg = __('Sorry, something went wrong while trying to retract your message.');
                         if (u.isErrorStanza(e)) {
                             this.showErrorMessage(errmsg);
@@ -984,10 +980,6 @@ converse.plugins.add('converse-muc-views', {
                         }
                         log.error(e);
                     });
-                message.save({
-                    'retracted': (new Date()).toISOString(),
-                    'retracted_id': message.get('origin_id')
-                });
             },
 
             /**

@@ -424,6 +424,7 @@
                 expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
                 expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
                 expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
+                expect(view.model.messages.at(0).get('editable')).toBe(false);
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
 
                 const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
@@ -571,7 +572,7 @@
 
                 const message = view.model.messages.at(0);
                 expect(message.get('retracted')).toBeTruthy();
-                expect(message.get('is_ephemeral')).toBeTruthy();
+                expect(message.get('is_ephemeral')).toBe(false);
                 expect(message.get('editable')).toBeFalsy();
 
                 const stanza_id = message.get(`stanza_id ${muc_jid}`);
@@ -591,7 +592,7 @@
 
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('retracted')).toBeTruthy();
-                expect(view.model.messages.at(0).get('is_ephemeral')).toBe(true);
+                expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
                 expect(view.model.messages.at(0).get('editable')).toBe(false);
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
@@ -640,6 +641,7 @@
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
                 expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
+                expect(view.model.messages.at(0).get('editable')).toBeTruthy();
 
                 expect(view.el.querySelectorAll('.chat-error').length).toBe(1);
                 const errmsg = view.el.querySelector('.chat-error');
@@ -675,6 +677,7 @@
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
                 expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
+                expect(view.model.messages.at(0).get('editable')).toBeTruthy();
 
                 const error_messages = view.el.querySelectorAll('.chat-error');
                 expect(error_messages.length).toBe(2);

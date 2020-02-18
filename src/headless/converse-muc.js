@@ -648,32 +648,60 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Retract one of your messages in this chat
+             * Retract one of your messages in this groupchat
              * @private
              * @method _converse.ChatRoom#retractOwnMessage
              * @param { _converse.Message } message - The message which we're retracting.
              */
             async retractOwnMessage(message) {
                 const editable = message.get('editable');
-                const is_ephemeral = message.get('is_ephemeral');
                 // Optimistic save
                 message.save({
                     'retracted': (new Date()).toISOString(),
                     'retracted_id': message.get('origin_id'),
-                    'is_ephemeral': true,
                     'editable': false
                 });
                 try {
                     await this.sendRetractionMessage(message)
                 } catch (e) {
                     message.save({
-                        is_ephemeral,
                         editable,
                         'retracted': undefined,
                         'retracted_id': undefined,
                     });
                     throw e;
                 }
+            },
+
+            /**
+             * Retract someone else's message in this groupchat.
+             * @private
+             * @method _converse.ChatRoom#retractOtherMessage
+             * @param { _converse.Message } message - The message which we're retracting.
+             * @param { string } [reason] - The reason for retracting the message.
+             */
+            async retractOtherMessage (message, reason) {
+                const editable = message.get('editable');
+                // Optimistic save
+                message.save({
+                    'moderated': 'retracted',
+                    'moderated_by': _converse.bare_jid,
+                    'moderated_id': message.get('msgid'),
+                    'moderation_reason': reason,
+                    'editable': false
+                });
+                const result = await this.sendRetractionIQ(message, reason);
+                if (result === null || u.isErrorStanza(result)) {
+                    // Undo the save if something went wrong
+                    message.save({
+                        editable,
+                        'moderated': undefined,
+                        'moderated_by': undefined,
+                        'moderated_id': undefined,
+                        'moderation_reason': undefined,
+                    });
+                }
+                return result;
             },
 
             /**

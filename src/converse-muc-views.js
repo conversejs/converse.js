@@ -990,7 +990,7 @@ converse.plugins.add('converse-muc-views', {
              * @param { string } [reason] - The reason for retracting the message.
              */
             async retractOtherMessage (message, reason) {
-                const result = await this.model.sendRetractionIQ(message, reason);
+                const result = await this.model.retractOtherMessage(message, reason);
                 if (result === null) {
                     const err_msg = __(`A timeout occurred while trying to retract the message`);
                     _converse.api.alert('error', __('Error'), err_msg);
@@ -1000,13 +1000,6 @@ converse.plugins.add('converse-muc-views', {
                     _converse.api.alert('error', __('Error'), err_msg);
                     _converse.log(err_msg, Strophe.LogLevel.WARN);
                     _converse.log(result, Strophe.LogLevel.WARN);
-                } else {
-                    message.save({
-                        'moderated': 'retracted',
-                        'moderated_by': _converse.bare_jid,
-                        'moderated_id': message.get('msgid'),
-                        'moderation_reason': reason
-                    });
                 }
             },
 

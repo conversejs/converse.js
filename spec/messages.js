@@ -529,7 +529,7 @@
                 }).c('body').t("This headline message will not be shown").tree();
             await _converse.handleMessageStanza(msg);
             expect(converse.env.log.info.calledWith(
-                "onMessage: Ignoring incoming headline message from JID: montague.lit"
+                "handleMessageStanza: Ignoring incoming headline message from JID: montague.lit"
             )).toBeTruthy();
             expect(u.isHeadlineMessage.called).toBeTruthy();
             expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
@@ -1863,7 +1863,7 @@
                 await _converse.handleMessageStanza(msg);
 
                 expect(converse.env.log.info).toHaveBeenCalledWith(
-                    "onMessage: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
+                    "handleMessageStanza: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
                 );
                 expect(_converse.api.chatboxes.create).not.toHaveBeenCalled();
                 _converse.filter_by_resource = false;

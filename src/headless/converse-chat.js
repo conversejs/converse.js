@@ -1123,11 +1123,11 @@ converse.plugins.add('converse-chat', {
             const to_resource = Strophe.getResourceFromJid(to_jid);
 
             if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
-                return log.info(`onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`);
+                return log.info(`handleMessageStanza: Ignoring incoming message intended for a different resource: ${to_jid}`);
             } else if (utils.isHeadlineMessage(_converse, stanza)) {
                 // XXX: Prosody sends headline messages with the
                 // wrong type ('chat'), so we need to filter them out here.
-                return log.info(`onMessage: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`);
+                return log.info(`handleMessageStanza: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`);
             }
 
             const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
@@ -1157,7 +1157,7 @@ converse.plugins.add('converse-chat', {
                     to_jid = stanza.getAttribute('to');
                     from_jid = stanza.getAttribute('from');
                 } else {
-                    return log.warn(`onMessage: Ignoring alleged MAM message from ${stanza.getAttribute('from')}`);
+                    return log.warn(`handleMessageStanza: Ignoring alleged MAM message from ${stanza.getAttribute('from')}`);
                 }
             }
 

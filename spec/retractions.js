@@ -358,6 +358,7 @@
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('retracted')).toBeTruthy();
+                expect(view.model.messages.at(0).get('editable')).toBe(false);
                 expect(view.el.querySelectorAll('.chat-msg--retracted').length).toBe(1);
                 const msg_el = view.el.querySelector('.chat-msg--retracted .chat-msg__message');
                 expect(msg_el.textContent.trim()).toBe('eve has removed this message');
@@ -448,6 +449,7 @@
                 expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
                 expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
                 expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
+                expect(view.model.messages.at(0).get('editable')).toBe(false);
                 done();
             }));
 
@@ -497,6 +499,7 @@
                 `);
                 await view.model.onMessage(received_stanza);
                 await u.waitUntil(() => view.model.messages.length === 1);
+                expect(view.model.messages.length).toBe(1);
 
                 const retract_button = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .chat-msg__action-retract'));
                 retract_button.click();
@@ -539,6 +542,7 @@
                 expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
                 expect(view.model.messages.at(0).get('moderated_by')).toBe(_converse.bare_jid);
                 expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
+                expect(view.model.messages.at(0).get('editable')).toBe(false);
                 done();
             }));
         });
@@ -683,6 +687,59 @@
                 expect(error_messages.length).toBe(2);
                 expect(error_messages[0].textContent).toBe("Sorry, something went wrong while trying to retract your message.");
                 expect(error_messages[1].textContent).toBe("Timeout Error: No response from server");
+                done();
+            }));
+
+
+            it("can be retracted by a moderator",
+                mock.initConverse(
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+                const view = _converse.api.chatviews.get(muc_jid);
+                const occupant = view.model.getOwnOccupant();
+                expect(occupant.get('role')).toBe('moderator');
+
+                view.model.sendMessage('Visit this site to get free bitcoin');
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
+                const stanza_id = 'retraction-id-1';
+                const msg_obj = view.model.messages.at(0);
+                const reflection_stanza = u.toStanza(`
+                    <message xmlns="jabber:client"
+                            from="${msg_obj.get('from')}"
+                            to="${_converse.connection.jid}"
+                            type="groupchat">
+                        <msg_body>${msg_obj.get('message')}</msg_body>
+                        <stanza-id xmlns="urn:xmpp:sid:0"
+                                id="${stanza_id}"
+                                by="lounge@montague.lit"/>
+                        <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
+                    </message>`);
+                await view.model.onMessage(reflection_stanza);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
+                expect(view.model.messages.length).toBe(1);
+                expect(view.model.messages.at(0).get('editable')).toBe(true);
+
+                // The server responds with a retraction message
+                const reason = "This content is inappropriate for this forum!"
+                const retraction = u.toStanza(`
+                    <message type="groupchat" id='retraction-id-1' from="${muc_jid}" to="${muc_jid}/romeo">
+                        <apply-to id="${stanza_id}" xmlns="urn:xmpp:fasten:0">
+                            <moderated by='${_converse.bare_jid}' xmlns='urn:xmpp:message-moderate:0'>
+                            <retract xmlns='urn:xmpp:message-retract:0' />
+                            <reason>${reason}</reason>
+                            </moderated>
+                        </apply-to>
+                    </message>`);
+                await view.model.onMessage(retraction);
+                expect(view.model.messages.length).toBe(1);
+                expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
+                expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
+                expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
+                expect(view.model.messages.at(0).get('editable')).toBe(false);
                 done();
             }));
         });

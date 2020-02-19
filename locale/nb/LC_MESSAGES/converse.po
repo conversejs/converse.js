@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-01-21 23:32+0000\n"
+"PO-Revision-Date: 2020-02-21 02:32+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 3.11.1\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -820,7 +820,7 @@ msgstr "Klikk her for å logge inn anonymt"
 
 #: dist/converse-no-dependencies.js:53881
 msgid "Disconnected"
-msgstr ""
+msgstr "Frakoblet"
 
 #: dist/converse-no-dependencies.js:53883
 msgid "Log in"
@@ -1729,7 +1729,7 @@ msgstr "En feil skjedde ved forsøk på å fjerne enhetene."
 
 #: dist/converse-no-dependencies.js:61735
 msgid "Announcements"
-msgstr ""
+msgstr "Kunngjøringer"
 
 #: dist/converse-no-dependencies.js:61739
 #, fuzzy
@@ -1865,7 +1865,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62413
 msgid "OMEMO"
-msgstr ""
+msgstr "OMEMO"
 
 #: dist/converse-no-dependencies.js:62415
 #, fuzzy

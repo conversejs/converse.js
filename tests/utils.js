@@ -140,9 +140,7 @@
     };
 
     utils.openChatRoom = async function (_converse, room, server) {
-        const model = await _converse.api.rooms.open(`${room}@${server}`);
-        await model.messages.fetched;
-        return model;
+        return _converse.api.rooms.open(`${room}@${server}`);
     };
 
     utils.getRoomFeatures = async function (_converse, muc_jid, features=[]) {
@@ -273,7 +271,9 @@
         return new Promise(resolve => _converse.api.listen.on('membersFetched', resolve));
     };
 
-    utils.receiveOwnMUCPresence = function (_converse, muc_jid, nick) {
+    utils.receiveOwnMUCPresence = async function (_converse, muc_jid, nick) {
+        const sent_stanzas = _converse.connection.sent_stanzas;
+        await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
         const presence = $pres({
                 to: _converse.connection.jid,
                 from: `${muc_jid}/${nick}`,
@@ -297,7 +297,7 @@
         // The user has just entered the room (because join was called)
         // and receives their own presence from the server.
         // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
-        utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
+        await utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
 
         await room_creation_promise;
         const view = _converse.chatboxviews.get(muc_jid);

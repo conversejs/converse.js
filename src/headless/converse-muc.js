@@ -384,6 +384,7 @@ converse.plugins.add('converse-muc', {
                     await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
                     await this.fetchOccupants();
                     await this.fetchMessages();
+                    await this.clearMessageQueue();
                     return true;
                 } else {
                     await this.clearCache();
@@ -451,12 +452,23 @@ converse.plugins.add('converse-muc', {
                 return this.join();
             },
 
+            initMessages () {
+                _converse.ChatBox.prototype.initMessages.call(this);
+                this.message_queue = [];
+            },
+
+            async clearMessageQueue () {
+                await Promise.all(this.message_queue.map(m => this.onMessage(m)));
+                this.message_queue = [];
+            },
+
             async onConnectionStatusChanged () {
                 if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                     if (_converse.muc_fetch_members) {
                         await this.occupants.fetchMembers();
                     }
                     await this.fetchMessages();
+                    await this.clearMessageQueue();
                     /**
                      * Triggered when the user has entered a new MUC
                      * @event _converse#enteredNewRoom
@@ -1780,6 +1792,13 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza - The message stanza.
              */
             async onMessage (stanza) {
+                if (!this.messages.fetched || this.messages.fetched.isPending) {
+                    // We're not ready to accept messages before we've fetched
+                    // from our store, so we stuff them into a queue.
+                    this.message_queue.push(stanza);
+                    return;
+                }
+
                 if (sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length) {
                     return log.warn('onMessage: Ignoring unencapsulated forwarded groupchat message');
                 }

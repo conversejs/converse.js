@@ -580,12 +580,15 @@
 
             it("shows join/leave messages when users enter or exit a groupchat",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_fetch_members': false},
                     async function (done, _converse) {
 
                 const muc_jid = 'coven@chat.shakespeare.lit';
-                await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
+                const nick = 'some1';
+                const room_creation_promise = await _converse.api.rooms.open(muc_jid, {nick});
                 await test_utils.getRoomFeatures(_converse, muc_jid);
+                const sent_stanzas = _converse.connection.sent_stanzas;
+                await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
 
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 const chat_content = view.el.querySelector('.chat-content');
@@ -627,6 +630,10 @@
                 expect(sizzle('div.chat-info:first', chat_content).pop().textContent.trim())
                     .toBe("some1 has entered the groupchat");
 
+                await room_creation_promise;
+                await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+                await view.model.messages.fetched;
+
                 presence = $pres({
                         to: 'romeo@montague.lit/_converse.js-29092160',
                         from: 'coven@chat.shakespeare.lit/newguy'
@@ -664,7 +671,7 @@
                         'role': 'participant'
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
+                await u.waitUntil(() => chat_content.querySelectorAll('div.chat-info').length === 3);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent.trim())
                     .toBe("newgirl has entered the groupchat");
 
@@ -5184,13 +5191,14 @@
             });
 
             describe("A paused notification", function () {
+
                 it("will be shown if received",
                     mock.initConverse(
                         ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
-                    await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
                     const muc_jid = 'coven@chat.shakespeare.lit';
+                    await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'some1');
                     const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                     const chat_content = view.el.querySelector('.chat-content');
 

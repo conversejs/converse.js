@@ -185,9 +185,10 @@
             mock.initConverse(
                 ['chatBoxesInitialized'],
                 { 'auto_login': false,
-                  'enable_smacks': true,
-                  'show_controlbox_by_default': true,
                   'blacklisted_plugins': 'converse-mam',
+                  'enable_smacks': true,
+                  'muc_fetch_members': false,
+                  'show_controlbox_by_default': true,
                   'smacks_max_unacked_stanzas': 2
                 },
                 async function (done, _converse) {
@@ -243,9 +244,11 @@
             _converse.connection._dataRecv(test_utils.createRequest(result));
             expect(_converse.session.get('smacks_enabled')).toBe(true);
 
+
+            const nick = 'romeo';
             const func = _converse.chatboxes.onChatBoxesFetched;
             spyOn(_converse.chatboxes, 'onChatBoxesFetched').and.callFake(collection => {
-                const muc = new _converse.ChatRoom({'jid': muc_jid, 'id': muc_jid}, {'collection': _converse.chatboxes});
+                const muc = new _converse.ChatRoom({'jid': muc_jid, 'id': muc_jid, nick}, {'collection': _converse.chatboxes});
                 _converse.chatboxes.add(muc);
                 func.call(_converse.chatboxes, collection);
             });
@@ -262,7 +265,15 @@
 
             await _converse.api.waitUntil('chatBoxesFetched');
             const muc = _converse.chatboxes.get(muc_jid);
-            await u.waitUntil(() => muc.messages.length === 1);
+            await u.waitUntil(() => muc.message_queue.length === 1);
+
+            const view = _converse.chatboxviews.get(muc_jid);
+            await test_utils.getRoomFeatures(_converse, muc_jid);
+            await test_utils.receiveOwnMUCPresence(_converse, muc_jid, nick);
+            await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+            await view.model.messages.fetched;
+
+            await u.waitUntil(() => muc.messages.length);
             expect(muc.messages.at(0).get('message')).toBe('First message')
             done();
         }));

@@ -2403,9 +2403,13 @@ converse.plugins.add('converse-muc', {
                 const muc_jid = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
                 if (!_converse.chatboxes.get(muc_jid)) {
                     _converse.api.waitUntil('chatBoxesFetched')
-                        .then(() => {
+                        .then(async () => {
                             const muc = _converse.chatboxes.get(muc_jid);
-                            muc && muc.message_handler.run(stanza);
+                            if (muc) {
+                                await muc.initialized;
+                                await muc.messages.fetched
+                                muc.message_handler.run(stanza);
+                            }
                         });
                 }
                 return true;

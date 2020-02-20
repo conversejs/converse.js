@@ -7,7 +7,9 @@
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
     const $pres = converse.env.$pres;
+    const $msg = converse.env.$msg;
     const Strophe = converse.env.Strophe;
+    const u = converse.env.utils;
 
     describe("The nickname autocomplete feature", function () {
 
@@ -19,6 +21,7 @@
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
 
+            // Nicknames from presences
             ['dick', 'harry'].forEach((nick) => {
                 _converse.connection._dataRecv(test_utils.createRequest(
                     $pres({
@@ -33,6 +36,15 @@
                     })));
             });
 
+            // Nicknames from messages
+            const msg = $msg({
+                    from: 'lounge@montague.lit/jane',
+                    id: u.getUniqueId(),
+                    to: 'romeo@montague.lit',
+                    type: 'groupchat'
+                }).c('body').t('Hello world').tree();
+            await view.model.onMessage(msg);
+
             // Test that pressing @ brings up all options
             const textarea = view.el.querySelector('textarea.chat-textarea');
             const at_event = {
@@ -46,10 +58,11 @@
             textarea.value = '@';
             view.onKeyUp(at_event);
 
-            expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(3);
+            expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(4);
             expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
             expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
-            expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('tom');
+            expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
+            expect(view.el.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
             done();
         }));
 

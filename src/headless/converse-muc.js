@@ -249,10 +249,6 @@ converse.plugins.add('converse-muc', {
                 _converse.api.trigger('chatRoomMessageInitialized', this);
             },
 
-            validate (attrs) {
-                return !u.shouldCreateGroupchatMessage(attrs);
-            },
-
             onOccupantRemoved () {
                 this.stopListening(this.occupant);
                 delete this.occupant;

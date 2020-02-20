@@ -1776,8 +1776,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             removeEmptyHistoryFeedback () {
-                if (_converse.muc_show_logs_before_join &&
-                        this.content.firstElementChild.matches('.empty-history-feedback')) {
+                const el = this.content.firstElementChild;
+                if (_converse.muc_show_logs_before_join && el && el.matches('.empty-history-feedback')) {
                     this.content.removeChild(this.content.firstElementChild);
                 }
             },

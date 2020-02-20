@@ -3,7 +3,7 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-/* global libsignal, ArrayBuffer */
+/* global libsignal */
 
 import "converse-profile";
 import { Collection } from "skeletor.js/src/collection";

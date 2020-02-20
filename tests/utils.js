@@ -204,6 +204,9 @@
 
 
     utils.returnMemberLists = async function (_converse, muc_jid, members=[], affiliations=['member', 'owner', 'admin']) {
+        if (affiliations.length === 0) {
+            return;
+        }
         const stanzas = _converse.connection.IQ_stanzas;
 
         if (affiliations.includes('member')) {
@@ -302,9 +305,10 @@
         await room_creation_promise;
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
-        if (_converse.muc_fetch_members) {
-            await utils.returnMemberLists(_converse, muc_jid, members);
-        }
+
+        const affs = _converse.muc_fetch_members;
+        const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
+        await utils.returnMemberLists(_converse, muc_jid, members, all_affiliations);
         await view.model.messages.fetched;
     };
 

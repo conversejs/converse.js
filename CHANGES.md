@@ -3,6 +3,7 @@
 
 ## 7.0.0 (Unreleased)
 
+- [muc_fetch_members](https://conversejs.org/docs/html/configuration.html#muc-fetch-members) now also accepts an array of affiliations to fetch.
 - Replace Backbone with [Skeletor](https://github.com/skeletorjs/skeletor)
 - Start using [lit-html](https://lit-html.polymer-project.org/) instead of lodash for templating.
 - Bugfix. Handle stanza that clears the MUC subject

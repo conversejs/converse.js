@@ -362,12 +362,11 @@
                         ['rosterGroupsFetched'], {'muc_fetch_members': true},
                         async function (done, _converse) {
 
-                    const sent_IQs = _converse.connection.IQ_stanzas;
+                    let sent_IQs = _converse.connection.IQ_stanzas;
                     const muc_jid = 'lounge@montague.lit';
-                    spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
                     await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                     let view = _converse.chatboxviews.get(muc_jid);
-                    expect(view.model.occupants.fetchMembers).toHaveBeenCalled();
+                    expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation]')).length).toBe(3);
 
                     // Check in reverse order that we requested all three lists
                     const owner_iq = sent_IQs.pop();
@@ -387,11 +386,33 @@
                         `<iq id="${member_iq.getAttribute('id')}" to="${muc_jid}" type="get" xmlns="jabber:client">`+
                             `<query xmlns="http://jabber.org/protocol/muc#admin"><item affiliation="member"/></query>`+
                         `</iq>`);
+                    view.close();
 
+                    _converse.connection.IQ_stanzas = [];
+                    sent_IQs = _converse.connection.IQ_stanzas;
                     _converse.muc_fetch_members = false;
                     await test_utils.openAndEnterChatRoom(_converse, 'orchard@montague.lit', 'romeo');
                     view = _converse.chatboxviews.get('orchard@montague.lit');
-                    expect(view.model.occupants.fetchMembers.calls.count()).toBe(1);
+                    expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation]')).length).toBe(0);
+                    await view.close();
+
+                    _converse.connection.IQ_stanzas = [];
+                    sent_IQs = _converse.connection.IQ_stanzas;
+                    _converse.muc_fetch_members = ['admin'];
+                    await test_utils.openAndEnterChatRoom(_converse, 'courtyard@montague.lit', 'romeo');
+                    view = _converse.chatboxviews.get('courtyard@montague.lit');
+                    expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation]')).length).toBe(1);
+                    expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation="admin"]')).length).toBe(1);
+                    view.close();
+
+                    _converse.connection.IQ_stanzas = [];
+                    sent_IQs = _converse.connection.IQ_stanzas;
+                    _converse.muc_fetch_members = ['owner'];
+                    await test_utils.openAndEnterChatRoom(_converse, 'garden@montague.lit', 'romeo');
+                    view = _converse.chatboxviews.get('garden@montague.lit');
+                    expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation]')).length).toBe(1);
+                    expect(sent_IQs.filter(iq => iq.querySelector('query item[affiliation="owner"]')).length).toBe(1);
+                    view.close();
                     done();
                 }));
 

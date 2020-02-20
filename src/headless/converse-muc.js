@@ -460,9 +460,7 @@ converse.plugins.add('converse-muc', {
 
             async onConnectionStatusChanged () {
                 if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-                    if (_converse.muc_fetch_members) {
-                        await this.occupants.fetchMembers();
-                    }
+                    await this.occupants.fetchMembers();
                     await this.fetchMessages();
                     await this.clearMessageQueue();
                     /**
@@ -1339,9 +1337,7 @@ converse.plugins.add('converse-muc', {
                 const aff_lists = await Promise.all(all_affiliations.map(a => this.getAffiliationList(a)));
                 const old_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc: [...val, ...acc]), []);
                 await this.setAffiliations(muc_utils.computeAffiliationsDelta(true, false, members, old_members));
-                if (_converse.muc_fetch_members) {
-                    return this.occupants.fetchMembers();
-                }
+                await this.occupants.fetchMembers();
             },
 
             /**
@@ -2228,7 +2224,11 @@ converse.plugins.add('converse-muc', {
             },
 
             async fetchMembers () {
-                const all_affiliations = ['member', 'admin', 'owner'];
+                const affs = _converse.muc_fetch_members;
+                const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
+                if (affs.length === 0) {
+                    return;
+                }
                 const aff_lists = await Promise.all(all_affiliations.map(a => this.chatroom.getAffiliationList(a)));
                 const new_members = aff_lists.reduce((acc, val) => (u.isErrorObject(val) ? acc : [...val, ...acc]), []);
                 const known_affiliations = all_affiliations.filter(a => !u.isErrorObject(aff_lists[all_affiliations.indexOf(a)]));

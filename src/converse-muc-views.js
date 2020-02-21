@@ -1442,7 +1442,12 @@ converse.plugins.add('converse-muc-views', {
                     allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
                 }
                 allowed_commands.sort();
-                return allowed_commands;
+
+                if (Array.isArray(_converse.muc_disable_slash_commands)) {
+                    return allowed_commands.filter(c => !_converse.muc_disable_slash_commands.includes(c));
+                } else {
+                    return allowed_commands;
+                }
             },
 
             parseMessageForCommands (text) {
@@ -1455,14 +1460,8 @@ converse.plugins.add('converse-muc-views', {
                     return false;
                 }
                 const args = text.slice(('/'+command).length+1).trim();
-
-                let disabled_commands = [];
-                if (Array.isArray(_converse.muc_disable_slash_commands)) {
-                    disabled_commands = _converse.muc_disable_slash_commands;
-                    if (disabled_commands.includes(command)) {
-                        return false;
-                    }
-                }
+                const disabled_commands = Array.isArray(_converse.muc_disable_slash_commands) ?
+                        _converse.muc_disable_slash_commands : [];
                 const allowed_commands = this.getAllowedCommands();
                 if (!allowed_commands.includes(command)) {
                     return false;

@@ -8,6 +8,7 @@ import xss from "xss/dist/xss";
 
 const u = converse.env.utils;
 const i18n_hide_topic = __('Hide the groupchat topic');
+const i18n_bookmarked = __('This groupchat is bookmarked');
 
 
 const tpl_standalone_btns = (o) => o.standalone_btns.reverse().map(b => until(b, ''));
@@ -20,7 +21,7 @@ export default (o) => {
         <div class="chatbox-title ${ show_subject ? '' :  "chatbox-title--no-desc"}">
             ${ (o._converse.standalone) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
             <div class="chatbox-title__text" title="${ (o._converse.locked_muc_domain !== 'hidden') ? o.jid : '' }">${ o.title }
-                ${ (o.bookmarked) ? html`<i class="fa fa-bookmark"></i>` : '' }
+                ${ (o.bookmarked) ? html`<i class="fa fa-bookmark chatbox-title__text--bookmarked" title="${i18n_bookmarked}"></i>` : '' }
             </div>
             <div class="chatbox-title__buttons row no-gutters">
                 ${ o.standalone_btns.length ? tpl_standalone_btns(o) : '' }

@@ -60,6 +60,10 @@
                     color: var(--chatroom-head-color);
                 }
             }
+            .chatbox-title__text--bookmarked {
+                margin-left: 0.5em;
+                color: var(--chatroom-head-color);
+            }
         }
 
         .chatbox-title__buttons {

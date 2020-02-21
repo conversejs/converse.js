@@ -258,10 +258,10 @@ converse.plugins.add('converse-muc-views', {
             toHTML () {
                 const allowed_commands = this.chatroomview.getAllowedCommands();
                 const allowed_affiliations = allowed_commands.map(c => COMMAND_TO_AFFILIATION[c]).filter(c => c);
-                const allowed_roles = allowed_commands
+                const allowed_roles = [...new Set(allowed_commands
                     .filter((value, i, list) => list.indexOf(value) == i)
                     .map(c => COMMAND_TO_ROLE[c])
-                    .filter(c => c);
+                    .filter(c => c))];
 
                 allowed_affiliations.sort();
                 allowed_roles.sort();

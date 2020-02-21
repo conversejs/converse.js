@@ -237,7 +237,7 @@ converse.plugins.add('converse-muc-views', {
                     this.users_with_affiliation = null;
                     this.render();
                     const affiliation = this.model.get('affiliation');
-                    if (!_converse.muc_fetch_members || affiliation === 'outcast') {
+                    if (this.shouldFetchAffiliationsList()) {
                         this.users_with_affiliation = await this.chatroomview.model.getAffiliationList(affiliation);
                     } else {
                         this.users_with_affiliation = this.getUsersWithAffiliation();
@@ -273,6 +273,20 @@ converse.plugins.add('converse-muc-views', {
                     'users_with_affiliation': this.users_with_affiliation,
                     'users_with_role': this.users_with_role
                 }));
+            },
+
+            shouldFetchAffiliationsList () {
+                const affiliation = this.model.get('affiliation');
+                if (affiliation === 'none') {
+                    return false;
+                }
+                const chatroom = this.chatroomview.model;
+                const auto_fetched_affs = chatroom.occupants.getAutoFetchedAffiliationLists();
+                if (auto_fetched_affs.includes(affiliation)) {
+                    return false;
+                } else {
+                    return true;
+                }
             },
 
             toggleForm (ev) {

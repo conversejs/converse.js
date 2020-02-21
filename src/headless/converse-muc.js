@@ -829,11 +829,22 @@ converse.plugins.add('converse-muc', {
                 _converse.connection.sendPresence(presence);
             },
 
+            /**
+             * Return an array of unique nicknames based on all occupants and messages in this MUC.
+             * @private
+             * @method _converse.ChatRoom#getAllKnownNicknames
+             * @returns { String[] }
+             */
+            getAllKnownNicknames () {
+                return [...new Set([
+                    ...this.occupants.map(o => o.get('nick')),
+                    ...this.messages.map(m => m.get('nick'))
+                ])].filter(n => n);
+            },
+
             getReferenceForMention (mention, index) {
-                const longest_match = u.getLongestSubstring(
-                    mention,
-                    this.occupants.map(o => o.getDisplayName())
-                );
+                const nicknames = this.getAllKnownNicknames();
+                const longest_match = u.getLongestSubstring(mention, nicknames);
                 if (!longest_match) {
                     return null;
                 }
@@ -843,22 +854,26 @@ converse.plugins.add('converse-muc', {
                     // match.
                     return null;
                 }
+
+                let uri;
                 const occupant = this.occupants.findOccupant({'nick': longest_match}) ||
-                        this.occupants.findOccupant({'jid': longest_match});
-                if (!occupant) {
-                    return null;
+                        u.isValidJID(longest_match) && this.occupants.findOccupant({'jid': longest_match});
+
+                if (occupant) {
+                    uri = occupant.get('jid') || `${this.get('jid')}/${occupant.get('nick')}`;
+                } else if (nicknames.includes(longest_match)) {
+                    // TODO: show a warning to the user that the person is not currently in the chat
+                    uri = `${this.get('jid')}/${longest_match}`;
+                } else {
+                    return;
                 }
                 const obj = {
                     'begin': index,
                     'end': index + longest_match.length,
                     'value': longest_match,
-                    'type': 'mention'
+                    'type': 'mention',
+                    'uri': encodeURI(`xmpp:${uri}`)
                 };
-                if (occupant.get('jid')) {
-                    obj.uri = encodeURI(`xmpp:${occupant.get('jid')}`);
-                } else {
-                    obj.uri = encodeURI(`xmpp:${this.get('jid')}/${occupant.get('nick')}`);
-                }
                 return obj;
             },
 
@@ -898,16 +913,16 @@ converse.plugins.add('converse-muc', {
                 const origin_id = u.getUniqueId();
 
                 return {
+                    is_spoiler,
+                    origin_id,
+                    references,
                     'id': origin_id,
                     'msgid': origin_id,
-                    'origin_id': origin_id,
                     'from': `${this.get('jid')}/${this.get('nick')}`,
                     'fullname': this.get('nick'),
                     'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
-                    'is_spoiler': is_spoiler,
                     'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
                     'nick': this.get('nick'),
-                    'references': references,
                     'sender': 'me',
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
                     'type': 'groupchat'
@@ -915,9 +930,9 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Utility method to construct the JID for the current user
-             * as occupant of the groupchat.
-             *
+             * Utility method to construct the JID for the current user as occupant of the groupchat.
+             * @private
+             * @method _converse.ChatRoom#getRoomJIDAndNick
              * @returns {string} - The groupchat JID with the user's nickname added at the end.
              * @example groupchat@conference.example.org/nickname
              */

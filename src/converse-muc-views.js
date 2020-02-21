@@ -845,12 +845,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             getAutoCompleteList () {
-                // Create an array of unique nicknames based on the occupants and messages.
-                const nicks = [...new Set([
-                    ...this.model.occupants.map(o => o.get('nick')),
-                    ...this.model.messages.map(m => m.get('nick'))
-                ])].filter(n => n);
-                return nicks.map(nick => ({'label': nick, 'value': `@${nick}`}));
+                return this.model.getAllKnownNicknames().map(nick => ({'label': nick, 'value': `@${nick}`}));
             },
 
             getAutoCompleteListItem(text, input) {

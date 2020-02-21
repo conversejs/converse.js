@@ -652,7 +652,7 @@
                          from="${msg_obj.get('from')}"
                          to="${_converse.connection.jid}"
                          type="groupchat">
-                    <msg_body>${msg_obj.get('message')}</msg_body>
+                    <body>${msg_obj.get('message')}</body>
                     <stanza-id xmlns="urn:xmpp:sid:0"
                                id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                                by="lounge@montague.lit"/>
@@ -878,6 +878,17 @@
                         })));
                 });
 
+                // Also check that nicks from received messages, (but for which
+                // we don't have occupant objects) can be mentioned.
+                const stanza = u.toStanza(`
+                    <message xmlns="jabber:client"
+                            from="${muc_jid}/gh0st"
+                            to="${_converse.connection.bare_jid}"
+                            type="groupchat">
+                        <body>Boo!</body>
+                    </message>`);
+                await view.model.onMessage(stanza);
+
                 // Run a few unit tests for the parseTextForReferences method
                 let [text, references] = view.model.parseTextForReferences('hello z3r0')
                 expect(references.length).toBe(0);
@@ -935,6 +946,12 @@
                 expect(references.length).toBe(0);
                 expect(JSON.stringify(references))
                     .toBe('[]');
+
+                [text, references] = view.model.parseTextForReferences('@gh0st where are you?')
+                expect(text).toBe('gh0st where are you?');
+                expect(references.length).toBe(1);
+                expect(JSON.stringify(references))
+                    .toBe('[{"begin":0,"end":5,"value":"gh0st","type":"mention","uri":"xmpp:lounge@montague.lit/gh0st"}]');
                 done();
             }));
 

@@ -74,8 +74,8 @@ const role_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Role:</strong> ${o.item.role}<a href="#" data-form="role-form" class="toggle-form right fa fa-wrench"></a></div>
-                <form class="role-form hidden">
+                <div><strong>Role:</strong> ${o.item.role}<a href="#" data-form="role-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a></div>
+                <form class="role-form hidden" @submit=${o.assignRole}>
                     <div class="form-group">
                         <input type="hidden" name="jid" value="${o.item.jid}"/>
                         <input type="hidden" name="nick" value="${o.item.nick}"/>
@@ -112,8 +112,8 @@ const affiliation_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Affiliation:</strong> ${o.item.affiliation} <a href="#" data-form="affiliation-form" class="toggle-form right fa fa-wrench"></a></div>
-                <form class="affiliation-form hidden">
+                <div><strong>Affiliation:</strong> ${o.item.affiliation} <a href="#" data-form="affiliation-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a></div>
+                <form class="affiliation-form hidden" @submit=${o.assignAffiliation}>
                     <div class="form-group">
                         <input type="hidden" name="jid" value="${o.item.jid}"/>
                         <input type="hidden" name="nick" value="${o.item.nick}"/>
@@ -152,16 +152,16 @@ export default (o) => html`
 
                 <ul class="nav nav-pills justify-content-center">
                     <li role="presentation" class="nav-item">
-                        <a class="nav-link active" id="affiliations-tab" href="#affiliations-tabpanel" aria-controls="affiliations-tabpanel" role="tab" data-toggle="tab">Affiliations</a>
+                        <a class="nav-link active" id="affiliations-tab" href="#affiliations-tabpanel" aria-controls="affiliations-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>Affiliations</a>
                     </li>
                     <li role="presentation" class="nav-item">
-                        <a class="nav-link" id="roles-tab" href="#roles-tabpanel" aria-controls="roles-tabpanel" role="tab" data-toggle="tab">Roles</a>
+                        <a class="nav-link" id="roles-tab" href="#roles-tabpanel" aria-controls="roles-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>Roles</a>
                     </li>
                 </ul>
 
                 <div class="tab-content">
                     <div class="tab-pane tab-pane--columns active" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
-                        <form class="converse-form query-affiliation">
+                        <form class="converse-form query-affiliation" @submit=${o.queryAffiliation}>
                             <p class="helptext pb-3">${i18n_helptext_affiliation}</p>
                             <div class="form-group">
                                 <label for="affiliation">
@@ -194,7 +194,7 @@ export default (o) => html`
                     </div>
 
                     <div class="tab-pane tab-pane--columns" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
-                        <form class="converse-form query-role">
+                        <form class="converse-form query-role" @submit=${o.queryRole}>
                             <p class="helptext pb-3">${i18n_helptext_role}</p>
                             <div class="form-group">
                                 <label for="role"><strong>${i18n_role}:</strong></label>

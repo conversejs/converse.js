@@ -223,14 +223,6 @@ converse.plugins.add('converse-muc-views', {
 
         _converse.ModeratorToolsModal = _converse.BootstrapModal.extend({
             id: "converse-modtools-modal",
-            events: {
-                'submit .affiliation-form': 'assignAffiliation',
-                'submit .role-form': 'assignRole',
-                'submit .query-affiliation': 'queryAffiliation',
-                'submit .query-role': 'queryRole',
-                'click  .nav-item .nav-link': 'switchTab',
-                'click .toggle-form': 'toggleForm',
-            },
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
@@ -270,8 +262,14 @@ converse.plugins.add('converse-muc-views', {
                     allowed_affiliations,
                     allowed_roles,
                     'affiliations': [...AFFILIATIONS, 'none'],
+                    'assignAffiliation': ev => this.assignAffiliation(ev),
+                    'assignRole': ev => this.assignRole(ev),
                     'loading_users_with_affiliation': this.loading_users_with_affiliation,
+                    'queryAffiliation': ev => this.queryAffiliation(ev),
+                    'queryRole': ev => this.queryRole(ev),
                     'roles': ROLES,
+                    'switchTab': ev => this.switchTab(ev),
+                    'toggleForm': ev => this.toggleForm(ev),
                     'users_with_affiliation': this.users_with_affiliation,
                     'users_with_role': this.users_with_role
                 }));

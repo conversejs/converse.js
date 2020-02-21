@@ -152,45 +152,15 @@ export default (o) => html`
 
                 <ul class="nav nav-pills justify-content-center">
                     <li role="presentation" class="nav-item">
-                        <a class="nav-link active" id="roles-tab" href="#roles-tabpanel" aria-controls="roles-tabpanel" role="tab" data-toggle="tab">Roles</a>
+                        <a class="nav-link active" id="affiliations-tab" href="#affiliations-tabpanel" aria-controls="affiliations-tabpanel" role="tab" data-toggle="tab">Affiliations</a>
                     </li>
                     <li role="presentation" class="nav-item">
-                        <a class="nav-link" id="affiliations-tab" href="#affiliations-tabpanel" aria-controls="affiliations-tabpanel" role="tab" data-toggle="tab">Affiliations</a>
+                        <a class="nav-link" id="roles-tab" href="#roles-tabpanel" aria-controls="roles-tabpanel" role="tab" data-toggle="tab">Roles</a>
                     </li>
                 </ul>
 
                 <div class="tab-content">
-                    <div class="tab-pane tab-pane--columns active" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
-                        <form class="converse-form query-role">
-                            <p class="helptext pb-3">${i18n_helptext_role}</p>
-                            <div class="form-group">
-                                <label for="role"><strong>${i18n_role}:</strong></label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select class="custom-select select-role" name="role">
-                                            ${o.roles.map(item => role_option(Object.assign({item}, o)))}
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        <input type="submit" class="btn btn-primary" name="users_with_role" value="${i18n_show_users}"/>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col pt-2"><p class="helptext pb-3">${getRoleHelpText(o.role)}</p></div>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="scrollable-container">
-                            <ul class="list-group list-group--users">
-                                ${ o.loading_users_with_role ? html`<li class="list-group-item"> ${spinner()} </li>` : '' }
-                                ${ (o.users_with_role && o.users_with_role.length === 0) ? html`<li class="list-group-item">${i18n_no_users_with_role}</li>` : '' }
-                                ${ (o.users_with_role || []).map(item => role_list_item(Object.assign({item}, o))) }
-                            </ul>
-                        </div>
-                    </div>
-
-
-                    <div class="tab-pane tab-pane--columns" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
+                    <div class="tab-pane tab-pane--columns active" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
                         <form class="converse-form query-affiliation">
                             <p class="helptext pb-3">${i18n_helptext_affiliation}</p>
                             <div class="form-group">
@@ -219,6 +189,35 @@ export default (o) => html`
                                 ${ (o.users_with_affiliation instanceof Error) ?
                                         html`<li class="list-group-item">${o.users_with_affiliation.message}</li>` :
                                         (o.users_with_affiliation || []).map(item => affiliation_list_item(Object.assign({item}, o))) }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane tab-pane--columns" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
+                        <form class="converse-form query-role">
+                            <p class="helptext pb-3">${i18n_helptext_role}</p>
+                            <div class="form-group">
+                                <label for="role"><strong>${i18n_role}:</strong></label>
+                                <div class="row">
+                                    <div class="col">
+                                        <select class="custom-select select-role" name="role">
+                                            ${o.roles.map(item => role_option(Object.assign({item}, o)))}
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <input type="submit" class="btn btn-primary" name="users_with_role" value="${i18n_show_users}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col pt-2"><p class="helptext pb-3">${getRoleHelpText(o.role)}</p></div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="scrollable-container">
+                            <ul class="list-group list-group--users">
+                                ${ o.loading_users_with_role ? html`<li class="list-group-item"> ${spinner()} </li>` : '' }
+                                ${ (o.users_with_role && o.users_with_role.length === 0) ? html`<li class="list-group-item">${i18n_no_users_with_role}</li>` : '' }
+                                ${ (o.users_with_role || []).map(item => role_list_item(Object.assign({item}, o))) }
                             </ul>
                         </div>
                     </div>

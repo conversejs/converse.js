@@ -1658,7 +1658,7 @@ converse.plugins.add('converse-muc', {
                     messages.reverse();
                     return messages.find(
                         ({attributes}) =>
-                            attributes.moderation === 'retraction' &&
+                            attributes.moderated === 'retracted' &&
                             attributes.moderated_id === stanza_id &&
                             attributes.moderated_by
                     );

@@ -141,6 +141,66 @@
             }));
         });
 
+        describe("A groupchat message moderator retraction", function () {
+
+            it("can be received before the message it pertains to",
+                mock.initConverse(
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                const date = (new Date()).toISOString();
+                const muc_jid = 'lounge@montague.lit';
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+                const retraction_stanza = u.toStanza(`
+                    <message xmlns="jabber:client" from="${muc_jid}" type="groupchat" id="retraction-id-1">
+                        <apply-to xmlns="urn:xmpp:fasten:0" id="stanza-id-1">
+                            <moderated xmlns="urn:xmpp:message-moderate:0" by="${muc_jid}/madison">
+                                <retract xmlns="urn:xmpp:message-retract:0"/>
+                                <reason>Insults</reason>
+                            </moderated>
+                        </apply-to>
+                    </message>
+                `);
+                const view = _converse.api.chatviews.get(muc_jid);
+                spyOn(converse.env.log, 'warn');
+                spyOn(view.model, 'handleModeration').and.callThrough();
+                _converse.connection._dataRecv(test_utils.createRequest(retraction_stanza));
+
+                await u.waitUntil(() => view.model.handleModeration.calls.count() === 1);
+                await u.waitUntil(() => view.model.messages.length === 1);
+                expect(view.model.handleModeration.calls.first().returnValue).toBe(true);
+                expect(view.model.messages.length).toBe(1);
+                expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
+                expect(view.model.messages.at(0).get('dangling_moderation')).toBe(true);
+
+                const received_stanza = u.toStanza(`
+                    <message to='${_converse.jid}' from='${muc_jid}/eve' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                        <body>Hello world</body>
+                        <delay xmlns='urn:xmpp:delay' stamp='${date}'/>
+                        <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
+                    </message>
+
+                `);
+
+                _converse.connection._dataRecv(test_utils.createRequest(received_stanza));
+                await u.waitUntil(() => view.model.handleModeration.calls.count() === 2);
+
+                expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.model.messages.length).toBe(1);
+
+                const message = view.model.messages.at(0)
+                expect(message.get('moderated')).toBe('retracted');
+                expect(message.get('dangling_moderation')).toBe(false);
+                expect(message.get(`stanza_id ${muc_jid}`)).toBe('stanza-id-1');
+                expect(message.get('time')).toBe(date);
+                expect(message.get('type')).toBe('groupchat');
+                expect(view.model.handleModeration.calls.all().pop().returnValue).toBe(true);
+                done();
+            }));
+        });
+
+
         describe("A message retraction", function () {
 
             it("can be received before the message it pertains to",

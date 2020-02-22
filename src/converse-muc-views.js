@@ -40,7 +40,7 @@ const { Strophe, sizzle, $iq, $pres } = converse.env;
 const u = converse.env.utils;
 
 const ROLES = ['moderator', 'participant', 'visitor'];
-const AFFILIATIONS = ['admin', 'member', 'outcast', 'owner'];
+const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
@@ -101,16 +101,18 @@ converse.plugins.add('converse-muc-views', {
             'auto_list_rooms': false,
             'cache_muc_messages': true,
             'locked_muc_nickname': false,
-            'show_retraction_warning': true,
+            'modtools_disable_query': [],
+            'modtools_disable_assign': false,
             'muc_disable_slash_commands': false,
-            'muc_show_join_leave': true,
-            'muc_show_join_leave_status': true,
-            'muc_mention_autocomplete_min_chars': 0,
             'muc_mention_autocomplete_filter': 'contains',
+            'muc_mention_autocomplete_min_chars': 0,
             'muc_mention_autocomplete_show_avatar': true,
-            'roomconfig_whitelist': [],
             'muc_roomid_policy': null,
             'muc_roomid_policy_hint': null,
+            'muc_show_join_leave': true,
+            'muc_show_join_leave_status': true,
+            'roomconfig_whitelist': [],
+            'show_retraction_warning': true,
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
             }
@@ -248,31 +250,46 @@ converse.plugins.add('converse-muc-views', {
             },
 
             toHTML () {
-                const allowed_commands = this.chatroomview.getAllowedCommands();
-                const allowed_affiliations = allowed_commands.map(c => COMMAND_TO_AFFILIATION[c]).filter(c => c);
-                const allowed_roles = [...new Set(allowed_commands
-                    .filter((value, i, list) => list.indexOf(value) == i)
-                    .map(c => COMMAND_TO_ROLE[c])
-                    .filter(c => c))];
-
-                allowed_affiliations.sort();
-                allowed_roles.sort();
-
+                const occupant = this.chatroomview.model.occupants.findWhere({'jid': _converse.bare_jid});
                 return tpl_moderator_tools_modal(Object.assign(this.model.toJSON(), {
-                    allowed_affiliations,
-                    allowed_roles,
-                    'affiliations': [...AFFILIATIONS, 'none'],
                     'assignAffiliation': ev => this.assignAffiliation(ev),
                     'assignRole': ev => this.assignRole(ev),
                     'loading_users_with_affiliation': this.loading_users_with_affiliation,
                     'queryAffiliation': ev => this.queryAffiliation(ev),
                     'queryRole': ev => this.queryRole(ev),
-                    'roles': ROLES,
+                    'queryable_affiliations': AFFILIATIONS.filter(a => !_converse.modtools_disable_query.includes(a)),
+                    'queryable_roles': ROLES.filter(a => !_converse.modtools_disable_query.includes(a)),
+                    'assignable_affiliations': this.getAssignableAffiliations(occupant),
+                    'assignable_roles': this.getAssignableRoles(occupant),
                     'switchTab': ev => this.switchTab(ev),
                     'toggleForm': ev => this.toggleForm(ev),
                     'users_with_affiliation': this.users_with_affiliation,
                     'users_with_role': this.users_with_role
                 }));
+            },
+
+            getAssignableAffiliations (occupant) {
+                const disabled = _converse.modtools_disable_assign;
+                if (!Array.isArray(disabled)) {
+                    return disabled ? [] : AFFILIATIONS;
+                } else if (occupant.get('affiliation') === 'owner') {
+                    return AFFILIATIONS.filter(a => !disabled.includes(a));
+                } else if (occupant.get('affiliation') === 'admin') {
+                    return AFFILIATIONS.filter(a => !['owner', ...disabled].includes(a));
+                } else {
+                    return [];
+                }
+            },
+
+            getAssignableRoles (occupant) {
+                const disabled = _converse.modtools_disable_assign;
+                if (!Array.isArray(disabled)) {
+                    return disabled ? [] : ROLES;
+                } else if (occupant.get('role') === 'moderator') {
+                    return ROLES.filter(r => !disabled.includes(r));
+                } else {
+                    return [];
+                }
             },
 
             shouldFetchAffiliationsList () {

@@ -64,6 +64,31 @@ const affiliation_option = (o) => html`
 `;
 
 
+const tpl_set_role_form = (o) => html`
+    <form class="role-form hidden" @submit=${o.assignRole}>
+        <div class="form-group">
+            <input type="hidden" name="jid" value="${o.item.jid}"/>
+            <input type="hidden" name="nick" value="${o.item.nick}"/>
+            <div class="row">
+                <div class="col">
+                    <label><strong>${i18n_new_role}:</strong></label>
+                    <select class="custom-select select-role" name="role">
+                        ${ o.assignable_roles.map(role => html`<option value="${role}" ?selected=${role === o.item.role}>${role}</option>`) }
+                    </select>
+                </div>
+                <div class="col">
+                    <label><strong>${i18n_reason}:</strong></label>
+                    <input class="form-control" type="text" name="reason"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="${i18n_change_role}"/>
+        </div>
+    </form>
+`;
+
+
 const role_list_item = (o) => html`
     <li class="list-group-item">
         <ul class="list-group">
@@ -74,31 +99,36 @@ const role_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Role:</strong> ${o.item.role}<a href="#" data-form="role-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a></div>
-                <form class="role-form hidden" @submit=${o.assignRole}>
-                    <div class="form-group">
-                        <input type="hidden" name="jid" value="${o.item.jid}"/>
-                        <input type="hidden" name="nick" value="${o.item.nick}"/>
-                        <div class="row">
-                            <div class="col">
-                                <label><strong>${i18n_new_role}:</strong></label>
-                                <select class="custom-select select-role" name="role">
-                                    ${ o.allowed_roles.map(role => html`<option value="${role}" ?selected=${role === o.item.role}>${role}</option>`) }
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label><strong>${i18n_reason}:</strong></label>
-                                <input class="form-control" type="text" name="reason"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" class="btn btn-primary" value="${i18n_change_role}"/>
-                    </div>
-                </form>
+                <div><strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? html`<a href="#" data-form="role-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a>` : ''}</div>
+                ${o.assignable_roles.length ? tpl_set_role_form(o) : ''}
             </li>
         </ul>
     </li>
+`;
+
+
+const tpl_set_affiliation_form = (o) => html`
+    <form class="affiliation-form hidden" @submit=${o.assignAffiliation}>
+        <div class="form-group">
+            <input type="hidden" name="jid" value="${o.item.jid}"/>
+            <input type="hidden" name="nick" value="${o.item.nick}"/>
+            <div class="row">
+                <div class="col">
+                    <label><strong>${i18n_new_affiliation}:</strong></label>
+                    <select class="custom-select select-affiliation" name="affiliation">
+                        ${ o.assignable_affiliations.map(aff => html`<option value="${aff}" ?selected=${aff === o.item.affiliation}>${aff}</option>`) }
+                    </select>
+                </div>
+                <div class="col">
+                    <label><strong>${i18n_reason}:</strong></label>
+                    <input class="form-control" type="text" name="reason"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" name="change" value="${i18n_change_affiliation}"/>
+        </div>
+    </form>
 `;
 
 
@@ -112,35 +142,30 @@ const affiliation_list_item = (o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div><strong>Affiliation:</strong> ${o.item.affiliation} <a href="#" data-form="affiliation-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a></div>
-                <form class="affiliation-form hidden" @submit=${o.assignAffiliation}>
-                    <div class="form-group">
-                        <input type="hidden" name="jid" value="${o.item.jid}"/>
-                        <input type="hidden" name="nick" value="${o.item.nick}"/>
-                        <div class="row">
-                            <div class="col">
-                                <label><strong>${i18n_new_affiliation}:</strong></label>
-                                <select class="custom-select select-affiliation" name="affiliation">
-                                    ${ o.allowed_affiliations.map(aff => html`<option value="${aff}" ?selected=${aff === o.item.affiliation}>${aff}</option>`) }
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label><strong>${i18n_reason}:</strong></label>
-                                <input class="form-control" type="text" name="reason"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" class="btn btn-primary" name="change" value="${i18n_change_affiliation}"/>
-                    </div>
-                </form>
+                <div><strong>Affiliation:</strong> ${o.item.affiliation} ${o.assignable_affiliations.length ? html`<a href="#" data-form="affiliation-form" class="toggle-form right fa fa-wrench" @click=${o.toggleForm}></a>` : ''}</div>
+                ${o.assignable_affiliations.length ? tpl_set_affiliation_form(o) : ''}
             </li>
         </ul>
     </li>
 `;
 
 
-export default (o) => html`
+const tpl_navigation = (o) => html`
+    <ul class="nav nav-pills justify-content-center">
+        <li role="presentation" class="nav-item">
+            <a class="nav-link active" id="affiliations-tab" href="#affiliations-tabpanel" aria-controls="affiliations-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>Affiliations</a>
+        </li>
+        <li role="presentation" class="nav-item">
+            <a class="nav-link" id="roles-tab" href="#roles-tabpanel" aria-controls="roles-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>Roles</a>
+        </li>
+    </ul>
+`;
+
+
+export default (o) => {
+
+    const show_both_tabs = o.queryable_roles.length && o.queryable_affiliations.length;
+    return html`
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -150,17 +175,11 @@ export default (o) => html`
             <div class="modal-body d-flex flex-column">
                 <span class="modal-alert"></span>
 
-                <ul class="nav nav-pills justify-content-center">
-                    <li role="presentation" class="nav-item">
-                        <a class="nav-link active" id="affiliations-tab" href="#affiliations-tabpanel" aria-controls="affiliations-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>Affiliations</a>
-                    </li>
-                    <li role="presentation" class="nav-item">
-                        <a class="nav-link" id="roles-tab" href="#roles-tabpanel" aria-controls="roles-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>Roles</a>
-                    </li>
-                </ul>
+                ${ show_both_tabs ? tpl_navigation(o) : '' }
+
 
                 <div class="tab-content">
-                    <div class="tab-pane tab-pane--columns active" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
+                    <div class="tab-pane tab-pane--columns ${ o.queryable_affiliations.length ? 'active' : ''}" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
                         <form class="converse-form query-affiliation" @submit=${o.queryAffiliation}>
                             <p class="helptext pb-3">${i18n_helptext_affiliation}</p>
                             <div class="form-group">
@@ -170,7 +189,7 @@ export default (o) => html`
                                 <div class="row">
                                     <div class="col">
                                         <select class="custom-select select-affiliation" name="affiliation">
-                                            ${o.affiliations.map(item => affiliation_option(Object.assign({item}, o)))}
+                                            ${o.queryable_affiliations.map(item => affiliation_option(Object.assign({item}, o)))}
                                         </select>
                                     </div>
                                     <div class="col">
@@ -193,7 +212,7 @@ export default (o) => html`
                         </div>
                     </div>
 
-                    <div class="tab-pane tab-pane--columns" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
+                    <div class="tab-pane tab-pane--columns ${ !show_both_tabs && o.queryable_roles.length ? 'active' : ''}" id="roles-tabpanel" role="tabpanel" aria-labelledby="roles-tab">
                         <form class="converse-form query-role" @submit=${o.queryRole}>
                             <p class="helptext pb-3">${i18n_helptext_role}</p>
                             <div class="form-group">
@@ -201,7 +220,7 @@ export default (o) => html`
                                 <div class="row">
                                     <div class="col">
                                         <select class="custom-select select-role" name="role">
-                                            ${o.roles.map(item => role_option(Object.assign({item}, o)))}
+                                            ${o.queryable_roles.map(item => role_option(Object.assign({item}, o)))}
                                         </select>
                                     </div>
                                     <div class="col">
@@ -224,5 +243,5 @@ export default (o) => html`
                 </div>
             </div>
         </div>
-    </div>
-`;
+    </div>`;
+}

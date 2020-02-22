@@ -1039,6 +1039,26 @@ and it's trivial for an attacker to bypass this restriction.
 
 You should therefore also configure your XMPP server to limit message sizes.
 
+modtools_disable_assign
+-----------------------
+
+* Default: ``false``
+* Possible Values: ``true``, ``false``, ``['owner', 'admin', 'member', 'outcast', 'none', 'moderator', 'participant', 'visitor']``
+
+This setting allows you to disable (either completely, or fine-grained) which affiliations and or roles
+may be assigned in the moderator tools modal.
+
+
+modtools_disable_query
+----------------------
+
+* Default: ``[]``
+* Possible Values: ``['owner', 'admin', 'member', 'outcast', 'none', 'moderator', 'participant', 'visitor']``
+
+This setting allows you to disable which affiliations or roles may be queried in the moderator tools modal.
+If all roles or all affiliations are disabled, then the relevant tab won't be
+showed at all.
+
 
 muc_disable_slash_commands
 --------------------------

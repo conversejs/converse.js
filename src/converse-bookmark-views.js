@@ -50,7 +50,7 @@ converse.plugins.add('converse-bookmark-views', {
                         'name': 'bookmark'
                     }
                     const names = buttons.map(t => t.name);
-                    const idx = names.indexOf('configure');
+                    const idx = names.indexOf('details');
                     const data_promise = supported.then(s => s ? data : '');
                     return idx > -1 ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)] : [data_promise, ...buttons];
                 }

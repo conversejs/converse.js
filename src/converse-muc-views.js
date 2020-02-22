@@ -1112,16 +1112,6 @@ converse.plugins.add('converse-muc-views', {
                     'icon_class': 'fa-info-circle',
                     'name': 'details'
                 }];
-                if (this.model.invitesAllowed()) {
-                    buttons.push({
-                        'i18n_text': __('Invite'),
-                        'i18n_title': __('Invite someone to join this groupchat'),
-                        'handler': ev => this.showInviteModal(ev),
-                        'a_class': 'open-invite-modal',
-                        'icon_class': 'fa-user-plus',
-                        'name': 'invite'
-                    });
-                }
                 if (this.model.getOwnAffiliation() === 'owner') {
                     buttons.push({
                         'i18n_text': __('Configure'),
@@ -1133,7 +1123,44 @@ converse.plugins.add('converse-muc-views', {
                     });
                 }
 
-                if (this.model.get('subject')) {
+                const conn_status = this.model.session.get('connection_status');
+                if (conn_status === converse.ROOMSTATUS.ENTERED) {
+                    const allowed_commands = this.getAllowedCommands();
+                    if (allowed_commands.includes('modtools')) {
+                        buttons.push({
+                            'i18n_text': __('Moderate'),
+                            'i18n_title': __('Moderate this groupchat'),
+                            'handler': () => this.showModeratorToolsModal(),
+                            'a_class': 'moderate-chatroom-button',
+                            'icon_class': 'fa-user-cog',
+                            'name': 'moderate'
+                        });
+                    }
+                    if (allowed_commands.includes('destroy')) {
+                        buttons.push({
+                            'i18n_text': __('Destroy'),
+                            'i18n_title': __('Remove this groupchat'),
+                            'handler': ev => this.destroy(ev),
+                            'a_class': 'destroy-chatroom-button',
+                            'icon_class': 'fa-trash',
+                            'name': 'destroy'
+                        });
+                    }
+                }
+
+                if (this.model.invitesAllowed()) {
+                    buttons.push({
+                        'i18n_text': __('Invite'),
+                        'i18n_title': __('Invite someone to join this groupchat'),
+                        'handler': ev => this.showInviteModal(ev),
+                        'a_class': 'open-invite-modal',
+                        'icon_class': 'fa-user-plus',
+                        'name': 'invite'
+                    });
+                }
+
+                const subject = this.model.get('subject');
+                if (subject && subject.text) {
                     buttons.push({
                         'i18n_text': this.model.get('subject_hidden') ? __('Show topic') : __('Hide topic'),
                         'i18n_title': this.model.get('subject_hidden') ?
@@ -1466,6 +1493,13 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            async destroy (reason, new_jid) {
+                const message = [__('Are you sure you want to destroy this groupchat?')];
+                if (await _converse.api.confirm(__('Confirm'), message)) {
+                    return this.model.sendDestroyIQ(reason, new_jid).then(() => this.close())
+                }
+            },
+
             parseMessageForCommands (text) {
                 if (_converse.muc_disable_slash_commands && !Array.isArray(_converse.muc_disable_slash_commands)) {
                     return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
@@ -1510,9 +1544,7 @@ converse.plugins.add('converse-muc-views', {
                         if (!this.verifyAffiliations(['owner'])) {
                             break;
                         }
-                        this.model.sendDestroyIQ(args)
-                            .then(() => this.close())
-                            .catch(e => this.onCommandError(e));
+                        this.destroy(args).catch(e => this.onCommandError(e));
                         break;
                     }
                     case 'help': {

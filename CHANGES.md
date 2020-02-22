@@ -8,9 +8,10 @@
 - Start using [lit-html](https://lit-html.polymer-project.org/) instead of lodash for templating.
 - Bugfix. Handle stanza that clears the MUC subject
 - #1313: Stylistic improvements to the send button
+- #1535: Add option to destroy a MUC
 - #1793: Send button doesn't appear in Firefox in 1:1 chats
-- #1822: Don't log error if user has no bookmarks
 - #1820: Set focus on jid field after controlbox is loaded
+- #1822: Don't log error if user has no bookmarks
 - #1823: New config options [muc_roomid_policy](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy)
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact

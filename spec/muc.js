@@ -3966,17 +3966,15 @@
                 const muc_jid = 'lounge@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.api.chatviews.get(muc_jid);
-                let sent_IQ, IQ_id;
-                const sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
+                spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
                 const textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = '/destroy bored';
                 view.onFormSubmitted(new Event('submit'));
-                expect(sent_IQ.toLocaleString()).toBe(
-                    `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
+
+                const sent_IQs = _converse.connection.IQ_stanzas;
+                const sent_IQ = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('destroy')).pop());
+                expect(Strophe.serialize(sent_IQ)).toBe(
+                    `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#owner">`+
                             `<destroy>`+
                                 `<reason>`+
@@ -3986,15 +3984,9 @@
                         `</query>`+
                     `</iq>`);
 
-                /* <iq from="lounge@montague.lit"
-                 *  id="${IQ_id}"
-                 *  to="romeo@montague.lit/orchard"
-                 *  type="result"
-                 *  xmlns="jabber:client"/>
-                */
                 const result_stanza = $iq({
                     'type': 'result',
-                    'id': IQ_id,
+                    'id': sent_IQ.getAttribute('id'),
                     'from': view.model.get('jid'),
                     'to': _converse.connection.jid
                 });

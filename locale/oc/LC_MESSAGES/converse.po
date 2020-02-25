@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2019-11-02 03:04+0000\n"
-"Last-Translator: Quentí <quentinantonin@free.fr>\n"
+"PO-Revision-Date: 2020-04-04 18:09+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
 "Language: oc\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: dist/converse-no-dependencies.js:10630
 msgid "Uploading file:"
@@ -32,18 +32,16 @@ msgid "Edit this message"
 msgstr "Modificar aqueste messatge"
 
 #: dist/converse-no-dependencies.js:10766
-#, fuzzy
 msgid "Retract this message"
-msgstr "Modificar aqueste messatge"
+msgstr "Levar aqueste messatge"
 
 #: dist/converse-no-dependencies.js:10792
-#, fuzzy
 msgid "Send the message"
-msgstr "Modificar aqueste messatge"
+msgstr "Enviar lo messatge"
 
 #: dist/converse-no-dependencies.js:11114
 msgid "No message history available."
-msgstr ""
+msgstr "Cap d’istoric de messatges pas disponible."
 
 #: dist/converse-no-dependencies.js:11147
 msgid "You're not allowed to send messages in this room"
@@ -104,16 +102,15 @@ msgid "Cancel"
 msgstr "Anullar"
 
 #: dist/converse-no-dependencies.js:27593
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
 "Lo messatge es pas estat liurat perque sètz pas autorizat a enviar de "
-"messatge a aquesta sala."
+"messatges."
 
 #: dist/converse-no-dependencies.js:27596
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The message from the server is: \"%1$s\""
-msgstr "La rason indicada es  : « %1$s »."
+msgstr "Lo messatge del servidor es  : « %1$s »"
 
 #: dist/converse-no-dependencies.js:27599
 msgid ""
@@ -126,26 +123,26 @@ msgstr "Una error s’es producha :"
 
 #: dist/converse-no-dependencies.js:28450
 msgid "The connection has dropped, attempting to reconnect."
-msgstr "La connexion  es estada perduda, ensag de reconnexion."
+msgstr "La connexion es estada perduda, ensag de reconnexion."
 
 #: dist/converse-no-dependencies.js:29477
-#, fuzzy
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
-"O planhèm, una error s’es producha en ensajar de suprimir los clients OMEMO."
+msgstr "O planhèm, una error s’es producha en se connectar al servidor de chat."
 
 #: dist/converse-no-dependencies.js:29484
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Vòstra adreça XMPP e/o senhal es incorrèct. Tornatz ensajar."
 
 #: dist/converse-no-dependencies.js:29496
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
+"O planhèm, avèm pas pogut nos connectar a l’òste XMPP amb lo domeni : %1$s"
 
 #: dist/converse-no-dependencies.js:29498
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
+"Lo servidor XMPP a pas prepausat un mecanisme d’autentificacion pres en carga"
 
 #: dist/converse-no-dependencies.js:30655
 msgid "Unencryptable OMEMO message"
@@ -477,9 +474,8 @@ msgid "Ungrouped"
 msgstr "Sens grop"
 
 #: dist/converse-no-dependencies.js:43070
-#, fuzzy
 msgid "New messages"
-msgstr "Escafar los messatges"
+msgstr "Messatges novèls"
 
 #: dist/converse-no-dependencies.js:43737
 #, javascript-format
@@ -575,9 +571,9 @@ msgstr "Ne veire mai"
 
 #: dist/converse-no-dependencies.js:50778
 #: dist/converse-no-dependencies.js:50780
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s es estat levat per es pas membre"
+msgstr "%1$s a suprimit aqueste messatge"
 
 #: dist/converse-no-dependencies.js:50797
 msgid "Typing from another device"
@@ -605,7 +601,7 @@ msgstr "%1$s es passat absent"
 
 #: dist/converse-no-dependencies.js:50987
 msgid "OK"
-msgstr ""
+msgstr "D’acòrdi"
 
 #: dist/converse-no-dependencies.js:51595
 #: dist/converse-no-dependencies.js:51768
@@ -669,9 +665,8 @@ msgid "Untrusted"
 msgstr "Pas fisable"
 
 #: dist/converse-no-dependencies.js:51782
-#, fuzzy
 msgid "No OMEMO-enabled devices found"
-msgstr "Autres clients amb lo chiframent OMEMO activat"
+msgstr "Cap de periferic amb lo chiframent OMEMO pas trobat"
 
 #: dist/converse-no-dependencies.js:51982
 msgid "Close this chat box"
@@ -743,7 +738,6 @@ msgid "Remove messages"
 msgstr "Escafar los messatges"
 
 #: dist/converse-no-dependencies.js:52888
-#, fuzzy
 msgid "Close this chat"
 msgstr "Tampar aquesta fenèstra de discussion"
 
@@ -765,14 +759,13 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:53148
 #: dist/converse-no-dependencies.js:59737
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "Volètz vertadièrament levar aqueste contacte ?"
+msgstr "Volètz vertadièrament suprimir aqueste messatge ?"
 
 #: dist/converse-no-dependencies.js:53155
 #: dist/converse-no-dependencies.js:59744
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmar"
 
 #: dist/converse-no-dependencies.js:53189
 msgid ""
@@ -806,7 +799,7 @@ msgstr "Clicatz aquí per vos connectar anonimament"
 
 #: dist/converse-no-dependencies.js:53881
 msgid "Disconnected"
-msgstr ""
+msgstr "Desconnectat"
 
 #: dist/converse-no-dependencies.js:53883
 msgid "Log in"
@@ -817,9 +810,8 @@ msgid "Don't have a chat account?"
 msgstr "Avètz pas de compte ?"
 
 #: dist/converse-no-dependencies.js:53887
-#, fuzzy
 msgid "Password"
-msgstr "Senhal :"
+msgstr "Senhal"
 
 #: dist/converse-no-dependencies.js:53889
 msgid "This is a trusted device"
@@ -883,9 +875,8 @@ msgid "Minimize this chat box"
 msgstr "Reduire aquesta fenèstra de discussion"
 
 #: dist/converse-no-dependencies.js:56986
-#, fuzzy
 msgid "Minimize this groupchat"
-msgstr "Reduire aquesta fenèstra de discussion"
+msgstr "Reduire aqueste grop de discussion"
 
 #: dist/converse-no-dependencies.js:57303
 msgid "Click to restore this chat"
@@ -1055,19 +1046,16 @@ msgid "Invite"
 msgstr "Convidar"
 
 #: dist/converse-no-dependencies.js:57991
-#, fuzzy
 msgid "Invite someone to this groupchat"
-msgstr "Suprimir aquesta sala"
+msgstr "Convidar qualqu’un al grop de discussion"
 
 #: dist/converse-no-dependencies.js:57993
-#, fuzzy
 msgid "user@example.org"
 msgstr "nom@exemple.org"
 
 #: dist/converse-no-dependencies.js:57999
-#, fuzzy
 msgid "Optional reason for the invitation"
-msgstr "Indici opcional"
+msgstr "Rason facultativa pel convit"
 
 #: dist/converse-no-dependencies.js:58034
 msgid "This groupchat requires a password"
@@ -1119,9 +1107,8 @@ msgid "Click to mention %1$s in your message."
 msgstr "Clicar per mencionar %1$s dins vòstre messatge."
 
 #: dist/converse-no-dependencies.js:58201
-#, fuzzy
 msgid "Invite someone"
-msgstr "Convidar"
+msgstr "Convidar qualqu’un"
 
 #: dist/converse-no-dependencies.js:58204
 #, fuzzy
@@ -1676,7 +1663,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:61735
 msgid "Announcements"
-msgstr ""
+msgstr "Anóncias"
 
 #: dist/converse-no-dependencies.js:61739
 #, fuzzy
@@ -1810,7 +1797,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62413
 msgid "OMEMO"
-msgstr ""
+msgstr "OMEMO"
 
 #: dist/converse-no-dependencies.js:62415
 #, fuzzy

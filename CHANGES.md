@@ -4,6 +4,7 @@
 
 - #1313: Stylistic improvements to the send button
 - #1535: Add option to destroy a MUC
+- #1715: Update chat state notification after receiving a message correction.
 - #1793: Send button doesn't appear in Firefox in 1:1 chats
 - #1820: Set focus on jid field after controlbox is loaded
 - #1822: Don't log error if user has no bookmarks

@@ -700,6 +700,7 @@ converse.plugins.add('converse-muc-views', {
                 this.initDebounced();
 
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'change:edited', this.onMessageEdited);
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
                     this.content.innerHTML = '';

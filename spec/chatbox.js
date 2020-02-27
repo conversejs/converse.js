@@ -1057,6 +1057,68 @@
                         done();
                     }));
                 });
+
+                describe("On receiving a message correction", function () {
+                    it("will be updated",
+                        mock.initConverse(
+                            ['rosterGroupsFetched'], {},
+                            async function (done, _converse) {
+
+                        await test_utils.waitForRoster(_converse, 'current');
+                        await test_utils.openControlBox(_converse);
+
+                        // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
+                        const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                        await test_utils.openChatBoxFor(_converse, sender_jid);
+
+                        // Original message
+                        const original_id = u.getUniqueId();
+                        const original = $msg({
+                            from: sender_jid,
+                            to: _converse.connection.jid,
+                            type: 'chat',
+                            id: original_id,
+                            body: "Original message",
+                        }).c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+
+                        spyOn(_converse.api, "trigger").and.callThrough();
+                        _converse.connection._dataRecv(test_utils.createRequest(original));
+                        await u.waitUntil(() => _converse.api.trigger.calls.count());
+                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        const view = _converse.chatboxviews.get(sender_jid);
+                        expect(view).toBeDefined();
+
+                        // <composing> state
+                        const msg = $msg({
+                            from: sender_jid,
+                            to: _converse.connection.jid,
+                            type: 'chat',
+                            id: u.getUniqueId()
+                        }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+
+                        await _converse.handleMessageStanza(msg);
+                        const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
+                        expect(event.textContent).toEqual(mock.cur_names[1] + ' is typing');
+
+                        // Edited message
+                        const edited = $msg({
+                                from: sender_jid,
+                                to: _converse.connection.jid,
+                                type: 'chat',
+                                id: u.getUniqueId(),
+                                body: "Edited message",
+                            })
+                            .c('active', {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('replace', {'xmlns': Strophe.NS.MESSAGE_CORRECT, 'id': original_id }).tree();
+
+                        await _converse.handleMessageStanza(edited);
+
+                        const events = view.el.querySelectorAll('.chat-state-notification');
+                        expect(events.length).toBe(0);
+                        done();
+                    }));
+                });
             });
         });
 

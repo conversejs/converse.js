@@ -196,6 +196,7 @@ converse.plugins.add('converse-chatview', {
                 this.initDebounced();
 
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'change:edited', this.onMessageEdited);
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
                     this.content.innerHTML = '';
@@ -724,8 +725,7 @@ converse.plugins.add('converse-chatview', {
                 await message.initialized;
                 const view = this.add(message.get('id'), new _converse.MessageView({'model': message}));
                 await view.render();
-                // Clear chat state notifications
-                sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content).forEach(u.removeElement);
+                this.clearChatStateForSender(message.get('from'));
                 this.insertMessage(view);
                 this.insertDayIndicator(view.el);
                 this.setScrollPosition(view.el);
@@ -778,6 +778,16 @@ converse.plugins.add('converse-chatview', {
                     'message': message,
                     'chatbox': this.model
                 });
+            },
+
+            /**
+             * Handler that gets called when a message object has been edited via LMC.
+             * @private
+             * @method _converse.ChatBoxView#onMessageEdited
+             * @param { object } message - The updated message object.
+             */
+            onMessageEdited (message) {
+                this.clearChatStateForSender(message.get('from'));
             },
 
             parseMessageForCommands (text) {
@@ -1070,6 +1080,16 @@ converse.plugins.add('converse-chatview', {
                     await this.model.clearMessages();
                 }
                 return this;
+            },
+
+            /**
+             * Remove chat state notifications for a given sender JID.
+             * @private
+             * @method _converse.ChatBoxView#clearChatStateForSender
+             * @param {string} sender - The sender of the chat state
+             */
+            clearChatStateForSender (sender) {
+                sizzle(`.chat-state-notification[data-csn="${sender}"]`, this.content).forEach(u.removeElement);
             },
 
             /**

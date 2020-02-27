@@ -20,6 +20,7 @@
   example: export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist
 - New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
 - New config option [modtools_disable_assign](https://conversejs.org/docs/html/configuration.html#modtools-disable-assign)
+- #1896: Sending receipts for messages fetched from the archive 
 
 ## 6.0.0 (2020-01-09)
 

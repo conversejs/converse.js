@@ -9,7 +9,7 @@ import "./converse-disco";
 import "./converse-emoji";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import { clone, get, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
+import { clone, debounce, get, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
 import converse from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
@@ -250,6 +250,12 @@ converse.plugins.add('converse-muc', {
                 _converse.api.trigger('chatRoomMessageInitialized', this);
             },
 
+            checkValidity () {
+                const result = _converse.Message.prototype.checkValidity.call(this);
+                !result && this.collection.chatbox.debouncedRejoin();
+                return result;
+            },
+
             onOccupantRemoved () {
                 this.stopListening(this.occupant);
                 delete this.occupant;
@@ -345,6 +351,7 @@ converse.plugins.add('converse-muc', {
 
             async initialize () {
                 this.initialized = u.getResolveablePromise();
+                this.debouncedRejoin = debounce(this.rejoin, 250);
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
                 this.initMessages();
                 this.initOccupants();

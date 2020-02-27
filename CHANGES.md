@@ -20,6 +20,7 @@
   example: export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist
 - New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
 - New config option [modtools_disable_assign](https://conversejs.org/docs/html/configuration.html#modtools-disable-assign)
+- Bugfix. Update chat state notification after receiving a message correction.
 
 ## 6.0.0 (2020-01-09)
 

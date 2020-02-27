@@ -389,7 +389,7 @@ converse.plugins.add('converse-chat', {
                 if (message) {
                     this.updateMessage(message, original_stanza);
                 } else if (
-                    !this.handleReceipt (stanza, from_jid) &&
+                    !this.handleReceipt (stanza, original_stanza, from_jid) &&
                     !this.handleChatMarker(stanza, from_jid)
                 ) {
                     if (this.handleRetraction(attrs)) {
@@ -808,10 +808,10 @@ converse.plugins.add('converse-chat', {
                 _converse.api.send(receipt_stanza);
             },
 
-            handleReceipt (stanza, from_jid) {
+            handleReceipt (stanza, original_stanza, from_jid) {
                 const is_me = Strophe.getBareJidFromJid(from_jid) === _converse.bare_jid;
                 const requests_receipt = sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop() !== undefined;
-                if (requests_receipt && !is_me && !u.isCarbonMessage(stanza)) {
+                if (requests_receipt && !is_me && !u.isCarbonMessage(stanza) && !u.isMAMMessage(original_stanza)) {
                     this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
                 }
                 const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));

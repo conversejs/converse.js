@@ -234,6 +234,7 @@ converse.plugins.add('converse-muc', {
         _converse.ChatRoomMessage = _converse.Message.extend({
 
             initialize () {
+                if (!this.checkValidity()) { return; }
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
                 }

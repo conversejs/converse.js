@@ -86,6 +86,7 @@ converse.plugins.add('converse-chat', {
             },
 
             async initialize () {
+                if (!this.checkValidity()) { return; }
                 this.initialized = u.getResolveablePromise();
                 if (this.get('type') === 'chat') {
                     ModelWithContact.prototype.initialize.apply(this, arguments);
@@ -125,6 +126,20 @@ converse.plugins.add('converse-chat', {
                     );
                     return false;
                 }
+            },
+
+            checkValidity () {
+                if (Object.keys(this.attributes).length === 3) {
+                    // XXX: This is an empty message with only the 3 default values.
+                    // This seems to happen when saving a newly created message
+                    // fails for some reason.
+                    // TODO: This is likely fixable by setting `wait` when
+                    // creating messages. See the wait-for-messages branch.
+                    this.validationError = "Empty message";
+                    this.safeDestroy();
+                    return false;
+                }
+                return true;
             },
 
             safeDestroy () {

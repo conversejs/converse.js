@@ -246,7 +246,8 @@ converse.plugins.add('converse-minimize', {
              * Minimizes a chat box.
              * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
              */
-            minimize () {
+            minimize (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 this.model.minimize();
                 return this;
             },

@@ -529,7 +529,7 @@
                 }).c('body').t("This headline message will not be shown").tree();
             await _converse.handleMessageStanza(msg);
             expect(converse.env.log.info.calledWith(
-                "onMessage: Ignoring incoming headline message from JID: montague.lit"
+                "handleMessageStanza: Ignoring incoming headline message from JID: montague.lit"
             )).toBeTruthy();
             expect(u.isHeadlineMessage.called).toBeTruthy();
             expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
@@ -1228,9 +1228,7 @@
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msg_id = u.getUniqueId();
             const sent_stanzas = [];
-            spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
-                sent_stanzas.push(stanza);
-            });
+            spyOn(_converse.connection, 'send').and.callFake(stanza => sent_stanzas.push(stanza));
             const msg = $msg({
                     'from': sender_jid,
                     'to': _converse.connection.jid,
@@ -1240,8 +1238,9 @@
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
             await _converse.handleMessageStanza(msg);
             const sent_messages = sent_stanzas.map(s => _.isElement(s) ? s : s.nodeTree).filter(s => s.nodeName === 'message');
-            expect(sent_messages.length).toBe(1);
-            const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_messages[0]).pop();
+            // A chat state message is also included
+            expect(sent_messages.length).toBe(2);
+            const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_messages[1]).pop();
             expect(Strophe.serialize(receipt)).toBe(`<received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>`);
             done();
         }));
@@ -1864,7 +1863,7 @@
                 await _converse.handleMessageStanza(msg);
 
                 expect(converse.env.log.info).toHaveBeenCalledWith(
-                    "onMessage: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
+                    "handleMessageStanza: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
                 );
                 expect(_converse.api.chatboxes.create).not.toHaveBeenCalled();
                 _converse.filter_by_resource = false;
@@ -2116,7 +2115,15 @@
             const sent_messages = sent_stanzas
                 .map(s => _.isElement(s) ? s : s.nodeTree)
                 .filter(e => e.nodeName === 'message');
-            expect(sent_messages.length).toBe(0);
+
+            expect(sent_messages.length).toBe(1);
+            expect(Strophe.serialize(sent_messages[0])).toBe(
+                `<message id="${sent_messages[0].getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">`+
+                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                    `<no-store xmlns="urn:xmpp:hints"/>`+
+                    `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                `</message>`
+            );
             done();
         }));
 

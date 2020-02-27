@@ -72,6 +72,7 @@
             _converse.connection._dataRecv(test_utils.createRequest(msg));
             await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
             const view = _converse.chatboxviews.get(sender_jid);
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             await u.waitUntil(() => u.isVisible(view.el));
             await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
             expect(view.el.querySelector('.chat-msg__author').textContent.includes('Mercutio')).toBeTruthy();

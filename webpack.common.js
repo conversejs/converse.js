@@ -1,5 +1,11 @@
-/* global __dirname, module */
+/* global __dirname, module, process */
 const path = require('path');
+let bootstrap_ignore_modules = ['carousel', 'scrollspy'];
+
+const BOOTSTRAP_IGNORE_MODULES = (process.env.BOOTSTRAP_IGNORE_MODULES || '').replace(/ /g, '').trim();
+if (BOOTSTRAP_IGNORE_MODULES.length > 0) {
+    bootstrap_ignore_modules = bootstrap_ignore_modules.concat(BOOTSTRAP_IGNORE_MODULES.split(','));
+}
 
 module.exports = {
     output: {
@@ -103,7 +109,7 @@ module.exports = {
                 loader: 'bootstrap.native-loader',
                 options: {
                     bs_version: 4,
-                    ignore: ['carousel', 'scrollspy']
+                    ignore: bootstrap_ignore_modules
                 }
             }
         }],

@@ -9,7 +9,7 @@ import "@converse/headless/utils/muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
 import { get, head, isString, isUndefined } from "lodash";
-import { html, render } from "lit-html";
+import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -40,7 +40,7 @@ const { Strophe, sizzle, $iq, $pres } = converse.env;
 const u = converse.env.utils;
 
 const ROLES = ['moderator', 'participant', 'visitor'];
-const AFFILIATIONS = ['admin', 'member', 'outcast', 'owner'];
+const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
@@ -101,16 +101,18 @@ converse.plugins.add('converse-muc-views', {
             'auto_list_rooms': false,
             'cache_muc_messages': true,
             'locked_muc_nickname': false,
-            'show_retraction_warning': true,
+            'modtools_disable_query': [],
+            'modtools_disable_assign': false,
             'muc_disable_slash_commands': false,
-            'muc_show_join_leave': true,
-            'muc_show_join_leave_status': true,
-            'muc_mention_autocomplete_min_chars': 0,
             'muc_mention_autocomplete_filter': 'contains',
+            'muc_mention_autocomplete_min_chars': 0,
             'muc_mention_autocomplete_show_avatar': true,
-            'roomconfig_whitelist': [],
             'muc_roomid_policy': null,
             'muc_roomid_policy_hint': null,
+            'muc_show_join_leave': true,
+            'muc_show_join_leave_status': true,
+            'roomconfig_whitelist': [],
+            'show_retraction_warning': true,
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
             }
@@ -223,14 +225,6 @@ converse.plugins.add('converse-muc-views', {
 
         _converse.ModeratorToolsModal = _converse.BootstrapModal.extend({
             id: "converse-modtools-modal",
-            events: {
-                'submit .affiliation-form': 'assignAffiliation',
-                'submit .role-form': 'assignRole',
-                'submit .query-affiliation': 'queryAffiliation',
-                'submit .query-role': 'queryRole',
-                'click  .nav-item .nav-link': 'switchTab',
-                'click .toggle-form': 'toggleForm',
-            },
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
@@ -245,7 +239,7 @@ converse.plugins.add('converse-muc-views', {
                     this.users_with_affiliation = null;
                     this.render();
                     const affiliation = this.model.get('affiliation');
-                    if (!_converse.muc_fetch_members || affiliation === 'outcast') {
+                    if (this.shouldFetchAffiliationsList()) {
                         this.users_with_affiliation = await this.chatroomview.model.getAffiliationList(affiliation);
                     } else {
                         this.users_with_affiliation = this.getUsersWithAffiliation();
@@ -256,25 +250,60 @@ converse.plugins.add('converse-muc-views', {
             },
 
             toHTML () {
-                const allowed_commands = this.chatroomview.getAllowedCommands();
-                const allowed_affiliations = allowed_commands.map(c => COMMAND_TO_AFFILIATION[c]).filter(c => c);
-                const allowed_roles = allowed_commands
-                    .filter((value, i, list) => list.indexOf(value) == i)
-                    .map(c => COMMAND_TO_ROLE[c])
-                    .filter(c => c);
-
-                allowed_affiliations.sort();
-                allowed_roles.sort();
-
+                const occupant = this.chatroomview.model.occupants.findWhere({'jid': _converse.bare_jid});
                 return tpl_moderator_tools_modal(Object.assign(this.model.toJSON(), {
-                    allowed_affiliations,
-                    allowed_roles,
-                    'affiliations': [...AFFILIATIONS, 'none'],
+                    'assignAffiliation': ev => this.assignAffiliation(ev),
+                    'assignRole': ev => this.assignRole(ev),
                     'loading_users_with_affiliation': this.loading_users_with_affiliation,
-                    'roles': ROLES,
+                    'queryAffiliation': ev => this.queryAffiliation(ev),
+                    'queryRole': ev => this.queryRole(ev),
+                    'queryable_affiliations': AFFILIATIONS.filter(a => !_converse.modtools_disable_query.includes(a)),
+                    'queryable_roles': ROLES.filter(a => !_converse.modtools_disable_query.includes(a)),
+                    'assignable_affiliations': this.getAssignableAffiliations(occupant),
+                    'assignable_roles': this.getAssignableRoles(occupant),
+                    'switchTab': ev => this.switchTab(ev),
+                    'toggleForm': ev => this.toggleForm(ev),
                     'users_with_affiliation': this.users_with_affiliation,
                     'users_with_role': this.users_with_role
                 }));
+            },
+
+            getAssignableAffiliations (occupant) {
+                const disabled = _converse.modtools_disable_assign;
+                if (!Array.isArray(disabled)) {
+                    return disabled ? [] : AFFILIATIONS;
+                } else if (occupant.get('affiliation') === 'owner') {
+                    return AFFILIATIONS.filter(a => !disabled.includes(a));
+                } else if (occupant.get('affiliation') === 'admin') {
+                    return AFFILIATIONS.filter(a => !['owner', ...disabled].includes(a));
+                } else {
+                    return [];
+                }
+            },
+
+            getAssignableRoles (occupant) {
+                const disabled = _converse.modtools_disable_assign;
+                if (!Array.isArray(disabled)) {
+                    return disabled ? [] : ROLES;
+                } else if (occupant.get('role') === 'moderator') {
+                    return ROLES.filter(r => !disabled.includes(r));
+                } else {
+                    return [];
+                }
+            },
+
+            shouldFetchAffiliationsList () {
+                const affiliation = this.model.get('affiliation');
+                if (affiliation === 'none') {
+                    return false;
+                }
+                const chatroom = this.chatroomview.model;
+                const auto_fetched_affs = chatroom.occupants.getAutoFetchedAffiliationLists();
+                if (auto_fetched_affs.includes(affiliation)) {
+                    return false;
+                } else {
+                    return true;
+                }
             },
 
             toggleForm (ev) {
@@ -649,14 +678,11 @@ converse.plugins.add('converse-muc-views', {
                 'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
                 'click .chat-msg__action-retract': 'onMessageRetractButtonClicked',
                 'click .chatbox-navback': 'showControlBox',
-                'click .close-chatbox-button': 'close',
-                'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                 'click .hide-occupants': 'hideOccupants',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 // Arrow functions don't work here because you can't bind a different `this` param to them.
                 'click .occupant-nick': function (ev) {this.insertIntoTextArea(ev.target.textContent) },
                 'click .send-button': 'onFormSubmitted',
-                'click .show-room-details-modal': 'showRoomDetailsModal',
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-occupants': 'toggleOccupants',
                 'click .upload-file': 'toggleFileUpload',
@@ -689,6 +715,7 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model, 'show', this.show);
 
                 this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
+                this.listenTo(this.model.features, 'change:open', this.renderHeading);
 
                 this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
                 this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
@@ -704,6 +731,7 @@ converse.plugins.add('converse-muc-views', {
                 this.createSidebarView();
                 await this.updateAfterMessagesFetched();
                 this.onConnectionStatusChanged();
+                this.model.maybeShow();
                 /**
                  * Triggered once a { @link _converse.ChatRoomView } has been opened
                  * @event _converse#chatRoomViewInitialized
@@ -734,13 +762,10 @@ converse.plugins.add('converse-muc-views', {
              * @method _converse.ChatRoomView#renderHeading
              * @param { _converse.ChatRoom } [item]
              */
-            renderHeading (item=null) {
-                const changed = item === null ? [] : Object.keys(item.changed);
-                const keys = ['affiliation', 'bookmarked', 'jid', 'name', 'description', 'subject'];
-                if (item === null || changed.filter(v => keys.includes(v)).length) {
-                    render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatroom'));
-                }
+            renderHeading () {
+                render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatroom'));
             },
+
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
@@ -849,7 +874,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             getAutoCompleteList () {
-                return this.model.occupants.filter('nick').map(o => ({'label': o.get('nick'), 'value': `@${o.get('nick')}`}));
+                return this.model.getAllKnownNicknames().map(nick => ({'label': nick, 'value': `@${nick}`}));
             },
 
             getAutoCompleteListItem(text, input) {
@@ -973,12 +998,8 @@ converse.plugins.add('converse-muc-views', {
              * @param { _converse.Message } message - The message which we're retracting.
              */
             retractOwnMessage(message) {
-                this.model.sendRetractionMessage(message)
+                this.model.retractOwnMessage(message)
                     .catch(e => {
-                        message.save({
-                            'retracted': undefined,
-                            'retracted_id': undefined
-                        });
                         const errmsg = __('Sorry, something went wrong while trying to retract your message.');
                         if (u.isErrorStanza(e)) {
                             this.showErrorMessage(errmsg);
@@ -988,10 +1009,6 @@ converse.plugins.add('converse-muc-views', {
                         }
                         log.error(e);
                     });
-                message.save({
-                    'retracted': (new Date()).toISOString(),
-                    'retracted_id': message.get('origin_id')
-                });
             },
 
             /**
@@ -1002,7 +1019,7 @@ converse.plugins.add('converse-muc-views', {
              * @param { string } [reason] - The reason for retracting the message.
              */
             async retractOtherMessage (message, reason) {
-                const result = await this.model.sendRetractionIQ(message, reason);
+                const result = await this.model.retractOtherMessage(message, reason);
                 if (result === null) {
                     const err_msg = __(`A timeout occurred while trying to retract the message`);
                     _converse.api.alert('error', __('Error'), err_msg);
@@ -1012,13 +1029,6 @@ converse.plugins.add('converse-muc-views', {
                     _converse.api.alert('error', __('Error'), err_msg);
                     _converse.log(err_msg, Strophe.LogLevel.WARN);
                     _converse.log(result, Strophe.LogLevel.WARN);
-                } else {
-                    message.save({
-                        'moderated': 'retracted',
-                        'moderated_by': _converse.bare_jid,
-                        'moderated_id': message.get('msgid'),
-                        'moderation_reason': reason
-                    });
                 }
             },
 
@@ -1068,13 +1078,10 @@ converse.plugins.add('converse-muc-views', {
                 } else if (previous_affiliation === 'outcast') {
                     this.showChatEvent(__("%1$s is no longer banned from this groupchat", occupant.get('nick')))
                 }
-
                 if (current_affiliation === 'none' && previous_affiliation === 'member') {
                     this.showChatEvent(__("%1$s is no longer a member of this groupchat", occupant.get('nick')))
                 } if (current_affiliation === 'member') {
                     this.showChatEvent(__("%1$s is now a member of this groupchat", occupant.get('nick')))
-                } else if (current_affiliation === 'outcast') {
-                    this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')))
                 } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
                     // For example: AppleJack is now an (admin|owner) of this groupchat
                     this.showChatEvent(__('%1$s is now an %2$s of this groupchat', occupant.get('nick'), current_affiliation))
@@ -1114,39 +1121,126 @@ converse.plugins.add('converse-muc-views', {
             },
 
             getHeadingButtons () {
-                const buttons = [];
-                if (!_converse.singleton) {
-                    const info_close = __('Close and leave this groupchat');
-                    const template = html`<a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="${info_close}"></a>`;
-                    template.name = 'signout';
-                    buttons.push(template);
-                }
+                const buttons = [{
+                    'i18n_text': __('Details'),
+                    'i18n_title': __('Show more information about this groupchat'),
+                    'handler': ev => this.showRoomDetailsModal(ev),
+                    'a_class': 'show-room-details-modal',
+                    'icon_class': 'fa-info-circle',
+                    'name': 'details'
+                }];
                 if (this.model.getOwnAffiliation() === 'owner') {
-                    const info_configure = __('Configure this groupchat');
-                    const template = html`<a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="${info_configure} "></a>`
-                    template.name = 'configure';
-                    buttons.push(template);
+                    buttons.push({
+                        'i18n_text': __('Configure'),
+                        'i18n_title': __('Configure this groupchat'),
+                        'handler': ev => this.getAndRenderConfigurationForm(ev),
+                        'a_class': 'configure-chatroom-button',
+                        'icon_class': 'fa-wrench',
+                        'name': 'configure'
+                    });
                 }
-                const info_details = __('Show more details about this groupchat');
-                const template = html`<a class="chatbox-btn show-room-details-modal fa fa-info-circle" title="${info_details}"></a>`;
-                template.name = 'details';
-                buttons.push(template);
+
+                const conn_status = this.model.session.get('connection_status');
+                if (conn_status === converse.ROOMSTATUS.ENTERED) {
+                    const allowed_commands = this.getAllowedCommands();
+                    if (allowed_commands.includes('modtools')) {
+                        buttons.push({
+                            'i18n_text': __('Moderate'),
+                            'i18n_title': __('Moderate this groupchat'),
+                            'handler': () => this.showModeratorToolsModal(),
+                            'a_class': 'moderate-chatroom-button',
+                            'icon_class': 'fa-user-cog',
+                            'name': 'moderate'
+                        });
+                    }
+                    if (allowed_commands.includes('destroy')) {
+                        buttons.push({
+                            'i18n_text': __('Destroy'),
+                            'i18n_title': __('Remove this groupchat'),
+                            'handler': ev => this.destroy(ev),
+                            'a_class': 'destroy-chatroom-button',
+                            'icon_class': 'fa-trash',
+                            'name': 'destroy'
+                        });
+                    }
+                }
+
+                if (this.model.invitesAllowed()) {
+                    buttons.push({
+                        'i18n_text': __('Invite'),
+                        'i18n_title': __('Invite someone to join this groupchat'),
+                        'handler': ev => this.showInviteModal(ev),
+                        'a_class': 'open-invite-modal',
+                        'icon_class': 'fa-user-plus',
+                        'name': 'invite'
+                    });
+                }
+
+                const subject = this.model.get('subject');
+                if (subject && subject.text) {
+                    buttons.push({
+                        'i18n_text': this.model.get('subject_hidden') ? __('Show topic') : __('Hide topic'),
+                        'i18n_title': this.model.get('subject_hidden') ?
+                            __('Show the topic message in the heading') :
+                            __('Hide the topic in the heading'),
+                        'handler': ev => this.toggleTopic(ev),
+                        'a_class': '',
+                        'icon_class': 'fa-minus-square',
+                        'name': 'toggle-topic'
+                    });
+                }
+
+                if (!_converse.singleton) {
+                    buttons.push({
+                        'i18n_text': __('Leave'),
+                        'i18n_title': __('Leave and close this groupchat'),
+                        'handler': async ev => {
+                            const messages = [__('Are you sure you want to leave this groupchat?')];
+                            const result = await _converse.api.confirm(__('Confirm'), messages);
+                            result && this.close(ev);
+                        },
+                        'a_class': 'close-chatbox-button',
+                        'standalone': _converse.view_mode === 'overlayed',
+                        'icon_class': 'fa-sign-out-alt',
+                        'name': 'signout'
+                    });
+                }
                 return buttons;
             },
 
             /**
-             * Returns the groupchat heading HTML to be rendered.
+             * Returns the groupchat heading TemplateResult to be rendered.
              * @private
              * @method _converse.ChatRoomView#generateHeadingTemplate
              */
             generateHeadingTemplate () {
+                const heading_btns = this.getHeadingButtons();
+                const standalone_btns = heading_btns.filter(b => b.standalone);
+                const dropdown_btns = heading_btns.filter(b => !b.standalone);
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
                         _converse,
-                        'buttons': this.getHeadingButtons(),
+                        'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
+                        'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
                         'title': this.model.getDisplayName(),
                 }));
             },
+
+            toggleTopic () {
+                this.model.save('subject_hidden', !this.model.get('subject_hidden'));
+            },
+
+
+            showInviteModal (ev) {
+                ev.preventDefault();
+                if (this.muc_invite_modal === undefined) {
+                    this.muc_invite_modal = new _converse.MUCInviteModal({'model': new Model()});
+                    // TODO: remove once we have API for sending direct invite
+                    this.muc_invite_modal.chatroomview = this;
+                }
+                this.muc_invite_modal.show(ev);
+            },
+
 
             /**
              * Callback method that gets called after the chat has become visible.
@@ -1221,8 +1315,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             /**
-             * Show or hide the right sidebar containing the chat
-             * occupants (and the invite widget).
+             * Hide the right sidebar containing the chat occupants.
              * @private
              * @method _converse.ChatRoomView#hideOccupants
              */
@@ -1236,8 +1329,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             /**
-             * Show or hide the right sidebar containing the chat
-             * occupants (and the invite widget).
+             * Show or hide the right sidebar containing the chat occupants.
              * @private
              * @method _converse.ChatRoomView#toggleOccupants
              */
@@ -1338,8 +1430,12 @@ converse.plugins.add('converse-muc-views', {
                     return false;
                 }
                 const reason = args.split(nick_or_jid, 2)[1].trim();
-                // We're guaranteed to have an occupant due to getNickOrJIDFromCommandArgs
                 const occupant = this.model.getOccupant(nick_or_jid);
+                if (!occupant) {
+                    this.showErrorMessage(__("Couldn't find a participant with that nickname or JID. They might have left the groupchat."));
+                    return;
+                }
+
                 const attrs = {
                     'jid': occupant.get('jid'),
                     'reason': reason
@@ -1406,7 +1502,19 @@ converse.plugins.add('converse-muc-views', {
                     allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
                 }
                 allowed_commands.sort();
-                return allowed_commands;
+
+                if (Array.isArray(_converse.muc_disable_slash_commands)) {
+                    return allowed_commands.filter(c => !_converse.muc_disable_slash_commands.includes(c));
+                } else {
+                    return allowed_commands;
+                }
+            },
+
+            async destroy (reason, new_jid) {
+                const message = [__('Are you sure you want to destroy this groupchat?')];
+                if (await _converse.api.confirm(__('Confirm'), message)) {
+                    return this.model.sendDestroyIQ(reason, new_jid).then(() => this.close())
+                }
             },
 
             parseMessageForCommands (text) {
@@ -1419,14 +1527,8 @@ converse.plugins.add('converse-muc-views', {
                     return false;
                 }
                 const args = text.slice(('/'+command).length+1).trim();
-
-                let disabled_commands = [];
-                if (Array.isArray(_converse.muc_disable_slash_commands)) {
-                    disabled_commands = _converse.muc_disable_slash_commands;
-                    if (disabled_commands.includes(command)) {
-                        return false;
-                    }
-                }
+                const disabled_commands = Array.isArray(_converse.muc_disable_slash_commands) ?
+                        _converse.muc_disable_slash_commands : [];
                 const allowed_commands = this.getAllowedCommands();
                 if (!allowed_commands.includes(command)) {
                     return false;
@@ -1459,9 +1561,7 @@ converse.plugins.add('converse-muc-views', {
                         if (!this.verifyAffiliations(['owner'])) {
                             break;
                         }
-                        this.model.sendDestroyIQ(args)
-                            .then(() => this.close())
-                            .catch(e => this.onCommandError(e));
+                        this.destroy(args).catch(e => this.onCommandError(e));
                         break;
                     }
                     case 'help': {
@@ -1740,8 +1840,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             removeEmptyHistoryFeedback () {
-                if (_converse.muc_show_logs_before_join &&
-                        this.content.firstElementChild.matches('.empty-history-feedback')) {
+                const el = this.content.firstElementChild;
+                if (_converse.muc_show_logs_before_join && el && el.matches('.empty-history-feedback')) {
                     this.content.removeChild(this.content.firstElementChild);
                 }
             },
@@ -1990,26 +2090,13 @@ converse.plugins.add('converse-muc-views', {
                 // replaced by the user's name.
                 // Example: Topic set by JC Brand
                 const message = subject.text ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
-                const date = (new Date()).toISOString();
-
                 this.content.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({
-                        'isodate': date,
+                        'isodate': (new Date()).toISOString(),
                         'extra_classes': 'chat-event',
                         'message': message
                     }));
-
-                if (subject.text) {
-                    this.content.insertAdjacentHTML(
-                        'beforeend',
-                        tpl_info({
-                            'isodate': date,
-                            'extra_classes': 'chat-topic',
-                            'message': u.addHyperlinks(xss.filterXSS(get(this.model.get('subject'), 'text'), {'whiteList': {}})),
-                            'render_message': true
-                        }));
-                }
                 this.scrollDown();
             }
         });
@@ -2202,9 +2289,7 @@ converse.plugins.add('converse-muc-views', {
                     Object.assign(this.chatroomview.model.toJSON(), {
                         _converse,
                         'features': this.chatroomview.model.features,
-                        'occupants': this.model.models,
-                        'invitesAllowed': () => this.invitesAllowed(),
-                        'showInviteModal': ev => this.showInviteModal(ev)
+                        'occupants': this.model.models
                     })
                 );
             },
@@ -2222,16 +2307,6 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            showInviteModal (ev) {
-                ev.preventDefault();
-                if (this.muc_invite_modal === undefined) {
-                    this.muc_invite_modal = new _converse.MUCInviteModal({'model': new Model()});
-                    // TODO: remove once we have API for sending direct invite
-                    this.muc_invite_modal.chatroomview = this.chatroomview;
-                }
-                this.muc_invite_modal.show(ev);
-            },
-
             setOccupantsHeight () {
                 // TODO: remove the features section in sidebar and then this as well
                 const el = this.el.querySelector('.chatroom-features');
@@ -2239,13 +2314,6 @@ converse.plugins.add('converse-muc-views', {
                     this.el.querySelector('.occupant-list').style.cssText =
                         `height: calc(100% - ${el.offsetHeight}px - 5em);`;
                 }
-            },
-
-            invitesAllowed () {
-                return _converse.allow_muc_invitations &&
-                    (this.chatroomview.model.features.get('open') ||
-                        this.chatroomview.model.getOwnAffiliation() === "owner"
-                    );
             }
         });
 

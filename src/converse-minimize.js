@@ -8,7 +8,6 @@ import { Model } from 'skeletor.js/src/model.js';
 import { Overview } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
 import { __ } from '@converse/headless/i18n';
-import { html } from "lit-html";
 import converse from "@converse/headless/converse-core";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.html";
@@ -74,10 +73,6 @@ converse.plugins.add('converse-minimize', {
         },
 
         ChatBoxView: {
-            events: {
-                'click .toggle-chatbox-button': 'minimize',
-            },
-
             initialize () {
                 this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
                 return this.__super__.initialize.apply(this, arguments);
@@ -113,25 +108,27 @@ converse.plugins.add('converse-minimize', {
                 if (!this.model.get('minimized')) {
                     return this.__super__.setChatBoxWidth.call(this, width);
                 }
-            }
-        },
+            },
 
-        ChatBoxHeading: {
             getHeadingButtons () {
+                const { _converse } = this.__super__;
                 const buttons = this.__super__.getHeadingButtons.call(this);
-                const info_minimize = __('Minimize this chat box');
-                const template = html`<a class="chatbox-btn toggle-chatbox-button fa fa-minus" title="${info_minimize}"></a>`;
+                const data = {
+                    'a_class': 'toggle-chatbox-button',
+                    'handler': ev => this.minimize(ev),
+                    'i18n_text': __('Minimize'),
+                    'i18n_title': __('Minimize this chat'),
+                    'icon_class': "fa-minus",
+                    'name': 'minimize',
+                    'standalone': _converse.view_mode === 'overlayed'
+                }
                 const names = buttons.map(t => t.name);
                 const idx = names.indexOf('close');
-                return idx > -1 ? [...buttons.slice(0, idx+1), template, ...buttons.slice(idx+1)] : [template, ...buttons];
+                return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
             }
         },
 
         ChatRoomView: {
-            events: {
-                'click .toggle-chatbox-button': 'minimize',
-            },
-
             initialize () {
                 this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
                 const result = this.__super__.initialize.apply(this, arguments);
@@ -142,12 +139,20 @@ converse.plugins.add('converse-minimize', {
             },
 
             getHeadingButtons () {
+                const { _converse } = this.__super__;
                 const buttons = this.__super__.getHeadingButtons.call(this);
-                const info_minimize = __('Minimize this groupchat');
-                const template = html`<a class="chatbox-btn toggle-chatbox-button fa fa-minus" title="${info_minimize}"></a>`;
+                const data = {
+                    'a_class': 'toggle-chatbox-button',
+                    'handler': ev => this.minimize(ev),
+                    'i18n_text': __('Minimize'),
+                    'i18n_title': __('Minimize this groupchat'),
+                    'icon_class': "fa-minus",
+                    'name': 'minimize',
+                    'standalone': _converse.view_mode === 'overlayed'
+                }
                 const names = buttons.map(t => t.name);
                 const idx = names.indexOf('signout');
-                return idx > -1 ? [...buttons.slice(0, idx+1), template, ...buttons.slice(idx+1)] : [template, ...buttons];
+                return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
             }
         }
     },
@@ -241,7 +246,8 @@ converse.plugins.add('converse-minimize', {
              * Minimizes a chat box.
              * @returns {_converse.ChatBoxView|_converse.ChatRoomView}
              */
-            minimize () {
+            minimize (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 this.model.minimize();
                 return this;
             },

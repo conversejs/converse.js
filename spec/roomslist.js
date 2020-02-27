@@ -116,7 +116,7 @@
                 }, async function (done, _converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';
-            await _converse.api.rooms.open(muc_jid, {'nick': 'some1'});
+            await _converse.api.rooms.open(muc_jid, {'nick': 'some1'}, true);
             const lview = _converse.rooms_list_view
             await u.waitUntil(() => lview.el.querySelectorAll(".open-room").length);
             let room_els = lview.el.querySelectorAll(".available-chatroom");
@@ -126,7 +126,7 @@
             await u.waitUntil(() => lview.model.get(muc_jid).get('hidden') === false);
             await u.waitUntil(() => u.hasClass('open', item), 1000);
             expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
-            await _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'});
+            await _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'}, true);
             await u.waitUntil(() => lview.el.querySelectorAll(".open-room").length > 1);
             room_els = lview.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(2);

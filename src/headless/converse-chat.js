@@ -86,8 +86,8 @@ converse.plugins.add('converse-chat', {
             },
 
             async initialize () {
+                if (!this.checkValidity()) { return; }
                 this.initialized = u.getResolveablePromise();
-
                 if (this.get('type') === 'chat') {
                     ModelWithContact.prototype.initialize.apply(this, arguments);
                     this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
@@ -126,6 +126,20 @@ converse.plugins.add('converse-chat', {
                     );
                     return false;
                 }
+            },
+
+            checkValidity () {
+                if (Object.keys(this.attributes).length === 3) {
+                    // XXX: This is an empty message with only the 3 default values.
+                    // This seems to happen when saving a newly created message
+                    // fails for some reason.
+                    // TODO: This is likely fixable by setting `wait` when
+                    // creating messages. See the wait-for-messages branch.
+                    this.validationError = "Empty message";
+                    this.safeDestroy();
+                    return false;
+                }
+                return true;
             },
 
             safeDestroy () {
@@ -310,13 +324,13 @@ converse.plugins.add('converse-chat', {
                     return;
                 }
                 this.set({'box_id': `box-${btoa(jid)}`});
+                this.initMessages();
 
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                     this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
                     await this.setRosterContact(jid);
                 }
                 this.on('change:chat_state', this.sendChatState, this);
-                this.initMessages();
                 await this.fetchMessages();
                 /**
                  * Triggered once a {@link _converse.ChatBox} has been created and initialized.
@@ -382,10 +396,7 @@ converse.plugins.add('converse-chat', {
                         return;
                     }
                     this.setEditable(attrs, attrs.time, stanza);
-                    if (attrs['chat_state'] ||
-                        attrs['retracted'] || // Retraction received *before* the message
-                        !u.isEmptyMessage(attrs)
-                    ) {
+                    if (u.shouldCreateMessage(attrs)) {
                         const msg = this.handleCorrection(attrs) || this.messages.create(attrs);
                         this.incrementUnreadMsgCounter(msg);
                     }
@@ -705,6 +716,22 @@ converse.plugins.add('converse-chat', {
             },
 
             /**
+             * Retract one of your messages in this chat
+             * @private
+             * @method _converse.ChatBoxView#retractOwnMessage
+             * @param { _converse.Message } message - The message which we're retracting.
+             */
+            retractOwnMessage(message) {
+                this.sendRetractionMessage(message)
+                message.save({
+                    'retracted': (new Date()).toISOString(),
+                    'retracted_id': message.get('origin_id'),
+                    'is_ephemeral': true,
+                    'editable': false
+                });
+            },
+
+            /**
              * Sends a message stanza to retract a message in this chat
              * @private
              * @method _converse.ChatBox#sendRetractionMessage
@@ -895,8 +922,7 @@ converse.plugins.add('converse-chat', {
                 }
                 if (_converse.allow_message_corrections === 'all') {
                     attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
-                } else if ((_converse.allow_message_corrections === 'last') &&
-                           (send_time > this.get('time_sent'))) {
+                } else if ((_converse.allow_message_corrections === 'last') && (send_time > this.get('time_sent'))) {
                     this.set({'time_sent': send_time});
                     const msg = this.messages.findWhere({'editable': true});
                     if (msg) {
@@ -1119,11 +1145,11 @@ converse.plugins.add('converse-chat', {
             const to_resource = Strophe.getResourceFromJid(to_jid);
 
             if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
-                return log.info(`onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`);
+                return log.info(`handleMessageStanza: Ignoring incoming message intended for a different resource: ${to_jid}`);
             } else if (utils.isHeadlineMessage(_converse, stanza)) {
                 // XXX: Prosody sends headline messages with the
                 // wrong type ('chat'), so we need to filter them out here.
-                return log.info(`onMessage: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`);
+                return log.info(`handleMessageStanza: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`);
             }
 
             const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
@@ -1153,7 +1179,7 @@ converse.plugins.add('converse-chat', {
                     to_jid = stanza.getAttribute('to');
                     from_jid = stanza.getAttribute('from');
                 } else {
-                    return log.warn(`onMessage: Ignoring alleged MAM message from ${stanza.getAttribute('from')}`);
+                    return log.warn(`handleMessageStanza: Ignoring alleged MAM message from ${stanza.getAttribute('from')}`);
                 }
             }
 

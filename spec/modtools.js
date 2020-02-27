@@ -41,7 +41,8 @@
             _converse.connection.IQ_stanzas = [];
             tab.click();
             let select = modal.el.querySelector('.select-affiliation');
-            expect(select.value).toBe('admin');
+            expect(select.value).toBe('owner');
+            select.value = 'admin';
             let button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
             button.click();
             await u.waitUntil(() => !modal.loading_users_with_affiliation);

@@ -23,7 +23,6 @@
             await u.waitUntil(() => _converse.chatboxes.length > 1);
             const view = _converse.chatboxviews.get(contact_jid);
             let show_modal_button = view.el.querySelector('.show-user-details-modal');
-            expect(u.isVisible(show_modal_button)).toBeTruthy();
             show_modal_button.click();
             const modal = view.user_details_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -33,7 +32,7 @@
             expect(u.isVisible(remove_contact_button)).toBeTruthy();
             remove_contact_button.click();
             await u.waitUntil(() => modal.el.getAttribute('aria-hidden'), 1000);
-
+            await u.waitUntil(() => !u.isVisible(modal.el));
             show_modal_button = view.el.querySelector('.show-user-details-modal');
             show_modal_button.click();
             remove_contact_button = modal.el.querySelector('button.remove-contact');
@@ -51,7 +50,6 @@
             await test_utils.openChatBoxFor(_converse, contact_jid)
             const view = _converse.chatboxviews.get(contact_jid);
             let show_modal_button = view.el.querySelector('.show-user-details-modal');
-            expect(u.isVisible(show_modal_button)).toBeTruthy();
             show_modal_button.click();
             const modal = view.user_details_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 2000);

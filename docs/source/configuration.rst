@@ -1039,6 +1039,26 @@ and it's trivial for an attacker to bypass this restriction.
 
 You should therefore also configure your XMPP server to limit message sizes.
 
+modtools_disable_assign
+-----------------------
+
+* Default: ``false``
+* Possible Values: ``true``, ``false``, ``['owner', 'admin', 'member', 'outcast', 'none', 'moderator', 'participant', 'visitor']``
+
+This setting allows you to disable (either completely, or fine-grained) which affiliations and or roles
+may be assigned in the moderator tools modal.
+
+
+modtools_disable_query
+----------------------
+
+* Default: ``[]``
+* Possible Values: ``['owner', 'admin', 'member', 'outcast', 'none', 'moderator', 'participant', 'visitor']``
+
+This setting allows you to disable which affiliations or roles may be queried in the moderator tools modal.
+If all roles or all affiliations are disabled, then the relevant tab won't be
+showed at all.
+
 
 muc_disable_slash_commands
 --------------------------
@@ -1079,6 +1099,8 @@ muc_fetch_members
 
 * Default:  ``true``
 
+* Possible values: Array containing any of the following: ``['member', 'admin', 'owner']``
+
 Determines whether Converse.js will fetch the member lists for a MUC
 (multi-user chat) when the user first enters it.
 
@@ -1091,8 +1113,7 @@ The member lists consists of three lists of users who have the affiliations
 ``member``, ``admin`` and ``owner`` respectively.
 
 By fetching member lists, Converse.js will always show these users as
-participants of the MUC, which makes it behave a bit more like modern chat
-apps.
+participants of the MUC, giving them a permanent "presence" in the MUC.
 
 
 muc_history_max_stanzas
@@ -1653,7 +1674,7 @@ server for acknowledgement of those stanzas.
 sounds_path
 -----------
 
-* Default: ``sounds/``
+* Default: ``${assets_path}/sounds/``
 
 This option only makes sense in conjunction with the `play_sounds`_ option and
 specifies the URL of the sound files to be played (exluding the file names

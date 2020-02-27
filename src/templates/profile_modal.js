@@ -21,9 +21,7 @@ const i18n_remove_devices = __('Remove checked devices and close');
 const i18n_role = __('Role');
 const i18n_save = __('Save and close');
 const i18n_select_all = __('Select all');
-const i18n_role_help = __(
-    'Use commas to separate multiple roles. '+
-    'Your roles are shown next to your name on your chat messages.');
+const i18n_role_help = __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.');
 const i18n_url = __('URL');
 const i18n_omemo = __('OMEMO');
 const i18n_profile = __('Profile');
@@ -155,7 +153,7 @@ export default (o) => html`
                             </div>
                         </form>
                     </div>
-                    ${ _converse.pluggable.plugins['converse-omemo'].enabled(_converse) && omemo_page(o) }
+                    ${ o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse) && omemo_page(o) }
                 </div>
             </div>
             <div class="modal-footer">${modal_close_button}</div>

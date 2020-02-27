@@ -95,6 +95,7 @@
                         `</presence>`)
 
             await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
+            await u.waitUntil(() => !u.isVisible(modal.el));
             cbview.el.querySelector('.change-status').click()
             await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "false", 1000);
             modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"

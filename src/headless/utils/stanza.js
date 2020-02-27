@@ -91,7 +91,7 @@ const stanza_utils = {
                         return {};
                     }
                     return {
-                        'edtiable': false,
+                        'editable': false,
                         'moderated': 'retracted',
                         'moderated_by': moderated.getAttribute('by'),
                         'moderated_id': applies_to_id,
@@ -105,7 +105,7 @@ const stanza_utils = {
                 const retracted = sizzle(`retracted[xmlns="${Strophe.NS.RETRACT}"]`, tombstone).pop();
                 if (retracted) {
                     return {
-                        'edtiable': false,
+                        'editable': false,
                         'is_tombstone': true,
                         'moderated_by': tombstone.getAttribute('by'),
                         'retracted': tombstone.getAttribute('stamp'),

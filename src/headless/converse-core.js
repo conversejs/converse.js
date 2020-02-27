@@ -201,6 +201,7 @@ _converse.default_connection_options = {'explicitResourceBinding': true};
 // ----------------------------
 _converse.default_settings = {
     allow_non_roster_messaging: false,
+    assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
     auto_away: 0, // Seconds after which user status is set to 'away'
     auto_login: false, // Currently only used in connection with anonymous login
@@ -210,7 +211,6 @@ _converse.default_settings = {
     connection_options: {},
     credentials_url: null, // URL from where login credentials can be fetched
     csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
-    loglevel: 'info',
     default_state: 'online',
     discover_connection_methods: false,
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
@@ -218,6 +218,7 @@ _converse.default_settings = {
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
     keepalive: true,
+    loglevel: 'info',
     locales: [
         'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
         'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'mr', 'oc',
@@ -1129,7 +1130,7 @@ _converse.initialize = async function (settings, callback) {
             _converse.setConnectionStatus(status);
         } else if (status === Strophe.Status.AUTHFAIL) {
             if (!message) {
-                message = __('Your Jabber ID and/or password is incorrect. Please try again.');
+                message = __('Your XMPP address and/or password is incorrect. Please try again.');
             }
             _converse.setConnectionStatus(status, message);
             _converse.setDisconnectionCause(status, message, true);

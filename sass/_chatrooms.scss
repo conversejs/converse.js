@@ -42,15 +42,32 @@
         border-bottom: var(--chatroom-head-border-bottom);
 
         .chat-head__desc {
-            color: var(--chatroom-head-description-color);
+            color: var(--chatroom-head-color);
             display: var(--chatroom-head-description-display);
-            font-size: 70%;
-            margin-top: 3px;
-            border-left: var(--chatroom-head-description-border-left);
-            padding-left: var(--chatroom-head-description-padding-left);
             a {
                 color: var(--chatroom-head-description-link-color);
             }
+            &:hover {
+                button {
+                    display: inline-block;
+                }
+            }
+        }
+
+        .chatbox-title {
+            .btn--transparent {
+                i {
+                    color: var(--chatroom-head-color);
+                }
+            }
+            .chatbox-title__text--bookmarked {
+                margin-left: 0.5em;
+                color: var(--chatroom-head-color);
+            }
+        }
+
+        .chatbox-title__buttons {
+            background-color: var(--chatroom-head-bg-color);
         }
 
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {
@@ -73,6 +90,7 @@
             display: var(--heading-display);
             font-weight: var(--chatroom-head-title-font-weight);
             padding-right: var(--chatroom-head-title-padding-right);
+            margin: auto 0;
             .chatroom-jid {
                 font-size: var(--font-size-small);
             }
@@ -214,7 +232,6 @@
                             overflow-y: auto;
                             flex-basis: 0;
                             flex-grow: 1;
-                            border-bottom: var(--occupants-border-bottom);
                         }
                         li {
                             cursor: default;
@@ -466,10 +483,6 @@
     .chatroom {
         .box-flyout {
             width: 100%;
-
-            .chat-head__desc {
-                font-size: 70%;
-            }
 
             .chatroom-body {
                 .chat-area {

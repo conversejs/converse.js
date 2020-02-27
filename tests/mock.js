@@ -155,6 +155,8 @@
     };
 
 
+    let _converse;
+
     const OriginalConnection = Strophe.Connection;
 
     function MockConnection (service, options) {
@@ -210,7 +212,9 @@
         this.bind = () => {
             this.authenticated = true;
             this.authenticated = true;
-            this._changeConnectStatus(Strophe.Status.CONNECTED);
+            if (!_converse.no_connection_on_bind) {
+                this._changeConnectStatus(Strophe.Status.CONNECTED);
+            }
         };
 
         this._proto._disconnect = () => this._onDisconnectTimeout();
@@ -254,7 +258,7 @@
         clearStores();
         await clearIndexedDB();
 
-        const _converse = await converse.initialize(Object.assign({
+        _converse = await converse.initialize(Object.assign({
             'animate': false,
             'auto_subscribe': false,
             'bosh_service_url': 'montague.lit/http-bind',
@@ -315,10 +319,9 @@
         }
 
         return async done => {
-            let _converse;
-
+            const _converse = await initConverse(settings);
             async function _done () {
-                if (_converse && _converse.api.connection.connected()) {
+                if (_converse.api.connection.connected()) {
                     await _converse.api.user.logout();
                 }
                 const el = document.querySelector('#conversejs');
@@ -328,9 +331,8 @@
                 document.title = "Converse Tests";
                 done();
             }
+            await Promise.all((promise_names || []).map(_converse.api.waitUntil));
             try {
-                _converse = await initConverse(settings);
-                await Promise.all((promise_names || []).map(_converse.api.waitUntil));
                 await func(_done, _converse);
             } catch(e) {
                 console.error(e);

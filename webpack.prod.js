@@ -3,9 +3,9 @@ const common = require("./webpack.common.js");
 const merge = require("webpack-merge");
 const path = require('path');
 const webpack = require('webpack');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
-
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ASSET_PATH = process.env.ASSET_PATH || '/dist/'; // eslint-disable-line no-process-env
 
 module.exports = merge(common, {
@@ -14,8 +14,16 @@ module.exports = merge(common, {
         filename: 'converse.min.js',
     },
     plugins: [
+        new CleanWebpackPlugin({
+            cleanStaleWebpackAssets: false // resolves conflict with CopyWebpackPlugin
+        }),
         new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
-        new CopyPlugin([{from: 'images/favicon.ico'}]),
+        new CopyWebpackPlugin([
+            {from: 'sounds'},
+            {from: 'images/favicon.ico'},
+            {from: 'images/custom_emojis', to: 'custom_emojis'},
+            {from: 'sass/webfonts', to: 'webfonts'}
+        ]),
         new webpack.DefinePlugin({ // This makes it possible for us to safely use env vars on our code
             'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
         })
@@ -29,7 +37,11 @@ module.exports = merge(common, {
                 MiniCssExtractPlugin.loader,
                 {
                     loader: 'css-loader',
-                    options: {sourceMap: true}
+                    options: {
+                        url: false,
+                        sourceMap: true
+
+                    }
                 },
                 'postcss-loader',
                 {

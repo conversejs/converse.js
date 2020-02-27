@@ -2,7 +2,7 @@ import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 
 
-const i18n_moderator_hint = ('This user is a moderator.');
+const i18n_moderator_hint = __('This user is a moderator.');
 const i18n_participant_hint = __('This user can send messages in this groupchat.');
 const i18n_visitor_hint = __('This user can NOT send messages in this groupchat.')
 const i18n_owner = __('Owner');

@@ -364,9 +364,6 @@
 
                 expect(trimmedview.restore).toHaveBeenCalled();
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
-                const toggle_el = sizzle('.toggle-chatbox-button', chatview.el).pop();
-                expect(u.hasClass('fa-minus', toggle_el)).toBeTruthy();
-                expect(u.hasClass('fa-plus', toggle_el)).toBeFalsy();
                 expect(chatview.model.get('minimized')).toBeFalsy();
                 done();
             }));

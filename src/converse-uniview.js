@@ -22,11 +22,6 @@ function hideChat (view) {
     view.hide();
 }
 
-function visibleChats (_converse) {
-    return _converse.chatboxes
-        .filter(cb => (cb.get('id') !== 'controlbox' && !cb.get('hidden'))).length > 0;
-}
-
 
 converse.plugins.add('converse-uniview', {
     // It's possible however to make optional dependencies non-optional.
@@ -53,10 +48,11 @@ converse.plugins.add('converse-uniview', {
         },
 
         ChatBox: {
-            maybeShow () {
+            maybeShow (force) {
+                force && u.safeSave(this, {'hidden': false});
                 const { _converse } = this.__super__;
-                if (_converse.isUniView() && (!this.get('hidden') || !visibleChats(_converse))) {
-                    return this.trigger("show");
+                if (_converse.isUniView() && this.get('hidden')) {
+                    return;
                 } else {
                     return this.__super__.maybeShow.apply(this, arguments);
                 }

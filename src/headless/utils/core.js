@@ -123,6 +123,16 @@ u.isNewMessage = function (message) {
     return !(message['is_delayed'] && message['is_archived']);
 };
 
+u.shouldCreateMessage = function (attrs) {
+    return attrs['chat_state'] ||
+        attrs['retracted'] || // Retraction received *before* the message
+        !u.isEmptyMessage(attrs);
+}
+
+u.shouldCreateGroupchatMessage = function (attrs) {
+    return attrs.nick && (u.shouldCreateMessage(attrs) || attrs.is_tombstone);
+}
+
 u.isEmptyMessage = function (attrs) {
     if (attrs instanceof Model) {
         attrs = attrs.attributes;

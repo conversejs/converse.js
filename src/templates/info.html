@@ -4,7 +4,8 @@
 ]}
     {{o.message}}
 {[ } else { ]}
-    {{{o.message}}}
+<div class="chat-info__message">{{{o.message}}}</div>
+    {[ if (o.reason) { ]}<q class="reason">{{{o.reason}}}</q>{[ } ]}
 {[ } ]}
 {[ if (o.retry) { ]}
     <a class="retry">Retry</a>

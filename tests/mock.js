@@ -319,25 +319,23 @@
         }
 
         return async done => {
-            const _converse = await initConverse(settings);
-            async function _done () {
-                if (_converse.api.connection.connected()) {
-                    await _converse.api.user.logout();
-                }
-                const el = document.querySelector('#conversejs');
-                if (el) {
-                    el.parentElement.removeChild(el);
-                }
-                document.title = "Converse Tests";
-                done();
+            if (_converse && _converse.api.connection.connected()) {
+                await _converse.api.user.logout();
             }
+            const el = document.querySelector('#conversejs');
+            if (el) {
+                el.parentElement.removeChild(el);
+            }
+            document.title = "Converse Tests";
+
+            await initConverse(settings);
             await Promise.all((promise_names || []).map(_converse.api.waitUntil));
             try {
-                await func(_done, _converse);
+                await func(done, _converse);
             } catch(e) {
                 console.error(e);
                 fail(e);
-                await _done();
+                await done();
             }
         }
     };

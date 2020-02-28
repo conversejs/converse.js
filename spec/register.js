@@ -57,8 +57,13 @@
                 async function (done, _converse) {
 
             spyOn(Strophe.Connection.prototype, 'connect');
+
             await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
+            const toggle = document.querySelector(".toggle-controlbox");
+            toggle.click();
+
             const cbview = _converse.api.controlbox.get();
+            await u.waitUntil(() => u.isVisible(cbview.el));
             const registerview = cbview.registerpanel;
             spyOn(registerview, 'onProviderChosen').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
@@ -191,13 +196,14 @@
             registerview.el.querySelector('input[name=email]').value = 'test@email.local';
 
             spyOn(_converse.connection, 'send');
-
             registerview.el.querySelector('input[type=submit]').click();
 
             expect(_converse.connection.send).toHaveBeenCalled();
             stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
             expect(stanza.querySelector('query').childNodes.length).toBe(3);
             expect(stanza.querySelector('query').firstElementChild.tagName).toBe('username');
+
+            delete _converse.connection;
             done();
         }));
 
@@ -276,6 +282,8 @@
                     '</query>'+
                 '</iq>'
             );
+
+            delete _converse.connection;
             done();
         }));
 

@@ -518,12 +518,16 @@ converse.plugins.add('converse-controlbox', {
             },
 
             hide (callback) {
-                u.hideElement(this.el);
-                callback();
+                if (u.isVisible(this.el)) {
+                    u.hideElement(this.el);
+                    callback();
+                }
             },
 
             show (callback) {
-                u.fadeIn(this.el, callback);
+                if (!u.isVisible(this.el)) {
+                    u.fadeIn(this.el, callback);
+                }
             },
 
             showControlBox () {

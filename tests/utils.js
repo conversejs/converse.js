@@ -139,7 +139,7 @@
         return _converse.chatboxviews.get(jid);
     };
 
-    utils.openChatRoom = async function (_converse, room, server) {
+    utils.openChatRoom = function (_converse, room, server) {
         return _converse.api.rooms.open(`${room}@${server}`);
     };
 

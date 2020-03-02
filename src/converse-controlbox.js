@@ -297,7 +297,7 @@ converse.plugins.add('converse-controlbox', {
                     await new Promise((resolve, reject) => {
                         return this.model.save(
                             {'closed': true},
-                            {'success': resolve, 'error': reject}
+                            {'success': resolve, 'error': reject, 'wait': true}
                         );
                     });
                 } else {
@@ -341,9 +341,7 @@ converse.plugins.add('converse-controlbox', {
             },
 
             show () {
-                _converse.controlboxtoggle.hide(
-                    this.onControlBoxToggleHidden.bind(this)
-                );
+                _converse.controlboxtoggle.hide(() => this.onControlBoxToggleHidden());
                 return this;
             },
 

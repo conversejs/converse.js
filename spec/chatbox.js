@@ -92,8 +92,8 @@
             }));
 
             it("is created when you click on a roster item", mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current');
                 await test_utils.openControlBox(_converse);
@@ -173,6 +173,7 @@
 
                 await test_utils.waitForRoster(_converse, 'current');
                 await test_utils.openControlBox(_converse);
+                expect(_converse.chatboxviews.trimChats.calls.count()).toBe(1);
 
                 let jid, chatboxview;
                 // openControlBox was called earlier, so the controlbox is
@@ -191,7 +192,7 @@
                     el.click();
                 }
                 await u.waitUntil(() => _converse.chatboxes.length == 16);
-                expect(_converse.chatboxviews.trimChats.calls.count()).toBe(17);
+                expect(_converse.chatboxviews.trimChats.calls.count()).toBe(16);
 
                 _converse.api.chatviews.get().forEach(v => spyOn(v, 'onMinimized').and.callThrough());
                 for (i=0; i<online_contacts.length; i++) {
@@ -213,7 +214,7 @@
 
                 expect(trimmedview.restore).toHaveBeenCalled();
                 expect(chatbox.maximize).toHaveBeenCalled();
-                expect(_converse.chatboxviews.trimChats.calls.count()).toBe(18);
+                expect(_converse.chatboxviews.trimChats.calls.count()).toBe(17);
                 done();
             }));
 

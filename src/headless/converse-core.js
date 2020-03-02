@@ -534,12 +534,12 @@ function clearSession  () {
         delete _converse.session;
     }
     /**
-     * Triggered once the user session has been cleared,
+     * Synchronouse event triggered once the user session has been cleared,
      * for example when the user has logged out or when Converse has
      * disconnected for some other reason.
      * @event _converse#clearSession
      */
-    _converse.api.trigger('clearSession');
+    return _converse.api.trigger('clearSession', {'synchronous': true});
 }
 
 
@@ -798,7 +798,6 @@ async function finishInitialization () {
     initPlugins();
     registerGlobalEventHandlers();
 
-
     if (!History.started) {
         _converse.router.history.start();
     }
@@ -820,12 +819,12 @@ async function finishInitialization () {
  * @emits _converse#disconnected
  * @private
  */
-function finishDisconnection () {
+async function finishDisconnection () {
     log.debug('DISCONNECTED');
     delete _converse.connection.reconnecting;
     _converse.connection.reset();
     tearDown();
-    clearSession();
+    await clearSession();
     delete _converse.connection;
     /**
      * Triggered after converse.js has disconnected from the XMPP server.
@@ -1236,7 +1235,7 @@ _converse.api = {
 
             if (_converse.authentication === _converse.ANONYMOUS) {
                 await tearDown();
-                clearSession();
+                await clearSession();
             }
             if (conn_status === Strophe.Status.CONNFAIL) {
                 // When reconnecting with a new transport, we call setUserJID

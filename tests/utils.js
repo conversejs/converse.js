@@ -139,7 +139,7 @@
         return _converse.chatboxviews.get(jid);
     };
 
-    utils.openChatRoom = async function (_converse, room, server) {
+    utils.openChatRoom = function (_converse, room, server) {
         return _converse.api.rooms.open(`${room}@${server}`);
     };
 
@@ -371,11 +371,8 @@
     };
 
     utils.waitForRoster = async function (_converse, type='current', length=-1, include_nick=true, grouped=true) {
-        const iq = await u.waitUntil(() =>
-            _.filter(
-                _converse.connection.IQ_stanzas,
-                iq => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq).length
-            ).pop());
+        const s = `iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`;
+        const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(iq => sizzle(s, iq).length).pop());
 
         const result = $iq({
             'to': _converse.connection.jid,

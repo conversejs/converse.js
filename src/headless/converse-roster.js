@@ -913,38 +913,33 @@ converse.plugins.add('converse-roster', {
             });
         });
 
-        function clearPresences () {
-            if (_converse.presences) {
-                _converse.presences.forEach(p => {
-                    p.resources.reject(r => r === undefined).forEach(r => r.destroy({'silent': true}));
-                });
-                _converse.presences.clearStore();
-            }
+        async function clearPresences () {
+            _converse.presences && await _converse.presences.clearStore();
         }
 
         _converse.api.listen.on('streamResumptionFailed', () => _converse.session.set('roster_cached', false));
 
-        _converse.api.listen.on('clearSession', () => {
-            clearPresences();
+        _converse.api.listen.on('clearSession', async () => {
+            await clearPresences();
             if (_converse.shouldClearCache()) {
+                if (_converse.rostergroups) {
+                    await _converse.rostergroups.clearStore();
+                    delete _converse.rostergroups;
+                }
                 if (_converse.roster) {
                     invoke(_converse, 'roster.data.destroy');
-                    _converse.roster.clearStore();
+                    await _converse.roster.clearStore();
                     delete _converse.roster;
-                }
-                if (_converse.rostergroups) {
-                    _converse.rostergroups.clearStore();
-                    delete _converse.rostergroups;
                 }
             }
         });
 
-        _converse.api.listen.on('statusInitialized', (reconnecting) => {
+        _converse.api.listen.on('statusInitialized', async reconnecting => {
             if (reconnecting) {
                 // When reconnecting and not resuming a previous session,
                 // we clear all cached presence data, since it might be stale
                 // and we'll receive new presence updates
-                !_converse.haveResumed() && clearPresences();
+                !_converse.haveResumed() && await clearPresences();
             } else {
                 _converse.presences = new _converse.Presences();
                 const id = `converse.presences-${_converse.bare_jid}`;

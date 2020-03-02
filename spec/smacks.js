@@ -23,7 +23,7 @@
             const view = _converse.chatboxviews.get('controlbox');
             spyOn(view, 'renderControlBoxPane').and.callThrough();
 
-            _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
+            await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
             const sent_stanzas = _converse.connection.sent_stanzas;
             let stanza = await u.waitUntil(() =>
                 sent_stanzas.filter(s => (s.tagName === 'enable')).pop());
@@ -99,13 +99,13 @@
             _converse.connection._dataRecv(test_utils.createRequest(r));
             ack = await u.waitUntil(() => sent_stanzas.filter(s => (s.nodeName === 'a' && s.getAttribute('h') === '1')).pop());
             expect(Strophe.serialize(ack)).toBe('<a h="1" xmlns="urn:xmpp:sm:3"/>');
+            await _converse.api.waitUntil('rosterInitialized');
 
             // test session resumption
             _converse.connection.IQ_stanzas = [];
             IQ_stanzas = _converse.connection.IQ_stanzas;
             await _converse.api.connection.reconnect();
             stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'resume')).pop());
-
             expect(Strophe.serialize(stanza)).toEqual('<resume h="2" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
 
             result = u.toStanza(`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`);
@@ -115,6 +115,7 @@
             expect(sent_stanzas.filter(s => (s.tagName === 'enable')).length).toBe(1);
             expect(_converse.session.get('smacks_enabled')).toBe(true);
 
+            await new Promise(resolve => _converse.api.listen.once('reconnected', resolve));
             await u.waitUntil(() => IQ_stanzas.length === 1);
 
             // Test that unacked stanzas get resent out
@@ -122,8 +123,6 @@
             expect(Strophe.serialize(iq)).toBe(`<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
 
             expect(IQ_stanzas.filter(iq => sizzle('query[xmlns="jabber:iq:roster"]', iq).pop()).length).toBe(0);
-
-            await _converse.api.waitUntil('statusInitialized');
             done();
         }));
 
@@ -138,7 +137,7 @@
                 },
                 async function (done, _converse) {
 
-            _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
+            await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
             const sent_stanzas = _converse.connection.sent_stanzas;
             let stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'enable')).pop());
             expect(Strophe.serialize(stanza)).toEqual('<enable resume="true" xmlns="urn:xmpp:sm:3"/>');
@@ -177,6 +176,7 @@
 
             // Check that the roster gets fetched
             await test_utils.waitForRoster(_converse, 'current', 1);
+            await new Promise(resolve => _converse.api.listen.once('reconnected', resolve));
             done();
         }));
 
@@ -233,7 +233,7 @@
             );
 
             _converse.no_connection_on_bind = true; // XXX Don't trigger CONNECTED in tests/mock.js
-            _converse.api.user.login('romeo@montague.lit', 'secret');
+            await _converse.api.user.login('romeo@montague.lit', 'secret');
             delete _converse.no_connection_on_bind;
 
             const sent_stanzas = _converse.connection.sent_stanzas;

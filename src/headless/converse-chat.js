@@ -383,6 +383,19 @@ converse.plugins.add('converse-chat', {
                 return this.messages.fetched;
             },
 
+            /**
+             * Queue an incoming `chat` message stanza for processing.
+             * @async
+             * @private
+             * @method _converse.ChatRoom#queueMessage
+             * @param { XMLElement } stanza - The message stanza.
+             */
+            queueMessage (stanza, original_stanza, from_jid) {
+                this.msg_chain = (this.msg_chain || this.messages.fetched);
+                this.msg_chain = this.msg_chain.then(() => this.onMessage(stanza, original_stanza, from_jid));
+                return this.msg_chain;
+            },
+
             async onMessage (stanza, original_stanza, from_jid) {
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                 const message = this.getDuplicateMessage(attrs);
@@ -392,12 +405,12 @@ converse.plugins.add('converse-chat', {
                     !this.handleReceipt (stanza, original_stanza, from_jid) &&
                     !this.handleChatMarker(stanza, from_jid)
                 ) {
-                    if (this.handleRetraction(attrs)) {
+                    if (await this.handleRetraction(attrs)) {
                         return;
                     }
                     this.setEditable(attrs, attrs.time, stanza);
                     if (u.shouldCreateMessage(attrs)) {
-                        const msg = this.handleCorrection(attrs) || this.messages.create(attrs);
+                        const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
                         this.incrementUnreadMsgCounter(msg);
                     }
                 }
@@ -468,9 +481,9 @@ converse.plugins.add('converse-chat', {
                 }
             },
 
-            createMessageFromError (error) {
+            async createMessageFromError (error) {
                 if (error instanceof _converse.TimeoutError) {
-                    const msg = this.messages.create({'type': 'error', 'message': error.message, 'retry': true});
+                    const msg = await this.createMessage({'type': 'error', 'message': error.message, 'retry': true});
                     msg.error = error;
                 }
             },
@@ -609,7 +622,7 @@ converse.plugins.add('converse-chat', {
              * @returns { Boolean } Returns `true` or `false` depending on
              *  whether a message was retracted or not.
              */
-            handleRetraction (attrs) {
+            async handleRetraction (attrs) {
                 const RETRACTION_ATTRIBUTES = ['retracted', 'retracted_id', 'editable'];
                 if (attrs.retracted) {
                     if (attrs.is_tombstone) {
@@ -618,7 +631,7 @@ converse.plugins.add('converse-chat', {
                     const message = this.messages.findWhere({'origin_id': attrs.retracted_id, 'from': attrs.from});
                     if (!message) {
                         attrs['dangling_retraction'] = true;
-                        this.messages.create(attrs);
+                        await this.createMessage(attrs);
                         return true;
                     }
                     message.save(pick(attrs, RETRACTION_ATTRIBUTES));
@@ -932,6 +945,10 @@ converse.plugins.add('converse-chat', {
                 }
             },
 
+            createMessage (attrs, options) {
+                return this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options));
+            },
+
             /**
              * Responsible for sending off a text message inside an ongoing chat conversation.
              * @method _converse.ChatBox#sendMessage
@@ -943,7 +960,7 @@ converse.plugins.add('converse-chat', {
              * const chat = _converse.api.chats.get('buddy1@example.com');
              * chat.sendMessage('hello world');
              */
-            sendMessage (text, spoiler_hint) {
+            async sendMessage (text, spoiler_hint) {
                 const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                 let message = this.messages.findWhere('correcting')
                 if (message) {
@@ -961,7 +978,7 @@ converse.plugins.add('converse-chat', {
                     });
                 } else {
                     this.setEditable(attrs, (new Date()).toISOString());
-                    message = this.messages.create(attrs);
+                    message = await this.createMessage(attrs);
                 }
                 _converse.api.send(this.createMessageStanza(message));
                 return message;
@@ -996,7 +1013,7 @@ converse.plugins.add('converse-chat', {
                 const result = await _converse.api.disco.features.get(Strophe.NS.HTTPUPLOAD, _converse.domain);
                 const item = result.pop();
                 if (!item) {
-                    this.messages.create({
+                    this.createMessage({
                         'message': __("Sorry, looks like file upload is not supported by your server."),
                         'type': 'error',
                         'is_ephemeral': true
@@ -1008,16 +1025,16 @@ converse.plugins.add('converse-chat', {
                       slot_request_url = get(item, 'id');
 
                 if (!slot_request_url) {
-                    this.messages.create({
+                    this.createMessage({
                         'message': __("Sorry, looks like file upload is not supported by your server."),
                         'type': 'error',
                         'is_ephemeral': true
                     });
                     return;
                 }
-                Array.from(files).forEach(file => {
+                Array.from(files).forEach(async file => {
                     if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
-                        return this.messages.create({
+                        return this.createMessage({
                             'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
                                 file.name, filesize(max_file_size)),
                             'type': 'error',
@@ -1031,7 +1048,7 @@ converse.plugins.add('converse-chat', {
                             'slot_request_url': slot_request_url
                         });
                         this.setEditable(attrs, (new Date()).toISOString());
-                        const message = this.messages.create(attrs, {'silent': true});
+                        const message = await this.createMessage(attrs, {'silent': true});
                         message.file = file;
                         this.messages.trigger('add', message);
                         message.getRequestSlotURL();
@@ -1129,7 +1146,7 @@ converse.plugins.add('converse-chat', {
                 return;
             }
             const attrs = await chatbox.getMessageAttributesFromStanza(stanza, stanza);
-            await chatbox.messages.create(attrs);
+            await chatbox.createMessage(attrs);
         }
 
 
@@ -1198,7 +1215,7 @@ converse.plugins.add('converse-chat', {
             const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
             const roster_nick = get(contact, 'attributes.nickname');
             const chatbox = await _converse.api.chats.get(contact_jid, {'nickname': roster_nick}, has_body);
-            chatbox && await chatbox.onMessage(stanza, original_stanza, from_jid);
+            chatbox && await chatbox.queueMessage(stanza, original_stanza, from_jid);
             /**
              * Triggered when a message stanza is been received and processed.
              * @event _converse#message
@@ -1286,7 +1303,7 @@ converse.plugins.add('converse-chat', {
 
         _converse.api.listen.on('clearSession', () => {
             if (_converse.shouldClearCache()) {
-                _converse.chatboxes.filter(c => c.messages && c.messages.clearStore({'silent': true}));
+                return Promise.all(_converse.chatboxes.map(c => c.messages && c.messages.clearStore({'silent': true})));
             }
         });
         /************************ END Event Handlers ************************/

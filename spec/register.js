@@ -353,6 +353,7 @@
             // Hide the controlbox so that we can see whether the test
             // passed or failed
             u.addClass('hidden', _converse.chatboxviews.get('controlbox').el);
+            delete _converse.connection;
             done();
         }));
     });

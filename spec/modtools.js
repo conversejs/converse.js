@@ -10,9 +10,9 @@
     describe("The groupchat moderator tool", function () {
 
         it("allows you to set affiliations and roles",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
 
             spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
             const muc_jid = 'lounge@montague.lit';
@@ -26,7 +26,7 @@
             ];
             await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
             const view = _converse.chatboxviews.get(muc_jid);
-            await u.waitUntil(() => (view.model.occupants.length === 5));
+            await u.waitUntil(() => (view.model.occupants.length === 5), 1000);
 
             const textarea = view.el.querySelector('.chat-textarea');
             textarea.value = '/modtools';

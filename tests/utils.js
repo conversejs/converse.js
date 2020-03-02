@@ -123,7 +123,7 @@
         // Opens a new chatroom
         const model = await _converse.api.controlbox.open('controlbox');
         await u.waitUntil(() => model.get('connected'));
-        utils.openControlBox();
+        await utils.openControlBox(_converse);
         const view = await _converse.chatboxviews.get('controlbox');
         const roomspanel = view.roomspanel;
         roomspanel.el.querySelector('.show-add-muc-modal').click();

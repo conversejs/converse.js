@@ -20,8 +20,8 @@
 
                 const muc_jid = 'lounge@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-
                 const view = _converse.api.chatviews.get(muc_jid);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length);
                 const presence = u.toStanza(`
                     <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
                         <x xmlns="http://jabber.org/protocol/muc#user">
@@ -49,6 +49,7 @@
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.api.chatviews.get(muc_jid);
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length);
+                expect(view.el.querySelectorAll('.chat-info').length).toBe(1);
 
                 const presence = u.toStanza(`
                     <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
@@ -59,9 +60,18 @@
                         </x>
                     </presence>
                 `);
+                // XXX: We wait for createInfoMessages to complete, if we don't
+                // we still get two info messages due to messages
+                // created from presences not being queued and run
+                // sequentially (i.e. by waiting for promises to resolve)
+                // like we do with message stanzas.
+                spyOn(view.model, 'createInfoMessages').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await u.waitUntil(() => view.model.createInfoMessages.calls.count());
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 2);
+
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length > 1);
+                await u.waitUntil(() => view.model.createInfoMessages.calls.count() === 2);
                 expect(view.el.querySelectorAll('.chat-info').length).toBe(2);
                 done();
             }));
@@ -91,9 +101,13 @@
                 </message>
             `);
             const view = _converse.api.chatviews.get(muc_jid);
-            await view.model.onMessage(received_stanza);
+            spyOn(view.model, 'onMessage').and.callThrough();
+
+
+            await view.model.queueMessage(received_stanza);
             spyOn(converse.env.log, 'warn');
             _converse.connection._dataRecv(test_utils.createRequest(received_stanza));
+            await u.waitUntil(() => view.model.onMessage.calls.count());
             expect(converse.env.log.warn).toHaveBeenCalledWith(
                 'onMessage: Ignoring unencapsulated forwarded groupchat message'
             );
@@ -120,7 +134,8 @@
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(message).tree();
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(u.hasClass('mentioned', view.el.querySelector('.chat-msg'))).toBeTruthy();
             done();
         }));
@@ -141,7 +156,7 @@
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('First message').tree();
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
 
             msg = $msg({
@@ -150,7 +165,7 @@
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('Another message').tree();
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
             expect(view.model.messages.length).toBe(2);
             done();
@@ -196,7 +211,7 @@
                 </message>`);
 
             spyOn(view.model, 'updateMessage');
-            await view.model.onMessage(stanza);
+            await view.model.queueMessage(stanza);
             await u.waitUntil(() => view.model.getDuplicateMessage.calls.count() === 2);
             result = await view.model.getDuplicateMessage.calls.all()[1].returnValue;
             expect(result instanceof _converse.Message).toBe(true);
@@ -302,7 +317,7 @@
                 }).c('body').t('I am groot').tree();
             const view = _converse.api.chatviews.get(muc_jid);
             spyOn(converse.env.log, 'warn');
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
             expect(converse.env.log.warn).toHaveBeenCalledWith(
                 'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
                 'according to the XEP groupchat messages SHOULD NOT be carbon copied'
@@ -326,7 +341,7 @@
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('I wrote this message!').tree();
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
             expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
@@ -352,7 +367,8 @@
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('Another message!').tree();
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().occupant.get('affiliation')).toBe('member');
             expect(view.model.messages.last().occupant.get('role')).toBe('participant');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
@@ -371,14 +387,15 @@
                 .c('status').attrs({code:'110'}).up()
                 .c('status').attrs({code:'210'}).nodeTree;
             _converse.connection._dataRecv(test_utils.createRequest(presence));
+
             view.model.sendMessage('hello world');
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 3);
 
-            expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
-            expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
+            const occupant = await u.waitUntil(() => view.model.messages.filter(m => m.get('type') === 'groupchat')[2].occupant);
+            expect(occupant.get('affiliation')).toBe('owner');
+            expect(occupant.get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
-            expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat moderator owner');
-
+            await u.waitUntil(() => sizzle('.chat-msg', view.el).pop().classList.value.trim() === 'message chat-msg groupchat moderator owner');
 
             const add_events = view.model.occupants._events.add.length;
             msg = $msg({
@@ -387,7 +404,8 @@
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('Message from someone not in the MUC right now').tree();
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.model.messages.last().occupant).toBeUndefined();
             // Check that there's a new "add" event handler, for when the occupant appears.
             expect(view.model.occupants._events.add.length).toBe(add_events+1);
@@ -451,7 +469,7 @@
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('I wrote this message!').tree();
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
             expect(view.model.messages.last().get('sender')).toBe('me');
             done();
         }));
@@ -476,7 +494,7 @@
                 }).tree();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             const msg_id = u.getUniqueId();
-            await view.model.onMessage($msg({
+            await view.model.queueMessage($msg({
                     'from': 'lounge@montague.lit/newguy',
                     'to': _converse.connection.jid,
                     'type': 'groupchat',
@@ -488,7 +506,7 @@
             expect(view.el.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder airlock breaks?');
 
-            await view.model.onMessage($msg({
+            await view.model.queueMessage($msg({
                     'from': 'lounge@montague.lit/newguy',
                     'to': _converse.connection.jid,
                     'type': 'groupchat',
@@ -500,7 +518,7 @@
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
 
-            await view.model.onMessage($msg({
+            await view.model.queueMessage($msg({
                     'from': 'lounge@montague.lit/newguy',
                     'to': _converse.connection.jid,
                     'type': 'groupchat',
@@ -597,12 +615,13 @@
             expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
 
             // Check that messages from other users are skipped
-            await view.model.onMessage($msg({
+            await view.model.queueMessage($msg({
                 'from': muc_jid+'/someone-else',
                 'id': u.getUniqueId(),
                 'to': 'romeo@montague.lit',
                 'type': 'groupchat'
             }).c('body').t('Hello world').tree());
+            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
 
             // Test that pressing the down arrow cancels message correction
@@ -658,7 +677,7 @@
                                by="lounge@montague.lit"/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
                 </message>`);
-            await view.model.onMessage(stanza);
+            await view.model.queueMessage(stanza);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             expect(view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(1);
@@ -842,11 +861,10 @@
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'6', 'end':'10', 'type':'mention', 'uri':'xmpp:z3r0@montague.lit'}).up()
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
-                await view.model.onMessage(msg);
-                const messages = view.el.querySelectorAll('.chat-msg__text');
-                expect(messages.length).toBe(1);
-                expect(messages[0].classList.length).toEqual(1);
-                expect(messages[0].innerHTML).toBe(
+                await view.model.queueMessage(msg);
+                const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
+                expect(message.classList.length).toEqual(1);
+                expect(message.innerHTML).toBe(
                     'hello <span class="mention">z3r0</span> '+
                     '<span class="mention mention--self badge badge-info">tom</span> '+
                     '<span class="mention">mr.robot</span>, how are you?');
@@ -887,7 +905,7 @@
                             type="groupchat">
                         <body>Boo!</body>
                     </message>`);
-                await view.model.onMessage(stanza);
+                await view.model.queueMessage(stanza);
 
                 // Run a few unit tests for the parseTextForReferences method
                 let [text, references] = view.model.parseTextForReferences('hello z3r0')
@@ -1008,6 +1026,7 @@
                         'affiliation': 'none',
                         'role': 'participant'
                     })));
+                await u.waitUntil(() => view.model.occupants.length === 2);
 
                 const textarea = view.el.querySelector('textarea.chat-textarea');
                 textarea.value = 'hello @Link Mauve'
@@ -1054,6 +1073,7 @@
                             'role': 'participant'
                         })));
                 });
+                await u.waitUntil(() => view.model.occupants.length === 5);
 
                 const textarea = view.el.querySelector('textarea.chat-textarea');
                 textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
@@ -1087,6 +1107,7 @@
                 expect(view.model.messages.at(0).get('correcting')).toBe(true);
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                 await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+                await u.waitUntil(() => _converse.connection.send.calls.count() === 2);
 
                 textarea.value = 'hello @z3r0 @gibson @sw0rdf1sh, how are you?';
                 view.onKeyDown(enter_event);
@@ -1130,6 +1151,7 @@
                             'role': 'participant'
                         })));
                 });
+                await u.waitUntil(() => view.model.occupants.length === 5);
 
                 spyOn(_converse.connection, 'send');
                 const textarea = view.el.querySelector('textarea.chat-textarea');
@@ -1141,6 +1163,7 @@
                     'keyCode': 13 // Enter
                 }
                 view.onKeyDown(enter_event);
+                await new Promise(resolve => view.once('messageInserted', resolve));
 
                 const msg = _converse.connection.send.calls.all()[0].args[0];
                 expect(msg.toLocaleString())

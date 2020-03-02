@@ -157,7 +157,7 @@
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(message).tree();
-            view.model.onMessage(msg);
+            view.model.queueMessage(msg);
             await u.waitUntil(() => view.model.messages.length);
             expect(u.isVisible(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count'))).toBeTruthy();
             expect(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count').textContent).toBe('1');

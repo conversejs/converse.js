@@ -15,14 +15,14 @@
 
         describe("Discovering support", function () {
 
-            it("is done automatically", mock.initConverse(async (done, _converse) => {
+            it("is done automatically",
+                    mock.initConverse(
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                            async function (done, _converse) {
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
-                const IQ_ids =  _converse.connection.IQ_ids;
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
-                await u.waitUntil(() => _.filter(
-                    IQ_stanzas,
-                    iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
-                );
+                let selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
+                let stanza = await u.waitUntil(() => IQ_stanzas.find(iq => iq.querySelector(selector)), 1000);
 
                 /* <iq type='result'
                  *      from='plays.shakespeare.lit'
@@ -37,16 +37,11 @@
                  *  </query>
                  *  </iq>
                  */
-                let stanza = _.find(IQ_stanzas, function (iq) {
-                    return iq.querySelector(
-                        'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                });
-                const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                 stanza = $iq({
                     'type': 'result',
                     'from': 'montague.lit',
                     'to': 'romeo@montague.lit/orchard',
-                    'id': info_IQ_id
+                    'id': stanza.getAttribute('id'),
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                     .c('identity', {
                         'category': 'server',
@@ -59,19 +54,16 @@
 
                 let entities = await _converse.api.disco.entities.get();
                 expect(entities.length).toBe(2);
-                expect(_.includes(entities.pluck('jid'), 'montague.lit')).toBe(true);
-                expect(_.includes(entities.pluck('jid'), 'romeo@montague.lit')).toBe(true);
+                expect(entities.pluck('jid').includes('montague.lit')).toBe(true);
+                expect(entities.pluck('jid').includes('romeo@montague.lit')).toBe(true);
 
                 expect(entities.get(_converse.domain).features.length).toBe(2);
                 expect(entities.get(_converse.domain).identities.length).toBe(1);
 
                 // Converse.js sees that the entity has a disco#items feature,
                 // so it will make a query for it.
-                await u.waitUntil(() => _.filter(
-                        IQ_stanzas,
-                        iq => iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]')
-                    ).length
-                );
+                selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]';
+                await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).length, 1000);
                 /* <iq from='montague.tld'
                  *      id='step_01'
                  *      to='romeo@montague.tld/garden'
@@ -82,15 +74,13 @@
                  *  </query>
                  *  </iq>
                  */
-                stanza = _.find(IQ_stanzas, function (iq) {
-                    return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]');
-                });
-                const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
+                selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]';
+                stanza = IQ_stanzas.find(iq => iq.querySelector(selector), 500);
                 stanza = $iq({
                     'type': 'result',
                     'from': 'montague.lit',
                     'to': 'romeo@montague.lit/orchard',
-                    'id': items_IQ_id
+                    'id': stanza.getAttribute('id'),
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
                     .c('item', {
                         'jid': 'upload.montague.lit',
@@ -98,28 +88,18 @@
 
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                _converse.api.disco.entities.get().then(function (entities) {
+                _converse.api.disco.entities.get().then(entities => {
                     expect(entities.length).toBe(2);
                     expect(entities.get('montague.lit').items.length).toBe(1);
-                    return u.waitUntil(function () {
-                        // Converse.js sees that the entity has a disco#info feature,
-                        // so it will make a query for it.
-                        return _.filter(IQ_stanzas, function (iq) {
-                            return iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                        }).length > 0;
-                    }, 300);
+                    // Converse.js sees that the entity has a disco#info feature, so it will make a query for it.
+                    const selector = 'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
+                    return u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).length > 0);
                 });
 
-                stanza = await u.waitUntil(() =>
-                    _.filter(
-                        IQ_stanzas,
-                        iq => iq.querySelector('iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]')
-                    ).pop()
-                );
-                const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-
+                selector = 'iq[to="upload.montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
+                stanza = await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector(selector)).pop(), 1000);
                 expect(Strophe.serialize(stanza)).toBe(
-                    `<iq from="romeo@montague.lit/orchard" id="`+IQ_id+`" to="upload.montague.lit" type="get" xmlns="jabber:client">`+
+                    `<iq from="romeo@montague.lit/orchard" id="`+stanza.getAttribute('id')+`" to="upload.montague.lit" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                     `</iq>`);
 
@@ -144,7 +124,7 @@
                  * </query>
                  * </iq>
                  */
-                stanza = $iq({'type': 'result', 'to': 'romeo@montague.lit/orchard', 'id': IQ_id, 'from': 'upload.montague.lit'})
+                stanza = $iq({'type': 'result', 'to': 'romeo@montague.lit/orchard', 'id': stanza.getAttribute('id'), 'from': 'upload.montague.lit'})
                     .c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                         .c('identity', {'category':'store', 'type':'file', 'name':'HTTP File Upload'}).up()
                         .c('feature', {'var':'urn:xmpp:http:upload:0'}).up()

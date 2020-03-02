@@ -377,7 +377,7 @@
                 .c('body').t("Older message").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T22:08:25Z'})
                 .tree();
-            await _converse.handleMessageStanza(msg);
+            _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             msg = $msg({
@@ -389,7 +389,7 @@
                 .c('body').t("Inbetween message").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'})
                 .tree();
-            await _converse.handleMessageStanza(msg);
+            _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             msg = $msg({
@@ -401,7 +401,7 @@
                 .c('body').t("another inbetween message").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'})
                 .tree();
-            await _converse.handleMessageStanza(msg);
+            _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             msg = $msg({
@@ -413,7 +413,7 @@
                 .c('body').t("An earlier message on the next day").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T12:18:23Z'})
                 .tree();
-            await _converse.handleMessageStanza(msg);
+            _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             msg = $msg({
@@ -425,7 +425,7 @@
                 .c('body').t("newer message from the next day").up()
                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T22:28:23Z'})
                 .tree();
-            await _converse.handleMessageStanza(msg);
+            _converse.handleMessageStanza(msg);
             await new Promise(resolve => view.once('messageInserted', resolve));
 
             // Insert <composing> message, to also check that
@@ -439,7 +439,8 @@
                     'type': 'chat'})
                 .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                 .tree();
-            await _converse.handleMessageStanza(msg);
+            _converse.handleMessageStanza(msg);
+            await new Promise(resolve => view.once('messageInserted', resolve));
 
             msg = $msg({
                     'id': _converse.connection.getUniqueId(),
@@ -509,9 +510,9 @@
         }));
 
         it("is ignored if it's a malformed headline message",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
 
             await test_utils.waitForRoster(_converse, 'current');
             await test_utils.openControlBox(_converse);
@@ -569,6 +570,7 @@
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
 
+            console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAA')
             await _converse.handleMessageStanza(msg);
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
@@ -576,7 +578,8 @@
             expect(chatbox).toBeDefined();
             expect(view).toBeDefined();
             // Check that the message was received and check the message parameters
-            expect(chatbox.messages.length).toEqual(1);
+            console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBB')
+            await u.waitUntil(() => chatbox.messages.length);
             const msg_obj = chatbox.messages.models[0];
             expect(msg_obj.get('message')).toEqual(msgtext);
             expect(msg_obj.get('fullname')).toBeUndefined();
@@ -584,10 +587,13 @@
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(false);
             // Now check that the message appears inside the chatbox in the DOM
-            await new Promise(resolve => view.once('messageInserted', resolve));
             const chat_content = view.el.querySelector('.chat-content');
+            console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCC')
+            await u.waitUntil(() => chat_content.querySelector('.chat-msg .chat-msg__text'));
+
             expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(msgtext);
             expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+            console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDD')
             await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet')
             expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Juliet Capulet');
             done();
@@ -624,7 +630,6 @@
             // Check that the chatbox and its view now exist
             const chatbox = await _converse.api.chats.get(recipient_jid);
             const view = _converse.api.chatviews.get(recipient_jid);
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(chatbox).toBeDefined();
             expect(view).toBeDefined();
 
@@ -1405,6 +1410,7 @@
 
                 expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                 // Check that the message was received and check the message parameters
+                await u.waitUntil(() => chatbox.messages.length);
                 expect(chatbox.messages.length).toEqual(1);
                 const msg_obj = chatbox.messages.models[0];
                 expect(msg_obj.get('message')).toEqual(message);
@@ -1440,6 +1446,7 @@
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                 );
                 const view = _converse.api.chatviews.get(sender_jid);
+                await u.waitUntil(() => view.model.messages.length);
                 expect(view.model.messages.length).toEqual(1);
                 const msg_obj = view.model.messages.at(0);
                 expect(msg_obj.get('message')).toEqual(message.trim());
@@ -1544,15 +1551,12 @@
                     expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
                     await _converse.handleMessageStanza(msg);
+                    const view = await u.waitUntil(() => _converse.api.chatviews.get(sender_jid));
+                    await new Promise(resolve => view.once('messageInserted', resolve));
                     expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
                     // Check that the chatbox and its view now exist
                     const chatbox = await _converse.api.chats.get(sender_jid);
-                    const view = _converse.api.chatviews.get(sender_jid);
-                    await new Promise(resolve => view.once('messageInserted', resolve));
-
-                    expect(chatbox).toBeDefined();
-                    expect(view).toBeDefined();
                     expect(chatbox.get('fullname') === sender_jid);
 
                     await u.waitUntil(() => view.el.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
@@ -1593,12 +1597,10 @@
 
                     let chatbox = await _converse.api.chats.get(sender_jid);
                     expect(chatbox).toBe(null);
-                    // onMessage is a handler for received XMPP messages
                     await _converse.handleMessageStanza(msg);
                     let view = _converse.chatboxviews.get(sender_jid);
                     expect(view).not.toBeDefined();
 
-                    // onMessage is a handler for received XMPP messages
                     _converse.allow_non_roster_messaging = true;
                     await _converse.handleMessageStanza(msg);
                     view = _converse.chatboxviews.get(sender_jid);

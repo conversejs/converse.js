@@ -283,7 +283,7 @@
             const view = _converse.chatboxviews.get(room_jid);
             view.model.set({'minimized': true});
             const nick = mock.chatroom_names[0];
-            await view.model.onMessage(
+            await view.model.queueMessage(
                 $msg({
                     from: room_jid+'/'+nick,
                     id: u.getUniqueId(),
@@ -297,7 +297,7 @@
             expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
 
             // If the user is mentioned, the counter also gets updated
-            await view.model.onMessage(
+            await view.model.queueMessage(
                 $msg({
                     from: room_jid+'/'+nick,
                     id: u.getUniqueId(),
@@ -310,7 +310,7 @@
             expect(indicator_el.textContent).toBe('1');
 
             spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
-            await view.model.onMessage(
+            await view.model.queueMessage(
                 $msg({
                     from: room_jid+'/'+nick,
                     id: u.getUniqueId(),

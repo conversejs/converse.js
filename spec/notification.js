@@ -177,7 +177,7 @@
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t(text);
-                    await view.model.onMessage(message.nodeTree);
+                    await view.model.queueMessage(message.nodeTree);
                     await u.waitUntil(() => _converse.playSoundNotification.calls.count());
                     expect(_converse.playSoundNotification).toHaveBeenCalled();
 
@@ -188,7 +188,7 @@
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t(text);
-                    await view.model.onMessage(message.nodeTree);
+                    await view.model.queueMessage(message.nodeTree);
                     expect(_converse.playSoundNotification, 1);
                     _converse.play_sounds = false;
 
@@ -199,7 +199,7 @@
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t(text);
-                    await view.model.onMessage(message.nodeTree);
+                    await view.model.queueMessage(message.nodeTree);
                     expect(_converse.playSoundNotification, 1);
                     _converse.play_sounds = false;
                     done();

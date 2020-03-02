@@ -329,7 +329,7 @@
 
                 await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED);
                 await test_utils.returnMemberLists(_converse, muc_jid);
-                // await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 2);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length === 2);
 
                 const info_texts = Array.from(view.el.querySelectorAll('.chat-content .chat-info')).map(e => e.textContent.trim());
                 expect(info_texts[0]).toBe('A new groupchat has been created');
@@ -516,7 +516,7 @@
                         'type': 'groupchat'
                     }).c('body').t(message).tree();
 
-                await view.model.onMessage(msg);
+                await view.model.queueMessage(msg);
 
                 spyOn(view.model, 'clearMessages').and.callThrough();
                 await view.model.close();
@@ -547,7 +547,7 @@
                         'type': 'groupchat'
                     }).c('body').t(message).tree();
 
-                await view.model.onMessage(msg);
+                await view.model.queueMessage(msg);
                 await u.waitUntil(()  => view.el.querySelector('.chat-msg__text a'));
                 view.el.querySelector('.chat-msg__text a').click();
                 await u.waitUntil(() => _converse.chatboxes.length === 3)
@@ -1142,7 +1142,8 @@
                         'type': 'groupchat'
                     }).c('body').t('Some message').tree();
 
-                await view.model.onMessage(msg);
+                await view.model.queueMessage(msg);
+                await u.waitUntil(() => sizzle('.chat-msg:last .chat-msg__text', view.chat_content).pop());
 
                 let stanza = u.toStanza(
                     `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" type="unavailable" from="conversations@conference.siacs.eu/Guus">
@@ -1357,7 +1358,8 @@
                         'to': 'romeo@montague.lit',
                         'type': 'groupchat'
                     }).c('body').t(message).tree();
-                await view.model.onMessage(msg);
+                await view.model.queueMessage(msg);
+                await u.waitUntil(() => sizzle('.chat-msg:last .chat-msg__text', view.chat_content).pop());
                 expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Dyon van de Wege')).toBeTruthy();
                 expect(view.el.querySelector('.chat-msg__text').textContent.trim()).toBe('is tired');
 
@@ -1368,8 +1370,9 @@
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(message).tree();
-                await view.model.onMessage(msg);
-                expect(_.includes(sizzle('.chat-msg__author:last', view.el).pop().textContent, '**Romeo Montague')).toBeTruthy();
+                await view.model.queueMessage(msg);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
+                expect(sizzle('.chat-msg__author:last', view.el).pop().textContent.includes('**Romeo Montague')).toBeTruthy();
                 expect(sizzle('.chat-msg__text:last', view.el).pop().textContent.trim()).toBe('is as well');
                 done();
             }));
@@ -1867,8 +1870,7 @@
 
                 await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
 
-                let stanza = await u.waitUntil(() => _.filter(
-                    IQ_stanzas,
+                let stanza = await u.waitUntil(() => IQ_stanzas.filter(
                     iq => iq.querySelector(
                         `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                     )).pop()
@@ -2088,8 +2090,9 @@
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(text);
-                await view.model.onMessage(message.nodeTree);
+                await view.model.queueMessage(message.nodeTree);
                 const chat_content = view.el.querySelector('.chat-content');
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(chat_content.querySelector('.chat-msg__text').textContent.trim()).toBe(text);
                 expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -2134,7 +2137,7 @@
                                 by="lounge@montague.lit"/>
                         <origin-id xmlns="urn:xmpp:sid:0" id="${view.model.messages.at(0).get('origin_id')}"/>
                     </message>`);
-                await view.model.onMessage(stanza);
+                await view.model.queueMessage(stanza);
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(sizzle('.chat-msg__text:last').pop().textContent.trim()).toBe(text);
                 expect(view.model.messages.length).toBe(1);
@@ -2156,7 +2159,7 @@
                 const promises = [];
                 for (let i=0; i<20; i++) {
                     promises.push(
-                        view.model.onMessage(
+                        view.model.queueMessage(
                             $msg({
                                 from: 'lounge@montague.lit/someone',
                                 to: 'romeo@montague.lit.com',
@@ -2169,13 +2172,14 @@
                 // Give enough time for `markScrolled` to have been called
                 setTimeout(async () => {
                     view.content.scrollTop = 0;
-                    await view.model.onMessage(
+                    await view.model.queueMessage(
                         $msg({
                             from: 'lounge@montague.lit/someone',
                             to: 'romeo@montague.lit.com',
                             type: 'groupchat',
                             id: u.getUniqueId(),
                         }).c('body').t(message).tree());
+                    await new Promise(resolve => view.once('messageInserted', resolve));
                     // Now check that the message appears inside the chatbox in the DOM
                     const chat_content = view.el.querySelector('.chat-content');
                     const msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
@@ -4969,7 +4973,7 @@
 
                 const nick = mock.chatroom_names[0];
 
-                await view.model.onMessage($msg({
+                await view.model.queueMessage($msg({
                         from: muc_jid+'/'+nick,
                         id: u.getUniqueId(),
                         to: 'romeo@montague.lit',
@@ -4980,7 +4984,7 @@
                 expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);
                 expect(roomspanel.el.querySelector('.msgs-indicator').textContent.trim()).toBe('1');
 
-                await view.model.onMessage($msg({
+                await view.model.queueMessage($msg({
                     'from': muc_jid+'/'+nick,
                     'id': u.getUniqueId(),
                     'to': 'romeo@montague.lit',
@@ -5106,7 +5110,7 @@
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
-                    await view.model.onMessage(msg);
+                    await view.model.queueMessage(msg);
                     await u.waitUntil(() => view.el.querySelectorAll('.chat-state-notification').length);
 
                     // Check that the notification appears inside the chatbox in the DOM
@@ -5130,7 +5134,7 @@
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    await view.model.onMessage(msg);
+                    await view.model.queueMessage(msg);
 
                     events = view.el.querySelectorAll('.chat-event');
                     expect(events.length).toBe(3);
@@ -5150,7 +5154,7 @@
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    await view.model.onMessage(msg);
+                    await view.model.queueMessage(msg);
                     events = view.el.querySelectorAll('.chat-event');
                     expect(events.length).toBe(3);
                     expect(events[0].textContent.trim()).toEqual('some1 has entered the groupchat');
@@ -5170,7 +5174,8 @@
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t('hello world').tree();
-                    await view.model.onMessage(msg);
+                    await view.model.queueMessage(msg);
+                    await new Promise(resolve => view.once('messageInserted', resolve));
 
                     const messages = view.el.querySelectorAll('.message');
                     expect(messages.length).toBe(7);
@@ -5276,7 +5281,7 @@
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    await view.model.onMessage(msg);
+                    await view.model.queueMessage(msg);
 
                     // Check that the notification appears inside the chatbox in the DOM
                     var events = view.el.querySelectorAll('.chat-event');
@@ -5297,7 +5302,7 @@
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    await view.model.onMessage(msg);
+                    await view.model.queueMessage(msg);
 
                     events = view.el.querySelectorAll('.chat-event');
                     expect(events.length).toBe(3);
@@ -5316,7 +5321,7 @@
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    await view.model.onMessage(msg);
+                    await view.model.queueMessage(msg);
                     events = view.el.querySelectorAll('.chat-event');
                     expect(events.length).toBe(3);
                     expect(events[0].textContent.trim()).toEqual('some1 has entered the groupchat');
@@ -5339,7 +5344,7 @@
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
                         }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    await view.model.onMessage(msg);
+                    await view.model.queueMessage(msg);
                     events = view.el.querySelectorAll('.chat-event');
                     expect(events.length).toBe(3);
                     expect(events[0].textContent.trim()).toEqual('some1 has entered the groupchat');

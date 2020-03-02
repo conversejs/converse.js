@@ -189,7 +189,7 @@ converse.plugins.add('converse-omemo', {
                     let message, stanza;
                     try {
                         const devices = await _converse.getBundlesAndBuildSessions(this);
-                        message = this.messages.create(attrs);
+                        message = await this.createMessage(attrs);
                         stanza = await _converse.createOMEMOMessageStanza(this, message, devices);
                     } catch (e) {
                         this.handleMessageSendError(e);
@@ -307,7 +307,7 @@ converse.plugins.add('converse-omemo', {
             reportDecryptionError (e) {
                 if (_converse.loglevel === 'debug') {
                     const { __ } = _converse;
-                    this.messages.create({
+                    this.createMessage({
                         'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
                         'type': 'error',
                     });
@@ -1208,7 +1208,7 @@ converse.plugins.add('converse-omemo', {
             if (chatroom.get('omemo_active')) {
                 const supported = await _converse.contactHasOMEMOSupport(occupant.get('jid'));
                 if (!supported) {
-                        chatroom.messages.create({
+                        chatroom.createMessage({
                             'message': __("%1$s doesn't appear to have a client that supports OMEMO. " +
                                           "Encrypted chat will no longer be possible in this grouchat.", occupant.get('nick')),
                             'type': 'error'

@@ -88,9 +88,7 @@ converse.plugins.add('converse-mam', {
                 if (!(await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid))) {
                     return;
                 }
-                const message_handler = is_groupchat ?
-                    this.onMessage.bind(this) :
-                    _converse.handleMessageStanza.bind(_converse.chatboxes);
+                const msg_handler = is_groupchat ? s => this.queueMessage(s) : s => _converse.handleMessageStanza(s);
 
                 const query = Object.assign({
                         'groupchat': is_groupchat,
@@ -102,7 +100,7 @@ converse.plugins.add('converse-mam', {
                 /* eslint-disable no-await-in-loop */
                 for (const message of result.messages) {
                     try {
-                        await message_handler(message);
+                        await msg_handler(message);
                     } catch (e) {
                         log.error(e);
                     }

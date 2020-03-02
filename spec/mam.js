@@ -296,7 +296,7 @@
                         </message>`);
                     spyOn(view.model, 'getDuplicateMessage').and.callThrough();
                     spyOn(view.model, 'updateMessage').and.callThrough();
-                    view.model.onMessage(stanza);
+                    view.model.queueMessage(stanza);
                     await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                     expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                     const result = view.model.getDuplicateMessage.calls.all()[0].returnValue
@@ -340,7 +340,7 @@
                             </result>
                         </message>`);
                     spyOn(view.model, 'getDuplicateMessage').and.callThrough();
-                    view.model.onMessage(stanza);
+                    view.model.queueMessage(stanza);
                     await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                     expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                     const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
@@ -370,7 +370,7 @@
                                 </forwarded>
                             </result>
                         </message>`);
-                    view.model.onMessage(stanza);
+                    view.model.queueMessage(stanza);
                     await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
                     expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
@@ -390,7 +390,7 @@
                         </message>`);
 
                     spyOn(view.model, 'getDuplicateMessage').and.callThrough();
-                    view.model.onMessage(stanza);
+                    view.model.queueMessage(stanza);
                     await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                     expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                     const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue

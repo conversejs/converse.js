@@ -43,7 +43,7 @@
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('Hello world').tree();
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
 
             // Test that pressing @ brings up all options
             const textarea = view.el.querySelector('textarea.chat-textarea');

@@ -321,15 +321,14 @@
                 chatview.delegateEvents();
 
                 controlview.el.querySelector('.close-chatbox-button').click();
-
                 expect(controlview.close).toHaveBeenCalled();
+                await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                expect(_converse.api.trigger.calls.count(), 1);
-                chatview.el.querySelector('.close-chatbox-button').click();
 
+                chatview.el.querySelector('.close-chatbox-button').click();
                 expect(chatview.close).toHaveBeenCalled();
+                await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                expect(_converse.api.trigger.calls.count(), 2);
                 done();
             }));
 
@@ -381,6 +380,7 @@
                 spyOn(_converse.api, "trigger").and.callThrough();
 
                 test_utils.closeControlBox();
+                await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 expect(_converse.chatboxes.length).toEqual(1);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);

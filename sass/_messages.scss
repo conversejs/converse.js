@@ -234,13 +234,13 @@
                     height: var(--message-font-size);
                     font-size: var(--message-font-size);
                     padding: 0;
-                    padding-left: 0.75em;
+                    margin-left: 0.75em;
                     border: none;
                     opacity: 0;
                     background: transparent;
                     cursor: pointer;
                     &:focus {
-                        display: block;
+                        opacity: 1;
                     }
                 }
             }

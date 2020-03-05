@@ -533,7 +533,7 @@
                 await view.model.queueMessage(received_stanza);
                 await u.waitUntil(() => view.el.querySelector('.chat-msg__content'));
                 expect(view.el.querySelector('.chat-msg__content .chat-msg__action-retract')).toBe(null);
-                const result = await view.model.canRetractMessages();
+                const result = await view.model.canModerateMessages();
                 expect(result).toBe(false);
                 done();
             }));

@@ -820,7 +820,7 @@ converse.plugins.add('converse-muc', {
                 return _converse.ChatBox.prototype.close.call(this);
             },
 
-            canRetractMessages () {
+            canModerateMessages () {
                 const self = this.getOwnOccupant();
                 return self && self.isModerator() && _converse.api.disco.supports(Strophe.NS.MODERATE, this.get('jid'));
             },

@@ -234,10 +234,12 @@ converse.plugins.add('converse-message-view', {
                 const is_groupchat = this.model.get('type') === 'groupchat';
                 const is_own_message = this.model.get('sender') === 'me';
                 const chatbox = this.model.collection.chatbox;
-                const may_retract_own_message = is_own_message && ['all', 'own'].includes(_converse.allow_message_retraction);
+                const may_retract_own_message = is_own_message && (
+                    ['all', 'own'].includes(_converse.allow_message_retraction) || await chatbox.canModerateMessages()
+                );
                 const may_moderate_message = !is_own_message && is_groupchat &&
                     ['all', 'moderator'].includes(_converse.allow_message_retraction) &&
-                    await chatbox.canRetractMessages();
+                    await chatbox.canModerateMessages();
 
                 const retractable= !is_retracted && (may_moderate_message || may_retract_own_message);
                 const msg = u.stringToElement(tpl_message(

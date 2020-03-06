@@ -93,7 +93,7 @@ converse.plugins.add('converse-push', {
         async function enablePush (domain) {
             domain = domain || _converse.bare_jid;
             const push_enabled = _converse.session.get('push_enabled') || [];
-            if (_.includes(push_enabled, domain)) {
+            if (push_enabled.includes(domain)) {
                 return;
             }
             const enabled_services = _.reject(_converse.push_app_servers, 'disable');

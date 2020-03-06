@@ -8,11 +8,12 @@
 import "converse-profile";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
+import { concat, debounce, difference, get, invokeMap, range, omit } from "lodash";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
 
-const { Strophe, sizzle, $build, $iq, $msg, _ } = converse.env;
+const { Strophe, sizzle, $build, $iq, $msg } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO+".devicelist");
@@ -81,7 +82,7 @@ converse.plugins.add('converse-omemo', {
 
             initialize () {
                 const { _converse } = this.__super__;
-                this.debouncedRender = _.debounce(this.render, 50);
+                this.debouncedRender = debounce(this.render, 50);
                 this.devicelist = _converse.devicelists.get(_converse.bare_jid);
                 this.listenTo(this.devicelist.devices, 'change:bundle', this.debouncedRender);
                 this.listenTo(this.devicelist.devices, 'reset', this.debouncedRender);
@@ -376,8 +377,8 @@ converse.plugins.add('converse-omemo', {
                         'device_id': header.getAttribute('sid'),
                         'iv': header.querySelector('iv').textContent,
                         'key': key.textContent,
-                        'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
-                        'prekey': _.includes(['true', '1'], key.getAttribute('prekey'))
+                        'payload': get(encrypted.querySelector('payload'), 'textContent', null),
+                        'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
                     }
                     return this.decrypt(attrs);
                 } else {
@@ -480,7 +481,7 @@ converse.plugins.add('converse-omemo', {
 
 
         async function generateFingerprint (device) {
-            if (_.get(device.get('bundle'), 'fingerprint')) {
+            if (get(device.get('bundle'), 'fingerprint')) {
                 return;
             }
             const bundle = await device.getBundle();
@@ -516,7 +517,7 @@ converse.plugins.add('converse-omemo', {
             const existing_ids = _converse.devicelists.get(_converse.bare_jid).devices.pluck('id');
             let device_id = libsignal.KeyHelper.generateRegistrationId();
             let i = 0;
-            while (_.includes(existing_ids, device_id)) {
+            while (existing_ids.includes(device_id)) {
                 device_id = libsignal.KeyHelper.generateRegistrationId();
                 i++;
                 if (i == 10) {
@@ -569,7 +570,7 @@ converse.plugins.add('converse-omemo', {
             let devices;
             if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
                 const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
-                devices = collections.reduce((a, b) => _.concat(a, b.models), []);
+                devices = collections.reduce((a, b) => concat(a, b.models), []);
             } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                 const their_devices = await getDevicesForContact(chatbox.get('jid'));
                 if (their_devices.length === 0) {
@@ -749,7 +750,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             removePreKey (key_id) {
-                this.save('prekeys', _.omit(this.getPreKeys(), key_id));
+                this.save('prekeys', omit(this.getPreKeys(), key_id));
                 return Promise.resolve();
             },
 
@@ -807,13 +808,9 @@ converse.plugins.add('converse-omemo', {
             },
 
             removeAllSessions (identifier) {
-                const keys = _.filter(Object.keys(this.attributes), (key) => {
-                    if (key.startsWith('session'+identifier)) {
-                        return key;
-                    }
-                });
+                const keys = Object.keys(this.attributes).filter(key => key.startsWith('session'+identifier) ? key : false);
                 const attrs = {};
-                _.forEach(keys, (key) => {attrs[key] = undefined});
+                keys.forEach(key => {attrs[key] = undefined});
                 this.save(attrs);
                 return Promise.resolve();
             },
@@ -828,17 +825,15 @@ converse.plugins.add('converse-omemo', {
                         .c('signedPreKeySignature').t(signed_prekey.signature).up()
                         .c('identityKey').t(this.get('identity_keypair').pubKey).up()
                         .c('prekeys');
-                _.forEach(
-                    this.get('prekeys'),
-                    (prekey, id) => item.c('preKeyPublic', {'preKeyId': id}).t(prekey.pubKey).up()
-                );
+
+                Object.values(this.get('prekeys')).forEach((prekey, id) => item.c('preKeyPublic', {'preKeyId': id}).t(prekey.pubKey).up());
                 const options = {'pubsub#access_model': 'open'};
                 return _converse.api.pubsub.publish(null, node, item, options, false);
             },
 
             async generateMissingPreKeys () {
-                const missing_keys = _.difference(
-                    _.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString),
+                const missing_keys = difference(
+                    invokeMap(range(0, _converse.NUM_PREKEYS), Number.prototype.toString),
                     Object.keys(this.getPreKeys())
                 );
                 if (missing_keys.length < 1) {
@@ -884,7 +879,7 @@ converse.plugins.add('converse-omemo', {
                     'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.privKey),
                     'signature': u.arrayBufferToBase64(signed_prekey.signature)
                 }
-                const keys = await Promise.all(_.range(0, _converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id)));
+                const keys = await Promise.all(range(0, _converse.NUM_PREKEYS).map(id => libsignal.KeyHelper.generatePreKey(id)));
                 keys.forEach(k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
                 const devicelist = _converse.devicelists.get(_converse.bare_jid);
                 const device = await devicelist.devices.create({'id': bundle.device_id, 'jid': _converse.bare_jid}, {'promise': true});
@@ -1027,7 +1022,7 @@ converse.plugins.add('converse-omemo', {
                     await _converse.omemo_store.generateBundle();
                     device_id = _converse.omemo_store.get('device_id');
                 }
-                if (!_.includes(device_ids, device_id)) {
+                if (!device_ids.includes(device_id)) {
                     return this.publishDevices();
                 }
             },
@@ -1066,7 +1061,7 @@ converse.plugins.add('converse-omemo', {
                 if (this.get('jid') !== _converse.bare_jid) {
                     throw new Error("Cannot remove devices from someone else's device list");
                 }
-                _.forEach(device_ids, (device_id) => this.devices.get(device_id).destroy());
+                device_ids.forEach(device_id => this.devices.get(device_id).destroy());
                 return this.publishDevices();
             }
         });
@@ -1129,7 +1124,7 @@ converse.plugins.add('converse-omemo', {
             const jid = stanza.getAttribute('from');
             const devicelist = _converse.devicelists.getDeviceList(jid);
             const devices = devicelist.devices;
-            const removed_ids = _.difference(devices.pluck('id'), device_ids);
+            const removed_ids = difference(devices.pluck('id'), device_ids);
 
             removed_ids.forEach(id => {
                 if (jid === _converse.bare_jid && id === _converse.omemo_store.get('device_id')) {

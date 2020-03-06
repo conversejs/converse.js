@@ -4,8 +4,8 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { Model } from 'skeletor.js/src/model.js';
+import { find, uniq } from "lodash";
 import * as twemoji from "twemoji";
-import _ from "./lodash.noconflict";
 import converse from "./converse-core";
 
 const u = converse.env.utils;
@@ -118,7 +118,7 @@ converse.plugins.add('converse-emoji', {
 
         function getTonedEmojis () {
             if (!_converse.toned_emojis) {
-                _converse.toned_emojis = _.uniq(
+                _converse.toned_emojis = uniq(
                     Object.values(_converse.emojis.json.people)
                         .filter(person => person.sn.includes('_tone'))
                         .map(person => person.sn.replace(/_tone[1-5]/, ''))
@@ -254,7 +254,7 @@ converse.plugins.add('converse-emoji', {
                     .filter((c, i, arr) => arr.indexOf(c) == i);
 
                 emojis_by_attribute[attr] = {};
-                all_variants.forEach(v => (emojis_by_attribute[attr][v] = _.find(_converse.emojis_list, i => (i[attr] === v))));
+                all_variants.forEach(v => (emojis_by_attribute[attr][v] = find(_converse.emojis_list, i => (i[attr] === v))));
                 return emojis_by_attribute[attr];
             }
         });

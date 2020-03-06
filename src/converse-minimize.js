@@ -293,8 +293,7 @@ converse.plugins.add('converse-minimize', {
 
             getMinimizedWidth () {
                 const minimized_el = _.get(_converse.minimized_chats, 'el');
-                return _.includes(this.model.pluck('minimized'), true) ?
-                    u.getOuterWidth(minimized_el, true) : 0;
+                return this.model.pluck('minimized').includes(true) ? u.getOuterWidth(minimized_el, true) : 0;
             },
 
             getBoxesWidth (newchat) {
@@ -356,8 +355,7 @@ converse.plugins.add('converse-minimize', {
                 exclude_ids.push('controlbox');
                 let i = 0;
                 let model = this.model.sort().at(i);
-                while (_.includes(exclude_ids, model.get('id')) ||
-                    model.get('minimized') === true) {
+                while (exclude_ids.includes(model.get('id')) || model.get('minimized') === true) {
                     i++;
                     model = this.model.at(i);
                     if (!model) {

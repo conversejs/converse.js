@@ -8,6 +8,7 @@
  */
 import "converse-controlbox";
 import { View } from "skeletor.js/src/view";
+import { get, pick } from "lodash";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_form_input from "templates/form_input.html";
@@ -19,7 +20,7 @@ import tpl_spinner from "templates/spinner.html";
 import utils from "@converse/headless/utils/form";
 
 // Strophe methods for building stanzas
-const { Strophe, sizzle, $iq, _ } = converse.env;
+const { Strophe, sizzle, $iq } = converse.env;
 const u = converse.env.utils;
 
 // Add Strophe Namespaces
@@ -258,7 +259,7 @@ converse.plugins.add('converse-register', {
                 };
                 Object.assign(this, defaults);
                 if (settings) {
-                    Object.assign(this, _.pick(settings, Object.keys(defaults)));
+                    Object.assign(this, pick(settings, Object.keys(defaults)));
                 }
             },
 
@@ -286,7 +287,7 @@ converse.plugins.add('converse-register', {
              */
             onProviderChosen (form) {
                 const domain_input = form.querySelector('input[name=domain]'),
-                    domain = _.get(domain_input, 'value');
+                    domain = get(domain_input, 'value');
                 if (!domain) {
                     // TODO: add validation message
                     domain_input.classList.add('error');
@@ -365,13 +366,12 @@ converse.plugins.add('converse-register', {
              */
             onConnectStatusChanged(status_code) {
                 log.debug('converse-register: onConnectStatusChanged');
-                if (_.includes([
-                            Strophe.Status.DISCONNECTED,
-                            Strophe.Status.CONNFAIL,
-                            Strophe.Status.REGIFAIL,
-                            Strophe.Status.NOTACCEPTABLE,
-                            Strophe.Status.CONFLICT
-                        ], status_code)) {
+                if ([Strophe.Status.DISCONNECTED,
+                     Strophe.Status.CONNFAIL,
+                     Strophe.Status.REGIFAIL,
+                     Strophe.Status.NOTACCEPTABLE,
+                     Strophe.Status.CONFLICT
+                    ].includes(status_code)) {
 
                     log.error(
                         `Problem during registration: Strophe.Status is ${_converse.CONNECTION_STATUS[status_code]}`
@@ -540,9 +540,8 @@ converse.plugins.add('converse-register', {
              * @param { HTMLElement } form - The HTML form that was submitted
              */
             submitRegistrationForm (form) {
-                const has_empty_inputs = _.reduce(
-                    this.el.querySelectorAll('input.required'),
-                    function (result, input) {
+                const has_empty_inputs = Array.from(this.el.querySelectorAll('input.required'))
+                    .reduce((result, input) => {
                         if (input.value === '') {
                             input.classList.add('error');
                             return result + 1;
@@ -551,8 +550,8 @@ converse.plugins.add('converse-register', {
                     }, 0);
                 if (has_empty_inputs) { return; }
 
-                const inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
-                      iq = $iq({'type': 'set', 'id': u.getUniqueId()})
+                const inputs = sizzle(':input:not([type=button]):not([type=submit])', form);
+                const iq = $iq({'type': 'set', 'id': u.getUniqueId()})
                             .c("query", {xmlns:Strophe.NS.REGISTER});
 
                 if (this.form_type === 'xform') {
@@ -598,12 +597,12 @@ converse.plugins.add('converse-register', {
             },
 
             _setFieldsFromXForm (xform) {
-                this.title = _.get(xform.querySelector('title'), 'textContent');
-                this.instructions = _.get(xform.querySelector('instructions'), 'textContent');
+                this.title = get(xform.querySelector('title'), 'textContent');
+                this.instructions = get(xform.querySelector('instructions'), 'textContent');
                 xform.querySelectorAll('field').forEach(field => {
                     const _var = field.getAttribute('var');
                     if (_var) {
-                        this.fields[_var.toLowerCase()] = _.get(field.querySelector('value'), 'textContent', '');
+                        this.fields[_var.toLowerCase()] = get(field.querySelector('value'), 'textContent', '');
                     } else {
                         // TODO: other option seems to be type="fixed"
                         log.warn("Found field we couldn't parse");

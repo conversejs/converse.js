@@ -262,9 +262,7 @@ converse.plugins.add('converse-message-view', {
                 ));
 
                 const url = this.model.get('oob_url');
-                if (url) {
-                    msg.querySelector('.chat-msg__media').innerHTML = this.transformOOBURL(url);
-                }
+                url && render(this.transformOOBURL(url), msg.querySelector('.chat-msg__media'));
 
                 if (!is_retracted) {
                     const text = this.model.getMessageText();

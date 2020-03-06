@@ -324,10 +324,8 @@
                         await u.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                         // Check that the image renders
                         expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
-                            `<!-- src/templates/image.html -->\n`+
-                            `<a href="${base_url}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
-                                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
-                            `</a>`);
+                            `<!----><a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                            `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a><!---->`);
                         XMLHttpRequest.prototype.send = send_backup;
                         done();
                     }));
@@ -430,10 +428,9 @@
                         await u.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                         // Check that the image renders
                         expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
-                            `<!-- src/templates/image.html -->\n`+
-                            `<a href="${base_url}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
-                                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
-                            `</a>`);
+                            `<!----><a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                            `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a><!---->`);
+
                         XMLHttpRequest.prototype.send = send_backup;
                         done();
                     }));

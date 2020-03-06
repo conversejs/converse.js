@@ -1920,9 +1920,8 @@
                 expect(msg.textContent).toEqual('Have you heard this funny audio?');
                 let media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                    '<!-- src/templates/audio.html -->'+
-                    '<audio controls="" src="https://montague.lit/audio.mp3"></audio>'+
-                    '<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3">Download audio file "audio.mp3"</a>');
+                    `<!---->    <audio controls="" src="https://montague.lit/audio.mp3"></audio>    `+
+                    `<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3"><!---->Download audio file "audio.mp3"<!----></a><!---->`);
 
                 // If the <url> and <body> contents is the same, don't duplicate.
                 stanza = u.toStanza(`
@@ -1938,10 +1937,9 @@
                 expect(msg.innerHTML).toEqual('<!-- message gets added here via renderMessage -->'); // Emtpy
                 media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                    '<!-- src/templates/audio.html -->'+
-                    '<audio controls="" src="https://montague.lit/audio.mp3"></audio>'+
-                    '<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3">Download audio file "audio.mp3"</a>'
-                );
+                    `<!---->    <audio controls="" src="https://montague.lit/audio.mp3"></audio>    `+
+                    `<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3">`+
+                    `<!---->Download audio file "audio.mp3"<!----></a><!---->`);
                 done();
             }));
 
@@ -1970,8 +1968,8 @@
                 expect(msg.textContent).toEqual('Have you seen this funny video?');
                 let media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                    '<!-- src/templates/video.html -->'+
-                    '<video controls="" preload="metadata" src="https://montague.lit/video.mp4" style="max-height: 50vh"></video>');
+                    `<!----><video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video><!---->`);
+
 
                 // If the <url> and <body> contents is the same, don't duplicate.
                 stanza = u.toStanza(`
@@ -1987,8 +1985,7 @@
                 expect(msg.innerHTML).toEqual('<!-- message gets added here via renderMessage -->'); // Emtpy
                 media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                    '<!-- src/templates/video.html -->'+
-                    '<video controls="" preload="metadata" src="https://montague.lit/video.mp4" style="max-height: 50vh"></video>');
+                    `<!----><video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video><!---->`);
                 done();
             }));
 
@@ -2017,8 +2014,7 @@
                 expect(msg.textContent).toEqual('Have you downloaded this funny file?');
                 const media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                    '<!-- src/templates/file.html -->'+
-                    '<a target="_blank" rel="noopener" href="https://montague.lit/funny.pdf">Download file "funny.pdf"</a>');
+                    `<!----><a target="_blank" rel="noopener" href="https://montague.lit/funny.pdf"><!---->Download file "funny.pdf"<!----></a><!---->`);
                 done();
             }));
 
@@ -2050,10 +2046,8 @@
                 expect(msg.textContent).toEqual('Have you seen this funny image?');
                 const media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                    `<!-- src/templates/image.html -->`+
-                    `<a href="${base_url}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
-                        `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
-                    `</a>`);
+                    `<!----><a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                    `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a><!---->`);
                 done();
             }));
         });

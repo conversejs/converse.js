@@ -9,6 +9,7 @@ import "@converse/headless/utils/muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
 import { get, head, isString, isUndefined } from "lodash";
+import { BootstrapModal } from "./converse-modal.js";
 import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
@@ -223,12 +224,12 @@ converse.plugins.add('converse-muc-views', {
         }
 
 
-        _converse.ModeratorToolsModal = _converse.BootstrapModal.extend({
+        _converse.ModeratorToolsModal = BootstrapModal.extend({
             id: "converse-modtools-modal",
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
 
                 this.listenTo(this.model, 'change:role', () => {
                     this.users_with_role = this.getUsersWithRole();
@@ -412,7 +413,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.ListChatRoomsModal = _converse.BootstrapModal.extend({
+        _converse.ListChatRoomsModal = BootstrapModal.extend({
             id: "list-chatrooms-modal",
 
             events: {
@@ -424,7 +425,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 if (_converse.muc_domain && !this.model.get('muc_domain')) {
                     this.model.save('muc_domain', _converse.muc_domain);
                 }
@@ -544,7 +545,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.AddChatRoomModal = _converse.BootstrapModal.extend({
+        _converse.AddChatRoomModal = BootstrapModal.extend({
             id: 'add-chatroom-modal',
 
             events: {
@@ -554,7 +555,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change:muc_domain', this.render);
                 this.muc_roomid_policy_error_msg = null;
             },
@@ -637,11 +638,11 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.RoomDetailsModal = _converse.BootstrapModal.extend({
+        _converse.RoomDetailsModal = BootstrapModal.extend({
             id: "room-details-modal",
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change', this.render);
                 this.listenTo(this.model.features, 'change', this.render);
                 this.listenTo(this.model.occupants, 'add', this.render);
@@ -2224,11 +2225,11 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.MUCInviteModal = _converse.BootstrapModal.extend({
+        _converse.MUCInviteModal = BootstrapModal.extend({
             id: "muc-invite-modal",
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change', this.render);
                 this.initInviteWidget();
             },

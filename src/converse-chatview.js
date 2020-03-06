@@ -6,8 +6,9 @@
 import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
-import { debounce, get, isString } from "lodash";
+import { BootstrapModal } from "./converse-modal.js";
 import { Overview } from "skeletor.js/src/overview";
+import { debounce, get, isString } from "lodash";
 import { html, render } from "lit-html";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -72,7 +73,7 @@ converse.plugins.add('converse-chatview', {
         });
 
 
-        _converse.UserDetailsModal = _converse.BootstrapModal.extend({
+        _converse.UserDetailsModal = BootstrapModal.extend({
             id: "user-details-modal",
 
             events: {
@@ -81,7 +82,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.model.rosterContactAdded.then(() => this.registerContactEventHandlers());
                 this.listenTo(this.model, 'change', this.render);
                 this.registerContactEventHandlers();

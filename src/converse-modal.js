@@ -7,6 +7,7 @@ import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { isString } from "lodash";
 import { render } from 'lit-html';
+import { __ } from '@converse/headless/i18n';
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -17,139 +18,141 @@ import tpl_prompt from "templates/prompt.js";
 const { sizzle } = converse.env;
 const u = converse.env.utils;
 
+let _converse;
+
+
+export const BootstrapModal = View.extend({
+    className: "modal",
+    events: {
+        'click  .nav-item .nav-link': 'switchTab'
+    },
+
+    initialize () {
+        this.render()
+
+        this.el.setAttribute('tabindex', '-1');
+        this.el.setAttribute('role', 'dialog');
+        this.el.setAttribute('aria-hidden', 'true');
+        const label_id = this.el.querySelector('.modal-title').getAttribute('id');
+        label_id && this.el.setAttribute('aria-labelledby', label_id);
+
+        this.insertIntoDOM();
+        const Modal = bootstrap.Modal;
+        this.modal = new Modal(this.el, {
+            backdrop: 'static',
+            keyboard: true
+        });
+        this.el.addEventListener('hide.bs.modal', () => u.removeClass('selected', this.trigger_el), false);
+    },
+
+    insertIntoDOM () {
+        const container_el = _converse.chatboxviews.el.querySelector("#converse-modals");
+        container_el.insertAdjacentElement('beforeEnd', this.el);
+    },
+
+    switchTab (ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+        sizzle('.nav-link.active', this.el).forEach(el => {
+            u.removeClass('active', this.el.querySelector(el.getAttribute('href')));
+            u.removeClass('active', el);
+        });
+        u.addClass('active', ev.target);
+        u.addClass('active', this.el.querySelector(ev.target.getAttribute('href')))
+    },
+
+    alert (message, type='primary') {
+        const body = this.el.querySelector('.modal-alert');
+        if (body === null) {
+            log.error("Could not find a .modal-alert element in the modal to show an alert message in!");
+            return;
+        }
+        // FIXME: Instead of adding the alert imperatively, we should
+        // find a way to let the modal rerender with an alert message
+        render(tpl_alert_component({'type': `alert-${type}`, 'message': message}), body);
+        const el = body.firstElementChild;
+        setTimeout(() => {
+            u.addClass('fade-out', el);
+            setTimeout(() => u.removeElement(el), 600);
+        }, 5000);
+    },
+
+    show (ev) {
+        if (ev) {
+            ev.preventDefault();
+            this.trigger_el = ev.target;
+            this.trigger_el.classList.add('selected');
+        }
+        this.modal.show();
+    }
+});
+
+
+export const Confirm = BootstrapModal.extend({
+    events: {
+        'submit .confirm': 'onConfimation'
+    },
+
+    initialize () {
+        this.confirmation = u.getResolveablePromise();
+        BootstrapModal.prototype.initialize.apply(this, arguments);
+        this.listenTo(this.model, 'change', this.render)
+        this.el.addEventListener('closed.bs.modal', () => this.confirmation.reject(), false);
+    },
+
+    toHTML () {
+        return tpl_prompt(this.model.toJSON());
+    },
+
+    afterRender () {
+        if (!this.close_handler_registered) {
+            this.el.addEventListener('closed.bs.modal', () => {
+                if (!this.confirmation.isResolved) {
+                    this.confirmation.reject()
+                }
+            }, false);
+            this.close_handler_registered = true;
+        }
+    },
+
+    onConfimation (ev) {
+        ev.preventDefault();
+        this.confirmation.resolve(true);
+        this.modal.hide();
+    }
+});
+
+
+export const Prompt = Confirm.extend({
+    toHTML () {
+        return tpl_prompt(this.model.toJSON());
+    },
+
+    onConfimation (ev) {
+        ev.preventDefault();
+        const form_data = new FormData(ev.target);
+        this.confirmation.resolve(form_data.get('reason'));
+        this.modal.hide();
+    }
+});
+
+
+export const Alert = BootstrapModal.extend({
+    initialize () {
+        BootstrapModal.prototype.initialize.apply(this, arguments);
+        this.listenTo(this.model, 'change', this.render)
+    },
+
+    toHTML () {
+        return tpl_alert_modal(Object.assign({__}, this.model.toJSON()));
+    }
+});
+
 
 converse.plugins.add('converse-modal', {
 
     initialize () {
-        const { _converse } = this;
-        const { __ } = _converse;
-
-        _converse.BootstrapModal = View.extend({
-            className: "modal",
-            events: {
-                'click  .nav-item .nav-link': 'switchTab'
-            },
-
-            initialize () {
-                this.render()
-
-                this.el.setAttribute('tabindex', '-1');
-                this.el.setAttribute('role', 'dialog');
-                this.el.setAttribute('aria-hidden', 'true');
-                const label_id = this.el.querySelector('.modal-title').getAttribute('id');
-                label_id && this.el.setAttribute('aria-labelledby', label_id);
-
-                this.insertIntoDOM();
-                const Modal = bootstrap.Modal;
-                this.modal = new Modal(this.el, {
-                    backdrop: 'static',
-                    keyboard: true
-                });
-                this.el.addEventListener('hide.bs.modal', () => u.removeClass('selected', this.trigger_el), false);
-            },
-
-            insertIntoDOM () {
-                const container_el = _converse.chatboxviews.el.querySelector("#converse-modals");
-                container_el.insertAdjacentElement('beforeEnd', this.el);
-            },
-
-            switchTab (ev) {
-                ev.stopPropagation();
-                ev.preventDefault();
-                sizzle('.nav-link.active', this.el).forEach(el => {
-                    u.removeClass('active', this.el.querySelector(el.getAttribute('href')));
-                    u.removeClass('active', el);
-                });
-                u.addClass('active', ev.target);
-                u.addClass('active', this.el.querySelector(ev.target.getAttribute('href')))
-            },
-
-            alert (message, type='primary') {
-                const body = this.el.querySelector('.modal-alert');
-                if (body === null) {
-                    log.error("Could not find a .modal-alert element in the modal to show an alert message in!");
-                    return;
-                }
-                // FIXME: Instead of adding the alert imperatively, we should
-                // find a way to let the modal rerender with an alert message
-                render(tpl_alert_component({'type': `alert-${type}`, 'message': message}), body);
-                const el = body.firstElementChild;
-                setTimeout(() => {
-                    u.addClass('fade-out', el);
-                    setTimeout(() => u.removeElement(el), 600);
-                }, 5000);
-            },
-
-            show (ev) {
-                if (ev) {
-                    ev.preventDefault();
-                    this.trigger_el = ev.target;
-                    this.trigger_el.classList.add('selected');
-                }
-                this.modal.show();
-            }
-        });
-
-        _converse.Confirm = _converse.BootstrapModal.extend({
-            events: {
-                'submit .confirm': 'onConfimation'
-            },
-
-            initialize () {
-                this.confirmation = u.getResolveablePromise();
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.listenTo(this.model, 'change', this.render)
-                this.el.addEventListener('closed.bs.modal', () => this.confirmation.reject(), false);
-            },
-
-            toHTML () {
-                return tpl_prompt(this.model.toJSON());
-            },
-
-            afterRender () {
-                if (!this.close_handler_registered) {
-                    this.el.addEventListener('closed.bs.modal', () => {
-                        if (!this.confirmation.isResolved) {
-                            this.confirmation.reject()
-                        }
-                    }, false);
-                    this.close_handler_registered = true;
-                }
-            },
-
-            onConfimation (ev) {
-                ev.preventDefault();
-                this.confirmation.resolve(true);
-                this.modal.hide();
-            }
-        });
-
-
-        _converse.Prompt = _converse.Confirm.extend({
-            toHTML () {
-                return tpl_prompt(this.model.toJSON());
-            },
-
-            onConfimation (ev) {
-                ev.preventDefault();
-                const form_data = new FormData(ev.target);
-                this.confirmation.resolve(form_data.get('reason'));
-                this.modal.hide();
-            }
-        });
-
-
-        _converse.Alert = _converse.BootstrapModal.extend({
-            initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.listenTo(this.model, 'change', this.render)
-            },
-
-            toHTML () {
-                return tpl_alert_modal(Object.assign({__}, this.model.toJSON()));
-            }
-        });
-
+        _converse = this._converse
 
         /************************ BEGIN Event Listeners ************************/
         _converse.api.listen.on('disconnect', () => {
@@ -182,7 +185,7 @@ converse.plugins.add('converse-modal', {
                         'messages': messages,
                         'type': 'confirm'
                     })
-                    confirm = new _converse.Confirm({model});
+                    confirm = new Confirm({model});
                 } else {
                     confirm.confirmation = u.getResolveablePromise();
                     confirm.model.set({
@@ -219,7 +222,7 @@ converse.plugins.add('converse-modal', {
                         'placeholder': placeholder,
                         'type': 'prompt'
                     })
-                    prompt = new _converse.Prompt({model});
+                    prompt = new Prompt({model});
                 } else {
                     prompt.confirmation = u.getResolveablePromise();
                     prompt.model.set({
@@ -263,7 +266,7 @@ converse.plugins.add('converse-modal', {
                         'level': level,
                         'type': 'alert'
                     })
-                    alert = new _converse.Alert({model});
+                    alert = new Alert({model});
                 } else {
                     alert.model.set({
                         'title': title,

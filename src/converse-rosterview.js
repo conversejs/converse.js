@@ -7,6 +7,7 @@ import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
 import { compact, debounce, has, isString, uniq, without } from "lodash";
+import { BootstrapModal } from "./converse-modal.js";
 import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { OrderedListView } from "skeletor.js/src/overview";
@@ -56,14 +57,14 @@ converse.plugins.add('converse-rosterview', {
         };
 
 
-        _converse.AddContactModal = _converse.BootstrapModal.extend({
+        _converse.AddContactModal = BootstrapModal.extend({
             id: "add-contact-modal",
             events: {
                 'submit form': 'addContactFromForm'
             },
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change', this.render);
             },
 

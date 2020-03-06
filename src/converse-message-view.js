@@ -7,7 +7,9 @@ import "./utils/html";
 import "@converse/headless/converse-emoji";
 import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
+import { BootstrapModal } from "./converse-modal.js";
 import { debounce } from 'lodash'
+import { render } from "lit-html";
 import filesize from "filesize";
 import log from "@converse/headless/log";
 import tpl_csn from "templates/csn.html";
@@ -69,7 +71,7 @@ converse.plugins.add('converse-message-view', {
             'allow_message_retraction': 'all'
         });
 
-        _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+        _converse.MessageVersionsModal = BootstrapModal.extend({
             id: "message-versions-modal",
             toHTML () {
                 return tpl_message_versions_modal(this.model.toJSON());

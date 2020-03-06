@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-02-26 21:32+0000\n"
+"PO-Revision-Date: 2020-03-07 19:33+0000\n"
 "Last-Translator: Quentí <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
@@ -102,11 +102,10 @@ msgid "Cancel"
 msgstr "Anullar"
 
 #: dist/converse-no-dependencies.js:27593
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
 "Lo messatge es pas estat liurat perque sètz pas autorizat a enviar de "
-"messatge a aquesta sala."
+"messatges."
 
 #: dist/converse-no-dependencies.js:27596
 #, javascript-format

@@ -213,9 +213,11 @@ u.renderImageURLs = function (_converse, el) {
     return Promise.all(
         list.map(url =>
             new Promise(resolve => {
-                if (url.startsWith('https://imgur.com') && !u.isImageURL(url)) {
-                    const imgur_url = url + '.png';
-                    renderImage(imgur_url, url, el, resolve);
+                let image_url = getURI(url);
+                if (['imgur.com', 'pbs.twimg.com'].includes(image_url.hostname()) && !u.isImageURL(url)) {
+                    const format = (image_url.hostname() === 'pbs.twimg.com') ? image_url.search(true).format : 'png';
+                    image_url = image_url.removeSearch(/.*/).toString() + `.${format}`;
+                    renderImage(image_url, url, el, resolve);
                 } else {
                     renderImage(url, url, el, resolve);
                 }

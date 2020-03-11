@@ -612,7 +612,8 @@
             overflow: hidden;
         }
         .chat-body {
-            height: calc(100% - var(--fullpage-chat-head-height));
+            height: inherit;
+            overflow: hidden;
             background-color: var(--chat-head-color);
         }
         .chat-title {

@@ -586,7 +586,7 @@
 
                 await test_utils.openControlBox(_converse);
                 await test_utils.waitForRoster(_converse, 'all');
-                await Promise.all(_converse.roster.forEach(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
+                await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
                 await u.waitUntil(() => sizzle('.roster-group', _converse.rosterview.el).filter(u.isVisible).map(e => e.querySelector('li')).length, 1000);
                 await checkHeaderToggling.apply(
                     _converse,
@@ -620,7 +620,7 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 await test_utils.openControlBox(_converse);
                 await test_utils.waitForRoster(_converse, 'pending');
-                await Promise.all(_converse.roster.forEach(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
+                await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
                 await u.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500)
                 expect(_converse.rosterview.update).toHaveBeenCalled();
                 expect(u.isVisible(_converse.rosterview.el)).toBe(true);
@@ -635,7 +635,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'all');
-                await Promise.all(_converse.roster.forEach(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
+                await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
                 const name = mock.pend_names[0];
                 const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const contact = _converse.roster.get(jid);
@@ -705,7 +705,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'all');
-                await Promise.all(_converse.roster.forEach(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
+                await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
                 await u.waitUntil(() => _converse.roster.at(0).vcard.get('fullname'))
                 spyOn(window, 'confirm').and.returnValue(true);
                 for (var i=0; i<mock.pend_names.length; i++) {
@@ -723,7 +723,7 @@
 
                 await test_utils.openControlBox(_converse);
                 await test_utils.waitForRoster(_converse, 'current');
-                await Promise.all(_converse.roster.forEach(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
+                await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 let i;
                 for (i=0; i<mock.pend_names.length; i++) {
@@ -749,7 +749,7 @@
             async function _addContacts (_converse) {
                 await test_utils.waitForRoster(_converse, 'current');
                 await test_utils.openControlBox(_converse);
-                await Promise.all(_converse.roster.forEach(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
+                await Promise.all(_converse.roster.map(contact => u.waitUntil(() => contact.vcard.get('fullname'))));
             }
 
             it("can be collapsed under their own header",

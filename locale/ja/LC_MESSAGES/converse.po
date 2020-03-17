@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-03-15 09:36+0000\n"
+"PO-Revision-Date: 2020-03-17 15:56+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -472,7 +472,7 @@ msgstr "このクライアントは在籍状況の申込を許可していませ
 
 #: dist/converse-no-dependencies.js:44158
 msgid "Click to hide these contacts"
-msgstr "クリックしてこの相手先を隠す"
+msgstr "クリックしてこれらの相手先を隠す"
 
 #: dist/converse-no-dependencies.js:48383
 msgid "Click to toggle the bookmarks list"
@@ -779,7 +779,7 @@ msgstr "%1$s は在席しています"
 
 #: dist/converse-no-dependencies.js:53879
 msgid "Click here to log in anonymously"
-msgstr "クリックして、匿名としてログイン"
+msgstr "クリックして匿名としてログイン"
 
 #: dist/converse-no-dependencies.js:53881
 msgid "Disconnected"
@@ -813,10 +813,8 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
-"性能改善のため、このブラウザーにデータをキャッシュします。共用コンピューター"
-"の場合や、ログアウト時にデータを消去したい場合は、この欄のチェックをはずして"
-"ください。確実にログアウトしないと、キャッシュデータが残る可能性があります。"
-"信頼のない機器での利用の場合には OMEMO が使えないことにご注意ください。"
+"性能改善のため、このブラウザーにデータをキャッシュします。共用コンピューターの場合や、ログアウト時にデータを消去したい場合は、この欄のチェックをはずしてく"
+"ださい。確実にログアウトしないと、キャッシュデータが残る可能性があります。信頼のない機器での利用の場合には OMEMO が使えないことに注意してください。"
 
 #: dist/converse-no-dependencies.js:54398
 msgid "Username"
@@ -838,7 +836,7 @@ msgstr "相手先"
 
 #: dist/converse-no-dependencies.js:54518
 msgid "Toggle chat"
-msgstr "チャットを切替"
+msgstr "チャットを開閉"
 
 #: dist/converse-no-dependencies.js:55808
 msgid "Search"
@@ -866,7 +864,7 @@ msgstr "クリックしてこのチャットを復元"
 
 #: dist/converse-no-dependencies.js:57470
 msgid "Minimized"
-msgstr "最小化"
+msgstr "面が最小化状態"
 
 #: dist/converse-no-dependencies.js:57582
 msgid "Join"
@@ -925,7 +923,7 @@ msgstr "司会付き"
 #: dist/converse-no-dependencies.js:57802
 msgid ""
 "Participants entering this groupchat need to request permission to write"
-msgstr "このグループチャットの参加者は書込権を得る必要があります"
+msgstr "この談話室の参加者は書込権を得る必要があります"
 
 #: dist/converse-no-dependencies.js:57804
 msgid "Name"
@@ -953,7 +951,7 @@ msgstr "発言制限なし"
 
 #: dist/converse-no-dependencies.js:57816
 msgid "Participants entering this groupchat can write right away"
-msgstr "このグループチャットの参加者は直ちに書き込むことができます"
+msgstr "この談話室の参加者は直ちに書き込むことができます"
 
 #: dist/converse-no-dependencies.js:57818
 msgid "Online users"
@@ -1100,7 +1098,7 @@ msgstr "参加者"
 
 #: dist/converse-no-dependencies.js:58262
 msgid "Query for Groupchats"
-msgstr "談話室へのクエリ"
+msgstr "談話室の検索"
 
 #: dist/converse-no-dependencies.js:58264
 msgid "Server address"
@@ -1595,15 +1593,15 @@ msgstr "%1$s が題を設定しました"
 
 #: dist/converse-no-dependencies.js:61075
 msgid "Groupchats"
-msgstr "グループチャット"
+msgstr "談話室"
 
 #: dist/converse-no-dependencies.js:61076
 msgid "Add a new groupchat"
-msgstr "新しい談話室を追加する"
+msgstr "新しい談話室を追加"
 
 #: dist/converse-no-dependencies.js:61077
 msgid "Query for groupchats"
-msgstr "談話室へのクエリ"
+msgstr "談話室の検索"
 
 #: dist/converse-no-dependencies.js:61164
 msgid "Sorry, an error occurred while trying to submit the config form."
@@ -1679,7 +1677,7 @@ msgstr "ログアウト"
 
 #: dist/converse-no-dependencies.js:62271
 msgid "Click to change your chat status"
-msgstr "クリックして、在席状況を変更"
+msgstr "クリックして在席状況を変更"
 
 #: dist/converse-no-dependencies.js:62273
 msgid "Show details about this chat client"
@@ -1907,7 +1905,7 @@ msgstr "入力欄を取り寄せ"
 
 #: dist/converse-no-dependencies.js:65856
 msgid "Tip: A list of public XMPP providers is available"
-msgstr "ヒント: 公開 XMPP プロバイダーの一覧です"
+msgstr "ヒント: 公開 XMPP プロバイダーの一覧は"
 
 #: dist/converse-no-dependencies.js:65857
 msgid "here"
@@ -1959,7 +1957,7 @@ msgstr "談話室から退出"
 #. Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
 #: dist/converse-no-dependencies.js:66514
 msgid "Open Groupchats"
-msgstr "グループチャットを開く"
+msgstr "参加中の談話室"
 
 #: dist/converse-no-dependencies.js:66746
 #, javascript-format

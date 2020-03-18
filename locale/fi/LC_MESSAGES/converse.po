@@ -8,33 +8,36 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-03-19 08:36+0000\n"
+"Last-Translator: Nikolaj Nielsen <nni@zylinc.com>\n"
+"Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
+"translations/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: dist/converse-no-dependencies.js:10630
 msgid "Uploading file:"
-msgstr ""
+msgstr "Lähetetään tiedosto:"
 
 #: dist/converse-no-dependencies.js:10754
 msgid "This message has been edited"
-msgstr ""
+msgstr "Tätä viestiä on muokattu"
 
 #: dist/converse-no-dependencies.js:10760
 msgid "Edit this message"
-msgstr ""
+msgstr "Muokkaa tätä viestiä"
 
 #: dist/converse-no-dependencies.js:10766
 msgid "Retract this message"
-msgstr ""
+msgstr "Poista tämä viesti"
 
 #: dist/converse-no-dependencies.js:10792
 msgid "Send the message"
-msgstr ""
+msgstr "Lähetä viesti"
 
 #: dist/converse-no-dependencies.js:11114
 msgid "No message history available."

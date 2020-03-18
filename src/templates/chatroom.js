@@ -1,0 +1,11 @@
+import { html } from "lit-html";
+
+
+export default () => html`
+    <div class="flyout box-flyout">
+        <div class="chat-head chat-head-chatroom row no-gutters"></div>
+        <div class="chat-body chatroom-body row no-gutters">
+            <div class="disconnect-container hidden"></div>
+        </div>
+    </div>
+`;

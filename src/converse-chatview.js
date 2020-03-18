@@ -12,7 +12,7 @@ import { debounce, get, isString } from "lodash";
 import { html, render } from "lit-html";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
-import tpl_chatbox from "templates/chatbox.html";
+import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
 import tpl_error_message from "templates/error_message.html";
@@ -238,12 +238,15 @@ converse.plugins.add('converse-chatview', {
             },
 
             render () {
-                this.el.innerHTML = tpl_chatbox(
+                const result = tpl_chatbox(
                     Object.assign(
-                        this.model.toJSON(),
-                        {'unread_msgs': __('You have unread messages')}
+                        this.model.toJSON(), {
+                            'unread_msgs': __('You have unread messages'),
+                            'markScrolled': () => this.markScrolled()
+                        }
                     )
                 );
+                render(result, this.el);
                 this.content = this.el.querySelector('.chat-content');
                 this.renderMessageForm();
                 this.renderHeading();

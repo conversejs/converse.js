@@ -16,7 +16,7 @@ import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
 import tpl_chatarea from "templates/chatarea.html";
-import tpl_chatroom from "templates/chatroom.html";
+import tpl_chatroom from "templates/chatroom.js";
 import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_details_modal from "templates/chatroom_details_modal.js";
@@ -745,7 +745,7 @@ converse.plugins.add('converse-muc-views', {
 
             render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
-                this.el.innerHTML = tpl_chatroom();
+                render(tpl_chatroom(), this.el);
                 this.renderHeading();
                 this.renderChatArea();
                 this.renderBottomPanel();

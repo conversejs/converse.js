@@ -6,8 +6,9 @@
 import "converse-chatview";
 import { View } from 'skeletor.js/src/view.js';
 import { __ } from '@converse/headless/i18n';
+import { render } from "lit-html";
 import converse from "@converse/headless/converse-core";
-import tpl_chatbox from "templates/chatbox.html";
+import tpl_chatbox from "templates/chatbox.js";
 import tpl_headline_panel from "templates/headline_panel.js";
 
 const u = converse.env.utils;
@@ -154,7 +155,7 @@ converse.plugins.add('converse-headlines-view', {
 
             render () {
                 this.el.setAttribute('id', this.model.get('box_id'))
-                this.el.innerHTML = tpl_chatbox(
+                const result = tpl_chatbox(
                     Object.assign(this.model.toJSON(), {
                             info_close: '',
                             label_personal_message: '',
@@ -163,6 +164,7 @@ converse.plugins.add('converse-headlines-view', {
                             unread_msgs: ''
                         }
                     ));
+                render(result, this.el);
                 this.content = this.el.querySelector('.chat-content');
                 return this;
             },

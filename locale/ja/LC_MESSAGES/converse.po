@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-03-17 15:56+0000\n"
+"PO-Revision-Date: 2020-03-19 08:36+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -864,7 +864,7 @@ msgstr "クリックしてこのチャットを復元"
 
 #: dist/converse-no-dependencies.js:57470
 msgid "Minimized"
-msgstr "面が最小化状態"
+msgstr "面の最小化窓"
 
 #: dist/converse-no-dependencies.js:57582
 msgid "Join"
@@ -918,7 +918,7 @@ msgstr "メンバー制"
 #: dist/converse-no-dependencies.js:57800
 #: dist/converse-no-dependencies.js:58843
 msgid "Moderated"
-msgstr "司会付き"
+msgstr "司会あり"
 
 #: dist/converse-no-dependencies.js:57802
 msgid ""
@@ -947,7 +947,7 @@ msgstr "すべての入室者はあなたの XMPP アドレスを見ることが
 
 #: dist/converse-no-dependencies.js:57814
 msgid "Not moderated"
-msgstr "発言制限なし"
+msgstr "司会なし"
 
 #: dist/converse-no-dependencies.js:57816
 msgid "Participants entering this groupchat can write right away"
@@ -1183,7 +1183,7 @@ msgstr "デフォルトの役は、メッセージを読むことと書くこと
 #: dist/converse-no-dependencies.js:58445
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
-msgstr "傍聴者は、発言制限の談話室では書き込みが許されていません。"
+msgstr "傍聴者は、発言制限のある談話室では書き込みが許されていません。"
 
 #: dist/converse-no-dependencies.js:58451
 msgid ""

@@ -12,7 +12,6 @@ import { debounce } from 'lodash'
 import { render } from "lit-html";
 import filesize from "filesize";
 import log from "@converse/headless/log";
-import tpl_csn from "templates/csn.html";
 import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
@@ -119,9 +118,7 @@ converse.plugins.add('converse-message-view', {
 
             async render () {
                 const is_followup = u.hasClass('chat-msg--followup', this.el);
-                if (this.model.isOnlyChatStateNotification()) {
-                    this.renderChatStateNotification()
-                } else if (this.model.get('file') && !this.model.get('oob_url')) {
+                if (this.model.get('file') && !this.model.get('oob_url')) {
                     if (!this.model.file) {
                         log.error("Attempted to render a file upload message with no file data");
                         return this.el;
@@ -325,38 +322,6 @@ converse.plugins.add('converse-message-view', {
                     }))
                 );
                 return this.replaceElement(msg);
-            },
-
-            renderChatStateNotification () {
-                let text;
-                const from = this.model.get('from');
-                const name = this.model.getDisplayName();
-
-                if (this.model.get('chat_state') === _converse.COMPOSING) {
-                    if (this.model.get('sender') === 'me') {
-                        text = __('Typing from another device');
-                    } else {
-                        text = __('%1$s is typing', name);
-                    }
-                } else if (this.model.get('chat_state') === _converse.PAUSED) {
-                    if (this.model.get('sender') === 'me') {
-                        text = __('Stopped typing on the other device');
-                    } else {
-                        text = __('%1$s has stopped typing', name);
-                    }
-                } else if (this.model.get('chat_state') === _converse.GONE) {
-                    text = __('%1$s has gone away', name);
-                } else {
-                    return;
-                }
-                const isodate = (new Date()).toISOString();
-                this.replaceElement(
-                      u.stringToElement(
-                        tpl_csn({
-                            'message': text,
-                            'from': from,
-                            'isodate': isodate
-                        })));
             },
 
             renderFileUploadProgresBar () {

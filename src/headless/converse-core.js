@@ -1691,6 +1691,9 @@ window.converse = window.converse || {};
  * @namespace converse
  */
 Object.assign(window.converse, {
+
+    CHAT_STATES: ['active', 'composing', 'gone', 'inactive', 'paused'],
+
     keycodes: {
         TAB: 9,
         ENTER: 13,

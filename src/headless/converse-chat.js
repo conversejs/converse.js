@@ -150,12 +150,8 @@ converse.plugins.add('converse-chat', {
                 }
             },
 
-            isOnlyChatStateNotification () {
-                return u.isOnlyChatStateNotification(this);
-            },
-
             isEphemeral () {
-                return this.get('is_ephemeral') || u.isOnlyChatStateNotification(this);
+                return this.get('is_ephemeral');
             },
 
             getDisplayName () {
@@ -325,6 +321,7 @@ converse.plugins.add('converse-chat', {
                 }
                 this.set({'box_id': `box-${btoa(jid)}`});
                 this.initMessages();
+                this.initCSN();
 
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                     this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
@@ -355,6 +352,10 @@ converse.plugins.add('converse-chat', {
                         _converse.api.send(this.createMessageStanza(message));
                     }
                 });
+            },
+
+            initCSN () {
+                this.csn = new Model();
             },
 
             afterMessagesFetched () {
@@ -409,8 +410,13 @@ converse.plugins.add('converse-chat', {
                         return;
                     }
                     this.setEditable(attrs, attrs.time, stanza);
+
+                    if (attrs['chat_state'] && attrs.sender === 'them') {
+                        this.csn.set('chat_state', attrs.chat_state);
+                    }
                     if (u.shouldCreateMessage(attrs)) {
                         const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
+                        this.csn.set({'chat_state': null});
                         this.incrementUnreadMsgCounter(msg);
                     }
                 }
@@ -945,12 +951,18 @@ converse.plugins.add('converse-chat', {
                 }
             },
 
+            /**
+             * @async
+             * @private
+             * @method _converse.ChatBox#createMessage
+             */
             createMessage (attrs, options) {
                 return this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options));
             },
 
             /**
              * Responsible for sending off a text message inside an ongoing chat conversation.
+             * @private
              * @method _converse.ChatBox#sendMessage
              * @memberOf _converse.ChatBox
              * @param { String } text - The chat message text
@@ -1073,7 +1085,6 @@ converse.plugins.add('converse-chat', {
             },
 
             maybeShow () {
-                // Returns the chatbox
                 return this.trigger("show");
             },
 

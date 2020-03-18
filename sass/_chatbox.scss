@@ -230,8 +230,19 @@
                 width: 100%
             }
         }
+
         .chat-content-sendbutton {
             height: calc(100% - (var(--chat-textarea-height) + var(--send-button-height) + 2 * var(--send-button-margin)));
+        }
+
+        .chat-state-notifications {
+            white-space: pre;
+            background-color: var(--chat-content-background-color);
+            color: var(--subdued-color);
+            font-size: 90%;
+            font-style: italic;
+            line-height: var(--line-height-small);
+            padding: 0 1em 0.3em;
         }
 
         .dropdown { /* status dropdown styles */

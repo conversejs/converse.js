@@ -1108,21 +1108,8 @@
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => view.once('messageInserted', resolve));
 
-            jasmine.clock().tick(1000);
-            // Insert <composing> message, to also check that
-            // text messages are inserted correctly with
-            // temporary chat events in the chat contents.
-            _converse.handleMessageStanza($msg({
-                    'id': 'aeb219',
-                    'to': _converse.bare_jid,
-                    'xmlns': 'jabber:client',
-                    'from': sender_jid,
-                    'type': 'chat'})
-                .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
-                .tree());
-            await new Promise(resolve => view.once('messageInserted', resolve));
-
             jasmine.clock().tick(1*ONE_MINUTE_LATER);
+
             _converse.handleMessageStanza($msg({
                     'from': sender_jid,
                     'to': _converse.connection.jid,

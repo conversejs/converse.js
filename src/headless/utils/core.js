@@ -124,8 +124,7 @@ u.isNewMessage = function (message) {
 };
 
 u.shouldCreateMessage = function (attrs) {
-    return attrs['chat_state'] ||
-        attrs['retracted'] || // Retraction received *before* the message
+    return attrs['retracted'] || // Retraction received *before* the message
         !u.isEmptyMessage(attrs);
 }
 

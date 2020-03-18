@@ -15,7 +15,6 @@ import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
-import tpl_chatarea from "templates/chatarea.html";
 import tpl_chatroom from "templates/chatroom.js";
 import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
@@ -708,8 +707,10 @@ converse.plugins.add('converse-muc-views', {
                     this.removeAll();
                 });
 
-                this.listenTo(this.model, 'change', this.renderHeading);
+                this.listenTo(this.model.csn, 'change', this.renderChatStateNotifications);
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
+
+                this.listenTo(this.model, 'change', this.renderHeading);
                 this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
                 this.listenTo(this.model, 'change:subject', this.setChatRoomSubject);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
@@ -745,10 +746,14 @@ converse.plugins.add('converse-muc-views', {
 
             render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
-                render(tpl_chatroom(), this.el);
+                render(tpl_chatroom({
+                    'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
+                    'show_send_button': _converse.show_send_button
+                }), this.el);
                 this.renderHeading();
-                this.renderChatArea();
                 this.renderBottomPanel();
+                this.content = this.el.querySelector('.chat-content');
+                this.csn = this.el.querySelector('.chat-state-notifications');
                 if (!_converse.muc_show_logs_before_join) {
                     this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();
                 }
@@ -756,6 +761,47 @@ converse.plugins.add('converse-muc-views', {
                     this.show();
                 }
                 return this;
+            },
+
+            renderChatStateNotifications () {
+                const actors_per_state = this.model.csn.toJSON();
+                const message = converse.CHAT_STATES.reduce((result, state) => {
+                    const existing_actors = actors_per_state[state];
+                    if (!existing_actors) {
+                        return result;
+                    }
+                    const actors = existing_actors
+                        .map(a => this.model.getOccupant(a))
+                        .filter(a => a)
+                        .map(a => a.getDisplayName());
+
+                    if (actors.length === 1) {
+                        if (state === 'composing') {
+                            return `${result} ${__('%1$s is typing', actors[0])}\n`;
+                        } else if (state === 'paused') {
+                            return `${result} ${__('%1$s has stopped typing', actors[0])}\n`;
+                        } else if (state === _converse.GONE) {
+                            return `${result} ${__('%1$s has gone away', actors[0])}\n`;
+                        }
+                    } else if (actors.length > 1) {
+                        let actors_str;
+                        if (actors.length > 3) {
+                            actors_str = `${Array.from(actors).slice(0, 2).join(', ')} and others`;
+                        } else {
+                            const last_actor = actors.pop();
+                            actors_str = __('%1$s and %2$s', actors.join(', '), last_actor);
+                        }
+                        if (state === 'composing') {
+                            return `${result} ${__('%1$s are typing', actors_str)}\n`;
+                        } else if (state === 'paused') {
+                            return `${result} ${__('%1$s have stopped typing', actors_str)}\n`;
+                        } else if (state === _converse.GONE) {
+                            return `${result} ${__('%1$s have gone away', actors_str)}\n`;
+                        }
+                    }
+                    return result;
+                }, '');
+                this.csn.innerHTML = message;
             },
 
             /**
@@ -778,23 +824,6 @@ converse.plugins.add('converse-muc-views', {
                     this.renderMessageForm();
                     this.initMentionAutoComplete();
                 }
-            },
-
-            renderChatArea () {
-                // Render the UI container in which groupchat messages will appear.
-                if (this.el.querySelector('.chat-area') === null) {
-                    const container_el = this.el.querySelector('.chatroom-body');
-                    container_el.insertAdjacentHTML(
-                        'beforeend',
-                        tpl_chatarea({
-                            __,
-                            'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
-                            'show_send_button': _converse.show_send_button
-                        })
-                    );
-                    this.content = this.el.querySelector('.chat-content');
-                }
-                return this;
             },
 
             createSidebarView () {

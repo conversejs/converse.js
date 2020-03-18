@@ -354,6 +354,7 @@ converse.plugins.add('converse-muc', {
                 this.debouncedRejoin = debounce(this.rejoin, 250);
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
                 this.initMessages();
+                this.initCSN();
                 this.initOccupants();
                 this.initDiscoModels(); // sendChatState depends on this.features
                 this.registerHandlers();
@@ -1818,6 +1819,36 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            removeCSNFor (actor, state) {
+                const actors_per_state = this.csn.toJSON();
+                const existing_actors = Array.from(actors_per_state[state]) || [];
+                if (existing_actors.includes(actor)) {
+                    const idx = existing_actors.indexOf(actor);
+                    existing_actors.splice(idx, 1);
+                    this.csn.set(state, Array.from(existing_actors));
+                }
+            },
+
+            updateCSN (attrs) {
+                const actor = attrs.nick;
+                const state = attrs.chat_state;
+                const actors_per_state = this.csn.toJSON();
+                const existing_actors = actors_per_state[state] || [];
+                if (existing_actors.includes(actor)) {
+                    return;
+                }
+                const new_actors_per_state = converse.CHAT_STATES.reduce((out, s) => {
+                    if (s === state) {
+                        out[s] =  [...existing_actors, actor];
+                    } else {
+                        out[s] = (actors_per_state[s] || []).filter(a => a !== actor);
+                    }
+                    return out;
+                }, {});
+                this.csn.set(new_actors_per_state);
+                window.setTimeout(() => this.removeCSNFor(actor, state), 10000);
+            },
+
             /**
              * Handler for all MUC messages sent to this groupchat. This method
              * shouldn't be called directly, instead {@link _converse.ChatRoom#queueMessage}
@@ -1865,7 +1896,9 @@ converse.plugins.add('converse-muc', {
                 }
                 this.setEditable(attrs, attrs.time);
 
-                if (u.shouldCreateGroupchatMessage(attrs)) {
+                if (attrs['chat_state']) {
+                    this.updateCSN(attrs);
+                } else if (u.shouldCreateGroupchatMessage(attrs)) {
                     const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
                     this.incrementUnreadMsgCounter(msg);
                 }

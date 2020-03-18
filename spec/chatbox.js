@@ -686,31 +686,37 @@
                                 id: u.getUniqueId()
                             }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
-                        spyOn(_converse.api, "trigger").and.callThrough();
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
-                        await u.waitUntil(() => _converse.api.trigger.calls.count());
-                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         const view = _converse.chatboxviews.get(sender_jid);
-                        expect(view).toBeDefined();
+                        let csn = mock.cur_names[1] + ' is typing';
+                        await u.waitUntil( () => view.el.querySelector('.chat-state-notifications').innerText === csn);
+                        expect(view.model.messages.length).toEqual(0);
 
-                        const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
-                        expect(event.textContent).toEqual(mock.cur_names[1] + ' is typing');
-
-                        // Check that it doesn't appear twice
+                        // <paused> state
                         msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
                                 id: u.getUniqueId()
-                            }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                            }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
+                        csn = mock.cur_names[1] + ' has stopped typing';
+                        await u.waitUntil( () => view.el.querySelector('.chat-state-notifications').innerText === csn);
+
+                        msg = $msg({
+                                from: sender_jid,
+                                to: _converse.connection.jid,
+                                type: 'chat',
+                                id: u.getUniqueId()
+                            }).c('body').t('hello world').tree();
                         await _converse.handleMessageStanza(msg);
-                        const events = view.el.querySelectorAll('.chat-state-notification');
-                        expect(events.length).toBe(1);
-                        expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
+                        const msg_el = await u.waitUntil(() => view.content.querySelector('.chat-msg'));
+                        await u.waitUntil( () => view.el.querySelector('.chat-state-notifications').innerText === '');
+                        expect(msg_el.querySelector('.chat-msg__text').textContent).toBe('hello world');
                         done();
                     }));
 
-                    it("can be a composing carbon message that this user sent from a different client",
+                    it("is ignored if it's a composing carbon message sent by this user from a different client",
                         mock.initConverse(
                             ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
@@ -721,6 +727,9 @@
                         // Send a message from a different resource
                         const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         const view = await test_utils.openChatBoxFor(_converse, recipient_jid);
+
+                        spyOn(u, 'shouldCreateMessage').and.callThrough();
+
                         const msg = $msg({
                                 'from': _converse.bare_jid,
                                 'id': u.getUniqueId(),
@@ -735,20 +744,12 @@
                                     'to': recipient_jid,
                                     'type': 'chat'
                             }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.handleMessageStanza(msg);
-                        await u.waitUntil(() => view.model.messages.length);
-                        // Check that the chatbox and its view now exist
-                        const chatbox = _converse.chatboxes.get(recipient_jid);
-                        const chatboxview = _converse.chatboxviews.get(recipient_jid);
-                        // Check that the message was received and check the message parameters
-                        expect(chatbox.messages.length).toEqual(1);
-                        const msg_obj = chatbox.messages.models[0];
-                        expect(msg_obj.get('sender')).toEqual('me');
-                        expect(msg_obj.get('is_delayed')).toEqual(false);
-                        const chat_content = chatboxview.el.querySelector('.chat-content');
-                        const el = await u.waitUntil(() => chat_content.querySelector('.chat-info.chat-state-notification'));
-                        const status_text = el.textContent;
-                        expect(status_text).toBe('Typing from another device');
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
+
+                        await u.waitUntil(() => u.shouldCreateMessage.calls.count());
+                        expect(view.model.messages.length).toEqual(0);
+                        const el = view.el.querySelector('.chat-state-notifications');
+                        expect(el.textContent).toBe('');
                         done();
                     }));
                 });
@@ -829,15 +830,15 @@
                                 type: 'chat',
                                 id: u.getUniqueId()
                             }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.handleMessageStanza(msg);
-                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-                        await u.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
-                        const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
-                        expect(event.textContent).toEqual(mock.cur_names[1] + ' has stopped typing');
+
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
+                        const csn = mock.cur_names[1] +  ' has stopped typing';
+                        await u.waitUntil( () => view.el.querySelector('.chat-state-notifications').innerText === csn);
+                        expect(view.model.messages.length).toEqual(0);
                         done();
                     }));
 
-                    it("can be a paused carbon message that this user sent from a different client",
+                    it("will not be shown if it's a paused carbon message that this user sent from a different client",
                         mock.initConverse(
                             ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
@@ -847,6 +848,7 @@
                         await test_utils.waitForRoster(_converse, 'current');
                         // Send a message from a different resource
                         const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                        spyOn(u, 'shouldCreateMessage').and.callThrough();
                         const view = await test_utils.openChatBoxFor(_converse, recipient_jid);
                         const msg = $msg({
                                 'from': _converse.bare_jid,
@@ -862,18 +864,12 @@
                                     'to': recipient_jid,
                                     'type': 'chat'
                             }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.handleMessageStanza(msg);
-                        await u.waitUntil(() => view.model.messages.length);
-                        // Check that the chatbox and its view now exist
-                        const chatbox = _converse.chatboxes.get(recipient_jid);
-                        const chatboxview = _converse.chatboxviews.get(recipient_jid);
-                        // Check that the message was received and check the message parameters
-                        expect(chatbox.messages.length).toEqual(1);
-                        const msg_obj = chatbox.messages.models[0];
-                        expect(msg_obj.get('sender')).toEqual('me');
-                        expect(msg_obj.get('is_delayed')).toEqual(false);
-                        const el = await u.waitUntil(() => chatboxview.el.querySelector('.chat-info.chat-state-notification'));
-                        expect(el.textContent).toBe('Stopped typing on the other device');
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
+                        await u.waitUntil(() => u.shouldCreateMessage.calls.count());
+                        expect(view.model.messages.length).toEqual(0);
+                        const el = view.el.querySelector('.chat-state-notifications');
+                        expect(el.textContent).toBe('');
+                        done();
                         done();
                     }));
                 });
@@ -997,7 +993,6 @@
                         await test_utils.openControlBox(_converse);
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse.api, "trigger").and.callThrough();
                         await test_utils.openChatBoxFor(_converse, sender_jid);
                         const view = _converse.chatboxviews.get(sender_jid);
                         expect(view.el.querySelectorAll('.chat-event').length).toBe(0);
@@ -1011,20 +1006,20 @@
                                 'type': 'chat'})
                             .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                             .tree();
-                        await _converse.handleMessageStanza(msg);
-                        await u.waitUntil(() => view.model.messages.length);
-                        await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
-                        expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(1);
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
+                        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-state-notifications').textContent);
+                        expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
+                        expect(view.model.messages.length).toBe(0);
+
                         msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
                                 id: u.getUniqueId()
                             }).c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.handleMessageStanza(msg);
-                        await u.waitUntil(() => (view.model.messages.length > 1));
-                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-                        await u.waitUntil(() => view.el.querySelectorAll('.chat-state-notification').length === 0);
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
+
+                        await u.waitUntil(() => !view.el.querySelector('.chat-state-notifications').textContent);
                         done();
                     }));
                 });
@@ -1038,28 +1033,27 @@
 
                         await test_utils.waitForRoster(_converse, 'current', 3);
                         await test_utils.openControlBox(_converse);
-
-                        spyOn(_converse.api, "trigger").and.callThrough();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                        // <paused> state
+                        await test_utils.openChatBoxFor(_converse, sender_jid);
+
                         const msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
                                 id: u.getUniqueId()
                             }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        await _converse.handleMessageStanza(msg);
-                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
+
                         const view = _converse.chatboxviews.get(sender_jid);
-                        await u.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1]);
-                        const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
-                        expect(event.textContent).toEqual(mock.cur_names[1] + ' has gone away');
+                        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-state-notifications').textContent);
+                        expect(csntext).toEqual(mock.cur_names[1] + ' has gone away');
                         done();
                     }));
                 });
 
                 describe("On receiving a message correction", function () {
-                    it("will be updated",
+
+                    it("will be removed",
                         mock.initConverse(
                             ['rosterGroupsFetched'], {},
                             async function (done, _converse) {
@@ -1096,10 +1090,10 @@
                             type: 'chat',
                             id: u.getUniqueId()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
 
-                        await _converse.handleMessageStanza(msg);
-                        const event = await u.waitUntil(() => view.el.querySelector('.chat-state-notification'));
-                        expect(event.textContent).toEqual(mock.cur_names[1] + ' is typing');
+                        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-state-notifications').textContent);
+                        expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
 
                         // Edited message
                         const edited = $msg({
@@ -1113,9 +1107,7 @@
                             .c('replace', {'xmlns': Strophe.NS.MESSAGE_CORRECT, 'id': original_id }).tree();
 
                         await _converse.handleMessageStanza(edited);
-
-                        const events = view.el.querySelectorAll('.chat-state-notification');
-                        expect(events.length).toBe(0);
+                        await u.waitUntil(() => !view.el.querySelector('.chat-state-notifications').textContent);
                         done();
                     }));
                 });

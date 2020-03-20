@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
 "PO-Revision-Date: 2020-03-23 03:48+0000\n"
-"Last-Translator: anonymous <noreply@weblate.org>\n"
+"Last-Translator: Deleted User <noreply+19883@weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -62,7 +62,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:11388
 msgid "Create your account"
-msgstr ""
+msgstr "创建你的账户"
 
 #: dist/converse-no-dependencies.js:11390
 msgid "Please enter the XMPP provider to register with:"
@@ -76,19 +76,19 @@ msgstr ""
 #: dist/converse-no-dependencies.js:11410
 #: dist/converse-no-dependencies.js:11444
 msgid "Log in here"
-msgstr "这里登录吧"
+msgstr "在这里登录"
 
 #: dist/converse-no-dependencies.js:11426
 msgid "Account Registration:"
-msgstr ""
+msgstr "注册新账户："
 
 #: dist/converse-no-dependencies.js:11434
 msgid "Register"
-msgstr ""
+msgstr "注册"
 
 #: dist/converse-no-dependencies.js:11438
 msgid "Choose a different provider"
-msgstr ""
+msgstr "选择其他提供商"
 
 #: dist/converse-no-dependencies.js:11458
 msgid "Hold tight, we're fetching the registration form…"

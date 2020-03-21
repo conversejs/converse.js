@@ -65,7 +65,8 @@ var specs = [
     "spec/login",
     "spec/register",
     "spec/http-file-upload",
-    "spec/emojis"
+    "spec/emojis",
+    "spec/xss"
 ];
 
 require(['console-reporter', 'mock', 'sinon'], (ConsoleReporter, mock, sinon) => {

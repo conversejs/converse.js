@@ -889,66 +889,6 @@
             done();
         }));
 
-        it("will have properly escaped URLs",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
-            await test_utils.waitForRoster(_converse, 'current');
-            await test_utils.openControlBox(_converse);
-
-            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            await test_utils.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.api.chatviews.get(contact_jid);
-
-            let message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
-            await test_utils.sendMessage(view, message);
-
-            let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
-            expect(msg.textContent).toEqual(message);
-            expect(msg.innerHTML)
-                .toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
-
-            message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
-            await test_utils.sendMessage(view, message);
-
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
-            expect(msg.textContent).toEqual(message);
-            expect(msg.innerHTML).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
-
-            message = "https://en.wikipedia.org/wiki/Ender's_Game";
-            await test_utils.sendMessage(view, message);
-
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
-            expect(msg.textContent).toEqual(message);
-            expect(msg.innerHTML).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
-
-            message = "<https://bugs.documentfoundation.org/show_bug.cgi?id=123737>";
-            await test_utils.sendMessage(view, message);
-
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
-            expect(msg.textContent).toEqual(message);
-            expect(msg.innerHTML).toEqual(
-                `&lt;<a target="_blank" rel="noopener" href="https://bugs.documentfoundation.org/show_bug.cgi?id=123737">https://bugs.documentfoundation.org/show_bug.cgi?id=123737</a>&gt;`);
-
-            message = '<http://www.opkode.com/"onmouseover="alert(1)"whatever>';
-            await test_utils.sendMessage(view, message);
-
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
-            expect(msg.textContent).toEqual(message);
-            expect(msg.innerHTML).toEqual(
-                '&lt;<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>&gt;');
-
-            message = `https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=!3m6!1e1!3m4!1sQ7SdHo_bPLPlLlU8GSGWaQ!2e0!7i13312!8i6656!4m5!3m4!1s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08!8m2!3d52.3773668!4d4.5489388!5m1!1e2`
-            await test_utils.sendMessage(view, message);
-
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
-            expect(msg.textContent).toEqual(message);
-            expect(msg.innerHTML).toEqual(
-                `<a target="_blank" rel="noopener" href="https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=%213m6%211e1%213m4%211sQ7SdHo_bPLPlLlU8GSGWaQ%212e0%217i13312%218i6656%214m5%213m4%211s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08%218m2%213d52.3773668%214d4.5489388%215m1%211e2">https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=!3m6!1e1!3m4!1sQ7SdHo_bPLPlLlU8GSGWaQ!2e0!7i13312!8i6656!4m5!3m4!1s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08!8m2!3d52.3773668!4d4.5489388!5m1!1e2</a>`);
-            done();
-        }));
-
         it("will render newlines",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},

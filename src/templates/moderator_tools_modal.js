@@ -91,7 +91,7 @@ const tpl_set_role_form = (o) => html`
 
 
 const role_list_item = (o) => html`
-    <li class="list-group-item">
+    <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
             <li class="list-group-item active">
                 <div><strong>JID:</strong> ${o.item.jid}</div>
@@ -134,7 +134,7 @@ const tpl_set_affiliation_form = (o) => html`
 
 
 const affiliation_list_item = (o) => html`
-    <li class="list-group-item">
+    <li class="list-group-item" data-nick="${o.item.nick}">
         <ul class="list-group">
             <li class="list-group-item active">
                 <div><strong>JID:</strong> ${o.item.jid}</div>

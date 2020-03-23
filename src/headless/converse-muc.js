@@ -1312,6 +1312,56 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
+             * Return an array of occupant models that have the required role
+             * @private
+             * @method _converse.ChatRoom#getOccupantsWithRole
+             * @param { String } role
+             * @returns { _converse.ChatRoomOccupant[] }
+             */
+            getOccupantsWithRole (role) {
+                return this.getOccupantsSortedBy('nick')
+                    .filter(o => o.get('role') === role)
+                    .map(item => {
+                        return {
+                            'jid': item.get('jid'),
+                            'nick': item.get('nick'),
+                            'role': item.get('role')
+                        }
+                    });
+            },
+
+            /**
+             * Return an array of occupant models that have the required affiliation
+             * @private
+             * @method _converse.ChatRoom#getOccupantsWithAffiliation
+             * @param { String } affiliation
+             * @returns { _converse.ChatRoomOccupant[] }
+             */
+            getOccupantsWithAffiliation (affiliation) {
+                return this.getOccupantsSortedBy('nick')
+                    .filter(o => o.get('affiliation') === affiliation)
+                    .map(item => {
+                        return {
+                            'jid': item.get('jid'),
+                            'nick': item.get('nick'),
+                            'affiliation': item.get('affiliation')
+                        }
+                    });
+            },
+
+            /**
+             * Return an array of occupant models, sorted according to the passed-in attribute.
+             * @private
+             * @method _converse.ChatRoom#getOccupantsSortedBy
+             * @param { String } attr - The attribute to sort the returned array by
+             * @returns { _converse.ChatRoomOccupant[] }
+             */
+            getOccupantsSortedBy (attr) {
+                return Array.from(this.occupants.models)
+                    .sort((a, b) => a.get(attr) < b.get(attr) ? -1 : (a.get(attr) > b.get(attr) ? 1 : 0));
+            },
+
+            /**
              * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
              * Returns an array of {@link MemberListItem} objects, representing occupants
              * that have the given affiliation.
@@ -1340,7 +1390,9 @@ converse.plugins.add('converse-muc', {
                     log.warn(result);
                     return err;
                 }
-                return muc_utils.parseMemberListIQ(result).filter(p => p);
+                return muc_utils.parseMemberListIQ(result)
+                    .filter(p => p)
+                    .sort((a, b) => a.nick < b.nick ? -1 : (a.nick > b.nick ? 1 : 0))
             },
 
             /**

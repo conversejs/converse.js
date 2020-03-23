@@ -234,18 +234,19 @@ converse.plugins.add('converse-muc-views', {
                 this.roles_filter = '';
 
                 this.listenTo(this.model, 'change:role', () => {
-                    this.users_with_role = this.getUsersWithRole();
+                    this.users_with_role = this.chatroomview.model.getOccupantsWithRole(this.model.get('role'));
                     this.render();
                 });
                 this.listenTo(this.model, 'change:affiliation', async () => {
                     this.loading_users_with_affiliation = true;
                     this.users_with_affiliation = null;
                     this.render();
+                    const chatroom = this.chatroomview.model;
                     const affiliation = this.model.get('affiliation');
                     if (this.shouldFetchAffiliationsList()) {
-                        this.users_with_affiliation = await this.chatroomview.model.getAffiliationList(affiliation);
+                        this.users_with_affiliation = await chatroom.getAffiliationList(affiliation);
                     } else {
-                        this.users_with_affiliation = this.getUsersWithAffiliation();
+                        this.users_with_affiliation = chatroom.getOccupantsWithAffiliation(affiliation);
                     }
                     this.loading_users_with_affiliation = false;
                     this.render();
@@ -323,30 +324,6 @@ converse.plugins.add('converse-muc-views', {
                 } else {
                     u.addClass('hidden', form);
                 }
-            },
-
-            getUsersWithAffiliation () {
-                return this.chatroomview.model.occupants
-                    .where({'affiliation': this.model.get('affiliation')})
-                    .map(item => {
-                        return {
-                            'jid': item.get('jid'),
-                            'nick': item.get('nick'),
-                            'affiliation': item.get('affiliation')
-                        }
-                    });
-            },
-
-            getUsersWithRole () {
-                return this.chatroomview.model.occupants
-                    .where({'role': this.model.get('role')})
-                    .map(item => {
-                        return {
-                            'jid': item.get('jid'),
-                            'nick': item.get('nick'),
-                            'role': item.get('role')
-                        }
-                    });
             },
 
             filterRoleResults (ev) {

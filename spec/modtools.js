@@ -176,6 +176,9 @@
             const user_els = modal.el.querySelectorAll('.list-group--users > li');
             expect(user_els.length).toBe(6);
 
+            const nicks = Array.from(modal.el.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
+            expect(nicks.join(' ')).toBe('gower juliet romeo thirdwitch wiccan witch');
+
             const filter = modal.el.querySelector('[name="filter"]');
             expect(filter).not.toBe(null);
 
@@ -283,6 +286,9 @@
             await u.waitUntil(() => !modal.loading_users_with_role);
             const user_els = modal.el.querySelectorAll('.list-group--users > li');
             expect(user_els.length).toBe(6);
+
+            const nicks = Array.from(modal.el.querySelectorAll('.list-group--users > li')).map(el => el.getAttribute('data-nick'));
+            expect(nicks.join(' ')).toBe('crone newb nomorenicks oldhag some1 tux');
 
             const filter = modal.el.querySelector('[name="filter"]');
             expect(filter).not.toBe(null);

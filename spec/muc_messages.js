@@ -116,6 +116,30 @@
             done();
         }));
 
+        it("can contain a chat state notification and will still be shown",
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
+            if (!view.el.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
+            const message = 'romeo: Your attention is required';
+            const nick = mock.chatroom_names[0],
+                msg = $msg({
+                    from: 'lounge@montague.lit/'+nick,
+                    id: u.getUniqueId(),
+                    to: 'romeo@montague.lit',
+                    type: 'groupchat'
+                }).c('body').t(message)
+                  .c('active', {'xmlns': "http://jabber.org/protocol/chatstates"})
+                  .tree();
+            await view.model.queueMessage(msg);
+            await new Promise(resolve => view.once('messageInserted', resolve));
+            expect(view.el.querySelector('.chat-msg')).not.toBe(null);
+            done();
+        }));
 
         it("is specially marked when you are mentioned in it",
             mock.initConverse(

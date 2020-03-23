@@ -1950,7 +1950,8 @@ converse.plugins.add('converse-muc', {
 
                 if (attrs['chat_state']) {
                     this.updateCSN(attrs);
-                } else if (u.shouldCreateGroupchatMessage(attrs)) {
+                }
+                if (u.shouldCreateGroupchatMessage(attrs)) {
                     const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
                     this.incrementUnreadMsgCounter(msg);
                 }

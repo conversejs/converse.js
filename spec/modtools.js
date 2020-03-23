@@ -3,6 +3,7 @@
 } (this, function (jasmine, mock, test_utils) {
     const _ = converse.env._;
     const $iq = converse.env.$iq;
+    const $pres = converse.env.$pres;
     const sizzle = converse.env.sizzle;
     const Strophe = converse.env.Strophe;
     const u = converse.env.utils;
@@ -134,6 +135,169 @@
             user_els = roles_panel.querySelectorAll('.list-group--users > li')
             expect(user_els.length).toBe(1);
             expect(user_els[0].textContent.trim()).toBe('No users with that role found.');
+            done();
+        }));
+
+        it("allows you to filter affiliation search results",
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+            spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
+            const muc_jid = 'lounge@montague.lit';
+            const members = [
+                {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
+                {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
+                {'jid': 'wiccarocks@shakespeare.lit', 'nick': 'wiccan', 'affiliation': 'member'},
+                {'jid': 'crone1@shakespeare.lit', 'nick': 'thirdwitch', 'affiliation': 'member'},
+                {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'member'},
+                {'jid': 'juliet@capulet.lit', 'nick': 'juliet', 'affiliation': 'member'},
+            ];
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => (view.model.occupants.length === 6), 1000);
+
+            const textarea = view.el.querySelector('.chat-textarea');
+            textarea.value = '/modtools';
+            const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+            view.onKeyDown(enter);
+            await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
+
+            const modal = view.modtools_modal;
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
+            // Clear so that we don't match older stanzas
+            _converse.connection.IQ_stanzas = [];
+            const select = modal.el.querySelector('.select-affiliation');
+            expect(select.value).toBe('owner');
+            select.value = 'member';
+            const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
+            button.click();
+            await u.waitUntil(() => !modal.loading_users_with_affiliation);
+            const user_els = modal.el.querySelectorAll('.list-group--users > li');
+            expect(user_els.length).toBe(6);
+
+            const filter = modal.el.querySelector('[name="filter"]');
+            expect(filter).not.toBe(null);
+
+            filter.value = 'romeo';
+            u.triggerEvent(filter, "keyup", "KeyboardEvent");
+            await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+
+            filter.value = 'r';
+            u.triggerEvent(filter, "keyup", "KeyboardEvent");
+            await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 3));
+
+            filter.value = 'gower';
+            u.triggerEvent(filter, "keyup", "KeyboardEvent");
+            await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+            done();
+        }));
+
+        it("allows you to filter role search results",
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+            spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
+            const muc_jid = 'lounge@montague.lit';
+            await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo', []);
+            const view = _converse.chatboxviews.get(muc_jid);
+
+            _converse.connection._dataRecv(test_utils.createRequest(
+                $pres({to: _converse.jid, from: `${muc_jid}/nomorenicks`})
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': `nomorenicks@montague.lit`,
+                        'role': 'participant'
+                    })
+            ));
+            _converse.connection._dataRecv(test_utils.createRequest(
+                $pres({to: _converse.jid, from: `${muc_jid}/newb`})
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': `newb@montague.lit`,
+                        'role': 'participant'
+                    })
+            ));
+            _converse.connection._dataRecv(test_utils.createRequest(
+                $pres({to: _converse.jid, from: `${muc_jid}/some1`})
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': `some1@montague.lit`,
+                        'role': 'participant'
+                    })
+            ));
+            _converse.connection._dataRecv(test_utils.createRequest(
+                $pres({to: _converse.jid, from: `${muc_jid}/oldhag`})
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': `oldhag@montague.lit`,
+                        'role': 'participant'
+                    })
+            ));
+            _converse.connection._dataRecv(test_utils.createRequest(
+                $pres({to: _converse.jid, from: `${muc_jid}/crone`})
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': `crone@montague.lit`,
+                        'role': 'participant'
+                    })
+            ));
+            _converse.connection._dataRecv(test_utils.createRequest(
+                $pres({to: _converse.jid, from: `${muc_jid}/tux`})
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': `tux@montague.lit`,
+                        'role': 'participant'
+                    })
+            ));
+            await u.waitUntil(() => (view.model.occupants.length === 7), 1000);
+
+            const textarea = view.el.querySelector('.chat-textarea');
+            textarea.value = '/modtools';
+            const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+            view.onKeyDown(enter);
+            await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
+
+            const modal = view.modtools_modal;
+            await u.waitUntil(() => u.isVisible(modal.el), 1000);
+
+            const tab = modal.el.querySelector('#roles-tab');
+            tab.click();
+
+            // Clear so that we don't match older stanzas
+            _converse.connection.IQ_stanzas = [];
+
+            const select = modal.el.querySelector('.select-role');
+            expect(select.value).toBe('moderator');
+            select.value = 'participant';
+
+            const button = modal.el.querySelector('.btn-primary[name="users_with_role"]');
+            button.click();
+            await u.waitUntil(() => !modal.loading_users_with_role);
+            const user_els = modal.el.querySelectorAll('.list-group--users > li');
+            expect(user_els.length).toBe(6);
+
+            const filter = modal.el.querySelector('[name="filter"]');
+            expect(filter).not.toBe(null);
+
+            filter.value = 'tux';
+            u.triggerEvent(filter, "keyup", "KeyboardEvent");
+            await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+
+            filter.value = 'r';
+            u.triggerEvent(filter, "keyup", "KeyboardEvent");
+            await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 2));
+
+            filter.value = 'crone';
+            u.triggerEvent(filter, "keyup", "KeyboardEvent");
+            await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
             done();
         }));
 

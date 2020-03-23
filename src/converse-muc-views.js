@@ -230,6 +230,9 @@ converse.plugins.add('converse-muc-views', {
                 this.chatroomview = attrs.chatroomview;
                 BootstrapModal.prototype.initialize.apply(this, arguments);
 
+                this.affiliations_filter = '';
+                this.roles_filter = '';
+
                 this.listenTo(this.model, 'change:role', () => {
                     this.users_with_role = this.getUsersWithRole();
                     this.render();
@@ -252,15 +255,19 @@ converse.plugins.add('converse-muc-views', {
             toHTML () {
                 const occupant = this.chatroomview.model.occupants.findWhere({'jid': _converse.bare_jid});
                 return tpl_moderator_tools_modal(Object.assign(this.model.toJSON(), {
+                    'affiliations_filter': this.affiliations_filter,
                     'assignAffiliation': ev => this.assignAffiliation(ev),
                     'assignRole': ev => this.assignRole(ev),
+                    'assignable_affiliations': this.getAssignableAffiliations(occupant),
+                    'assignable_roles': this.getAssignableRoles(occupant),
+                    'filterAffiliationResults': ev => this.filterAffiliationResults(ev),
+                    'filterRoleResults': ev => this.filterRoleResults(ev),
                     'loading_users_with_affiliation': this.loading_users_with_affiliation,
                     'queryAffiliation': ev => this.queryAffiliation(ev),
                     'queryRole': ev => this.queryRole(ev),
                     'queryable_affiliations': AFFILIATIONS.filter(a => !_converse.modtools_disable_query.includes(a)),
                     'queryable_roles': ROLES.filter(a => !_converse.modtools_disable_query.includes(a)),
-                    'assignable_affiliations': this.getAssignableAffiliations(occupant),
-                    'assignable_roles': this.getAssignableRoles(occupant),
+                    'roles_filter': this.roles_filter,
                     'switchTab': ev => this.switchTab(ev),
                     'toggleForm': ev => this.toggleForm(ev),
                     'users_with_affiliation': this.users_with_affiliation,
@@ -340,6 +347,16 @@ converse.plugins.add('converse-muc-views', {
                             'role': item.get('role')
                         }
                     });
+            },
+
+            filterRoleResults (ev) {
+                this.roles_filter = ev.target.value;
+                this.render();
+            },
+
+            filterAffiliationResults (ev) {
+                this.affiliations_filter = ev.target.value;
+                this.render();
             },
 
             queryRole (ev) {

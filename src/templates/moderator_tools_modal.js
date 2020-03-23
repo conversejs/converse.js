@@ -13,6 +13,7 @@ const i18n_new_role = __('New Role');
 const i18n_no_users_with_aff = __('No users with that affiliation found.')
 const i18n_no_users_with_role = __('No users with that role found.');
 const i18n_reason = __('Reason');
+const i18n_filter = __('Type here to filter the search results');
 const i18n_role = __('Role');
 const i18n_show_users = __('Show users');
 
@@ -163,7 +164,6 @@ const tpl_navigation = (o) => html`
 
 
 export default (o) => {
-
     const show_both_tabs = o.queryable_roles.length && o.queryable_affiliations.length;
     return html`
     <div class="modal-dialog" role="document">
@@ -176,7 +176,6 @@ export default (o) => {
                 <span class="modal-alert"></span>
 
                 ${ show_both_tabs ? tpl_navigation(o) : '' }
-
 
                 <div class="tab-content">
                     <div class="tab-pane tab-pane--columns ${ o.queryable_affiliations.length ? 'active' : ''}" id="affiliations-tabpanel" role="tabpanel" aria-labelledby="affiliations-tab">
@@ -197,17 +196,25 @@ export default (o) => {
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col pt-2"><p class="helptext pb-3">${getAffiliationHelpText(o.affiliation)}</p></div>
+                                    <div class="col mt-3">
+                                        ${ (Array.isArray(o.users_with_affiliation) && o.users_with_affiliation.length > 5) ?
+                                            html`<input class="form-control" .value="${o.affiliations_filter}" @keyup=${o.filterAffiliationResults} type="text" name="filter" placeholder="${i18n_filter}"/>` : '' }
+                                    </div>
                                 </div>
+
+                                ${ getAffiliationHelpText(o.affiliation) ?
+                                    html`<div class="row"><div class="col pt-2"><p class="helptext pb-3">${getAffiliationHelpText(o.affiliation)}</p></div></div>` : '' }
                             </div>
                         </form>
                         <div class="scrollable-container">
                             <ul class="list-group list-group--users">
                                 ${ (o.loading_users_with_affiliation) ? html`<li class="list-group-item"> ${spinner()} </li>` : '' }
-                                ${ (Array.isArray(o.users_with_affiliation) && o.users_with_affiliation.length === 0) ? html`<li class="list-group-item">${i18n_no_users_with_aff}</li>` : '' }
+                                ${ (Array.isArray(o.users_with_affiliation) && o.users_with_affiliation.length === 0) ?
+                                        html`<li class="list-group-item">${i18n_no_users_with_aff}</li>` : '' }
+
                                 ${ (o.users_with_affiliation instanceof Error) ?
                                         html`<li class="list-group-item">${o.users_with_affiliation.message}</li>` :
-                                        (o.users_with_affiliation || []).map(item => affiliation_list_item(Object.assign({item}, o))) }
+                                        (o.users_with_affiliation || []).map(item => (item.nick.match(o.affiliations_filter) ? affiliation_list_item(Object.assign({item}, o)) : '')) }
                             </ul>
                         </div>
                     </div>
@@ -228,15 +235,20 @@ export default (o) => {
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col pt-2"><p class="helptext pb-3">${getRoleHelpText(o.role)}</p></div>
+                                    <div class="col mt-3">
+                                        ${ (Array.isArray(o.users_with_role) && o.users_with_role.length > 5) ?
+                                            html`<input class="form-control" .value="${o.roles_filter}" @keyup=${o.filterRoleResults} type="text" name="filter" placeholder="${i18n_filter}"/>` : '' }
+                                    </div>
                                 </div>
+
+                                ${ getRoleHelpText(o.role) ? html`<div class="row"><div class="col pt-2"><p class="helptext pb-3">${getRoleHelpText(o.role)}</p></div></div>` :  ''}
                             </div>
                         </form>
                         <div class="scrollable-container">
                             <ul class="list-group list-group--users">
                                 ${ o.loading_users_with_role ? html`<li class="list-group-item"> ${spinner()} </li>` : '' }
                                 ${ (o.users_with_role && o.users_with_role.length === 0) ? html`<li class="list-group-item">${i18n_no_users_with_role}</li>` : '' }
-                                ${ (o.users_with_role || []).map(item => role_list_item(Object.assign({item}, o))) }
+                                ${ (o.users_with_role || []).map(item => (item.nick.match(o.roles_filter) ? role_list_item(Object.assign({item}, o)) : '')) }
                             </ul>
                         </div>
                     </div>

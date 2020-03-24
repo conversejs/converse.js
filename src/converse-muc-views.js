@@ -764,7 +764,7 @@ converse.plugins.add('converse-muc-views', {
                     if (!(existing_actors?.length)) {
                         return result;
                     }
-                    const actors = existing_actors.map(a => this.model.getOccupant(a)?.getDisplayName() || a.nick);
+                    const actors = existing_actors.map(a => this.model.getOccupant(a)?.getDisplayName() || a);
                     if (actors.length === 1) {
                         if (state === 'composing') {
                             return `${result} ${__('%1$s is typing', actors[0])}\n`;

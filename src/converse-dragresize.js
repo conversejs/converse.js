@@ -5,7 +5,7 @@
  */
 import "converse-chatview";
 import "converse-controlbox";
-import { debounce, get } from "lodash";
+import { debounce } from "lodash";
 import converse from "@converse/headless/converse-core";
 import tpl_dragresize from "templates/dragresize.html";
 
@@ -168,7 +168,7 @@ converse.plugins.add('converse-dragresize', {
                 // Initialize last known mouse position
                 this.prev_pageY = 0;
                 this.prev_pageX = 0;
-                if (get(_converse.connection, 'connected')) {
+                if (_converse.connection?.connected) {
                     this.height = this.model.get('height');
                     this.width = this.model.get('width');
                 }

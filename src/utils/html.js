@@ -4,7 +4,7 @@
  * @description This is the DOM/HTML utilities module.
  */
 import URI from "urijs";
-import { get, isFunction } from "lodash";
+import { isFunction } from "lodash";
 import log from '@converse/headless/log';
 import sizzle from "sizzle";
 import tpl_audio from  "../templates/audio.js";
@@ -588,9 +588,9 @@ u.xForm2webForm = function (field, stanza, options) {
     if (field.getAttribute('type') === 'list-single' ||
         field.getAttribute('type') === 'list-multi') {
 
-        const values = u.queryChildren(field, 'value').map(el => get(el, 'textContent'));
+        const values = u.queryChildren(field, 'value').map(el => el?.textContent);
         const options = u.queryChildren(field, 'option').map(option => {
-            const value = get(option.querySelector('value'), 'textContent');
+            const value = option.querySelector('value')?.textContent;
             return tpl_select_option({
                 'value': value,
                 'label': option.getAttribute('label'),
@@ -607,13 +607,13 @@ u.xForm2webForm = function (field, stanza, options) {
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('type') === 'fixed') {
-        const text = get(field.querySelector('value'), 'textContent');
+        const text = field.querySelector('value')?.textContent;
         return '<p class="form-help">'+text+'</p>';
     } else if (field.getAttribute('type') === 'jid-multi') {
         return tpl_form_textarea({
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
-            'value': get(field.querySelector('value'), 'textContent'),
+            'value': field.querySelector('value')?.textContent,
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('type') === 'boolean') {
@@ -621,13 +621,13 @@ u.xForm2webForm = function (field, stanza, options) {
             'id': u.getUniqueId(),
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
-            'checked': get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
+            'checked': field.querySelector('value')?.textContent === "1" && 'checked="1"' || '',
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'url') {
         return tpl_form_url({
             'label': field.getAttribute('label') || '',
-            'value': get(field.querySelector('value'), 'textContent')
+            'value': field.querySelector('value')?.textContent
         });
     } else if (field.getAttribute('var') === 'username') {
         return tpl_form_username({
@@ -635,7 +635,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'name': field.getAttribute('var'),
             'type': XFORM_TYPE_MAP[field.getAttribute('type')],
             'label': field.getAttribute('label') || '',
-            'value': get(field.querySelector('value'), 'textContent'),
+            'value': field.querySelector('value')?.textContent,
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'ocr') { // Captcha
@@ -644,7 +644,7 @@ u.xForm2webForm = function (field, stanza, options) {
         return tpl_form_captcha({
             'label': field.getAttribute('label'),
             'name': field.getAttribute('var'),
-            'data': get(el, 'textContent'),
+            'data': el?.textContent,
             'type': uri.getAttribute('type'),
             'required': !!field.querySelector('required')
         });
@@ -659,7 +659,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'placeholder': null,
             'required': !!field.querySelector('required'),
             'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-            'value': get(field.querySelector('value'), 'textContent')
+            'value': field.querySelector('value')?.textContent
         });
     }
 }

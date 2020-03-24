@@ -8,7 +8,7 @@
  */
 import "converse-controlbox";
 import { View } from "skeletor.js/src/view";
-import { get, pick } from "lodash";
+import { pick } from "lodash";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_form_input from "templates/form_input.html";
@@ -287,7 +287,7 @@ converse.plugins.add('converse-register', {
              */
             onProviderChosen (form) {
                 const domain_input = form.querySelector('input[name=domain]'),
-                    domain = get(domain_input, 'value');
+                    domain = domain_input?.value;
                 if (!domain) {
                     // TODO: add validation message
                     domain_input.classList.add('error');
@@ -597,12 +597,12 @@ converse.plugins.add('converse-register', {
             },
 
             _setFieldsFromXForm (xform) {
-                this.title = get(xform.querySelector('title'), 'textContent');
-                this.instructions = get(xform.querySelector('instructions'), 'textContent');
+                this.title = xform.querySelector('title')?.textContent;
+                this.instructions = xform.querySelector('instructions')?.textContent;
                 xform.querySelectorAll('field').forEach(field => {
                     const _var = field.getAttribute('var');
                     if (_var) {
-                        this.fields[_var.toLowerCase()] = get(field.querySelector('value'), 'textContent', '');
+                        this.fields[_var.toLowerCase()] = field.querySelector('value')?.textContent ?? '';
                     } else {
                         // TODO: other option seems to be type="fixed"
                         log.warn("Found field we couldn't parse");

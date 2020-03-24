@@ -6,7 +6,7 @@
 import "@converse/headless/converse-status";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import { get, invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash";
+import { invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash";
 import converse from "@converse/headless/converse-core";
 import log from "./log";
 
@@ -136,7 +136,7 @@ converse.plugins.add('converse-roster', {
 
             onResourcesChanged () {
                 const hpr = this.getHighestPriorityResource();
-                const show = get(hpr, 'attributes.show', 'offline');
+                const show = hpr?.attributes?.show || 'offline';
                 if (this.get('show') !== show) {
                     this.save({'show': show});
                 }
@@ -538,7 +538,7 @@ converse.plugins.add('converse-roster', {
                     contact.authorize().subscribe();
                 } else {
                     // Can happen when a subscription is retried or roster was deleted
-                    const nickname = get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
+                    const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || null;
                     const contact = await this.addContactToRoster(bare_jid, nickname, [], {'subscription': 'from'});
                     if (contact instanceof _converse.RosterContact) {
                         contact.authorize().subscribe();
@@ -686,8 +686,8 @@ converse.plugins.add('converse-roster', {
             },
 
             createRequestingContact (presence) {
-                const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
-                      nickname = get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
+                const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
+                const nickname = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop()?.textContent || null;
                 const user_data = {
                     'jid': bare_jid,
                     'subscription': 'none',

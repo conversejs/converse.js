@@ -8,7 +8,7 @@
 import "converse-profile";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import { concat, debounce, difference, get, invokeMap, range, omit } from "lodash";
+import { concat, debounce, difference, invokeMap, range, omit } from "lodash";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
@@ -377,7 +377,7 @@ converse.plugins.add('converse-omemo', {
                         'device_id': header.getAttribute('sid'),
                         'iv': header.querySelector('iv').textContent,
                         'key': key.textContent,
-                        'payload': get(encrypted.querySelector('payload'), 'textContent', null),
+                        'payload': encrypted.querySelector('payload')?.textContent || null,
                         'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
                     }
                     return this.decrypt(attrs);
@@ -481,7 +481,7 @@ converse.plugins.add('converse-omemo', {
 
 
         async function generateFingerprint (device) {
-            if (get(device.get('bundle'), 'fingerprint')) {
+            if (device.get('bundle')?.fingerprint) {
                 return;
             }
             const bundle = await device.getBundle();

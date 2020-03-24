@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { __, i18n } from './i18n';
-import { assignIn, debounce, get, invoke, isFunction, isObject, isString, pick } from 'lodash';
+import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import { Collection } from "skeletor.js/src/collection";
 import { Events } from 'skeletor.js/src/events.js';
 import { Model } from 'skeletor.js/src/model.js';
@@ -486,7 +486,7 @@ function connect (credentials) {
             BOSH_WAIT
         );
     } else if (_converse.authentication === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (get(_converse.connection, 'pass') || _converse.password);
+        const password = credentials ? credentials.password : (_converse.connection?.pass || _converse.password);
         if (!password) {
             if (_converse.auto_login) {
                 throw new Error("autoLogin: If you use auto_login and "+
@@ -1063,7 +1063,7 @@ _converse.initialize = async function (settings, callback) {
                 return finishDisconnection();
             }
         } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-                (reason !== undefined && reason === get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
+                (reason !== undefined && reason === Strophe?.ErrorCondition.NO_AUTH_MECH) ||
                 reason === "host-unknown" ||
                 reason === "remote-connection-failed" ||
                 !_converse.auto_reconnect) {
@@ -1139,7 +1139,7 @@ _converse.initialize = async function (settings, callback) {
             if (message === "host-unknown" || message == "remote-connection-failed") {
                 feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
                     `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
-            } else if (message !== undefined && message === get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
+            } else if (message !== undefined && message === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
                 feedback = __("The XMPP server did not offer a supported authentication mechanism");
             }
             _converse.setConnectionStatus(status, feedback);
@@ -1206,7 +1206,7 @@ _converse.api = {
          * @returns {boolean} Whether there is an established connection or not.
          */
         connected () {
-            return get(_converse, 'connection', {}).connected && true;
+            return _converse?.connection?.connected && true;
         },
 
         /**

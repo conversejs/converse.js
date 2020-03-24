@@ -8,7 +8,7 @@ import "converse-message-view";
 import "converse-modal";
 import { BootstrapModal } from "./converse-modal.js";
 import { Overview } from "skeletor.js/src/overview";
-import { debounce, get, isString } from "lodash";
+import { debounce, isString } from "lodash";
 import { html, render } from "lit-html";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -96,7 +96,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             toHTML () {
-                const vcard = get(this.model, 'vcard'),
+                const vcard = this.model?.vcard,
                       vcard_json = vcard ? vcard.toJSON() : {};
                 return tpl_user_details_modal(Object.assign(
                     this.model.toJSON(),
@@ -295,10 +295,10 @@ converse.plugins.add('converse-chatview', {
                     Object.assign(this.model.toJSON(), {
                         '__': __,
                         'message_limit': _converse.message_limit,
-                        'hint_value': get(this.el.querySelector('.spoiler-hint'), 'value'),
+                        'hint_value': this.el.querySelector('.spoiler-hint')?.value,
                         'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
                         'label_spoiler_hint': __('Optional hint'),
-                        'message_value': get(this.el.querySelector('.chat-textarea'), 'value'),
+                        'message_value': this.el.querySelector('.chat-textarea')?.value,
                         'show_send_button': _converse.show_send_button,
                         'show_toolbar': _converse.show_toolbar,
                         'unread_msgs': __('You have unread messages')
@@ -403,7 +403,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             generateHeadingTemplate () {
-                const vcard = get(this.model, 'vcard');
+                const vcard = this.model?.vcard;
                 const vcard_json = vcard ? vcard.toJSON() : {};
                 const heading_btns = this.getHeadingButtons();
                 const standalone_btns = heading_btns.filter(b => b.standalone);

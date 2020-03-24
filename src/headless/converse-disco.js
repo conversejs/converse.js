@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  * @description Converse plugin which add support for XEP-0030: Service Discovery
  */
-import { get, isEmpty, isObject } from "lodash";
+import { isEmpty, isObject } from "lodash";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import converse from "./converse-core";
@@ -195,7 +195,7 @@ converse.plugins.add('converse-disco', {
                     const data = {};
                     sizzle('field', form).forEach(field => {
                         data[field.getAttribute('var')] = {
-                            'value': get(field.querySelector('value'), 'textContent'),
+                            'value': field.querySelector('value')?.textContent,
                             'type': field.getAttribute('type')
                         };
                     });
@@ -216,7 +216,7 @@ converse.plugins.add('converse-disco', {
                 sizzle('x[type="result"][xmlns="jabber:x:data"] field', stanza).forEach(field => {
                     this.fields.create({
                         'var': field.getAttribute('var'),
-                        'value': get(field.querySelector('value'), 'textContent'),
+                        'value': field.querySelector('value')?.textContent,
                         'from': stanza.getAttribute('from')
                     });
                 });

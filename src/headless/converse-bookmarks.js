@@ -9,7 +9,6 @@ import "@converse/headless/converse-muc";
 import converse from "@converse/headless/converse-core";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import { get } from "lodash";
 import log from "./log";
 
 const { Strophe, $iq, sizzle } = converse.env;
@@ -215,7 +214,7 @@ converse.plugins.add('converse-bookmarks', {
                         'jid': jid,
                         'name': bookmark.getAttribute('name') || jid,
                         'autojoin': bookmark.getAttribute('autojoin') === 'true',
-                        'nick': get(bookmark.querySelector('nick'), 'textContent')
+                        'nick': bookmark.querySelector('nick')?.textContent
                     });
                 });
             },

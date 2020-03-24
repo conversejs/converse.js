@@ -5,7 +5,7 @@
  */
 import "@converse/headless/converse-emoji";
 import { View } from "skeletor.js/src/view";
-import { debounce, find, get } from "lodash";
+import { debounce, find } from "lodash";
 import DOMNavigator from "./dom-navigator";
 import bootstrap from "bootstrap.native";
 import emoji_picker from "templates/emoji_picker.js";
@@ -255,7 +255,7 @@ converse.plugins.add('converse-emoji-views', {
                 if (intersection_with_selected) {
                     current = intersection_with_selected;
                 } else {
-                    current = ev.reduce((p, c) => c.intersectionRatio >= get(p, 'intersectionRatio', 0) ? c : p, null);
+                    current = ev.reduce((p, c) => c.intersectionRatio >= (p?.intersectionRatio || 0) ? c : p, null);
                 }
                 current && current.isIntersecting && this.setCategoryForElement(current.target);
             },

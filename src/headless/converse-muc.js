@@ -9,7 +9,7 @@ import "./converse-disco";
 import "./converse-emoji";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import { clone, debounce, get, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
+import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
 import converse from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
@@ -259,7 +259,7 @@ converse.plugins.add('converse-muc', {
             onOccupantRemoved () {
                 this.stopListening(this.occupant);
                 delete this.occupant;
-                const chatbox = get(this, 'collection.chatbox');
+                const chatbox = this?.collection?.chatbox;
                 if (!chatbox) {
                     return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                 }
@@ -270,7 +270,7 @@ converse.plugins.add('converse-muc', {
                 if (occupant.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
                     this.occupant = occupant;
                     this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
-                    const chatbox = get(this, 'collection.chatbox');
+                    const chatbox = this?.collection?.chatbox;
                     if (!chatbox) {
                         return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                     }
@@ -280,7 +280,7 @@ converse.plugins.add('converse-muc', {
 
             setOccupant () {
                 if (this.get('type') !== 'groupchat') { return; }
-                const chatbox = get(this, 'collection.chatbox');
+                const chatbox = this?.collection?.chatbox;
                 if (!chatbox) {
                     return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                 }
@@ -1210,7 +1210,7 @@ converse.plugins.add('converse-muc', {
              * @returns { ('none'|'visitor'|'participant'|'moderator') }
              */
             getOwnRole () {
-                return get(this.getOwnOccupant(), 'attributes.role');
+                return this.getOwnOccupant()?.attributes?.role;
             },
 
             /**
@@ -1220,7 +1220,7 @@ converse.plugins.add('converse-muc', {
              * @returns { ('none'|'outcast'|'member'|'admin'|'owner') }
              */
             getOwnAffiliation () {
-                return get(this.getOwnOccupant(), 'attributes.affiliation');
+                return this.getOwnOccupant()?.attributes?.affiliation;
             },
 
             /**
@@ -1534,8 +1534,8 @@ converse.plugins.add('converse-muc', {
                 }
                 const jid = data.jid || '';
                 const attributes = Object.assign(data, {
-                    'jid': Strophe.getBareJidFromJid(jid) || get(occupant, 'attributes.jid'),
-                    'resource': Strophe.getResourceFromJid(jid) || get(occupant, 'attributes.resource')
+                    'jid': Strophe.getBareJidFromJid(jid) || occupant?.attributes?.jid,
+                    'resource': Strophe.getResourceFromJid(jid) || occupant?.attributes?.resource
                 });
                 if (occupant) {
                     occupant.save(attributes);
@@ -1580,7 +1580,7 @@ converse.plugins.add('converse-muc', {
                                     }
                                 });
                             } else if (child.getAttribute("xmlns") === Strophe.NS.VCARDUPDATE) {
-                                data.image_hash = get(child.querySelector('photo'), 'textContent');
+                                data.image_hash = child.querySelector('photo')?.textContent;
                             }
                     }
                 });
@@ -1959,7 +1959,7 @@ converse.plugins.add('converse-muc', {
             },
 
             handleModifyError(pres) {
-                const text = get(pres.querySelector('error text'), 'textContent');
+                const text = pres.querySelector('error text')?.textContent;
                 if (text) {
                     if (this.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
                         this.setDisconnectionMessage(text);
@@ -1991,7 +1991,7 @@ converse.plugins.add('converse-muc', {
                 // element. This appears to be a safe assumption, since
                 // each <x/> element pertains to a single user.
                 const item = x.querySelector('item');
-                const reason = item ? get(item.querySelector('reason'), 'textContent') : undefined;
+                const reason = item ? item.querySelector('reason')?.textContent : undefined;
                 const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
                 const message = _converse.muc.disconnect_messages[disconnection_codes[0]];
                 this.setDisconnectionMessage(message, reason, actor);
@@ -2038,7 +2038,7 @@ converse.plugins.add('converse-muc', {
                         const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                         const item = x.querySelector('item');
                         data.actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
-                        data.reason = item ? get(item.querySelector('reason'), 'textContent') : undefined;
+                        data.reason = item ? item.querySelector('reason')?.textContent : undefined;
                         data.message = this.getActionInfoMessage(code, nick, data.actor);
                     } else if (is_self && (code in _converse.muc.new_nickname_messages)) {
                         let nick;
@@ -2107,7 +2107,7 @@ converse.plugins.add('converse-muc', {
             onErrorPresence (stanza) {
                 const error = stanza.querySelector('error');
                 const error_type = error.getAttribute('type');
-                const reason = get(sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent');
+                const reason = sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop()?.textContent;
 
                 if (error_type === 'modify') {
                     this.handleModifyError(stanza);
@@ -2131,7 +2131,7 @@ converse.plugins.add('converse-muc', {
                         const message = __("Your nickname doesn't conform to this groupchat's policies.");
                         this.setDisconnectionMessage(message, reason);
                     } else if (sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
-                        const moved_jid = get(sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent')
+                        const moved_jid = sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).pop()?.textContent
                             .replace(/^xmpp:/, '')
                             .replace(/\?join$/, '');
                         this.save({ moved_jid, 'destroyed_reason': reason});

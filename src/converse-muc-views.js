@@ -8,7 +8,7 @@ import "converse-modal";
 import "@converse/headless/utils/muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
-import { get, head, isString, isUndefined } from "lodash";
+import { head, isString, isUndefined } from "lodash";
 import { BootstrapModal } from "./converse-modal.js";
 import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
@@ -172,8 +172,8 @@ converse.plugins.add('converse-muc-views', {
                 'beforeEnd',
                 tpl_room_description({
                     'jid': stanza.getAttribute('from'),
-                    'desc': get(head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
-                    'occ': get(head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
+                    'desc': head(sizzle('field[var="muc#roominfo_description"] value', stanza))?.textContent,
+                    'occ': head(sizzle('field[var="muc#roominfo_occupants"] value', stanza))?.textContent,
                     'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
                     'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
                     'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
@@ -764,11 +764,7 @@ converse.plugins.add('converse-muc-views', {
                     if (!(existing_actors?.length)) {
                         return result;
                     }
-                    const actors = existing_actors
-                        .map(a => this.model.getOccupant(a))
-                        .filter(a => a)
-                        .map(a => a.getDisplayName());
-
+                    const actors = existing_actors.map(a => this.model.getOccupant(a)?.getDisplayName() || a.nick);
                     if (actors.length === 1) {
                         if (state === 'composing') {
                             return `${result} ${__('%1$s is typing', actors[0])}\n`;
@@ -1941,7 +1937,7 @@ converse.plugins.add('converse-muc-views', {
                     if (date && date.split('T')[0] !== today) {
                         return;
                     }
-                    const data = get(el, 'dataset', {});
+                    const data = el?.dataset || {};
                     if (data.join === nick ||
                             data.leave === nick ||
                             data.leavejoin === nick ||
@@ -1960,7 +1956,7 @@ converse.plugins.add('converse-muc-views', {
                 const nick = occupant.get('nick'),
                       stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
                       prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
-                      data = get(prev_info_el, 'dataset', {});
+                      data = prev_info_el?.dataset || {};
 
                 if (data.leave === nick) {
                     let message;
@@ -2015,7 +2011,7 @@ converse.plugins.add('converse-muc-views', {
                 const nick = occupant.get('nick'),
                       stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
                       prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
-                      dataset = get(prev_info_el, 'dataset', {});
+                      dataset = prev_info_el?.dataset || {};
 
                 if (dataset.join === nick) {
                     let message;
@@ -2192,9 +2188,9 @@ converse.plugins.add('converse-muc-views', {
                 return tpl_muc_config_form({
                     'closeConfigForm': ev => this.closeConfigForm(ev),
                     'fields': fields.map(f => u.xForm2webForm(f, stanza, options)),
-                    'instructions': get(stanza.querySelector('instructions'), 'textContent'),
+                    'instructions': stanza.querySelector('instructions')?.textContent,
                     'submitConfigForm': ev => this.submitConfigForm(ev),
-                    'title': get(stanza.querySelector('title'), 'textContent')
+                    'title': stanza.querySelector('title')?.textContent
                 });
             },
 

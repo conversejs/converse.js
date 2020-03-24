@@ -3,7 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { find, get, isMatch, isObject, isString, pick } from "lodash";
+import { find, isMatch, isObject, isString, pick } from "lodash";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import converse from "./converse-core";
@@ -1033,8 +1033,8 @@ converse.plugins.add('converse-chat', {
                     return;
                 }
                 const data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
-                      max_file_size = window.parseInt(get(data, 'attributes.max-file-size.value')),
-                      slot_request_url = get(item, 'id');
+                      max_file_size = window.parseInt((data?.attributes || {})['max-file-size']?.value),
+                      slot_request_url = item?.id;
 
                 if (!slot_request_url) {
                     this.createMessage({
@@ -1224,7 +1224,7 @@ converse.plugins.add('converse-chat', {
             }
             // Get chat box, but only create when the message has something to show to the user
             const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
-            const roster_nick = get(contact, 'attributes.nickname');
+            const roster_nick = contact?.attributes?.nickname;
             const chatbox = await _converse.api.chats.get(contact_jid, {'nickname': roster_nick}, has_body);
             chatbox && await chatbox.queueMessage(stanza, original_stanza, from_jid);
             /**
@@ -1336,9 +1336,9 @@ converse.plugins.add('converse-chat', {
                  */
                 async create (jids, attrs) {
                     if (isString(jids)) {
-                        if (attrs && !get(attrs, 'fullname')) {
+                        if (attrs && !attrs?.fullname) {
                             const contact = await _converse.api.contacts.get(jids);
-                            attrs.fullname = get(contact, 'attributes.fullname');
+                            attrs.fullname = contact?.attributes?.fullname;
                         }
                         const chatbox = _converse.api.chats.get(jids, attrs, true);
                         if (!chatbox) {
@@ -1350,7 +1350,7 @@ converse.plugins.add('converse-chat', {
                     if (Array.isArray(jids)) {
                         return Promise.all(jids.forEach(async jid => {
                             const contact = await _converse.api.contacts.get(jids);
-                            attrs.fullname = get(contact, 'attributes.fullname');
+                            attrs.fullname = contact?.attributes?.fullname;
                             return _converse.api.chats.get(jid, attrs, true).maybeShow();
                         }));
                     }

@@ -522,7 +522,7 @@
                 await view.model.close();
                 await u.waitUntil(() => view.model.clearMessages.calls.count());
                 expect(view.model.messages.length).toBe(0);
-                expect(view.content.innerHTML).toBe('');
+                expect(view.msgs_container.innerHTML).toBe('');
                 done()
             }));
 
@@ -996,7 +996,7 @@
 
                 // XXX: hack so that we can test leave/enter of occupants
                 // who were already in the room when we joined.
-                view.content.innerHTML = '';
+                view.msgs_container.innerHTML = '';
 
                 presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" type="unavailable" from="coven@chat.shakespeare.lit/fabio">

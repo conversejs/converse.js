@@ -788,16 +788,16 @@
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(true);
             await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet')
-            expect(view.content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
-            expect(view.content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-            expect(view.content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Juliet Capulet');
+            expect(view.msgs_container.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
+            expect(view.msgs_container.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+            expect(view.msgs_container.querySelector('span.chat-msg__author').textContent.trim()).toBe('Juliet Capulet');
 
-            expect(view.content.querySelectorAll('.date-separator').length).toEqual(1);
-            let day = view.content.querySelector('.date-separator');
+            expect(view.msgs_container.querySelectorAll('.date-separator').length).toEqual(1);
+            let day = view.msgs_container.querySelector('.date-separator');
             expect(day.getAttribute('class')).toEqual('message date-separator');
             expect(day.getAttribute('data-isodate')).toEqual(dayjs(one_day_ago.startOf('day')).toISOString());
 
-            let time = view.content.querySelector('time.separator-text');
+            let time = view.msgs_container.querySelector('time.separator-text');
             expect(time.textContent).toEqual(dayjs(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
 
             message = 'This is a current message';
@@ -813,15 +813,15 @@
 
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
             // Check that there is a <time> element, with the required props.
-            expect(view.content.querySelectorAll('time.separator-text').length).toEqual(2); // There are now two time elements
+            expect(view.msgs_container.querySelectorAll('time.separator-text').length).toEqual(2); // There are now two time elements
 
             const message_date = new Date();
-            day = sizzle('.date-separator:last', view.content);
+            day = sizzle('.date-separator:last', view.msgs_container);
             expect(day.length).toEqual(1);
             expect(day[0].getAttribute('class')).toEqual('message date-separator');
             expect(day[0].getAttribute('data-isodate')).toEqual(dayjs(message_date).startOf('day').toISOString());
 
-            time = sizzle('time.separator-text:last', view.content).pop();
+            time = sizzle('time.separator-text:last', view.msgs_container).pop();
             expect(time.textContent).toEqual(dayjs(message_date).startOf('day').format("dddd MMM Do YYYY"));
 
             // Normal checks for the 2nd message
@@ -831,12 +831,12 @@
             expect(msg_obj.get('fullname')).toBeUndefined();
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(false);
-            const msg_txt = sizzle('.chat-msg:last .chat-msg__text', view.content).pop().textContent;
+            const msg_txt = sizzle('.chat-msg:last .chat-msg__text', view.msgs_container).pop().textContent;
             expect(msg_txt).toEqual(message);
 
-            expect(view.content.querySelector('.chat-msg:last-child .chat-msg__text').textContent).toEqual(message);
-            expect(view.content.querySelector('.chat-msg:last-child .chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-            expect(view.content.querySelector('.chat-msg:last-child .chat-msg__author').textContent.trim()).toBe('Juliet Capulet');
+            expect(view.msgs_container.querySelector('.chat-msg:last-child .chat-msg__text').textContent).toEqual(message);
+            expect(view.msgs_container.querySelector('.chat-msg:last-child .chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+            expect(view.msgs_container.querySelector('.chat-msg:last-child .chat-msg__author').textContent.trim()).toBe('Juliet Capulet');
             done();
         }));
 

@@ -41,7 +41,7 @@
                     }).c('body').t('hello world').tree();
                 await _converse.handleMessageStanza(msg);
                 await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
-                expect(view.content.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
+                expect(view.msgs_container.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
                 done();
             }));
 

@@ -199,7 +199,7 @@ converse.plugins.add('converse-chatview', {
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
-                    this.content.innerHTML = '';
+                    this.msgs_container.innerHTML = '';
                     this.removeAll();
                 });
 
@@ -248,8 +248,9 @@ converse.plugins.add('converse-chatview', {
                     )
                 );
                 render(result, this.el);
-                this.content = this.el.querySelector('.chat-content__messages');
+                this.content = this.el.querySelector('.chat-content');
                 this.csn = this.el.querySelector('.chat-content__notifications');
+                this.msgs_container = this.el.querySelector('.chat-content__messages');
                 this.renderChatStateNotification();
                 this.renderMessageForm();
                 this.renderHeading();
@@ -493,20 +494,20 @@ converse.plugins.add('converse-chatview', {
 
             showChatEvent (message) {
                 const isodate = (new Date()).toISOString();
-                this.content.insertAdjacentHTML(
+                this.msgs_container.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({
                         'extra_classes': 'chat-event',
                         'message': message,
                         'isodate': isodate,
                     }));
-                this.insertDayIndicator(this.content.lastElementChild);
+                this.insertDayIndicator(this.msgs_container.lastElementChild);
                 this.scrollDown();
                 return isodate;
             },
 
             showErrorMessage (message) {
-                this.content.insertAdjacentHTML(
+                this.msgs_container.insertAdjacentHTML(
                     'beforeend',
                     tpl_error_message({'message': message, 'isodate': (new Date()).toISOString() })
                 );
@@ -566,12 +567,12 @@ converse.plugins.add('converse-chatview', {
              * @returns { Date }
              */
             getLastMessageDate (cutoff) {
-                const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)');
+                const first_msg = u.getFirstChildElement(this.msgs_container, '.message:not(.chat-state-notification)');
                 const oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
                 if (oldest_date !== null && dayjs(oldest_date).isAfter(cutoff)) {
                     return null;
                 }
-                const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-state-notification)');
+                const last_msg = u.getLastChildElement(this.msgs_container, '.message:not(.chat-state-notification)');
                 const most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
                 if (most_recent_date === null) {
                     return null;
@@ -586,7 +587,7 @@ converse.plugins.add('converse-chatview', {
                  * upon element insertion.
                  */
                 const sel = '.message:not(.chat-state-notification)';
-                const msg_dates = sizzle(sel, this.content).map(e => e.getAttribute('data-isodate'));
+                const msg_dates = sizzle(sel, this.msgs_container).map(e => e.getAttribute('data-isodate'));
                 const cutoff_iso = cutoff.toISOString();
                 msg_dates.push(cutoff_iso);
                 msg_dates.sort();
@@ -639,7 +640,7 @@ converse.plugins.add('converse-chatview', {
 
             showHelpMessages (msgs, type='info', spinner) {
                 msgs.forEach(msg => {
-                    this.content.insertAdjacentHTML(
+                    this.msgs_container.insertAdjacentHTML(
                         'beforeend',
                         tpl_help_message({
                             'isodate': (new Date()).toISOString(),
@@ -669,7 +670,7 @@ converse.plugins.add('converse-chatview', {
              */
             insertMessage (view) {
                 if (view.model.get('type') === 'error') {
-                    const previous_msg_el = this.content.querySelector(`[data-msgid="${view.model.get('msgid')}"]`);
+                    const previous_msg_el = this.msgs_container.querySelector(`[data-msgid="${view.model.get('msgid')}"]`);
                     if (previous_msg_el) {
                         previous_msg_el.insertAdjacentElement('afterend', view.el);
                         return this.trigger('messageInserted', view.el);
@@ -679,9 +680,9 @@ converse.plugins.add('converse-chatview', {
                 const previous_msg_date = this.getLastMessageDate(current_msg_date);
 
                 if (previous_msg_date === null) {
-                    this.content.insertAdjacentElement('afterbegin', view.el);
+                    this.msgs_container.insertAdjacentElement('afterbegin', view.el);
                 } else {
-                    const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date.toISOString()}"]:last`, this.content).pop();
+                    const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date.toISOString()}"]:last`, this.msgs_container).pop();
                     if (view.model.get('type') === 'error' &&
                             u.hasClass('chat-error', previous_msg_el) &&
                             previous_msg_el.textContent === view.model.get('message')) {
@@ -865,14 +866,14 @@ converse.plugins.add('converse-chatview', {
                 if (_converse.view_mode === 'overlayed') {
                     // XXX: Chrome flexbug workaround. The .chat-content area
                     // doesn't resize when the textarea is resized to its original size.
-                    this.content.parentElement.style.display = 'none';
+                    this.msgs_container.parentElement.style.display = 'none';
                 }
                 textarea.removeAttribute('disabled');
                 u.removeClass('disabled', textarea);
 
                 if (_converse.view_mode === 'overlayed') {
                     // XXX: Chrome flexbug workaround.
-                    this.content.parentElement.style.display = '';
+                    this.msgs_container.parentElement.style.display = '';
                 }
 
                 // Suppress events, otherwise superfluous CSN gets set
@@ -1192,7 +1193,7 @@ converse.plugins.add('converse-chatview', {
                         text = __('%1$s is online', fullname);
                     }
                     if (text) {
-                        this.content.insertAdjacentHTML(
+                        this.msgs_container.insertAdjacentHTML(
                             'beforeend',
                             tpl_status_message({
                                 'message': text,

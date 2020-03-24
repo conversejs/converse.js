@@ -314,7 +314,7 @@
 
     utils.clearChatBoxMessages = function (converse, jid) {
         const view = converse.chatboxviews.get(jid);
-        view.el.querySelector('.chat-content').innerHTML = '';
+        view.msgs_container.innerHTML = '';
         return view.model.messages.clearStore();
     };
 

@@ -761,7 +761,7 @@ converse.plugins.add('converse-muc-views', {
                 const actors_per_state = this.model.csn.toJSON();
                 const message = converse.CHAT_STATES.reduce((result, state) => {
                     const existing_actors = actors_per_state[state];
-                    if (!existing_actors) {
+                    if (!(existing_actors?.length)) {
                         return result;
                     }
                     const actors = existing_actors

@@ -248,8 +248,8 @@ converse.plugins.add('converse-chatview', {
                     )
                 );
                 render(result, this.el);
-                this.content = this.el.querySelector('.chat-content');
-                this.csn = this.el.querySelector('.chat-state-notifications');
+                this.content = this.el.querySelector('.chat-content__messages');
+                this.csn = this.el.querySelector('.chat-content__notifications');
                 this.renderChatStateNotification();
                 this.renderMessageForm();
                 this.renderHeading();

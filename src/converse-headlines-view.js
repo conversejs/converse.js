@@ -165,7 +165,7 @@ converse.plugins.add('converse-headlines-view', {
                         }
                     ));
                 render(result, this.el);
-                this.content = this.el.querySelector('.chat-content');
+                this.content = this.el.querySelector('.chat-content__messages');
                 return this;
             },
 

@@ -173,8 +173,7 @@
                 await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
                 const view = _converse.api.chatviews.get(sender_jid);
                 await new Promise(resolve => view.once('messageInserted', resolve));
-                const chat_content = view.el.querySelector('.chat-content');
-                let message = chat_content.querySelector('.chat-msg__text');
+                let message = view.content.querySelector('.chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
 
                 _converse.handleMessageStanza($msg({
@@ -185,7 +184,7 @@
                     }).c('body').t('😇 Hello world! 😇 😇').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                 await new Promise(resolve => view.once('messageInserted', resolve));
-                message = chat_content.querySelector('.message:last-child .chat-msg__text');
+                message = view.content.querySelector('.message:last-child .chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
 
                 // Test that a modified message that no longer contains only
@@ -199,7 +198,7 @@
                 });
                 await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
-                expect(chat_content.querySelector('.message:last-child .chat-msg__text').textContent).toBe('💩 😇');
+                expect(view.content.querySelector('.message:last-child .chat-msg__text').textContent).toBe('💩 😇');
                 expect(textarea.value).toBe('');
                 view.onKeyDown({
                     target: textarea,
@@ -216,7 +215,7 @@
                 });
                 await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(view.model.messages.models.length).toBe(3);
-                message = chat_content.querySelector('.message:last-child .chat-msg__text');
+                message = view.content.querySelector('.message:last-child .chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
 
                 textarea.value = ':smile: Hello world!';
@@ -235,7 +234,7 @@
                 });
                 await new Promise(resolve => view.once('messageInserted', resolve));
 
-                message = chat_content.querySelector('.message:last-child .chat-msg__text');
+                message = view.content.querySelector('.message:last-child .chat-msg__text');
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
                 done()
             }));

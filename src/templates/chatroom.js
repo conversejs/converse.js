@@ -11,8 +11,9 @@ export default (o) => html`
             <div class="chat-area col">
                 <div class="chat-content ${ o.show_send_button ? 'chat-content-sendbutton' : '' }" aria-live="polite">
                     ${ o.muc_show_logs_before_join ? html`<div class="empty-history-feedback"><span>${ i18n_no_history }</span></div>`  : '' }
+                    <div class="chat-content__messages"></div>
+                    <div class="chat-content__notifications"></div>
                 </div>
-                <div class="chat-state-notifications"></div>
                 <div class="bottom-panel"></div>
             </div>
             <div class="disconnect-container hidden"></div>

@@ -689,7 +689,7 @@
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
                         const view = _converse.chatboxviews.get(sender_jid);
                         let csn = mock.cur_names[1] + ' is typing';
-                        await u.waitUntil( () => view.el.querySelector('.chat-state-notifications').innerText === csn);
+                        await u.waitUntil( () => view.el.querySelector('.chat-content__notifications').innerText === csn);
                         expect(view.model.messages.length).toEqual(0);
 
                         // <paused> state
@@ -701,7 +701,7 @@
                             }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
                         csn = mock.cur_names[1] + ' has stopped typing';
-                        await u.waitUntil( () => view.el.querySelector('.chat-state-notifications').innerText === csn);
+                        await u.waitUntil( () => view.el.querySelector('.chat-content__notifications').innerText === csn);
 
                         msg = $msg({
                                 from: sender_jid,
@@ -711,7 +711,7 @@
                             }).c('body').t('hello world').tree();
                         await _converse.handleMessageStanza(msg);
                         const msg_el = await u.waitUntil(() => view.content.querySelector('.chat-msg'));
-                        await u.waitUntil( () => view.el.querySelector('.chat-state-notifications').innerText === '');
+                        await u.waitUntil( () => view.el.querySelector('.chat-content__notifications').innerText === '');
                         expect(msg_el.querySelector('.chat-msg__text').textContent).toBe('hello world');
                         done();
                     }));
@@ -748,7 +748,7 @@
 
                         await u.waitUntil(() => u.shouldCreateMessage.calls.count());
                         expect(view.model.messages.length).toEqual(0);
-                        const el = view.el.querySelector('.chat-state-notifications');
+                        const el = view.el.querySelector('.chat-content__notifications');
                         expect(el.textContent).toBe('');
                         done();
                     }));
@@ -833,7 +833,7 @@
 
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
                         const csn = mock.cur_names[1] +  ' has stopped typing';
-                        await u.waitUntil( () => view.el.querySelector('.chat-state-notifications').innerText === csn);
+                        await u.waitUntil( () => view.el.querySelector('.chat-content__notifications').innerText === csn);
                         expect(view.model.messages.length).toEqual(0);
                         done();
                     }));
@@ -867,7 +867,7 @@
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
                         await u.waitUntil(() => u.shouldCreateMessage.calls.count());
                         expect(view.model.messages.length).toEqual(0);
-                        const el = view.el.querySelector('.chat-state-notifications');
+                        const el = view.el.querySelector('.chat-content__notifications');
                         expect(el.textContent).toBe('');
                         done();
                         done();
@@ -1007,7 +1007,7 @@
                             .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                             .tree();
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
-                        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-state-notifications').textContent);
+                        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
                         expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
                         expect(view.model.messages.length).toBe(0);
 
@@ -1019,7 +1019,7 @@
                             }).c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
 
-                        await u.waitUntil(() => !view.el.querySelector('.chat-state-notifications').textContent);
+                        await u.waitUntil(() => !view.el.querySelector('.chat-content__notifications').textContent);
                         done();
                     }));
                 });
@@ -1045,7 +1045,7 @@
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
 
                         const view = _converse.chatboxviews.get(sender_jid);
-                        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-state-notifications').textContent);
+                        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
                         expect(csntext).toEqual(mock.cur_names[1] + ' has gone away');
                         done();
                     }));
@@ -1092,7 +1092,7 @@
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
 
-                        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-state-notifications').textContent);
+                        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
                         expect(csntext).toEqual(mock.cur_names[1] + ' is typing');
 
                         // Edited message
@@ -1107,7 +1107,7 @@
                             .c('replace', {'xmlns': Strophe.NS.MESSAGE_CORRECT, 'id': original_id }).tree();
 
                         await _converse.handleMessageStanza(edited);
-                        await u.waitUntil(() => !view.el.querySelector('.chat-state-notifications').textContent);
+                        await u.waitUntil(() => !view.el.querySelector('.chat-content__notifications').textContent);
                         done();
                     }));
                 });

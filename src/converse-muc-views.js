@@ -746,8 +746,8 @@ converse.plugins.add('converse-muc-views', {
                 }), this.el);
                 this.renderHeading();
                 this.renderBottomPanel();
-                this.content = this.el.querySelector('.chat-content');
-                this.csn = this.el.querySelector('.chat-state-notifications');
+                this.content = this.el.querySelector('.chat-content__messages');
+                this.csn = this.el.querySelector('.chat-content__notifications');
                 if (!_converse.muc_show_logs_before_join) {
                     this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();
                 }

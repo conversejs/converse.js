@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-03-23 03:48+0000\n"
+"PO-Revision-Date: 2020-03-26 09:46+0000\n"
 "Last-Translator: Nikolaj Nielsen <nni@zylinc.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
 "translations/fi/>\n"
@@ -464,7 +464,7 @@ msgstr "Yhteyspyynnöt"
 
 #: dist/converse-no-dependencies.js:43069
 msgid "Ungrouped"
-msgstr ""
+msgstr "Ryhmittämätön"
 
 #: dist/converse-no-dependencies.js:43070
 msgid "New messages"
@@ -1103,67 +1103,67 @@ msgstr "Valitse tämä, jos haluat mainita viestissäsi %1$s."
 
 #: dist/converse-no-dependencies.js:58201
 msgid "Invite someone"
-msgstr ""
+msgstr "Kutsu joku"
 
 #: dist/converse-no-dependencies.js:58204
 msgid "Invite someone to join this groupchat"
-msgstr ""
+msgstr "Kutsu joku liittymään tähän ryhmäkeskusteluun"
 
 #: dist/converse-no-dependencies.js:58206
 msgid "Participants"
-msgstr ""
+msgstr "Osallistujat"
 
 #: dist/converse-no-dependencies.js:58262
 msgid "Query for Groupchats"
-msgstr ""
+msgstr "Ryhmäkeskustelujen kysely"
 
 #: dist/converse-no-dependencies.js:58264
 msgid "Server address"
-msgstr ""
+msgstr "Palvelimen osoite"
 
 #: dist/converse-no-dependencies.js:58266
 msgid "Show groupchats"
-msgstr ""
+msgstr "Näytä ryhmäkeskustelut"
 
 #: dist/converse-no-dependencies.js:58413
 msgid "Affiliation"
-msgstr ""
+msgstr "Kuuluminen"
 
 #: dist/converse-no-dependencies.js:58415
 msgid "Change affiliation"
-msgstr ""
+msgstr "Muuta kuulumista"
 
 #: dist/converse-no-dependencies.js:58417
 msgid "Change role"
-msgstr ""
+msgstr "Vaihda rooli"
 
 #: dist/converse-no-dependencies.js:58419
 msgid "Moderator Tools"
-msgstr ""
+msgstr "Moderaattori työkalut"
 
 #: dist/converse-no-dependencies.js:58421
 msgid "New affiliation"
-msgstr ""
+msgstr "Uusi kuuluminen"
 
 #: dist/converse-no-dependencies.js:58423
 msgid "New Role"
-msgstr ""
+msgstr "Uusi rooli"
 
 #: dist/converse-no-dependencies.js:58425
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "Käyttäjiä, joilla on kyse, ei löytynyt."
 
 #: dist/converse-no-dependencies.js:58427
 msgid "No users with that role found."
-msgstr ""
+msgstr "Tätä roolia käyttäviä käyttäjiä ei löytynyt."
 
 #: dist/converse-no-dependencies.js:58429
 msgid "Reason"
-msgstr ""
+msgstr "Syy"
 
 #: dist/converse-no-dependencies.js:58433
 msgid "Show users"
-msgstr ""
+msgstr "Näytä käyttäjät"
 
 #: dist/converse-no-dependencies.js:58435
 msgid ""
@@ -1172,6 +1172,10 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"Rooleja annetaan käyttäjille, jotka myöntävät tai kieltävät heille tiettyjä "
+"kykyjä usean käyttäjän keskustelussa. Ne on määritetty joko "
+"eksplisiittisesti tai implisiittisesti osana kuulumista. Rooli, joka ei "
+"johdu liitoksesta, on voimassa vain käyttäjän istunnon ajan."
 
 #: dist/converse-no-dependencies.js:58437
 msgid ""
@@ -1179,212 +1183,226 @@ msgid ""
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
 msgstr ""
+"Kuuluminen on pitkäaikainen oikeus, joka tyypillisesti edellyttää tiettyä "
+"roolia ja joka antaa etuoikeuksia ja velvollisuuksia. Esimerkiksi "
+"järjestelmänvalvojilla ja omistajilla on automaattisesti moderaattorin rooli."
 
 #: dist/converse-no-dependencies.js:58441
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
 msgstr ""
+"Valvojat ovat etuoikeutettuja käyttäjiä, jotka voivat muuttaa muiden "
+"käyttäjien rooleja (lukuun ottamatta niitä, joilla on järjestelmänvalvojan "
+"tai omistajan yhteyksiä."
 
 #: dist/converse-no-dependencies.js:58443
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "Oletusrooli tarkoittaa, että voit lukea ja kirjoittaa viestejä."
 
 #: dist/converse-no-dependencies.js:58445
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
+"Vierailijat eivät saa kirjoittaa viestejä valvotussa usean käyttäjän "
+"keskustelussa."
 
 #: dist/converse-no-dependencies.js:58451
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
+"Omistaja on korkein liitos. Omistajat voivat muokata kaikkien muiden "
+"käyttäjien rooleja ja yhteyksiä."
 
 #: dist/converse-no-dependencies.js:58453
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
 msgstr ""
+"Järjestelmänvalvoja on toiseksi korkein kuuluminen. Järjestelmänvalvojat "
+"voivat muokata kaikkien muiden käyttäjien rooleja ja yhteyksiä omistajia "
+"lukuun ottamatta."
 
 #: dist/converse-no-dependencies.js:58455
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr ""
+msgstr "Voit kieltää käyttäjän, annat heille kuuluminen \"hylkiö\"."
 
 #: dist/converse-no-dependencies.js:58836
 msgid "Description:"
-msgstr ""
+msgstr "Kuvaus:"
 
 #: dist/converse-no-dependencies.js:58837
 msgid "Groupchat Address (JID):"
-msgstr ""
+msgstr "Groupchat-osoite (JID):"
 
 #: dist/converse-no-dependencies.js:58838
 msgid "Participants:"
-msgstr ""
+msgstr "Osallistujat:"
 
 #: dist/converse-no-dependencies.js:58839
 msgid "Features:"
-msgstr ""
+msgstr "Ominaisuuksia:"
 
 #: dist/converse-no-dependencies.js:58840
 msgid "Requires authentication"
-msgstr ""
+msgstr "Edellyttää todennusta"
 
 #: dist/converse-no-dependencies.js:58842
 msgid "Requires an invitation"
-msgstr ""
+msgstr "Vaatii kutsun"
 
 #: dist/converse-no-dependencies.js:58844
 msgid "Non-anonymous"
-msgstr ""
+msgstr "Ei-anonyymi"
 
 #: dist/converse-no-dependencies.js:58846
 msgid "Permanent"
-msgstr ""
+msgstr "Pysyvä"
 
 #: dist/converse-no-dependencies.js:58850
 msgid "Unmoderated"
-msgstr ""
+msgstr "Mittaamattomat"
 
 #: dist/converse-no-dependencies.js:59055
 msgid "Affiliation changed"
-msgstr ""
+msgstr "Kuuluminen muuttui"
 
 #: dist/converse-no-dependencies.js:59078
 msgid "Sorry, something went wrong while trying to set the affiliation"
-msgstr ""
+msgstr "Anteeksi, jokin meni pieleen, kun yrittää asettaa kuuluminen"
 
 #: dist/converse-no-dependencies.js:59094
 msgid "Role changed"
-msgstr ""
+msgstr "Rooli muuttui"
 
 #: dist/converse-no-dependencies.js:59107
 msgid "You're not allowed to make that change"
-msgstr ""
+msgstr "Et saa tehdä sitä muutosta"
 
 #: dist/converse-no-dependencies.js:59109
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr ""
+msgstr "Anteeksi, jotain meni pieleen, kun yrittää asettaa roolin"
 
 #: dist/converse-no-dependencies.js:59141
 msgid "conference.example.org"
-msgstr ""
+msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:59182
 #: dist/converse-no-dependencies.js:66509
 msgid "Show more information on this groupchat"
-msgstr ""
+msgstr "Näytä lisätietoja tästä ryhmäkeskustelusta"
 
 #: dist/converse-no-dependencies.js:59192
 msgid "No groupchats found"
-msgstr ""
+msgstr "Ryhmäkeskusteluja ei löytynyt"
 
 #: dist/converse-no-dependencies.js:59207
 msgid "Groupchats found:"
-msgstr ""
+msgstr "Löytyi ryhmäkeskusteluja:"
 
 #: dist/converse-no-dependencies.js:59277
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "name@conference.example.org"
 
 #: dist/converse-no-dependencies.js:59282
 msgid "Groupchat name"
-msgstr ""
+msgstr "Ryhmäkeskustelu nimi"
 
 #: dist/converse-no-dependencies.js:59282
 msgid "Groupchat address"
-msgstr ""
+msgstr "Ryhmäkeskusteluosoite"
 
 #: dist/converse-no-dependencies.js:59360
 msgid "Groupchat id is invalid."
-msgstr ""
+msgstr "Ryhmäkeskustelun tunnus on virheellinen."
 
 #: dist/converse-no-dependencies.js:59380
 #, javascript-format
 msgid "Groupchat info for %1$s"
-msgstr ""
+msgstr "Ryhmäkeskustelun tiedot kohteelle %1$s"
 
 #: dist/converse-no-dependencies.js:59757
 msgid "You are about to retract this message."
-msgstr ""
+msgstr "Olet perumassa tämän viestin."
 
 #: dist/converse-no-dependencies.js:59757
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
 msgstr ""
+"Voit valinnaisesti sisällyttää viestin, joka selittää peruuttamisen syyn."
 
 #: dist/converse-no-dependencies.js:59764
 msgid "Message Retraction"
-msgstr ""
+msgstr "Viestin peruuttaminen"
 
 #: dist/converse-no-dependencies.js:59764
 msgid "Optional reason"
-msgstr ""
+msgstr "Valinnainen syy"
 
 #: dist/converse-no-dependencies.js:59803
 msgid "Sorry, something went wrong while trying to retract your message."
-msgstr ""
+msgstr "Anteeksi, jokin meni pieleen, kun yritÃ¤t peruuttaa viestisi."
 
 #: dist/converse-no-dependencies.js:59845
 msgid "A timeout occurred while trying to retract the message"
-msgstr ""
+msgstr "Aikakatkaisu yritettäessä peruuttaa viestiä"
 
 #: dist/converse-no-dependencies.js:59851
 msgid "Sorry, you're not allowed to retract this message."
-msgstr ""
+msgstr "Valitettavasti et saa peruuttaa tätä viestiä."
 
 #: dist/converse-no-dependencies.js:59930
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr ""
+msgstr "%1$s ei ole enää tämän ryhmäkeskustelun järjestelmänvalvoja"
 
 #: dist/converse-no-dependencies.js:59932
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr ""
+msgstr "%1$s ei ole enää tämän ryhmäkeskustelun omistaja"
 
 #: dist/converse-no-dependencies.js:59934
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr ""
+msgstr "%1$s ei ole enää kielletty tästä ryhmäkeskustelusta"
 
 #: dist/converse-no-dependencies.js:59938
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr ""
+msgstr "%1$s ei ole enää tämän ryhmäkeskustelun jäsen"
 
 #: dist/converse-no-dependencies.js:59942
 #, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr ""
+msgstr "%1$s on nyt tämän ryhmäkeskustelun jäsen"
 
 #: dist/converse-no-dependencies.js:59944
 #, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr ""
+msgstr "%1$s on kielletty tästä ryhmäkeskustelusta"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:59947
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr ""
+msgstr "%1$s on nyt %2$s tästä ryhmäkeskustelusta"
 
 #: dist/converse-no-dependencies.js:59966
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr ""
+msgstr "%1$s ei ole enää moderaattori"
 
 #: dist/converse-no-dependencies.js:59970
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr ""
+msgstr "%1$s on saanut äänen"
 
 #: dist/converse-no-dependencies.js:59974
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "%1$s on mykistetty"
 
 #. We only show this message if the user isn't already
 #. an admin or owner, otherwise this isn't new
@@ -1392,28 +1410,28 @@ msgstr ""
 #: dist/converse-no-dependencies.js:59982
 #, javascript-format
 msgid "%1$s is now a moderator"
-msgstr ""
+msgstr "%1$s on nyt moderaattori"
 
 #: dist/converse-no-dependencies.js:59990
 msgid "Close and leave this groupchat"
-msgstr ""
+msgstr "Sulje ja jätä tämä ryhmäkeskustelu"
 
 #: dist/converse-no-dependencies.js:59999
 msgid "Configure this groupchat"
-msgstr ""
+msgstr "Määritä tämä ryhmäkeskustelu"
 
 #: dist/converse-no-dependencies.js:60064
 msgid "Hide the list of participants"
-msgstr ""
+msgstr "Piilota osallistujien luettelo"
 
 #: dist/converse-no-dependencies.js:60183
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Kielletty: sinulla ei ole tarvittavaa roolia sen tekemiseen."
 
 #: dist/converse-no-dependencies.js:60212
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "Kielletty: sinulla ei ole tarvittavaa yhteyttä, jotta voit tehdä sen."
 
 #: dist/converse-no-dependencies.js:60219
 #, javascript-format
@@ -1421,166 +1439,170 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Virhe: Komento %1$s ottaa kaksi argumenttia, käyttäjän lempinimen ja "
+"valinnaisesti syyn."
 
 #: dist/converse-no-dependencies.js:60237
 #: dist/converse-no-dependencies.js:60250
 msgid "Error: couldn't find a groupchat participant based on your arguments"
 msgstr ""
+"Virhe: ryhmäkeskustelun osallistujaa ei löytynyt argumenttiesi perusteella"
 
 #: dist/converse-no-dependencies.js:60242
 msgid "Error: found multiple groupchat participant based on your arguments"
 msgstr ""
+"Virhe: löytyi useita ryhmäkeskustelun osallistujia argumenttiesi perusteella"
 
 #: dist/converse-no-dependencies.js:60335
 msgid "Sorry, an error happened while running the command."
-msgstr ""
+msgstr "Anteeksi, komennon suorittamisessa tapahtui virhe."
 
 #: dist/converse-no-dependencies.js:60335
 #: dist/converse-no-dependencies.js:61164
 msgid "Check your browser's developer console for details."
-msgstr ""
+msgstr "Tarkista yksityiskohdat selaimesi kehittäjäkonsolista."
 
 #: dist/converse-no-dependencies.js:60441
 msgid "You can run the following commands"
-msgstr ""
+msgstr "Voit suorittaa seuraavat komennot"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Change user's affiliation to admin"
-msgstr ""
+msgstr "Muuta käyttäjän liitosta admin"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Ban user by changing their affiliation to outcast"
-msgstr ""
+msgstr "Estä käyttäjä muuttamalla heidän kuulumisensa hylkiöksi"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Clear the chat area"
-msgstr ""
+msgstr "Tyhjennä chat-alue"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Close this groupchat"
-msgstr ""
+msgstr "Sulje tämä ryhmäkeskustelu"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Change user role to participant"
-msgstr ""
+msgstr "Käyttäjän roolin muuttaminen osallistujaksi"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Remove this groupchat"
-msgstr ""
+msgstr "Poista tämä ryhmäkeskustelu"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Kick user from groupchat"
-msgstr ""
+msgstr "Potkaise käyttäjä ryhmäkeskusteluista"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Write in 3rd person"
-msgstr ""
+msgstr "Kirjoita kolmas henkilö"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Grant membership to a user"
-msgstr ""
+msgstr "Jäsenyyden myöntäminen käyttäjälle"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Opens up the moderator tools GUI"
-msgstr ""
+msgstr "Avaa moderaattorityökalujen graafisen käyttöliittymän"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Remove user's ability to post messages"
-msgstr ""
+msgstr "Poista käyttäjän kyky lähettää viestejä"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Change your nickname"
-msgstr ""
+msgstr "Lempinimen muuttaminen"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Grant moderator role to user"
-msgstr ""
+msgstr "Myönnä moderaattorin rooli käyttäjälle"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Grant ownership of this groupchat"
-msgstr ""
+msgstr "Myönnä omistajuus tähän ryhmäkeskusteluun"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Register your nickname"
-msgstr ""
+msgstr "Rekisteröi lempinimesi"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Revoke the user's current affiliation"
-msgstr ""
+msgstr "Peruuta käyttäjän nykyinen yhteys"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Set groupchat subject"
-msgstr ""
+msgstr "Aseta ryhmäkeskustelu aihe"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Set groupchat subject (alias for /subject)"
-msgstr ""
+msgstr "Aseta ryhmäkeskusteluaihe (alias / aiheelle)"
 
 #: dist/converse-no-dependencies.js:60442
 msgid "Allow muted user to post messages"
-msgstr ""
+msgstr "Salli mykistetty käyttäjä lähettää viestejä"
 
 #. e.g. Your nickname is "coolguy69"
 #: dist/converse-no-dependencies.js:60478
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
-msgstr ""
+msgstr "Lempinimesi on \"%1$s\""
 
 #: dist/converse-no-dependencies.js:60505
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Virhe: virheellinen määrä argumentteja"
 
 #: dist/converse-no-dependencies.js:60571
 msgid "Choose a nickname to enter"
-msgstr ""
+msgstr "Valitse lempinimi kirjoittaaksesi"
 
 #: dist/converse-no-dependencies.js:60571
 msgid "Please choose your nickname"
-msgstr ""
+msgstr "Valitse lempinimesi"
 
 #: dist/converse-no-dependencies.js:60575
 msgid "Enter groupchat"
-msgstr ""
+msgstr "Kirjoita ryhmäkeskustelu"
 
 #: dist/converse-no-dependencies.js:60867
 #, javascript-format
 msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
-msgstr ""
+msgstr "%1$s on lähtenyt ja kirjoittanut ryhmäkeskustelun uudelleen. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:60869
 #, javascript-format
 msgid "%1$s has left and re-entered the groupchat"
-msgstr ""
+msgstr "%1$s on lähtenyt ja kirjoittanut ryhmäkeskustelun uudelleen"
 
 #: dist/converse-no-dependencies.js:60892
 #, javascript-format
 msgid "%1$s has entered the groupchat. \"%2$s\""
-msgstr ""
+msgstr "%1$s on tullut ryhmÃ¤keskusteluun. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:60894
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr ""
+msgstr "%1$s on tullut ryhmäkeskusteluun"
 
 #: dist/converse-no-dependencies.js:60930
 #, javascript-format
 msgid "%1$s has entered and left the groupchat. \"%2$s\""
-msgstr ""
+msgstr "%1$s on syöttänyt ja jättänyt ryhmäkeskustelun. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:60932
 #, javascript-format
 msgid "%1$s has entered and left the groupchat"
-msgstr ""
+msgstr "%1$s on syöttänyt ja jättänyt ryhmäkeskustelun"
 
 #: dist/converse-no-dependencies.js:60955
 #, javascript-format
 msgid "%1$s has left the groupchat. \"%2$s\""
-msgstr ""
+msgstr "%1$s on poistunut ryhmäkeskusteluista. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:60957
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr ""
+msgstr "%1$s on poistunut ryhmäkeskusteluista"
 
 #. For translators: the %1$s part will get
 #. replaced by the user's name.
@@ -1588,243 +1610,247 @@ msgstr ""
 #: dist/converse-no-dependencies.js:61036
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr ""
+msgstr "Aihe asetettu %1$s"
 
 #: dist/converse-no-dependencies.js:61036
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr ""
+msgstr "Aihe poistettu %1$s"
 
 #: dist/converse-no-dependencies.js:61075
 msgid "Groupchats"
-msgstr ""
+msgstr "Lisää tyrejä"
 
 #: dist/converse-no-dependencies.js:61076
 msgid "Add a new groupchat"
-msgstr ""
+msgstr "Uuden ryhmäkeskustelun lisääminen"
 
 #: dist/converse-no-dependencies.js:61077
 msgid "Query for groupchats"
-msgstr ""
+msgstr "Ryhmäkeskustelujen kysely"
 
 #: dist/converse-no-dependencies.js:61164
 msgid "Sorry, an error occurred while trying to submit the config form."
-msgstr ""
+msgstr "Virhe yritettäessä lähettää määrityslomaketta."
 
 #: dist/converse-no-dependencies.js:61735
 msgid "Announcements"
-msgstr ""
+msgstr "Ilmoitukset"
 
 #: dist/converse-no-dependencies.js:61739
 msgid "Click to open this server message"
-msgstr ""
+msgstr "Avaa tämä palvelinviesti napsauttamalla"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:61966
 #: dist/converse-no-dependencies.js:61972
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "Ilmoitus kohteesta %1$s"
 
 #: dist/converse-no-dependencies.js:61974
 #: dist/converse-no-dependencies.js:61984
 #: dist/converse-no-dependencies.js:61987
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s sanoo"
 
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:61996
 msgid "OMEMO Message received"
-msgstr ""
+msgstr "OMEMO-viesti vastaanotettu"
 
 #: dist/converse-no-dependencies.js:62038
 msgid "has gone offline"
-msgstr ""
+msgstr "on mennyt offline-tilaan"
 
 #: dist/converse-no-dependencies.js:62040
 msgid "has gone away"
-msgstr ""
+msgstr "on mennyt pois"
 
 #: dist/converse-no-dependencies.js:62042
 msgid "is busy"
-msgstr ""
+msgstr "on kiireinen"
 
 #: dist/converse-no-dependencies.js:62044
 msgid "has come online"
-msgstr ""
+msgstr "on tullut verkossa"
 
 #: dist/converse-no-dependencies.js:62061
 msgid "wants to be your contact"
-msgstr ""
+msgstr "haluaa olla yhteyshenkilösi"
 
 #: dist/converse-no-dependencies.js:62206
 msgid "About"
-msgstr ""
+msgstr "Noin"
 
 #: dist/converse-no-dependencies.js:62208
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
+"%1$s Avoimen Lähdekoodin %2$s XMPP chat client tuonut sinulle %3$s Opkode "
+"%2$s"
 
 #: dist/converse-no-dependencies.js:62210
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr ""
+msgstr "%1$s Käännä %2$s se omalle kielellesi"
 
 #: dist/converse-no-dependencies.js:62269
 msgid "Log out"
-msgstr ""
+msgstr "Kirjaudu ulos"
 
 #: dist/converse-no-dependencies.js:62271
 msgid "Click to change your chat status"
-msgstr ""
+msgstr "Muuta keskustelun tilaa napsauttamalla tätä"
 
 #: dist/converse-no-dependencies.js:62273
 msgid "Show details about this chat client"
-msgstr ""
+msgstr "Näytä tämän chat-asiakkaan tiedot"
 
 #: dist/converse-no-dependencies.js:62377
 msgid "Your avatar image"
-msgstr ""
+msgstr "Avatar-kuvasi"
 
 #: dist/converse-no-dependencies.js:62379
 msgid "Your Profile"
-msgstr ""
+msgstr "Profiilisi"
 
 #: dist/converse-no-dependencies.js:62381
 msgid "Checkbox for selecting the following fingerprint"
-msgstr ""
+msgstr "Valintaruutu seuraavan sormenjäljen valitsemiseksi"
 
 #: dist/converse-no-dependencies.js:62383
 msgid "Device without a fingerprint"
-msgstr ""
+msgstr "Laite ilman sormenjälkiä"
 
 #: dist/converse-no-dependencies.js:62387
 msgid "This device's OMEMO fingerprint"
-msgstr ""
+msgstr "Tämän laitteen OMEMO-sormenjälki"
 
 #: dist/converse-no-dependencies.js:62391
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "Luo uusia avaimia ja sormenjälkiä"
 
 #: dist/converse-no-dependencies.js:62393
 msgid "XMPP Address (JID)"
-msgstr ""
+msgstr "XMPP-osoite (JID)"
 
 #: dist/converse-no-dependencies.js:62397
 msgid "Other OMEMO-enabled devices"
-msgstr ""
+msgstr "Muut OMEMO-yhteensopivat laitteet"
 
 #: dist/converse-no-dependencies.js:62399
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
-msgstr ""
+msgstr "Valintaruutu valitaksesi kaikkien muiden OMEMO-laitteiden sormenjäljet"
 
 #: dist/converse-no-dependencies.js:62401
 msgid "Remove checked devices and close"
-msgstr ""
+msgstr "Poista valitut laitteet ja sulje"
 
 #: dist/converse-no-dependencies.js:62405
 msgid "Save and close"
-msgstr ""
+msgstr "Tallenna ja sulje"
 
 #: dist/converse-no-dependencies.js:62407
 msgid "Select all"
-msgstr ""
+msgstr "Valitse kaikki"
 
 #: dist/converse-no-dependencies.js:62409
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
+"Käyttää pilkkuja erottamaan useita rooleja. Teidän roolit ovat osoittaneet, "
+"nimesi vieressä chat-viestejä."
 
 #: dist/converse-no-dependencies.js:62413
 msgid "OMEMO"
-msgstr ""
+msgstr "OMEMO"
 
 #: dist/converse-no-dependencies.js:62415
 msgid "Profile"
-msgstr ""
+msgstr "Profiili"
 
 #: dist/converse-no-dependencies.js:62577
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr ""
+msgstr "Anteeksi, tapahtui virhe yrittäessäsi tallentaa profiilisi tietoja."
 
 #: dist/converse-no-dependencies.js:62577
 msgid "You can check your browser's developer console for any error output."
-msgstr ""
+msgstr "Voit tarkistaa selaimesi kehittäjäkonsolin virhelähdön."
 
 #: dist/converse-no-dependencies.js:62625
 #: dist/converse-no-dependencies.js:67203
 msgid "Away"
-msgstr ""
+msgstr "Pois"
 
 #: dist/converse-no-dependencies.js:62626
 #: dist/converse-no-dependencies.js:67202
 msgid "Busy"
-msgstr ""
+msgstr "Kiireinen"
 
 #: dist/converse-no-dependencies.js:62629
 msgid "Custom status"
-msgstr ""
+msgstr "Mukautettu tila"
 
 #: dist/converse-no-dependencies.js:62630
 #: dist/converse-no-dependencies.js:67205
 msgid "Offline"
-msgstr ""
+msgstr "Poissa"
 
 #: dist/converse-no-dependencies.js:62631
 #: dist/converse-no-dependencies.js:67200
 msgid "Online"
-msgstr ""
+msgstr "Online"
 
 #: dist/converse-no-dependencies.js:62633
 msgid "Away for long"
-msgstr ""
+msgstr "Poissa pitkään"
 
 #: dist/converse-no-dependencies.js:62634
 msgid "Change chat status"
-msgstr ""
+msgstr "Vaihda chatin tila"
 
 #: dist/converse-no-dependencies.js:62635
 msgid "Personal status message"
-msgstr ""
+msgstr "Henkilökohtainen tilaviesti"
 
 #: dist/converse-no-dependencies.js:62690
 #, javascript-format
 msgid "I am %1$s"
-msgstr ""
+msgstr "Olen %1$s"
 
 #: dist/converse-no-dependencies.js:62725
 msgid "Are you sure you want to log out?"
-msgstr ""
+msgstr "Haluatko varmasti kirjautua ulos?"
 
 #: dist/converse-no-dependencies.js:62733
 #: dist/converse-no-dependencies.js:62743
 msgid "online"
-msgstr ""
+msgstr "verkossa"
 
 #: dist/converse-no-dependencies.js:62735
 msgid "busy"
-msgstr ""
+msgstr "Varattu"
 
 #: dist/converse-no-dependencies.js:62737
 msgid "away for long"
-msgstr ""
+msgstr "pois pitkään"
 
 #: dist/converse-no-dependencies.js:62739
 msgid "away"
-msgstr ""
+msgstr "pois"
 
 #: dist/converse-no-dependencies.js:62741
 msgid "offline"
-msgstr ""
+msgstr "Offline"
 
 #: dist/converse-no-dependencies.js:63119
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr ""
+msgstr "Virhe yritettäessä poistaa laitteita."
 
 #: dist/converse-no-dependencies.js:63128
 msgid ""
@@ -1832,6 +1858,8 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
+"Haluatko varmasti luoda uusia OMEMO-avaimia? Tämä poistaa vanhat avaimesi, "
+"eikä kaikkia aiemmin salattuja viestejä voi enää purkaa tässä laitteessa."
 
 #: dist/converse-no-dependencies.js:63635
 #, javascript-format
@@ -1839,6 +1867,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Emme valitettavasti voi lähettää salattua viestiä, koska %1$s edellyttää, "
+"että olet tilannut heidän läsnäolonsa, jotta näet heidän OMEMO-tietonsa"
 
 #: dist/converse-no-dependencies.js:63637
 #, javascript-format
@@ -1846,16 +1876,21 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Salattua viestiä ei voi lähettää, koska kohteen %1$s etäpalvelinta ei "
+"löytynyt"
 
 #: dist/converse-no-dependencies.js:63639
 msgid "Unable to send an encrypted message due to an unexpected error."
-msgstr ""
+msgstr "Salattua viestiä ei voi lähettää odottamattoman virheen vuoksi."
 
 #: dist/converse-no-dependencies.js:63689
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
+"Tässä ryhmäkeskusteluissa ei voida käyttää päästä päähän -salausta. "
+"Ryhmäkeskusteluissa on jonkin verran nimettömiä tai kaikki osallistujat "
+"eivät tue OMEMOa."
 
 #: dist/converse-no-dependencies.js:63691
 #, javascript-format
@@ -1863,17 +1898,23 @@ msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
+"Lopullista salausta ei voida käyttää, koska %1$s käyttää asiakasta, joka ei "
+"tue OMEMO:t a."
 
 #: dist/converse-no-dependencies.js:63984
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
 msgstr ""
+"Valitettavasti mitään laitteita ei löytynyt, joihin voimme lähettää OMEMO-"
+"salatun viestin."
 
 #: dist/converse-no-dependencies.js:64114
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
+"Tämä on OMEMO-salattu viesti, jota asiakkaasi ei näytä tukevan. Lisätietoja "
+"https://conversations.im/omemo"
 
 #: dist/converse-no-dependencies.js:65121
 #, javascript-format
@@ -1881,32 +1922,37 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"%1$s ei näytä olevan asiakasta, joka tukee OMEMO:ta. Salattu chat ei ole "
+"enää mahdollista tässä grouchat."
 
 #: dist/converse-no-dependencies.js:65766
 msgid " e.g. conversejs.org"
-msgstr ""
+msgstr " esim. conversejs.org"
 
 #: dist/converse-no-dependencies.js:65855
 msgid "Fetch registration form"
-msgstr ""
+msgstr "Hae rekisteröintilomake"
 
 #: dist/converse-no-dependencies.js:65856
 msgid "Tip: A list of public XMPP providers is available"
-msgstr ""
+msgstr "Vihje: Julkisten XMPP-palveluntarjoajien luettelo on käytettävissä"
 
 #: dist/converse-no-dependencies.js:65857
 msgid "here"
-msgstr ""
+msgstr "tässä"
 
 #: dist/converse-no-dependencies.js:65908
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr ""
+"Valitettavasti emme voi muodostaa yhteyttä valitsemasi palveluntarjoajaan."
 
 #: dist/converse-no-dependencies.js:65924
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
+"Anteeksi, annettu tarjoaja ei tue bänditilin rekisteröintiä. Kokeile toista "
+"palveluntarjoajaa."
 
 #: dist/converse-no-dependencies.js:65950
 #, javascript-format
@@ -1914,156 +1960,160 @@ msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
+"Jotain meni pieleen, kun muodostat yhteyden \"%1$s\". Oletko varma, että se "
+"on olemassa?"
 
 #: dist/converse-no-dependencies.js:66140
 msgid "Now logging you in"
-msgstr ""
+msgstr "Nyt kirjautumalla sisään"
 
 #: dist/converse-no-dependencies.js:66144
 msgid "Registered successfully"
-msgstr ""
+msgstr "Rekisteröity onnistuneesti"
 
 #: dist/converse-no-dependencies.js:66256
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
+"Palveluntarjoaja hylkäsi rekisteröintiyrityksen. Tarkista syöttämiesi "
+"arvojen oikeellisuus."
 
 #: dist/converse-no-dependencies.js:66501
 msgid "Click to toggle the list of open groupchats"
-msgstr ""
+msgstr "Valitse tämä, jos haluat vaihtaa avoimien ryhmäkeskusteluiden luettelon"
 
 #: dist/converse-no-dependencies.js:66505
 msgid "Leave this groupchat"
-msgstr ""
+msgstr "Jätä tämä ryhmäkeskustelu"
 
 #. Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
 #: dist/converse-no-dependencies.js:66514
 msgid "Open Groupchats"
-msgstr ""
+msgstr "Avaa ryhmäkeskusteluja"
 
 #: dist/converse-no-dependencies.js:66746
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
-msgstr ""
+msgstr "Oletko varma, että haluat jättää ryhmäkeskustelun% 1$s?"
 
 #: dist/converse-no-dependencies.js:66863
 msgid "name@example.org"
-msgstr ""
+msgstr "name@example.org"
 
 #: dist/converse-no-dependencies.js:66865
 msgid "Add"
-msgstr ""
+msgstr "Lisää"
 
 #: dist/converse-no-dependencies.js:66869
 msgid "Add a Contact"
-msgstr ""
+msgstr "Lisää yhteystieto"
 
 #: dist/converse-no-dependencies.js:67008
 msgid "This contact is busy"
-msgstr ""
+msgstr "Tämä yhteystieto on varattu"
 
 #: dist/converse-no-dependencies.js:67009
 msgid "This contact is online"
-msgstr ""
+msgstr "Tämä yhteyshenkilö on verkossa"
 
 #: dist/converse-no-dependencies.js:67010
 msgid "This contact is offline"
-msgstr ""
+msgstr "Tämä yhteyshenkilö on offline-tilassa"
 
 #: dist/converse-no-dependencies.js:67011
 msgid "This contact is unavailable"
-msgstr ""
+msgstr "Tämä yhteystieto ei ole käytettävissä"
 
 #: dist/converse-no-dependencies.js:67012
 msgid "This contact is away for an extended period"
-msgstr ""
+msgstr "Tämä kontakti on poissa pidemmän aikaa"
 
 #: dist/converse-no-dependencies.js:67013
 msgid "This contact is away"
-msgstr ""
+msgstr "Tämä yhteyshenkilö on poissa"
 
 #: dist/converse-no-dependencies.js:67026
 msgid "Contact name"
-msgstr ""
+msgstr "Yhteyshenkilön nimi"
 
 #: dist/converse-no-dependencies.js:67026
 msgid "Optional nickname"
-msgstr ""
+msgstr "Valinnainen lempinimi"
 
 #: dist/converse-no-dependencies.js:67118
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "Anteeksi, ei löytynyt yhteyttä, että nimi"
 
 #: dist/converse-no-dependencies.js:67143
 msgid "This contact has already been added"
-msgstr ""
+msgstr "Tämä yhteystieto on jo lisätty"
 
 #: dist/converse-no-dependencies.js:67194
 msgid "Filter"
-msgstr ""
+msgstr "Suodatin"
 
 #: dist/converse-no-dependencies.js:67195
 msgid "Filter by contact name"
-msgstr ""
+msgstr "Suodata yhteyshenkilön nimen perusteella"
 
 #: dist/converse-no-dependencies.js:67196
 msgid "Filter by group name"
-msgstr ""
+msgstr "Suodata ryhmän nimen mukaan"
 
 #: dist/converse-no-dependencies.js:67197
 msgid "Filter by status"
-msgstr ""
+msgstr "Suodata tilan mukaan"
 
 #: dist/converse-no-dependencies.js:67198
 msgid "Any"
-msgstr ""
+msgstr "Mitään"
 
 #: dist/converse-no-dependencies.js:67199
 msgid "Unread"
-msgstr ""
+msgstr "Lukemattomat"
 
 #: dist/converse-no-dependencies.js:67201
 msgid "Chatty"
-msgstr ""
+msgstr "Puhelias"
 
 #: dist/converse-no-dependencies.js:67204
 msgid "Extended Away"
-msgstr ""
+msgstr "Laajennettu pois"
 
 #: dist/converse-no-dependencies.js:67368
 #: dist/converse-no-dependencies.js:67430
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr ""
+msgstr "Poista %1$s yhteystietona napsauttamalla tätä"
 
 #: dist/converse-no-dependencies.js:67377
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
-msgstr ""
+msgstr "Hyväksy yhteystietopyyntö kohteesta %1$s napsauttamalla tätä"
 
 #: dist/converse-no-dependencies.js:67378
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
-msgstr ""
+msgstr "Hylkää yhteystietopyyntö kohteesta %1$s napsauttamalla tätä"
 
 #: dist/converse-no-dependencies.js:67429
 #, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
-msgstr ""
+msgstr "Napsauttamalla tätä voit keskustella kohteen %1$s kanssa (JID: %2$s)"
 
 #: dist/converse-no-dependencies.js:67572
 msgid "Are you sure you want to decline this contact request?"
-msgstr ""
+msgstr "Haluatko varmasti hylätä tämän yhteydenottopyynnön?"
 
 #: dist/converse-no-dependencies.js:67905
 msgid "Contacts"
-msgstr ""
+msgstr "Yhteystiedot"
 
 #: dist/converse-no-dependencies.js:67906
 msgid "Add a contact"
-msgstr ""
+msgstr "Lisää yhteystieto"
 
 #: dist/converse-no-dependencies.js:67907
 msgid "Re-sync your contacts"
-msgstr ""
+msgstr "Yhteystietojen synkronointi uudelleen"

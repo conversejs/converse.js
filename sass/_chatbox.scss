@@ -223,6 +223,7 @@
             line-height: 1.3em;
 
             .chat-content__notifications {
+                height: 1em;
                 white-space: pre;
                 background-color: var(--chat-content-background-color);
                 color: var(--subdued-color);

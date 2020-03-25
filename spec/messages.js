@@ -937,14 +937,14 @@
             expect(view.model.sendMessage).toHaveBeenCalled();
             let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.trim()).toEqual(
-                `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg"><img src="${message}" class="chat-image img-thumbnail"></a>`);
+                `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg" class="chat-image__link"><img src="${message}" class="chat-image img-thumbnail"></a>`);
             message += "?param1=val1&param2=val2";
             test_utils.sendMessage(view, message);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
             expect(msg.innerHTML.trim()).toEqual(
-                '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2"><img'+
+                '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2" class="chat-image__link"><img'+
                 ' src="'+message.replace(/&/g, '&amp;')+'" class="chat-image img-thumbnail"></a>')
 
             // Test now with two images in one message
@@ -1958,7 +1958,7 @@
                 expect(msg.textContent).toEqual('Have you seen this funny image?');
                 const media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                    `<!----><a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                    `<!----><a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                     `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a><!---->`);
                 done();
             }));

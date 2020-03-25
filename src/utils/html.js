@@ -189,6 +189,7 @@ async function renderImage (img_url, link_url, el, callback) {
         }
         sizzle(`a[href="${link_url}"]`, el).forEach(a => {
             a.innerHTML = "";
+            u.addClass('chat-image__link', a);
             u.addClass('chat-image', img);
             u.addClass('img-thumbnail', img);
             a.insertAdjacentElement('afterBegin', img);

@@ -142,6 +142,17 @@ converse.plugins.add('converse-chat', {
                 return true;
             },
 
+            /**
+             * Determines whether this messsage may be retracted by the current user.
+             * @private
+             * @method _converse.Messages#mayBeRetracted
+             * @returns { Boolean }
+             */
+            mayBeRetracted () {
+                const is_own_message = this.get('sender') === 'me';
+                return is_own_message && ['all', 'own'].includes(_converse.allow_message_retraction);
+            },
+
             safeDestroy () {
                 try {
                     this.destroy()

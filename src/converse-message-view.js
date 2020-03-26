@@ -230,17 +230,8 @@ converse.plugins.add('converse-message-view', {
                 const role = this.model.vcard ? this.model.vcard.get('role') : null;
                 const roles = role ? role.split(',') : [];
                 const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
-                const is_groupchat = this.model.get('type') === 'groupchat';
-                const is_own_message = this.model.get('sender') === 'me';
-                const chatbox = this.model.collection.chatbox;
-                const may_retract_own_message = is_own_message && (
-                    ['all', 'own'].includes(_converse.allow_message_retraction) || await chatbox.canModerateMessages()
-                );
-                const may_moderate_message = !is_own_message && is_groupchat &&
-                    ['all', 'moderator'].includes(_converse.allow_message_retraction) &&
-                    await chatbox.canModerateMessages();
-
-                const retractable= !is_retracted && (may_moderate_message || may_retract_own_message);
+                const may_be_moderated = this.model.get('type') === 'groupchat' && await this.model.mayBeModerated();
+                const retractable= !is_retracted && (this.model.mayBeRetracted() || may_be_moderated);
                 const msg = u.stringToElement(tpl_message(
                     Object.assign(
                         this.model.toJSON(), {
@@ -248,7 +239,7 @@ converse.plugins.add('converse-message-view', {
                         is_retracted,
                         retractable,
                         'extra_classes': this.getExtraMessageClasses(),
-                        'is_groupchat_message': is_groupchat,
+                        'is_groupchat_message': this.model.get('type') === 'groupchat',
                         'is_me_message': this.model.isMeCommand(),
                         'label_show': __('Show more'),
                         'occupant': this.model.occupant,

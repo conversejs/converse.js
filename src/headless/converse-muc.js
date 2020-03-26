@@ -250,6 +250,19 @@ converse.plugins.add('converse-muc', {
                 _converse.api.trigger('chatRoomMessageInitialized', this);
             },
 
+            /**
+             * Determines whether this messsage may be moderated,
+             * based on configuration settings and server support.
+             * @async
+             * @private
+             * @method _converse.ChatRoomMessages#mayBeModerated
+             * @returns { Boolean }
+             */
+            mayBeModerated () {
+                return ['all', 'moderator'].includes(_converse.allow_message_retraction) &&
+                    this.collection.chatbox.canModerateMessages();
+            },
+
             checkValidity () {
                 const result = _converse.Message.prototype.checkValidity.call(this);
                 !result && this.collection.chatbox.debouncedRejoin();
@@ -757,7 +770,7 @@ converse.plugins.add('converse-muc', {
                         'xmlns': Strophe.NS.FASTEN
                     }).c('moderate', {xmlns: Strophe.NS.MODERATE})
                         .c('retract', {xmlns: Strophe.NS.RETRACT}).up()
-                        .c('reason').t(reason);
+                        .c('reason').t(reason || '');
                 return _converse.api.sendIQ(iq, null, false);
             },
 

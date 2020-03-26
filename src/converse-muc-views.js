@@ -985,7 +985,7 @@ converse.plugins.add('converse-muc-views', {
                         "not yet support retractions and that this message may not "+
                         "be removed everywhere.");
 
-                if (message.get('sender') === 'me') {
+                if (message.mayBeRetracted()) {
                     const messages = [__('Are you sure you want to retract this message?')];
                     if (_converse.show_retraction_warning) {
                         messages[1] = retraction_warning;
@@ -994,22 +994,35 @@ converse.plugins.add('converse-muc-views', {
                     if (result) {
                         this.retractOwnMessage(message);
                     }
+                } else if (await message.mayBeModerated()) {
+                    if (message.get('sender') === 'me') {
+                        let messages = [__('Are you sure you want to retract this message?')];
+                        if (_converse.show_retraction_warning) {
+                            messages = [messages[0], retraction_warning, messages[1]]
+                        }
+                        if (await _converse.api.confirm(__('Confirm'), messages)) {
+                            this.retractOtherMessage(message);
+                        }
+                    } else {
+                        let messages = [
+                            __('You are about to retract this message.'),
+                            __('You may optionally include a message, explaining the reason for the retraction.')
+                        ];
+                        if (_converse.show_retraction_warning) {
+                            messages = [messages[0], retraction_warning, messages[1]]
+                        }
+                        const reason = await _converse.api.prompt(
+                            __('Message Retraction'),
+                            messages,
+                            __('Optional reason')
+                        );
+                        if (reason !== false) {
+                            this.retractOtherMessage(message, reason);
+                        }
+                    }
                 } else {
-                    let messages = [
-                        __('You are about to retract this message.'),
-                        __('You may optionally include a message, explaining the reason for the retraction.')
-                    ];
-                    if (_converse.show_retraction_warning) {
-                        messages = [messages[0], retraction_warning, messages[1]]
-                    }
-                    const reason = await _converse.api.prompt(
-                        __('Message Retraction'),
-                        messages,
-                        __('Optional reason')
-                    );
-                    if (reason !== false) {
-                        this.retractOtherMessage(message, reason);
-                    }
+                    const err_msg = __(`Sorry, you're not allowed to retract this message`);
+                    _converse.api.alert('error', __('Error'), err_msg);
                 }
             },
 

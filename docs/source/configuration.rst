@@ -168,7 +168,7 @@ allow_message_retraction
 ------------------------
 
 * Default:  ``'all'``
-* Possible values: ``'all'``, ``'own'``, ``'moderator'``
+* Possible values: ``'all'``, ``'own'``, ``'moderator'`` or any falsy value
 
 Determines who is allowed to retract messages. If set to ``'all'``, then normal
 users may retract their own messages and ``'moderators'`` may retract the messages of

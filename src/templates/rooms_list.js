@@ -62,7 +62,7 @@ const room_item = (o) => html`
 export default (o) => html`
     <div class="list-container list-container--openrooms ${ o.rooms.length ? '' : 'hidden' }">
         <a class="list-toggle open-rooms-toggle controlbox-padded" title="${i18n_desc_rooms}" @click=${o.toggleRoomsList}>
-        <span class="fa ${ (o.toggle_state === o._converse.OPENED) ? 'fa-caret-down' : 'fa-caret-right' }"></span>${i18n_rooms}</a>
+        <span class="fa ${ (o.toggle_state === o._converse.OPENED) ? 'fa-caret-down' : 'fa-caret-right' }"></span> ${i18n_rooms}</a>
         <div class="items-list rooms-list open-rooms-list ${ o.collapsed && 'collapsed' }">
             ${ o.rooms.map(room => room_item(Object.assign({room}, o))) }
         </div>

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-03-07 19:33+0000\n"
+"PO-Revision-Date: 2020-03-30 03:48+0000\n"
 "Last-Translator: Quentí <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
@@ -126,10 +126,8 @@ msgid "The connection has dropped, attempting to reconnect."
 msgstr "La connexion  es estada perduda, ensag de reconnexion."
 
 #: dist/converse-no-dependencies.js:29477
-#, fuzzy
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
-"O planhèm, una error s’es producha en ensajar de suprimir los clients OMEMO."
+msgstr "O planhèm, una error s’es producha en se connectar al servidor de chat."
 
 #: dist/converse-no-dependencies.js:29484
 msgid "Your XMPP address and/or password is incorrect. Please try again."
@@ -139,10 +137,12 @@ msgstr "Vòstra adreça XMPP e/o senhal es incorrèct. Tornatz ensajar."
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
+"O planhèm, avèm pas pogut nos connectar a l’òste XMPP amb lo domeni : %1$s"
 
 #: dist/converse-no-dependencies.js:29498
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
+"Lo servidor XMPP a pas prepausat un mecanisme d’autentificacion pres en carga"
 
 #: dist/converse-no-dependencies.js:30655
 msgid "Unencryptable OMEMO message"
@@ -571,9 +571,9 @@ msgstr "Ne veire mai"
 
 #: dist/converse-no-dependencies.js:50778
 #: dist/converse-no-dependencies.js:50780
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s es estat levat per es pas membre"
+msgstr "%1$s a suprimit aqueste messatge"
 
 #: dist/converse-no-dependencies.js:50797
 msgid "Typing from another device"
@@ -665,9 +665,8 @@ msgid "Untrusted"
 msgstr "Pas fisable"
 
 #: dist/converse-no-dependencies.js:51782
-#, fuzzy
 msgid "No OMEMO-enabled devices found"
-msgstr "Autres clients amb lo chiframent OMEMO activat"
+msgstr "Cap de periferic amb lo chiframent OMEMO pas trobat"
 
 #: dist/converse-no-dependencies.js:51982
 msgid "Close this chat box"
@@ -739,7 +738,6 @@ msgid "Remove messages"
 msgstr "Escafar los messatges"
 
 #: dist/converse-no-dependencies.js:52888
-#, fuzzy
 msgid "Close this chat"
 msgstr "Tampar aquesta fenèstra de discussion"
 
@@ -761,9 +759,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:53148
 #: dist/converse-no-dependencies.js:59737
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "Volètz vertadièrament levar aqueste contacte ?"
+msgstr "Volètz vertadièrament suprimir aqueste messatge ?"
 
 #: dist/converse-no-dependencies.js:53155
 #: dist/converse-no-dependencies.js:59744
@@ -813,9 +810,8 @@ msgid "Don't have a chat account?"
 msgstr "Avètz pas de compte ?"
 
 #: dist/converse-no-dependencies.js:53887
-#, fuzzy
 msgid "Password"
-msgstr "Senhal :"
+msgstr "Senhal"
 
 #: dist/converse-no-dependencies.js:53889
 msgid "This is a trusted device"
@@ -879,9 +875,8 @@ msgid "Minimize this chat box"
 msgstr "Reduire aquesta fenèstra de discussion"
 
 #: dist/converse-no-dependencies.js:56986
-#, fuzzy
 msgid "Minimize this groupchat"
-msgstr "Reduire aquesta fenèstra de discussion"
+msgstr "Reduire aqueste grop de discussion"
 
 #: dist/converse-no-dependencies.js:57303
 msgid "Click to restore this chat"
@@ -1051,19 +1046,16 @@ msgid "Invite"
 msgstr "Convidar"
 
 #: dist/converse-no-dependencies.js:57991
-#, fuzzy
 msgid "Invite someone to this groupchat"
-msgstr "Suprimir aquesta sala"
+msgstr "Convidar qualqu’un al grop de discussion"
 
 #: dist/converse-no-dependencies.js:57993
-#, fuzzy
 msgid "user@example.org"
 msgstr "nom@exemple.org"
 
 #: dist/converse-no-dependencies.js:57999
-#, fuzzy
 msgid "Optional reason for the invitation"
-msgstr "Indici opcional"
+msgstr "Rason facultativa pel convit"
 
 #: dist/converse-no-dependencies.js:58034
 msgid "This groupchat requires a password"
@@ -1115,9 +1107,8 @@ msgid "Click to mention %1$s in your message."
 msgstr "Clicar per mencionar %1$s dins vòstre messatge."
 
 #: dist/converse-no-dependencies.js:58201
-#, fuzzy
 msgid "Invite someone"
-msgstr "Convidar"
+msgstr "Convidar qualqu’un"
 
 #: dist/converse-no-dependencies.js:58204
 #, fuzzy

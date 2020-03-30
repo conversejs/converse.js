@@ -1269,10 +1269,15 @@ _converse.api = {
                 // (now failed) session.
                 await _converse.setUserJID(_converse.settings.jid);
             }
-            if (_converse.connection.reconnecting) {
-                debouncedReconnect();
+
+            if (_converse.connection.authenticated) {
+                if (_converse.connection.reconnecting) {
+                    debouncedReconnect();
+                } else {
+                    return reconnect();
+                }
             } else {
-                return reconnect();
+                log.warn("Not attempting to reconnect because we're not authenticated");
             }
         },
 

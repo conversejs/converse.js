@@ -3,6 +3,7 @@
 ## 7.0.0 (Unreleased)
 
 - #1313: Stylistic improvements to the send button
+- #1490: Busy-loop when fetching registration form fails
 - #1535: Add option to destroy a MUC
 - #1715: Update chat state notification after receiving a message correction.
 - #1793: Send button doesn't appear in Firefox in 1:1 chats

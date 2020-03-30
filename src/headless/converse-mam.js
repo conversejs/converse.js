@@ -92,7 +92,7 @@ converse.plugins.add('converse-mam', {
 
                 const query = Object.assign({
                         'groupchat': is_groupchat,
-                        'max': _converse.archived_messages_page_size,
+                        'max': _converse.api.settings.get('archived_messages_page_size'),
                         'with': this.get('jid'),
                     }, options);
 
@@ -113,9 +113,9 @@ converse.plugins.add('converse-mam', {
 
                 if (page && result.rsm) {
                     if (page === 'forwards') {
-                        options = result.rsm.next(_converse.archived_messages_page_size, options.before);
+                        options = result.rsm.next(_converse.api.settings.get('archived_messages_page_size'), options.before);
                     } else if (page === 'backwards') {
-                        options = result.rsm.previous(_converse.archived_messages_page_size, options.after);
+                        options = result.rsm.previous(_converse.api.settings.get('archived_messages_page_size'), options.after);
                     }
                     return this.fetchArchivedMessages(options, page);
                 } else {
@@ -150,11 +150,11 @@ converse.plugins.add('converse-mam', {
              */
             const preference = sizzle(`prefs[xmlns="${Strophe.NS.MAM}"]`, iq).pop();
             const default_pref = preference.getAttribute('default');
-            if (default_pref !== _converse.message_archiving) {
+            if (default_pref !== _converse.api.settings.get('message_archiving')) {
                 const stanza = $iq({'type': 'set'})
                     .c('prefs', {
                         'xmlns':Strophe.NS.MAM,
-                        'default':_converse.message_archiving
+                        'default':_converse.api.settings.get('message_archiving')
                     });
                 Array.from(preference.children).forEach(child => stanza.cnode(child).up());
 
@@ -162,19 +162,19 @@ converse.plugins.add('converse-mam', {
                 // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
                 // but Prosody doesn't do this, so we don't rely on it.
                 _converse.api.sendIQ(stanza)
-                    .then(() => feature.save({'preferences': {'default':_converse.message_archiving}}))
+                    .then(() => feature.save({'preferences': {'default':_converse.api.settings.get('message_archiving')}}))
                     .catch(_converse.onMAMError);
             } else {
-                feature.save({'preferences': {'default':_converse.message_archiving}});
+                feature.save({'preferences': {'default':_converse.api.settings.get('message_archiving')}});
             }
         };
 
         function getMAMPrefsFromFeature (feature) {
             const prefs = feature.get('preferences') || {};
-            if (feature.get('var') !== Strophe.NS.MAM || _converse.message_archiving === undefined) {
+            if (feature.get('var') !== Strophe.NS.MAM || _converse.api.settings.get('message_archiving') === undefined) {
                 return;
             }
-            if (prefs['default'] !== _converse.message_archiving) {
+            if (prefs['default'] !== _converse.api.settings.get('message_archiving')) {
                 _converse.api.sendIQ($iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}))
                     .then(iq => _converse.onMAMPreferences(iq, feature))
                     .catch(_converse.onMAMError);
@@ -479,7 +479,7 @@ converse.plugins.add('converse-mam', {
                     }, Strophe.NS.MAM);
 
                     let error;
-                    const iq_result = await _converse.api.sendIQ(stanza, _converse.message_archiving_timeout, false)
+                    const iq_result = await _converse.api.sendIQ(stanza, _converse.api.settings.get('message_archiving_timeout'), false)
                     if (iq_result === null) {
                         const err_msg = "Timeout while trying to fetch archived messages.";
                         log.error(err_msg);

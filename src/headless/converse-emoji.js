@@ -99,7 +99,7 @@ converse.plugins.add('converse-emoji', {
 
         _converse.emojis = {};
         _converse.api.promises.add('emojisInitialized', false);
-        twemoji.default.base = _converse.emoji_image_path;
+        twemoji.default.base = _converse.api.settings.get('emoji_image_path');
 
 
         /**
@@ -162,7 +162,7 @@ converse.plugins.add('converse-emoji', {
                     }
                 };
                 const transform = u.shortnamesToEmojis;
-                return _converse.use_system_emojis ? transform : text => twemoji.default.parse(transform(text), how);
+                return _converse.api.settings.get('use_system_emojis') ? transform : text => twemoji.default.parse(transform(text), how);
             },
 
             /**

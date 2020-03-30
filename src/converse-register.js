@@ -95,7 +95,7 @@ converse.plugins.add('converse-register', {
             },
 
             renderRegistrationPanel () {
-                if (_converse.allow_registration) {
+                if (_converse.api.settings.get('allow_registration')) {
                     this.registerpanel = new _converse.RegisterPanel({
                         'model': this.model
                     });
@@ -145,15 +145,15 @@ converse.plugins.add('converse-register', {
                 this.model.set('registration_form_rendered', false);
                 this.el.innerHTML = tpl_register_panel({
                     '__': __,
-                    'default_domain': _converse.registration_domain,
+                    'default_domain': _converse.api.settings.get('registration_domain'),
                     'label_register': __('Fetch registration form'),
                     'help_providers': __('Tip: A list of public XMPP providers is available'),
                     'help_providers_link': __('here'),
-                    'href_providers': _converse.providers_link,
-                    'domain_placeholder': _converse.domain_placeholder
+                    'href_providers': _converse.api.settings.get('providers_link'),
+                    'domain_placeholder': _converse.api.settings.get('domain_placeholder')
                 });
-                if (_converse.registration_domain) {
-                    this.fetchRegistrationForm(_converse.registration_domain);
+                if (_converse.api.settings.get('registration_domain')) {
+                    this.fetchRegistrationForm(_converse.api.settings.get('registration_domain'));
                 }
                 return this;
             },
@@ -324,7 +324,7 @@ converse.plugins.add('converse-register', {
                     'beforeend',
                     tpl_registration_request({
                         '__': _converse.__,
-                        'cancel': _converse.registration_domain,
+                        'cancel': _converse.api.settings.get('registration_domain'),
                     })
                 );
             },
@@ -451,7 +451,7 @@ converse.plugins.add('converse-register', {
                     'domain': this.domain,
                     'title': this.title,
                     'instructions': this.instructions,
-                    'registration_domain': _converse.registration_domain
+                    'registration_domain': _converse.api.settings.get('registration_domain')
                 });
 
                 const buttons = form.querySelector('fieldset.buttons');
@@ -522,9 +522,9 @@ converse.plugins.add('converse-register', {
                 _converse.connection._proto._abortAllRequests();
                 _converse.connection.reset();
                 if (this.model.get('registration_form_rendered')) {
-                    if (_converse.registration_domain && this.model.get('registration_form_rendered')) {
+                    if (_converse.api.settings.get('registration_domain') && this.model.get('registration_form_rendered')) {
                         this.fetchRegistrationForm(
-                            _converse.registration_domain
+                            _converse.api.settings.get('registration_domain')
                         );
                     }
                 } else {

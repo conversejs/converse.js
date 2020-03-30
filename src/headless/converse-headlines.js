@@ -58,7 +58,7 @@ converse.plugins.add('converse-headlines', {
             defaults () {
                 return {
                     'bookmarked': false,
-                    'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
+                    'hidden': ['mobile', 'fullscreen'].includes(_converse.api.settings.get("view_mode")),
                     'message_type': 'headline',
                     'num_unread': 0,
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
@@ -85,7 +85,7 @@ converse.plugins.add('converse-headlines', {
                 const from_jid = message.getAttribute('from');
                 if (from_jid.includes('@') &&
                         !_converse.roster.get(from_jid) &&
-                        !_converse.allow_non_roster_messaging) {
+                        !_converse.api.settings.get("allow_non_roster_messaging")) {
                     return;
                 }
                 if (message.querySelector('body') === null) {

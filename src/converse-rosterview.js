@@ -42,7 +42,6 @@ converse.plugins.add('converse-rosterview', {
             'allow_contact_removal': true,
             'hide_offline_users': false,
             'roster_groups': true,
-            'show_toolbar': true,
             'xhr_user_search_url': null,
         });
         _converse.api.promises.add('rosterViewInitialized');
@@ -69,7 +68,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             toHTML () {
-                const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
+                const label_nickname = _converse.api.settings.get('xhr_user_search_url') ? __('Contact name') : __('Optional nickname');
                 return tpl_add_contact_modal(Object.assign(this.model.toJSON(), {
                     '_converse': _converse,
                     'label_nickname': label_nickname,
@@ -77,7 +76,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             afterRender () {
-                if (_converse.xhr_user_search_url && isString(_converse.xhr_user_search_url)) {
+                if (_converse.api.settings.get('xhr_user_search_url') && isString(_converse.api.settings.get('xhr_user_search_url'))) {
                     this.initXHRAutoComplete();
                 } else {
                     this.initJIDAutoComplete();
@@ -87,7 +86,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initJIDAutoComplete () {
-                if (!_converse.autocomplete_add_contact) {
+                if (!_converse.api.settings.get('autocomplete_add_contact')) {
                     return;
                 }
                 const el = this.el.querySelector('.suggestion-box__jid').parentElement;
@@ -99,7 +98,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initXHRAutoComplete () {
-                if (!_converse.autocomplete_add_contact) {
+                if (!_converse.api.settings.get('autocomplete_add_contact')) {
                     return this.initXHRFetch();
                 }
                 const el = this.el.querySelector('.suggestion-box__name').parentElement;
@@ -120,7 +119,7 @@ converse.plugins.add('converse-rosterview', {
                 };
                 const input_el = this.el.querySelector('input[name="name"]');
                 input_el.addEventListener('input', debounce(() => {
-                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
+                    xhr.open("GET", `${_converse.api.settings.get('xhr_user_search_url')}q=${encodeURIComponent(input_el.value)}`, true);
                     xhr.send()
                 } , 300));
                 this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
@@ -177,9 +176,9 @@ converse.plugins.add('converse-rosterview', {
                 const data = new FormData(ev.target),
                       jid = (data.get('jid') || '').trim();
 
-                if (!jid && _converse.xhr_user_search_url && isString(_converse.xhr_user_search_url)) {
+                if (!jid && _converse.api.settings.get('xhr_user_search_url') && isString(_converse.api.settings.get('xhr_user_search_url'))) {
                     const input_el = this.el.querySelector('input[name="name"]');
-                    this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
+                    this.xhr.open("GET", `${_converse.api.settings.get('xhr_user_search_url')}q=${encodeURIComponent(input_el.value)}`, true);
                     this.xhr.send()
                     return;
                 }
@@ -358,7 +357,7 @@ converse.plugins.add('converse-rosterview', {
                         Object.assign(this.model.toJSON(), {
                             display_name,
                             'desc_remove': __('Click to remove %1$s as a contact', display_name),
-                            'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
+                            'allow_chat_pending_contacts': _converse.api.settings.get('allow_chat_pending_contacts')
                         })
                     );
                 } else if (requesting === true) {
@@ -369,7 +368,7 @@ converse.plugins.add('converse-rosterview', {
                             display_name,
                             'desc_accept': __("Click to accept the contact request from %1$s", display_name),
                             'desc_decline': __("Click to decline the contact request from %1$s", display_name),
-                            'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
+                            'allow_chat_pending_contacts': _converse.api.settings.get('allow_chat_pending_contacts')
                         })
                     );
                 } else if (subscription === 'both' || subscription === 'to' || _converse.rosterview.isSelf(jid)) {
@@ -420,7 +419,7 @@ converse.plugins.add('converse-rosterview', {
                         'desc_status': STATUSES[show],
                         'desc_chat': __('Click to chat with %1$s (JID: %2$s)', display_name, item.get('jid')),
                         'desc_remove': __('Click to remove %1$s as a contact', display_name),
-                        'allow_contact_removal': _converse.allow_contact_removal,
+                        'allow_contact_removal': _converse.api.settings.get('allow_contact_removal'),
                         'num_unread': item.get('num_unread') || 0,
                         classes: ''
                     })
@@ -439,7 +438,7 @@ converse.plugins.add('converse-rosterview', {
              */
             mayBeShown () {
                 const chatStatus = this.model.presence.get('show');
-                if (_converse.hide_offline_users && chatStatus === 'offline') {
+                if (_converse.api.settings.get('hide_offline_users') && chatStatus === 'offline') {
                     // If pending or requesting, show
                     if ((this.model.get('ask') === 'subscribe') ||
                             (this.model.get('subscription') === 'from') ||
@@ -459,7 +458,7 @@ converse.plugins.add('converse-rosterview', {
 
             async removeContact (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (!_converse.allow_contact_removal) { return; }
+                if (!_converse.api.settings.get('allow_contact_removal')) { return; }
                 if (!confirm(__("Are you sure you want to remove this contact?"))) { return; }
 
                 try {
@@ -893,7 +892,7 @@ converse.plugins.add('converse-rosterview', {
 
             addExistingContact (contact, options) {
                 let groups;
-                if (_converse.roster_groups) {
+                if (_converse.api.settings.get('roster_groups')) {
                     groups = contact.get('groups');
                     groups = (groups.length === 0) ? [_converse.HEADER_UNGROUPED] : groups;
                 } else {
@@ -946,7 +945,7 @@ converse.plugins.add('converse-rosterview', {
 
         _converse.api.listen.on('controlBoxInitialized', (view) => {
             function insertRoster () {
-                if (!view.model.get('connected') || _converse.authentication === _converse.ANONYMOUS) {
+                if (!view.model.get('connected') || _converse.api.settings.get("authentication") === _converse.ANONYMOUS) {
                     return;
                 }
                 /* Place the rosterview inside the "Contacts" panel. */
@@ -963,7 +962,7 @@ converse.plugins.add('converse-rosterview', {
             /* Create an instance of RosterView once the RosterGroups
              * collection has been created (in @converse/headless/converse-core.js)
              */
-            if (_converse.authentication === _converse.ANONYMOUS) {
+            if (_converse.api.settings.get("authentication") === _converse.ANONYMOUS) {
                 return;
             }
             _converse.rosterview = new _converse.RosterView({

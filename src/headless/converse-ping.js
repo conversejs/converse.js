@@ -46,7 +46,7 @@ converse.plugins.add('converse-ping', {
 
         function registerPingHandler () {
             _converse.connection.addHandler(() => {
-                if (_converse.ping_interval > 0) {
+                if (_converse.api.settings.get('ping_interval') > 0) {
                     // Handler on each stanza, saves the received date
                     // in order to ping only when needed.
                     lastStanzaDate = new Date();
@@ -56,12 +56,12 @@ converse.plugins.add('converse-ping', {
         }
 
         setTimeout(() => {
-            if (_converse.ping_interval > 0) {
+            if (_converse.api.settings.get('ping_interval') > 0) {
                 const now = new Date();
                 if (!lastStanzaDate) {
                     lastStanzaDate = now;
                 }
-                if ((now - lastStanzaDate)/1000 > _converse.ping_interval) {
+                if ((now - lastStanzaDate)/1000 > _converse.api.settings.get('ping_interval')) {
                     return _converse.api.ping();
                 }
                 return true;

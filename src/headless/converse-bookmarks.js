@@ -69,7 +69,8 @@ converse.plugins.add('converse-bookmarks', {
         // configuration settings.
         _converse.api.settings.update({
             allow_bookmarks: true,
-            allow_public_bookmarks: false
+            allow_public_bookmarks: false,
+            muc_respect_autojoin: true
         });
 
         _converse.api.promises.add('bookmarksInitialized');
@@ -81,7 +82,7 @@ converse.plugins.add('converse-bookmarks', {
           * @method _converse#getNicknameFromBookmark
           */
         _converse.getNicknameFromBookmark = function (jid) {
-            if (!_converse.bookmarks || !_converse.allow_bookmarks) {
+            if (!_converse.bookmarks || !_converse.api.settings.get('allow_bookmarks')) {
                 return null;
             }
             const bookmark = _converse.bookmarks.findWhere({'jid': jid});
@@ -115,7 +116,7 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             async openBookmarkedRoom (bookmark) {
-                if ( _converse.muc_respect_autojoin && bookmark.get('autojoin')) {
+                if ( _converse.api.settings.get('muc_respect_autojoin') && bookmark.get('autojoin')) {
                     const groupchat = await _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
                     groupchat.maybeShow();
                 }
@@ -271,7 +272,7 @@ converse.plugins.add('converse-bookmarks', {
         }
 
         const initBookmarks = async function () {
-            if (!_converse.allow_bookmarks) {
+            if (!_converse.api.settings.get('allow_bookmarks')) {
                 return;
             }
             if (await _converse.checkBookmarksSupport()) {

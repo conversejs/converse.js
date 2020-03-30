@@ -710,13 +710,13 @@ converse.plugins.add('converse-roster', {
                     bare_jid = Strophe.getBareJidFromJid(jid),
                     contact = this.get(bare_jid);
 
-                if (!_converse.allow_contact_requests) {
+                if (!_converse.api.settings.get('allow_contact_requests')) {
                     _converse.rejectPresenceSubscription(
                         jid,
                         __("This client does not allow presence subscriptions")
                     );
                 }
-                if (_converse.auto_subscribe) {
+                if (_converse.api.settings.get('auto_subscribe')) {
                     if ((!contact) || (contact.get('subscription') !== 'to')) {
                         this.subscribeBack(bare_jid, presence);
                     } else {
@@ -742,8 +742,8 @@ converse.plugins.add('converse-roster', {
 
                 if ((_converse.connection.jid !== jid) &&
                         (presence_type !== 'unavailable') &&
-                        (_converse.synchronize_availability === true ||
-                        _converse.synchronize_availability === resource)) {
+                        (_converse.api.settings.get('synchronize_availability') === true ||
+                        _converse.api.settings.get('synchronize_availability') === resource)) {
                     // Another resource has changed its status and
                     // synchronize_availability option set to update,
                     // we'll update ours as well.

@@ -40,7 +40,7 @@ converse.plugins.add('converse-minimize', {
     ],
 
     enabled (_converse) {
-        return _converse.view_mode === 'overlayed';
+        return _converse.api.settings.get("view_mode") === 'overlayed';
     },
 
     overrides: {
@@ -81,7 +81,7 @@ converse.plugins.add('converse-minimize', {
 
             show () {
                 const { _converse } = this.__super__;
-                if (_converse.view_mode === 'overlayed' && this.model.get('minimized')) {
+                if (_converse.api.settings.get("view_mode") === 'overlayed' && this.model.get('minimized')) {
                     this.model.minimize();
                     return this;
                 } else {
@@ -121,7 +121,7 @@ converse.plugins.add('converse-minimize', {
                     'i18n_title': __('Minimize this chat'),
                     'icon_class': "fa-minus",
                     'name': 'minimize',
-                    'standalone': _converse.view_mode === 'overlayed'
+                    'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
                 }
                 const names = buttons.map(t => t.name);
                 const idx = names.indexOf('close');
@@ -149,7 +149,7 @@ converse.plugins.add('converse-minimize', {
                     'i18n_title': __('Minimize this groupchat'),
                     'icon_class': "fa-minus",
                     'name': 'minimize',
-                    'standalone': _converse.view_mode === 'overlayed'
+                    'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
                 }
                 const names = buttons.map(t => t.name);
                 const idx = names.indexOf('signout');
@@ -314,7 +314,7 @@ converse.plugins.add('converse-minimize', {
              * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesBoxView } [newchat]
              */
             async trimChats (newchat) {
-                if (_converse.no_trimming || !_converse.api.connection.connected() || _converse.view_mode !== 'overlayed') {
+                if (_converse.api.settings.get('no_trimming') || !_converse.api.connection.connected() || _converse.api.settings.get("view_mode") !== 'overlayed') {
                     return;
                 }
                 const shown_chats = this.getShownChats();

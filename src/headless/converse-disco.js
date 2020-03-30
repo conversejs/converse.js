@@ -251,7 +251,7 @@ converse.plugins.add('converse-disco', {
             _converse.api.disco.own.features.add(Strophe.NS.CHATSTATES);
             _converse.api.disco.own.features.add(Strophe.NS.DISCO_INFO);
             _converse.api.disco.own.features.add(Strophe.NS.ROSTERX); // Limited support
-            if (_converse.message_carbons) {
+            if (_converse.api.settings.get("message_carbons")) {
                 _converse.api.disco.own.features.add(Strophe.NS.CARBONS);
             }
             /**

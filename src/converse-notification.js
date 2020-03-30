@@ -30,7 +30,7 @@ converse.plugins.add('converse-notification', {
             chatstate_notification_blacklist: [],
             // ^ a list of JIDs to ignore concerning chat state notifications
             play_sounds: true,
-            sounds_path: _converse.assets_path+'/sounds/',
+            sounds_path: _converse.api.settings.get("assets_path")+'/sounds/',
             notification_icon: 'logo/conversejs-filled.svg',
             notification_delay: 5000
         });
@@ -135,7 +135,7 @@ converse.plugins.add('converse-notification', {
             const full_from_jid = message.getAttribute('from'),
                   from_jid = Strophe.getBareJidFromJid(full_from_jid);
             if (message.getAttribute('type') === 'headline') {
-                if (!from_jid.includes('@') || _converse.allow_non_roster_messaging) {
+                if (!from_jid.includes('@') || _converse.api.settings.get("allow_non_roster_messaging")) {
                     title = __("Notification from %1$s", from_jid);
                 } else {
                     return;
@@ -154,7 +154,7 @@ converse.plugins.add('converse-notification', {
                 if (roster_item !== undefined) {
                     title = __("%1$s says", roster_item.getDisplayName());
                 } else {
-                    if (_converse.allow_non_roster_messaging) {
+                    if (_converse.api.settings.get("allow_non_roster_messaging")) {
                         title = __("%1$s says", from_jid);
                     } else {
                         return;

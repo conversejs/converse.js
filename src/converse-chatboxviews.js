@@ -74,7 +74,7 @@ converse.plugins.add('converse-chatboxviews', {
                     if (el === null) {
                         el = document.createElement('div');
                         el.setAttribute('id', 'conversejs');
-                        u.addClass(`theme-${_converse.theme}`, el);
+                        u.addClass(`theme-${_converse.api.settings.get('theme')}`, el);
                         const body = _converse.root.querySelector('body');
                         if (body) {
                             body.appendChild(el);
@@ -97,9 +97,9 @@ converse.plugins.add('converse-chatboxviews', {
                     bg.innerHTML = tpl_background_logo();
                 }
                 const body = document.querySelector('body');
-                body.classList.add(`converse-${_converse.view_mode}`);
-                this.el.classList.add(`converse-${_converse.view_mode}`);
-                if (_converse.singleton) {
+                body.classList.add(`converse-${_converse.api.settings.get("view_mode")}`);
+                this.el.classList.add(`converse-${_converse.api.settings.get("view_mode")}`);
+                if (_converse.api.settings.get("singleton")) {
                     this.el.classList.add(`converse-singleton`);
                 }
                 this.render();

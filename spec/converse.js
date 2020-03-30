@@ -41,8 +41,8 @@
                 _converse.idle_seconds = 0; // Usually initialized by registerIntervalHandler
                 _converse.disco_entities.get(_converse.domain).features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
 
-                _converse.csi_waiting_time = 3; // The relevant config option
-                while (i <= _converse.csi_waiting_time) {
+                _converse.api.settings.set('csi_waiting_time', 3);
+                while (i <= _converse.api.settings.get("csi_waiting_time")) {
                     expect(_converse.sendCSI).not.toHaveBeenCalled();
                     _converse.onEverySecond();
                     i++;
@@ -52,9 +52,6 @@
                 _converse.onUserActivity();
                 expect(_converse.sendCSI).toHaveBeenCalledWith('active');
                 expect(sent_stanza.toLocaleString()).toBe('<active xmlns="urn:xmpp:csi:0"/>');
-                // Reset values
-                _converse.csi_waiting_time = 0;
-                _converse.disco_entities.get(_converse.domain).features['urn:xmpp:csi:0'] = false;
                 done();
             }));
         });
@@ -66,13 +63,11 @@
                 // Usually initialized by registerIntervalHandler
                 _converse.idle_seconds = 0;
                 _converse.auto_changed_status = false;
-
-                // The relevant config options
-                _converse.auto_away = 3;
-                _converse.auto_xa = 6;
+                _converse.api.settings.set('auto_away', 3);
+                _converse.api.settings.set('auto_xa', 6);
 
                 expect(_converse.api.user.status.get()).toBe('online');
-                while (i <= _converse.auto_away) {
+                while (i <= _converse.api.settings.get("auto_away")) {
                     _converse.onEverySecond(); i++;
                 }
                 expect(_converse.auto_changed_status).toBe(true);
@@ -92,7 +87,7 @@
                 // Check that it also works for the chat feature
                 _converse.api.user.status.set('chat')
                 i = 0;
-                while (i <= _converse.auto_away) {
+                while (i <= _converse.api.settings.get("auto_away")) {
                     _converse.onEverySecond();
                     i++;
                 }
@@ -112,7 +107,7 @@
                 // Check that it doesn't work for 'dnd'
                 _converse.api.user.status.set('dnd');
                 i = 0;
-                while (i <= _converse.auto_away) {
+                while (i <= _converse.api.settings.get("auto_away")) {
                     _converse.onEverySecond();
                     i++;
                 }

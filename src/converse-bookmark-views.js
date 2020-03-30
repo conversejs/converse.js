@@ -203,7 +203,7 @@ converse.plugins.add('converse-bookmark-views', {
             },
 
             toHTML () {
-                const is_hidden = b => !!(_converse.hide_open_bookmarks && _converse.chatboxes.get(b.get('jid')));
+                const is_hidden = b => !!(_converse.api.settings.get('hide_open_bookmarks') && _converse.chatboxes.get(b.get('jid')));
                 return tpl_bookmarks_list({
                     '_converse': _converse,
                     'bookmarks': this.model,

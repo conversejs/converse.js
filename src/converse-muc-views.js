@@ -1225,7 +1225,7 @@ converse.plugins.add('converse-muc-views', {
                     });
                 }
 
-                if (!_converse.singleton) {
+                if (!_converse.api.settings.get("singleton")) {
                     buttons.push({
                         'i18n_text': __('Leave'),
                         'i18n_title': __('Leave and close this groupchat'),
@@ -1235,7 +1235,7 @@ converse.plugins.add('converse-muc-views', {
                             result && this.close(ev);
                         },
                         'a_class': 'close-chatbox-button',
-                        'standalone': _converse.view_mode === 'overlayed',
+                        'standalone': _converse.api.settings.get("view_mode") === 'overlayed',
                         'icon_class': 'fa-sign-out-alt',
                         'name': 'signout'
                     });

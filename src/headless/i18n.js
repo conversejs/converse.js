@@ -94,7 +94,7 @@ export const i18n = {
      */
     async fetchTranslations (_converse) {
         const locale = _converse.locale;
-        if (!isConverseLocale(locale, _converse.locales) || locale === 'en') {
+        if (!isConverseLocale(locale, _converse.api.settings.get("locales")) || locale === 'en') {
             return;
         }
         const { default: data } = await import(/*webpackChunkName: "locales/[request]" */ `../../locale/${locale}/LC_MESSAGES/converse.po`);

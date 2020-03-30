@@ -66,7 +66,7 @@ function parseBundle (bundle_el) {
 converse.plugins.add('converse-omemo', {
 
     enabled (_converse) {
-        return window.libsignal && !_converse.blacklisted_plugins.includes('converse-omemo') && _converse.config.get('trusted');
+        return window.libsignal && !_converse.api.settings.get("blacklisted_plugins").includes('converse-omemo') && _converse.config.get('trusted');
     },
 
     dependencies: ["converse-chatview", "converse-pubsub", "converse-profile"],
@@ -306,7 +306,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             reportDecryptionError (e) {
-                if (_converse.loglevel === 'debug') {
+                if (_converse.api.settings.get("loglevel") === 'debug') {
                     const { __ } = _converse;
                     this.createMessage({
                         'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
@@ -1222,7 +1222,7 @@ converse.plugins.add('converse-omemo', {
                 supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
             }
             chatbox.set('omemo_supported', supported);
-            if (supported && _converse.omemo_default) {
+            if (supported && _converse.api.settings.get('omemo_default')) {
                 chatbox.set('omemo_active', true);
             }
         }

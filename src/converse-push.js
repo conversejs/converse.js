@@ -97,8 +97,8 @@ converse.plugins.add('converse-push', {
             if (push_enabled.includes(domain)) {
                 return;
             }
-            const enabled_services = reject(_converse.push_app_servers, 'disable');
-            const disabled_services = filter(_converse.push_app_servers, 'disable');
+            const enabled_services = reject(_converse.api.settings.get('push_app_servers'), 'disable');
+            const disabled_services = filter(_converse.api.settings.get('push_app_servers'), 'disable');
             const enabled = enabled_services.map(s => enablePushAppServer(domain, s));
             const disabled = disabled_services.map(s => disablePushAppServer(domain, s));
             try {
@@ -118,7 +118,7 @@ converse.plugins.add('converse-push', {
                 enablePush(Strophe.getDomainFromJid(model.get('jid')));
             }
         }
-        if (_converse.enable_muc_push) {
+        if (_converse.api.settings.get('enable_muc_push')) {
             _converse.api.listen.on('chatBoxesInitialized',  () => _converse.chatboxes.on('add', onChatBoxAdded));
         }
     }

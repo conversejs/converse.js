@@ -151,7 +151,7 @@ converse.plugins.add('converse-emoji-views', {
                     Object.assign(
                         this.model.toJSON(), {
                             '_converse': _converse,
-                            'emoji_categories': _converse.emoji_categories,
+                            'emoji_categories': _converse.api.settings.get('emoji_categories'),
                             'emojis_by_category': _converse.emojis.json,
                             'onSkintonePicked': ev => this.chooseSkinTone(ev),
                             'onEmojiPicked': ev => this.insertEmoji(ev),
@@ -418,7 +418,7 @@ converse.plugins.add('converse-emoji-views', {
         _converse.api.listen.on('chatBoxClosed', view => view.emoji_picker_view && view.emoji_picker_view.remove());
 
         _converse.api.listen.on('renderToolbar', view => {
-            if (_converse.visible_toolbar_buttons.emoji) {
+            if (_converse.api.settings.get('visible_toolbar_buttons').emoji) {
                 const html = tpl_emoji_button({'tooltip_insert_smiley': __('Insert emojis')});
                 view.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
             }

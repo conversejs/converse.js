@@ -42,10 +42,11 @@ converse.plugins.add('converse-chat', {
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
         _converse.api.settings.update({
+            'allow_message_corrections': 'all',
+            'allow_message_retraction': 'all',
             'auto_join_private_chats': [],
             'clear_messages_on_reconnection': false,
             'filter_by_resource': false,
-            'allow_message_corrections': 'all',
             'send_chat_state_notifications': true
         });
 
@@ -150,7 +151,7 @@ converse.plugins.add('converse-chat', {
              */
             mayBeRetracted () {
                 const is_own_message = this.get('sender') === 'me';
-                return is_own_message && ['all', 'own'].includes(_converse.allow_message_retraction);
+                return is_own_message && ['all', 'own'].includes(_converse.api.settings.get('allow_message_retraction'));
             },
 
             safeDestroy () {
@@ -305,7 +306,7 @@ converse.plugins.add('converse-chat', {
                 return {
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
+                    'hidden': ['mobile', 'fullscreen'].includes(_converse.api.settings.get("view_mode")),
                     'message_type': 'chat',
                     'nickname': undefined,
                     'num_unread': 0,
@@ -452,7 +453,7 @@ converse.plugins.add('converse-chat', {
                 } catch (e) {
                     log.error(e);
                 } finally {
-                    if (_converse.clear_messages_on_reconnection) {
+                    if (_converse.api.settings.get('clear_messages_on_reconnection')) {
                         await this.clearMessages();
                     }
                 }
@@ -469,7 +470,7 @@ converse.plugins.add('converse-chat', {
             },
 
             async onReconnection () {
-                if (_converse.clear_messages_on_reconnection) {
+                if (_converse.api.settings.get('clear_messages_on_reconnection')) {
                     await this.clearMessages();
                 }
                 this.announceReconnection();
@@ -480,8 +481,8 @@ converse.plugins.add('converse-chat', {
                     return 'Ignored ChatBox without JID';
                 }
                 const room_jids = _converse.auto_join_rooms.map(s => isObject(s) ? s.jid : s);
-                const auto_join = _converse.auto_join_private_chats.concat(room_jids);
-                if (_converse.singleton && !auto_join.includes(attrs.jid) && !_converse.auto_join_on_invite) {
+                const auto_join = _converse.api.settings.get('auto_join_private_chats').concat(room_jids);
+                if (_converse.api.settings.get("singleton") && !auto_join.includes(attrs.jid) && !_converse.auto_join_on_invite) {
                     const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
                     log.warn(msg);
                     return msg;
@@ -935,7 +936,7 @@ converse.plugins.add('converse-chat', {
 
             /**
              * Responsible for setting the editable attribute of messages.
-             * If _converse.allow_message_corrections is "last", then only the last
+             * If _converse.api.settings.get('allow_message_corrections') is "last", then only the last
              * message sent from me will be editable. If set to "all" all messages
              * will be editable. Otherwise no messages will be editable.
              * @method _converse.ChatBox#setEditable
@@ -950,9 +951,9 @@ converse.plugins.add('converse-chat', {
                 if (u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
                     return;
                 }
-                if (_converse.allow_message_corrections === 'all') {
+                if (_converse.api.settings.get('allow_message_corrections') === 'all') {
                     attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
-                } else if ((_converse.allow_message_corrections === 'last') && (send_time > this.get('time_sent'))) {
+                } else if ((_converse.api.settings.get('allow_message_corrections') === 'last') && (send_time > this.get('time_sent'))) {
                     this.set({'time_sent': send_time});
                     const msg = this.messages.findWhere({'editable': true});
                     if (msg) {
@@ -1014,8 +1015,8 @@ converse.plugins.add('converse-chat', {
              * @method _converse.ChatBox#sendChatState
              */
             sendChatState () {
-                if (_converse.send_chat_state_notifications && this.get('chat_state')) {
-                    const allowed = _converse.send_chat_state_notifications;
+                if (_converse.api.settings.get('send_chat_state_notifications') && this.get('chat_state')) {
+                    const allowed = _converse.api.settings.get('send_chat_state_notifications');
                     if (Array.isArray(allowed) && !allowed.includes(this.get('chat_state'))) {
                         return;
                     }
@@ -1183,7 +1184,7 @@ converse.plugins.add('converse-chat', {
             let to_jid = stanza.getAttribute('to');
             const to_resource = Strophe.getResourceFromJid(to_jid);
 
-            if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
+            if (_converse.api.settings.get('filter_by_resource') && (to_resource && to_resource !== _converse.resource)) {
                 return log.info(`handleMessageStanza: Ignoring incoming message intended for a different resource: ${to_jid}`);
             } else if (utils.isHeadlineMessage(_converse, stanza)) {
                 // XXX: Prosody sends headline messages with the
@@ -1229,7 +1230,7 @@ converse.plugins.add('converse-chat', {
             }
             const contact_jid = is_me ? Strophe.getBareJidFromJid(to_jid) : from_bare_jid;
             const contact = await _converse.api.contacts.get(contact_jid);
-            if (contact === undefined && !_converse.allow_non_roster_messaging) {
+            if (contact === undefined && !_converse.api.settings.get("allow_non_roster_messaging")) {
                 log.error(`Blocking messaging with a JID not in our roster because allow_non_roster_messaging is false.`);
                 return log.error(stanza);
             }
@@ -1286,7 +1287,7 @@ converse.plugins.add('converse-chat', {
         function autoJoinChats () {
             // Automatically join private chats, based on the
             // "auto_join_private_chats" configuration setting.
-            _converse.auto_join_private_chats.forEach(jid => {
+            _converse.api.settings.get('auto_join_private_chats').forEach(jid => {
                 if (_converse.chatboxes.where({'jid': jid}).length) {
                     return;
                 }

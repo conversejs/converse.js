@@ -199,19 +199,15 @@ _converse.default_connection_options = {'explicitResourceBinding': true};
 
 // Default configuration values
 // ----------------------------
-_converse.default_settings = {
+const DEFAULT_SETTINGS = {
     allow_non_roster_messaging: false,
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
-    auto_away: 0, // Seconds after which user status is set to 'away'
     auto_login: false, // Currently only used in connection with anonymous login
     auto_reconnect: true,
-    auto_xa: 0, // Seconds after which user status is set to 'xa'
     blacklisted_plugins: [],
     connection_options: {},
     credentials_url: null, // URL from where login credentials can be fetched
-    csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
-    default_state: 'online',
     discover_connection_methods: false,
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
@@ -228,7 +224,6 @@ _converse.default_settings = {
     nickname: undefined,
     password: undefined,
     persistent_store: 'localStorage',
-    priority: 0,
     rid: undefined,
     root: window.document,
     sid: undefined,
@@ -317,7 +312,7 @@ _converse.isUniView = function () {
      * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
      * MultiView means that multiple chats may be visible simultaneously.
      */
-    return ['mobile', 'fullscreen', 'embedded'].includes(_converse.view_mode);
+    return ['mobile', 'fullscreen', 'embedded'].includes(_converse.api.settings.get("view_mode"));
 };
 
 
@@ -341,10 +336,10 @@ function initPersistentStorage () {
         'name': _converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
         'storeName': _converse.bare_jid
     }
-    if (_converse.persistent_store === 'localStorage') {
+    if (_converse.api.settings.get("persistent_store") === 'localStorage') {
         config['description'] = 'localStorage instance';
         config['driver'] = [Storage.localForage.LOCALSTORAGE];
-    } else if (_converse.persistent_store === 'IndexedDB') {
+    } else if (_converse.api.settings.get("persistent_store") === 'IndexedDB') {
         config['description'] = 'indexedDB instance';
         config['driver'] = [Storage.localForage.INDEXEDDB];
     }
@@ -366,21 +361,21 @@ function initPlugins () {
     // If initialize is called for the first time, then this array is empty
     // in any case.
     _converse.pluggable.initialized_plugins = [];
-    const whitelist = CORE_PLUGINS.concat(_converse.whitelisted_plugins);
+    const whitelist = CORE_PLUGINS.concat(_converse.api.settings.get("whitelisted_plugins"));
 
-    if (_converse.singleton) {
+    if (_converse.api.settings.get("singleton")) {
         [
             'converse-bookmarks',
             'converse-controlbox',
             'converse-headline',
             'converse-register'
-        ].forEach(name => _converse.blacklisted_plugins.push(name));
+        ].forEach(name => _converse.api.settings.get("blacklisted_plugins").push(name));
     }
 
     _converse.pluggable.initializePlugins(
         { '_converse': _converse },
         whitelist,
-        _converse.blacklisted_plugins
+        _converse.api.settings.get("blacklisted_plugins")
     );
 
     /**
@@ -410,8 +405,8 @@ function initClientConfig () {
     const id = 'converse.client-config';
     _converse.config = new Model({
         'id': id,
-        'trusted': _converse.trusted && true || false,
-        'storage': _converse.trusted ? 'persistent' : 'session'
+        'trusted': _converse.api.settings.get("trusted") && true || false,
+        'storage': _converse.api.settings.get("trusted") ? 'persistent' : 'session'
     });
     _converse.config.browserStorage = _converse.createStore(id, "session");
     _converse.config.fetch();
@@ -442,34 +437,34 @@ async function tearDown () {
 
 
 async function attemptNonPreboundSession (credentials, automatic) {
-    if (_converse.authentication === _converse.LOGIN) {
+    if (_converse.api.settings.get("authentication") === _converse.LOGIN) {
         // XXX: If EITHER ``keepalive`` or ``auto_login`` is ``true`` and
         // ``authentication`` is set to ``login``, then Converse will try to log the user in,
         // since we don't have a way to distinguish between wether we're
         // restoring a previous session (``keepalive``) or whether we're
         // automatically setting up a new session (``auto_login``).
-        // So we can't do the check (!automatic || _converse.auto_login) here.
+        // So we can't do the check (!automatic || _converse.api.settings.get("auto_login")) here.
         if (credentials) {
             connect(credentials);
-        } else if (_converse.credentials_url) {
+        } else if (_converse.api.settings.get("credentials_url")) {
             // We give credentials_url preference, because
             // _converse.connection.pass might be an expired token.
             connect(await getLoginCredentials());
-        } else if (_converse.jid && (_converse.password || _converse.connection.pass)) {
+        } else if (_converse.jid && (_converse.api.settings.get("password") || _converse.connection.pass)) {
             connect();
         } else if (!_converse.isTestEnv() && 'credentials' in navigator) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
             log.warn("attemptNonPreboundSession: Could not find any credentials to log in with");
         }
-    } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication) && (!automatic || _converse.auto_login)) {
+    } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.api.settings.get("authentication")) && (!automatic || _converse.api.settings.get("auto_login"))) {
         connect();
     }
 }
 
 
 function connect (credentials) {
-    if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication)) {
+    if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.api.settings.get("authentication"))) {
         if (!_converse.jid) {
             throw new Error("Config Error: when using anonymous login " +
                 "you need to provide the server's domain via the 'jid' option. " +
@@ -485,10 +480,10 @@ function connect (credentials) {
             _converse.onConnectStatusChanged,
             BOSH_WAIT
         );
-    } else if (_converse.authentication === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (_converse.connection?.pass || _converse.password);
+    } else if (_converse.api.settings.get("authentication") === _converse.LOGIN) {
+        const password = credentials ? credentials.password : (_converse.connection?.pass || _converse.api.settings.get("password"));
         if (!password) {
-            if (_converse.auto_login) {
+            if (_converse.api.settings.get("auto_login")) {
                 throw new Error("autoLogin: If you use auto_login and "+
                     "authentication='login' then you also need to provide a password.");
             }
@@ -554,8 +549,8 @@ async function onDomainDiscovered (response) {
     const bosh_methods = bosh_links.map(el => el.getAttribute('href'));
     const ws_methods = ws_links.map(el => el.getAttribute('href'));
     // TODO: support multiple endpoints
-    _converse.websocket_url = ws_methods.pop();
-    _converse.bosh_service_url = bosh_methods.pop();
+    _converse.api.settings.set("websocket_url", ws_methods.pop());
+    _converse.api.settings.set('bosh_service_url', bosh_methods.pop());
     if (bosh_methods.length === 0 && ws_methods.length === 0) {
         log.warn(
             "onDomainDiscovered: neither BOSH nor WebSocket connection methods have been specified with XEP-0156."
@@ -591,30 +586,30 @@ async function discoverConnectionMethods (domain) {
 
 
 _converse.initConnection = async function (domain) {
-    if (_converse.discover_connection_methods) {
+    if (_converse.api.settings.get("discover_connection_methods")) {
         await discoverConnectionMethods(domain);
     }
-    if (! _converse.bosh_service_url) {
-        if (_converse.authentication === _converse.PREBIND) {
+    if (! _converse.api.settings.get('bosh_service_url')) {
+        if (_converse.api.settings.get("authentication") === _converse.PREBIND) {
             throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
         }
-        if (! _converse.websocket_url) {
+        if (! _converse.api.settings.get("websocket_url")) {
             throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
         }
     }
 
-    if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url) {
+    if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.api.settings.get("websocket_url")) {
         _converse.connection = new Strophe.Connection(
-            _converse.websocket_url,
-            Object.assign(_converse.default_connection_options, _converse.connection_options)
+            _converse.api.settings.get("websocket_url"),
+            Object.assign(_converse.default_connection_options, _converse.api.settings.get("connection_options"))
         );
-    } else if (_converse.bosh_service_url) {
+    } else if (_converse.api.settings.get('bosh_service_url')) {
         _converse.connection = new Strophe.Connection(
-            _converse.bosh_service_url,
+            _converse.api.settings.get('bosh_service_url'),
             Object.assign(
                 _converse.default_connection_options,
-                _converse.connection_options,
-                {'keepalive': _converse.keepalive}
+                _converse.api.settings.get("connection_options"),
+                {'keepalive': _converse.api.settings.get("keepalive")}
             )
         );
     } else {
@@ -660,7 +655,7 @@ async function initSession (jid) {
 
 function saveJIDtoSession (jid) {
     jid = _converse.session.get('jid') || jid;
-    if (_converse.authentication !== _converse.ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
+    if (_converse.api.settings.get("authentication") !== _converse.ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + _converse.generateResource();
     }
     _converse.jid = jid;
@@ -712,7 +707,7 @@ function enableCarbons () {
     /* Ask the XMPP server to enable Message Carbons
      * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
      */
-    if (!_converse.message_carbons || !_converse.session || _converse.session.get('carbons_enabled')) {
+    if (!_converse.api.settings.get("message_carbons") || !_converse.session || _converse.session.get('carbons_enabled')) {
         return;
     }
     const carbons_iq = new Strophe.Builder('iq', {
@@ -801,13 +796,13 @@ async function finishInitialization () {
     if (!History.started) {
         _converse.router.history.start();
     }
-    if (_converse.idle_presence_timeout > 0) {
+    if (_converse.api.settings.get("idle_presence_timeout") > 0) {
         _converse.api.listen.on('addClientFeatures', () => {
             _converse.api.disco.own.features.add(Strophe.NS.IDLE);
         });
     }
-    if (_converse.auto_login ||
-            _converse.keepalive && invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
+    if (_converse.api.settings.get("auto_login") ||
+            _converse.api.settings.get("keepalive") && invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
         await _converse.api.user.login(null, null, true);
     }
 }
@@ -840,7 +835,7 @@ function fetchLoginCredentials (wait=0) {
     return new Promise(
         debounce((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', _converse.credentials_url, true);
+            xhr.open('GET', _converse.api.settings.get("credentials_url"), true);
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
             xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 400) {
@@ -978,17 +973,21 @@ _converse.initialize = async function (settings, callback) {
         _converse.unloadevent = 'unload';
     }
 
-    assignIn(this, this.default_settings);
-    // Allow only whitelisted configuration attributes to be overwritten
-    assignIn(this, pick(settings, Object.keys(this.default_settings)));
     this.settings = {};
-    assignIn(this.settings, pick(settings, Object.keys(this.default_settings)));
+    assignIn(this.settings, DEFAULT_SETTINGS);
+    // Allow only whitelisted configuration attributes to be overwritten
+    assignIn(this.settings, pick(settings, Object.keys(DEFAULT_SETTINGS)));
+    assignIn(this, this.settings);
+    this.user_settings = settings; // XXX: See whether this can be removed
 
-    log.setLogLevel(_converse.loglevel);
+    // Needed by pluggable.js
+    this.strict_plugin_dependencies = settings.strict_plugin_dependencies;
+
+    log.setLogLevel(_converse.api.settings.get("loglevel"));
     _converse.log = log.log;
 
-    if (this.authentication === _converse.ANONYMOUS) {
-        if (this.auto_login && !this.jid) {
+    if (_converse.api.settings.get("authentication") === _converse.ANONYMOUS) {
+        if (_converse.api.settings.get("auto_login") && !this.jid) {
             throw new Error("Config Error: you need to provide the server's " +
                   "domain via the 'jid' option when using anonymous " +
                   "authentication with auto_login.");
@@ -1005,7 +1004,7 @@ _converse.initialize = async function (settings, callback) {
         _converse.locale = 'en';
     } else {
         try {
-            _converse.locale = i18n.getLocale(settings.i18n, _converse.locales);
+            _converse.locale = i18n.getLocale(settings.i18n, _converse.api.settings.get("locales"));
             await i18n.fetchTranslations(_converse);
         } catch (e) {
             log.fatal(e.message);
@@ -1024,7 +1023,6 @@ _converse.initialize = async function (settings, callback) {
      * https://github.com/jcbrand/converse.js/issues/521
      */
     this.send_initial_presence = true;
-    this.user_settings = settings; // Save the user settings so that they can be used by plugins
 
     // Module-level functions
     // ----------------------
@@ -1049,7 +1047,8 @@ _converse.initialize = async function (settings, callback) {
     this.onDisconnected = function () {
         const reason = _converse.disconnection_reason;
         if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
-            if (_converse.auto_reconnect && (_converse.credentials_url || _converse.authentication === _converse.ANONYMOUS)) {
+            if (_converse.api.settings.get("auto_reconnect") &&
+                (_converse.api.settings.get("credentials_url") || _converse.api.settings.get("authentication") === _converse.ANONYMOUS)) {
                 /**
                  * If `credentials_url` is set, we reconnect, because we might
                  * be receiving expirable tokens from the credentials_url.
@@ -1066,7 +1065,7 @@ _converse.initialize = async function (settings, callback) {
                 (reason !== undefined && reason === Strophe?.ErrorCondition.NO_AUTH_MECH) ||
                 reason === "host-unknown" ||
                 reason === "remote-connection-failed" ||
-                !_converse.auto_reconnect) {
+                !_converse.api.settings.get("auto_reconnect")) {
             return finishDisconnection();
         }
         _converse.api.connection.reconnect();
@@ -1233,7 +1232,7 @@ _converse.api = {
         async reconnect () {
             const conn_status = _converse.connfeedback.get('connection_status');
 
-            if (_converse.authentication === _converse.ANONYMOUS) {
+            if (_converse.api.settings.get("authentication") === _converse.ANONYMOUS) {
                 await tearDown();
                 await clearSession();
             }
@@ -1244,30 +1243,30 @@ _converse.api = {
                 //
                 // We also call `_proto._doDisconnect` so that connection event handlers
                 // for the old transport are removed.
-                if (_converse.api.connection.isType('websocket') && _converse.bosh_service_url) {
+                if (_converse.api.connection.isType('websocket') && _converse.api.settings.get('bosh_service_url')) {
                     await _converse.setUserJID(_converse.bare_jid);
                     _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Bosh(_converse.connection);
-                    _converse.connection.service = _converse.bosh_service_url;
-                } else if (_converse.api.connection.isType('bosh') && _converse.websocket_url) {
-                    if (_converse.authentication === _converse.ANONYMOUS) {
+                    _converse.connection.service = _converse.api.settings.get('bosh_service_url');
+                } else if (_converse.api.connection.isType('bosh') && _converse.api.settings.get("websocket_url")) {
+                    if (_converse.api.settings.get("authentication") === _converse.ANONYMOUS) {
                         // When reconnecting anonymously, we need to connect with only
                         // the domain, not the full JID that we had in our previous
                         // (now failed) session.
-                        await _converse.setUserJID(_converse.settings.jid);
+                        await _converse.setUserJID(_converse.api.settings.get("jid"));
                     } else {
                         await _converse.setUserJID(_converse.bare_jid);
                     }
                     _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Websocket(_converse.connection);
-                    _converse.connection.service = _converse.websocket_url;
+                    _converse.connection.service = _converse.api.settings.get("websocket_url");
                 }
             }
-            if (conn_status === Strophe.Status.AUTHFAIL && _converse.authentication === _converse.ANONYMOUS) {
+            if (conn_status === Strophe.Status.AUTHFAIL && _converse.api.settings.get("authentication") === _converse.ANONYMOUS) {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
-                await _converse.setUserJID(_converse.settings.jid);
+                await _converse.setUserJID(_converse.api.settings.get("jid"));
             }
 
             if (_converse.connection.authenticated) {
@@ -1369,12 +1368,12 @@ _converse.api = {
             if (bosh_plugin && bosh_plugin.enabled()) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
-                } else if (_converse.authentication === _converse.PREBIND && (!automatic || _converse.auto_login)) {
+                } else if (_converse.api.settings.get("authentication") === _converse.PREBIND && (!automatic || _converse.api.settings.get("auto_login"))) {
                     return _converse.startNewPreboundBOSHSession();
                 }
             }
 
-            password = password || _converse.password;
+            password = password || _converse.api.settings.get("password");
             const credentials = (jid && password) ? { jid, password } : null;
             attemptNonPreboundSession(credentials, automatic);
         },
@@ -1436,17 +1435,18 @@ _converse.api = {
          * });
          */
         update (settings) {
-            u.merge(_converse.default_settings, settings);
+            u.merge(DEFAULT_SETTINGS, settings);
             u.merge(_converse, settings);
             u.applyUserSettings(_converse, settings, _converse.user_settings);
         },
+
         /**
          * @method _converse.api.settings.get
          * @returns {*} Value of the particular configuration setting.
          * @example _converse.api.settings.get("play_sounds");
          */
         get (key) {
-            if (Object.keys(_converse.default_settings).includes(key)) {
+            if (Object.keys(DEFAULT_SETTINGS).includes(key)) {
                 return _converse[key];
             }
         },
@@ -1471,10 +1471,12 @@ _converse.api = {
         set (key, val) {
             const o = {};
             if (isObject(key)) {
-                assignIn(_converse, pick(key, Object.keys(_converse.default_settings)));
+                assignIn(_converse, pick(key, Object.keys(DEFAULT_SETTINGS)));
+                assignIn(_converse.settings, pick(key, Object.keys(DEFAULT_SETTINGS)));
             } else if (isString('string')) {
                 o[key] = val;
-                assignIn(_converse, pick(o, Object.keys(_converse.default_settings)));
+                assignIn(_converse, pick(o, Object.keys(DEFAULT_SETTINGS)));
+                assignIn(_converse.settings, pick(o, Object.keys(DEFAULT_SETTINGS)));
             }
         }
     },

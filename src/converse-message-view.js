@@ -67,7 +67,7 @@ converse.plugins.add('converse-message-view', {
 
         _converse.api.settings.update({
             'show_images_inline': true,
-            'allow_message_retraction': 'all'
+            'time_format': 'HH:mm',
         });
 
         _converse.MessageVersionsModal = BootstrapModal.extend({
@@ -153,7 +153,7 @@ converse.plugins.add('converse-message-view', {
             },
 
             fadeOut () {
-                if (_converse.animate) {
+                if (_converse.api.settings.get('animate')) {
                     setTimeout(() => this.remove(), 600);
                     u.addClass('fade-out', this.el);
                 } else {
@@ -207,7 +207,7 @@ converse.plugins.add('converse-message-view', {
                 await _converse.api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
                 text = this.model.isMeCommand() ? text.substring(4) : text;
                 text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
-                text = u.geoUriToHttp(text, _converse.geouri_replacement);
+                text = u.geoUriToHttp(text, _converse.api.settings.get("geouri_replacement"));
                 text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
                 text = u.addHyperlinks(text);
                 text = u.renderNewLines(text);
@@ -243,7 +243,7 @@ converse.plugins.add('converse-message-view', {
                         'is_me_message': this.model.isMeCommand(),
                         'label_show': __('Show more'),
                         'occupant': this.model.occupant,
-                        'pretty_time': time.format(_converse.time_format),
+                        'pretty_time': time.format(_converse.api.settings.get('time_format')),
                         'retraction_text': is_retracted ? this.getRetractionText() : null,
                         'roles': roles,
                         'time': time.toISOString(),
@@ -259,7 +259,7 @@ converse.plugins.add('converse-message-view', {
                     const msg_content = msg.querySelector('.chat-msg__text');
                     if (text && text !== url) {
                         msg_content.innerHTML = await this.transformBodyText(text);
-                        if (_converse.show_images_inline) {
+                        if (_converse.api.settings.get('show_images_inline')) {
                             u.renderImageURLs(_converse, msg_content).then(() => this.triggerRendered());
                         }
                     }

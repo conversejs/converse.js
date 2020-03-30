@@ -64,7 +64,6 @@ converse.plugins.add('converse-chatview', {
             'show_send_button': false,
             'show_retraction_warning': true,
             'show_toolbar': true,
-            'time_format': 'HH:mm',
             'visible_toolbar_buttons': {
                 'call': false,
                 'clear': true,
@@ -270,7 +269,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             renderToolbar () {
-                if (!_converse.show_toolbar) {
+                if (!_converse.api.settings.get('show_toolbar')) {
                     return this;
                 }
                 const options = Object.assign(
@@ -295,13 +294,13 @@ converse.plugins.add('converse-chatview', {
                 form_container.innerHTML = tpl_chatbox_message_form(
                     Object.assign(this.model.toJSON(), {
                         '__': __,
-                        'message_limit': _converse.message_limit,
+                        'message_limit': _converse.api.settings.get('message_limit'),
                         'hint_value': this.el.querySelector('.spoiler-hint')?.value,
                         'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
                         'label_spoiler_hint': __('Optional hint'),
                         'message_value': this.el.querySelector('.chat-textarea')?.value,
-                        'show_send_button': _converse.show_send_button,
-                        'show_toolbar': _converse.show_toolbar,
+                        'show_send_button': _converse.api.settings.get('show_send_button'),
+                        'show_toolbar': _converse.api.settings.get('show_toolbar'),
                         'unread_msgs': __('You have unread messages')
                     }));
                 this.el.addEventListener('focusin', ev => this.emitFocused(ev));
@@ -430,9 +429,9 @@ converse.plugins.add('converse-chatview', {
                     'i18n_title': __('See more information about this person'),
                     'icon_class': 'fa-id-card',
                     'name': 'details',
-                    'standalone': _converse.view_mode === 'overlayed',
+                    'standalone': _converse.api.settings.get("view_mode") === 'overlayed',
                 }];
-                if (!_converse.singleton) {
+                if (!_converse.api.settings.get("singleton")) {
                     buttons.push({
                         'a_class': 'close-chatbox-button',
                         'handler': ev => this.close(ev),
@@ -440,7 +439,7 @@ converse.plugins.add('converse-chatview', {
                         'i18n_title': __('Close and end this conversation'),
                         'icon_class': 'fa-times',
                         'name': 'close',
-                        'standalone': _converse.view_mode === 'overlayed',
+                        'standalone': _converse.api.settings.get("view_mode") === 'overlayed',
                     });
                 }
                 return buttons;
@@ -457,9 +456,9 @@ converse.plugins.add('converse-chatview', {
                     'label_clear': __('Clear all messages'),
                     'label_message_limit': __('Message characters remaining'),
                     'label_toggle_spoiler': label_toggle_spoiler,
-                    'message_limit': _converse.message_limit,
-                    'show_call_button': _converse.visible_toolbar_buttons.call,
-                    'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
+                    'message_limit': _converse.api.settings.get('message_limit'),
+                    'show_call_button': _converse.api.settings.get('visible_toolbar_buttons').call,
+                    'show_spoiler_button': _converse.api.settings.get('visible_toolbar_buttons').spoiler,
                     'tooltip_start_call': __('Start a call')
                 }
             },
@@ -825,7 +824,7 @@ converse.plugins.add('converse-chatview', {
                 ev.preventDefault();
                 const textarea = this.el.querySelector('.chat-textarea');
                 const message_text = textarea.value.trim();
-                if (_converse.message_limit && message_text.length > _converse.message_limit ||
+                if (_converse.api.settings.get('message_limit') && message_text.length > _converse.api.settings.get('message_limit') ||
                         !message_text.replace(/\s/g, '').length) {
                     return;
                 }
@@ -863,7 +862,7 @@ converse.plugins.add('converse-chatview', {
                      */
                     _converse.api.trigger('messageSend', message);
                 }
-                if (_converse.view_mode === 'overlayed') {
+                if (_converse.api.settings.get("view_mode") === 'overlayed') {
                     // XXX: Chrome flexbug workaround. The .chat-content area
                     // doesn't resize when the textarea is resized to its original size.
                     this.msgs_container.parentElement.style.display = 'none';
@@ -871,11 +870,10 @@ converse.plugins.add('converse-chatview', {
                 textarea.removeAttribute('disabled');
                 u.removeClass('disabled', textarea);
 
-                if (_converse.view_mode === 'overlayed') {
+                if (_converse.api.settings.get("view_mode") === 'overlayed') {
                     // XXX: Chrome flexbug workaround.
                     this.msgs_container.parentElement.style.display = '';
                 }
-
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.
                 this.model.setChatState(_converse.ACTIVE, {'silent': true});
@@ -883,9 +881,9 @@ converse.plugins.add('converse-chatview', {
             },
 
             updateCharCounter (chars) {
-                if (_converse.message_limit) {
+                if (_converse.api.settings.get('message_limit')) {
                     const message_limit = this.el.querySelector('.message-limit');
-                    const counter = _converse.message_limit - chars.length;
+                    const counter = _converse.api.settings.get('message_limit') - chars.length;
                     message_limit.textContent = counter;
                     if (counter < 1) {
                         u.addClass('error', message_limit);
@@ -994,7 +992,7 @@ converse.plugins.add('converse-chatview', {
                         "be removed everywhere.");
 
                 const messages = [__('Are you sure you want to retract this message?')];
-                if (_converse.show_retraction_warning) {
+                if (_converse.api.settings.get('show_retraction_warning')) {
                     messages[1] = retraction_warning;
                 }
                 const result = await _converse.api.confirm(__('Confirm'), messages);
@@ -1264,7 +1262,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             maybeFocus () {
-                _converse.auto_focus && this.focus();
+                _converse.api.settings.get('auto_focus') && this.focus();
             },
 
             hide () {
@@ -1293,7 +1291,7 @@ converse.plugins.add('converse-chatview', {
                  */
                 _converse.api.trigger('beforeShowingChatView', this);
 
-                if (_converse.animate) {
+                if (_converse.api.settings.get('animate')) {
                     u.fadeIn(this.el, () => this.afterShown());
                 } else {
                     u.showElement(this.el);

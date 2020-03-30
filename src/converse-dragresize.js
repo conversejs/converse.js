@@ -36,7 +36,7 @@ converse.plugins.add('converse-dragresize', {
     dependencies: ["converse-chatview", "converse-headlines-view", "converse-muc-views"],
 
     enabled (_converse) {
-        return _converse.view_mode == 'overlayed';
+        return _converse.api.settings.get("view_mode") == 'overlayed';
     },
 
     overrides: {
@@ -252,7 +252,9 @@ converse.plugins.add('converse-dragresize', {
             },
 
             onStartVerticalResize (ev, trigger=true) {
-                if (!_converse.allow_dragresize) { return true; }
+                if (!_converse.api.settings.get('allow_dragresize')) {
+                    return true;
+                }
                 // Record element attributes for mouseMove().
                 const flyout = this.el.querySelector('.box-flyout'),
                       style = window.getComputedStyle(flyout);
@@ -273,7 +275,9 @@ converse.plugins.add('converse-dragresize', {
             },
 
             onStartHorizontalResize (ev, trigger=true) {
-                if (!_converse.allow_dragresize) { return true; }
+                if (!_converse.api.settings.get('allow_dragresize')) {
+                    return true;
+                }
                 const flyout = this.el.querySelector('.box-flyout'),
                       style = window.getComputedStyle(flyout);
                 this.width = parseInt(style.width.replace(/px$/, ''), 10);
@@ -328,14 +332,18 @@ converse.plugins.add('converse-dragresize', {
 
 
         function onMouseMove (ev) {
-            if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
+            if (!_converse.resizing || !_converse.api.settings.get('allow_dragresize')) {
+                return true;
+            }
             ev.preventDefault();
             _converse.resizing.chatbox.resizeChatBox(ev);
         }
 
 
         function onMouseUp (ev) {
-            if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
+            if (!_converse.resizing || !_converse.api.settings.get('allow_dragresize')) {
+                return true;
+            }
             ev.preventDefault();
             const height = u.applyDragResistance(
                     _converse.resizing.chatbox.height,

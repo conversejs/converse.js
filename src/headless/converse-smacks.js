@@ -185,7 +185,7 @@ converse.plugins.add('converse-smacks', {
         }
 
         async function sendEnableStanza () {
-            if (!_converse.enable_smacks || _converse.session.get('smacks_enabled')) {
+            if (!_converse.api.settings.get('enable_smacks') || _converse.session.get('smacks_enabled')) {
                 return;
             }
             if (await isStreamManagementSupported()) {
@@ -202,7 +202,7 @@ converse.plugins.add('converse-smacks', {
         }
 
         async function enableStreamManagement () {
-            if (!_converse.enable_smacks) {
+            if (!_converse.api.settings.get('enable_smacks')) {
                 return;
             }
             if (!(await isStreamManagementSupported())) {
@@ -235,7 +235,7 @@ converse.plugins.add('converse-smacks', {
                     'unacked_stanzas',
                     (_converse.session.get('unacked_stanzas') || []).concat([stanza_string])
                 );
-                const max_unacked = _converse.smacks_max_unacked_stanzas;
+                const max_unacked = _converse.api.settings.get('smacks_max_unacked_stanzas');
                 if (max_unacked > 0) {
                     const num = _converse.session.get('num_stanzas_since_last_ack') + 1;
                     if (num % max_unacked === 0) {

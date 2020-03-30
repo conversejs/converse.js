@@ -124,7 +124,7 @@ converse.plugins.add('converse-muc', {
         });
         _converse.api.promises.add(['roomsAutoJoined']);
 
-        if (_converse.locked_muc_domain && !isString(_converse.muc_domain)) {
+        if (_converse.api.settings.get('locked_muc_domain') && !isString(_converse.api.settings.get('muc_domain'))) {
             throw new Error("Config Error: it makes no sense to set locked_muc_domain "+
                             "to true when muc_domain is not set");
         }
@@ -207,7 +207,7 @@ converse.plugins.add('converse-muc', {
             const nick = _converse.xmppstatus.getNickname();
             if (nick) {
                 return nick;
-            } else if (_converse.muc_nickname_from_jid) {
+            } else if (_converse.api.settings.get('muc_nickname_from_jid')) {
                 return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
             }
         }
@@ -259,7 +259,7 @@ converse.plugins.add('converse-muc', {
              * @returns { Boolean }
              */
             mayBeModerated () {
-                return ['all', 'moderator'].includes(_converse.allow_message_retraction) &&
+                return ['all', 'moderator'].includes(_converse.api.settings.get('allow_message_retraction')) &&
                     this.collection.chatbox.canModerateMessages();
             },
 
@@ -351,7 +351,7 @@ converse.plugins.add('converse-muc', {
                     'num_unread_general': 0,
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
+                    'hidden': ['mobile', 'fullscreen'].includes(_converse.api.settings.get("view_mode")),
                     'message_type': 'groupchat',
                     'name': '',
                     'num_unread': 0,
@@ -427,7 +427,7 @@ converse.plugins.add('converse-muc', {
                 nick = await this.getAndPersistNickname(nick);
                 if (!nick) {
                     u.safeSave(this.session, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
-                    if (_converse.muc_show_logs_before_join) {
+                    if (_converse.api.settings.get('muc_show_logs_before_join')) {
                         await this.fetchMessages();
                     }
                     return this;
@@ -436,7 +436,7 @@ converse.plugins.add('converse-muc', {
                     'from': _converse.connection.jid,
                     'to': this.getRoomJIDAndNick()
                 }).c("x", {'xmlns': Strophe.NS.MUC})
-                  .c("history", {'maxstanzas': this.features.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas}).up();
+                  .c("history", {'maxstanzas': this.features.get('mam_enabled') ? 0 : _converse.api.settings.get('muc_history_max_stanzas')}).up();
 
                 if (password) {
                     stanza.cnode(Strophe.xmlElement("password", [], password));
@@ -493,7 +493,7 @@ converse.plugins.add('converse-muc', {
                      */
                     _converse.api.trigger('enteredNewRoom', this);
 
-                    if (_converse.auto_register_muc_nickname &&
+                    if (_converse.api.settings.get('auto_register_muc_nickname') &&
                             await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
                         this.registerNickname()
                     }
@@ -618,7 +618,7 @@ converse.plugins.add('converse-muc', {
             },
 
             invitesAllowed () {
-                return _converse.allow_muc_invitations &&
+                return _converse.api.settings.get('allow_muc_invitations') &&
                     (this.features.get('open') ||
                         this.getOwnAffiliation() === "owner"
                     );
@@ -628,7 +628,7 @@ converse.plugins.add('converse-muc', {
                 const name = this.get('name');
                 if (name) {
                     return name;
-                } else if (_converse.locked_muc_domain === 'hidden') {
+                } else if (_converse.api.settings.get('locked_muc_domain') === 'hidden') {
                     return Strophe.getNodeFromJid(this.get('jid'));
                 } else {
                     return this.get('jid');
@@ -2089,7 +2089,7 @@ converse.plugins.add('converse-muc', {
 
 
             onNicknameClash (presence) {
-                if (_converse.muc_nickname_from_jid) {
+                if (_converse.api.settings.get('muc_nickname_from_jid')) {
                     const nick = presence.getAttribute('from').split('/')[1];
                     if (nick === _converse.getDefaultMUCNickname()) {
                         this.join(nick + '-2');
@@ -2216,7 +2216,7 @@ converse.plugins.add('converse-muc', {
                     if (locked_room) {
                         if (this.get('auto_configure')) {
                             this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-                        } else if (_converse.muc_instant_rooms) {
+                        } else if (_converse.api.settings.get('muc_instant_rooms')) {
                             // Accept default configuration
                             this.sendConfiguration().then(() => this.refreshDiscoInfo());
                         } else {
@@ -2359,7 +2359,7 @@ converse.plugins.add('converse-muc', {
             },
 
             getAutoFetchedAffiliationLists () {
-                const affs = _converse.muc_fetch_members;
+                const affs = _converse.api.settings.get('muc_fetch_members');
                 return Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
             },
 
@@ -2426,13 +2426,13 @@ converse.plugins.add('converse-muc', {
         _converse.RoomsPanelModel = Model.extend({
             defaults: function () {
                 return {
-                    'muc_domain': _converse.muc_domain,
+                    'muc_domain': _converse.api.settings.get('muc_domain'),
                     'nick': _converse.getDefaultMUCNickname()
                 }
             },
 
             setDomain (jid) {
-                if (!_converse.locked_muc_domain) {
+                if (!_converse.api.settings.get('locked_muc_domain')) {
                     this.save('muc_domain', Strophe.getDomainFromJid(jid));
                 }
             }
@@ -2453,7 +2453,7 @@ converse.plugins.add('converse-muc', {
                 reason = x_el.getAttribute('reason');
 
             let result;
-            if (_converse.auto_join_on_invite) {
+            if (_converse.api.settings.get('auto_join_on_invite')) {
                 result = true;
             } else {
                 // Invite request might come from someone not your roster list
@@ -2478,7 +2478,7 @@ converse.plugins.add('converse-muc', {
             }
         };
 
-        if (_converse.allow_muc_invitations) {
+        if (_converse.api.settings.get('allow_muc_invitations')) {
             const registerDirectInvitationHandler = function () {
                 _converse.connection.addHandler(
                     (message) =>  {
@@ -2504,7 +2504,7 @@ converse.plugins.add('converse-muc', {
          * settings).
          */
         function autoJoinRooms () {
-            _converse.auto_join_rooms.forEach(groupchat => {
+            _converse.api.settings.get('auto_join_rooms').forEach(groupchat => {
                 if (isString(groupchat)) {
                     if (_converse.chatboxes.where({'jid': groupchat}).length) {
                         return;
@@ -2542,10 +2542,10 @@ converse.plugins.add('converse-muc', {
         _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
 
         _converse.api.listen.on('addClientFeatures', () => {
-            if (_converse.allow_muc) {
+            if (_converse.api.settings.get('allow_muc')) {
                 _converse.api.disco.own.features.add(Strophe.NS.MUC);
             }
-            if (_converse.allow_muc_invitations) {
+            if (_converse.api.settings.get('allow_muc_invitations')) {
                 _converse.api.disco.own.features.add('jabber:x:conference'); // Invites
             }
         });
@@ -2624,7 +2624,7 @@ converse.plugins.add('converse-muc', {
                  */
                 create (jids, attrs={}) {
                     attrs = isString(attrs) ? {'nick': attrs} : (attrs || {});
-                    if (!attrs.nick && _converse.muc_nickname_from_jid) {
+                    if (!attrs.nick && _converse.api.settings.get('muc_nickname_from_jid')) {
                         attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                     }
                     if (jids === undefined) {

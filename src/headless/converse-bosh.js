@@ -51,11 +51,11 @@ converse.plugins.add('converse-bosh', {
 
 
         _converse.startNewPreboundBOSHSession = function () {
-            if (!_converse.prebind_url) {
+            if (!_converse.api.settings.get('prebind_url')) {
                 throw new Error("startNewPreboundBOSHSession: If you use prebind then you MUST supply a prebind_url");
             }
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', _converse.prebind_url, true);
+            xhr.open('GET', _converse.api.settings.get('prebind_url'), true);
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
             xhr.onload = async function () {
                 if (xhr.status >= 200 && xhr.status < 400) {

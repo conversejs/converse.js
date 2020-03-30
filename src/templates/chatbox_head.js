@@ -19,7 +19,7 @@ export default (o) => {
     return html`
         <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
             <div class="chatbox-title--row">
-                ${ (!o._converse.singleton) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
+                ${ (!o._converse.api.settings.get("singleton")) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
                 ${ (o.type !== o._converse.HEADLINES_TYPE) ? avatar(Object.assign({}, o, avatar_data)) : '' }
                 <div class="chatbox-title__text" title="${o.jid}">
                     ${ o.url ? html`<a href="${o.url}" target="_blank" rel="noopener" class="user">${o.display_name}</a>` : o.display_name}

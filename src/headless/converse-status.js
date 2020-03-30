@@ -15,9 +15,17 @@ converse.plugins.add('converse-status', {
     initialize () {
         const { _converse } = this;
 
+        _converse.api.settings.update({
+            auto_away: 0, // Seconds after which user status is set to 'away'
+            auto_xa: 0, // Seconds after which user status is set to 'xa'
+            csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
+            default_state: 'online',
+            priority: 0,
+        });
+
         _converse.XMPPStatus = Model.extend({
             defaults () {
-                return {"status":  _converse.default_state}
+                return {"status":  _converse.api.settings.get("default_state")}
             },
 
             initialize () {
@@ -42,7 +50,7 @@ converse.plugins.add('converse-status', {
 
             constructPresence (type, status_message) {
                 let presence;
-                type = isString(type) ? type : (this.get('status') || _converse.default_state);
+                type = isString(type) ? type : (this.get('status') || _converse.api.settings.get("default_state"));
                 status_message = isString(status_message) ? status_message : this.get('status_message');
                 // Most of these presence types are actually not explicitly sent,
                 // but I add all of them here for reference and future proofing.
@@ -64,7 +72,9 @@ converse.plugins.add('converse-status', {
                 if (status_message) {
                     presence.c('status').t(status_message).up();
                 }
-                presence.c('priority').t(isNaN(Number(_converse.priority)) ? 0 : _converse.priority).up();
+
+                const priority = _converse.api.settings.get("priority");
+                presence.c('priority').t(isNaN(Number(priority)) ? 0 : priority).up();
                 if (_converse.idle) {
                     const idle_since = new Date();
                     idle_since.setSeconds(idle_since.getSeconds() - _converse.idle_seconds);
@@ -113,7 +123,7 @@ converse.plugins.add('converse-status', {
                 _converse.auto_changed_status = false;
                 // XXX: we should really remember the original state here, and
                 // then set it back to that...
-                _converse.xmppstatus.set('status', _converse.default_state);
+                _converse.xmppstatus.set('status', _converse.api.settings.get("default_state"));
             }
         };
 
@@ -128,24 +138,24 @@ converse.plugins.add('converse-status', {
             }
             const stat = _converse.xmppstatus.get('status');
             _converse.idle_seconds++;
-            if (_converse.csi_waiting_time > 0 &&
-                    _converse.idle_seconds > _converse.csi_waiting_time &&
+            if (_converse.api.settings.get("csi_waiting_time") > 0 &&
+                    _converse.idle_seconds > _converse.api.settings.get("csi_waiting_time") &&
                     !_converse.inactive) {
                 _converse.sendCSI(_converse.INACTIVE);
             }
-            if (_converse.idle_presence_timeout > 0 &&
-                    _converse.idle_seconds > _converse.idle_presence_timeout &&
+            if (_converse.api.settings.get("idle_presence_timeout") > 0 &&
+                    _converse.idle_seconds > _converse.api.settings.get("idle_presence_timeout") &&
                     !_converse.idle) {
                 _converse.idle = true;
                 _converse.xmppstatus.sendPresence();
             }
-            if (_converse.auto_away > 0 &&
-                    _converse.idle_seconds > _converse.auto_away &&
+            if (_converse.api.settings.get("auto_away") > 0 &&
+                    _converse.idle_seconds > _converse.api.settings.get("auto_away") &&
                     stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
                 _converse.xmppstatus.set('status', 'away');
-            } else if (_converse.auto_xa > 0 &&
-                    _converse.idle_seconds > _converse.auto_xa &&
+            } else if (_converse.api.settings.get("auto_xa") > 0 &&
+                    _converse.idle_seconds > _converse.api.settings.get("auto_xa") &&
                     stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
                 _converse.xmppstatus.set('status', 'xa');
@@ -157,10 +167,10 @@ converse.plugins.add('converse-status', {
              * Required for the auto_away, auto_xa and csi_waiting_time features.
              */
             if (
-                _converse.auto_away < 1 &&
-                _converse.auto_xa < 1 &&
-                _converse.csi_waiting_time < 1 &&
-                _converse.idle_presence_timeout < 1
+                _converse.api.settings.get("auto_away") < 1 &&
+                _converse.api.settings.get("auto_xa") < 1 &&
+                _converse.api.settings.get("csi_waiting_time") < 1 &&
+                _converse.api.settings.get("idle_presence_timeout") < 1
             ) {
                 // Waiting time of less then one second means features aren't used.
                 return;

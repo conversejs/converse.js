@@ -70,7 +70,7 @@ converse.plugins.add('converse-controlbox', {
 
 
     enabled (_converse) {
-        return !_converse.singleton;
+        return !_converse.api.settings.get("singleton");
     },
 
 
@@ -119,7 +119,7 @@ converse.plugins.add('converse-controlbox', {
                     'bookmarked': false,
                     'box_id': 'controlbox',
                     'chat_state': undefined,
-                    'closed': !_converse.show_controlbox_by_default,
+                    'closed': !_converse.api.settings.get('show_controlbox_by_default'),
                     'num_unread': 0,
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.CONTROLBOX_TYPE,
@@ -137,7 +137,7 @@ converse.plugins.add('converse-controlbox', {
 
             validate (attrs) {
                 if (attrs.type === _converse.CONTROLBOX_TYPE) {
-                    if (_converse.view_mode === 'embedded' && _converse.singleton)  {
+                    if (_converse.api.settings.get("view_mode") === 'embedded' && _converse.api.settings.get("singleton"))  {
                         return 'Controlbox not relevant in embedded view mode';
                     }
                     return;
@@ -197,7 +197,7 @@ converse.plugins.add('converse-controlbox', {
             render () {
                 if (this.model.get('connected')) {
                     if (this.model.get('closed') === undefined) {
-                        this.model.set('closed', !_converse.show_controlbox_by_default);
+                        this.model.set('closed', !_converse.api.settings.get('show_controlbox_by_default'));
                     }
                 }
                 this.el.innerHTML = tpl_controlbox(Object.assign(this.model.toJSON()));
@@ -225,7 +225,7 @@ converse.plugins.add('converse-controlbox', {
 
              createBrandHeadingHTML () {
                 return tpl_brand_heading({
-                    'sticky_controlbox': _converse.sticky_controlbox
+                    'sticky_controlbox': _converse.api.settings.get('sticky_controlbox')
                 });
             },
 
@@ -285,10 +285,10 @@ converse.plugins.add('converse-controlbox', {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (ev?.name === 'closeAllChatBoxes' &&
                         (_converse.disconnection_cause !== _converse.LOGOUT ||
-                         _converse.show_controlbox_by_default)) {
+                         _converse.api.settings.get('show_controlbox_by_default'))) {
                     return;
                 }
-                if (_converse.sticky_controlbox) {
+                if (_converse.api.settings.get('sticky_controlbox')) {
                     return;
                 }
                 const connection = _converse?.connection || {};
@@ -315,7 +315,7 @@ converse.plugins.add('converse-controlbox', {
             },
 
             hide (callback) {
-                if (_converse.sticky_controlbox) {
+                if (_converse.api.settings.get('sticky_controlbox')) {
                     return;
                 }
                 u.addClass('hidden', this.el);
@@ -387,12 +387,12 @@ converse.plugins.add('converse-controlbox', {
                         'LOGIN': _converse.LOGIN,
                         'PREBIND': _converse.PREBIND,
                         'auto_login': _converse.auto_login,
-                        'authentication': _converse.authentication,
+                        'authentication': _converse.api.settings.get("authentication"),
                         'connection_status': connection_status,
                         'conn_feedback_class': feedback_class,
                         'conn_feedback_subject': pretty_status,
                         'conn_feedback_message': _converse.connfeedback.get('message'),
-                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) &&
+                        'placeholder_username': (_converse.api.settings.get('locked_domain') || _converse.api.settings.get('default_domain')) &&
                                                 __('Username') || __('user@domain'),
                         'show_trust_checkbox': _converse.trusted !== 'on' && _converse.trusted !== 'off'
                     })
@@ -402,8 +402,8 @@ converse.plugins.add('converse-controlbox', {
             initPopovers () {
                 Array.from(this.el.querySelectorAll('[data-title]')).forEach(el => {
                     new bootstrap.Popover(el, {
-                        'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
-                        'dismissible': _converse.view_mode === 'mobile' && true || false,
+                        'trigger': _converse.api.settings.get("view_mode") === 'mobile' && 'click' || 'hover',
+                        'dismissible': _converse.api.settings.get("view_mode") === 'mobile' && true || false,
                         'container': this.el.parentElement.parentElement.parentElement
                     })
                 });
@@ -413,8 +413,8 @@ converse.plugins.add('converse-controlbox', {
                 const form = this.el.querySelector('form');
                 const jid_element = form.querySelector('input[name=jid]');
                 if (jid_element.value &&
-                        !_converse.locked_domain &&
-                        !_converse.default_domain &&
+                        !_converse.api.settings.get('locked_domain') &&
+                        !_converse.api.settings.get('default_domain') &&
                         !u.isValidJID(jid_element.value)) {
                     jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
                     return false;
@@ -427,7 +427,7 @@ converse.plugins.add('converse-controlbox', {
                 /* Authenticate the user based on a form submission event.
                  */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (_converse.authentication === _converse.ANONYMOUS) {
+                if (_converse.api.settings.get("authentication") === _converse.ANONYMOUS) {
                     return this.connect(_converse.jid, null);
                 }
                 if (!this.validate()) { return; }
@@ -447,14 +447,14 @@ converse.plugins.add('converse-controlbox', {
                 }
 
                 let jid = form_data.get('jid');
-                if (_converse.locked_domain) {
-                    const last_part = '@' + _converse.locked_domain;
+                if (_converse.api.settings.get('locked_domain')) {
+                    const last_part = '@' + _converse.api.settings.get('locked_domain');
                     if (jid.endsWith(last_part)) {
                         jid = jid.substr(0, jid.length - last_part.length);
                     }
                     jid = Strophe.escapeNode(jid) + last_part;
-                } else if (_converse.default_domain && !jid.includes('@')) {
-                    jid = jid + '@' + _converse.default_domain;
+                } else if (_converse.api.settings.get('default_domain') && !jid.includes('@')) {
+                    jid = jid + '@' + _converse.api.settings.get('default_domain');
                 }
                this.connect(jid, form_data.get('password'));
             },

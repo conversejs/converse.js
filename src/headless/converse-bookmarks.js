@@ -214,7 +214,7 @@ converse.plugins.add('converse-bookmarks', {
                         'jid': jid,
                         'name': bookmark.getAttribute('name') || jid,
                         'autojoin': bookmark.getAttribute('autojoin') === 'true',
-                        'nick': bookmark.querySelector('nick')?.textContent
+                        'nick': bookmark.querySelector('nick')?.textContent || ''
                     });
                 });
             },

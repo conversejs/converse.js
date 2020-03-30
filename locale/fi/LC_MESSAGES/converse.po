@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-03-27 15:46+0000\n"
+"PO-Revision-Date: 2020-03-30 15:04+0000\n"
 "Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
 "translations/fi/>\n"
@@ -723,7 +723,7 @@ msgstr "Poista kaikki viestit"
 
 #: dist/converse-no-dependencies.js:52439
 msgid "Message characters remaining"
-msgstr "Viestimerkit jäljellä"
+msgstr "Viestimerkkejä jäljellä"
 
 #: dist/converse-no-dependencies.js:52444
 msgid "Start a call"
@@ -735,11 +735,11 @@ msgstr "Poista viestit"
 
 #: dist/converse-no-dependencies.js:52888
 msgid "Close this chat"
-msgstr "Poista viestit"
+msgstr "Sulje chat"
 
 #: dist/converse-no-dependencies.js:52888
 msgid "Write in the third person"
-msgstr "Kirjoita kolmas henkilö"
+msgstr "Kirjoita kolmannessa persoonassa"
 
 #: dist/converse-no-dependencies.js:52888
 #: dist/converse-no-dependencies.js:60442
@@ -782,7 +782,7 @@ msgstr "%1$s on mennyt offline-tilaan"
 #: dist/converse-no-dependencies.js:53407
 #, javascript-format
 msgid "%1$s is busy"
-msgstr "%1$s on mennyt offline-tilaan"
+msgstr "%1$s on varattu"
 
 #: dist/converse-no-dependencies.js:53409
 #, javascript-format
@@ -791,7 +791,7 @@ msgstr "%1$s on online-tilassa"
 
 #: dist/converse-no-dependencies.js:53879
 msgid "Click here to log in anonymously"
-msgstr "Napsauta tätä kirjautuaksesi nimettömästi"
+msgstr "Napsauta tätä kirjautuaksesi anonyymisti"
 
 #: dist/converse-no-dependencies.js:53881
 msgid "Disconnected"
@@ -825,12 +825,12 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
-"Suorituskyvyn parantamiseksi välimuisti tallentaa tietosi tähän selaimeen. "
-"Poista tämä valintaruutu, jos kyseessä on julkinen tietokone tai jos haluat, "
-"että tietosi poistetaan, kun kirjaudut ulos. On tärkeää, että kirjaudut "
-"nimenomaisesti ulos, muuten kaikkia välimuistilla olevia tietoja ei ehkä "
-"poisteta. Huomaa, että kun käytetään epäluotettavaa laitetta, OMEMO-salaus "
-"EI ole käytettävissä."
+"Suorituskyvyn parantamiseksi tallennamme tietosi tämän selaimen "
+"välimuistiin. Poista tämä valintaruutu, jos kyseessä on julkinen tietokone "
+"tai jos haluat, että tietosi poistetaan, kun kirjaudut ulos. On tärkeää, "
+"että kirjaudut nimenomaisesti ulos, muuten kaikkia välimuistissa olevia "
+"tietoja ei ehkä poisteta. Huomaa, että kun käytetään epäluotettavaa "
+"laitetta, OMEMO-salaus EI ole käytettävissä."
 
 #: dist/converse-no-dependencies.js:54398
 msgid "Username"
@@ -884,7 +884,7 @@ msgstr "Minimoitu"
 
 #: dist/converse-no-dependencies.js:57582
 msgid "Join"
-msgstr "Liittyä seuraan"
+msgstr "Liity"
 
 #: dist/converse-no-dependencies.js:57584
 msgid "Enter a new Groupchat"

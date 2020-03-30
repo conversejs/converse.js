@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Browser based XMPP chat client",
   "browser": "dist/converse.js",
   "module": "src/converse.js",
@@ -57,10 +57,12 @@
   "devDependencies": {
     "@babel/cli": "^7.5.0",
     "@babel/core": "^7.5.4",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
+    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.5.4",
     "@converse/headless": "file:src/headless",
-    "@fortawesome/fontawesome-free": "5.9.0",
+    "@fortawesome/fontawesome-free": "5.13.0",
     "@lit-element-bootstrap/button": "^1.0.0",
     "@lit-element-bootstrap/button-group": "^1.0.0",
     "@lit-element-bootstrap/dropdown": "^1.0.0-alpha.4",

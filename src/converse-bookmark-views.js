@@ -5,14 +5,15 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-muc";
-import { Model } from 'skeletor.js/src/model.js';
-import { View } from 'skeletor.js/src/view.js';
-import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import tpl_bookmarks_list from "templates/bookmarks_list.js"
 import tpl_muc_bookmark_form from "templates/muc_bookmark_form.js";
+import { Model } from 'skeletor.js/src/model.js';
+import { View } from 'skeletor.js/src/view.js';
+import { __ } from '@converse/headless/i18n';
+import { invokeMap } from 'lodash';
 
-const { Strophe, _ } = converse.env;
+const { Strophe } = converse.env;
 const u = converse.env.utils;
 
 
@@ -85,7 +86,7 @@ converse.plugins.add('converse-bookmark-views', {
                 const name = ev.target.getAttribute('data-bookmark-name');
                 const jid = ev.target.getAttribute('data-room-jid');
                 if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
-                    _.invokeMap(_converse.bookmarks.where({'jid': jid}), Model.prototype.destroy);
+                    invokeMap(_converse.bookmarks.where({'jid': jid}), Model.prototype.destroy);
                 }
             },
 
@@ -166,9 +167,9 @@ converse.plugins.add('converse-bookmark-views', {
                 ev.preventDefault();
                 _converse.bookmarks.createBookmark({
                     'jid': this.model.get('jid'),
-                    'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
-                    'name':  _.get(ev.target.querySelector('input[name=name]'), 'value'),
-                    'nick':  _.get(ev.target.querySelector('input[name=nick]'), 'value')
+                    'autojoin': ev.target.querySelector('input[name="autojoin"]')?.checked || false,
+                    'name':  ev.target.querySelector('input[name=name]')?.value,
+                    'nick': ev.target.querySelector('input[name=nick]')?.value
                 });
                 this.closeBookmarkForm(ev);
             },

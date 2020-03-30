@@ -8,12 +8,13 @@ import { Model } from 'skeletor.js/src/model.js';
 import { Overview } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
 import { __ } from '@converse/headless/i18n';
+import { debounce, sum } from 'lodash';
 import converse from "@converse/headless/converse-core";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.html";
 import tpl_trimmed_chat from "templates/trimmed_chat.html";
 
-const { _ , dayjs } = converse.env;
+const { dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -292,9 +293,8 @@ converse.plugins.add('converse-minimize', {
             },
 
             getMinimizedWidth () {
-                const minimized_el = _.get(_converse.minimized_chats, 'el');
-                return _.includes(this.model.pluck('minimized'), true) ?
-                    u.getOuterWidth(minimized_el, true) : 0;
+                const minimized_el = _converse.minimized_chats?.el;
+                return this.model.pluck('minimized').includes(true) ? u.getOuterWidth(minimized_el, true) : 0;
             },
 
             getBoxesWidth (newchat) {
@@ -329,7 +329,7 @@ converse.plugins.add('converse-minimize', {
                     return;
                 }
                 await _converse.api.waitUntil('minimizedChatsInitialized');
-                const minimized_el = _.get(_converse.minimized_chats, 'el');
+                const minimized_el = _converse.minimized_chats?.el;
                 if (minimized_el) {
                     while ((this.getMinimizedWidth() + this.getBoxesWidth(newchat)) > body_width) {
                         const new_id = newchat ? newchat.model.get('id') : null;
@@ -356,8 +356,7 @@ converse.plugins.add('converse-minimize', {
                 exclude_ids.push('controlbox');
                 let i = 0;
                 let model = this.model.sort().at(i);
-                while (_.includes(exclude_ids, model.get('id')) ||
-                    model.get('minimized') === true) {
+                while (exclude_ids.includes(model.get('id')) || model.get('minimized') === true) {
                     i++;
                     model = this.model.at(i);
                     if (!model) {
@@ -419,7 +418,7 @@ converse.plugins.add('converse-minimize', {
                 return this;
             },
 
-            restore: _.debounce(function (ev) {
+            restore: debounce(function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 this.model.off('change:num_unread', null, this);
                 this.remove();
@@ -515,7 +514,7 @@ converse.plugins.add('converse-minimize', {
             },
 
             updateUnreadMessagesCounter () {
-                this.toggleview.model.save({'num_unread': _.sum(this.model.pluck('num_unread'))});
+                this.toggleview.model.save({'num_unread': sum(this.model.pluck('num_unread'))});
                 this.render();
             }
         });
@@ -571,7 +570,7 @@ converse.plugins.add('converse-minimize', {
         _converse.api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
         _converse.api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
 
-        const debouncedTrimChats = _.debounce(() => _converse.chatboxviews.trimChats(), 250);
+        const debouncedTrimChats = debounce(() => _converse.chatboxviews.trimChats(), 250);
         _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));
         _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrimChats));
         /************************ END Event Handlers ************************/

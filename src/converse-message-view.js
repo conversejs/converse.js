@@ -7,10 +7,11 @@ import "./utils/html";
 import "@converse/headless/converse-emoji";
 import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
+import { BootstrapModal } from "./converse-modal.js";
 import { debounce } from 'lodash'
+import { render } from "lit-html";
 import filesize from "filesize";
 import log from "@converse/headless/log";
-import tpl_csn from "templates/csn.html";
 import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
@@ -69,7 +70,7 @@ converse.plugins.add('converse-message-view', {
             'allow_message_retraction': 'all'
         });
 
-        _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+        _converse.MessageVersionsModal = BootstrapModal.extend({
             id: "message-versions-modal",
             toHTML () {
                 return tpl_message_versions_modal(this.model.toJSON());
@@ -117,9 +118,7 @@ converse.plugins.add('converse-message-view', {
 
             async render () {
                 const is_followup = u.hasClass('chat-msg--followup', this.el);
-                if (this.model.isOnlyChatStateNotification()) {
-                    this.renderChatStateNotification()
-                } else if (this.model.get('file') && !this.model.get('oob_url')) {
+                if (this.model.get('file') && !this.model.get('oob_url')) {
                     if (!this.model.file) {
                         log.error("Attempted to render a file upload message with no file data");
                         return this.el;
@@ -231,15 +230,8 @@ converse.plugins.add('converse-message-view', {
                 const role = this.model.vcard ? this.model.vcard.get('role') : null;
                 const roles = role ? role.split(',') : [];
                 const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
-                const is_groupchat = this.model.get('type') === 'groupchat';
-                const is_own_message = this.model.get('sender') === 'me';
-                const chatbox = this.model.collection.chatbox;
-                const may_retract_own_message = is_own_message && ['all', 'own'].includes(_converse.allow_message_retraction);
-                const may_moderate_message = !is_own_message && is_groupchat &&
-                    ['all', 'moderator'].includes(_converse.allow_message_retraction) &&
-                    await chatbox.canRetractMessages();
-
-                const retractable= !is_retracted && (may_moderate_message || may_retract_own_message);
+                const may_be_moderated = this.model.get('type') === 'groupchat' && await this.model.mayBeModerated();
+                const retractable= !is_retracted && (this.model.mayBeRetracted() || may_be_moderated);
                 const msg = u.stringToElement(tpl_message(
                     Object.assign(
                         this.model.toJSON(), {
@@ -247,7 +239,7 @@ converse.plugins.add('converse-message-view', {
                         is_retracted,
                         retractable,
                         'extra_classes': this.getExtraMessageClasses(),
-                        'is_groupchat_message': is_groupchat,
+                        'is_groupchat_message': this.model.get('type') === 'groupchat',
                         'is_me_message': this.model.isMeCommand(),
                         'label_show': __('Show more'),
                         'occupant': this.model.occupant,
@@ -260,9 +252,7 @@ converse.plugins.add('converse-message-view', {
                 ));
 
                 const url = this.model.get('oob_url');
-                if (url) {
-                    msg.querySelector('.chat-msg__media').innerHTML = this.transformOOBURL(url);
-                }
+                url && render(this.transformOOBURL(url), msg.querySelector('.chat-msg__media'));
 
                 if (!is_retracted) {
                     const text = this.model.getMessageText();
@@ -323,38 +313,6 @@ converse.plugins.add('converse-message-view', {
                     }))
                 );
                 return this.replaceElement(msg);
-            },
-
-            renderChatStateNotification () {
-                let text;
-                const from = this.model.get('from');
-                const name = this.model.getDisplayName();
-
-                if (this.model.get('chat_state') === _converse.COMPOSING) {
-                    if (this.model.get('sender') === 'me') {
-                        text = __('Typing from another device');
-                    } else {
-                        text = __('%1$s is typing', name);
-                    }
-                } else if (this.model.get('chat_state') === _converse.PAUSED) {
-                    if (this.model.get('sender') === 'me') {
-                        text = __('Stopped typing on the other device');
-                    } else {
-                        text = __('%1$s has stopped typing', name);
-                    }
-                } else if (this.model.get('chat_state') === _converse.GONE) {
-                    text = __('%1$s has gone away', name);
-                } else {
-                    return;
-                }
-                const isodate = (new Date()).toISOString();
-                this.replaceElement(
-                      u.stringToElement(
-                        tpl_csn({
-                            'message': text,
-                            'from': from,
-                            'isodate': isodate
-                        })));
             },
 
             renderFileUploadProgresBar () {

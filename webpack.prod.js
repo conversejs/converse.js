@@ -20,8 +20,12 @@ module.exports = merge(common, {
         new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
         new CopyWebpackPlugin([
             {from: 'sounds'},
-            {from: 'images/favicon.ico'},
-            {from: 'images/custom_emojis', to: 'custom_emojis'},
+            {from: 'images/favicon.ico', to: 'images/favicon.ico'},
+            {from: 'images/custom_emojis', to: 'images/custom_emojis'},
+            {from: 'logo/conversejs-filled-192.png', to: 'images/logo'},
+            {from: 'logo/conversejs-filled-512.png', to: 'images/logo'},
+            {from: 'logo/conversejs-filled-192.svg', to: 'images/logo'},
+            {from: 'logo/conversejs-filled-512.svg', to: 'images/logo'},
             {from: 'sass/webfonts', to: 'webfonts'}
         ]),
         new webpack.DefinePlugin({ // This makes it possible for us to safely use env vars on our code

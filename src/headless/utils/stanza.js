@@ -1,5 +1,5 @@
 import * as strophe from 'strophe.js/src/core';
-import { get, propertyOf } from "lodash";
+import { propertyOf } from "lodash";
 import dayjs from 'dayjs';
 import log from '@converse/headless/log';
 import sizzle from 'sizzle';
@@ -95,7 +95,7 @@ const stanza_utils = {
                         'moderated': 'retracted',
                         'moderated_by': moderated.getAttribute('by'),
                         'moderated_id': applies_to_id,
-                        'moderation_reason': get(moderated.querySelector('reason'), 'textContent')
+                        'moderation_reason': moderated.querySelector('reason')?.textContent
                     }
                 }
             }
@@ -109,7 +109,7 @@ const stanza_utils = {
                         'is_tombstone': true,
                         'moderated_by': tombstone.getAttribute('by'),
                         'retracted': tombstone.getAttribute('stamp'),
-                        'moderation_reason': get(tombstone.querySelector('reason'), 'textContent')
+                        'moderation_reason': tombstone.querySelector('reason')?.textContent
 
                     }
                 }
@@ -202,7 +202,7 @@ const stanza_utils = {
         const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, stanza).pop();
         return {
             'is_spoiler': !!spoiler,
-            'spoiler_hint': get(spoiler, 'textContent')
+            'spoiler_hint': spoiler?.textContent
         }
     },
 
@@ -210,8 +210,8 @@ const stanza_utils = {
         const xform = sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza).pop();
         if (xform) {
             return {
-                'oob_url': get(xform.querySelector('url'), 'textContent'),
-                'oob_desc': get(xform.querySelector('desc'), 'textContent')
+                'oob_url': xform.querySelector('url')?.textContent,
+                'oob_desc': xform.querySelector('desc')?.textContent
             }
         }
         return {};

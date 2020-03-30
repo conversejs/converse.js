@@ -123,7 +123,7 @@
         // Opens a new chatroom
         const model = await _converse.api.controlbox.open('controlbox');
         await u.waitUntil(() => model.get('connected'));
-        utils.openControlBox();
+        await utils.openControlBox(_converse);
         const view = await _converse.chatboxviews.get('controlbox');
         const roomspanel = view.roomspanel;
         roomspanel.el.querySelector('.show-add-muc-modal').click();
@@ -139,7 +139,7 @@
         return _converse.chatboxviews.get(jid);
     };
 
-    utils.openChatRoom = async function (_converse, room, server) {
+    utils.openChatRoom = function (_converse, room, server) {
         return _converse.api.rooms.open(`${room}@${server}`);
     };
 
@@ -314,7 +314,7 @@
 
     utils.clearChatBoxMessages = function (converse, jid) {
         const view = converse.chatboxviews.get(jid);
-        view.el.querySelector('.chat-content').innerHTML = '';
+        view.msgs_container.innerHTML = '';
         return view.model.messages.clearStore();
     };
 
@@ -371,11 +371,8 @@
     };
 
     utils.waitForRoster = async function (_converse, type='current', length=-1, include_nick=true, grouped=true) {
-        const iq = await u.waitUntil(() =>
-            _.filter(
-                _converse.connection.IQ_stanzas,
-                iq => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq).length
-            ).pop());
+        const s = `iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`;
+        const iq = await u.waitUntil(() => _converse.connection.IQ_stanzas.filter(iq => sizzle(s, iq).length).pop());
 
         const result = $iq({
             'to': _converse.connection.jid,

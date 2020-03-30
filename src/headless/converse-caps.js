@@ -5,8 +5,9 @@
  */
 import SHA1 from 'strophe.js/src/sha1';
 import converse from "@converse/headless/converse-core";
+import { get } from "lodash";
 
-const { Strophe, $build, _ } = converse.env;
+const { Strophe, $build } = converse.env;
 
 Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
 
@@ -24,13 +25,9 @@ function generateVerificationString (_converse) {
         propertySort(identities, "lang");
     }
 
-    let S = _.reduce(
-        identities,
-        (result, id) => `${result}${id.category}/${id.type}/${_.get(id, 'lang', '')}/${id.name}<`,
-        "");
-
+    let S = identities.reduce((result, id) => `${result}${id.category}/${id.type}/${get(id, 'lang', '')}/${id.name}<`, "");
     features.sort();
-    S = _.reduce(features, (result, feature) => `${result}${feature}<`, S);
+    S = features.reduce((result, feature) => `${result}${feature}<`, S);
     return SHA1.b64_sha1(S);
 }
 

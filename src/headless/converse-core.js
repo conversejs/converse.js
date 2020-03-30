@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { __, i18n } from './i18n';
-import { assignIn, debounce, get, invoke, isFunction, isObject, isString, pick } from 'lodash';
+import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import { Collection } from "skeletor.js/src/collection";
 import { Events } from 'skeletor.js/src/events.js';
 import { Model } from 'skeletor.js/src/model.js';
@@ -486,7 +486,7 @@ function connect (credentials) {
             BOSH_WAIT
         );
     } else if (_converse.authentication === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (get(_converse.connection, 'pass') || _converse.password);
+        const password = credentials ? credentials.password : (_converse.connection?.pass || _converse.password);
         if (!password) {
             if (_converse.auto_login) {
                 throw new Error("autoLogin: If you use auto_login and "+
@@ -534,12 +534,12 @@ function clearSession  () {
         delete _converse.session;
     }
     /**
-     * Triggered once the user session has been cleared,
+     * Synchronouse event triggered once the user session has been cleared,
      * for example when the user has logged out or when Converse has
      * disconnected for some other reason.
      * @event _converse#clearSession
      */
-    _converse.api.trigger('clearSession');
+    return _converse.api.trigger('clearSession', {'synchronous': true});
 }
 
 
@@ -798,7 +798,6 @@ async function finishInitialization () {
     initPlugins();
     registerGlobalEventHandlers();
 
-
     if (!History.started) {
         _converse.router.history.start();
     }
@@ -820,12 +819,12 @@ async function finishInitialization () {
  * @emits _converse#disconnected
  * @private
  */
-function finishDisconnection () {
+async function finishDisconnection () {
     log.debug('DISCONNECTED');
     delete _converse.connection.reconnecting;
     _converse.connection.reset();
     tearDown();
-    clearSession();
+    await clearSession();
     delete _converse.connection;
     /**
      * Triggered after converse.js has disconnected from the XMPP server.
@@ -1064,7 +1063,7 @@ _converse.initialize = async function (settings, callback) {
                 return finishDisconnection();
             }
         } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-                (reason !== undefined && reason === get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
+                (reason !== undefined && reason === Strophe?.ErrorCondition.NO_AUTH_MECH) ||
                 reason === "host-unknown" ||
                 reason === "remote-connection-failed" ||
                 !_converse.auto_reconnect) {
@@ -1140,7 +1139,7 @@ _converse.initialize = async function (settings, callback) {
             if (message === "host-unknown" || message == "remote-connection-failed") {
                 feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
                     `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
-            } else if (message !== undefined && message === get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
+            } else if (message !== undefined && message === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
                 feedback = __("The XMPP server did not offer a supported authentication mechanism");
             }
             _converse.setConnectionStatus(status, feedback);
@@ -1207,7 +1206,7 @@ _converse.api = {
          * @returns {boolean} Whether there is an established connection or not.
          */
         connected () {
-            return get(_converse, 'connection', {}).connected && true;
+            return _converse?.connection?.connected && true;
         },
 
         /**
@@ -1236,7 +1235,7 @@ _converse.api = {
 
             if (_converse.authentication === _converse.ANONYMOUS) {
                 await tearDown();
-                clearSession();
+                await clearSession();
             }
             if (conn_status === Strophe.Status.CONNFAIL) {
                 // When reconnecting with a new transport, we call setUserJID
@@ -1270,10 +1269,15 @@ _converse.api = {
                 // (now failed) session.
                 await _converse.setUserJID(_converse.settings.jid);
             }
-            if (_converse.connection.reconnecting) {
-                debouncedReconnect();
+
+            if (_converse.connection.authenticated) {
+                if (_converse.connection.reconnecting) {
+                    debouncedReconnect();
+                } else {
+                    return reconnect();
+                }
             } else {
-                return reconnect();
+                log.warn("Not attempting to reconnect because we're not authenticated");
             }
         },
 
@@ -1692,6 +1696,9 @@ window.converse = window.converse || {};
  * @namespace converse
  */
 Object.assign(window.converse, {
+
+    CHAT_STATES: ['active', 'composing', 'gone', 'inactive', 'paused'],
+
     keycodes: {
         TAB: 9,
         ENTER: 13,

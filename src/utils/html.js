@@ -4,11 +4,11 @@
  * @description This is the DOM/HTML utilities module.
  */
 import URI from "urijs";
-import _ from "../headless/lodash.noconflict";
+import { isFunction } from "lodash";
 import log from '@converse/headless/log';
 import sizzle from "sizzle";
-import tpl_audio from  "../templates/audio.html";
-import tpl_file from "../templates/file.html";
+import tpl_audio from  "../templates/audio.js";
+import tpl_file from "../templates/file.js";
 import tpl_form_captcha from "../templates/form_captcha.html";
 import tpl_form_checkbox from "../templates/form_checkbox.html";
 import tpl_form_input from "../templates/form_input.html";
@@ -16,9 +16,9 @@ import tpl_form_select from "../templates/form_select.html";
 import tpl_form_textarea from "../templates/form_textarea.html";
 import tpl_form_url from "../templates/form_url.html";
 import tpl_form_username from "../templates/form_username.html";
-import tpl_image from "../templates/image.html";
+import tpl_image from "../templates/image.js";
 import tpl_select_option from "../templates/select_option.html";
-import tpl_video from "../templates/video.html";
+import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
 
 const URL_REGEX = /\b(https?\:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
@@ -189,6 +189,7 @@ async function renderImage (img_url, link_url, el, callback) {
         }
         sizzle(`a[href="${link_url}"]`, el).forEach(a => {
             a.innerHTML = "";
+            u.addClass('chat-image__link', a);
             u.addClass('chat-image', img);
             u.addClass('img-thumbnail', img);
             a.insertAdjacentElement('afterBegin', img);
@@ -213,9 +214,11 @@ u.renderImageURLs = function (_converse, el) {
     return Promise.all(
         list.map(url =>
             new Promise(resolve => {
-                if (url.startsWith('https://imgur.com') && !u.isImageURL(url)) {
-                    const imgur_url = url + '.png';
-                    renderImage(imgur_url, url, el, resolve);
+                let image_url = getURI(url);
+                if (['imgur.com', 'pbs.twimg.com'].includes(image_url.hostname()) && !u.isImageURL(url)) {
+                    const format = (image_url.hostname() === 'pbs.twimg.com') ? image_url.search(true).format : 'png';
+                    image_url = image_url.removeSearch(/.*/).toString() + `.${format}`;
+                    renderImage(image_url, url, el, resolve);
                 } else {
                     renderImage(url, url, el, resolve);
                 }
@@ -233,10 +236,7 @@ u.calculateElementHeight = function (el) {
     /* Return the height of the passed in DOM element,
      * based on the heights of its children.
      */
-    return _.reduce(
-        el.children,
-        (result, child) => result + child.offsetHeight, 0
-    );
+    return Array.from(el.children).reduce((result, child) => result + child.offsetHeight, 0);
 }
 
 u.getNextElement = function (el, selector='*') {
@@ -307,10 +307,10 @@ u.removeElement = function (el) {
     return el;
 }
 
-u.showElement = _.flow(
-    _.partial(u.removeClass, 'collapsed'),
-    _.partial(u.removeClass, 'hidden')
-)
+u.showElement = el => {
+    u.removeClass('collapsed', el);
+    u.removeClass('hidden', el);
+}
 
 u.hideElement = function (el) {
     (el instanceof Element) && el.classList.add('hidden');
@@ -410,16 +410,11 @@ u.addHyperlinks = function (text) {
 
 
 u.slideInAllElements = function (elements, duration=300) {
-    return Promise.all(
-        _.map(
-            elements,
-            _.partial(u.slideIn, _, duration)
-        ));
+    return Promise.all(Array.from(elements).map(e => u.slideIn(e, duration)));
 };
 
 u.slideToggleElement = function (el, duration) {
-    if (_.includes(el.classList, 'collapsed') ||
-            _.includes(el.classList, 'hidden')) {
+    if (u.hasClass('collapsed', el) || u.hasClass('hidden', el)) {
         return u.slideOut(el, duration);
     } else {
         return u.slideIn(el, duration);
@@ -499,7 +494,7 @@ u.slideIn = function (el, duration=200) {
             const err = "An element needs to be passed in to slideIn";
             log.warn(err);
             return reject(new Error(err));
-        } else if (_.includes(el.classList, 'collapsed')) {
+        } else if (u.hasClass('collapsed', el)) {
             return resolve(el);
         } else if (window.converse_disable_effects) { // Effects are disabled (for tests)
             el.classList.add('collapsed');
@@ -541,7 +536,7 @@ u.slideIn = function (el, duration=200) {
 
 function afterAnimationEnds (el, callback) {
     el.classList.remove('visible');
-    if (_.isFunction(callback)) {
+    if (isFunction(callback)) {
         callback();
     }
 }
@@ -570,12 +565,12 @@ u.fadeIn = function (el, callback) {
         el.classList.remove('hidden');
         return afterAnimationEnds(el, callback);
     }
-    if (_.includes(el.classList, 'hidden')) {
+    if (u.hasClass('hidden', el)) {
         el.classList.add('visible');
         el.classList.remove('hidden');
-        el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnds, el, callback));
-        el.addEventListener("animationend", _.partial(afterAnimationEnds, el, callback));
-        el.addEventListener("oanimationend", _.partial(afterAnimationEnds, el, callback));
+        el.addEventListener("webkitAnimationEnd", () => afterAnimationEnds(el, callback));
+        el.addEventListener("animationend", () => afterAnimationEnds(el, callback));
+        el.addEventListener("oanimationend", () => afterAnimationEnds(el, callback));
     } else {
         afterAnimationEnds(el, callback);
     }
@@ -594,22 +589,16 @@ u.xForm2webForm = function (field, stanza, options) {
     if (field.getAttribute('type') === 'list-single' ||
         field.getAttribute('type') === 'list-multi') {
 
-        const values = _.map(
-            u.queryChildren(field, 'value'),
-            _.partial(_.get, _, 'textContent')
-        );
-        const options = _.map(
-            u.queryChildren(field, 'option'),
-            function (option) {
-                const value = _.get(option.querySelector('value'), 'textContent');
-                return tpl_select_option({
-                    'value': value,
-                    'label': option.getAttribute('label'),
-                    'selected': _.includes(values, value),
-                    'required': !!field.querySelector('required')
-                })
-            }
-        );
+        const values = u.queryChildren(field, 'value').map(el => el?.textContent);
+        const options = u.queryChildren(field, 'option').map(option => {
+            const value = option.querySelector('value')?.textContent;
+            return tpl_select_option({
+                'value': value,
+                'label': option.getAttribute('label'),
+                'selected': values.includes(value),
+                'required': !!field.querySelector('required')
+            });
+        });
         return tpl_form_select({
             'id': u.getUniqueId(),
             'name': field.getAttribute('var'),
@@ -619,13 +608,13 @@ u.xForm2webForm = function (field, stanza, options) {
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('type') === 'fixed') {
-        const text = _.get(field.querySelector('value'), 'textContent');
+        const text = field.querySelector('value')?.textContent;
         return '<p class="form-help">'+text+'</p>';
     } else if (field.getAttribute('type') === 'jid-multi') {
         return tpl_form_textarea({
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
-            'value': _.get(field.querySelector('value'), 'textContent'),
+            'value': field.querySelector('value')?.textContent,
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('type') === 'boolean') {
@@ -633,13 +622,13 @@ u.xForm2webForm = function (field, stanza, options) {
             'id': u.getUniqueId(),
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
-            'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
+            'checked': field.querySelector('value')?.textContent === "1" && 'checked="1"' || '',
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'url') {
         return tpl_form_url({
             'label': field.getAttribute('label') || '',
-            'value': _.get(field.querySelector('value'), 'textContent')
+            'value': field.querySelector('value')?.textContent
         });
     } else if (field.getAttribute('var') === 'username') {
         return tpl_form_username({
@@ -647,7 +636,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'name': field.getAttribute('var'),
             'type': XFORM_TYPE_MAP[field.getAttribute('type')],
             'label': field.getAttribute('label') || '',
-            'value': _.get(field.querySelector('value'), 'textContent'),
+            'value': field.querySelector('value')?.textContent,
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'ocr') { // Captcha
@@ -656,7 +645,7 @@ u.xForm2webForm = function (field, stanza, options) {
         return tpl_form_captcha({
             'label': field.getAttribute('label'),
             'name': field.getAttribute('var'),
-            'data': _.get(el, 'textContent'),
+            'data': el?.textContent,
             'type': uri.getAttribute('type'),
             'required': !!field.querySelector('required')
         });
@@ -671,7 +660,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'placeholder': null,
             'required': !!field.querySelector('required'),
             'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-            'value': _.get(field.querySelector('value'), 'textContent')
+            'value': field.querySelector('value')?.textContent
         });
     }
 }

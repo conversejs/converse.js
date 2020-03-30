@@ -87,6 +87,7 @@ release:
 	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/converse-core.js
 	$(SED) -i '/Version:/s/:.*/: $(VERSION)/' COPYRIGHT
 	$(SED) -i '/Project-Id-Version:/s/:.*/: Converse.js $(VERSION)\n"/' locale/converse.pot
+	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' manifest.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' package.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' src/headless/package.json
 	$(SED) -ri 's/--package-version=$(VERSION_FORMAT)/--package-version=$(VERSION)/' Makefile

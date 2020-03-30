@@ -1,4 +1,6 @@
-const tpl_provider = (o) => html`
+import { html } from "lit-html";
+
+const tpl_provider = (o, provider) => html`
     <p class="oauth-provider">
         <a @click=${o.oauthLogin} class="oauth-login" data-id="${provider.id}">
             <i class="fa ${provider.class}"></i>${provider.login_text}
@@ -8,6 +10,6 @@ const tpl_provider = (o) => html`
 
 export default (o) => html`
     <fieldset class="oauth-providers">
-        ${ o.providers.map(provider => tpl_provider(o)) }
+        ${ o.providers.map(provider => tpl_provider(o, provider)) }
     </fieldset>
 `;

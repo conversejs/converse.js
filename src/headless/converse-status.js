@@ -3,7 +3,7 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { get, isNaN, isObject, isString } from "lodash";
+import { isNaN, isObject, isString } from "lodash";
 import { Model } from 'skeletor.js/src/model.js';
 import converse from "@converse/headless/converse-core";
 
@@ -97,7 +97,7 @@ converse.plugins.add('converse-status', {
             if (_converse.idle_seconds > 0) {
                 _converse.idle_seconds = 0;
             }
-            if (!get(_converse.connection, 'authenticated')) {
+            if (!_converse.connection?.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
                 // This can happen when the connection reconnects.
                 return;
@@ -121,7 +121,7 @@ converse.plugins.add('converse-status', {
             /* An interval handler running every second.
              * Used for CSI and the auto_away and auto_xa features.
              */
-            if (!get(_converse.connection, 'authenticated')) {
+            if (!_converse.connection?.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
                 // This can happen when the connection reconnects.
                 return;

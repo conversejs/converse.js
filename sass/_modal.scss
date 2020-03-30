@@ -3,6 +3,7 @@
     #converse-modals {
         .modal {
             background-color: rgba(0, 0, 0, 0.4);
+
             .modal-body {
                 overflow-y: auto;
                 max-height: 75vh;
@@ -30,7 +31,7 @@
         }
 
         .scrollable-container {
-            max-height: 50vh;
+            max-height: 45vh;
             overflow-y: auto;
         }
 

@@ -6,7 +6,7 @@
 import "./converse-status";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import { get, has, isString } from "lodash";
+import { has, isString } from "lodash";
 import converse from "./converse-core";
 import log from "@converse/headless/log";
 import tpl_vcard from "./templates/vcard.html";
@@ -117,13 +117,13 @@ converse.plugins.add('converse-vcard', {
             if (vcard !== null) {
                 result = {
                     'stanza': iq,
-                    'fullname': get(vcard.querySelector('FN'), 'textContent'),
-                    'nickname': get(vcard.querySelector('NICKNAME'), 'textContent'),
-                    'image': get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
-                    'image_type': get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
-                    'url': get(vcard.querySelector('URL'), 'textContent'),
-                    'role': get(vcard.querySelector('ROLE'), 'textContent'),
-                    'email': get(vcard.querySelector('EMAIL USERID'), 'textContent'),
+                    'fullname': vcard.querySelector('FN')?.textConte?.t,
+                    'nickname': vcard.querySelector('NICKNAME')?.textConte?.t,
+                    'image': vcard.querySelector('PHOTO BINVAL')?.textConte?.t,
+                    'image_type': vcard.querySelector('PHOTO TYPE')?.textConte?.t,
+                    'url': vcard.querySelector('URL')?.textConte?.t,
+                    'role': vcard.querySelector('ROLE')?.textConte?.t,
+                    'email': vcard.querySelector('EMAIL USERID')?.textConte?.t,
                     'vcard_updated': (new Date()).toISOString(),
                     'vcard_error': undefined
                 };
@@ -184,7 +184,7 @@ converse.plugins.add('converse-vcard', {
 
 
         function getVCardForChatroomOccupant (message) {
-            const chatbox = get(message, 'collection.chatbox');
+            const chatbox = message?.collection?.chatbox;
             const nick = Strophe.getResourceFromJid(message.get('from'));
 
             if (chatbox && chatbox.get('nick') === nick) {

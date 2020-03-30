@@ -8,14 +8,14 @@ import "converse-modal";
 import "@converse/headless/utils/muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
-import { get, head, isString, isUndefined } from "lodash";
+import { head, isString, isUndefined } from "lodash";
+import { BootstrapModal } from "./converse-modal.js";
 import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
-import tpl_chatarea from "templates/chatarea.html";
-import tpl_chatroom from "templates/chatroom.html";
+import tpl_chatroom from "templates/chatroom.js";
 import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_details_modal from "templates/chatroom_details_modal.js";
@@ -172,8 +172,8 @@ converse.plugins.add('converse-muc-views', {
                 'beforeEnd',
                 tpl_room_description({
                     'jid': stanza.getAttribute('from'),
-                    'desc': get(head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
-                    'occ': get(head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
+                    'desc': head(sizzle('field[var="muc#roominfo_description"] value', stanza))?.textContent,
+                    'occ': head(sizzle('field[var="muc#roominfo_occupants"] value', stanza))?.textContent,
                     'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
                     'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
                     'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
@@ -223,26 +223,30 @@ converse.plugins.add('converse-muc-views', {
         }
 
 
-        _converse.ModeratorToolsModal = _converse.BootstrapModal.extend({
+        _converse.ModeratorToolsModal = BootstrapModal.extend({
             id: "converse-modtools-modal",
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
+
+                this.affiliations_filter = '';
+                this.roles_filter = '';
 
                 this.listenTo(this.model, 'change:role', () => {
-                    this.users_with_role = this.getUsersWithRole();
+                    this.users_with_role = this.chatroomview.model.getOccupantsWithRole(this.model.get('role'));
                     this.render();
                 });
                 this.listenTo(this.model, 'change:affiliation', async () => {
                     this.loading_users_with_affiliation = true;
                     this.users_with_affiliation = null;
                     this.render();
+                    const chatroom = this.chatroomview.model;
                     const affiliation = this.model.get('affiliation');
                     if (this.shouldFetchAffiliationsList()) {
-                        this.users_with_affiliation = await this.chatroomview.model.getAffiliationList(affiliation);
+                        this.users_with_affiliation = await chatroom.getAffiliationList(affiliation);
                     } else {
-                        this.users_with_affiliation = this.getUsersWithAffiliation();
+                        this.users_with_affiliation = chatroom.getOccupantsWithAffiliation(affiliation);
                     }
                     this.loading_users_with_affiliation = false;
                     this.render();
@@ -252,15 +256,19 @@ converse.plugins.add('converse-muc-views', {
             toHTML () {
                 const occupant = this.chatroomview.model.occupants.findWhere({'jid': _converse.bare_jid});
                 return tpl_moderator_tools_modal(Object.assign(this.model.toJSON(), {
+                    'affiliations_filter': this.affiliations_filter,
                     'assignAffiliation': ev => this.assignAffiliation(ev),
                     'assignRole': ev => this.assignRole(ev),
+                    'assignable_affiliations': this.getAssignableAffiliations(occupant),
+                    'assignable_roles': this.getAssignableRoles(occupant),
+                    'filterAffiliationResults': ev => this.filterAffiliationResults(ev),
+                    'filterRoleResults': ev => this.filterRoleResults(ev),
                     'loading_users_with_affiliation': this.loading_users_with_affiliation,
                     'queryAffiliation': ev => this.queryAffiliation(ev),
                     'queryRole': ev => this.queryRole(ev),
                     'queryable_affiliations': AFFILIATIONS.filter(a => !_converse.modtools_disable_query.includes(a)),
                     'queryable_roles': ROLES.filter(a => !_converse.modtools_disable_query.includes(a)),
-                    'assignable_affiliations': this.getAssignableAffiliations(occupant),
-                    'assignable_roles': this.getAssignableRoles(occupant),
+                    'roles_filter': this.roles_filter,
                     'switchTab': ev => this.switchTab(ev),
                     'toggleForm': ev => this.toggleForm(ev),
                     'users_with_affiliation': this.users_with_affiliation,
@@ -318,28 +326,14 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            getUsersWithAffiliation () {
-                return this.chatroomview.model.occupants
-                    .where({'affiliation': this.model.get('affiliation')})
-                    .map(item => {
-                        return {
-                            'jid': item.get('jid'),
-                            'nick': item.get('nick'),
-                            'affiliation': item.get('affiliation')
-                        }
-                    });
+            filterRoleResults (ev) {
+                this.roles_filter = ev.target.value;
+                this.render();
             },
 
-            getUsersWithRole () {
-                return this.chatroomview.model.occupants
-                    .where({'role': this.model.get('role')})
-                    .map(item => {
-                        return {
-                            'jid': item.get('jid'),
-                            'nick': item.get('nick'),
-                            'role': item.get('role')
-                        }
-                    });
+            filterAffiliationResults (ev) {
+                this.affiliations_filter = ev.target.value;
+                this.render();
             },
 
             queryRole (ev) {
@@ -412,7 +406,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.ListChatRoomsModal = _converse.BootstrapModal.extend({
+        _converse.ListChatRoomsModal = BootstrapModal.extend({
             id: "list-chatrooms-modal",
 
             events: {
@@ -424,7 +418,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 if (_converse.muc_domain && !this.model.get('muc_domain')) {
                     this.model.save('muc_domain', _converse.muc_domain);
                 }
@@ -544,7 +538,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.AddChatRoomModal = _converse.BootstrapModal.extend({
+        _converse.AddChatRoomModal = BootstrapModal.extend({
             id: 'add-chatroom-modal',
 
             events: {
@@ -554,7 +548,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change:muc_domain', this.render);
                 this.muc_roomid_policy_error_msg = null;
             },
@@ -637,11 +631,11 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.RoomDetailsModal = _converse.BootstrapModal.extend({
+        _converse.RoomDetailsModal = BootstrapModal.extend({
             id: "room-details-modal",
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change', this.render);
                 this.listenTo(this.model.features, 'change', this.render);
                 this.listenTo(this.model.occupants, 'add', this.render);
@@ -700,14 +694,17 @@ converse.plugins.add('converse-muc-views', {
                 this.initDebounced();
 
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'change:edited', this.onMessageEdited);
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
-                    this.content.innerHTML = '';
+                    this.msgs_container.innerHTML = '';
                     this.removeAll();
                 });
 
-                this.listenTo(this.model, 'change', this.renderHeading);
+                this.listenTo(this.model.csn, 'change', this.renderChatStateNotifications);
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
+
+                this.listenTo(this.model, 'change', this.renderHeading);
                 this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
                 this.listenTo(this.model, 'change:subject', this.setChatRoomSubject);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
@@ -743,10 +740,15 @@ converse.plugins.add('converse-muc-views', {
 
             render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
-                this.el.innerHTML = tpl_chatroom();
+                render(tpl_chatroom({
+                    'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
+                    'show_send_button': _converse.show_send_button
+                }), this.el);
                 this.renderHeading();
-                this.renderChatArea();
                 this.renderBottomPanel();
+                this.content = this.el.querySelector('.chat-content');
+                this.msgs_container = this.el.querySelector('.chat-content__messages');
+                this.csn = this.el.querySelector('.chat-content__notifications');
                 if (!_converse.muc_show_logs_before_join) {
                     this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();
                 }
@@ -754,6 +756,43 @@ converse.plugins.add('converse-muc-views', {
                     this.show();
                 }
                 return this;
+            },
+
+            renderChatStateNotifications () {
+                const actors_per_state = this.model.csn.toJSON();
+                const message = converse.CHAT_STATES.reduce((result, state) => {
+                    const existing_actors = actors_per_state[state];
+                    if (!(existing_actors?.length)) {
+                        return result;
+                    }
+                    const actors = existing_actors.map(a => this.model.getOccupant(a)?.getDisplayName() || a);
+                    if (actors.length === 1) {
+                        if (state === 'composing') {
+                            return `${result} ${__('%1$s is typing', actors[0])}\n`;
+                        } else if (state === 'paused') {
+                            return `${result} ${__('%1$s has stopped typing', actors[0])}\n`;
+                        } else if (state === _converse.GONE) {
+                            return `${result} ${__('%1$s has gone away', actors[0])}\n`;
+                        }
+                    } else if (actors.length > 1) {
+                        let actors_str;
+                        if (actors.length > 3) {
+                            actors_str = `${Array.from(actors).slice(0, 2).join(', ')} and others`;
+                        } else {
+                            const last_actor = actors.pop();
+                            actors_str = __('%1$s and %2$s', actors.join(', '), last_actor);
+                        }
+                        if (state === 'composing') {
+                            return `${result} ${__('%1$s are typing', actors_str)}\n`;
+                        } else if (state === 'paused') {
+                            return `${result} ${__('%1$s have stopped typing', actors_str)}\n`;
+                        } else if (state === _converse.GONE) {
+                            return `${result} ${__('%1$s have gone away', actors_str)}\n`;
+                        }
+                    }
+                    return result;
+                }, '');
+                this.csn.innerHTML = message;
             },
 
             /**
@@ -776,23 +815,6 @@ converse.plugins.add('converse-muc-views', {
                     this.renderMessageForm();
                     this.initMentionAutoComplete();
                 }
-            },
-
-            renderChatArea () {
-                // Render the UI container in which groupchat messages will appear.
-                if (this.el.querySelector('.chat-area') === null) {
-                    const container_el = this.el.querySelector('.chatroom-body');
-                    container_el.insertAdjacentHTML(
-                        'beforeend',
-                        tpl_chatarea({
-                            __,
-                            'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
-                            'show_send_button': _converse.show_send_button
-                        })
-                    );
-                    this.content = this.el.querySelector('.chat-content');
-                }
-                return this;
             },
 
             createSidebarView () {
@@ -963,7 +985,7 @@ converse.plugins.add('converse-muc-views', {
                         "not yet support retractions and that this message may not "+
                         "be removed everywhere.");
 
-                if (message.get('sender') === 'me') {
+                if (message.mayBeRetracted()) {
                     const messages = [__('Are you sure you want to retract this message?')];
                     if (_converse.show_retraction_warning) {
                         messages[1] = retraction_warning;
@@ -972,22 +994,35 @@ converse.plugins.add('converse-muc-views', {
                     if (result) {
                         this.retractOwnMessage(message);
                     }
+                } else if (await message.mayBeModerated()) {
+                    if (message.get('sender') === 'me') {
+                        let messages = [__('Are you sure you want to retract this message?')];
+                        if (_converse.show_retraction_warning) {
+                            messages = [messages[0], retraction_warning, messages[1]]
+                        }
+                        if (await _converse.api.confirm(__('Confirm'), messages)) {
+                            this.retractOtherMessage(message);
+                        }
+                    } else {
+                        let messages = [
+                            __('You are about to retract this message.'),
+                            __('You may optionally include a message, explaining the reason for the retraction.')
+                        ];
+                        if (_converse.show_retraction_warning) {
+                            messages = [messages[0], retraction_warning, messages[1]]
+                        }
+                        const reason = await _converse.api.prompt(
+                            __('Message Retraction'),
+                            messages,
+                            __('Optional reason')
+                        );
+                        if (reason !== false) {
+                            this.retractOtherMessage(message, reason);
+                        }
+                    }
                 } else {
-                    let messages = [
-                        __('You are about to retract this message.'),
-                        __('You may optionally include a message, explaining the reason for the retraction.')
-                    ];
-                    if (_converse.show_retraction_warning) {
-                        messages = [messages[0], retraction_warning, messages[1]]
-                    }
-                    const reason = await _converse.api.prompt(
-                        __('Message Retraction'),
-                        messages,
-                        __('Optional reason')
-                    );
-                    if (reason !== false) {
-                        this.retractOtherMessage(message, reason);
-                    }
+                    const err_msg = __(`Sorry, you're not allowed to retract this message`);
+                    _converse.api.alert('error', __('Error'), err_msg);
                 }
             },
 
@@ -1826,23 +1861,10 @@ converse.plugins.add('converse-muc-views', {
                 u.showElement(container);
             },
 
-            getNotificationWithMessage (message) {
-                let el = this.content.lastElementChild;
-                while (el) {
-                    if (!u.hasClass(el, 'chat-info')) {
-                        return;
-                    }
-                    if (el.textContent === message) {
-                        return el;
-                    }
-                    el = el.previousElementSibling;
-                }
-            },
-
             removeEmptyHistoryFeedback () {
-                const el = this.content.firstElementChild;
+                const el = this.msgs_container.firstElementChild;
                 if (_converse.muc_show_logs_before_join && el && el.matches('.empty-history-feedback')) {
-                    this.content.removeChild(this.content.firstElementChild);
+                    this.msgs_container.removeChild(this.msgs_container.firstElementChild);
                 }
             },
 
@@ -1858,7 +1880,7 @@ converse.plugins.add('converse-muc-views', {
 
             insertNotification (message) {
                 this.removeEmptyHistoryFeedback();
-                this.content.insertAdjacentHTML(
+                this.msgs_container.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({
                         'isodate': (new Date()).toISOString(),
@@ -1916,7 +1938,7 @@ converse.plugins.add('converse-muc-views', {
                     if (date && date.split('T')[0] !== today) {
                         return;
                     }
-                    const data = get(el, 'dataset', {});
+                    const data = el?.dataset || {};
                     if (data.join === nick ||
                             data.leave === nick ||
                             data.leavejoin === nick ||
@@ -1934,8 +1956,8 @@ converse.plugins.add('converse-muc-views', {
                 }
                 const nick = occupant.get('nick'),
                       stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
-                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
-                      data = get(prev_info_el, 'dataset', {});
+                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.msgs_container.lastElementChild, nick),
+                      data = prev_info_el?.dataset || {};
 
                 if (data.leave === nick) {
                     let message;
@@ -1951,9 +1973,9 @@ converse.plugins.add('converse-muc-views', {
                         'extra_classes': 'chat-event',
                         'message': message
                     };
-                    this.content.removeChild(prev_info_el);
-                    this.content.insertAdjacentHTML('beforeend', tpl_info(data));
-                    const el = this.content.lastElementChild;
+                    this.msgs_container.removeChild(prev_info_el);
+                    this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
+                    const el = this.msgs_container.lastElementChild;
                     setTimeout(() => u.addClass('fade-out', el), 5000);
                     setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
                 } else {
@@ -1971,11 +1993,11 @@ converse.plugins.add('converse-muc-views', {
                         'message': message
                     };
                     if (prev_info_el) {
-                        this.content.removeChild(prev_info_el);
-                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                        this.msgs_container.removeChild(prev_info_el);
+                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
                     } else {
-                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
-                        this.insertDayIndicator(this.content.lastElementChild);
+                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
+                        this.insertDayIndicator(this.msgs_container.lastElementChild);
                     }
                 }
                 this.scrollDown();
@@ -1989,8 +2011,8 @@ converse.plugins.add('converse-muc-views', {
                 }
                 const nick = occupant.get('nick'),
                       stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
-                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
-                      dataset = get(prev_info_el, 'dataset', {});
+                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.msgs_container.lastElementChild, nick),
+                      dataset = prev_info_el?.dataset || {};
 
                 if (dataset.join === nick) {
                     let message;
@@ -2006,9 +2028,9 @@ converse.plugins.add('converse-muc-views', {
                         'extra_classes': 'chat-event',
                         'message': message
                     };
-                    this.content.removeChild(prev_info_el);
-                    this.content.insertAdjacentHTML('beforeend', tpl_info(data));
-                    const el = this.content.lastElementChild;
+                    this.msgs_container.removeChild(prev_info_el);
+                    this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
+                    const el = this.msgs_container.lastElementChild;
                     setTimeout(() => u.addClass('fade-out', el), 5000);
                     setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
                 } else {
@@ -2026,11 +2048,11 @@ converse.plugins.add('converse-muc-views', {
                         'data_value': nick
                     }
                     if (prev_info_el) {
-                        this.content.removeChild(prev_info_el);
-                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                        this.msgs_container.removeChild(prev_info_el);
+                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
                     } else {
-                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
-                        this.insertDayIndicator(this.content.lastElementChild);
+                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
+                        this.insertDayIndicator(this.msgs_container.lastElementChild);
                     }
                 }
                 this.scrollDown();
@@ -2090,7 +2112,7 @@ converse.plugins.add('converse-muc-views', {
                 // replaced by the user's name.
                 // Example: Topic set by JC Brand
                 const message = subject.text ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
-                this.content.insertAdjacentHTML(
+                this.msgs_container.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({
                         'isodate': (new Date()).toISOString(),
@@ -2167,9 +2189,9 @@ converse.plugins.add('converse-muc-views', {
                 return tpl_muc_config_form({
                     'closeConfigForm': ev => this.closeConfigForm(ev),
                     'fields': fields.map(f => u.xForm2webForm(f, stanza, options)),
-                    'instructions': get(stanza.querySelector('instructions'), 'textContent'),
+                    'instructions': stanza.querySelector('instructions')?.textContent,
                     'submitConfigForm': ev => this.submitConfigForm(ev),
-                    'title': get(stanza.querySelector('title'), 'textContent')
+                    'title': stanza.querySelector('title')?.textContent
                 });
             },
 
@@ -2223,11 +2245,11 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.MUCInviteModal = _converse.BootstrapModal.extend({
+        _converse.MUCInviteModal = BootstrapModal.extend({
             id: "muc-invite-modal",
 
             initialize () {
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change', this.render);
                 this.initInviteWidget();
             },

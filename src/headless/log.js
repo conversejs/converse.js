@@ -1,4 +1,4 @@
-import { get, isElement } from 'lodash';
+import { isElement } from 'lodash';
 
 const LEVELS = {
     'debug': 0,
@@ -9,10 +9,10 @@ const LEVELS = {
 }
 
 const logger = Object.assign({
-    'debug': get(console, 'log') ? console.log.bind(console) : function noop () {},
-    'error': get(console, 'log') ? console.log.bind(console) : function noop () {},
-    'info': get(console, 'log') ? console.log.bind(console) : function noop () {},
-    'warn': get(console, 'log') ? console.log.bind(console) : function noop () {}
+    'debug': console?.log ? console.log.bind(console) : function noop () {},
+    'error': console?.log ? console.log.bind(console) : function noop () {},
+    'info': console?.log ? console.log.bind(console) : function noop () {},
+    'warn': console?.log ? console.log.bind(console) : function noop () {}
 }, console);
 
 

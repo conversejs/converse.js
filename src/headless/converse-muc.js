@@ -9,7 +9,7 @@ import "./converse-disco";
 import "./converse-emoji";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import { clone, debounce, get, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
+import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
 import converse from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
@@ -250,6 +250,19 @@ converse.plugins.add('converse-muc', {
                 _converse.api.trigger('chatRoomMessageInitialized', this);
             },
 
+            /**
+             * Determines whether this messsage may be moderated,
+             * based on configuration settings and server support.
+             * @async
+             * @private
+             * @method _converse.ChatRoomMessages#mayBeModerated
+             * @returns { Boolean }
+             */
+            mayBeModerated () {
+                return ['all', 'moderator'].includes(_converse.allow_message_retraction) &&
+                    this.collection.chatbox.canModerateMessages();
+            },
+
             checkValidity () {
                 const result = _converse.Message.prototype.checkValidity.call(this);
                 !result && this.collection.chatbox.debouncedRejoin();
@@ -259,7 +272,7 @@ converse.plugins.add('converse-muc', {
             onOccupantRemoved () {
                 this.stopListening(this.occupant);
                 delete this.occupant;
-                const chatbox = get(this, 'collection.chatbox');
+                const chatbox = this?.collection?.chatbox;
                 if (!chatbox) {
                     return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                 }
@@ -270,7 +283,7 @@ converse.plugins.add('converse-muc', {
                 if (occupant.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
                     this.occupant = occupant;
                     this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
-                    const chatbox = get(this, 'collection.chatbox');
+                    const chatbox = this?.collection?.chatbox;
                     if (!chatbox) {
                         return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                     }
@@ -280,7 +293,7 @@ converse.plugins.add('converse-muc', {
 
             setOccupant () {
                 if (this.get('type') !== 'groupchat') { return; }
-                const chatbox = get(this, 'collection.chatbox');
+                const chatbox = this?.collection?.chatbox;
                 if (!chatbox) {
                     return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                 }
@@ -354,6 +367,7 @@ converse.plugins.add('converse-muc', {
                 this.debouncedRejoin = debounce(this.rejoin, 250);
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
                 this.initMessages();
+                this.initCSN();
                 this.initOccupants();
                 this.initDiscoModels(); // sendChatState depends on this.features
                 this.registerHandlers();
@@ -462,7 +476,7 @@ converse.plugins.add('converse-muc', {
             },
 
             async clearMessageQueue () {
-                await Promise.all(this.message_queue.map(m => this.onMessage(m)));
+                await Promise.all(this.message_queue.map(m => this.queueMessage(m)));
                 this.message_queue = [];
             },
 
@@ -573,7 +587,7 @@ converse.plugins.add('converse-muc', {
                             log.warn(`received a mam message with type "chat".`);
                             return true;
                         }
-                        this.onMessage(stanza);
+                        this.queueMessage(stanza);
                         return true;
                     }, null, 'message', 'groupchat', null, room_jid,
                     {'matchBareFromJid': true}
@@ -756,7 +770,7 @@ converse.plugins.add('converse-muc', {
                         'xmlns': Strophe.NS.FASTEN
                     }).c('moderate', {xmlns: Strophe.NS.MODERATE})
                         .c('retract', {xmlns: Strophe.NS.RETRACT}).up()
-                        .c('reason').t(reason);
+                        .c('reason').t(reason || '');
                 return _converse.api.sendIQ(iq, null, false);
             },
 
@@ -820,7 +834,7 @@ converse.plugins.add('converse-muc', {
                 return _converse.ChatBox.prototype.close.call(this);
             },
 
-            canRetractMessages () {
+            canModerateMessages () {
                 const self = this.getOwnOccupant();
                 return self && self.isModerator() && _converse.api.disco.supports(Strophe.NS.MODERATE, this.get('jid'));
             },
@@ -1209,7 +1223,7 @@ converse.plugins.add('converse-muc', {
              * @returns { ('none'|'visitor'|'participant'|'moderator') }
              */
             getOwnRole () {
-                return get(this.getOwnOccupant(), 'attributes.role');
+                return this.getOwnOccupant()?.attributes?.role;
             },
 
             /**
@@ -1219,7 +1233,7 @@ converse.plugins.add('converse-muc', {
              * @returns { ('none'|'outcast'|'member'|'admin'|'owner') }
              */
             getOwnAffiliation () {
-                return get(this.getOwnOccupant(), 'attributes.affiliation');
+                return this.getOwnOccupant()?.attributes?.affiliation;
             },
 
             /**
@@ -1311,6 +1325,56 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
+             * Return an array of occupant models that have the required role
+             * @private
+             * @method _converse.ChatRoom#getOccupantsWithRole
+             * @param { String } role
+             * @returns { _converse.ChatRoomOccupant[] }
+             */
+            getOccupantsWithRole (role) {
+                return this.getOccupantsSortedBy('nick')
+                    .filter(o => o.get('role') === role)
+                    .map(item => {
+                        return {
+                            'jid': item.get('jid'),
+                            'nick': item.get('nick'),
+                            'role': item.get('role')
+                        }
+                    });
+            },
+
+            /**
+             * Return an array of occupant models that have the required affiliation
+             * @private
+             * @method _converse.ChatRoom#getOccupantsWithAffiliation
+             * @param { String } affiliation
+             * @returns { _converse.ChatRoomOccupant[] }
+             */
+            getOccupantsWithAffiliation (affiliation) {
+                return this.getOccupantsSortedBy('nick')
+                    .filter(o => o.get('affiliation') === affiliation)
+                    .map(item => {
+                        return {
+                            'jid': item.get('jid'),
+                            'nick': item.get('nick'),
+                            'affiliation': item.get('affiliation')
+                        }
+                    });
+            },
+
+            /**
+             * Return an array of occupant models, sorted according to the passed-in attribute.
+             * @private
+             * @method _converse.ChatRoom#getOccupantsSortedBy
+             * @param { String } attr - The attribute to sort the returned array by
+             * @returns { _converse.ChatRoomOccupant[] }
+             */
+            getOccupantsSortedBy (attr) {
+                return Array.from(this.occupants.models)
+                    .sort((a, b) => a.get(attr) < b.get(attr) ? -1 : (a.get(attr) > b.get(attr) ? 1 : 0));
+            },
+
+            /**
              * Sends an IQ stanza to the server, asking it for the relevant affiliation list .
              * Returns an array of {@link MemberListItem} objects, representing occupants
              * that have the given affiliation.
@@ -1339,7 +1403,9 @@ converse.plugins.add('converse-muc', {
                     log.warn(result);
                     return err;
                 }
-                return muc_utils.parseMemberListIQ(result).filter(p => p);
+                return muc_utils.parseMemberListIQ(result)
+                    .filter(p => p)
+                    .sort((a, b) => a.nick < b.nick ? -1 : (a.nick > b.nick ? 1 : 0))
             },
 
             /**
@@ -1481,8 +1547,8 @@ converse.plugins.add('converse-muc', {
                 }
                 const jid = data.jid || '';
                 const attributes = Object.assign(data, {
-                    'jid': Strophe.getBareJidFromJid(jid) || get(occupant, 'attributes.jid'),
-                    'resource': Strophe.getResourceFromJid(jid) || get(occupant, 'attributes.resource')
+                    'jid': Strophe.getBareJidFromJid(jid) || occupant?.attributes?.jid,
+                    'resource': Strophe.getResourceFromJid(jid) || occupant?.attributes?.resource
                 });
                 if (occupant) {
                     occupant.save(attributes);
@@ -1527,7 +1593,7 @@ converse.plugins.add('converse-muc', {
                                     }
                                 });
                             } else if (child.getAttribute("xmlns") === Strophe.NS.VCARDUPDATE) {
-                                data.image_hash = get(child.querySelector('photo'), 'textContent');
+                                data.image_hash = child.querySelector('photo')?.textContent;
                             }
                     }
                 });
@@ -1766,7 +1832,7 @@ converse.plugins.add('converse-muc', {
              * @returns { Boolean } Returns `true` or `false` depending on
              *  whether a message was moderated or not.
              */
-            handleModeration (attrs) {
+            async handleModeration (attrs) {
                 const MODERATION_ATTRIBUTES = [
                     'editable',
                     'moderated',
@@ -1781,7 +1847,7 @@ converse.plugins.add('converse-muc', {
                     const message = this.messages.findWhere(query);
                     if (!message) {
                         attrs['dangling_moderation'] = true;
-                        this.messages.create(attrs);
+                        await this.createMessage(attrs);
                         return true;
                     }
                     message.save(pick(attrs, MODERATION_ATTRIBUTES));
@@ -1801,19 +1867,62 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Handler for all MUC messages sent to this groupchat.
+             * Queue an incoming message stanza meant for this {@link _converse.Chatroom} for processing.
+             * @async
+             * @private
+             * @method _converse.ChatRoom#queueMessage
+             * @param { XMLElement } stanza - The message stanza.
+             */
+            queueMessage (stanza) {
+                if (this.messages.fetched) {
+                    this.msg_chain = (this.msg_chain || this.messages.fetched);
+                    this.msg_chain = this.msg_chain.then(() => this.onMessage(stanza));
+                    return this.msg_chain;
+                } else {
+                    this.message_queue.push(stanza);
+                    return Promise.resolve();
+                }
+            },
+
+            removeCSNFor (actor, state) {
+                const actors_per_state = this.csn.toJSON();
+                const existing_actors = Array.from(actors_per_state[state]) || [];
+                if (existing_actors.includes(actor)) {
+                    const idx = existing_actors.indexOf(actor);
+                    existing_actors.splice(idx, 1);
+                    this.csn.set(state, Array.from(existing_actors));
+                }
+            },
+
+            updateCSN (attrs) {
+                const actor = attrs.nick;
+                const state = attrs.chat_state;
+                const actors_per_state = this.csn.toJSON();
+                const existing_actors = actors_per_state[state] || [];
+                if (existing_actors.includes(actor)) {
+                    return;
+                }
+                const new_actors_per_state = converse.CHAT_STATES.reduce((out, s) => {
+                    if (s === state) {
+                        out[s] =  [...existing_actors, actor];
+                    } else {
+                        out[s] = (actors_per_state[s] || []).filter(a => a !== actor);
+                    }
+                    return out;
+                }, {});
+                this.csn.set(new_actors_per_state);
+                window.setTimeout(() => this.removeCSNFor(actor, state), 10000);
+            },
+
+            /**
+             * Handler for all MUC messages sent to this groupchat. This method
+             * shouldn't be called directly, instead {@link _converse.ChatRoom#queueMessage}
+             * should be called.
              * @private
              * @method _converse.ChatRoom#onMessage
              * @param { XMLElement } stanza - The message stanza.
              */
             async onMessage (stanza) {
-                if (!this.messages.fetched || this.messages.fetched.isPending) {
-                    // We're not ready to accept messages before we've fetched
-                    // from our store, so we stuff them into a queue.
-                    this.message_queue.push(stanza);
-                    return;
-                }
-
                 if (sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length) {
                     return log.warn('onMessage: Ignoring unencapsulated forwarded groupchat message');
                 }
@@ -1832,7 +1941,7 @@ converse.plugins.add('converse-muc', {
                         return log.warn(`onMessage: Ignoring alleged MAM groupchat message from ${stanza.getAttribute('from')}`);
                     }
                 }
-                this.createInfoMessages(stanza);
+                await this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
@@ -1844,23 +1953,26 @@ converse.plugins.add('converse-muc', {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
 
-                if (this.handleRetraction(attrs) ||
-                        this.handleModeration(attrs) ||
+                if (await this.handleRetraction(attrs) ||
+                        await this.handleModeration(attrs) ||
                         this.subjectChangeHandled(attrs) ||
                         this.ignorableCSN(attrs)) {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
                 this.setEditable(attrs, attrs.time);
 
+                if (attrs['chat_state']) {
+                    this.updateCSN(attrs);
+                }
                 if (u.shouldCreateGroupchatMessage(attrs)) {
-                    const msg = this.handleCorrection(attrs) || await this.messages.create(attrs, {promise: true});
+                    const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
                     this.incrementUnreadMsgCounter(msg);
                 }
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});
             },
 
             handleModifyError(pres) {
-                const text = get(pres.querySelector('error text'), 'textContent');
+                const text = pres.querySelector('error text')?.textContent;
                 if (text) {
                     if (this.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
                         this.setDisconnectionMessage(text);
@@ -1870,7 +1982,7 @@ converse.plugins.add('converse-muc', {
                             'message': text,
                             'is_ephemeral': true
                         }
-                        this.messages.create(attrs);
+                        this.createMessage(attrs);
                     }
                 }
             },
@@ -1892,7 +2004,7 @@ converse.plugins.add('converse-muc', {
                 // element. This appears to be a safe assumption, since
                 // each <x/> element pertains to a single user.
                 const item = x.querySelector('item');
-                const reason = item ? get(item.querySelector('reason'), 'textContent') : undefined;
+                const reason = item ? item.querySelector('reason')?.textContent : undefined;
                 const actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
                 const message = _converse.muc.disconnect_messages[disconnection_codes[0]];
                 this.setDisconnectionMessage(message, reason, actor);
@@ -1939,7 +2051,7 @@ converse.plugins.add('converse-muc', {
                         const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                         const item = x.querySelector('item');
                         data.actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
-                        data.reason = item ? get(item.querySelector('reason'), 'textContent') : undefined;
+                        data.reason = item ? item.querySelector('reason')?.textContent : undefined;
                         data.message = this.getActionInfoMessage(code, nick, data.actor);
                     } else if (is_self && (code in _converse.muc.new_nickname_messages)) {
                         let nick;
@@ -1960,7 +2072,7 @@ converse.plugins.add('converse-muc', {
                             // XXX: very naive duplication checking
                             return;
                         }
-                        this.messages.create(data);
+                        this.createMessage(data);
                     }
                 });
             },
@@ -2008,7 +2120,7 @@ converse.plugins.add('converse-muc', {
             onErrorPresence (stanza) {
                 const error = stanza.querySelector('error');
                 const error_type = error.getAttribute('type');
-                const reason = get(sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent');
+                const reason = sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop()?.textContent;
 
                 if (error_type === 'modify') {
                     this.handleModifyError(stanza);
@@ -2032,7 +2144,7 @@ converse.plugins.add('converse-muc', {
                         const message = __("Your nickname doesn't conform to this groupchat's policies.");
                         this.setDisconnectionMessage(message, reason);
                     } else if (sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).length) {
-                        const moved_jid = get(sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).pop(), 'textContent')
+                        const moved_jid = sizzle(`gone[xmlns="${Strophe.NS.STANZAS}"]`, error).pop()?.textContent
                             .replace(/^xmpp:/, '')
                             .replace(/\?join$/, '');
                         this.save({ moved_jid, 'destroyed_reason': reason});
@@ -2649,3 +2761,5 @@ converse.plugins.add('converse-muc', {
         /************************ END API ************************/
     }
 });
+
+

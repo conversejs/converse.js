@@ -4,7 +4,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import converse from "@converse/headless/converse-core";
-import { get } from "lodash";
 import log from "@converse/headless/log";
 
 const { Strophe, sizzle } = converse.env;
@@ -166,7 +165,7 @@ converse.plugins.add('converse-notification', {
             // the message...
             const body = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, message).length ?
                          __('OMEMO Message received') :
-                         get(message.querySelector('body'), 'textContent');
+                         message.querySelector('body')?.textContent;
             if (!body) {
                 return;
             }

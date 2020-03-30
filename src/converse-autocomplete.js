@@ -9,8 +9,8 @@
 import { Events } from 'skeletor.js/src/events.js';
 import converse from "@converse/headless/converse-core";
 
-const { _ } = converse.env,
-      u = converse.env.utils;
+const u = converse.env.utils;
+
 
 converse.plugins.add("converse-autocomplete", {
 
@@ -94,7 +94,7 @@ converse.plugins.add("converse-autocomplete", {
                 this.ul = this.container.querySelector('.suggestion-box__results');
                 this.status = this.container.querySelector('.suggestion-box__additions');
 
-                _.assignIn(this, {
+                Object.assign(this, {
                     'match_current_word': false, // Match only the current word, otherwise all input is matched
                     'ac_triggers': [], // Array of keys (`ev.key`) values that will trigger auto-complete
                     'include_triggers': [], // Array of trigger keys which should be included in the returned value
@@ -102,7 +102,7 @@ converse.plugins.add("converse-autocomplete", {
                     'max_items': 10,
                     'auto_evaluate': true, // Should evaluation happen automatically without any particular key as trigger?
                     'auto_first': false, // Should the first element be automatically selected?
-                    'data': _.identity,
+                    'data': a => a,
                     'filter': _converse.FILTER_CONTAINS,
                     'sort': config.sort === false ? false : SORT_BYLENGTH,
                     'item': ITEM
@@ -147,7 +147,7 @@ converse.plugins.add("converse-autocomplete", {
             set list (list) {
                 if (Array.isArray(list) || typeof list === "function") {
                     this._list = list;
-                } else if (typeof list === "string" && _.includes(list, ",")) {
+                } else if (typeof list === "string" && list.includes(",")) {
                     this._list = list.split(/\s*,\s*/);
                 } else { // Element or CSS selector
                     list = helpers.getElement(list);
@@ -279,7 +279,7 @@ converse.plugins.add("converse-autocomplete", {
 
             onKeyDown (ev) {
                 if (this.opened) {
-                    if (_.includes([converse.keycodes.ENTER, converse.keycodes.TAB], ev.keyCode) && this.selected) {
+                    if ([converse.keycodes.ENTER, converse.keycodes.TAB].includes(ev.keyCode) && this.selected) {
                         ev.preventDefault();
                         ev.stopPropagation();
                         this.select();
@@ -287,7 +287,7 @@ converse.plugins.add("converse-autocomplete", {
                     } else if (ev.keyCode === converse.keycodes.ESCAPE) {
                         this.close({'reason': 'esc'});
                         return true;
-                    } else if (_.includes([converse.keycodes.UP_ARROW, converse.keycodes.DOWN_ARROW], ev.keyCode)) {
+                    } else if ([converse.keycodes.UP_ARROW, converse.keycodes.DOWN_ARROW].includes(ev.keyCode)) {
                         ev.preventDefault();
                         ev.stopPropagation();
                         this[ev.keyCode === converse.keycodes.UP_ARROW ? "previous" : "next"]();
@@ -295,13 +295,13 @@ converse.plugins.add("converse-autocomplete", {
                     }
                 }
 
-                if (_.includes([
-                            converse.keycodes.SHIFT,
-                            converse.keycodes.META,
-                            converse.keycodes.META_RIGHT,
-                            converse.keycodes.ESCAPE,
-                            converse.keycodes.ALT]
-                        , ev.keyCode)) {
+                if ([converse.keycodes.SHIFT,
+                     converse.keycodes.META,
+                     converse.keycodes.META_RIGHT,
+                     converse.keycodes.ESCAPE,
+                     converse.keycodes.ALT
+                    ].includes(ev.keyCode)) {
+
                     return;
                 }
 

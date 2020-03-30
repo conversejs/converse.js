@@ -213,7 +213,7 @@
             margin-bottom: 0.25em;
         }
         .chat-content {
-            padding: 1em 0;
+            padding: 1em 0 0 0;
             height: 100%;
             font-size: var(--message-font-size);
             color: var(--text-color);
@@ -221,6 +221,17 @@
             border: 0;
             background-color: var(--chat-content-background-color);
             line-height: 1.3em;
+
+            .chat-content__notifications {
+                height: 1.7em;
+                white-space: pre;
+                background-color: var(--chat-content-background-color);
+                color: var(--subdued-color);
+                font-size: 90%;
+                font-style: italic;
+                line-height: var(--line-height-small);
+                padding: 0 1em 0.3em;
+            }
 
             video {
                 width: 100%
@@ -230,6 +241,7 @@
                 width: 100%
             }
         }
+
         .chat-content-sendbutton {
             height: calc(100% - (var(--chat-textarea-height) + var(--send-button-height) + 2 * var(--send-button-margin)));
         }
@@ -612,7 +624,8 @@
             overflow: hidden;
         }
         .chat-body {
-            height: calc(100% - var(--fullpage-chat-head-height));
+            height: inherit;
+            overflow: hidden;
             background-color: var(--chat-head-color);
         }
         .chat-title {

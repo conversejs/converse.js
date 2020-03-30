@@ -1,14 +1,11 @@
 # Changelog
 
-
 ## 7.0.0 (Unreleased)
 
-- [muc_fetch_members](https://conversejs.org/docs/html/configuration.html#muc-fetch-members) now also accepts an array of affiliations to fetch.
-- Replace Backbone with [Skeletor](https://github.com/skeletorjs/skeletor)
-- Start using [lit-html](https://lit-html.polymer-project.org/) instead of lodash for templating.
-- Bugfix. Handle stanza that clears the MUC subject
 - #1313: Stylistic improvements to the send button
+- #1490: Busy-loop when fetching registration form fails
 - #1535: Add option to destroy a MUC
+- #1715: Update chat state notification after receiving a message correction.
 - #1793: Send button doesn't appear in Firefox in 1:1 chats
 - #1820: Set focus on jid field after controlbox is loaded
 - #1822: Don't log error if user has no bookmarks
@@ -16,10 +13,14 @@
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact
 - #1839: Headline messages are shown in controlbox
-- Allow ignore bootstrap modules at build using environment variable: BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown".
-  example: export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist
-- New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
+- #1896: Don't send receipts for messages fetched from the archive 
+- Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
+- Bugfix. Handle stanza that clears the MUC subject
 - New config option [modtools_disable_assign](https://conversejs.org/docs/html/configuration.html#modtools-disable-assign)
+- New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
+- Replace Backbone with [Skeletor](https://github.com/skeletorjs/skeletor)
+- Start using [lit-html](https://lit-html.polymer-project.org/) instead of lodash for templating.
+- [muc_fetch_members](https://conversejs.org/docs/html/configuration.html#muc-fetch-members) now also accepts an array of affiliations to fetch.
 
 ## 6.0.0 (2020-01-09)
 

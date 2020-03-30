@@ -5,7 +5,7 @@
  */
 import * as strophe from 'strophe.js/src/core';
 import { Model } from 'skeletor.js/src/model.js';
-import _ from "../lodash.noconflict";
+import { compact, last, isElement, isObject, isString } from "lodash";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
 
@@ -81,8 +81,8 @@ u.prefixMentions = function (message) {
 };
 
 u.isValidJID = function (jid) {
-    if (_.isString(jid)) {
-        return _.compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    if (isString(jid)) {
+        return compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     }
     return false;
 };
@@ -92,7 +92,7 @@ u.isValidMUCJID = function (jid) {
 };
 
 u.isSameBareJID = function (jid1, jid2) {
-    if (!_.isString(jid1) || !_.isString(jid2)) {
+    if (!isString(jid1) || !isString(jid2)) {
         return false;
     }
     return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
@@ -101,7 +101,7 @@ u.isSameBareJID = function (jid1, jid2) {
 
 
 u.isSameDomain = function (jid1, jid2) {
-    if (!_.isString(jid1) || !_.isString(jid2)) {
+    if (!isString(jid1) || !isString(jid2)) {
         return false;
     }
     return Strophe.getDomainFromJid(jid1).toLowerCase() ===
@@ -124,8 +124,7 @@ u.isNewMessage = function (message) {
 };
 
 u.shouldCreateMessage = function (attrs) {
-    return attrs['chat_state'] ||
-        attrs['retracted'] || // Retraction received *before* the message
+    return attrs['retracted'] || // Retraction received *before* the message
         !u.isEmptyMessage(attrs);
 }
 
@@ -184,7 +183,7 @@ u.isHeadlineMessage = function (_converse, message) {
     if (u.isChatRoom(chatbox)) {
         return false;
     }
-    if (message.getAttribute('type') !== 'error' && from_jid && !_.includes(from_jid, '@')) {
+    if (message.getAttribute('type') !== 'error' && from_jid && !from_jid.includes('@')) {
         // Some servers (I'm looking at you Prosody) don't set the message
         // type to "headline" when sending server messages. For now we
         // check if an @ signal is included, and if not, we assume it's
@@ -199,21 +198,21 @@ u.isErrorObject = function (o) {
 }
 
 u.isErrorStanza = function (stanza) {
-    if (!_.isElement(stanza)) {
+    if (!isElement(stanza)) {
         return false;
     }
     return stanza.getAttribute('type') === 'error';
 }
 
 u.isForbiddenError = function (stanza) {
-    if (!_.isElement(stanza)) {
+    if (!isElement(stanza)) {
         return false;
     }
     return sizzle(`error[type="auth"] forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length > 0;
 }
 
 u.isServiceUnavailableError = function (stanza) {
-    if (!_.isElement(stanza)) {
+    if (!isElement(stanza)) {
         return false;
     }
     return sizzle(`error[type="cancel"] service-unavailable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length > 0;
@@ -223,7 +222,7 @@ u.merge = function merge (first, second) {
     /* Merge the second object into the first one.
      */
     for (var k in second) {
-        if (_.isObject(first[k])) {
+        if (isObject(first[k])) {
             merge(first[k], second[k]);
         } else {
             first[k] = second[k];
@@ -239,7 +238,7 @@ u.applyUserSettings = function applyUserSettings (context, settings, user_settin
         if (user_settings[k] === undefined) {
             continue;
         }
-        if (_.isObject(settings[k]) && !Array.isArray(settings[k])) {
+        if (isObject(settings[k]) && !Array.isArray(settings[k])) {
             applyUserSettings(context[k], settings[k], user_settings[k]);
         } else {
             context[k] = user_settings[k];
@@ -317,15 +316,12 @@ u.queryChildren = function (el, selector) {
 };
 
 u.contains = function (attr, query) {
+    const checker = (item, key) => item.get(key).toLowerCase().includes(query.toLowerCase());
     return function (item) {
         if (typeof attr === 'object') {
-            var value = false;
-            _.forEach(attr, function (a) {
-                value = value || _.includes(item.get(a).toLowerCase(), query.toLowerCase());
-            });
-            return value;
+            return Object.keys(attr).reduce((acc, k) => acc || checker(item, k), false);
         } else if (typeof attr === 'string') {
-            return _.includes(item.get(attr).toLowerCase(), query.toLowerCase());
+            return checker(item, attr);
         } else {
             throw new TypeError('contains: wrong attribute type. Must be string or array.');
         }
@@ -478,7 +474,7 @@ u.getCurrentWord = function (input, index, delineator) {
 
 u.replaceCurrentWord = function (input, new_value) {
     const caret = input.selectionEnd || undefined,
-          current_word = _.last(input.value.slice(0, caret).split(' ')),
+          current_word = last(input.value.slice(0, caret).split(' ')),
           value = input.value;
     input.value = value.slice(0, caret - current_word.length) + `${new_value} ` + value.slice(caret);
     input.selectionEnd = caret - current_word.length + new_value.length + 1;

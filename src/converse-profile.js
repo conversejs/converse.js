@@ -6,6 +6,7 @@
 import "@converse/headless/converse-status";
 import "@converse/headless/converse-vcard";
 import "converse-modal";
+import { BootstrapModal } from "./converse-modal.js";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -34,7 +35,7 @@ converse.plugins.add('converse-profile', {
         });
 
 
-        _converse.ProfileModal = _converse.BootstrapModal.extend({
+        _converse.ProfileModal = BootstrapModal.extend({
             id: "user-profile-modal",
             events: {
                 'change input[type="file"': "updateFilePreview",
@@ -44,7 +45,7 @@ converse.plugins.add('converse-profile', {
 
             initialize () {
                 this.listenTo(this.model, 'change', this.render);
-                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                BootstrapModal.prototype.initialize.apply(this, arguments);
                 /**
                  * Triggered when the _converse.ProfileModal has been created and initialized.
                  * @event _converse#profileModalInitialized
@@ -128,7 +129,7 @@ converse.plugins.add('converse-profile', {
         });
 
 
-        _converse.ChatStatusModal = _converse.BootstrapModal.extend({
+        _converse.ChatStatusModal = BootstrapModal.extend({
             id: "modal-status-change",
             events: {
                 "submit form#set-xmpp-status": "onFormSubmitted",
@@ -180,7 +181,7 @@ converse.plugins.add('converse-profile', {
             }
         });
 
-        _converse.ClientInfoModal = _converse.BootstrapModal.extend({
+        _converse.ClientInfoModal = BootstrapModal.extend({
             id: "converse-client-info-modal",
 
             toHTML () {

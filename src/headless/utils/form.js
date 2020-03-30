@@ -3,8 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the form utilities module.
  */
-
-import _ from "../lodash.noconflict";
 import tpl_field from "../templates/field.html";
 import u from "./core";
 
@@ -19,7 +17,7 @@ u.webForm2xForm = function (field) {
     if (field.getAttribute('type') === 'checkbox') {
         value = field.checked && 1 || 0;
     } else if (field.tagName == "TEXTAREA") {
-        value = _.filter(field.value.split('\n'), _.trim);
+        value = field.value.split('\n').filter(s => s.trim());
     } else if (field.tagName == "SELECT") {
         value = u.getSelectValues(field);
     } else {

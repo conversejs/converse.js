@@ -15,7 +15,7 @@
 
         it("shows all autocompletion options when the user presses @",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
@@ -43,7 +43,7 @@
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('Hello world').tree();
-            await view.model.onMessage(msg);
+            await view.model.queueMessage(msg);
 
             // Test that pressing @ brings up all options
             const textarea = view.el.querySelector('textarea.chat-textarea');
@@ -68,7 +68,7 @@
 
         it("autocompletes when the user presses tab",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');

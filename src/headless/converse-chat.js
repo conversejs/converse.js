@@ -334,7 +334,7 @@ converse.plugins.add('converse-chat', {
                 }
                 this.set({'box_id': `box-${btoa(jid)}`});
                 this.initMessages();
-                this.initCSN();
+                this.initNotifications();
 
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                     this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
@@ -367,7 +367,7 @@ converse.plugins.add('converse-chat', {
                 });
             },
 
-            initCSN () {
+            initNotifications () {
                 this.csn = new Model();
             },
 

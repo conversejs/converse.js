@@ -702,7 +702,7 @@ converse.plugins.add('converse-muc-views', {
                     this.removeAll();
                 });
 
-                this.listenTo(this.model.csn, 'change', this.renderChatStateNotifications);
+                this.listenTo(this.model.csn, 'change', this.renderNotifications);
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
                 this.listenTo(this.model, 'change', this.renderHeading);
@@ -745,23 +745,26 @@ converse.plugins.add('converse-muc-views', {
                     'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
                     'show_send_button': _converse.show_send_button
                 }), this.el);
-                await this.renderHeading();
-                this.renderBottomPanel();
+                this.csn = this.el.querySelector('.chat-content__notifications');
                 this.content = this.el.querySelector('.chat-content');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
-                this.csn = this.el.querySelector('.chat-content__notifications');
-                if (!_converse.muc_show_logs_before_join) {
-                    this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();
+
+                this.renderBottomPanel();
+                if (!_converse.muc_show_logs_before_join &&
+                        this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
+                    this.showSpinner();
                 }
-                if (!this.model.get('hidden')) {
-                    this.show();
-                }
-                return this;
+                // Render header as late as possible since it's async and we
+                // want the rest of the DOM elements to be available ASAP.
+                // Otherwise e.g. this.csn is not yet defined when accessed elsewhere.
+                await this.renderHeading();
+                !this.model.get('hidden') && this.show();
             },
 
-            renderChatStateNotifications () {
+            renderNotifications () {
                 const actors_per_state = this.model.csn.toJSON();
-                const message = converse.CHAT_STATES.reduce((result, state) => {
+                const states = [...converse.CHAT_STATES, ...converse.MUC_TRAFFIC_STATES];
+                const message = states.reduce((result, state) => {
                     const existing_actors = actors_per_state[state];
                     if (!(existing_actors?.length)) {
                         return result;
@@ -774,6 +777,10 @@ converse.plugins.add('converse-muc-views', {
                             return `${result} ${__('%1$s has stopped typing', actors[0])}\n`;
                         } else if (state === _converse.GONE) {
                             return `${result} ${__('%1$s has gone away', actors[0])}\n`;
+                        } else if (state === 'entered') {
+                            return `${result} ${__('%1$s has entered the groupchat', actors[0])}\n`;
+                        } else if (state === 'exited') {
+                            return `${result} ${__('%1$s has left the groupchat', actors[0])}\n`;
                         }
                     } else if (actors.length > 1) {
                         let actors_str;
@@ -783,12 +790,17 @@ converse.plugins.add('converse-muc-views', {
                             const last_actor = actors.pop();
                             actors_str = __('%1$s and %2$s', actors.join(', '), last_actor);
                         }
+
                         if (state === 'composing') {
                             return `${result} ${__('%1$s are typing', actors_str)}\n`;
                         } else if (state === 'paused') {
                             return `${result} ${__('%1$s have stopped typing', actors_str)}\n`;
                         } else if (state === _converse.GONE) {
                             return `${result} ${__('%1$s have gone away', actors_str)}\n`;
+                        } else if (state === 'entered') {
+                            return `${result} ${__('%1$s have entered the groupchat', actors_str)}\n`;
+                        } else if (state === 'exited') {
+                            return `${result} ${__('%1$s have left the groupchat', actors_str)}\n`;
                         }
                     }
                     return result;
@@ -1905,27 +1917,6 @@ converse.plugins.add('converse-muc-views', {
                     this.renderHeading();
                     this.renderBottomPanel();
                 }
-                if (occupant.get('show') === 'online') {
-                    this.showJoinNotification(occupant);
-                }
-            },
-
-            onOccupantRemoved (occupant) {
-                if (this.model.session.get('connection_status') ===  converse.ROOMSTATUS.ENTERED &&
-                        occupant.get('show') === 'online') {
-                    this.showLeaveNotification(occupant);
-                }
-            },
-
-            showJoinOrLeaveNotification (occupant) {
-                if (occupant.get('states').includes('303')) {
-                    return;
-                }
-                if (occupant.get('show') === 'offline') {
-                    this.showLeaveNotification(occupant);
-                } else if (occupant.get('show') === 'online') {
-                    this.showJoinNotification(occupant);
-                }
             },
 
             /**
@@ -1957,117 +1948,6 @@ converse.plugins.add('converse-muc-views', {
                     }
                     el = el.previousElementSibling;
                 }
-            },
-
-            async showJoinNotification (occupant) {
-                if (!_converse.muc_show_join_leave ||
-                        this.model.session.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
-                    return;
-                }
-                await api.waitUntil('chatRoomViewInitialized');
-                const nick = occupant.get('nick');
-                const stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null;
-                const prev_info_el = this.getPreviousJoinOrLeaveNotification(this.msgs_container.lastElementChild, nick);
-                const data = prev_info_el?.dataset || {};
-
-                if (data.leave === nick) {
-                    let message;
-                    if (stat) {
-                        message = __('%1$s has left and re-entered the groupchat. "%2$s"', nick, stat);
-                    } else {
-                        message = __('%1$s has left and re-entered the groupchat', nick);
-                    }
-                    const data = {
-                        'data_name': 'leavejoin',
-                        'data_value': nick,
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    };
-                    this.msgs_container.removeChild(prev_info_el);
-                    this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                    const el = this.msgs_container.lastElementChild;
-                    setTimeout(() => u.addClass('fade-out', el), 5000);
-                    setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
-                } else {
-                    let message;
-                    if (stat) {
-                        message = __('%1$s has entered the groupchat. "%2$s"', nick, stat);
-                    } else {
-                        message = __('%1$s has entered the groupchat', nick);
-                    }
-                    const data = {
-                        'data_name': 'join',
-                        'data_value': nick,
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    };
-                    if (prev_info_el) {
-                        this.msgs_container.removeChild(prev_info_el);
-                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                    } else {
-                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                        this.insertDayIndicator(this.msgs_container.lastElementChild);
-                    }
-                }
-                this.scrollDown();
-            },
-
-            async showLeaveNotification (occupant) {
-                if (!api.settings.get('muc_show_join_leave') ||
-                        occupant.get('states').includes('303') ||
-                        occupant.get('states').includes('307')) {
-                    return;
-                }
-                await api.waitUntil('chatRoomViewInitialized');
-                const nick = occupant.get('nick'),
-                      stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
-                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.msgs_container.lastElementChild, nick),
-                      dataset = prev_info_el?.dataset || {};
-
-                if (dataset.join === nick) {
-                    let message;
-                    if (stat) {
-                        message = __('%1$s has entered and left the groupchat. "%2$s"', nick, stat);
-                    } else {
-                        message = __('%1$s has entered and left the groupchat', nick);
-                    }
-                    const data = {
-                        'data_name': 'joinleave',
-                        'data_value': nick,
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    };
-                    this.msgs_container.removeChild(prev_info_el);
-                    this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                    const el = this.msgs_container.lastElementChild;
-                    setTimeout(() => u.addClass('fade-out', el), 5000);
-                    setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
-                } else {
-                    let message;
-                    if (stat) {
-                        message = __('%1$s has left the groupchat. "%2$s"', nick, stat);
-                    } else {
-                        message = __('%1$s has left the groupchat', nick);
-                    }
-                    const data = {
-                        'message': message,
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'data_name': 'leave',
-                        'data_value': nick
-                    }
-                    if (prev_info_el) {
-                        this.msgs_container.removeChild(prev_info_el);
-                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                    } else {
-                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                        this.insertDayIndicator(this.msgs_container.lastElementChild);
-                    }
-                }
-                this.scrollDown();
             },
 
             /**

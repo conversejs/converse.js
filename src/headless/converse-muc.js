@@ -16,6 +16,8 @@ import muc_utils from "./utils/muc";
 import stanza_utils from "./utils/stanza";
 import u from "./utils/form";
 
+converse.MUC_TRAFFIC_STATES = ['entered', 'exited'];
+
 const MUC_ROLE_WEIGHTS = {
     'moderator':    1,
     'participant':  2,
@@ -368,7 +370,7 @@ converse.plugins.add('converse-muc', {
                 this.debouncedRejoin = debounce(this.rejoin, 250);
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
                 this.initMessages();
-                this.initCSN();
+                this.initNotifications();
                 this.initOccupants();
                 this.initDiscoModels(); // sendChatState depends on this.features
                 this.registerHandlers();
@@ -376,6 +378,10 @@ converse.plugins.add('converse-muc', {
                 this.on('change:chat_state', this.sendChatState, this);
                 await this.restoreSession();
                 this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
+
+                this.listenTo(this.occupants, 'add', this.onOccupantAdded);
+                this.listenTo(this.occupants, 'remove', this.onOccupantRemoved);
+                this.listenTo(this.occupants, 'change:show', this.onOccupantShowChanged);
 
                 const restored = await this.restoreFromCache()
                 if (!restored) {
@@ -458,6 +464,31 @@ converse.plugins.add('converse-muc', {
                 }
                 if (_converse.clear_messages_on_reconnection) {
                     await this.clearMessages();
+                }
+            },
+
+            onOccupantAdded (occupant) {
+                if (this.session.get('connection_status') ===  converse.ROOMSTATUS.ENTERED &&
+                        occupant.get('show') === 'online') {
+                    this.updateNotifications(occupant.get('nick'), 'entered');
+                }
+            },
+
+            onOccupantRemoved (occupant) {
+                if (this.session.get('connection_status') ===  converse.ROOMSTATUS.ENTERED &&
+                        occupant.get('show') === 'online') {
+                    this.updateNotifications(occupant.get('nick'), 'exited');
+                }
+            },
+
+            onOccupantShowChanged (occupant) {
+                if (occupant.get('states').includes('303')) {
+                    return;
+                }
+                if (occupant.get('show') === 'offline') {
+                    this.updateNotifications(occupant.get('nick'), 'exited');
+                } else if (occupant.get('show') === 'online') {
+                    this.updateNotifications(occupant.get('nick'), 'entered');
                 }
             },
 
@@ -1885,7 +1916,7 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            removeCSNFor (actor, state) {
+            removeNotification (actor, state) {
                 const actors_per_state = this.csn.toJSON();
                 const existing_actors = Array.from(actors_per_state[state]) || [];
                 if (existing_actors.includes(actor)) {
@@ -1895,24 +1926,32 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            updateCSN (attrs) {
-                const actor = attrs.nick;
-                const state = attrs.chat_state;
+            /**
+             * Update the notifications model by adding the passed in nickname
+             * to the array of nicknames that all match a particular state.
+             * The state can be a XEP-0085 Chat State or a XEP-0045 join/leave
+             * state.
+             * @param {String} actor - The nickname of the actor that causes the notification
+             * @param {String} state - The state representing the type of notificcation
+             */
+            updateNotifications (actor, state) {
                 const actors_per_state = this.csn.toJSON();
                 const existing_actors = actors_per_state[state] || [];
                 if (existing_actors.includes(actor)) {
                     return;
                 }
-                const new_actors_per_state = converse.CHAT_STATES.reduce((out, s) => {
+                const reducer = (out, s) => {
                     if (s === state) {
                         out[s] =  [...existing_actors, actor];
                     } else {
                         out[s] = (actors_per_state[s] || []).filter(a => a !== actor);
                     }
                     return out;
-                }, {});
-                this.csn.set(new_actors_per_state);
-                window.setTimeout(() => this.removeCSNFor(actor, state), 10000);
+                };
+                const actors_per_chat_state = converse.CHAT_STATES.reduce(reducer, {});
+                const actors_per_traffic_state = converse.MUC_TRAFFIC_STATES.reduce(reducer, {});
+                this.csn.set(Object.assign(actors_per_chat_state, actors_per_traffic_state));
+                window.setTimeout(() => this.removeNotification(actor, state), 10000);
             },
 
             /**
@@ -1963,7 +2002,7 @@ converse.plugins.add('converse-muc', {
                 this.setEditable(attrs, attrs.time);
 
                 if (attrs['chat_state']) {
-                    this.updateCSN(attrs);
+                    this.updateNotifications(attrs.nick, attrs.chat_state);
                 }
                 if (u.shouldCreateGroupchatMessage(attrs)) {
                     const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);

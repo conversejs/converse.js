@@ -21,11 +21,22 @@
                 const muc_jid = 'lounge@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.api.chatviews.get(muc_jid);
-                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length);
-                const presence = u.toStanza(`
+                let presence = u.toStanza(`
                     <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <status code="201"/>
+                            <item role="moderator" affiliation="owner" jid="${_converse.jid}"/>
+                            <status code="110"/>
+                        </x>
+                    </presence>
+                `);
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 1);
+
+                presence = u.toStanza(`
+                    <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo1">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <status code="210"/>
                             <item role="moderator" affiliation="owner" jid="${_converse.jid}"/>
                             <status code="110"/>
                         </x>
@@ -48,9 +59,6 @@
                 const muc_jid = 'lounge@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.api.chatviews.get(muc_jid);
-                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length);
-                expect(view.el.querySelectorAll('.chat-info').length).toBe(1);
-
                 const presence = u.toStanza(`
                     <presence xmlns="jabber:client" to="${_converse.jid}" from="${muc_jid}/romeo">
                         <x xmlns="http://jabber.org/protocol/muc#user">
@@ -68,11 +76,11 @@
                 spyOn(view.model, 'createInfoMessages').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 await u.waitUntil(() => view.model.createInfoMessages.calls.count());
-                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 2);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 1);
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 await u.waitUntil(() => view.model.createInfoMessages.calls.count() === 2);
-                expect(view.el.querySelectorAll('.chat-info').length).toBe(2);
+                expect(view.el.querySelectorAll('.chat-info').length).toBe(1);
                 done();
             }));
         });

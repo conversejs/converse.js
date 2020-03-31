@@ -1223,17 +1223,6 @@ muc_show_join_leave
 Determines whether Converse will show info messages inside a chatroom
 whenever a user joins or leaves it.
 
-muc_show_join_leave_status
---------------------------
-
-* Default; ``true``
-
-Determines whether Converse shows the optionally included status message when a
-user joins or leaves the MUC. This setting only has an effect if
-``muc_show_join_leave`` is set to ``true``.
-
-See https://xmpp.org/extensions/xep-0045.html#changepres
-
 muc_show_logs_before_join
 -------------------------
 

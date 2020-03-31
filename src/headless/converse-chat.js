@@ -334,7 +334,7 @@ converse.plugins.add('converse-chat', {
                 }
                 this.set({'box_id': `box-${btoa(jid)}`});
                 this.initMessages();
-                this.initCSN();
+                this.initNotifications();
 
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                     this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
@@ -367,8 +367,8 @@ converse.plugins.add('converse-chat', {
                 });
             },
 
-            initCSN () {
-                this.csn = new Model();
+            initNotifications () {
+                this.notifications = new Model();
             },
 
             afterMessagesFetched () {
@@ -425,11 +425,11 @@ converse.plugins.add('converse-chat', {
                     this.setEditable(attrs, attrs.time, stanza);
 
                     if (attrs['chat_state'] && attrs.sender === 'them') {
-                        this.csn.set('chat_state', attrs.chat_state);
+                        this.notifications.set('chat_state', attrs.chat_state);
                     }
                     if (u.shouldCreateMessage(attrs)) {
                         const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
-                        this.csn.set({'chat_state': null});
+                        this.notifications.set({'chat_state': null});
                         this.incrementUnreadMsgCounter(msg);
                     }
                 }

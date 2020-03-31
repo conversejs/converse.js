@@ -25,6 +25,7 @@ Soon we'll deprecate the latter, so prepare now.
 - Replace Backbone with [Skeletor](https://github.com/skeletorjs/skeletor)
 - Start using [lit-html](https://lit-html.polymer-project.org/) instead of lodash for templating.
 - [muc_fetch_members](https://conversejs.org/docs/html/configuration.html#muc-fetch-members) now also accepts an array of affiliations to fetch.
+- Remove the configuration setting `muc_show_join_leave_status`. The optional status message is no longer shown at all.
 
 ## 6.0.0 (2020-01-09)
 

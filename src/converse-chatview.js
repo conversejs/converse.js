@@ -203,7 +203,7 @@ converse.plugins.add('converse-chatview', {
                     this.removeAll();
                 });
 
-                this.listenTo(this.model.csn, 'change', this.renderChatStateNotification);
+                this.listenTo(this.model.notifications, 'change', this.renderChatStateNotification);
 
                 this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
                 this.listenTo(this.model, 'destroy', this.remove);
@@ -249,7 +249,7 @@ converse.plugins.add('converse-chatview', {
                 );
                 render(result, this.el);
                 this.content = this.el.querySelector('.chat-content');
-                this.csn = this.el.querySelector('.chat-content__notifications');
+                this.notifications = this.el.querySelector('.chat-content__notifications');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
                 this.renderChatStateNotification();
                 this.renderMessageForm();
@@ -258,14 +258,14 @@ converse.plugins.add('converse-chatview', {
             },
 
             renderChatStateNotification () {
-                if (this.model.csn.get('chat_state') === _converse.COMPOSING) {
-                    this.csn.innerText = __('%1$s is typing', this.model.getDisplayName());
-                } else if (this.model.csn.get('chat_state') === _converse.PAUSED) {
-                    this.csn.innerText = __('%1$s has stopped typing', this.model.getDisplayName());
-                } else if (this.model.csn.get('chat_state') === _converse.GONE) {
-                    this.csn.innerText = __('%1$s has gone away', this.model.getDisplayName());
+                if (this.model.notifications.get('chat_state') === _converse.COMPOSING) {
+                    this.notifications.innerText = __('%1$s is typing', this.model.getDisplayName());
+                } else if (this.model.notifications.get('chat_state') === _converse.PAUSED) {
+                    this.notifications.innerText = __('%1$s has stopped typing', this.model.getDisplayName());
+                } else if (this.model.notifications.get('chat_state') === _converse.GONE) {
+                    this.notifications.innerText = __('%1$s has gone away', this.model.getDisplayName());
                 } else {
-                    this.csn.innerText = '';
+                    this.notifications.innerText = '';
                 }
             },
 

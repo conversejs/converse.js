@@ -236,7 +236,8 @@
                     'author': 'ralphm'
                 }});
                 expect(sizzle('.chat-event:last').pop().textContent.trim()).toBe('Topic set by ralphm');
-                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(subject);
+                const desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
+                expect(desc.textContent.trim()).toBe(subject);
                 done();
             }));
         });

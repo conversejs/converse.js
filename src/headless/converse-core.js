@@ -274,6 +274,24 @@ Object.assign(_converse, Events);
 pluggable.enable(_converse, '_converse', 'pluggable');
 
 
+// Populated via the _converse.api.users.settings API
+const user_settings = new Model();
+
+function initUserSettings () {
+    if (!_converse.bare_jid) {
+        const msg = "No JID to fetch user settings for";
+        log.error(msg);
+        throw Error(msg);
+    }
+    if (!user_settings.fetched) {
+        const id = `converse.user-settings.${_converse.bare_jid}`;
+        user_settings.browserStorage = _converse.createStore(id, "session");
+        user_settings.fetched = user_settings.fetch({'promise': true});
+    }
+    return user_settings.fetched;
+}
+
+
 /**
  * ### The private API
  *
@@ -501,6 +519,46 @@ const api = _converse.api = {
                 complete();
             }
             return promise;
+        },
+
+        /**
+         * API for accessing and setting user settings. User settings are
+         * different from the application settings from {@link _converse.api.settings}
+         * because they are per-user and set via user action.
+         * @namespace _converse.api.user.settings
+         * @memberOf _converse.api.user
+         */
+        settings: {
+            /**
+             * Get the value of a particular user setting.
+             * @method _converse.api.user.settings.get
+             * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
+             * @example _converse.api.user.settings.get("foo");
+             */
+            async get (key) {
+                await initUserSettings();
+                return user_settings.get(key);
+            },
+
+            /**
+             * Set one or many user settings.
+             * @async
+             * @method _converse.api.user.settings.set
+             * @param {Object} [settings] An object containing configuration settings.
+             * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
+             * @param {string} [value]
+             * @example _converse.api.user.settings.set("foo", "bar");
+             * @example
+             * _converse.api.user.settings.set({
+             *     "foo": "bar",
+             *     "baz": "buz"
+             * });
+             */
+            async set (key, val) {
+                await initUserSettings();
+                const o = isObject(key) ? key : {key: val};
+                return user_settings.save(o, {'promise': true});
+            }
         }
     },
 
@@ -533,7 +591,7 @@ const api = _converse.api = {
         update (settings) {
             u.merge(DEFAULT_SETTINGS, settings);
             u.merge(_converse, settings);
-            u.applySiteSettings(_converse, settings, _converse.site_settings);
+            u.applySiteSettings(_converse, settings, site_settings);
         },
 
         /**
@@ -560,8 +618,8 @@ const api = _converse.api = {
          * @example _converse.api.settings.set("play_sounds", true);
          * @example
          * _converse.api.settings.set({
-         *     "play_sounds", true,
-         *     "hide_offline_users" true
+         *     "play_sounds": true,
+         *     "hide_offline_users": true
          * });
          */
         set (key, val) {
@@ -1588,13 +1646,15 @@ async function initLocale () {
 }
 
 
+let site_settings;
+
 function initSettings (settings) {
     _converse.settings = {};
     assignIn(_converse.settings, DEFAULT_SETTINGS);
     // Allow only whitelisted configuration attributes to be overwritten
     assignIn(_converse.settings, pick(settings, Object.keys(DEFAULT_SETTINGS)));
     assignIn(_converse, _converse.settings);
-    _converse.site_settings = settings;
+    site_settings = settings;
 }
 
 

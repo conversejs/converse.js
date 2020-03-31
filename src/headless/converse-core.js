@@ -559,9 +559,8 @@ async function onDomainDiscovered (response) {
 }
 
 
-/* Use XEP-0156 to check whether this host advertises websocket or BOSH connection methods.
- */
 async function discoverConnectionMethods (domain) {
+    // Use XEP-0156 to check whether this host advertises websocket or BOSH connection methods.
     const options = {
         'mode': 'cors',
         'headers': {
@@ -954,229 +953,153 @@ function cleanup () {
     _converse.off();
 }
 
+_converse.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
 
-_converse.initialize = async function (settings, callback) {
-    cleanup();
 
-    settings = settings !== undefined ? settings : {};
-    PROMISES.forEach(name => _converse.api.promises.add(name));
-
-    if ('onpagehide' in window) {
-        // Pagehide gets thrown in more cases than unload. Specifically it
-        // gets thrown when the page is cached and not just
-        // closed/destroyed. It's the only viable event on mobile Safari.
-        // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
-        _converse.unloadevent = 'pagehide';
-    } else if ('onbeforeunload' in window) {
-        _converse.unloadevent = 'beforeunload';
-    } else if ('onunload' in window) {
-        _converse.unloadevent = 'unload';
-    }
-
-    this.settings = {};
-    assignIn(this.settings, DEFAULT_SETTINGS);
-    // Allow only whitelisted configuration attributes to be overwritten
-    assignIn(this.settings, pick(settings, Object.keys(DEFAULT_SETTINGS)));
-    assignIn(this, this.settings);
-    this.user_settings = settings; // XXX: See whether this can be removed
-
-    // Needed by pluggable.js
-    this.strict_plugin_dependencies = settings.strict_plugin_dependencies;
-
-    log.setLogLevel(_converse.api.settings.get("loglevel"));
-    _converse.log = log.log;
-
-    if (_converse.api.settings.get("authentication") === _converse.ANONYMOUS) {
-        if (_converse.api.settings.get("auto_login") && !this.jid) {
-            throw new Error("Config Error: you need to provide the server's " +
-                  "domain via the 'jid' option when using anonymous " +
-                  "authentication with auto_login.");
-        }
-    }
-
-    _converse.router.route(
-        /^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel',
-        l => log.setLogLevel(l)
-    );
-
-    /* Localisation */
-    if (_converse.isTestEnv()) {
-        _converse.locale = 'en';
-    } else {
-        try {
-            _converse.locale = i18n.getLocale(settings.i18n, _converse.api.settings.get("locales"));
-            await i18n.fetchTranslations(_converse);
-        } catch (e) {
-            log.fatal(e.message);
-            _converse.locale = 'en';
-        }
-    }
-
-    // Module-level variables
-    // ----------------------
-    this.callback = callback || function noop () {};
-    /* When reloading the page:
-     * For new sessions, we need to send out a presence stanza to notify
-     * the server/network that we're online.
-     * When re-attaching to an existing session we don't need to again send out a presence stanza,
-     * because it's as if "we never left" (see onConnectStatusChanged).
-     * https://github.com/jcbrand/converse.js/issues/521
-     */
-    this.send_initial_presence = true;
-
-    // Module-level functions
-    // ----------------------
-
-    this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
-
-    this.setConnectionStatus = function (connection_status, message) {
-        _converse.connfeedback.set({
-            'connection_status': connection_status,
-            'message': message
-        });
-    };
-
-    /**
-     * Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
-     * Will either start a teardown process for converse.js or attempt
-     * to reconnect.
-     * @method onDisconnected
-     * @private
-     * @memberOf _converse
-     */
-    this.onDisconnected = function () {
-        const reason = _converse.disconnection_reason;
-        if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
-            if (_converse.api.settings.get("auto_reconnect") &&
-                (_converse.api.settings.get("credentials_url") || _converse.api.settings.get("authentication") === _converse.ANONYMOUS)) {
-                /**
-                 * If `credentials_url` is set, we reconnect, because we might
-                 * be receiving expirable tokens from the credentials_url.
-                 *
-                 * If `authentication` is anonymous, we reconnect because we
-                 * might have tried to attach with stale BOSH session tokens
-                 * or with a cached JID and password
-                 */
-                return _converse.api.connection.reconnect();
-            } else {
-                return finishDisconnection();
-            }
-        } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-                (reason !== undefined && reason === Strophe?.ErrorCondition.NO_AUTH_MECH) ||
-                reason === "host-unknown" ||
-                reason === "remote-connection-failed" ||
-                !_converse.api.settings.get("auto_reconnect")) {
+/**
+ * Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
+ * Will either start a teardown process for converse.js or attempt
+ * to reconnect.
+ * @method onDisconnected
+ * @private
+ * @memberOf _converse
+ */
+_converse.onDisconnected = function () {
+    const reason = _converse.disconnection_reason;
+    if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
+        if (_converse.api.settings.get("auto_reconnect") &&
+            (_converse.api.settings.get("credentials_url") || _converse.api.settings.get("authentication") === _converse.ANONYMOUS)) {
+            /**
+             * If `credentials_url` is set, we reconnect, because we might
+             * be receiving expirable tokens from the credentials_url.
+             *
+             * If `authentication` is anonymous, we reconnect because we
+             * might have tried to attach with stale BOSH session tokens
+             * or with a cached JID and password
+             */
+            return _converse.api.connection.reconnect();
+        } else {
             return finishDisconnection();
         }
-        _converse.api.connection.reconnect();
-    };
+    } else if (_converse.disconnection_cause === _converse.LOGOUT ||
+            (reason !== undefined && reason === Strophe?.ErrorCondition.NO_AUTH_MECH) ||
+            reason === "host-unknown" ||
+            reason === "remote-connection-failed" ||
+            !_converse.api.settings.get("auto_reconnect")) {
+        return finishDisconnection();
+    }
+    _converse.api.connection.reconnect();
+};
 
 
-    this.setDisconnectionCause = function (cause, reason, override) {
-        /* Used to keep track of why we got disconnected, so that we can
-         * decide on what the next appropriate action is (in onDisconnected)
-         */
-        if (cause === undefined) {
-            delete _converse.disconnection_cause;
-            delete _converse.disconnection_reason;
-        } else if (_converse.disconnection_cause === undefined || override) {
-            _converse.disconnection_cause = cause;
-            _converse.disconnection_reason = reason;
-        }
-    };
-
-    /**
-     * Callback method called by Strophe as the Strophe.Connection goes
-     * through various states while establishing or tearing down a
-     * connection.
-     * @method _converse#onConnectStatusChanged
-     * @private
-     * @memberOf _converse
-     */
-    this.onConnectStatusChanged = function (status, message) {
-        log.debug(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
-        if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
-            _converse.setConnectionStatus(status);
-            // By default we always want to send out an initial presence stanza.
-            _converse.send_initial_presence = true;
-            _converse.setDisconnectionCause();
-            if (_converse.connection.reconnecting) {
-                log.debug(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
-                onConnected(true);
-            } else {
-                log.debug(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
-                if (_converse.connection.restored) {
-                    // No need to send an initial presence stanza when
-                    // we're restoring an existing session.
-                    _converse.send_initial_presence = false;
-                }
-                onConnected();
+/**
+ * Callback method called by Strophe as the Strophe.Connection goes
+ * through various states while establishing or tearing down a
+ * connection.
+ * @method _converse#onConnectStatusChanged
+ * @private
+ * @memberOf _converse
+ */
+_converse.onConnectStatusChanged = function (status, message) {
+    log.debug(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
+    if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+        _converse.setConnectionStatus(status);
+        // By default we always want to send out an initial presence stanza.
+        _converse.send_initial_presence = true;
+        _converse.setDisconnectionCause();
+        if (_converse.connection.reconnecting) {
+            log.debug(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
+            onConnected(true);
+        } else {
+            log.debug(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
+            if (_converse.connection.restored) {
+                // No need to send an initial presence stanza when
+                // we're restoring an existing session.
+                _converse.send_initial_presence = false;
             }
-        } else if (status === Strophe.Status.DISCONNECTED) {
-            _converse.setDisconnectionCause(status, message);
-            _converse.onDisconnected();
-        } else if (status === Strophe.Status.BINDREQUIRED) {
-            _converse.bindResource();
-        } else if (status === Strophe.Status.ERROR) {
-            _converse.setConnectionStatus(
-                status,
-                __('An error occurred while connecting to the chat server.')
-            );
-        } else if (status === Strophe.Status.CONNECTING) {
-            _converse.setConnectionStatus(status);
-        } else if (status === Strophe.Status.AUTHENTICATING) {
-            _converse.setConnectionStatus(status);
-        } else if (status === Strophe.Status.AUTHFAIL) {
-            if (!message) {
-                message = __('Your XMPP address and/or password is incorrect. Please try again.');
-            }
-            _converse.setConnectionStatus(status, message);
-            _converse.setDisconnectionCause(status, message, true);
-            _converse.onDisconnected();
-        } else if (status === Strophe.Status.CONNFAIL) {
-            let feedback = message;
-            if (message === "host-unknown" || message == "remote-connection-failed") {
-                feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
-                    `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
-            } else if (message !== undefined && message === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
-                feedback = __("The XMPP server did not offer a supported authentication mechanism");
-            }
-            _converse.setConnectionStatus(status, feedback);
-            _converse.setDisconnectionCause(status, message);
-        } else if (status === Strophe.Status.DISCONNECTING) {
-            _converse.setDisconnectionCause(status, message);
+            onConnected();
         }
-    };
-
-    this.bindResource = async function () {
-        /**
-         * Synchronous event triggered before we send an IQ to bind the user's
-         * JID resource for this session.
-         * @event _converse#beforeResourceBinding
-         */
-        await _converse.api.trigger('beforeResourceBinding', {'synchronous': true});
-        _converse.connection.bind();
-    };
-
-    this.ConnectionFeedback = Model.extend({
-        defaults: {
-            'connection_status': Strophe.Status.DISCONNECTED,
-            'message': ''
-        },
-
-        initialize () {
-            this.on('change', () => _converse.api.trigger('connfeedback', _converse.connfeedback));
+    } else if (status === Strophe.Status.DISCONNECTED) {
+        _converse.setDisconnectionCause(status, message);
+        _converse.onDisconnected();
+    } else if (status === Strophe.Status.BINDREQUIRED) {
+        _converse.bindResource();
+    } else if (status === Strophe.Status.ERROR) {
+        _converse.setConnectionStatus(
+            status,
+            __('An error occurred while connecting to the chat server.')
+        );
+    } else if (status === Strophe.Status.CONNECTING) {
+        _converse.setConnectionStatus(status);
+    } else if (status === Strophe.Status.AUTHENTICATING) {
+        _converse.setConnectionStatus(status);
+    } else if (status === Strophe.Status.AUTHFAIL) {
+        if (!message) {
+            message = __('Your XMPP address and/or password is incorrect. Please try again.');
         }
-    });
-    this.connfeedback = new this.ConnectionFeedback();
-
-    // Initialization
-    // --------------
-    await finishInitialization();
-    if (_converse.isTestEnv()) {
-        return _converse;
+        _converse.setConnectionStatus(status, message);
+        _converse.setDisconnectionCause(status, message, true);
+        _converse.onDisconnected();
+    } else if (status === Strophe.Status.CONNFAIL) {
+        let feedback = message;
+        if (message === "host-unknown" || message == "remote-connection-failed") {
+            feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
+                `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
+        } else if (message !== undefined && message === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
+            feedback = __("The XMPP server did not offer a supported authentication mechanism");
+        }
+        _converse.setConnectionStatus(status, feedback);
+        _converse.setDisconnectionCause(status, message);
+    } else if (status === Strophe.Status.DISCONNECTING) {
+        _converse.setDisconnectionCause(status, message);
     }
 };
+
+
+_converse.setConnectionStatus = function (connection_status, message) {
+    _converse.connfeedback.set({
+        'connection_status': connection_status,
+        'message': message
+    });
+};
+
+
+/**
+ * Used to keep track of why we got disconnected, so that we can
+ * decide on what the next appropriate action is (in onDisconnected)
+ */
+_converse.setDisconnectionCause = function (cause, reason, override) {
+    if (cause === undefined) {
+        delete _converse.disconnection_cause;
+        delete _converse.disconnection_reason;
+    } else if (_converse.disconnection_cause === undefined || override) {
+        _converse.disconnection_cause = cause;
+        _converse.disconnection_reason = reason;
+    }
+};
+
+
+_converse.bindResource = async function () {
+    /**
+     * Synchronous event triggered before we send an IQ to bind the user's
+     * JID resource for this session.
+     * @event _converse#beforeResourceBinding
+     */
+    await _converse.api.trigger('beforeResourceBinding', {'synchronous': true});
+    _converse.connection.bind();
+};
+
+
+_converse.ConnectionFeedback = Model.extend({
+    defaults: {
+        'connection_status': Strophe.Status.DISCONNECTED,
+        'message': ''
+    },
+    initialize () {
+        this.on('change', () => _converse.api.trigger('connfeedback', _converse.connfeedback));
+    }
+});
+
 
 /**
  * ### The private API
@@ -1191,7 +1114,7 @@ _converse.initialize = async function (settings, callback) {
  * @namespace _converse.api
  * @memberOf _converse
  */
-_converse.api = {
+const api = _converse.api = {
     /**
      * This grouping collects API functions related to the XMPP connection.
      *
@@ -1682,6 +1605,46 @@ _converse.api = {
 };
 
 
+async function initLocale () {
+    if (_converse.isTestEnv()) {
+        _converse.locale = 'en';
+    } else {
+        try {
+            _converse.locale = i18n.getLocale(api.settings.get('i18n'), api.settings.get("locales"));
+            await i18n.fetchTranslations(_converse);
+        } catch (e) {
+            log.fatal(e.message);
+            _converse.locale = 'en';
+        }
+    }
+}
+
+
+function initSettings (settings) {
+    _converse.settings = {};
+    assignIn(_converse.settings, DEFAULT_SETTINGS);
+    // Allow only whitelisted configuration attributes to be overwritten
+    assignIn(_converse.settings, pick(settings, Object.keys(DEFAULT_SETTINGS)));
+    assignIn(_converse, _converse.settings);
+    _converse.user_settings = settings; // XXX: See whether _converse can be removed
+}
+
+
+function setUnloadEvent () {
+    if ('onpagehide' in window) {
+        // Pagehide gets thrown in more cases than unload. Specifically it
+        // gets thrown when the page is cached and not just
+        // closed/destroyed. It's the only viable event on mobile Safari.
+        // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
+        _converse.unloadevent = 'pagehide';
+    } else if ('onbeforeunload' in window) {
+        _converse.unloadevent = 'beforeunload';
+    } else if ('onunload' in window) {
+        _converse.unloadevent = 'unload';
+    }
+}
+
+
 window.converse = window.converse || {};
 
 /**
@@ -1721,6 +1684,7 @@ Object.assign(window.converse, {
     /**
      * Public API method which initializes Converse.
      * This method must always be called when using Converse.
+     * @async
      * @memberOf converse
      * @method initialize
      * @param {object} config A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
@@ -1737,9 +1701,43 @@ Object.assign(window.converse, {
      *     roster_groups: true
      * });
      */
-    initialize (settings, callback) {
-        return _converse.initialize(settings, callback);
+    async initialize (settings) {
+        cleanup();
+        PROMISES.forEach(name => api.promises.add(name));
+        setUnloadEvent();
+        initSettings(settings);
+        _converse.strict_plugin_dependencies = settings.strict_plugin_dependencies; // Needed by pluggable.js
+        log.setLogLevel(api.settings.get("loglevel"));
+
+        if (api.settings.get("authentication") === _converse.ANONYMOUS) {
+            if (api.settings.get("auto_login") && !api.settings.get('jid')) {
+                throw new Error("Config Error: you need to provide the server's " +
+                      "domain via the 'jid' option when using anonymous " +
+                      "authentication with auto_login.");
+            }
+        }
+        _converse.router.route(
+            /^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel',
+            l => log.setLogLevel(l)
+        );
+        initLocale();
+        _converse.connfeedback = new _converse.ConnectionFeedback();
+
+        /* When reloading the page:
+         * For new sessions, we need to send out a presence stanza to notify
+         * the server/network that we're online.
+         * When re-attaching to an existing session we don't need to again send out a presence stanza,
+         * because it's as if "we never left" (see onConnectStatusChanged).
+         * https://github.com/conversejs/converse.js/issues/521
+         */
+        _converse.send_initial_presence = true;
+
+        await finishInitialization();
+        if (_converse.isTestEnv()) {
+            return _converse;
+        }
     },
+
     /**
      * Exposes methods for adding and removing plugins. You'll need to write a plugin
      * if you want to have access to the private API methods defined further down below.

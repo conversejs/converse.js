@@ -28,8 +28,9 @@ converse.plugins.add('converse-mam', {
          * loaded by Converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
-        _converse.api.settings.update({
+        api.settings.update({
             archived_messages_page_size: '50',
             message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
             message_archiving_timeout: 20000, // Time (in milliseconds) to wait before aborting MAM request
@@ -85,18 +86,18 @@ converse.plugins.add('converse-mam', {
                 }
                 const is_groupchat = this.get('type') === _converse.CHATROOMS_TYPE;
                 const mam_jid = is_groupchat ? this.get('jid') : _converse.bare_jid;
-                if (!(await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid))) {
+                if (!(await api.disco.supports(Strophe.NS.MAM, mam_jid))) {
                     return;
                 }
                 const msg_handler = is_groupchat ? s => this.queueMessage(s) : s => _converse.handleMessageStanza(s);
 
                 const query = Object.assign({
                         'groupchat': is_groupchat,
-                        'max': _converse.api.settings.get('archived_messages_page_size'),
+                        'max': api.settings.get('archived_messages_page_size'),
                         'with': this.get('jid'),
                     }, options);
 
-                const result = await _converse.api.archive.query(query);
+                const result = await api.archive.query(query);
                 /* eslint-disable no-await-in-loop */
                 for (const message of result.messages) {
                     try {
@@ -113,9 +114,9 @@ converse.plugins.add('converse-mam', {
 
                 if (page && result.rsm) {
                     if (page === 'forwards') {
-                        options = result.rsm.next(_converse.api.settings.get('archived_messages_page_size'), options.before);
+                        options = result.rsm.next(api.settings.get('archived_messages_page_size'), options.before);
                     } else if (page === 'backwards') {
-                        options = result.rsm.previous(_converse.api.settings.get('archived_messages_page_size'), options.after);
+                        options = result.rsm.previous(api.settings.get('archived_messages_page_size'), options.after);
                     }
                     return this.fetchArchivedMessages(options, page);
                 } else {
@@ -150,32 +151,32 @@ converse.plugins.add('converse-mam', {
              */
             const preference = sizzle(`prefs[xmlns="${Strophe.NS.MAM}"]`, iq).pop();
             const default_pref = preference.getAttribute('default');
-            if (default_pref !== _converse.api.settings.get('message_archiving')) {
+            if (default_pref !== api.settings.get('message_archiving')) {
                 const stanza = $iq({'type': 'set'})
                     .c('prefs', {
                         'xmlns':Strophe.NS.MAM,
-                        'default':_converse.api.settings.get('message_archiving')
+                        'default':api.settings.get('message_archiving')
                     });
                 Array.from(preference.children).forEach(child => stanza.cnode(child).up());
 
                 // XXX: Strictly speaking, the server should respond with the updated prefs
                 // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
                 // but Prosody doesn't do this, so we don't rely on it.
-                _converse.api.sendIQ(stanza)
-                    .then(() => feature.save({'preferences': {'default':_converse.api.settings.get('message_archiving')}}))
+                api.sendIQ(stanza)
+                    .then(() => feature.save({'preferences': {'default':api.settings.get('message_archiving')}}))
                     .catch(_converse.onMAMError);
             } else {
-                feature.save({'preferences': {'default':_converse.api.settings.get('message_archiving')}});
+                feature.save({'preferences': {'default':api.settings.get('message_archiving')}});
             }
         };
 
         function getMAMPrefsFromFeature (feature) {
             const prefs = feature.get('preferences') || {};
-            if (feature.get('var') !== Strophe.NS.MAM || _converse.api.settings.get('message_archiving') === undefined) {
+            if (feature.get('var') !== Strophe.NS.MAM || api.settings.get('message_archiving') === undefined) {
                 return;
             }
-            if (prefs['default'] !== _converse.api.settings.get('message_archiving')) {
-                _converse.api.sendIQ($iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}))
+            if (prefs['default'] !== api.settings.get('message_archiving')) {
+                api.sendIQ($iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}))
                     .then(iq => _converse.onMAMPreferences(iq, feature))
                     .catch(_converse.onMAMError);
             }
@@ -193,26 +194,26 @@ converse.plugins.add('converse-mam', {
         }
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
-        _converse.api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
-        _converse.api.listen.on('chatRoomViewInitialized', view => {
+        api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.MAM));
+        api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
+        api.listen.on('chatRoomViewInitialized', view => {
             if (_converse.muc_show_logs_before_join) {
                 // If we want to show MAM logs before entering the MUC, we need
                 // to be informed once it's clear that this MUC supports MAM.
                 view.model.features.on('change:mam_enabled', preMUCJoinMAMFetch(view.model));
             }
         });
-        _converse.api.listen.on('enteredNewRoom', room => room.features.get('mam_enabled') && room.fetchNewestMessages());
+        api.listen.on('enteredNewRoom', room => room.features.get('mam_enabled') && room.fetchNewestMessages());
 
 
-        _converse.api.listen.on('chatReconnected', chat => {
+        api.listen.on('chatReconnected', chat => {
             // XXX: For MUCs, we listen to enteredNewRoom instead
             if (chat.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                 chat.fetchNewestMessages();
             }
         });
 
-        _converse.api.listen.on('afterMessagesFetched', chat => {
+        api.listen.on('afterMessagesFetched', chat => {
             // XXX: We don't want to query MAM every time this is triggered
             // since it's not necessary when the chat is restored from cache.
             // (given that BOSH or SMACKS will ensure that you get messages
@@ -226,7 +227,7 @@ converse.plugins.add('converse-mam', {
 
 
         /************************ BEGIN API ************************/
-        Object.assign(_converse.api, {
+        Object.assign(api, {
             /**
              * The [XEP-0313](https://xmpp.org/extensions/xep-0313.html) Message Archive Management API
              *
@@ -236,8 +237,8 @@ converse.plugins.add('converse-mam', {
              * option in the configuration settings section, which you'll
              * usually want to use in conjunction with this API.
              *
-             * @namespace _converse.api.archive
-             * @memberOf _converse.api
+             * @namespace api.archive
+             * @memberOf api
              */
             'archive': {
                  /**
@@ -246,7 +247,7 @@ converse.plugins.add('converse-mam', {
                   * The options parameter can also be an instance of
                   * _converse.RSM to enable easy querying between results pages.
                   *
-                  * @method _converse.api.archive.query
+                  * @method api.archive.query
                   * @param {(Object|_converse.RSM)} options Query parameters, either
                   *      MAM-specific or also for Result Set Management.
                   *      Can be either an object or an instance of _converse.RSM.
@@ -276,7 +277,7 @@ converse.plugins.add('converse-mam', {
                   *
                   * let result;
                   * try {
-                  *     result = await _converse.api.archive.query();
+                  *     result = await api.archive.query();
                   * } catch (e) {
                   *     // The query was not successful, perhaps inform the user?
                   *     // The IQ stanza returned by the XMPP server is passed in, so that you
@@ -296,7 +297,7 @@ converse.plugins.add('converse-mam', {
                   * // For a particular user
                   * let result;
                   * try {
-                  *    result = await _converse.api.archive.query({'with': 'john@doe.net'});
+                  *    result = await api.archive.query({'with': 'john@doe.net'});
                   * } catch (e) {
                   *     // The query was not successful
                   * }
@@ -304,7 +305,7 @@ converse.plugins.add('converse-mam', {
                   * // For a particular room
                   * let result;
                   * try {
-                  *    result = await _converse.api.archive.query({'with': 'discuss@conference.doglovers.net', 'groupchat': true});
+                  *    result = await api.archive.query({'with': 'discuss@conference.doglovers.net', 'groupchat': true});
                   * } catch (e) {
                   *     // The query was not successful
                   * }
@@ -324,7 +325,7 @@ converse.plugins.add('converse-mam', {
                   *  };
                   * let result;
                   * try {
-                  *    result = await _converse.api.archive.query(options);
+                  *    result = await api.archive.query(options);
                   * } catch (e) {
                   *     // The query was not successful
                   * }
@@ -339,7 +340,7 @@ converse.plugins.add('converse-mam', {
                   * // Return maximum 10 archived messages
                   * let result;
                   * try {
-                  *     result = await _converse.api.archive.query({'with': 'john@doe.net', 'max':10});
+                  *     result = await api.archive.query({'with': 'john@doe.net', 'max':10});
                   * } catch (e) {
                   *     // The query was not successful
                   * }
@@ -363,7 +364,7 @@ converse.plugins.add('converse-mam', {
                   *
                   * let result;
                   * try {
-                  *     result = await _converse.api.archive.query({'with': 'john@doe.net', 'max':10});
+                  *     result = await api.archive.query({'with': 'john@doe.net', 'max':10});
                   * } catch (e) {
                   *     // The query was not successful
                   * }
@@ -372,7 +373,7 @@ converse.plugins.add('converse-mam', {
                   *
                   * while (result.rsm) {
                   *     try {
-                  *         result = await _converse.api.archive.query(rsm.next(10));
+                  *         result = await api.archive.query(rsm.next(10));
                   *     } catch (e) {
                   *         // The query was not successful
                   *     }
@@ -391,7 +392,7 @@ converse.plugins.add('converse-mam', {
                   *
                   * let result;
                   * try {
-                  *     result = await _converse.api.archive.query({'before': '', 'max':5});
+                  *     result = await api.archive.query({'before': '', 'max':5});
                   * } catch (e) {
                   *     // The query was not successful
                   * }
@@ -400,7 +401,7 @@ converse.plugins.add('converse-mam', {
                   *
                   * // Now we query again, to get the previous batch.
                   * try {
-                  *      result = await _converse.api.archive.query(rsm.previous(5););
+                  *      result = await api.archive.query(rsm.previous(5););
                   * } catch (e) {
                   *     // The query was not successful
                   * }
@@ -409,7 +410,7 @@ converse.plugins.add('converse-mam', {
                   *
                   */
                 async query (options) {
-                    if (!_converse.api.connection.connected()) {
+                    if (!api.connection.connected()) {
                         throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
                     }
                     const attrs = {'type':'set'};
@@ -423,7 +424,7 @@ converse.plugins.add('converse-mam', {
                     }
 
                     const jid = attrs.to || _converse.bare_jid;
-                    const supported = await _converse.api.disco.supports(Strophe.NS.MAM, jid);
+                    const supported = await api.disco.supports(Strophe.NS.MAM, jid);
                     if (!supported) {
                         log.warn(`Did not fetch MAM archive for ${jid} because it doesn't support ${Strophe.NS.MAM}`);
                         return {'messages': []};
@@ -479,7 +480,7 @@ converse.plugins.add('converse-mam', {
                     }, Strophe.NS.MAM);
 
                     let error;
-                    const iq_result = await _converse.api.sendIQ(stanza, _converse.api.settings.get('message_archiving_timeout'), false)
+                    const iq_result = await api.sendIQ(stanza, api.settings.get('message_archiving_timeout'), false)
                     if (iq_result === null) {
                         const err_msg = "Timeout while trying to fetch archived messages.";
                         log.error(err_msg);

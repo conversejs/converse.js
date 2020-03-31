@@ -165,8 +165,9 @@ converse.plugins.add('converse-minimize', {
          */
         const { _converse } = this;
         const { __ } = _converse;
+        const { api } = _converse;
 
-        _converse.api.settings.update({'no_trimming': false});
+        api.settings.update({'no_trimming': false});
 
         const minimizableChatBox = {
             maximize () {
@@ -210,7 +211,7 @@ converse.plugins.add('converse-minimize', {
                  * @type { _converse.ChatBoxView }
                  * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
                  */
-                _converse.api.trigger('chatBoxMaximized', this);
+                api.trigger('chatBoxMaximized', this);
                 return this;
             },
 
@@ -239,7 +240,7 @@ converse.plugins.add('converse-minimize', {
                  * @type { _converse.ChatBoxView }
                  * @example _converse.api.listen.on('chatBoxMinimized', view => { ... });
                  */
-                _converse.api.trigger('chatBoxMinimized', this);
+                api.trigger('chatBoxMinimized', this);
                 return this;
             },
 
@@ -314,7 +315,7 @@ converse.plugins.add('converse-minimize', {
              * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesBoxView } [newchat]
              */
             async trimChats (newchat) {
-                if (_converse.api.settings.get('no_trimming') || !_converse.api.connection.connected() || _converse.api.settings.get("view_mode") !== 'overlayed') {
+                if (api.settings.get('no_trimming') || !api.connection.connected() || api.settings.get("view_mode") !== 'overlayed') {
                     return;
                 }
                 const shown_chats = this.getShownChats();
@@ -328,7 +329,7 @@ converse.plugins.add('converse-minimize', {
                     // fullscreen. In this case we don't trim.
                     return;
                 }
-                await _converse.api.waitUntil('minimizedChatsInitialized');
+                await api.waitUntil('minimizedChatsInitialized');
                 const minimized_el = _converse.minimized_chats?.el;
                 if (minimized_el) {
                     while ((this.getMinimizedWidth() + this.getBoxesWidth(newchat)) > body_width) {
@@ -369,7 +370,7 @@ converse.plugins.add('converse-minimize', {
         Object.assign(_converse.ChatBoxViews.prototype, chatTrimmer);
 
 
-        _converse.api.promises.add('minimizedChatsInitialized');
+        api.promises.add('minimizedChatsInitialized');
 
         _converse.MinimizedChatBoxView = View.extend({
             tagName: 'div',
@@ -390,7 +391,7 @@ converse.plugins.add('converse-minimize', {
                  * @type { _converse.MinimizedChatBoxView }
                  * @example _converse.api.listen.on('minimizedChatViewInitialized', view => { ... });
                  */
-                _converse.api.trigger('minimizedChatViewInitialized', this);
+                api.trigger('minimizedChatViewInitialized', this);
             },
 
             render () {
@@ -413,7 +414,7 @@ converse.plugins.add('converse-minimize', {
                     view.close();
                 } else {
                     this.model.destroy();
-                    _converse.api.trigger('chatBoxClosed', this);
+                    api.trigger('chatBoxClosed', this);
                 }
                 return this;
             },
@@ -562,17 +563,17 @@ converse.plugins.add('converse-minimize', {
              * @event _converse#minimizedChatsInitialized
              * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
              */
-            _converse.api.trigger('minimizedChatsInitialized');
+            api.trigger('minimizedChatsInitialized');
         }
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('chatBoxViewsInitialized', () => initMinimizedChats());
-        _converse.api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
-        _converse.api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
+        api.listen.on('chatBoxViewsInitialized', () => initMinimizedChats());
+        api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
+        api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
 
         const debouncedTrimChats = debounce(() => _converse.chatboxviews.trimChats(), 250);
-        _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));
-        _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrimChats));
+        api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));
+        api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrimChats));
         /************************ END Event Handlers ************************/
     }
 });

@@ -48,14 +48,15 @@ converse.plugins.add('converse-chatboxviews', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
-        _converse.api.promises.add(['chatBoxViewsInitialized']);
+        api.promises.add(['chatBoxViewsInitialized']);
 
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        _converse.api.settings.update({
+        api.settings.update({
             'animate': true,
             'theme': 'default'
         });
@@ -74,7 +75,7 @@ converse.plugins.add('converse-chatboxviews', {
                     if (el === null) {
                         el = document.createElement('div');
                         el.setAttribute('id', 'conversejs');
-                        u.addClass(`theme-${_converse.api.settings.get('theme')}`, el);
+                        u.addClass(`theme-${api.settings.get('theme')}`, el);
                         const body = _converse.root.querySelector('body');
                         if (body) {
                             body.appendChild(el);
@@ -97,9 +98,9 @@ converse.plugins.add('converse-chatboxviews', {
                     bg.innerHTML = tpl_background_logo();
                 }
                 const body = document.querySelector('body');
-                body.classList.add(`converse-${_converse.api.settings.get("view_mode")}`);
-                this.el.classList.add(`converse-${_converse.api.settings.get("view_mode")}`);
-                if (_converse.api.settings.get("singleton")) {
+                body.classList.add(`converse-${api.settings.get("view_mode")}`);
+                this.el.classList.add(`converse-${api.settings.get("view_mode")}`);
+                if (api.settings.get("singleton")) {
                     this.el.classList.add(`converse-singleton`);
                 }
                 this.render();
@@ -133,7 +134,7 @@ converse.plugins.add('converse-chatboxviews', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('chatBoxesInitialized', () => {
+        api.listen.on('chatBoxesInitialized', () => {
             _converse.chatboxviews = new _converse.ChatBoxViews({
                 'model': _converse.chatboxes
             });
@@ -142,17 +143,17 @@ converse.plugins.add('converse-chatboxviews', {
              * @event _converse#chatBoxViewsInitialized
              * @example _converse.api.listen.on('chatBoxViewsInitialized', () => { ... });
              */
-            _converse.api.trigger('chatBoxViewsInitialized');
+            api.trigger('chatBoxViewsInitialized');
         });
 
-        _converse.api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());
+        api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());
 
 
         function calculateViewportHeightUnit () {
             const vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         }
-        _converse.api.listen.on('chatBoxViewsInitialized', () => calculateViewportHeightUnit());
+        api.listen.on('chatBoxViewsInitialized', () => calculateViewportHeightUnit());
         window.addEventListener('resize', () => calculateViewportHeightUnit());
         /************************ END Event Handlers ************************/
     }

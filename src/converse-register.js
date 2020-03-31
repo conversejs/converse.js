@@ -7,6 +7,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-controlbox";
+import { __ } from '@converse/headless/i18n';
 import { View } from "skeletor.js/src/view";
 import { pick } from "lodash";
 import converse from "@converse/headless/converse-core";
@@ -63,15 +64,15 @@ converse.plugins.add('converse-register', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-            { __ } = _converse;
+        const { _converse } = this;
+        const { api } = _converse;
 
         _converse.CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
         _converse.CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
         _converse.CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
         _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
-        _converse.api.settings.update({
+        api.settings.update({
             'allow_registration': true,
             'domain_placeholder': __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             'providers_link': 'https://compliance.conversations.im/', // Link to XMPP providers shown on registration page
@@ -95,7 +96,7 @@ converse.plugins.add('converse-register', {
             },
 
             renderRegistrationPanel () {
-                if (_converse.api.settings.get('allow_registration')) {
+                if (api.settings.get('allow_registration')) {
                     this.registerpanel = new _converse.RegisterPanel({
                         'model': this.model
                     });
@@ -113,7 +114,7 @@ converse.plugins.add('converse-register', {
 
 
         function setActiveForm (value) {
-            _converse.api.waitUntil('controlBoxInitialized').then(() => {
+            api.waitUntil('controlBoxInitialized').then(() => {
                 const controlbox = _converse.chatboxes.get('controlbox')
                 controlbox.set({'active-form': value});
             }).catch(e => log.fatal(e));
@@ -138,22 +139,22 @@ converse.plugins.add('converse-register', {
 
             initialize () {
                 this.reset();
-                _converse.api.listen.on('connectionInitialized', () => this.registerHooks());
+                api.listen.on('connectionInitialized', () => this.registerHooks());
             },
 
             render () {
                 this.model.set('registration_form_rendered', false);
                 this.el.innerHTML = tpl_register_panel({
                     '__': __,
-                    'default_domain': _converse.api.settings.get('registration_domain'),
+                    'default_domain': api.settings.get('registration_domain'),
                     'label_register': __('Fetch registration form'),
                     'help_providers': __('Tip: A list of public XMPP providers is available'),
                     'help_providers_link': __('here'),
-                    'href_providers': _converse.api.settings.get('providers_link'),
-                    'domain_placeholder': _converse.api.settings.get('domain_placeholder')
+                    'href_providers': api.settings.get('providers_link'),
+                    'domain_placeholder': api.settings.get('domain_placeholder')
                 });
-                if (_converse.api.settings.get('registration_domain')) {
-                    this.fetchRegistrationForm(_converse.api.settings.get('registration_domain'));
+                if (api.settings.get('registration_domain')) {
+                    this.fetchRegistrationForm(api.settings.get('registration_domain'));
                 }
                 return this;
             },
@@ -324,7 +325,7 @@ converse.plugins.add('converse-register', {
                     'beforeend',
                     tpl_registration_request({
                         '__': _converse.__,
-                        'cancel': _converse.api.settings.get('registration_domain'),
+                        'cancel': api.settings.get('registration_domain'),
                     })
                 );
             },
@@ -447,11 +448,11 @@ converse.plugins.add('converse-register', {
             renderRegistrationForm (stanza) {
                 const form = this.el.querySelector('form');
                 form.innerHTML = tpl_registration_form({
-                    '__': _converse.__,
+                    '__': __,
                     'domain': this.domain,
                     'title': this.title,
                     'instructions': this.instructions,
-                    'registration_domain': _converse.api.settings.get('registration_domain')
+                    'registration_domain': api.settings.get('registration_domain')
                 });
 
                 const buttons = form.querySelector('fieldset.buttons');
@@ -522,9 +523,9 @@ converse.plugins.add('converse-register', {
                 _converse.connection._proto._abortAllRequests();
                 _converse.connection.reset();
                 if (this.model.get('registration_form_rendered')) {
-                    if (_converse.api.settings.get('registration_domain') && this.model.get('registration_form_rendered')) {
+                    if (api.settings.get('registration_domain') && this.model.get('registration_form_rendered')) {
                         this.fetchRegistrationForm(
-                            _converse.api.settings.get('registration_domain')
+                            api.settings.get('registration_domain')
                         );
                     }
                 } else {
@@ -645,7 +646,7 @@ converse.plugins.add('converse-register', {
         });
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('controlBoxInitialized', view => {
+        api.listen.on('controlBoxInitialized', view => {
             view.model.on('change:active-form', view.showLoginOrRegisterForm, view);
         });
         /************************ END Event Handlers ************************/

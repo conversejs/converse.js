@@ -48,6 +48,7 @@ converse.plugins.add('converse-headlines-view', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
 
         const viewWithHeadlinesPanel = {
@@ -62,7 +63,7 @@ converse.plugins.add('converse-headlines-view', {
                  * @event _converse#headlinesPanelRendered
                  * @example _converse.api.listen.on('headlinesPanelRendered', () => { ... });
                  */
-                _converse.api.trigger('headlinesPanelRendered');
+                api.trigger('headlinesPanelRendered');
                 return this.headlinepanel;
             }
         }
@@ -150,7 +151,7 @@ converse.plugins.add('converse-headlines-view', {
                  * @type { _converse.HeadlinesBoxView }
                  * @example _converse.api.listen.on('headlinesBoxViewInitialized', view => { ... });
                  */
-                _converse.api.trigger('headlinesBoxViewInitialized', this);
+                api.trigger('headlinesBoxViewInitialized', this);
             },
 
             render () {
@@ -177,7 +178,7 @@ converse.plugins.add('converse-headlines-view', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('chatBoxViewsInitialized', () => {
+        api.listen.on('chatBoxViewsInitialized', () => {
             const views = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
                 if (!views.get(item.get('id')) && item.get('type') === _converse.HEADLINES_TYPE) {

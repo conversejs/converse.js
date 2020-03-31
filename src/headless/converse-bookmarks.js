@@ -60,20 +60,21 @@ converse.plugins.add('converse-bookmarks', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { api } = _converse;
+        const { __ } = _converse;
 
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        _converse.api.settings.update({
+        api.settings.update({
             allow_bookmarks: true,
             allow_public_bookmarks: false,
             muc_respect_autojoin: true
         });
 
-        _converse.api.promises.add('bookmarksInitialized');
+        api.promises.add('bookmarksInitialized');
 
         /**
           * Check if the user has a bookmark with a saved nickanme
@@ -82,7 +83,7 @@ converse.plugins.add('converse-bookmarks', {
           * @method _converse#getNicknameFromBookmark
           */
         _converse.getNicknameFromBookmark = function (jid) {
-            if (!_converse.bookmarks || !_converse.api.settings.get('allow_bookmarks')) {
+            if (!_converse.bookmarks || !api.settings.get('allow_bookmarks')) {
                 return null;
             }
             const bookmark = _converse.bookmarks.findWhere({'jid': jid});
@@ -116,8 +117,8 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             async openBookmarkedRoom (bookmark) {
-                if ( _converse.api.settings.get('muc_respect_autojoin') && bookmark.get('autojoin')) {
-                    const groupchat = await _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                if ( api.settings.get('muc_respect_autojoin') && bookmark.get('autojoin')) {
+                    const groupchat = await api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
                     groupchat.maybeShow();
                 }
                 return bookmark;
@@ -166,13 +167,13 @@ converse.plugins.add('converse-bookmarks', {
                             .c('value').t('true').up().up()
                         .c('field', {'var':'pubsub#access_model'})
                             .c('value').t('whitelist');
-                return _converse.api.sendIQ(stanza);
+                return api.sendIQ(stanza);
             },
 
             onBookmarkError (iq, options) {
                 log.error("Error while trying to add bookmark");
                 log.error(iq);
-                _converse.api.alert(
+                api.alert(
                     'error', __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
                 );
                 this.findWhere({'jid': options.jid}).destroy();
@@ -184,7 +185,7 @@ converse.plugins.add('converse-bookmarks', {
                     'type': 'get',
                 }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                     .c('items', {'node': 'storage:bookmarks'});
-                _converse.api.sendIQ(stanza)
+                api.sendIQ(stanza)
                     .then(iq => this.onBookmarksReceived(deferred, iq))
                     .catch(iq => this.onBookmarksReceivedError(deferred, iq)
                 );
@@ -231,7 +232,7 @@ converse.plugins.add('converse-bookmarks', {
             onBookmarksReceivedError (deferred, iq) {
                 if (iq === null) {
                     log.error('Error: timeout while fetching bookmarks');
-                    _converse.api.alert('error', __('Timeout Error'),
+                    api.alert('error', __('Timeout Error'),
                         [__("The server did not return your bookmarks within the allowed time. "+
                             "You can reload the page to request them again.")]
                     );
@@ -263,16 +264,16 @@ converse.plugins.add('converse-bookmarks', {
         });
 
         _converse.checkBookmarksSupport = async function () {
-            const identity = await _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid);
+            const identity = await api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid);
             if (_converse.allow_public_bookmarks) {
                 return !!identity;
             } else {
-                return _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid);
+                return api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid);
             }
         }
 
         const initBookmarks = async function () {
-            if (!_converse.api.settings.get('allow_bookmarks')) {
+            if (!api.settings.get('allow_bookmarks')) {
                 return;
             }
             if (await _converse.checkBookmarksSupport()) {
@@ -284,11 +285,11 @@ converse.plugins.add('converse-bookmarks', {
                  * @event _converse#bookmarksInitialized
                  * @example _converse.api.listen.on('bookmarksInitialized', () => { ... });
                  */
-                _converse.api.trigger('bookmarksInitialized');
+                api.trigger('bookmarksInitialized');
             }
         }
 
-        _converse.api.listen.on('clearSession', () => {
+        api.listen.on('clearSession', () => {
             if (_converse.bookmarks !== undefined) {
                 _converse.bookmarks.clearStore({'silent': true});
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
@@ -296,19 +297,19 @@ converse.plugins.add('converse-bookmarks', {
             }
         });
 
-        _converse.api.listen.on('reconnected', initBookmarks);
+        api.listen.on('reconnected', initBookmarks);
 
-        _converse.api.listen.on('connected', async () =>  {
+        api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
             _converse.connection.addHandler(message => {
                 if (sizzle('event[xmlns="'+Strophe.NS.PUBSUB+'#event"] items[node="storage:bookmarks"]', message).length) {
-                    _converse.api.waitUntil('bookmarksInitialized')
+                    api.waitUntil('bookmarksInitialized')
                         .then(() => _converse.bookmarks.createBookmarksFromStanza(message))
                         .catch(e => log.fatal(e));
                 }
             }, null, 'message', 'headline', null, _converse.bare_jid);
 
-            await Promise.all([_converse.api.waitUntil('chatBoxesFetched')]);
+            await Promise.all([api.waitUntil('chatBoxesFetched')]);
             initBookmarks();
         });
     }

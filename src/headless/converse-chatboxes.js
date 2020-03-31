@@ -26,8 +26,9 @@ converse.plugins.add('converse-chatboxes', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
-        _converse.api.promises.add([
+        api.promises.add([
             'chatBoxesFetched',
             'chatBoxesInitialized',
             'privateChatsAutoJoined'
@@ -78,7 +79,7 @@ converse.plugins.add('converse-chatboxes', {
                  * @example _converse.api.listen.on('message', obj => { ... });
                  * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
                  */
-                _converse.api.trigger('chatBoxesFetched');
+                api.trigger('chatBoxesFetched');
             },
 
             onConnected (reconnecting) {
@@ -114,13 +115,13 @@ converse.plugins.add('converse-chatboxes', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('addClientFeatures', () => {
-            _converse.api.disco.own.features.add(Strophe.NS.MESSAGE_CORRECT);
-            _converse.api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
-            _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
+        api.listen.on('addClientFeatures', () => {
+            api.disco.own.features.add(Strophe.NS.MESSAGE_CORRECT);
+            api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
+            api.disco.own.features.add(Strophe.NS.OUTOFBAND);
         });
 
-        _converse.api.listen.on('pluginsInitialized', () => {
+        api.listen.on('pluginsInitialized', () => {
             _converse.chatboxes = new _converse.ChatBoxes();
             /**
              * Triggered once the _converse.ChatBoxes collection has been initialized.
@@ -128,32 +129,32 @@ converse.plugins.add('converse-chatboxes', {
              * @example _converse.api.listen.on('chatBoxesInitialized', () => { ... });
              * @example _converse.api.waitUntil('chatBoxesInitialized').then(() => { ... });
              */
-            _converse.api.trigger('chatBoxesInitialized');
+            api.trigger('chatBoxesInitialized');
         });
 
-        _converse.api.listen.on('presencesInitialized', (reconnecting) => _converse.chatboxes.onConnected(reconnecting));
-        _converse.api.listen.on('reconnected', () => _converse.chatboxes.forEach(m => m.onReconnection()));
-        _converse.api.listen.on('windowStateChanged', d => (d.state === 'visible') && _converse.clearMsgCounter());
+        api.listen.on('presencesInitialized', (reconnecting) => _converse.chatboxes.onConnected(reconnecting));
+        api.listen.on('reconnected', () => _converse.chatboxes.forEach(m => m.onReconnection()));
+        api.listen.on('windowStateChanged', d => (d.state === 'visible') && _converse.clearMsgCounter());
         /************************ END Event Handlers ************************/
 
 
         /************************ BEGIN API ************************/
-        Object.assign(_converse.api, {
+        Object.assign(api, {
             /**
              * The "chatboxes" namespace.
              *
-             * @namespace _converse.api.chatboxes
-             * @memberOf _converse.api
+             * @namespace api.chatboxes
+             * @memberOf api
              */
             chatboxes: {
                 /**
-                 * @method _converse.api.chats.create
+                 * @method api.chats.create
                  * @param { String|String[] } jids - A JID or array of JIDs
                  * @param { Object } [attrs] An object containing configuration attributes
                  * @param { Model } model - The type of chatbox that should be created
                  */
                 async create (jids=[], attrs={}, model) {
-                    await _converse.api.waitUntil('chatBoxesFetched');
+                    await api.waitUntil('chatBoxesFetched');
                     if (isString(jids)) {
                         return createChatBox(jids, attrs, model);
                     } else {
@@ -162,11 +163,11 @@ converse.plugins.add('converse-chatboxes', {
                 },
 
                 /**
-                 * @method _converse.api.chats.get
+                 * @method api.chats.get
                  * @param { String|String[] } jids - A JID or array of JIDs
                  */
                 async get (jids) {
-                    await _converse.api.waitUntil('chatBoxesFetched');
+                    await api.waitUntil('chatBoxesFetched');
                     if (jids === undefined) {
                         return _converse.chatboxes.models;
                     } else if (isString(jids)) {

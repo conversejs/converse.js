@@ -27,10 +27,11 @@ converse.plugins.add('converse-profile', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { api } = _converse;
+        const { __ } = _converse;
 
-        _converse.api.settings.update({
+        api.settings.update({
             'show_client_info': true
         });
 
@@ -52,7 +53,7 @@ converse.plugins.add('converse-profile', {
                  * @type { _converse.XMPPStatus }
                  * @example _converse.api.listen.on('profileModalInitialized', status => { ... });
                  */
-                _converse.api.trigger('profileModalInitialized', this.model);
+                api.trigger('profileModalInitialized', this.model);
             },
 
             toHTML () {
@@ -84,11 +85,11 @@ converse.plugins.add('converse-profile', {
             },
 
             setVCard (data) {
-                _converse.api.vcard.set(_converse.bare_jid, data)
-                .then(() => _converse.api.vcard.update(this.model.vcard, true))
+                api.vcard.set(_converse.bare_jid, data)
+                .then(() => api.vcard.update(this.model.vcard, true))
                 .catch((err) => {
                     log.fatal(err);
-                    _converse.api.show('error', __('Error'), [
+                    api.show('error', __('Error'), [
                         __("Sorry, an error happened while trying to save your profile data."),
                         __("You can check your browser's developer console for any error output.")
                     ]);
@@ -251,7 +252,7 @@ converse.plugins.add('converse-profile', {
                 ev.preventDefault();
                 const result = confirm(__("Are you sure you want to log out?"));
                 if (result === true) {
-                    _converse.api.user.logout();
+                    api.user.logout();
                 }
             },
 
@@ -274,8 +275,8 @@ converse.plugins.add('converse-profile', {
 
 
         /******************** Event Handlers ********************/
-        _converse.api.listen.on('controlBoxPaneInitialized', async view => {
-            await _converse.api.waitUntil('VCardsInitialized');
+        api.listen.on('controlBoxPaneInitialized', async view => {
+            await api.waitUntil('VCardsInitialized');
             _converse.xmppstatusview = new _converse.XMPPStatusView({'model': _converse.xmppstatus});
             view.el.insertAdjacentElement('afterBegin', _converse.xmppstatusview.render().el);
         });

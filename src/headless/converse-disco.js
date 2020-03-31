@@ -20,10 +20,11 @@ converse.plugins.add('converse-disco', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
         // Promises exposed by this plugin
-        _converse.api.promises.add('discoInitialized');
-        _converse.api.promises.add('streamFeaturesAdded');
+        api.promises.add('discoInitialized');
+        api.promises.add('streamFeaturesAdded');
 
 
         /**
@@ -106,7 +107,7 @@ converse.plugins.add('converse-disco', {
                  * @type { Model }
                  * @example _converse.api.listen.on('featuresDiscovered', feature => { ... });
                  */
-                _converse.api.trigger('serviceDiscovered', feature);
+                api.trigger('serviceDiscovered', feature);
             },
 
             onFieldAdded (field) {
@@ -117,7 +118,7 @@ converse.plugins.add('converse-disco', {
                  * @event _converse#discoExtensionFieldDiscovered
                  * @example _converse.api.listen.on('discoExtensionFieldDiscovered', () => { ... });
                  */
-                _converse.api.trigger('discoExtensionFieldDiscovered', field);
+                api.trigger('discoExtensionFieldDiscovered', field);
             },
 
             async fetchFeatures (options) {
@@ -144,7 +145,7 @@ converse.plugins.add('converse-disco', {
             async queryInfo () {
                 let stanza;
                 try {
-                    stanza = await _converse.api.disco.info(this.get('jid'), null);
+                    stanza = await api.disco.info(this.get('jid'), null);
                 } catch (iq) {
                     log.error(iq);
                     this.waitUntilFeaturesDiscovered.resolve(this);
@@ -178,7 +179,7 @@ converse.plugins.add('converse-disco', {
                     // server or a conference component.
                     return;
                 }
-                const stanza = await _converse.api.disco.items(this.get('jid'));
+                const stanza = await api.disco.items(this.get('jid'));
                 this.onDiscoItems(stanza);
             },
 
@@ -246,13 +247,13 @@ converse.plugins.add('converse-disco', {
 
         function addClientFeatures () {
             // See https://xmpp.org/registrar/disco-categories.html
-            _converse.api.disco.own.identities.add('client', 'web', 'Converse');
+            api.disco.own.identities.add('client', 'web', 'Converse');
 
-            _converse.api.disco.own.features.add(Strophe.NS.CHATSTATES);
-            _converse.api.disco.own.features.add(Strophe.NS.DISCO_INFO);
-            _converse.api.disco.own.features.add(Strophe.NS.ROSTERX); // Limited support
-            if (_converse.api.settings.get("message_carbons")) {
-                _converse.api.disco.own.features.add(Strophe.NS.CARBONS);
+            api.disco.own.features.add(Strophe.NS.CHATSTATES);
+            api.disco.own.features.add(Strophe.NS.DISCO_INFO);
+            api.disco.own.features.add(Strophe.NS.ROSTERX); // Limited support
+            if (api.settings.get("message_carbons")) {
+                api.disco.own.features.add(Strophe.NS.CARBONS);
             }
             /**
              * Triggered in converse-disco once the core disco features of
@@ -260,7 +261,7 @@ converse.plugins.add('converse-disco', {
              * @event _converse#addClientFeatures
              * @example _converse.api.listen.on('addClientFeatures', () => { ... });
              */
-            _converse.api.trigger('addClientFeatures');
+            api.trigger('addClientFeatures');
             return this;
         }
 
@@ -274,7 +275,7 @@ converse.plugins.add('converse-disco', {
             if (!_converse.stream_features) {
                 const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
                 const id = `converse.stream-features-${bare_jid}`;
-                _converse.api.promises.add('streamFeaturesAdded');
+                api.promises.add('streamFeaturesAdded');
                 _converse.stream_features = new Collection();
                 _converse.stream_features.browserStorage = _converse.createStore(id, "session");
             }
@@ -306,7 +307,7 @@ converse.plugins.add('converse-disco', {
              * @event _converse#streamFeaturesAdded
              * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
              */
-            _converse.api.trigger('streamFeaturesAdded');
+            api.trigger('streamFeaturesAdded');
         }
 
 
@@ -339,7 +340,7 @@ converse.plugins.add('converse-disco', {
                 iqresult.c('identity', attrs).up();
             });
             plugin._features.forEach(feature => iqresult.c('feature', {'var': feature}).up());
-            _converse.api.send(iqresult.tree());
+            api.send(iqresult.tree());
             return true;
         }
 
@@ -364,12 +365,12 @@ converse.plugins.add('converse-disco', {
              * @event _converse#discoInitialized
              * @example _converse.api.listen.on('discoInitialized', () => { ... });
              */
-            _converse.api.trigger('discoInitialized');
+            api.trigger('discoInitialized');
         }
 
         /******************** Event Handlers ********************/
 
-        _converse.api.listen.on('userSessionInitialized', async () => {
+        api.listen.on('userSessionInitialized', async () => {
             initStreamFeatures();
             if (_converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED) {
                 // When re-attaching to a BOSH session, we fetch the stream features from the cache.
@@ -377,20 +378,20 @@ converse.plugins.add('converse-disco', {
                 notifyStreamFeaturesAdded();
             }
         });
-        _converse.api.listen.on('beforeResourceBinding', populateStreamFeatures);
+        api.listen.on('beforeResourceBinding', populateStreamFeatures);
 
-        _converse.api.listen.on('reconnected', initializeDisco);
-        _converse.api.listen.on('connected', initializeDisco);
+        api.listen.on('reconnected', initializeDisco);
+        api.listen.on('connected', initializeDisco);
 
-        _converse.api.listen.on('beforeTearDown', async () => {
-            _converse.api.promises.add('streamFeaturesAdded')
+        api.listen.on('beforeTearDown', async () => {
+            api.promises.add('streamFeaturesAdded')
             if (_converse.stream_features) {
                 await _converse.stream_features.clearStore();
                 delete _converse.stream_features;
             }
         });
 
-        _converse.api.listen.on('clearSession', () => {
+        api.listen.on('clearSession', () => {
             if (_converse.shouldClearCache() && _converse.disco_entities) {
                 Array.from(_converse.disco_entities.models).forEach(e => e.features.clearStore());
                 Array.from(_converse.disco_entities.models).forEach(e => e.identities.clearStore());
@@ -404,34 +405,34 @@ converse.plugins.add('converse-disco', {
 
         /************************ API ************************/
 
-        Object.assign(_converse.api, {
+        Object.assign(api, {
             /**
              * The XEP-0030 service discovery API
              *
              * This API lets you discover information about entities on the
              * XMPP network.
              *
-             * @namespace _converse.api.disco
-             * @memberOf _converse.api
+             * @namespace api.disco
+             * @memberOf api
              */
             disco: {
                 /**
-                 * @namespace _converse.api.disco.stream
-                 * @memberOf _converse.api.disco
+                 * @namespace api.disco.stream
+                 * @memberOf api.disco
                  */
                 stream: {
                     /**
-                     * @method _converse.api.disco.stream.getFeature
+                     * @method api.disco.stream.getFeature
                      * @param {String} name The feature name
                      * @param {String} xmlns The XML namespace
                      * @example _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver')
                      */
                     async getFeature (name, xmlns) {
-                        await _converse.api.waitUntil('streamFeaturesAdded');
+                        await api.waitUntil('streamFeaturesAdded');
                         if (!name || !xmlns) {
                             throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
                         }
-                        if (_converse.stream_features === undefined && !_converse.api.connection.connected()) {
+                        if (_converse.stream_features === undefined && !api.connection.connected()) {
                             // Happens during tests when disco lookups happen asynchronously after teardown.
                             const msg = `Tried to get feature ${name} ${xmlns} but _converse.stream_features has been torn down`;
                             log.warn(msg);
@@ -442,18 +443,18 @@ converse.plugins.add('converse-disco', {
                 },
 
                 /**
-                 * @namespace _converse.api.disco.own
-                 * @memberOf _converse.api.disco
+                 * @namespace api.disco.own
+                 * @memberOf api.disco
                  */
                 own: {
                     /**
-                     * @namespace _converse.api.disco.own.identities
-                     * @memberOf _converse.api.disco.own
+                     * @namespace api.disco.own.identities
+                     * @memberOf api.disco.own
                      */
                     identities: {
                         /**
                          * Lets you add new identities for this client (i.e. instance of Converse)
-                         * @method _converse.api.disco.own.identities.add
+                         * @method api.disco.own.identities.add
                          *
                          * @param {String} category - server, client, gateway, directory, etc.
                          * @param {String} type - phone, pc, web, etc.
@@ -475,7 +476,7 @@ converse.plugins.add('converse-disco', {
                         },
                         /**
                          * Clears all previously registered identities.
-                         * @method _converse.api.disco.own.identities.clear
+                         * @method api.disco.own.identities.clear
                          * @example _converse.api.disco.own.identities.clear();
                          */
                         clear () {
@@ -484,8 +485,8 @@ converse.plugins.add('converse-disco', {
                         /**
                          * Returns all of the identities registered for this client
                          * (i.e. instance of Converse).
-                         * @method _converse.api.disco.identities.get
-                         * @example const identities = _converse.api.disco.own.identities.get();
+                         * @method api.disco.identities.get
+                         * @example const identities = api.disco.own.identities.get();
                          */
                         get () {
                             return plugin._identities;
@@ -493,13 +494,13 @@ converse.plugins.add('converse-disco', {
                     },
 
                     /**
-                     * @namespace _converse.api.disco.own.features
-                     * @memberOf _converse.api.disco.own
+                     * @namespace api.disco.own.features
+                     * @memberOf api.disco.own
                      */
                     features: {
                         /**
                          * Lets you register new disco features for this client (i.e. instance of Converse)
-                         * @method _converse.api.disco.own.features.add
+                         * @method api.disco.own.features.add
                          * @param {String} name - e.g. http://jabber.org/protocol/caps
                          * @example _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
                          */
@@ -511,7 +512,7 @@ converse.plugins.add('converse-disco', {
                         },
                         /**
                          * Clears all previously registered features.
-                         * @method _converse.api.disco.own.features.clear
+                         * @method api.disco.own.features.clear
                          * @example _converse.api.disco.own.features.clear();
                          */
                         clear () {
@@ -519,8 +520,8 @@ converse.plugins.add('converse-disco', {
                         },
                         /**
                          * Returns all of the features registered for this client (i.e. instance of Converse).
-                         * @method _converse.api.disco.own.features.get
-                         * @example const features = _converse.api.disco.own.features.get();
+                         * @method api.disco.own.features.get
+                         * @example const features = api.disco.own.features.get();
                          */
                         get () {
                             return plugin._features;
@@ -531,7 +532,7 @@ converse.plugins.add('converse-disco', {
                 /**
                  * Query for information about an XMPP entity
                  *
-                 * @method _converse.api.disco.info
+                 * @method api.disco.info
                  * @param {string} jid The Jabber ID of the entity to query
                  * @param {string} [node] A specific node identifier associated with the JID
                  * @returns {promise} Promise which resolves once we have a result from the server.
@@ -546,13 +547,13 @@ converse.plugins.add('converse-disco', {
                         'to':jid,
                         'type':'get'
                     }).c('query', attrs);
-                    return _converse.api.sendIQ(info);
+                    return api.sendIQ(info);
                 },
 
                 /**
                  * Query for items associated with an XMPP entity
                  *
-                 * @method _converse.api.disco.items
+                 * @method api.disco.items
                  * @param {string} jid The Jabber ID of the entity to query for items
                  * @param {string} [node] A specific node identifier associated with the JID
                  * @returns {promise} Promise which resolves once we have a result from the server.
@@ -562,7 +563,7 @@ converse.plugins.add('converse-disco', {
                     if (node) {
                         attrs.node = node;
                     }
-                    return _converse.api.sendIQ(
+                    return api.sendIQ(
                         $iq({
                             'from': _converse.connection.jid,
                             'to':jid,
@@ -574,24 +575,24 @@ converse.plugins.add('converse-disco', {
                 /**
                  * Namespace for methods associated with disco entities
                  *
-                 * @namespace _converse.api.disco.entities
-                 * @memberOf _converse.api.disco
+                 * @namespace api.disco.entities
+                 * @memberOf api.disco
                  */
                 entities: {
                     /**
                      * Get the corresponding `DiscoEntity` instance.
                      *
-                     * @method _converse.api.disco.entities.get
+                     * @method api.disco.entities.get
                      * @param {string} jid The Jabber ID of the entity
                      * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
                      * @example _converse.api.disco.entities.get(jid);
                      */
                     async get (jid, create=false) {
-                        await _converse.api.waitUntil('discoInitialized');
+                        await api.waitUntil('discoInitialized');
                         if (!jid) {
                             return _converse.disco_entities;
                         }
-                        if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
+                        if (_converse.disco_entities === undefined && !api.connection.connected()) {
                             // Happens during tests when disco lookups happen asynchronously after teardown.
                             const msg = `Tried to look up entity ${jid} but _converse.disco_entities has been torn down`;
                             log.warn(msg);
@@ -601,7 +602,7 @@ converse.plugins.add('converse-disco', {
                         if (entity || !create) {
                             return entity;
                         }
-                        return _converse.api.disco.entities.create(jid);
+                        return api.disco.entities.create(jid);
                     },
 
                     /**
@@ -612,7 +613,7 @@ converse.plugins.add('converse-disco', {
                      * Fetching from cache can be disabled by passing in
                      * `ignore_cache: true` in the options parameter.
                      *
-                     * @method _converse.api.disco.entities.create
+                     * @method api.disco.entities.create
                      * @param {string} jid The Jabber ID of the entity
                      * @param {object} [options] Additional options
                      * @param {boolean} [options.ignore_cache]
@@ -625,14 +626,14 @@ converse.plugins.add('converse-disco', {
                 },
 
                 /**
-                 * @namespace _converse.api.disco.features
-                 * @memberOf _converse.api.disco
+                 * @namespace api.disco.features
+                 * @memberOf api.disco
                  */
                 features: {
                     /**
                      * Return a given feature of a disco entity
                      *
-                     * @method _converse.api.disco.features.get
+                     * @method api.disco.features.get
                      * @param {string} feature The feature that might be
                      *     supported. In the XML stanza, this is the `var`
                      *     attribute of the `<feature>` element. For
@@ -644,16 +645,16 @@ converse.plugins.add('converse-disco', {
                      *     itself or those items associated with the entity if
                      *     they support the given feature.
                      * @example
-                     * _converse.api.disco.features.get(Strophe.NS.MAM, _converse.bare_jid);
+                     * api.disco.features.get(Strophe.NS.MAM, _converse.bare_jid);
                      */
                     async get (feature, jid) {
                         if (!jid) {
                             throw new TypeError('You need to provide an entity JID');
                         }
-                        await _converse.api.waitUntil('discoInitialized');
-                        let entity = await _converse.api.disco.entities.get(jid, true);
+                        await api.waitUntil('discoInitialized');
+                        let entity = await api.disco.entities.get(jid, true);
 
-                        if (_converse.disco_entities === undefined && !_converse.api.connection.connected()) {
+                        if (_converse.disco_entities === undefined && !api.connection.connected()) {
                             // Happens during tests when disco lookups happen asynchronously after teardown.
                             const msg = `Tried to get feature ${feature} for ${jid} but _converse.disco_entities has been torn down`;
                             log.warn(msg);
@@ -669,7 +670,7 @@ converse.plugins.add('converse-disco', {
                 /**
                  * Used to determine whether an entity supports a given feature.
                  *
-                 * @method _converse.api.disco.supports
+                 * @method api.disco.supports
                  * @param {string} feature The feature that might be
                  *     supported. In the XML stanza, this is the `var`
                  *     attribute of the `<feature>` element. For
@@ -678,32 +679,32 @@ converse.plugins.add('converse-disco', {
                  *     (and its associated items) which should be queried
                  * @returns {promise} A promise which resolves with `true` or `false`.
                  * @example
-                 * if (await _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)) {
+                 * if (await api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)) {
                  *     // The feature is supported
                  * } else {
                  *     // The feature is not supported
                  * }
                  */
                 async supports (feature, jid) {
-                    const features = await _converse.api.disco.features.get(feature, jid);
+                    const features = await api.disco.features.get(feature, jid);
                     return features.length > 0;
                 },
 
                 /**
                  * Refresh the features, fields and identities associated with a
                  * disco entity by refetching them from the server
-                 * @method _converse.api.disco.refresh
+                 * @method api.disco.refresh
                  * @param {string} jid The JID of the entity whose features are refreshed.
                  * @returns {promise} A promise which resolves once the features have been refreshed
                  * @example
-                 * await _converse.api.disco.refresh('room@conference.example.org');
+                 * await api.disco.refresh('room@conference.example.org');
                  */
                 async refresh (jid) {
                     if (!jid) {
                         throw new TypeError('api.disco.refresh: You need to provide an entity JID');
                     }
-                    await _converse.api.waitUntil('discoInitialized');
-                    let entity = await _converse.api.disco.entities.get(jid);
+                    await api.waitUntil('discoInitialized');
+                    let entity = await api.disco.entities.get(jid);
                     if (entity) {
                         entity.features.reset();
                         entity.fields.reset();
@@ -714,34 +715,34 @@ converse.plugins.add('converse-disco', {
                         entity.queryInfo();
                     } else {
                         // Create it if it doesn't exist
-                        entity = await _converse.api.disco.entities.create(jid, {'ignore_cache': true});
+                        entity = await api.disco.entities.create(jid, {'ignore_cache': true});
                     }
                     return entity.waitUntilFeaturesDiscovered;
                 },
 
                 /**
-                 * @deprecated Use {@link _converse.api.disco.refresh} instead.
-                 * @method _converse.api.disco.refreshFeatures
+                 * @deprecated Use {@link api.disco.refresh} instead.
+                 * @method api.disco.refreshFeatures
                  */
                 refreshFeatures (jid) {
-                    return _converse.api.refresh(jid);
+                    return api.refresh(jid);
                 },
 
                 /**
                  * Return all the features associated with a disco entity
                  *
-                 * @method _converse.api.disco.getFeatures
+                 * @method api.disco.getFeatures
                  * @param {string} jid The JID of the entity whose features are returned.
                  * @returns {promise} A promise which resolves with the returned features
                  * @example
-                 * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
+                 * const features = await api.disco.getFeatures('room@conference.example.org');
                  */
                 async getFeatures (jid) {
                     if (!jid) {
                         throw new TypeError('api.disco.getFeatures: You need to provide an entity JID');
                     }
-                    await _converse.api.waitUntil('discoInitialized');
-                    let entity = await _converse.api.disco.entities.get(jid, true);
+                    await api.waitUntil('discoInitialized');
+                    let entity = await api.disco.entities.get(jid, true);
                     entity = await entity.waitUntilFeaturesDiscovered;
                     return entity.features;
                 },
@@ -752,17 +753,17 @@ converse.plugins.add('converse-disco', {
                  *
                  * See [XEP-0129: Service Discovery Extensions](https://xmpp.org/extensions/xep-0128.html)
                  *
-                 * @method _converse.api.disco.getFields
+                 * @method api.disco.getFields
                  * @param {string} jid The JID of the entity whose fields are returned.
                  * @example
-                 * const fields = await _converse.api.disco.getFields('room@conference.example.org');
+                 * const fields = await api.disco.getFields('room@conference.example.org');
                  */
                 async getFields (jid) {
                     if (!jid) {
                         throw new TypeError('api.disco.getFields: You need to provide an entity JID');
                     }
-                    await _converse.api.waitUntil('discoInitialized');
-                    let entity = await _converse.api.disco.entities.get(jid, true);
+                    await api.waitUntil('discoInitialized');
+                    let entity = await api.disco.entities.get(jid, true);
                     entity = await entity.waitUntilFeaturesDiscovered;
                     return entity.fields;
                 },
@@ -775,7 +776,7 @@ converse.plugins.add('converse-disco', {
                  * `category='pubsub'` and `type='pep'` as explained in this section of
                  * XEP-0163: https://xmpp.org/extensions/xep-0163.html#support
                  *
-                 * @method _converse.api.disco.getIdentity
+                 * @method api.disco.getIdentity
                  * @param {string} The identity category.
                  *     In the XML stanza, this is the `category`
                  *     attribute of the `<identity>` element.
@@ -788,7 +789,7 @@ converse.plugins.add('converse-disco', {
                  * @returns {promise} A promise which resolves with a map indicating
                  *     whether an identity with a given type is provided by the entity.
                  * @example
-                 * _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(
+                 * api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(
                  *     function (identity) {
                  *         if (identity) {
                  *             // The entity DOES have this identity
@@ -799,8 +800,8 @@ converse.plugins.add('converse-disco', {
                  * ).catch(e => log.error(e));
                  */
                 async getIdentity (category, type, jid) {
-                    const e = await _converse.api.disco.entities.get(jid, true);
-                    if (e === undefined && !_converse.api.connection.connected()) {
+                    const e = await api.disco.entities.get(jid, true);
+                    if (e === undefined && !api.connection.connected()) {
                         // Happens during tests when disco lookups happen asynchronously after teardown.
                         const msg = `Tried to look up category ${category} for ${jid} but _converse.disco_entities has been torn down`;
                         log.warn(msg);

@@ -22,8 +22,9 @@ converse.plugins.add('converse-bosh', {
 
     initialize () {
         const { _converse } = this;
+        const { api } = _converse;
 
-        _converse.api.settings.update({
+        api.settings.update({
             bosh_service_url: undefined,
             prebind_url: null
         });
@@ -51,11 +52,11 @@ converse.plugins.add('converse-bosh', {
 
 
         _converse.startNewPreboundBOSHSession = function () {
-            if (!_converse.api.settings.get('prebind_url')) {
+            if (!api.settings.get('prebind_url')) {
                 throw new Error("startNewPreboundBOSHSession: If you use prebind then you MUST supply a prebind_url");
             }
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', _converse.api.settings.get('prebind_url'), true);
+            xhr.open('GET', api.settings.get('prebind_url'), true);
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
             xhr.onload = async function () {
                 if (xhr.status >= 200 && xhr.status < 400) {
@@ -79,7 +80,7 @@ converse.plugins.add('converse-bosh', {
                  * @type { _converse }
                  * @example _converse.api.listen.on('noResumeableBOSHSession', _converse => { ... });
                  */
-                _converse.api.trigger('noResumeableBOSHSession', _converse);
+                api.trigger('noResumeableBOSHSession', _converse);
             };
             xhr.send();
         }
@@ -101,7 +102,7 @@ converse.plugins.add('converse-bosh', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('clearSession', () => {
+        api.listen.on('clearSession', () => {
             if (_converse.bosh_session === undefined) {
                 // Remove manually, even if we don't have the corresponding
                 // model, to avoid trying to reconnect to a stale BOSH session
@@ -114,28 +115,28 @@ converse.plugins.add('converse-bosh', {
             }
         });
 
-        _converse.api.listen.on('setUserJID', () => {
+        api.listen.on('setUserJID', () => {
             if (_converse.bosh_session !== undefined) {
                 _converse.bosh_session.save({'jid': _converse.jid});
             }
         });
 
-        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.BOSH));
+        api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.BOSH));
 
         /************************ END Event Handlers ************************/
 
 
         /************************ BEGIN API ************************/
-        Object.assign(_converse.api, {
+        Object.assign(api, {
             /**
              * This namespace lets you access the BOSH tokens
              *
-             * @namespace _converse.api.tokens
-             * @memberOf _converse.api
+             * @namespace api.tokens
+             * @memberOf api
              */
             tokens: {
                 /**
-                 * @method _converse.api.tokens.get
+                 * @method api.tokens.get
                  * @param {string} [id] The type of token to return ('rid' or 'sid').
                  * @returns 'string' A token, either the RID or SID token depending on what's asked for.
                  * @example _converse.api.tokens.get('rid');

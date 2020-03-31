@@ -20,17 +20,18 @@ converse.plugins.add('converse-notification', {
          */
         const { _converse } = this;
         const { __ } = _converse;
+        const { api } = _converse;
 
         _converse.supports_html5_notification = "Notification" in window;
 
-        _converse.api.settings.update({
+        api.settings.update({
             notify_all_room_messages: false,
             show_desktop_notifications: true,
             show_chat_state_notifications: false,
             chatstate_notification_blacklist: [],
             // ^ a list of JIDs to ignore concerning chat state notifications
             play_sounds: true,
-            sounds_path: _converse.api.settings.get("assets_path")+'/sounds/',
+            sounds_path: api.settings.get("assets_path")+'/sounds/',
             notification_icon: 'logo/conversejs-filled.svg',
             notification_delay: 5000
         });
@@ -135,7 +136,7 @@ converse.plugins.add('converse-notification', {
             const full_from_jid = message.getAttribute('from'),
                   from_jid = Strophe.getBareJidFromJid(full_from_jid);
             if (message.getAttribute('type') === 'headline') {
-                if (!from_jid.includes('@') || _converse.api.settings.get("allow_non_roster_messaging")) {
+                if (!from_jid.includes('@') || api.settings.get("allow_non_roster_messaging")) {
                     title = __("Notification from %1$s", from_jid);
                 } else {
                     return;
@@ -154,7 +155,7 @@ converse.plugins.add('converse-notification', {
                 if (roster_item !== undefined) {
                     title = __("%1$s says", roster_item.getDisplayName());
                 } else {
-                    if (_converse.api.settings.get("allow_non_roster_messaging")) {
+                    if (api.settings.get("allow_non_roster_messaging")) {
                         title = __("%1$s says", from_jid);
                     } else {
                         return;
@@ -262,7 +263,7 @@ converse.plugins.add('converse-notification', {
              * @type { XMLElement }
              * @example _converse.api.listen.on('messageNotification', stanza => { ... });
              */
-            _converse.api.trigger('messageNotification', message);
+            api.trigger('messageNotification', message);
             _converse.playSoundNotification();
             _converse.showMessageNotification(message);
         };
@@ -286,15 +287,15 @@ converse.plugins.add('converse-notification', {
             }
         };
 
-        _converse.api.listen.on('pluginsInitialized', function () {
+        api.listen.on('pluginsInitialized', function () {
             // We only register event handlers after all plugins are
             // registered, because other plugins might override some of our
             // handlers.
-            _converse.api.listen.on('contactRequest',  _converse.handleContactRequestNotification);
-            _converse.api.listen.on('contactPresenceChanged',  _converse.handleChatStateNotification);
-            _converse.api.listen.on('message',  _converse.handleMessageNotification);
-            _converse.api.listen.on('feedback', _converse.handleFeedback);
-            _converse.api.listen.on('connected', _converse.requestPermission);
+            api.listen.on('contactRequest',  _converse.handleContactRequestNotification);
+            api.listen.on('contactPresenceChanged',  _converse.handleChatStateNotification);
+            api.listen.on('message',  _converse.handleMessageNotification);
+            api.listen.on('feedback', _converse.handleFeedback);
+            api.listen.on('connected', _converse.requestPermission);
         });
     }
 });

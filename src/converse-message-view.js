@@ -32,6 +32,7 @@ converse.plugins.add('converse-message-view', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
         const { __ } = _converse;
 
 
@@ -65,7 +66,7 @@ converse.plugins.add('converse-message-view', {
         }
 
 
-        _converse.api.settings.update({
+        api.settings.update({
             'show_images_inline': true,
             'time_format': 'HH:mm',
         });
@@ -153,7 +154,7 @@ converse.plugins.add('converse-message-view', {
             },
 
             fadeOut () {
-                if (_converse.api.settings.get('animate')) {
+                if (api.settings.get('animate')) {
                     setTimeout(() => this.remove(), 600);
                     u.addClass('fade-out', this.el);
                 } else {
@@ -204,10 +205,10 @@ converse.plugins.add('converse-message-view', {
                  * @param { string } text - The message text
                  * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
                  */
-                await _converse.api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
+                await api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
                 text = this.model.isMeCommand() ? text.substring(4) : text;
                 text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
-                text = u.geoUriToHttp(text, _converse.api.settings.get("geouri_replacement"));
+                text = u.geoUriToHttp(text, api.settings.get("geouri_replacement"));
                 text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
                 text = u.addHyperlinks(text);
                 text = u.renderNewLines(text);
@@ -220,12 +221,12 @@ converse.plugins.add('converse-message-view', {
                  * @param { string } text - The message text
                  * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
                  */
-                await _converse.api.trigger('afterMessageBodyTransformed', this, text, {'Synchronous': true});
+                await api.trigger('afterMessageBodyTransformed', this, text, {'Synchronous': true});
                 return text;
             },
 
             async renderChatMessage () {
-                await _converse.api.waitUntil('emojisInitialized');
+                await api.waitUntil('emojisInitialized');
                 const time = dayjs(this.model.get('time'));
                 const role = this.model.vcard ? this.model.vcard.get('role') : null;
                 const roles = role ? role.split(',') : [];
@@ -243,7 +244,7 @@ converse.plugins.add('converse-message-view', {
                         'is_me_message': this.model.isMeCommand(),
                         'label_show': __('Show more'),
                         'occupant': this.model.occupant,
-                        'pretty_time': time.format(_converse.api.settings.get('time_format')),
+                        'pretty_time': time.format(api.settings.get('time_format')),
                         'retraction_text': is_retracted ? this.getRetractionText() : null,
                         'roles': roles,
                         'time': time.toISOString(),
@@ -259,7 +260,7 @@ converse.plugins.add('converse-message-view', {
                     const msg_content = msg.querySelector('.chat-msg__text');
                     if (text && text !== url) {
                         msg_content.innerHTML = await this.transformBodyText(text);
-                        if (_converse.api.settings.get('show_images_inline')) {
+                        if (api.settings.get('show_images_inline')) {
                             u.renderImageURLs(_converse, msg_content).then(() => this.triggerRendered());
                         }
                     }

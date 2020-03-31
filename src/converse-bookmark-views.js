@@ -65,14 +65,14 @@ converse.plugins.add('converse-bookmark-views', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        _converse.api.settings.update({
+        api.settings.update({
             hide_open_bookmarks: true,
-            muc_respect_autojoin: true
         });
 
 
@@ -96,7 +96,7 @@ converse.plugins.add('converse-bookmark-views', {
                  */
                 ev.preventDefault();
                 const jid = ev.target.getAttribute('data-room-jid');
-                _converse.api.rooms.open(jid, {'bring_to_foreground': true});
+                api.rooms.open(jid, {'bring_to_foreground': true});
                 _converse.chatboxviews.get(jid).renderBookmarkForm();
             },
         });
@@ -203,7 +203,7 @@ converse.plugins.add('converse-bookmark-views', {
             },
 
             toHTML () {
-                const is_hidden = b => !!(_converse.api.settings.get('hide_open_bookmarks') && _converse.chatboxes.get(b.get('jid')));
+                const is_hidden = b => !!(api.settings.get('hide_open_bookmarks') && _converse.chatboxes.get(b.get('jid')));
                 return tpl_bookmarks_list({
                     '_converse': _converse,
                     'bookmarks': this.model,
@@ -231,7 +231,7 @@ converse.plugins.add('converse-bookmark-views', {
                 const data = {
                     'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                 }
-                _converse.api.rooms.open(jid, data, true);
+                api.rooms.open(jid, data, true);
             },
 
             removeBookmark: _converse.removeBookmarkViaEvent,
@@ -255,7 +255,7 @@ converse.plugins.add('converse-bookmark-views', {
 
         /************************ BEGIN Event Handlers ************************/
         const initBookmarkViews = async function () {
-            await _converse.api.waitUntil('roomsPanelRendered');
+            await api.waitUntil('roomsPanelRendered');
             _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
             /**
              * Triggered once the _converse.Bookmarks collection and _converse.BookmarksView view
@@ -263,11 +263,11 @@ converse.plugins.add('converse-bookmark-views', {
              * @event _converse#bookmarkViewsInitialized
              * @example _converse.api.listen.on('bookmarkViewsInitialized', () => { ... });
              */
-            _converse.api.trigger('bookmarkViewsInitialized');
+            api.trigger('bookmarkViewsInitialized');
         }
 
-        _converse.api.listen.on('bookmarksInitialized', initBookmarkViews);
-        _converse.api.listen.on('chatRoomViewInitialized', view => view.setBookmarkState());
+        api.listen.on('bookmarksInitialized', initBookmarkViews);
+        api.listen.on('chatRoomViewInitialized', view => view.setBookmarkState());
         /************************ END Event Handlers ************************/
     }
 });

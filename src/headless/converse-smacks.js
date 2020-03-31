@@ -18,21 +18,22 @@ converse.plugins.add('converse-smacks', {
 
     initialize () {
         const { _converse } = this;
+        const { api } = _converse;
 
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        _converse.api.settings.update({
+        api.settings.update({
             'enable_smacks': true,
             'smacks_max_unacked_stanzas': 5,
         });
 
         function isStreamManagementSupported () {
-            if (_converse.api.connection.isType('bosh') && !_converse.isTestEnv()) {
+            if (api.connection.isType('bosh') && !_converse.isTestEnv()) {
                 return false;
             }
-            return _converse.api.disco.stream.getFeature('sm', Strophe.NS.SM);
+            return api.disco.stream.getFeature('sm', Strophe.NS.SM);
         }
 
         function handleAck (el) {
@@ -69,7 +70,7 @@ converse.plugins.add('converse-smacks', {
             if (_converse.session.get('smacks_enabled')) {
                 const h = _converse.session.get('num_stanzas_handled');
                 const stanza = u.toStanza(`<a xmlns="${Strophe.NS.SM}" h="${h}"/>`);
-                _converse.api.send(stanza);
+                api.send(stanza);
             }
             return true;
         }
@@ -132,7 +133,7 @@ converse.plugins.add('converse-smacks', {
              * Triggered when the XEP-0198 stream could not be resumed.
              * @event _converse#streamResumptionFailed
              */
-             _converse.api.trigger('streamResumptionFailed');
+             api.trigger('streamResumptionFailed');
             return true;
         }
 
@@ -158,7 +159,7 @@ converse.plugins.add('converse-smacks', {
             // service worker or handling IQ[type="result"] stanzas
             // differently, more like push stanzas, so that they don't need
             // explicit handlers.
-            stanzas.forEach(s => _converse.api.send(s));
+            stanzas.forEach(s => api.send(s));
         }
 
         function onResumedStanza (el) {
@@ -179,13 +180,13 @@ converse.plugins.add('converse-smacks', {
             const previous_id = _converse.session.get('smacks_stream_id');
             const h = _converse.session.get('num_stanzas_handled');
             const stanza = u.toStanza(`<resume xmlns="${Strophe.NS.SM}" h="${h}" previd="${previous_id}"/>`);
-            _converse.api.send(stanza);
+            api.send(stanza);
             _converse.connection.flush();
             await promise;
         }
 
         async function sendEnableStanza () {
-            if (!_converse.api.settings.get('enable_smacks') || _converse.session.get('smacks_enabled')) {
+            if (!api.settings.get('enable_smacks') || _converse.session.get('smacks_enabled')) {
                 return;
             }
             if (await isStreamManagementSupported()) {
@@ -193,16 +194,16 @@ converse.plugins.add('converse-smacks', {
                 _converse.connection._addSysHandler(el => promise.resolve(saveSessionData(el)), Strophe.NS.SM, 'enabled');
                 _converse.connection._addSysHandler(el => promise.resolve(onFailedStanza(el)), Strophe.NS.SM, 'failed');
 
-                const resume = (_converse.api.connection.isType('websocket') || _converse.isTestEnv());
+                const resume = (api.connection.isType('websocket') || _converse.isTestEnv());
                 const stanza = u.toStanza(`<enable xmlns="${Strophe.NS.SM}" resume="${resume}"/>`);
-                _converse.api.send(stanza);
+                api.send(stanza);
                 _converse.connection.flush();
                 await promise;
             }
         }
 
         async function enableStreamManagement () {
-            if (!_converse.api.settings.get('enable_smacks')) {
+            if (!api.settings.get('enable_smacks')) {
                 return;
             }
             if (!(await isStreamManagementSupported())) {
@@ -235,21 +236,21 @@ converse.plugins.add('converse-smacks', {
                     'unacked_stanzas',
                     (_converse.session.get('unacked_stanzas') || []).concat([stanza_string])
                 );
-                const max_unacked = _converse.api.settings.get('smacks_max_unacked_stanzas');
+                const max_unacked = api.settings.get('smacks_max_unacked_stanzas');
                 if (max_unacked > 0) {
                     const num = _converse.session.get('num_stanzas_since_last_ack') + 1;
                     if (num % max_unacked === 0) {
                         // Request confirmation of sent stanzas
-                        _converse.api.send(u.toStanza(`<r xmlns="${Strophe.NS.SM}"/>`));
+                        api.send(u.toStanza(`<r xmlns="${Strophe.NS.SM}"/>`));
                     }
                     _converse.session.save({'num_stanzas_since_last_ack': num});
                 }
             }
         }
 
-        _converse.api.listen.on('userSessionInitialized', initSessionData);
-        _converse.api.listen.on('beforeResourceBinding', enableStreamManagement);
-        _converse.api.listen.on('afterResourceBinding', sendEnableStanza);
-        _converse.api.listen.on('send', onStanzaSent);
+        api.listen.on('userSessionInitialized', initSessionData);
+        api.listen.on('beforeResourceBinding', enableStreamManagement);
+        api.listen.on('afterResourceBinding', sendEnableStanza);
+        api.listen.on('send', onStanzaSent);
     }
 });

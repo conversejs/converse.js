@@ -47,6 +47,7 @@ converse.plugins.add('converse-headlines', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
         /**
          * Shows headline messages
@@ -58,7 +59,7 @@ converse.plugins.add('converse-headlines', {
             defaults () {
                 return {
                     'bookmarked': false,
-                    'hidden': ['mobile', 'fullscreen'].includes(_converse.api.settings.get("view_mode")),
+                    'hidden': ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")),
                     'message_type': 'headline',
                     'num_unread': 0,
                     'time_opened': this.get('time_opened') || (new Date()).getTime(),
@@ -75,7 +76,7 @@ converse.plugins.add('converse-headlines', {
                  * @type { _converse.HeadlinesBox }
                  * @example _converse.api.listen.on('headlinesBoxInitialized', model => { ... });
                  */
-                _converse.api.trigger('headlinesBoxInitialized', this);
+                api.trigger('headlinesBoxInitialized', this);
             }
         });
 
@@ -85,7 +86,7 @@ converse.plugins.add('converse-headlines', {
                 const from_jid = message.getAttribute('from');
                 if (from_jid.includes('@') &&
                         !_converse.roster.get(from_jid) &&
-                        !_converse.api.settings.get("allow_non_roster_messaging")) {
+                        !api.settings.get("allow_non_roster_messaging")) {
                     return;
                 }
                 if (message.querySelector('body') === null) {
@@ -100,7 +101,7 @@ converse.plugins.add('converse-headlines', {
                 });
                 const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
                 await chatbox.createMessage(attrs);
-                _converse.api.trigger('message', {'chatbox': chatbox, 'stanza': message});
+                api.trigger('message', {'chatbox': chatbox, 'stanza': message});
             }
         }
 
@@ -112,26 +113,26 @@ converse.plugins.add('converse-headlines', {
                 return true
             }, null, 'message');
         }
-        _converse.api.listen.on('connected', registerHeadlineHandler);
-        _converse.api.listen.on('reconnected', registerHeadlineHandler);
+        api.listen.on('connected', registerHeadlineHandler);
+        api.listen.on('reconnected', registerHeadlineHandler);
         /************************ END Event Handlers ************************/
 
 
         /************************ BEGIN API ************************/
-        Object.assign(_converse.api, {
+        Object.assign(api, {
             /**
              * The "headlines" namespace, which is used for headline-channels
              * which are read-only channels containing messages of type
              * "headline".
              *
-             * @namespace _converse.api.headlines
-             * @memberOf _converse.api
+             * @namespace api.headlines
+             * @memberOf api
              */
             headlines: {
                 /**
                  * Retrieves a headline-channel or all headline-channels.
                  *
-                 * @method _converse.api.headlines.get
+                 * @method api.headlines.get
                  * @param {String|String[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
                  * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
                  * @param {Boolean} [create=false] - Whether the chat should be created if it's not found.
@@ -139,9 +140,9 @@ converse.plugins.add('converse-headlines', {
                  */
                 async get (jids, attrs={}, create=false) {
                     async function _get (jid) {
-                        let model = await _converse.api.chatboxes.get(jid);
+                        let model = await api.chatboxes.get(jid);
                         if (!model && create) {
-                            model = await _converse.api.chatboxes.create(jid, attrs, _converse.HeadlinesBox);
+                            model = await api.chatboxes.create(jid, attrs, _converse.HeadlinesBox);
                         } else {
                             model = (model && model.get('type') === _converse.HEADLINES_TYPE) ? model : null;
                             if (model && Object.keys(attrs).length) {
@@ -151,7 +152,7 @@ converse.plugins.add('converse-headlines', {
                         return model;
                     }
                     if (jids === undefined) {
-                        const chats = await _converse.api.chatboxes.get();
+                        const chats = await api.chatboxes.get();
                         return chats.filter(c => (c.get('type') === _converse.HEADLINES_TYPE));
                     } else if (isString(jids)) {
                         return _get(jids);

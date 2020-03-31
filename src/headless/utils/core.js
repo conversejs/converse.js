@@ -235,7 +235,7 @@ u.merge = function merge (first, second) {
     }
 };
 
-u.applyUserSettings = function applyUserSettings (context, settings, user_settings) {
+u.applySiteSettings = function applySiteSettings (context, settings, user_settings) {
     /* Configuration settings might be nested objects. We only want to
      * add settings which are whitelisted.
      */
@@ -244,7 +244,7 @@ u.applyUserSettings = function applyUserSettings (context, settings, user_settin
             continue;
         }
         if (isObject(settings[k]) && !Array.isArray(settings[k])) {
-            applyUserSettings(context[k], settings[k], user_settings[k]);
+            applySiteSettings(context[k], settings[k], user_settings[k]);
         } else {
             context[k] = user_settings[k];
         }

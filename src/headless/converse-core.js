@@ -533,7 +533,7 @@ const api = _converse.api = {
         update (settings) {
             u.merge(DEFAULT_SETTINGS, settings);
             u.merge(_converse, settings);
-            u.applyUserSettings(_converse, settings, _converse.user_settings);
+            u.applySiteSettings(_converse, settings, _converse.site_settings);
         },
 
         /**
@@ -1594,7 +1594,7 @@ function initSettings (settings) {
     // Allow only whitelisted configuration attributes to be overwritten
     assignIn(_converse.settings, pick(settings, Object.keys(DEFAULT_SETTINGS)));
     assignIn(_converse, _converse.settings);
-    _converse.user_settings = settings; // XXX: See whether _converse can be removed
+    _converse.site_settings = settings;
 }
 
 

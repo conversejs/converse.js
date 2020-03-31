@@ -532,12 +532,14 @@ const api = _converse.api = {
             /**
              * Get the value of a particular user setting.
              * @method _converse.api.user.settings.get
+             * @param {String} key - hello world
+             * @param {*} fallback - An optional fallback value if the user setting is undefined
              * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
              * @example _converse.api.user.settings.get("foo");
              */
-            async get (key) {
+            async get (key, fallback) {
                 await initUserSettings();
-                return user_settings.get(key);
+                return user_settings.get(key) === undefined ? fallback : user_settings.get(key);
             },
 
             /**

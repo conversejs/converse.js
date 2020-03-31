@@ -725,7 +725,7 @@ converse.plugins.add('converse-muc-views', {
                 this.onMouseMove =  this.onMouseMove.bind(this);
                 this.onMouseUp =  this.onMouseUp.bind(this);
 
-                this.render();
+                await this.render();
                 this.createSidebarView();
                 await this.updateAfterMessagesFetched();
                 this.onConnectionStatusChanged();
@@ -739,13 +739,13 @@ converse.plugins.add('converse-muc-views', {
                 api.trigger('chatRoomViewInitialized', this);
             },
 
-            render () {
+            async render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
                 render(tpl_chatroom({
                     'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
                     'show_send_button': _converse.show_send_button
                 }), this.el);
-                this.renderHeading();
+                await this.renderHeading();
                 this.renderBottomPanel();
                 this.content = this.el.querySelector('.chat-content');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
@@ -802,8 +802,9 @@ converse.plugins.add('converse-muc-views', {
              * @method _converse.ChatRoomView#renderHeading
              * @param { _converse.ChatRoom } [item]
              */
-            renderHeading () {
-                render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatroom'));
+            async renderHeading () {
+                const tpl = await this.generateHeadingTemplate();
+                render(tpl, this.el.querySelector('.chat-head-chatroom'));
             },
 
 
@@ -1156,7 +1157,7 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            getHeadingButtons () {
+            async getHeadingButtons () {
                 const buttons = [{
                     'i18n_text': __('Details'),
                     'i18n_title': __('Show more information about this groupchat'),
@@ -1212,11 +1213,14 @@ converse.plugins.add('converse-muc-views', {
                     });
                 }
 
+                const muc_jid = this.model.get('jid');
+                const jids = await api.user.settings.get('mucs_with_hidden_subject', [])
+                const subject_hidden = jids.includes(muc_jid);
                 const subject = this.model.get('subject');
                 if (subject && subject.text) {
                     buttons.push({
-                        'i18n_text': this.model.get('subject_hidden') ? __('Show topic') : __('Hide topic'),
-                        'i18n_title': this.model.get('subject_hidden') ?
+                        'i18n_text': subject_hidden ? __('Show topic') : __('Hide topic'),
+                        'i18n_title': subject_hidden ?
                             __('Show the topic message in the heading') :
                             __('Hide the topic in the heading'),
                         'handler': ev => this.toggleTopic(ev),
@@ -1249,8 +1253,8 @@ converse.plugins.add('converse-muc-views', {
              * @private
              * @method _converse.ChatRoomView#generateHeadingTemplate
              */
-            generateHeadingTemplate () {
-                const heading_btns = this.getHeadingButtons();
+            async generateHeadingTemplate () {
+                const heading_btns = await this.getHeadingButtons();
                 const standalone_btns = heading_btns.filter(b => b.standalone);
                 const dropdown_btns = heading_btns.filter(b => !b.standalone);
                 return tpl_chatroom_head(
@@ -1262,10 +1266,15 @@ converse.plugins.add('converse-muc-views', {
                 }));
             },
 
-            toggleTopic () {
-                this.model.save('subject_hidden', !this.model.get('subject_hidden'));
+            async toggleTopic () {
+                const muc_jid = this.model.get('jid');
+                const jids = await api.user.settings.get('mucs_with_hidden_subject', []);
+                if (jids.includes(this.model.get('jid'))) {
+                    api.user.settings.set('mucs_with_hidden_subject', jids.filter(jid => jid !== muc_jid));
+                } else {
+                    api.user.settings.set('mucs_with_hidden_subject', [...jids, muc_jid]);
+                }
             },
-
 
             showInviteModal (ev) {
                 ev.preventDefault();
@@ -1950,15 +1959,16 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            showJoinNotification (occupant) {
+            async showJoinNotification (occupant) {
                 if (!_converse.muc_show_join_leave ||
                         this.model.session.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                     return;
                 }
-                const nick = occupant.get('nick'),
-                      stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
-                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.msgs_container.lastElementChild, nick),
-                      data = prev_info_el?.dataset || {};
+                await api.waitUntil('chatRoomViewInitialized');
+                const nick = occupant.get('nick');
+                const stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null;
+                const prev_info_el = this.getPreviousJoinOrLeaveNotification(this.msgs_container.lastElementChild, nick);
+                const data = prev_info_el?.dataset || {};
 
                 if (data.leave === nick) {
                     let message;
@@ -2004,12 +2014,13 @@ converse.plugins.add('converse-muc-views', {
                 this.scrollDown();
             },
 
-            showLeaveNotification (occupant) {
-                if (!_converse.muc_show_join_leave ||
+            async showLeaveNotification (occupant) {
+                if (!api.settings.get('muc_show_join_leave') ||
                         occupant.get('states').includes('303') ||
                         occupant.get('states').includes('307')) {
                     return;
                 }
+                await api.waitUntil('chatRoomViewInitialized');
                 const nick = occupant.get('nick'),
                       stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
                       prev_info_el = this.getPreviousJoinOrLeaveNotification(this.msgs_container.lastElementChild, nick),

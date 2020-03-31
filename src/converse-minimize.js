@@ -139,9 +139,9 @@ converse.plugins.add('converse-minimize', {
                 return result;
             },
 
-            getHeadingButtons () {
+            async getHeadingButtons () {
                 const { _converse } = this.__super__;
-                const buttons = this.__super__.getHeadingButtons.call(this);
+                const buttons = await this.__super__.getHeadingButtons.call(this);
                 const data = {
                     'a_class': 'toggle-chatbox-button',
                     'handler': ev => this.minimize(ev),

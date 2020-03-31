@@ -224,9 +224,9 @@
                     'nick': ' some1'
                 });
                 view.model.set('bookmarked', true);
-                expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).not.toBe(null);
+                await u.waitUntil(() => view.el.querySelector('.chatbox-title__text .fa-bookmark') !== null);
                 view.model.set('bookmarked', false);
-                expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
+                await u.waitUntil(() => view.el.querySelector('.chatbox-title__text .fa-bookmark') === null);
                 done();
             }));
 
@@ -253,12 +253,12 @@
                 expect(_converse.bookmarks.length).toBe(1);
                 await u.waitUntil(() => _converse.chatboxes.length >= 1);
                 expect(view.model.get('bookmarked')).toBeTruthy();
-                expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).not.toBe(null);
+                await u.waitUntil(() => view.el.querySelector('.chatbox-title__text .fa-bookmark') !== null);
                 spyOn(_converse.connection, 'getUniqueId').and.callThrough();
                 const bookmark_icon = view.el.querySelector('.toggle-bookmark');
                 bookmark_icon.click();
                 expect(view.toggleBookmark).toHaveBeenCalled();
-                expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
+                await u.waitUntil(() => view.el.querySelector('.chatbox-title__text .fa-bookmark') === null);
                 expect(_converse.bookmarks.length).toBe(0);
 
                 // Check that an IQ stanza is sent out, containing no

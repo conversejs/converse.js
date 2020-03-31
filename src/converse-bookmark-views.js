@@ -36,9 +36,9 @@ converse.plugins.add('converse-bookmark-views', {
         // plugin architecture they will replace existing methods on the
         // relevant objects or classes.
         ChatRoomView: {
-            getHeadingButtons () {
+            async getHeadingButtons () {
                 const { _converse } = this.__super__;
-                const buttons = this.__super__.getHeadingButtons.call(this);
+                const buttons = await this.__super__.getHeadingButtons.call(this);
                 if (_converse.allow_bookmarks) {
                     const supported = _converse.checkBookmarksSupport();
                     const bookmarked = this.model.get('bookmarked');

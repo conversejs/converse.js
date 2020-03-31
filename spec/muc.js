@@ -611,6 +611,8 @@
                 await u.waitUntil(() => sent_stanzas.filter(iq => sizzle('presence history', iq).length).pop());
 
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                await _converse.api.waitUntil('chatRoomViewInitialized');
+
                 /* We don't show join/leave messages for existing occupants. We
                  * know about them because we receive their presences before we
                  * receive our own.
@@ -646,8 +648,8 @@
                     }).up()
                     .c('status', {code: '110'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(sizzle('div.chat-info:first', view.content).pop().textContent.trim())
-                    .toBe("some1 has entered the groupchat");
+                const text = await u.waitUntil(() => sizzle('div.chat-info:first', view.content).pop()?.textContent);
+                expect(text.trim()).toBe("some1 has entered the groupchat");
 
                 await room_creation_promise;
                 await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
@@ -664,7 +666,7 @@
                         'role': 'participant'
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.content.querySelectorAll('div.chat-info').length).toBe(2);
+                await u.waitUntil(() => view.content.querySelectorAll('div.chat-info').length === 2);
                 expect(sizzle('div.chat-info:last', view.content).pop().textContent.trim())
                     .toBe("newguy has entered the groupchat");
 
@@ -2166,7 +2168,8 @@
                 await new Promise(resolve => view.model.once('change:subject', resolve));
 
                 expect(sizzle('.chat-event:last', view.el).pop().textContent.trim()).toBe('Topic set by ralphm');
-                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(text);
+                const head_desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
+                expect(head_desc?.textContent.trim()).toBe(text);
 
                 stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
@@ -2188,7 +2191,7 @@
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise(resolve => view.model.once('change:subject', resolve));
-                expect(view.el.querySelector('.chat-head__desc')).toBe(null);
+                await u.waitUntil(() => view.el.querySelector('.chat-head__desc') === null);
                 expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
                 done();
             }));

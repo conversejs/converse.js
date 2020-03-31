@@ -251,8 +251,9 @@
         [localStorage, sessionStorage].forEach(
             s => Object.keys(s).forEach(k => k.match(/^converse-test-/) && s.removeItem(k))
         );
+        const cache_key = `converse.room-bookmarksromeo@montague.lit`;
+        window.sessionStorage.removeItem(cache_key+'fetched');
     }
-
 
     async function initConverse (settings) {
         clearStores();

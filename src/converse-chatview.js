@@ -1045,7 +1045,7 @@ converse.plugins.add('converse-chatview', {
                     }
                 }
                 if (message) {
-                    this.insertIntoTextArea(message.get('message'), true, true);
+                    this.insertIntoTextArea(u.prefixMentions(message), true, true);
                     message.save('correcting', true);
                 } else {
                     this.insertIntoTextArea('', true, false);
@@ -1068,7 +1068,7 @@ converse.plugins.add('converse-chatview', {
                 }
                 message = message || this.getOwnMessages().reverse().find(m => m.get('editable'));
                 if (message) {
-                    this.insertIntoTextArea(message.get('message'), true, true);
+                    this.insertIntoTextArea(u.prefixMentions(message), true, true);
                     message.save('correcting', true);
                 }
             },

@@ -1660,6 +1660,14 @@ This setting relates to `XEP-0198 <https://xmpp.org/extensions/xep-0198.html>`_
 and determines the number of stanzas to be sent before Converse will ask the
 server for acknowledgement of those stanzas.
 
+smooth_scroll
+-------------
+
+* Default: ``false``
+
+This option smoothly animates the chat scroll position, instead of a straight jump.
+
+
 sounds_path
 -----------
 

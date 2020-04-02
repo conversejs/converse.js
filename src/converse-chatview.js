@@ -61,6 +61,7 @@ converse.plugins.add('converse-chatview', {
 
         api.settings.update({
             'auto_focus': true,
+            'smooth_scroll': false,
             'message_limit': 0,
             'show_send_button': false,
             'show_retraction_warning': true,
@@ -1348,6 +1349,10 @@ converse.plugins.add('converse-chatview', {
                     return;
                 }
                 if (u.isVisible(this.content) && !this.model.get('scrolled')) {
+                    if (api.settings.get('smooth_scroll')) {
+                        this.content.style.scrollBehavior = "smooth";
+                    }
+
                     this.content.scrollTop = this.content.scrollHeight;
                 }
             },

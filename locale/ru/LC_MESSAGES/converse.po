@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
 "PO-Revision-Date: 2020-04-04 18:09+0000\n"
-"Last-Translator: Mingun <Alexander_Sergey@mail.ru>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -54,7 +54,7 @@ msgstr "Эта комната больше не существует"
 
 #: dist/converse-no-dependencies.js:11173
 msgid "The conversation has moved. Click below to enter."
-msgstr "Разговор был перенесен. Нажмите снизу что бы продолжить"
+msgstr "Беседа перемещена. Нажмите ниже чтобы войти."
 
 #: dist/converse-no-dependencies.js:11374
 msgid "Messages are being sent in plaintext"
@@ -717,9 +717,8 @@ msgid "Clear all messages"
 msgstr "Очистить все сообщения"
 
 #: dist/converse-no-dependencies.js:52439
-#, fuzzy
 msgid "Message characters remaining"
-msgstr "Архивация сообщений"
+msgstr "Осталось символов сообщения"
 
 #: dist/converse-no-dependencies.js:52444
 msgid "Start a call"

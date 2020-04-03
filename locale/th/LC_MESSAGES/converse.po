@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-02-11 08:50+0000\n"
-"Last-Translator: Arunothai Supsook <dakzanarak2@gmail.com>\n"
+"PO-Revision-Date: 2020-04-04 18:09+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/conversejs/"
 "translations/th/>\n"
 "Language: th\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: dist/converse-no-dependencies.js:10630
 msgid "Uploading file:"
@@ -66,7 +66,7 @@ msgstr "สร้างบัญชีผู้ใช้ของคุณ"
 
 #: dist/converse-no-dependencies.js:11390
 msgid "Please enter the XMPP provider to register with:"
-msgstr "โปรดระบุเซิร์ฟเวอร์  XMPP เพื่อลงทะเบียน :"
+msgstr "โปรดระบุเซิร์ฟเวอร์ XMPP เพื่อลงทะเบียน :"
 
 #: dist/converse-no-dependencies.js:11408
 #: dist/converse-no-dependencies.js:11442
@@ -255,7 +255,7 @@ msgstr "Groupchat นี้ไม่ระบุชื่อเต็ม"
 
 #: dist/converse-no-dependencies.js:35054
 msgid "A new groupchat has been created"
-msgstr "มีการสร้าง Groupchat  ใหม่"
+msgstr "มีการสร้าง Groupchat ใหม่"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:35058

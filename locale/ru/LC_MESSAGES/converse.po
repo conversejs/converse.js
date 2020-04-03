@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-02-10 03:50+0000\n"
-"Last-Translator: Антон <vooooggg@gmail.com>\n"
+"PO-Revision-Date: 2020-04-04 18:09+0000\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: dist/converse-no-dependencies.js:10630
 msgid "Uploading file:"
@@ -37,13 +37,12 @@ msgid "Retract this message"
 msgstr "Отменить сообщение"
 
 #: dist/converse-no-dependencies.js:10792
-#, fuzzy
 msgid "Send the message"
-msgstr "Отредактировать сообщение"
+msgstr "Отправить сообщение"
 
 #: dist/converse-no-dependencies.js:11114
 msgid "No message history available."
-msgstr "Нет доступной истории сообщений"
+msgstr "Нет доступной истории сообщений."
 
 #: dist/converse-no-dependencies.js:11147
 msgid "You're not allowed to send messages in this room"
@@ -55,7 +54,7 @@ msgstr "Эта комната больше не существует"
 
 #: dist/converse-no-dependencies.js:11173
 msgid "The conversation has moved. Click below to enter."
-msgstr "Разговор был перенесен. Нажмите снизу что бы продолжить"
+msgstr "Беседа перемещена. Нажмите ниже чтобы войти."
 
 #: dist/converse-no-dependencies.js:11374
 msgid "Messages are being sent in plaintext"
@@ -104,16 +103,14 @@ msgid "Cancel"
 msgstr "Отменить"
 
 #: dist/converse-no-dependencies.js:27593
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
-"Ваше сообщение не было доставлено потому что Вам не разрешено отправлять "
-"сообщения в этом групповом чате."
+"Ваше сообщение не было доставлено, потому что вам не разрешили его отправить."
 
 #: dist/converse-no-dependencies.js:27596
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The message from the server is: \"%1$s\""
-msgstr "Причиной является: \"%1$s\"."
+msgstr "Сообщение от сервера: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:27599
 msgid ""
@@ -134,9 +131,8 @@ msgid "An error occurred while connecting to the chat server."
 msgstr "При подключении к чат-серверу произошла ошибка."
 
 #: dist/converse-no-dependencies.js:29484
-#, fuzzy
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr "Твой ID Jabber'а и/или пароль некорректный. Пожалуйста попробуй снова."
+msgstr "Ваш адрес XMPP и/или пароль некорректные. Пожалуйста, попробуйте снова."
 
 #: dist/converse-no-dependencies.js:29496
 #, javascript-format
@@ -202,27 +198,27 @@ msgstr "Путешествие"
 
 #: dist/converse-no-dependencies.js:34350
 msgid "Objects"
-msgstr ""
+msgstr "Объекты"
 
 #: dist/converse-no-dependencies.js:34351
 msgid "Animals and nature"
-msgstr ""
+msgstr "Животные и природа"
 
 #: dist/converse-no-dependencies.js:34352
 msgid "Food and drink"
-msgstr ""
+msgstr "Еда и напитки"
 
 #: dist/converse-no-dependencies.js:34353
 msgid "Symbols"
-msgstr ""
+msgstr "Символы"
 
 #: dist/converse-no-dependencies.js:34354
 msgid "Flags"
-msgstr ""
+msgstr "Флаги"
 
 #: dist/converse-no-dependencies.js:34355
 msgid "Stickers"
-msgstr ""
+msgstr "Наклейки"
 
 #: dist/converse-no-dependencies.js:35045
 msgid "This groupchat is not anonymous"
@@ -241,14 +237,12 @@ msgid "The groupchat configuration has changed"
 msgstr "Изменена конфигурация группового чата"
 
 #: dist/converse-no-dependencies.js:35049
-#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr "Протокол чата включен"
+msgstr "Журналирование группового чата теперь включено"
 
 #: dist/converse-no-dependencies.js:35050
-#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr "Протокол чата выключен"
+msgstr "Журналирование группового чата теперь отключено"
 
 #: dist/converse-no-dependencies.js:35051
 msgid "This groupchat is now no longer anonymous"
@@ -331,26 +325,30 @@ msgid "%1$s has been removed for not being a member"
 msgstr "%1$s был удален из-за того, что не являлся членом"
 
 #: dist/converse-no-dependencies.js:37014
-#, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Вам не разрешено создавать новые комнаты."
+msgstr "Вам не разрешено регистрировать себя в этом групповом чате."
 
 #: dist/converse-no-dependencies.js:37016
-#, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "Вам не разрешено создавать новые комнаты."
+msgstr ""
+"Вам не разрешено регистрироваться в этом групповом чате, потому что он "
+"только для участников."
 
 #: dist/converse-no-dependencies.js:37061
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
+"Невозможно зарегистрировать ваш псевдоним в этом групповом чате, так как он "
+"не поддерживает регистрацию."
 
 #: dist/converse-no-dependencies.js:37063
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"Невозможно зарегистрировать ваш псевдоним в этом групповом чате, так как "
+"предоставлена неверная форма данных."
 
 #: dist/converse-no-dependencies.js:37771
 #: dist/converse-no-dependencies.js:60737
@@ -373,9 +371,8 @@ msgstr ""
 "выберите другой."
 
 #: dist/converse-no-dependencies.js:37857
-#, fuzzy
 msgid "Password incorrect"
-msgstr "Пароль защищён"
+msgstr "Неверный пароль"
 
 #: dist/converse-no-dependencies.js:37865
 msgid "You are not on the member list of this groupchat."
@@ -441,13 +438,15 @@ msgstr "Извините, что-то пошло не так при попытк
 
 #: dist/converse-no-dependencies.js:39110
 msgid "Timeout Error"
-msgstr ""
+msgstr "Ошибка времени ожидания"
 
 #: dist/converse-no-dependencies.js:39110
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"Сервер не вернул ваши закладки в течение отмеренного ему времени. Вы можете "
+"перезагрузить страницу, чтобы запросить их снова."
 
 #: dist/converse-no-dependencies.js:43066
 msgid "My contacts"
@@ -466,9 +465,8 @@ msgid "Ungrouped"
 msgstr "Несгруппированные"
 
 #: dist/converse-no-dependencies.js:43070
-#, fuzzy
 msgid "New messages"
-msgstr "Удалить сообщения"
+msgstr "Новые сообщения"
 
 #: dist/converse-no-dependencies.js:43737
 #, javascript-format
@@ -564,9 +562,9 @@ msgstr "Показать больше"
 
 #: dist/converse-no-dependencies.js:50778
 #: dist/converse-no-dependencies.js:50780
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s был удален из-за того, что не являлся членом"
+msgstr "%1$s удалил это сообщение"
 
 #: dist/converse-no-dependencies.js:50797
 msgid "Typing from another device"
@@ -658,9 +656,8 @@ msgid "Untrusted"
 msgstr "Недоверенный"
 
 #: dist/converse-no-dependencies.js:51782
-#, fuzzy
 msgid "No OMEMO-enabled devices found"
-msgstr "Другие устройства с включенным OMEMO"
+msgstr "Не найдено устройств с включённым OMEMO"
 
 #: dist/converse-no-dependencies.js:51982
 msgid "Close this chat box"
@@ -720,9 +717,8 @@ msgid "Clear all messages"
 msgstr "Очистить все сообщения"
 
 #: dist/converse-no-dependencies.js:52439
-#, fuzzy
 msgid "Message characters remaining"
-msgstr "Архивация сообщений"
+msgstr "Осталось символов сообщения"
 
 #: dist/converse-no-dependencies.js:52444
 msgid "Start a call"
@@ -733,9 +729,8 @@ msgid "Remove messages"
 msgstr "Удалить сообщения"
 
 #: dist/converse-no-dependencies.js:52888
-#, fuzzy
 msgid "Close this chat"
-msgstr "Закрыть это окно чата"
+msgstr "Закрыть этот чат"
 
 #: dist/converse-no-dependencies.js:52888
 msgid "Write in the third person"
@@ -1221,8 +1216,8 @@ msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
-"Статус владельца обладает неограниченным правом. Владелец может менять роли "
-"и права всех пользователей. "
+"Владелец обладает самыми обширными правами. Владельцы могут изменять роли и "
+"права всех других пользователей."
 
 #: dist/converse-no-dependencies.js:58453
 msgid ""
@@ -1899,13 +1894,13 @@ msgstr ""
 "расшифрованы на этом девайсе."
 
 #: dist/converse-no-dependencies.js:63635
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
-"Извините, невозможно отправить зашифрованное сообщение, т.к. %1$s требует "
-"быть подписанным на него, чтобы увидеть их информацию OMEMO"
+"Извините, невозможно отправить зашифрованное сообщение, поскольку %1$s "
+"требуют, чтобы вы были на них подписаны, чтобы увидеть их информацию об OMEMO"
 
 #: dist/converse-no-dependencies.js:63637
 #, javascript-format

@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
 "PO-Revision-Date: 2020-04-03 08:51+0000\n"
-"Last-Translator: Mingun <Alexander_Sergey@mail.ru>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -325,21 +325,23 @@ msgid "%1$s has been removed for not being a member"
 msgstr "%1$s был удален из-за того, что не являлся членом"
 
 #: dist/converse-no-dependencies.js:37014
-#, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Вам не разрешено создавать новые комнаты."
+msgstr "Вам не разрешено регистрировать себя в этом групповом чате."
 
 #: dist/converse-no-dependencies.js:37016
-#, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "Вам не разрешено создавать новые комнаты."
+msgstr ""
+"Вам не разрешено регистрироваться в этом групповом чате, потому что он "
+"только для участников."
 
 #: dist/converse-no-dependencies.js:37061
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
+"Невозможно зарегистрировать ваш псевдоним в этом групповом чате, т.к. он не "
+"поддерживает регистрацию."
 
 #: dist/converse-no-dependencies.js:37063
 msgid ""

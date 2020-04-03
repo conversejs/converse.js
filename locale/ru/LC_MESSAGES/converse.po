@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
 "PO-Revision-Date: 2020-04-03 08:48+0000\n"
-"Last-Translator: Mingun <Alexander_Sergey@mail.ru>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -131,9 +131,9 @@ msgid "An error occurred while connecting to the chat server."
 msgstr "При подключении к чат-серверу произошла ошибка."
 
 #: dist/converse-no-dependencies.js:29484
-#, fuzzy
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr "Твой ID Jabber'а и/или пароль некорректный. Пожалуйста попробуй снова."
+msgstr ""
+"Твой адрес XMPP и/или пароль некорректный. Пожалуйста, попробуйте снова."
 
 #: dist/converse-no-dependencies.js:29496
 #, javascript-format

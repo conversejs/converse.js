@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
 "PO-Revision-Date: 2020-04-03 08:50+0000\n"
-"Last-Translator: Mingun <Alexander_Sergey@mail.ru>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -241,9 +241,8 @@ msgid "Groupchat logging is now enabled"
 msgstr "Журналирование группового чата теперь включено"
 
 #: dist/converse-no-dependencies.js:35050
-#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr "Протокол чата выключен"
+msgstr "Журнал группового чата теперь отключен"
 
 #: dist/converse-no-dependencies.js:35051
 msgid "This groupchat is now no longer anonymous"

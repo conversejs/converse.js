@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-04-03 08:53+0000\n"
-"Last-Translator: anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-04-04 18:09+0000\n"
+"Last-Translator: Mingun <Alexander_Sergey@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -42,7 +42,7 @@ msgstr "Отправить сообщение"
 
 #: dist/converse-no-dependencies.js:11114
 msgid "No message history available."
-msgstr "Нет доступной истории сообщений"
+msgstr "Нет доступной истории сообщений."
 
 #: dist/converse-no-dependencies.js:11147
 msgid "You're not allowed to send messages in this room"
@@ -445,7 +445,7 @@ msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
-"Сервер не вернул ваши закладки в течение заданного времени. Вы можете "
+"Сервер не вернул ваши закладки в течение отмеренного ему времени. Вы можете "
 "перезагрузить страницу, чтобы запросить их снова."
 
 #: dist/converse-no-dependencies.js:43066
@@ -465,9 +465,8 @@ msgid "Ungrouped"
 msgstr "Несгруппированные"
 
 #: dist/converse-no-dependencies.js:43070
-#, fuzzy
 msgid "New messages"
-msgstr "Удалить сообщения"
+msgstr "Новые сообщения"
 
 #: dist/converse-no-dependencies.js:43737
 #, javascript-format
@@ -563,9 +562,9 @@ msgstr "Показать больше"
 
 #: dist/converse-no-dependencies.js:50778
 #: dist/converse-no-dependencies.js:50780
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s был удален из-за того, что не являлся членом"
+msgstr "%1$s удалил это сообщение"
 
 #: dist/converse-no-dependencies.js:50797
 msgid "Typing from another device"
@@ -657,9 +656,8 @@ msgid "Untrusted"
 msgstr "Недоверенный"
 
 #: dist/converse-no-dependencies.js:51782
-#, fuzzy
 msgid "No OMEMO-enabled devices found"
-msgstr "Другие устройства с включенным OMEMO"
+msgstr "Не найдено устройств с включённым OMEMO"
 
 #: dist/converse-no-dependencies.js:51982
 msgid "Close this chat box"
@@ -732,9 +730,8 @@ msgid "Remove messages"
 msgstr "Удалить сообщения"
 
 #: dist/converse-no-dependencies.js:52888
-#, fuzzy
 msgid "Close this chat"
-msgstr "Закрыть это окно чата"
+msgstr "Закрыть этот чат"
 
 #: dist/converse-no-dependencies.js:52888
 msgid "Write in the third person"
@@ -1220,8 +1217,8 @@ msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
 msgstr ""
-"Статус владельца обладает неограниченным правом. Владелец может менять роли "
-"и права всех пользователей. "
+"Владелец обладает самыми обширными правами. Владельцы могут изменять роли и "
+"права всех других пользователей."
 
 #: dist/converse-no-dependencies.js:58453
 msgid ""
@@ -1898,13 +1895,13 @@ msgstr ""
 "расшифрованы на этом девайсе."
 
 #: dist/converse-no-dependencies.js:63635
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
-"Извините, невозможно отправить зашифрованное сообщение, т.к. %1$s требует "
-"быть подписанным на него, чтобы увидеть их информацию OMEMO"
+"Извините, невозможно отправить зашифрованное сообщение, поскольку %1$s "
+"требуют, чтобы вы были на них подписаны, чтобы увидеть их информацию об OMEMO"
 
 #: dist/converse-no-dependencies.js:63637
 #, javascript-format

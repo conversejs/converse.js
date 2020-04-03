@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-02-21 02:32+0000\n"
+"PO-Revision-Date: 2020-04-04 18:09+0000\n"
 "Last-Translator: Michal Biesiada <blade-14@o2.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
 "translations/pl/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.11.1\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: dist/converse-no-dependencies.js:10630
 msgid "Uploading file:"
@@ -38,9 +38,8 @@ msgid "Retract this message"
 msgstr "Cofnij tę wiadomość"
 
 #: dist/converse-no-dependencies.js:10792
-#, fuzzy
 msgid "Send the message"
-msgstr "Edytuj tę wiadomość"
+msgstr "Wyślij wiadomość"
 
 #: dist/converse-no-dependencies.js:11114
 msgid "No message history available."
@@ -105,16 +104,14 @@ msgid "Cancel"
 msgstr "Anuluj"
 
 #: dist/converse-no-dependencies.js:27593
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
-"Twoja wiadomość nie została dostarczona, ponieważ nie możesz wysyłać "
-"wiadomości w tym grupowym czacie."
+"Twoja wiadomość nie została dostarczona, ponieważ nie możesz jej wysłać."
 
 #: dist/converse-no-dependencies.js:27596
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The message from the server is: \"%1$s\""
-msgstr "Podany powód to: \"%1$s\"."
+msgstr "Wiadomość z serwera to: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:27599
 msgid ""

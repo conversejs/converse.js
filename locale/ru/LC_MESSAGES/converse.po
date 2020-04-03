@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
 "PO-Revision-Date: 2020-04-03 08:52+0000\n"
-"Last-Translator: Mingun <Alexander_Sergey@mail.ru>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -347,6 +347,8 @@ msgstr ""
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"Невозможно зарегистрировать ваш псевдоним в этом групповом чате, "
+"предоставлена неверная форма данных."
 
 #: dist/converse-no-dependencies.js:37771
 #: dist/converse-no-dependencies.js:60737

@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
 "PO-Revision-Date: 2020-04-03 08:49+0000\n"
-"Last-Translator: Mingun <Alexander_Sergey@mail.ru>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
@@ -198,27 +198,27 @@ msgstr "Путешествие"
 
 #: dist/converse-no-dependencies.js:34350
 msgid "Objects"
-msgstr ""
+msgstr "Объекты"
 
 #: dist/converse-no-dependencies.js:34351
 msgid "Animals and nature"
-msgstr ""
+msgstr "Животные и природа"
 
 #: dist/converse-no-dependencies.js:34352
 msgid "Food and drink"
-msgstr ""
+msgstr "Еда и напитки"
 
 #: dist/converse-no-dependencies.js:34353
 msgid "Symbols"
-msgstr ""
+msgstr "Символы"
 
 #: dist/converse-no-dependencies.js:34354
 msgid "Flags"
-msgstr ""
+msgstr "Флаги"
 
 #: dist/converse-no-dependencies.js:34355
 msgid "Stickers"
-msgstr ""
+msgstr "Наклейки"
 
 #: dist/converse-no-dependencies.js:35045
 msgid "This groupchat is not anonymous"
@@ -237,9 +237,8 @@ msgid "The groupchat configuration has changed"
 msgstr "Изменена конфигурация группового чата"
 
 #: dist/converse-no-dependencies.js:35049
-#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr "Протокол чата включен"
+msgstr "Журнал группового чата теперь включен"
 
 #: dist/converse-no-dependencies.js:35050
 #, fuzzy

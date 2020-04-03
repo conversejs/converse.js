@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-03-30 15:04+0000\n"
-"Last-Translator: anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-04-04 18:09+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
 "translations/fi/>\n"
 "Language: fi\n"
@@ -176,7 +176,7 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
-"Tiedoston koko,% 1 $ s, ylittää palvelimen salliman enimmäismäärän, joka on "
+"Tiedoston koko, %1$s, ylittää palvelimen salliman enimmäismäärän, joka on "
 "%2$s."
 
 #: dist/converse-no-dependencies.js:34346
@@ -1995,7 +1995,7 @@ msgstr "Avaa ryhmäkeskusteluja"
 #: dist/converse-no-dependencies.js:66746
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
-msgstr "Oletko varma, että haluat jättää ryhmäkeskustelun% 1$s?"
+msgstr "Oletko varma, että haluat jättää ryhmäkeskustelun %1$s?"
 
 #: dist/converse-no-dependencies.js:66863
 msgid "name@example.org"

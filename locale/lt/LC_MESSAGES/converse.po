@@ -46,7 +46,7 @@ msgstr "Redaguoti šį pranešimą"
 
 #: dist/converse-no-dependencies.js:11114
 msgid "No message history available."
-msgstr "Žinučių istorija nepasiekiama."
+msgstr "Žinučių istorijos nėra."
 
 #: dist/converse-no-dependencies.js:11147
 #, fuzzy
@@ -205,7 +205,7 @@ msgstr "Veiklos"
 
 #: dist/converse-no-dependencies.js:34349
 msgid "Travel"
-msgstr "Kelionė"
+msgstr "Kelionės"
 
 #: dist/converse-no-dependencies.js:34350
 msgid "Objects"
@@ -1853,7 +1853,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62413
 msgid "OMEMO"
-msgstr ""
+msgstr "OMEMO"
 
 #: dist/converse-no-dependencies.js:62415
 #, fuzzy

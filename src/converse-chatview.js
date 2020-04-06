@@ -383,8 +383,9 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            renderHeading () {
-                render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatbox'));
+            async renderHeading () {
+                const tpl = await this.generateHeadingTemplate();
+                render(tpl, this.el.querySelector('.chat-head-chatbox'));
             },
 
             async getHeadingStandaloneButton (promise_or_data) {
@@ -403,10 +404,10 @@ converse.plugins.add('converse-chatview', {
                     title="${data.i18n_title}"><i class="fa ${data.icon_class}"></i>${data.i18n_text}</a>`;
             },
 
-            generateHeadingTemplate () {
+            async generateHeadingTemplate () {
                 const vcard = this.model?.vcard;
                 const vcard_json = vcard ? vcard.toJSON() : {};
-                const heading_btns = this.getHeadingButtons();
+                const heading_btns = await this.getHeadingButtons();
                 const standalone_btns = heading_btns.filter(b => b.standalone);
                 const dropdown_btns = heading_btns.filter(b => !b.standalone);
                 return tpl_chatbox_head(
@@ -422,6 +423,13 @@ converse.plugins.add('converse-chatview', {
                 );
             },
 
+            /**
+             * Returns a list of objects which represent buttons for the chat's header.
+             * @async
+             * @emits _converse#getHeadingButtons
+             * @private
+             * @method _converse.ChatBoxView#getHeadingButtons
+             */
             getHeadingButtons () {
                 const buttons = [{
                     'a_class': 'show-user-details-modal',
@@ -443,7 +451,11 @@ converse.plugins.add('converse-chatview', {
                         'standalone': api.settings.get("view_mode") === 'overlayed',
                     });
                 }
-                return buttons;
+                /**
+                 * *Hook* which allows plugins to add more buttons to a chat's heading.
+                 * @event _converse#getHeadingButtons
+                 */
+                return _converse.api.hook('getHeadingButtons', this, buttons);
             },
 
             getToolbarOptions () {

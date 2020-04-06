@@ -105,42 +105,6 @@ converse.plugins.add('converse-minimize', {
                     return this.__super__.setChatBoxWidth.call(this, width);
                 }
             },
-
-            getHeadingButtons () {
-                const { _converse } = this.__super__;
-                const buttons = this.__super__.getHeadingButtons.call(this);
-                const data = {
-                    'a_class': 'toggle-chatbox-button',
-                    'handler': ev => this.minimize(ev),
-                    'i18n_text': __('Minimize'),
-                    'i18n_title': __('Minimize this chat'),
-                    'icon_class': "fa-minus",
-                    'name': 'minimize',
-                    'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
-                }
-                const names = buttons.map(t => t.name);
-                const idx = names.indexOf('close');
-                return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
-            }
-        },
-
-        ChatRoomView: {
-            getHeadingButtons () {
-                const { _converse } = this.__super__;
-                const buttons = this.__super__.getHeadingButtons.apply(this, arguments);
-                const data = {
-                    'a_class': 'toggle-chatbox-button',
-                    'handler': ev => this.minimize(ev),
-                    'i18n_text': __('Minimize'),
-                    'i18n_title': __('Minimize this groupchat'),
-                    'icon_class': "fa-minus",
-                    'name': 'minimize',
-                    'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
-                }
-                const names = buttons.map(t => t.name);
-                const idx = names.indexOf('signout');
-                return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
-            }
         }
     },
 
@@ -551,6 +515,36 @@ converse.plugins.add('converse-minimize', {
             api.trigger('minimizedChatsInitialized');
         }
 
+        function addMinimizeButtonToChat (view, buttons) {
+            const data = {
+                'a_class': 'toggle-chatbox-button',
+                'handler': ev => view.minimize(ev),
+                'i18n_text': __('Minimize'),
+                'i18n_title': __('Minimize this chat'),
+                'icon_class': "fa-minus",
+                'name': 'minimize',
+                'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
+            }
+            const names = buttons.map(t => t.name);
+            const idx = names.indexOf('close');
+            return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
+        }
+
+        function addMinimizeButtonToMUC (view, buttons) {
+            const data = {
+                'a_class': 'toggle-chatbox-button',
+                'handler': ev => view.minimize(ev),
+                'i18n_text': __('Minimize'),
+                'i18n_title': __('Minimize this groupchat'),
+                'icon_class': "fa-minus",
+                'name': 'minimize',
+                'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
+            }
+            const names = buttons.map(t => t.name);
+            const idx = names.indexOf('signout');
+            return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
+        }
+
         /************************ BEGIN Event Handlers ************************/
         api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
         api.listen.on('chatBoxViewsInitialized', () => initMinimizedChats());
@@ -560,6 +554,14 @@ converse.plugins.add('converse-minimize', {
         api.listen.on('chatRoomViewInitialized', view => {
             view.listenTo(view.model, 'change:minimized', view.onMinimizedChanged)
             view.model.get('minimized') && view.hide();
+        });
+
+        api.listen.on('getHeadingButtons', (view, buttons) => {
+            if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
+                return addMinimizeButtonToMUC(view, buttons);
+            } else {
+                return addMinimizeButtonToChat(view, buttons);
+            }
         });
 
         const debouncedTrimChats = debounce(() => _converse.chatboxviews.trimChats(), 250);

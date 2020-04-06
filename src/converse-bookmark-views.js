@@ -31,35 +31,6 @@ converse.plugins.add('converse-bookmark-views', {
      */
     dependencies: ["converse-chatboxes", "converse-muc", "converse-muc-views"],
 
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        ChatRoomView: {
-            getHeadingButtons () {
-                const { _converse } = this.__super__;
-                const buttons = this.__super__.getHeadingButtons.apply(this, arguments);
-                if (_converse.allow_bookmarks) {
-                    const supported = _converse.checkBookmarksSupport();
-                    const bookmarked = this.model.get('bookmarked');
-                    const data = {
-                        'i18n_title': bookmarked ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
-                        'i18n_text': bookmarked ? __('Unbookmark') : __('Bookmark'),
-                        'handler': ev => this.toggleBookmark(ev),
-                        'a_class': 'toggle-bookmark',
-                        'icon_class': 'fa-bookmark',
-                        'name': 'bookmark'
-                    }
-                    const names = buttons.map(t => t.name);
-                    const idx = names.indexOf('details');
-                    const data_promise = supported.then(s => s ? data : '');
-                    return idx > -1 ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)] : [data_promise, ...buttons];
-                }
-                return buttons;
-            }
-        }
-    },
-
     initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
@@ -265,6 +236,25 @@ converse.plugins.add('converse-bookmark-views', {
              */
             api.trigger('bookmarkViewsInitialized');
         }
+
+        api.listen.on('getHeadingButtons', (view, buttons) => {
+            if (_converse.allow_bookmarks && view.model.get('type') === _converse.CHATROOMS_TYPE) {
+                const bookmarked = view.model.get('bookmarked');
+                const data = {
+                    'i18n_title': bookmarked ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
+                    'i18n_text': bookmarked ? __('Unbookmark') : __('Bookmark'),
+                    'handler': ev => view.toggleBookmark(ev),
+                    'a_class': 'toggle-bookmark',
+                    'icon_class': 'fa-bookmark',
+                    'name': 'bookmark'
+                }
+                const names = buttons.map(t => t.name);
+                const idx = names.indexOf('details');
+                const data_promise = _converse.checkBookmarksSupport().then(s => s ? data : '');
+                return idx > -1 ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)] : [data_promise, ...buttons];
+            }
+            return buttons;
+        });
 
         api.listen.on('bookmarksInitialized', initBookmarkViews);
         api.listen.on('chatRoomViewInitialized', view => view.setBookmarkState());

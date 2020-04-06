@@ -171,6 +171,29 @@ converse.plugins.add('converse-headlines-view', {
                 return this;
             },
 
+            /**
+             * Returns a list of objects which represent buttons for the headlines header.
+             * @async
+             * @emits _converse#getHeadingButtons
+             * @private
+             * @method _converse.HeadlinesBoxView#getHeadingButtons
+             */
+            getHeadingButtons () {
+                const buttons = [];
+                if (!api.settings.get("singleton")) {
+                    buttons.push({
+                        'a_class': 'close-chatbox-button',
+                        'handler': ev => this.close(ev),
+                        'i18n_text': __('Close'),
+                        'i18n_title': __('Close these announcements'),
+                        'icon_class': 'fa-times',
+                        'name': 'close',
+                        'standalone': api.settings.get("view_mode") === 'overlayed',
+                    });
+                }
+                return _converse.api.hook('getHeadingButtons', this, buttons);
+            },
+
             // Override to avoid the methods in converse-chatview.js
             'renderMessageForm': function renderMessageForm () {},
             'afterShown': function afterShown () {}

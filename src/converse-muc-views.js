@@ -1174,6 +1174,13 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            /**
+             * Returns a list of objects which represent buttons for the groupchat header.
+             * @async
+             * @emits _converse#getHeadingButtons
+             * @private
+             * @method _converse.ChatRoomView#getHeadingButtons
+             */
             getHeadingButtons (subject_hidden) {
                 const buttons = [{
                     'i18n_text': __('Details'),
@@ -1259,7 +1266,7 @@ converse.plugins.add('converse-muc-views', {
                         'name': 'signout'
                     });
                 }
-                return buttons;
+                return _converse.api.hook('getHeadingButtons', this, buttons);
             },
 
             /**
@@ -1270,7 +1277,7 @@ converse.plugins.add('converse-muc-views', {
             async generateHeadingTemplate () {
                 const jids = await api.user.settings.get('mucs_with_hidden_subject', [])
                 const subject_hidden = jids.includes(this.model.get('jid'));
-                const heading_btns = this.getHeadingButtons(subject_hidden);
+                const heading_btns = await this.getHeadingButtons(subject_hidden);
                 const standalone_btns = heading_btns.filter(b => b.standalone);
                 const dropdown_btns = heading_btns.filter(b => !b.standalone);
                 return tpl_chatroom_head(

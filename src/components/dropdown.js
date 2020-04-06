@@ -8,7 +8,6 @@ import converse from "@converse/headless/converse-core";
 const u = converse.env.utils;
 
 
-
 export class Dropdown extends CustomElement {
 
     static get properties () {

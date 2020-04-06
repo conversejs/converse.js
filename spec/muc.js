@@ -501,6 +501,100 @@
                 });
             });
 
+            describe("the topic", function () {
+
+                it("is shown the header",
+                    mock.initConverse(
+                        ['rosterGroupsFetched'], {},
+                        async function (done, _converse) {
+
+                    await test_utils.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
+                    const text = 'Jabber/XMPP Development | RFCs and Extensions: https://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
+                    let stanza = u.toStanza(`
+                        <message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject>${text}</subject>
+                            <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
+                            <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
+                    await new Promise(resolve => view.model.once('change:subject', resolve));
+
+                    expect(sizzle('.chat-event:last', view.el).pop().textContent.trim()).toBe('Topic set by ralphm');
+                    const head_desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
+                    expect(head_desc?.textContent.trim()).toBe(text);
+
+                    stanza = u.toStanza(
+                        `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject>This is a message subject</subject>
+                            <body>This is a message</body>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    await new Promise(resolve => view.once('messageInserted', resolve));
+                    expect(sizzle('.chat-msg__subject', view.el).length).toBe(1);
+                    expect(sizzle('.chat-msg__subject', view.el).pop().textContent.trim()).toBe('This is a message subject');
+                    expect(sizzle('.chat-msg__text').length).toBe(1);
+                    expect(sizzle('.chat-msg__text').pop().textContent.trim()).toBe('This is a message');
+                    expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(text);
+
+                    // Removes current topic
+                    stanza = u.toStanza(
+                        `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject/>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    await new Promise(resolve => view.model.once('change:subject', resolve));
+                    await u.waitUntil(() => view.el.querySelector('.chat-head__desc') === null);
+                    expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
+                    done();
+                }));
+
+                it("can be toggled by the user",
+                    mock.initConverse(
+                        ['rosterGroupsFetched'], {},
+                        async function (done, _converse) {
+
+                    await test_utils.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
+                    const text = 'Jabber/XMPP Development | RFCs and Extensions: https://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
+                    let stanza = u.toStanza(`
+                        <message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject>${text}</subject>
+                            <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
+                            <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
+                    await new Promise(resolve => view.model.once('change:subject', resolve));
+
+                    expect(sizzle('.chat-event:last', view.el).pop().textContent.trim()).toBe('Topic set by ralphm');
+                    const head_desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
+                    expect(head_desc?.textContent.trim()).toBe(text);
+
+                    stanza = u.toStanza(
+                        `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject>This is a message subject</subject>
+                            <body>This is a message</body>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    await new Promise(resolve => view.once('messageInserted', resolve));
+                    expect(sizzle('.chat-msg__subject', view.el).length).toBe(1);
+                    expect(sizzle('.chat-msg__subject', view.el).pop().textContent.trim()).toBe('This is a message subject');
+                    expect(sizzle('.chat-msg__text').length).toBe(1);
+                    expect(sizzle('.chat-msg__text').pop().textContent.trim()).toBe('This is a message');
+                    const topic_el = view.el.querySelector('.chat-head__desc');
+                    expect(topic_el.textContent.trim()).toBe(text);
+                    expect(u.isVisible(topic_el)).toBe(true);
+
+                    const toggle = view.el.querySelector('.hide-topic');
+                    expect(toggle.textContent).toBe('Hide topic');
+                    toggle.click();
+                    await u.waitUntil(() => !u.isVisible(topic_el));
+                    expect(view.el.querySelector('.hide-topic').textContent).toBe('Show topic');
+                    done();
+                }));
+            });
+
+
             it("clears cached messages when it gets closed and clear_messages_on_reconnection is true",
                 mock.initConverse(
                     ['rosterGroupsFetched'], {'clear_messages_on_reconnection': true},
@@ -1930,52 +2024,6 @@
                 }, 500);
             }));
 
-            it("shows the room topic in the header",
-                mock.initConverse(
-                    ['rosterGroupsFetched'], {},
-                    async function (done, _converse) {
-
-                await test_utils.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
-                const text = 'Jabber/XMPP Development | RFCs and Extensions: https://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
-                let stanza = u.toStanza(`
-                    <message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
-                        <subject>${text}</subject>
-                        <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
-                        <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
-                    </message>`);
-                _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
-                await new Promise(resolve => view.model.once('change:subject', resolve));
-
-                expect(sizzle('.chat-event:last', view.el).pop().textContent.trim()).toBe('Topic set by ralphm');
-                const head_desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
-                expect(head_desc?.textContent.trim()).toBe(text);
-
-                stanza = u.toStanza(
-                    `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
-                         <subject>This is a message subject</subject>
-                         <body>This is a message</body>
-                     </message>`);
-                _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await new Promise(resolve => view.once('messageInserted', resolve));
-                expect(sizzle('.chat-msg__subject', view.el).length).toBe(1);
-                expect(sizzle('.chat-msg__subject', view.el).pop().textContent.trim()).toBe('This is a message subject');
-                expect(sizzle('.chat-msg__text').length).toBe(1);
-                expect(sizzle('.chat-msg__text').pop().textContent.trim()).toBe('This is a message');
-                expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(text);
-
-                // Removes current topic
-                stanza = u.toStanza(
-                    `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
-                         <subject/>
-                     </message>`);
-                _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await new Promise(resolve => view.model.once('change:subject', resolve));
-                await u.waitUntil(() => view.el.querySelector('.chat-head__desc') === null);
-                expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
-                done();
-            }));
-
             it("reconnects when no-acceptable error is returned when sending a message",
                 mock.initConverse(
                     ['rosterGroupsFetched'], {},
@@ -2438,7 +2486,7 @@
                 expect(view.model.features.get('temporary')).toBe(true);
                 expect(view.model.features.get('unmoderated')).toBe(true);
                 expect(view.model.features.get('unsecured')).toBe(false);
-                expect(view.el.querySelector('.chatbox-title__text').textContent.trim()).toBe('New room name');
+                await u.waitUntil(() => view.el.querySelector('.chatbox-title__text')?.textContent.trim() === 'New room name');
                 done();
             }));
 

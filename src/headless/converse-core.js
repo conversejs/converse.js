@@ -530,6 +530,16 @@ const api = _converse.api = {
          */
         settings: {
             /**
+             * Returns the user settings model. Useful when you want to listen for change events.
+             * @method _converse.api.user.settings.getModel
+             * @returns {Model}
+             * @example _converse.api.user.settings.getModel
+             */
+            getModel () {
+                return user_settings;
+            },
+
+            /**
              * Get the value of a particular user setting.
              * @method _converse.api.user.settings.get
              * @param {String} key - hello world
@@ -558,8 +568,13 @@ const api = _converse.api = {
              */
             async set (key, val) {
                 await initUserSettings();
-                const o = isObject(key) ? key : {key: val};
-                return user_settings.save(o, {'promise': true});
+                if (isObject(key)) {
+                    return user_settings.save(key, {'promise': true});
+                } else {
+                    const o = {};
+                    o[key] = val;
+                    return user_settings.save(o, {'promise': true});
+                }
             }
         }
     },
@@ -1085,6 +1100,10 @@ function clearSession  () {
     if (_converse.session !== undefined) {
         _converse.session.destroy();
         delete _converse.session;
+    }
+    if (_converse.shouldClearCache()) {
+        const model = _converse.api.user.settings.getModel();
+        model.clear();
     }
     /**
      * Synchronouse event triggered once the user session has been cleared,

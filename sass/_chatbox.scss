@@ -57,10 +57,10 @@
             font-size: var(--font-size-small);
             margin: 0;
             overflow: hidden;
-            padding: 0.5rem 1rem 1rem 1rem;
+            padding: 0.5rem 1rem 0.5rem 1rem;
             text-overflow: ellipsis;
-            white-space: nowrap;
             width: 100%;
+            max-height: 5em;
         }
 
         .chatbox-title {

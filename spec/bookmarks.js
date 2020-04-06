@@ -37,7 +37,7 @@
             spyOn(view, 'renderBookmarkForm').and.callThrough();
             spyOn(view, 'closeForm').and.callThrough();
             await u.waitUntil(() => view.el.querySelector('.toggle-bookmark') !== null);
-            let toggle = view.el.querySelector('.toggle-bookmark');
+            const toggle = view.el.querySelector('.toggle-bookmark');
             expect(toggle.title).toBe('Bookmark this groupchat');
             toggle.click();
             expect(view.renderBookmarkForm).toHaveBeenCalled();
@@ -130,10 +130,9 @@
             });
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await u.waitUntil(() => view.model.get('bookmarked'));
-            toggle = await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
             expect(view.model.get('bookmarked')).toBeTruthy();
-            expect(toggle.title).toBe('Unbookmark this groupchat');
-            expect(u.hasClass('on-button', toggle), true);
+            await u.waitUntil(() => view.el.querySelector('.toggle-bookmark')?.title === 'Unbookmark this groupchat');
+            expect(u.hasClass('on-button', view.el.querySelector('.toggle-bookmark')), true);
             // We ignore this IQ stanza... (unless it's an error stanza), so
             // nothing to test for here.
             done();

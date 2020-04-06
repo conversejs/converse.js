@@ -8,7 +8,7 @@ import "converse-modal";
 import "@converse/headless/utils/muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
-import { head, isString, isUndefined } from "lodash";
+import { debounce, head, isString, isUndefined } from "lodash";
 import { BootstrapModal } from "./converse-modal.js";
 import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
@@ -703,7 +703,10 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model.notifications, 'change', this.renderNotifications);
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
-                this.listenTo(this.model, 'change', this.renderHeading);
+                const user_settings = _converse.api.user.settings.getModel();
+                this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
+
+                this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
                 this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
                 this.listenTo(this.model, 'change:subject', this.setChatRoomSubject);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
@@ -1171,7 +1174,7 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            async getHeadingButtons () {
+            getHeadingButtons (subject_hidden) {
                 const buttons = [{
                     'i18n_text': __('Details'),
                     'i18n_title': __('Show more information about this groupchat'),
@@ -1227,9 +1230,6 @@ converse.plugins.add('converse-muc-views', {
                     });
                 }
 
-                const muc_jid = this.model.get('jid');
-                const jids = await api.user.settings.get('mucs_with_hidden_subject', [])
-                const subject_hidden = jids.includes(muc_jid);
                 const subject = this.model.get('subject');
                 if (subject && subject.text) {
                     buttons.push({
@@ -1238,7 +1238,7 @@ converse.plugins.add('converse-muc-views', {
                             __('Show the topic message in the heading') :
                             __('Hide the topic in the heading'),
                         'handler': ev => this.toggleTopic(ev),
-                        'a_class': '',
+                        'a_class': 'hide-topic',
                         'icon_class': 'fa-minus-square',
                         'name': 'toggle-topic'
                     });
@@ -1268,12 +1268,15 @@ converse.plugins.add('converse-muc-views', {
              * @method _converse.ChatRoomView#generateHeadingTemplate
              */
             async generateHeadingTemplate () {
-                const heading_btns = await this.getHeadingButtons();
+                const jids = await api.user.settings.get('mucs_with_hidden_subject', [])
+                const subject_hidden = jids.includes(this.model.get('jid'));
+                const heading_btns = this.getHeadingButtons(subject_hidden);
                 const standalone_btns = heading_btns.filter(b => b.standalone);
                 const dropdown_btns = heading_btns.filter(b => !b.standalone);
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
                         _converse,
+                        subject_hidden,
                         'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
                         'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
                         'title': this.model.getDisplayName(),

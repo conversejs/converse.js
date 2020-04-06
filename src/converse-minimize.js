@@ -74,11 +74,6 @@ converse.plugins.add('converse-minimize', {
         },
 
         ChatBoxView: {
-            initialize () {
-                this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
-                return this.__super__.initialize.apply(this, arguments);
-            },
-
             show () {
                 const { _converse } = this.__super__;
                 if (_converse.api.settings.get("view_mode") === 'overlayed' && this.model.get('minimized')) {
@@ -130,15 +125,6 @@ converse.plugins.add('converse-minimize', {
         },
 
         ChatRoomView: {
-            initialize () {
-                this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
-                const result = this.__super__.initialize.apply(this, arguments);
-                if (this.model.get('minimized')) {
-                    this.hide();
-                }
-                return result;
-            },
-
             getHeadingButtons () {
                 const { _converse } = this.__super__;
                 const buttons = this.__super__.getHeadingButtons.apply(this, arguments);
@@ -164,7 +150,6 @@ converse.plugins.add('converse-minimize', {
          * loaded by Converse.js's plugin machinery.
          */
         const { _converse } = this;
-        const { __ } = _converse;
         const { api } = _converse;
 
         api.settings.update({'no_trimming': false});
@@ -567,9 +552,15 @@ converse.plugins.add('converse-minimize', {
         }
 
         /************************ BEGIN Event Handlers ************************/
-        api.listen.on('chatBoxViewsInitialized', () => initMinimizedChats());
         api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
+        api.listen.on('chatBoxViewsInitialized', () => initMinimizedChats());
         api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
+        api.listen.on('chatBoxViewInitialized', v => v.listenTo(v.model, 'change:minimized', v.onMinimizedChanged));
+
+        api.listen.on('chatRoomViewInitialized', view => {
+            view.listenTo(view.model, 'change:minimized', view.onMinimizedChanged)
+            view.model.get('minimized') && view.hide();
+        });
 
         const debouncedTrimChats = debounce(() => _converse.chatboxviews.trimChats(), 250);
         api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));

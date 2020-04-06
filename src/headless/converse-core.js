@@ -441,6 +441,35 @@ const api = _converse.api = {
     },
 
     /**
+     * Triggers a hook which can be intercepted by registered listeners via
+     * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}.
+     * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
+     * A hook is a special kind of event which allows you to intercept a data
+     * structure in order to modify it, before passing it back.
+     * @async
+     * @method _converse.api.hook
+     * @param {string} name - The hook name
+     * @param {...any} context - The context to which the hook applies (could be for example, a {@link _converse.ChatBox)).
+     * @param {...any} data - The data structure to be intercepted and * modified by the hook listeners.
+     */
+    hook (name, context, data) {
+        const events = _converse._events[name] || [];
+        if (events.length) {
+            // Create a chain of promises, with each one feeding its output to
+            // the next. The first input is a promise with the original data
+            // sent to this hook.
+            const o = events.reduce((o, e) => o.then(d => e.callback(context, d)), Promise.resolve(data));
+            o.catch(e => {
+                log.error(e)
+                throw e;
+            });
+            return o;
+        } else {
+            return data;
+        }
+    },
+
+    /**
      * This grouping collects API functions related to the current logged in user.
      *
      * @namespace _converse.api.user

@@ -7,6 +7,6 @@ addons:
   chrome: stable
 node_js:
  - "10"
-install: make stamp-npm
+install: make node_modules
 before_script: make serve_bg
 script: make check

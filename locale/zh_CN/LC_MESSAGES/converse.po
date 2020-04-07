@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-03-29 13:28+0000\n"
-"Last-Translator: Bolin Shen <bolin.edlison.shen@gmail.com>\n"
+"PO-Revision-Date: 2020-04-07 06:34+0000\n"
+"Last-Translator: Michael Lu <yeskky@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -57,7 +57,7 @@ msgstr "聊天已转移，点击前往。"
 
 #: dist/converse-no-dependencies.js:11374
 msgid "Messages are being sent in plaintext"
-msgstr ""
+msgstr "消息将以纯文本发送"
 
 #: dist/converse-no-dependencies.js:11388
 msgid "Create your account"
@@ -70,7 +70,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:11408
 #: dist/converse-no-dependencies.js:11442
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "已经有一个聊天帐户？"
 
 #: dist/converse-no-dependencies.js:11410
 #: dist/converse-no-dependencies.js:11444

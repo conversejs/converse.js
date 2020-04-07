@@ -1417,12 +1417,12 @@ converse.plugins.add('converse-muc-views', {
                 if (!roles.length) {
                     return true;
                 }
-                if (!occupant) {
-                    occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
-                }
-                const role = occupant.get('role');
-                if (roles.includes(role)) {
-                    return true;
+                occupant = occupant || this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                if (occupant) {
+                    const role = occupant.get('role');
+                    if (roles.includes(role)) {
+                        return true;
+                    }
                 }
                 if (show_error) {
                     this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'))
@@ -1437,12 +1437,12 @@ converse.plugins.add('converse-muc-views', {
                 if (!affiliations.length) {
                     return true;
                 }
-                if (!occupant) {
-                    occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
-                }
-                const a = occupant.get('affiliation');
-                if (affiliations.includes(a)) {
-                    return true;
+                occupant = occupant || this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                if (occupant) {
+                    const a = occupant.get('affiliation');
+                    if (affiliations.includes(a)) {
+                        return true;
+                    }
                 }
                 if (show_error) {
                     this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'))

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-02-11 10:07+0000\n"
+"PO-Revision-Date: 2020-04-07 11:23+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1064,9 +1064,8 @@ msgid "Invite someone to this groupchat"
 msgstr "Nooi iemand uit na hierdie groepsgesprek"
 
 #: dist/converse-no-dependencies.js:57993
-#, fuzzy
 msgid "user@example.org"
-msgstr "naam@voorbeeld.org"
+msgstr "gebruiker@voorbeeld.org"
 
 #: dist/converse-no-dependencies.js:57999
 msgid "Optional reason for the invitation"

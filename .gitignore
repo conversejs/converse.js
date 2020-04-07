@@ -46,7 +46,6 @@ converse-logs/*.html
 
 Backbone.Overview
 tags
-stamp-npm
 transpile
 
 # Sphinx

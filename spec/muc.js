@@ -501,7 +501,7 @@
                 });
             });
 
-            describe("the topic", function () {
+            describe("topic", function () {
 
                 it("is shown the header",
                     mock.initConverse(
@@ -511,7 +511,7 @@
                     await test_utils.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
                     const text = 'Jabber/XMPP Development | RFCs and Extensions: https://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
                     let stanza = u.toStanza(`
-                        <message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                        <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                             <subject>${text}</subject>
                             <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
                             <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
@@ -520,12 +520,11 @@
                     const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                     await new Promise(resolve => view.model.once('change:subject', resolve));
 
-                    expect(sizzle('.chat-event:last', view.el).pop().textContent.trim()).toBe('Topic set by ralphm');
                     const head_desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
                     expect(head_desc?.textContent.trim()).toBe(text);
 
                     stanza = u.toStanza(
-                        `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                        `<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                             <subject>This is a message subject</subject>
                             <body>This is a message</body>
                         </message>`);
@@ -536,16 +535,6 @@
                     expect(sizzle('.chat-msg__text').length).toBe(1);
                     expect(sizzle('.chat-msg__text').pop().textContent.trim()).toBe('This is a message');
                     expect(view.el.querySelector('.chat-head__desc').textContent.trim()).toBe(text);
-
-                    // Removes current topic
-                    stanza = u.toStanza(
-                        `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
-                            <subject/>
-                        </message>`);
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    await new Promise(resolve => view.model.once('change:subject', resolve));
-                    await u.waitUntil(() => view.el.querySelector('.chat-head__desc') === null);
-                    expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
                     done();
                 }));
 
@@ -557,7 +546,7 @@
                     await test_utils.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
                     const text = 'Jabber/XMPP Development | RFCs and Extensions: https://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
                     let stanza = u.toStanza(`
-                        <message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                        <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                             <subject>${text}</subject>
                             <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
                             <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
@@ -566,12 +555,11 @@
                     const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                     await new Promise(resolve => view.model.once('change:subject', resolve));
 
-                    expect(sizzle('.chat-event:last', view.el).pop().textContent.trim()).toBe('Topic set by ralphm');
                     const head_desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
                     expect(head_desc?.textContent.trim()).toBe(text);
 
                     stanza = u.toStanza(
-                        `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                        `<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                             <subject>This is a message subject</subject>
                             <body>This is a message</body>
                         </message>`);
@@ -590,6 +578,49 @@
                     toggle.click();
                     await u.waitUntil(() => !u.isVisible(topic_el));
                     expect(view.el.querySelector('.hide-topic').textContent).toBe('Show topic');
+                    done();
+                }));
+
+                it("causes an info message to be shown when received in real-time",
+                    mock.initConverse(
+                        ['rosterGroupsFetched'], {},
+                        async function (done, _converse) {
+
+                    spyOn(_converse.ChatRoom.prototype, 'handleSubjectChange').and.callThrough();
+                    await test_utils.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'romeo');
+                    const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
+
+                    _converse.connection._dataRecv(test_utils.createRequest(u.toStanza(`
+                        <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject>This is an older topic</subject>
+                            <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
+                            <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
+                        </message>`)));
+                    await u.waitUntil(() => view.model.handleSubjectChange.calls.count());
+                    expect(sizzle('.chat-info__message', view.el).length).toBe(0);
+
+                    const desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
+                    expect(desc.textContent.trim()).toBe('This is an older topic');
+
+                    _converse.connection._dataRecv(test_utils.createRequest(u.toStanza(`
+                        <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject>This is a new topic</subject>
+                        </message>`)));
+                    await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 2);
+
+                    const el = sizzle('.chat-info__message', view.el).pop();
+                    expect(el.textContent.trim()).toBe('Topic set by ralphm');
+                    await u.waitUntil(() => desc.textContent.trim()  === 'This is a new topic');
+
+                    // Removes current topic
+                    const stanza = u.toStanza(
+                        `<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject/>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 3);
+                    await u.waitUntil(() => view.el.querySelector('.chat-head__desc') === null);
+                    expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
                     done();
                 }));
             });

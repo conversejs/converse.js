@@ -708,7 +708,6 @@ converse.plugins.add('converse-muc-views', {
 
                 this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
                 this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
-                this.listenTo(this.model, 'change:subject', this.setChatRoomSubject);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
                 this.listenTo(this.model, 'destroy', this.hide);
                 this.listenTo(this.model, 'show', this.show);
@@ -2004,26 +2003,6 @@ converse.plugins.add('converse-muc-views', {
                     this.renderAfterTransition();
                 }
                 return this;
-            },
-
-            setChatRoomSubject () {
-                const subject = this.model.get('subject');
-                if (!subject.text && !subject.author) {
-                    return; // Probably a new MUC
-                }
-                const author = subject.author;
-                // For translators: the %1$s part will get
-                // replaced by the user's name.
-                // Example: Topic set by JC Brand
-                const message = subject.text ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
-                this.msgs_container.insertAdjacentHTML(
-                    'beforeend',
-                    tpl_info({
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    }));
-                this.scrollDown();
             }
         });
 

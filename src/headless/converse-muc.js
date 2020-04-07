@@ -1682,22 +1682,34 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Handle a subject change and return `true` if so.
+             * Handle a possible subject change and return `true` if so.
              * @private
-             * @method _converse.ChatRoom#subjectChangeHandled
-             * @param { object } attrs - The message attributes
+             * @method _converse.ChatRoom#handleSubjectChange
+             * @param { object } attrs - Attributes representing a received
+             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
              */
-            subjectChangeHandled (attrs) {
+            handleSubjectChange (attrs) {
                 if (isString(attrs.subject) && !attrs.thread && !attrs.message) {
                     // https://xmpp.org/extensions/xep-0045.html#subject-mod
                     // -----------------------------------------------------
                     // The subject is changed by sending a message of type "groupchat" to the <room@service>,
                     // where the <message/> MUST contain a <subject/> element that specifies the new subject but
                     // MUST NOT contain a <body/> element (or a <thread/> element).
+                    const subject = attrs.subject;
+                    const author = attrs.nick;
                     u.safeSave(this, {
-                        'subject': {'author': attrs.nick, 'text': attrs.subject || ''},
-                        'subject_hidden': attrs.subject ? false : this.get('subject_hidden')
+                        'subject': {author, 'text': attrs.subject || ''},
+                        'subject_hidden': subject ? false : this.get('subject_hidden')
                     });
+                    if (!attrs.is_delayed) {
+                        const message = subject ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
+                        const data = {
+                            message,
+                            'nick': attrs.nick,
+                            'type': 'info'
+                        };
+                        this.createMessage(data);
+                     }
                     return true;
                 }
                 return false;
@@ -1998,7 +2010,7 @@ converse.plugins.add('converse-muc', {
 
                 if (await this.handleRetraction(attrs) ||
                         await this.handleModeration(attrs) ||
-                        this.subjectChangeHandled(attrs) ||
+                        this.handleSubjectChange(attrs) ||
                         this.ignorableCSN(attrs)) {
                     return api.trigger('message', {'stanza': original_stanza});
                 }
@@ -2070,10 +2082,10 @@ converse.plugins.add('converse-muc', {
 
 
             /**
-             * Create info messages based on a received presence stanza
+             * Create info messages based on a received presence or message stanza
              * @private
              * @method _converse.ChatRoom#createInfoMessages
-             * @param { XMLElement } stanza: The presence stanza received
+             * @param { XMLElement } stanza
              */
             createInfoMessages (stanza) {
                 const is_self = stanza.querySelector("status[code='110']") !== null;

@@ -235,8 +235,8 @@
                     'text': subject,
                     'author': 'ralphm'
                 }});
-                expect(sizzle('.chat-event:last').pop().textContent.trim()).toBe('Topic set by ralphm');
-                await u.waitUntil(() => view.el.querySelector('.chat-head__desc')?.textContent.trim() === subject);
+                const text = await u.waitUntil(() => view.el.querySelector('.chat-head__desc')?.textContent.trim());
+                expect(text).toBe(subject);
                 done();
             }));
         });

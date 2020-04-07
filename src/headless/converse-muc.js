@@ -1939,7 +1939,7 @@ converse.plugins.add('converse-muc', {
                 const actors_per_state = this.notifications.toJSON();
                 states = Array.isArray(states) ? states : [states];
                 states.forEach(state => {
-                    const existing_actors = Array.from(actors_per_state[state]) || [];
+                    const existing_actors = Array.from(actors_per_state[state] || []);
                     if (existing_actors.includes(actor)) {
                         const idx = existing_actors.indexOf(actor);
                         existing_actors.splice(idx, 1);

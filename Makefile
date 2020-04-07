@@ -116,6 +116,7 @@ package-lock.json: package.json
 
 stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 	npm run lerna
+	npm rebuild node-sass
 	touch stamp-npm
 
 .PHONY: clean

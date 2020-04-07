@@ -1931,19 +1931,29 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            removeNotification (actor, state) {
+            /**
+             * @param {String} actor - The nickname of the actor that caused the notification
+             * @param {String|Array<String>} states - The state or states representing the type of notificcation
+             */
+            removeNotification (actor, states) {
                 const actors_per_state = this.notifications.toJSON();
-                const existing_actors = Array.from(actors_per_state[state]) || [];
-                if (existing_actors.includes(actor)) {
-                    const idx = existing_actors.indexOf(actor);
-                    existing_actors.splice(idx, 1);
-                    this.notifications.set(state, Array.from(existing_actors));
-                }
+                states = Array.isArray(states) ? states : [states];
+                states.forEach(state => {
+                    const existing_actors = Array.from(actors_per_state[state]) || [];
+                    if (existing_actors.includes(actor)) {
+                        const idx = existing_actors.indexOf(actor);
+                        existing_actors.splice(idx, 1);
+                        this.notifications.set(state, Array.from(existing_actors));
+                    }
+                });
             },
 
             /**
              * Update the notifications model by adding the passed in nickname
              * to the array of nicknames that all match a particular state.
+             *
+             * Removes the nickname from any other states it might be associated with.
+             *
              * The state can be a XEP-0085 Chat State or a XEP-0045 join/leave
              * state.
              * @param {String} actor - The nickname of the actor that causes the notification
@@ -2004,14 +2014,17 @@ converse.plugins.add('converse-muc', {
                 if (message) {
                     this.updateMessage(message, original_stanza);
                 }
-                if (message || stanza_utils.isReceipt(stanza) || stanza_utils.isChatMarker(stanza)) {
+                if (message ||
+                        stanza_utils.isReceipt(stanza) ||
+                        stanza_utils.isChatMarker(stanza) ||
+                        this.ignorableCSN(attrs)) {
                     return api.trigger('message', {'stanza': original_stanza});
                 }
 
                 if (await this.handleRetraction(attrs) ||
                         await this.handleModeration(attrs) ||
-                        this.handleSubjectChange(attrs) ||
-                        this.ignorableCSN(attrs)) {
+                        this.handleSubjectChange(attrs)) {
+                    this.removeNotification(attrs.nick, ['composing', 'paused']);
                     return api.trigger('message', {'stanza': original_stanza});
                 }
                 this.setEditable(attrs, attrs.time);
@@ -2021,6 +2034,7 @@ converse.plugins.add('converse-muc', {
                 }
                 if (u.shouldCreateGroupchatMessage(attrs)) {
                     const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
+                    this.removeNotification(attrs.nick, ['composing', 'paused']);
                     this.incrementUnreadMsgCounter(msg);
                 }
                 api.trigger('message', {'stanza': original_stanza, 'chatbox': this});

@@ -1360,6 +1360,11 @@ converse.plugins.add('converse-chatview', {
                     return;
                 }
                 if (u.isVisible(this.content) && !this.model.get('scrolled')) {
+                    if ((this.content.scrollTop === 0 || this.content.scrollTop < this.content.scrollHeight/2)) {
+                        u.removeClass('smooth-scroll', this.content);
+                    } else if (api.settings.get('animate')) {
+                        u.addClass('smooth-scroll', this.content);
+                    }
                     this.content.scrollTop = this.content.scrollHeight;
                 }
             },

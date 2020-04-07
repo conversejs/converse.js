@@ -276,7 +276,7 @@ pluggable.enable(_converse, '_converse', 'pluggable');
 
 
 // Populated via the _converse.api.users.settings API
-const user_settings = new Model();
+let user_settings;
 
 function initUserSettings () {
     if (!_converse.bare_jid) {
@@ -284,9 +284,10 @@ function initUserSettings () {
         log.error(msg);
         throw Error(msg);
     }
-    if (!user_settings.fetched) {
+    if (!user_settings?.fetched) {
         const id = `converse.user-settings.${_converse.bare_jid}`;
-        user_settings.browserStorage = _converse.createStore(id, "session");
+        user_settings = new Model({id});
+        user_settings.browserStorage = _converse.createStore(id);
         user_settings.fetched = user_settings.fetch({'promise': true});
     }
     return user_settings.fetched;
@@ -562,10 +563,11 @@ const api = _converse.api = {
             /**
              * Returns the user settings model. Useful when you want to listen for change events.
              * @method _converse.api.user.settings.getModel
-             * @returns {Model}
-             * @example _converse.api.user.settings.getModel
+             * @returns {Promise<Model>}
+             * @example const settings = await _converse.api.user.settings.getModel();
              */
-            getModel () {
+            async getModel () {
+                await initUserSettings();
                 return user_settings;
             },
 
@@ -605,6 +607,15 @@ const api = _converse.api = {
                     o[key] = val;
                     return user_settings.save(o, {'promise': true});
                 }
+            },
+
+            /**
+             * Clears all the user settings
+             * @method _converse.api.user.settings.clear
+             */
+            async clear () {
+                await initUserSettings();
+                user_settings.clear();
             }
         }
     },
@@ -1132,8 +1143,7 @@ function clearSession  () {
         delete _converse.session;
     }
     if (_converse.shouldClearCache()) {
-        const model = _converse.api.user.settings.getModel();
-        model.clear();
+        _converse.api.user.settings.clear();
     }
     /**
      * Synchronouse event triggered once the user session has been cleared,

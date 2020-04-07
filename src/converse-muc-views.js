@@ -703,7 +703,7 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model.notifications, 'change', this.renderNotifications);
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
-                const user_settings = _converse.api.user.settings.getModel();
+                const user_settings = await _converse.api.user.settings.getModel();
                 this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
 
                 this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));

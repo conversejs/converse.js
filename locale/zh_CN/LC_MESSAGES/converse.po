@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-11 10:11+0100\n"
-"PO-Revision-Date: 2020-04-07 06:34+0000\n"
+"PO-Revision-Date: 2020-04-07 11:23+0000\n"
 "Last-Translator: Michael Lu <yeskky@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -65,7 +65,7 @@ msgstr "创建你的账户"
 
 #: dist/converse-no-dependencies.js:11390
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "请输入XMPP提供程序进行注册："
 
 #: dist/converse-no-dependencies.js:11408
 #: dist/converse-no-dependencies.js:11442
@@ -91,7 +91,7 @@ msgstr "选择其他提供商"
 
 #: dist/converse-no-dependencies.js:11458
 msgid "Hold tight, we're fetching the registration form…"
-msgstr ""
+msgstr "请稍等，我们正在获取注册表单…"
 
 #: dist/converse-no-dependencies.js:11462
 #: dist/converse-no-dependencies.js:48432
@@ -103,7 +103,7 @@ msgstr "取消"
 
 #: dist/converse-no-dependencies.js:27593
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
+msgstr "由于您未获得允许，您的消息未被发送。"
 
 #: dist/converse-no-dependencies.js:27596
 #, fuzzy, javascript-format
@@ -113,7 +113,7 @@ msgstr "给出的原因是：“%1$s”。"
 #: dist/converse-no-dependencies.js:27599
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr ""
+msgstr "由于您不在群组聊天中，您的消息未被发送。"
 
 #: dist/converse-no-dependencies.js:27604
 msgid "Sorry, an error occurred:"
@@ -151,7 +151,7 @@ msgstr "对不起，无法确定文件上传URL。"
 
 #: dist/converse-no-dependencies.js:30736
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "抱歉，无法确定文件上传URL。"
 
 #: dist/converse-no-dependencies.js:30785
 #, javascript-format
@@ -179,43 +179,43 @@ msgstr "文件的大小为%2$s，超过了服务器允许的最大值%1$s。"
 
 #: dist/converse-no-dependencies.js:34346
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "笑脸和情绪"
 
 #: dist/converse-no-dependencies.js:34347
 msgid "People"
-msgstr ""
+msgstr "人"
 
 #: dist/converse-no-dependencies.js:34348
 msgid "Activities"
-msgstr ""
+msgstr "活动"
 
 #: dist/converse-no-dependencies.js:34349
 msgid "Travel"
-msgstr ""
+msgstr "旅行"
 
 #: dist/converse-no-dependencies.js:34350
 msgid "Objects"
-msgstr ""
+msgstr "对象"
 
 #: dist/converse-no-dependencies.js:34351
 msgid "Animals and nature"
-msgstr ""
+msgstr "动物和自然"
 
 #: dist/converse-no-dependencies.js:34352
 msgid "Food and drink"
-msgstr ""
+msgstr "食物和饮料"
 
 #: dist/converse-no-dependencies.js:34353
 msgid "Symbols"
-msgstr ""
+msgstr "符号"
 
 #: dist/converse-no-dependencies.js:34354
 msgid "Flags"
-msgstr ""
+msgstr "旗帜"
 
 #: dist/converse-no-dependencies.js:34355
 msgid "Stickers"
-msgstr ""
+msgstr "贴纸"
 
 #: dist/converse-no-dependencies.js:35045
 #, fuzzy
@@ -331,23 +331,23 @@ msgstr "%1$s因不是成员而被移除"
 
 #: dist/converse-no-dependencies.js:37014
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr ""
+msgstr "您未被允许在此群组聊天中注册。"
 
 #: dist/converse-no-dependencies.js:37016
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr ""
+msgstr "您不可以在此群组聊天中注册，因为它仅限会员。"
 
 #: dist/converse-no-dependencies.js:37061
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
-msgstr ""
+msgstr "无法在此群组聊天中注册您的昵称，它不支持注册。"
 
 #: dist/converse-no-dependencies.js:37063
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
-msgstr ""
+msgstr "无法在此群组聊天中注册您的昵称，提供的数据表单无效。"
 
 #: dist/converse-no-dependencies.js:37771
 #: dist/converse-no-dependencies.js:60737
@@ -368,22 +368,20 @@ msgid ""
 msgstr "您所选择的昵称已被保留或正在使用，请选择一个不同的。"
 
 #: dist/converse-no-dependencies.js:37857
-#, fuzzy
 msgid "Password incorrect"
-msgstr "密码： "
+msgstr "密码错误"
 
 #: dist/converse-no-dependencies.js:37865
 msgid "You are not on the member list of this groupchat."
-msgstr ""
+msgstr "你不在此群组聊天的成员列表中。"
 
 #: dist/converse-no-dependencies.js:37869
 msgid "You have been banned from this groupchat."
-msgstr ""
+msgstr "您已被禁止参加此群组聊天。"
 
 #: dist/converse-no-dependencies.js:37875
-#, fuzzy
 msgid "You are not allowed to create new groupchats."
-msgstr "你确定要删除此联系人吗？"
+msgstr "您无权创建新的小组讨论。"
 
 #: dist/converse-no-dependencies.js:37879
 msgid "Your nickname doesn't conform to this groupchat's policies."

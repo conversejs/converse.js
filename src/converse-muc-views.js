@@ -1274,8 +1274,7 @@ converse.plugins.add('converse-muc-views', {
              * @method _converse.ChatRoomView#generateHeadingTemplate
              */
             async generateHeadingTemplate () {
-                const jids = await api.user.settings.get('mucs_with_hidden_subject', [])
-                const subject_hidden = jids.includes(this.model.get('jid'));
+                const subject_hidden = await this.model.isSubjectHidden();
                 const heading_btns = await this.getHeadingButtons(subject_hidden);
                 const standalone_btns = heading_btns.filter(b => b.standalone);
                 const dropdown_btns = heading_btns.filter(b => !b.standalone);
@@ -1289,14 +1288,8 @@ converse.plugins.add('converse-muc-views', {
                 }));
             },
 
-            async toggleTopic () {
-                const muc_jid = this.model.get('jid');
-                const jids = await api.user.settings.get('mucs_with_hidden_subject', []);
-                if (jids.includes(this.model.get('jid'))) {
-                    api.user.settings.set('mucs_with_hidden_subject', jids.filter(jid => jid !== muc_jid));
-                } else {
-                    api.user.settings.set('mucs_with_hidden_subject', [...jids, muc_jid]);
-                }
+            toggleTopic () {
+                this.model.toggleSubjectHiddenState();
             },
 
             showInviteModal (ev) {

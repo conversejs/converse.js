@@ -581,6 +581,45 @@
                     done();
                 }));
 
+                it("will always be shown when it's new",
+                    mock.initConverse(
+                        ['rosterGroupsFetched'], {},
+                        async function (done, _converse) {
+
+                    await test_utils.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
+                    const text = 'Jabber/XMPP Development | RFCs and Extensions: https://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
+                    let stanza = u.toStanza(`
+                        <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject>${text}</subject>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
+                    await new Promise(resolve => view.model.once('change:subject', resolve));
+
+                    const head_desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
+                    expect(head_desc?.textContent.trim()).toBe(text);
+
+                    let topic_el = view.el.querySelector('.chat-head__desc');
+                    expect(topic_el.textContent.trim()).toBe(text);
+                    expect(u.isVisible(topic_el)).toBe(true);
+
+                    const toggle = view.el.querySelector('.hide-topic');
+                    expect(toggle.textContent).toBe('Hide topic');
+                    toggle.click();
+                    await u.waitUntil(() => !u.isVisible(topic_el));
+
+                    stanza = u.toStanza(`
+                        <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject>Another topic</subject>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    await u.waitUntil(() => u.isVisible(view.el.querySelector('.chat-head__desc')));
+                    topic_el = view.el.querySelector('.chat-head__desc');
+                    expect(topic_el.textContent.trim()).toBe('Another topic');
+                    done();
+                }));
+
+
                 it("causes an info message to be shown when received in real-time",
                     mock.initConverse(
                         ['rosterGroupsFetched'], {},

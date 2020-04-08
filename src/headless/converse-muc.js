@@ -1681,6 +1681,21 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            async isSubjectHidden () {
+                const jids = await api.user.settings.get('mucs_with_hidden_subject', [])
+                return jids.includes(this.get('jid'));
+            },
+
+            async toggleSubjectHiddenState () {
+                const muc_jid = this.get('jid');
+                const jids = await api.user.settings.get('mucs_with_hidden_subject', []);
+                if (jids.includes(this.get('jid'))) {
+                    api.user.settings.set('mucs_with_hidden_subject', jids.filter(jid => jid !== muc_jid));
+                } else {
+                    api.user.settings.set('mucs_with_hidden_subject', [...jids, muc_jid]);
+                }
+            },
+
             /**
              * Handle a possible subject change and return `true` if so.
              * @private
@@ -1688,7 +1703,7 @@ converse.plugins.add('converse-muc', {
              * @param { object } attrs - Attributes representing a received
              *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
              */
-            handleSubjectChange (attrs) {
+            async handleSubjectChange (attrs) {
                 if (isString(attrs.subject) && !attrs.thread && !attrs.message) {
                     // https://xmpp.org/extensions/xep-0045.html#subject-mod
                     // -----------------------------------------------------
@@ -1697,22 +1712,17 @@ converse.plugins.add('converse-muc', {
                     // MUST NOT contain a <body/> element (or a <thread/> element).
                     const subject = attrs.subject;
                     const author = attrs.nick;
-                    u.safeSave(this, {
-                        'subject': {author, 'text': attrs.subject || ''},
-                        'subject_hidden': subject ? false : this.get('subject_hidden')
-                    });
+                    u.safeSave(this, {'subject': {author, 'text': attrs.subject || ''}});
                     if (!attrs.is_delayed) {
                         const message = subject ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
                         const prev_msg = this.messages.last();
                         if (prev_msg?.get('nick') !== attrs.nick ||
                                 prev_msg?.get('type') !== 'info' ||
                                 prev_msg?.get('message') !== message) {
-
-                            this.createMessage({
-                                message,
-                                'nick': attrs.nick,
-                                'type': 'info'
-                            });
+                            this.createMessage({message, 'nick': attrs.nick, 'type': 'info'});
+                        }
+                        if (await this.isSubjectHidden()) {
+                            this.toggleSubjectHiddenState();
                         }
                      }
                     return true;
@@ -2028,7 +2038,7 @@ converse.plugins.add('converse-muc', {
 
                 if (await this.handleRetraction(attrs) ||
                         await this.handleModeration(attrs) ||
-                        this.handleSubjectChange(attrs)) {
+                        await this.handleSubjectChange(attrs)) {
                     this.removeNotification(attrs.nick, ['composing', 'paused']);
                     return api.trigger('message', {'stanza': original_stanza});
                 }

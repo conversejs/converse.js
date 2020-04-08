@@ -1703,12 +1703,17 @@ converse.plugins.add('converse-muc', {
                     });
                     if (!attrs.is_delayed) {
                         const message = subject ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
-                        const data = {
-                            message,
-                            'nick': attrs.nick,
-                            'type': 'info'
-                        };
-                        this.createMessage(data);
+                        const prev_msg = this.messages.last();
+                        if (prev_msg?.get('nick') !== attrs.nick ||
+                                prev_msg?.get('type') !== 'info' ||
+                                prev_msg?.get('message') !== message) {
+
+                            this.createMessage({
+                                message,
+                                'nick': attrs.nick,
+                                'type': 'info'
+                            });
+                        }
                      }
                     return true;
                 }

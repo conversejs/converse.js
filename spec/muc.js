@@ -608,19 +608,39 @@
                         </message>`)));
                     await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 2);
 
-                    const el = sizzle('.chat-info__message', view.el).pop();
+                    let el = sizzle('.chat-info__message', view.el).pop();
                     expect(el.textContent.trim()).toBe('Topic set by ralphm');
                     await u.waitUntil(() => desc.textContent.trim()  === 'This is a new topic');
 
+                    // Doesn't show multiple subsequent topic change notifications
+                    _converse.connection._dataRecv(test_utils.createRequest(u.toStanza(`
+                        <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                            <subject>Yet another topic</subject>
+                        </message>`)));
+                    await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 3);
+                    await u.waitUntil(() => desc.textContent.trim()  === 'Yet another topic');
+                    expect(sizzle('.chat-info__message', view.el).length).toBe(1);
+
+                    // Sow multiple subsequent topic change notification from someone else
+                    _converse.connection._dataRecv(test_utils.createRequest(u.toStanza(`
+                        <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/some1">
+                            <subject>Some1's topic</subject>
+                        </message>`)));
+                    await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 4);
+                    await u.waitUntil(() => desc.textContent.trim()  === "Some1's topic");
+                    expect(sizzle('.chat-info__message', view.el).length).toBe(2);
+                    el = sizzle('.chat-info__message', view.el).pop();
+                    expect(el.textContent.trim()).toBe('Topic set by some1');
+
                     // Removes current topic
                     const stanza = u.toStanza(
-                        `<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                        `<message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="jdev@conference.jabber.org/some1">
                             <subject/>
                         </message>`);
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 3);
+                    await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 5);
                     await u.waitUntil(() => view.el.querySelector('.chat-head__desc') === null);
-                    expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by ralphm");
+                    expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by some1");
                     done();
                 }));
             });

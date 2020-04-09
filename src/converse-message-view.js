@@ -65,6 +65,13 @@ converse.plugins.add('converse-message-view', {
             }
         }
 
+        function onEscapeHTMLDuringXSSFilter(html) {
+            if (html.startsWith('>')) {
+                return '>' + html.substring(1).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            } else {
+                return html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+        }
 
         api.settings.update({
             'show_images_inline': true,
@@ -207,7 +214,7 @@ converse.plugins.add('converse-message-view', {
                  */
                 await api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
                 text = this.model.isMeCommand() ? text.substring(4) : text;
-                text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
+                text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter, 'escapeHtml': onEscapeHTMLDuringXSSFilter});
                 text = u.geoUriToHttp(text, api.settings.get("geouri_replacement"));
                 text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
                 text = u.addHyperlinks(text);

@@ -885,6 +885,11 @@ const api = _converse.api = {
         let promise;
         if (reject) {
             promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
+            promise.catch(e => {
+                if (e === null) {
+                    throw new TimeoutError(`Timeout error after ${timeout}ms for the following IQ stanza: ${stanza}`);
+                }
+            });
         } else {
             promise = new Promise(resolve => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
         }

@@ -147,7 +147,7 @@ converse.plugins.add('converse-disco', {
                 try {
                     stanza = await api.disco.info(this.get('jid'), null);
                 } catch (iq) {
-                    log.error(iq);
+                    iq === null ? log.error(`Timeout for disco#info query for ${this.get('jid')}`) : log.error(iq);
                     this.waitUntilFeaturesDiscovered.resolve(this);
                     return;
                 }

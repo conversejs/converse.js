@@ -700,11 +700,7 @@ converse.plugins.add('converse-muc-views', {
                     this.removeAll();
                 });
 
-                this.listenTo(this.model.notifications, 'change', this.renderNotifications);
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
-
-                const user_settings = await _converse.api.user.settings.getModel();
-                this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
 
                 this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
                 this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
@@ -726,10 +722,20 @@ converse.plugins.add('converse-muc-views', {
                 this.onMouseUp =  this.onMouseUp.bind(this);
 
                 await this.render();
+
+                // Needs to be registered after render has been called.
+                this.listenTo(this.model.notifications, 'change', this.renderNotifications);
+
                 this.createSidebarView();
                 await this.updateAfterMessagesFetched();
+
+                // Register later due to await
+                const user_settings = await _converse.api.user.settings.getModel();
+                this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
+
                 this.onConnectionStatusChanged();
                 this.model.maybeShow();
+
                 /**
                  * Triggered once a { @link _converse.ChatRoomView } has been opened
                  * @event _converse#chatRoomViewInitialized

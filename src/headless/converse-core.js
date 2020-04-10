@@ -128,7 +128,7 @@ const DEFAULT_SETTINGS = {
     blacklisted_plugins: [],
     connection_options: {},
     credentials_url: null, // URL from where login credentials can be fetched
-    discover_connection_methods: false,
+    discover_connection_methods: true,
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent

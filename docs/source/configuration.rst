@@ -674,7 +674,7 @@ set to ``'chat'`` as soon as you've been logged in.
 discover_connection_methods
 ---------------------------
 
-* Default: ``false``
+* Default: ``true``
 
 Use `XEP-0156 <https://xmpp.org/extensions/xep-0156.html>`_ to discover whether
 the XMPP host for the current user advertises any Websocket or BOSH connection

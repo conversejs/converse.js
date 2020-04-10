@@ -1713,7 +1713,7 @@ converse.plugins.add('converse-muc', {
                     const subject = attrs.subject;
                     const author = attrs.nick;
                     u.safeSave(this, {'subject': {author, 'text': attrs.subject || ''}});
-                    if (!attrs.is_delayed) {
+                    if (!attrs.is_delayed && author) {
                         const message = subject ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
                         const prev_msg = this.messages.last();
                         if (prev_msg?.get('nick') !== attrs.nick ||

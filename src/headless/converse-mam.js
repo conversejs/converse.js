@@ -131,9 +131,9 @@ converse.plugins.add('converse-mam', {
 
         _converse.onMAMError = function (iq) {
             if (iq && iq.querySelectorAll('feature-not-implemented').length) {
-                log.warn("Message Archive Management (XEP-0313) not supported by this server");
+                log.warn(`Message Archive Management (XEP-0313) not supported by ${iq.getAttribute('from')}`);
             } else {
-                log.error("An error occured while trying to set archiving preferences.");
+                log.error(`Error while trying to set archiving preferences for ${iq.getAttribute('from')}.`);
                 log.error(iq);
             }
         };

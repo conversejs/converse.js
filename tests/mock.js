@@ -263,6 +263,7 @@
             'animate': false,
             'auto_subscribe': false,
             'bosh_service_url': 'montague.lit/http-bind',
+            'discover_connection_methods': false,
             'enable_smacks': false,
             'i18n': 'en',
             // 'persistent_store': 'IndexedDB',

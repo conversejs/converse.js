@@ -38,9 +38,10 @@ converse.plugins.add('converse-roomslist', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
         // Promises exposed by this plugin
-        _converse.api.promises.add('roomsListInitialized');
+        api.promises.add('roomsListInitialized');
 
 
         _converse.RoomsList = Model.extend({
@@ -121,8 +122,8 @@ converse.plugins.add('converse-roomslist', {
                 const data = {
                     'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                 }
-                await _converse.api.rooms.open(jid, data, true);
-                _converse.api.chatviews.get(jid).maybeFocus();
+                await api.rooms.open(jid, data, true);
+                api.chatviews.get(jid).maybeFocus();
             },
 
             closeRoom (ev) {
@@ -164,22 +165,22 @@ converse.plugins.add('converse-roomslist', {
              * @event _converse#roomsListInitialized
              * @example _converse.api.listen.on('roomsListInitialized', status => { ... });
              */
-            _converse.api.trigger('roomsListInitialized');
+            api.trigger('roomsListInitialized');
         };
 
-        _converse.api.listen.on('connected', async () =>  {
+        api.listen.on('connected', async () =>  {
             if (_converse.allow_bookmarks) {
-                await _converse.api.waitUntil('bookmarksInitialized');
+                await api.waitUntil('bookmarksInitialized');
             } else {
                 await Promise.all([
-                    _converse.api.waitUntil('chatBoxesFetched'),
-                    _converse.api.waitUntil('roomsPanelRendered')
+                    api.waitUntil('chatBoxesFetched'),
+                    api.waitUntil('roomsPanelRendered')
                 ]);
             }
             initRoomsListView();
         });
 
-        _converse.api.listen.on('reconnected', initRoomsListView);
+        api.listen.on('reconnected', initRoomsListView);
     }
 });
 

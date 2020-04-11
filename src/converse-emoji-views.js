@@ -68,9 +68,10 @@ converse.plugins.add('converse-emoji-views', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
         const { __ } = _converse;
 
-        _converse.api.settings.update({
+        api.settings.update({
             'use_system_emojis': true,
             'visible_toolbar_buttons': {
                 'emoji': true
@@ -91,7 +92,7 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             async createEmojiPicker () {
-                await _converse.api.emojis.initialize()
+                await api.emojis.initialize()
 
                 const id = `converse.emoji-${_converse.bare_jid}-${this.model.get('jid')}`;
                 const emojipicker = new _converse.EmojiPicker({'id': id});
@@ -151,7 +152,7 @@ converse.plugins.add('converse-emoji-views', {
                     Object.assign(
                         this.model.toJSON(), {
                             '_converse': _converse,
-                            'emoji_categories': _converse.emoji_categories,
+                            'emoji_categories': api.settings.get('emoji_categories'),
                             'emojis_by_category': _converse.emojis.json,
                             'onSkintonePicked': ev => this.chooseSkinTone(ev),
                             'onEmojiPicked': ev => this.insertEmoji(ev),
@@ -415,18 +416,18 @@ converse.plugins.add('converse-emoji-views', {
 
         /************************ BEGIN Event Handlers ************************/
 
-        _converse.api.listen.on('chatBoxClosed', view => view.emoji_picker_view && view.emoji_picker_view.remove());
+        api.listen.on('chatBoxClosed', view => view.emoji_picker_view && view.emoji_picker_view.remove());
 
-        _converse.api.listen.on('renderToolbar', view => {
-            if (_converse.visible_toolbar_buttons.emoji) {
+        api.listen.on('renderToolbar', view => {
+            if (api.settings.get('visible_toolbar_buttons').emoji) {
                 const html = tpl_emoji_button({'tooltip_insert_smiley': __('Insert emojis')});
                 view.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
             }
         });
 
-        _converse.api.listen.on('headlinesBoxInitialized', () => _converse.api.emojis.initialize());
-        _converse.api.listen.on('chatRoomInitialized', () => _converse.api.emojis.initialize());
-        _converse.api.listen.on('chatBoxInitialized', () => _converse.api.emojis.initialize());
+        api.listen.on('headlinesBoxInitialized', () => api.emojis.initialize());
+        api.listen.on('chatRoomInitialized', () => api.emojis.initialize());
+        api.listen.on('chatBoxInitialized', () => api.emojis.initialize());
 
         /************************ END Event Handlers ************************/
     }

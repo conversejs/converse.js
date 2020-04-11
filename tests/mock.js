@@ -251,8 +251,9 @@
         [localStorage, sessionStorage].forEach(
             s => Object.keys(s).forEach(k => k.match(/^converse-test-/) && s.removeItem(k))
         );
+        const cache_key = `converse.room-bookmarksromeo@montague.lit`;
+        window.sessionStorage.removeItem(cache_key+'fetched');
     }
-
 
     async function initConverse (settings) {
         clearStores();
@@ -262,6 +263,7 @@
             'animate': false,
             'auto_subscribe': false,
             'bosh_service_url': 'montague.lit/http-bind',
+            'discover_connection_methods': false,
             'enable_smacks': false,
             'i18n': 'en',
             // 'persistent_store': 'IndexedDB',

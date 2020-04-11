@@ -65,8 +65,9 @@ converse.plugins.add('converse-vcard', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
-        _converse.api.promises.add('VCardsInitialized');
+        api.promises.add('VCardsInitialized');
 
 
         _converse.VCard = Model.extend({
@@ -105,7 +106,7 @@ converse.plugins.add('converse-vcard', {
 
             initialize () {
                 this.on('add', vcard => {
-                    _converse.api.vcard.update(vcard);
+                    api.vcard.update(vcard);
                 });
             }
         });
@@ -152,7 +153,7 @@ converse.plugins.add('converse-vcard', {
             const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
             let iq;
             try {
-                iq = await _converse.api.sendIQ(createStanza("get", to))
+                iq = await api.sendIQ(createStanza("get", to))
             } catch (iq) {
                 return {
                     'stanza': iq,
@@ -174,7 +175,7 @@ converse.plugins.add('converse-vcard', {
             } else {
                 jid = model.get('jid');
             }
-            await _converse.api.waitUntil('VCardsInitialized');
+            await api.waitUntil('VCardsInitialized');
             model.vcard = _converse.vcards.findWhere({'jid': jid});
             if (!model.vcard) {
                 model.vcard = _converse.vcards.create({'jid': jid});
@@ -202,7 +203,7 @@ converse.plugins.add('converse-vcard', {
 
 
         async function setVCardOnMUCMessage (message) {
-            await _converse.api.waitUntil('VCardsInitialized');
+            await api.waitUntil('VCardsInitialized');
             if (['error', 'info'].includes(message.get('type'))) {
                 return;
             } else {
@@ -229,13 +230,13 @@ converse.plugins.add('converse-vcard', {
              * Triggered as soon as the `_converse.vcards` collection has been initialized and populated from cache.
              * @event _converse#VCardsInitialized
              */
-            _converse.api.trigger('VCardsInitialized');
+            api.trigger('VCardsInitialized');
         }
 
 
         function clearVCardsSession () {
             if (_converse.shouldClearCache()) {
-                _converse.api.promises.add('VCardsInitialized');
+                api.promises.add('VCardsInitialized');
                 if (_converse.vcards) {
                     _converse.vcards.clearStore();
                     delete _converse.vcards;
@@ -246,14 +247,14 @@ converse.plugins.add('converse-vcard', {
 
         /************************ BEGIN Event Handlers ************************/
 
-        _converse.api.listen.on('chatBoxInitialized', m => setVCardOnModel(m));
-        _converse.api.listen.on('chatRoomInitialized', m => setVCardOnModel(m));
-        _converse.api.listen.on('chatRoomMessageInitialized', m => setVCardOnMUCMessage(m));
-        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.VCARD));
-        _converse.api.listen.on('clearSession', () => clearVCardsSession());
-        _converse.api.listen.on('messageInitialized', m => setVCardOnModel(m));
-        _converse.api.listen.on('rosterContactInitialized', m => setVCardOnModel(m));
-        _converse.api.listen.on('statusInitialized', _converse.initVCardCollection);
+        api.listen.on('chatBoxInitialized', m => setVCardOnModel(m));
+        api.listen.on('chatRoomInitialized', m => setVCardOnModel(m));
+        api.listen.on('chatRoomMessageInitialized', m => setVCardOnMUCMessage(m));
+        api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.VCARD));
+        api.listen.on('clearSession', () => clearVCardsSession());
+        api.listen.on('messageInitialized', m => setVCardOnModel(m));
+        api.listen.on('rosterContactInitialized', m => setVCardOnModel(m));
+        api.listen.on('statusInitialized', _converse.initVCardCollection);
 
 
         /************************ BEGIN API ************************/
@@ -289,7 +290,7 @@ converse.plugins.add('converse-vcard', {
                         throw Error("No jid provided for the VCard data");
                     }
                     const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
-                    return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
+                    return api.sendIQ(createStanza("set", jid, vcard_el));
                 },
 
                 /**

@@ -40,7 +40,7 @@ converse.plugins.add('converse-minimize', {
     ],
 
     enabled (_converse) {
-        return _converse.view_mode === 'overlayed';
+        return _converse.api.settings.get("view_mode") === 'overlayed';
     },
 
     overrides: {
@@ -74,14 +74,9 @@ converse.plugins.add('converse-minimize', {
         },
 
         ChatBoxView: {
-            initialize () {
-                this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
-                return this.__super__.initialize.apply(this, arguments);
-            },
-
             show () {
                 const { _converse } = this.__super__;
-                if (_converse.view_mode === 'overlayed' && this.model.get('minimized')) {
+                if (_converse.api.settings.get("view_mode") === 'overlayed' && this.model.get('minimized')) {
                     this.model.minimize();
                     return this;
                 } else {
@@ -110,51 +105,6 @@ converse.plugins.add('converse-minimize', {
                     return this.__super__.setChatBoxWidth.call(this, width);
                 }
             },
-
-            getHeadingButtons () {
-                const { _converse } = this.__super__;
-                const buttons = this.__super__.getHeadingButtons.call(this);
-                const data = {
-                    'a_class': 'toggle-chatbox-button',
-                    'handler': ev => this.minimize(ev),
-                    'i18n_text': __('Minimize'),
-                    'i18n_title': __('Minimize this chat'),
-                    'icon_class': "fa-minus",
-                    'name': 'minimize',
-                    'standalone': _converse.view_mode === 'overlayed'
-                }
-                const names = buttons.map(t => t.name);
-                const idx = names.indexOf('close');
-                return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
-            }
-        },
-
-        ChatRoomView: {
-            initialize () {
-                this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged)
-                const result = this.__super__.initialize.apply(this, arguments);
-                if (this.model.get('minimized')) {
-                    this.hide();
-                }
-                return result;
-            },
-
-            getHeadingButtons () {
-                const { _converse } = this.__super__;
-                const buttons = this.__super__.getHeadingButtons.call(this);
-                const data = {
-                    'a_class': 'toggle-chatbox-button',
-                    'handler': ev => this.minimize(ev),
-                    'i18n_text': __('Minimize'),
-                    'i18n_title': __('Minimize this groupchat'),
-                    'icon_class': "fa-minus",
-                    'name': 'minimize',
-                    'standalone': _converse.view_mode === 'overlayed'
-                }
-                const names = buttons.map(t => t.name);
-                const idx = names.indexOf('signout');
-                return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
-            }
         }
     },
 
@@ -164,9 +114,9 @@ converse.plugins.add('converse-minimize', {
          * loaded by Converse.js's plugin machinery.
          */
         const { _converse } = this;
-        const { __ } = _converse;
+        const { api } = _converse;
 
-        _converse.api.settings.update({'no_trimming': false});
+        api.settings.update({'no_trimming': false});
 
         const minimizableChatBox = {
             maximize () {
@@ -210,7 +160,7 @@ converse.plugins.add('converse-minimize', {
                  * @type { _converse.ChatBoxView }
                  * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
                  */
-                _converse.api.trigger('chatBoxMaximized', this);
+                api.trigger('chatBoxMaximized', this);
                 return this;
             },
 
@@ -239,7 +189,7 @@ converse.plugins.add('converse-minimize', {
                  * @type { _converse.ChatBoxView }
                  * @example _converse.api.listen.on('chatBoxMinimized', view => { ... });
                  */
-                _converse.api.trigger('chatBoxMinimized', this);
+                api.trigger('chatBoxMinimized', this);
                 return this;
             },
 
@@ -314,7 +264,7 @@ converse.plugins.add('converse-minimize', {
              * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesBoxView } [newchat]
              */
             async trimChats (newchat) {
-                if (_converse.no_trimming || !_converse.api.connection.connected() || _converse.view_mode !== 'overlayed') {
+                if (api.settings.get('no_trimming') || !api.connection.connected() || api.settings.get("view_mode") !== 'overlayed') {
                     return;
                 }
                 const shown_chats = this.getShownChats();
@@ -328,7 +278,7 @@ converse.plugins.add('converse-minimize', {
                     // fullscreen. In this case we don't trim.
                     return;
                 }
-                await _converse.api.waitUntil('minimizedChatsInitialized');
+                await api.waitUntil('minimizedChatsInitialized');
                 const minimized_el = _converse.minimized_chats?.el;
                 if (minimized_el) {
                     while ((this.getMinimizedWidth() + this.getBoxesWidth(newchat)) > body_width) {
@@ -369,7 +319,7 @@ converse.plugins.add('converse-minimize', {
         Object.assign(_converse.ChatBoxViews.prototype, chatTrimmer);
 
 
-        _converse.api.promises.add('minimizedChatsInitialized');
+        api.promises.add('minimizedChatsInitialized');
 
         _converse.MinimizedChatBoxView = View.extend({
             tagName: 'div',
@@ -390,7 +340,7 @@ converse.plugins.add('converse-minimize', {
                  * @type { _converse.MinimizedChatBoxView }
                  * @example _converse.api.listen.on('minimizedChatViewInitialized', view => { ... });
                  */
-                _converse.api.trigger('minimizedChatViewInitialized', this);
+                api.trigger('minimizedChatViewInitialized', this);
             },
 
             render () {
@@ -413,7 +363,7 @@ converse.plugins.add('converse-minimize', {
                     view.close();
                 } else {
                     this.model.destroy();
-                    _converse.api.trigger('chatBoxClosed', this);
+                    api.trigger('chatBoxClosed', this);
                 }
                 return this;
             },
@@ -562,17 +512,61 @@ converse.plugins.add('converse-minimize', {
              * @event _converse#minimizedChatsInitialized
              * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
              */
-            _converse.api.trigger('minimizedChatsInitialized');
+            api.trigger('minimizedChatsInitialized');
+        }
+
+        function addMinimizeButtonToChat (view, buttons) {
+            const data = {
+                'a_class': 'toggle-chatbox-button',
+                'handler': ev => view.minimize(ev),
+                'i18n_text': __('Minimize'),
+                'i18n_title': __('Minimize this chat'),
+                'icon_class': "fa-minus",
+                'name': 'minimize',
+                'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
+            }
+            const names = buttons.map(t => t.name);
+            const idx = names.indexOf('close');
+            return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
+        }
+
+        function addMinimizeButtonToMUC (view, buttons) {
+            const data = {
+                'a_class': 'toggle-chatbox-button',
+                'handler': ev => view.minimize(ev),
+                'i18n_text': __('Minimize'),
+                'i18n_title': __('Minimize this groupchat'),
+                'icon_class': "fa-minus",
+                'name': 'minimize',
+                'standalone': _converse.api.settings.get("view_mode") === 'overlayed'
+            }
+            const names = buttons.map(t => t.name);
+            const idx = names.indexOf('signout');
+            return idx > -1 ? [...buttons.slice(0, idx), data, ...buttons.slice(idx)] : [data, ...buttons];
         }
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('chatBoxViewsInitialized', () => initMinimizedChats());
-        _converse.api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
-        _converse.api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
+        api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
+        api.listen.on('chatBoxViewsInitialized', () => initMinimizedChats());
+        api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
+        api.listen.on('chatBoxViewInitialized', v => v.listenTo(v.model, 'change:minimized', v.onMinimizedChanged));
+
+        api.listen.on('chatRoomViewInitialized', view => {
+            view.listenTo(view.model, 'change:minimized', view.onMinimizedChanged)
+            view.model.get('minimized') && view.hide();
+        });
+
+        api.listen.on('getHeadingButtons', (view, buttons) => {
+            if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
+                return addMinimizeButtonToMUC(view, buttons);
+            } else {
+                return addMinimizeButtonToChat(view, buttons);
+            }
+        });
 
         const debouncedTrimChats = debounce(() => _converse.chatboxviews.trimChats(), 250);
-        _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));
-        _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrimChats));
+        api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrimChats));
+        api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrimChats));
         /************************ END Event Handlers ************************/
     }
 });

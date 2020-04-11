@@ -10,7 +10,7 @@ import converse from "@converse/headless/converse-core";
 converse.plugins.add('converse-singleton', {
 
     enabled (_converse) {
-        return _converse.singleton;
+        return _converse.api.settings.get("singleton");
     },
 
     initialize () {

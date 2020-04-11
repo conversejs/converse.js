@@ -61,9 +61,10 @@ converse.plugins.add('converse-emoji', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
         const { ___ } = _converse;
 
-        _converse.api.settings.update({
+        api.settings.update({
             'emoji_image_path': twemoji.default.base,
             'emoji_categories': {
                 "smileys": ":grinning:",
@@ -98,8 +99,8 @@ converse.plugins.add('converse-emoji', {
         });
 
         _converse.emojis = {};
-        _converse.api.promises.add('emojisInitialized', false);
-        twemoji.default.base = _converse.emoji_image_path;
+        api.promises.add('emojisInitialized', false);
+        twemoji.default.base = api.settings.get('emoji_image_path');
 
 
         /**
@@ -162,7 +163,7 @@ converse.plugins.add('converse-emoji', {
                     }
                 };
                 const transform = u.shortnamesToEmojis;
-                return _converse.use_system_emojis ? transform : text => twemoji.default.parse(transform(text), how);
+                return api.settings.get('use_system_emojis') ? transform : text => twemoji.default.parse(transform(text), how);
             },
 
             /**
@@ -263,18 +264,18 @@ converse.plugins.add('converse-emoji', {
 
         /************************ BEGIN API ************************/
         // We extend the default converse.js API to add methods specific to MUC groupchats.
-        Object.assign(_converse.api, {
+        Object.assign(api, {
             /**
              * The "rooms" namespace groups methods relevant to chatrooms
              * (aka groupchats).
              *
-             * @namespace _converse.api.rooms
-             * @memberOf _converse.api
+             * @namespace api.rooms
+             * @memberOf api
              */
             emojis: {
                 /**
                  * Initializes Emoji support by downloading the emojis JSON (and any applicable images).
-                 * @method _converse.api.emojis.initialize
+                 * @method api.emojis.initialize
                  * @returns {Promise}
                  */
                 async initialize () {
@@ -300,7 +301,7 @@ converse.plugins.add('converse-emoji', {
                      * fetched and its save to start calling emoji utility methods.
                      * @event _converse#emojisInitialized
                      */
-                    _converse.api.trigger('emojisInitialized');
+                    api.trigger('emojisInitialized');
                 }
             }
         });

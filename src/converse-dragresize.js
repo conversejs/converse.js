@@ -36,7 +36,7 @@ converse.plugins.add('converse-dragresize', {
     dependencies: ["converse-chatview", "converse-headlines-view", "converse-muc-views"],
 
     enabled (_converse) {
-        return _converse.view_mode == 'overlayed';
+        return _converse.api.settings.get("view_mode") == 'overlayed';
     },
 
     overrides: {
@@ -134,8 +134,9 @@ converse.plugins.add('converse-dragresize', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
-        _converse.api.settings.update({
+        api.settings.update({
             'allow_dragresize': true,
         });
 
@@ -252,7 +253,9 @@ converse.plugins.add('converse-dragresize', {
             },
 
             onStartVerticalResize (ev, trigger=true) {
-                if (!_converse.allow_dragresize) { return true; }
+                if (!api.settings.get('allow_dragresize')) {
+                    return true;
+                }
                 // Record element attributes for mouseMove().
                 const flyout = this.el.querySelector('.box-flyout'),
                       style = window.getComputedStyle(flyout);
@@ -268,12 +271,14 @@ converse.plugins.add('converse-dragresize', {
                      * @event _converse#startVerticalResize
                      * @example _converse.api.listen.on('startVerticalResize', (view) => { ... });
                      */
-                    _converse.api.trigger('startVerticalResize', this);
+                    api.trigger('startVerticalResize', this);
                 }
             },
 
             onStartHorizontalResize (ev, trigger=true) {
-                if (!_converse.allow_dragresize) { return true; }
+                if (!api.settings.get('allow_dragresize')) {
+                    return true;
+                }
                 const flyout = this.el.querySelector('.box-flyout'),
                       style = window.getComputedStyle(flyout);
                 this.width = parseInt(style.width.replace(/px$/, ''), 10);
@@ -288,7 +293,7 @@ converse.plugins.add('converse-dragresize', {
                      * @event _converse#startHorizontalResize
                      * @example _converse.api.listen.on('startHorizontalResize', (view) => { ... });
                      */
-                    _converse.api.trigger('startHorizontalResize', this);
+                    api.trigger('startHorizontalResize', this);
                 }
 
             },
@@ -302,7 +307,7 @@ converse.plugins.add('converse-dragresize', {
                  * @event _converse#startDiagonalResize
                  * @example _converse.api.listen.on('startDiagonalResize', (view) => { ... });
                  */
-                _converse.api.trigger('startDiagonalResize', this);
+                api.trigger('startDiagonalResize', this);
             },
         };
         Object.assign(_converse.ChatBoxView.prototype, dragResizable);
@@ -328,14 +333,18 @@ converse.plugins.add('converse-dragresize', {
 
 
         function onMouseMove (ev) {
-            if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
+            if (!_converse.resizing || !api.settings.get('allow_dragresize')) {
+                return true;
+            }
             ev.preventDefault();
             _converse.resizing.chatbox.resizeChatBox(ev);
         }
 
 
         function onMouseUp (ev) {
-            if (!_converse.resizing || !_converse.allow_dragresize) { return true; }
+            if (!_converse.resizing || !api.settings.get('allow_dragresize')) {
+                return true;
+            }
             ev.preventDefault();
             const height = u.applyDragResistance(
                     _converse.resizing.chatbox.height,
@@ -345,7 +354,7 @@ converse.plugins.add('converse-dragresize', {
                     _converse.resizing.chatbox.width,
                     _converse.resizing.chatbox.model.get('default_width')
             );
-            if (_converse.api.connection.connected()) {
+            if (api.connection.connected()) {
                 _converse.resizing.chatbox.model.save({'height': height});
                 _converse.resizing.chatbox.model.save({'width': width});
             } else {
@@ -366,9 +375,9 @@ converse.plugins.add('converse-dragresize', {
             document.removeEventListener('mouseup', onMouseUp);
         }
 
-        _converse.api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
-        _converse.api.listen.on('unregisteredGlobalEventHandlers', unregisterGlobalEventHandlers);
-        _converse.api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
+        api.listen.on('registeredGlobalEventHandlers', registerGlobalEventHandlers);
+        api.listen.on('unregisteredGlobalEventHandlers', unregisterGlobalEventHandlers);
+        api.listen.on('beforeShowingChatView', view => view.initDragResize().setDimensions());
         /************************ END Event Handlers ************************/
     }
 });

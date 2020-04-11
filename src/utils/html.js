@@ -94,7 +94,7 @@ function renderAudioURL (_converse, uri) {
 }
 
 function renderImageURL (_converse, uri) {
-    if (!_converse.show_images_inline) {
+    if (!_converse.api.settings.get('show_images_inline')) {
         return u.convertToHyperlink(uri);
     }
     const { __ } = _converse;
@@ -207,7 +207,7 @@ async function renderImage (img_url, link_url, el, callback) {
  * @returns { Promise }
  */
 u.renderImageURLs = function (_converse, el) {
-    if (!_converse.show_images_inline) {
+    if (!_converse.api.settings.get('show_images_inline')) {
         return Promise.resolve();
     }
     const list = el.textContent.match(URL_REGEX) || [];

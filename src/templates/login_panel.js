@@ -34,7 +34,7 @@ const password_input = () => html`
     </div>
 `;
 
-const register_link = (o) => html`
+const register_link = () => html`
     <fieldset class="switch-form">
         <p>${i18n_hint_no_account}</p>
         <p><a class="register-account toggle-register-login" href="#converse/register">${i18n_create_account}</a></p>
@@ -44,7 +44,7 @@ const register_link = (o) => html`
 const show_register_link = (o) => {
     const _converse = o._converse;
     return _converse.allow_registration &&
-        !_converse.auto_login &&
+        !_converse.api.settings.get("auto_login") &&
         _converse.pluggable.plugins['converse-register'].enabled(_converse);
 }
 

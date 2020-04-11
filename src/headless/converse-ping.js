@@ -22,9 +22,11 @@ converse.plugins.add('converse-ping', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
+
         let lastStanzaDate;
 
-        _converse.api.settings.update({
+        api.settings.update({
             ping_interval: 60 //in seconds
         });
 
@@ -39,14 +41,14 @@ converse.plugins.add('converse-ping', {
 
         function registerPongHandler () {
             if (_converse.connection.disco !== undefined) {
-                _converse.api.disco.own.features.add(Strophe.NS.PING);
+                api.disco.own.features.add(Strophe.NS.PING);
             }
             return _converse.connection.addHandler(pong, Strophe.NS.PING, "iq", "get");
         }
 
         function registerPingHandler () {
             _converse.connection.addHandler(() => {
-                if (_converse.ping_interval > 0) {
+                if (api.settings.get('ping_interval') > 0) {
                     // Handler on each stanza, saves the received date
                     // in order to ping only when needed.
                     lastStanzaDate = new Date();
@@ -56,13 +58,13 @@ converse.plugins.add('converse-ping', {
         }
 
         setTimeout(() => {
-            if (_converse.ping_interval > 0) {
+            if (api.settings.get('ping_interval') > 0) {
                 const now = new Date();
                 if (!lastStanzaDate) {
                     lastStanzaDate = now;
                 }
-                if ((now - lastStanzaDate)/1000 > _converse.ping_interval) {
-                    return _converse.api.ping();
+                if ((now - lastStanzaDate)/1000 > api.settings.get('ping_interval')) {
+                    return api.ping();
                 }
                 return true;
             }
@@ -75,25 +77,25 @@ converse.plugins.add('converse-ping', {
             registerPongHandler();
             registerPingHandler();
         };
-        _converse.api.listen.on('connected', onConnected);
-        _converse.api.listen.on('reconnected', onConnected);
+        api.listen.on('connected', onConnected);
+        api.listen.on('reconnected', onConnected);
 
 
         function onWindowStateChanged (data) {
-            if (data.state === 'visible' && _converse.api.connection.connected()) {
-                _converse.api.ping(null, 5000);
+            if (data.state === 'visible' && api.connection.connected()) {
+                api.ping(null, 5000);
             }
         }
-        _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
+        api.listen.on('windowStateChanged', onWindowStateChanged);
         /************************ END Event Handlers ************************/
 
 
         /************************ BEGIN API ************************/
-        Object.assign(_converse.api, {
+        Object.assign(api, {
             /**
              * Pings the service represented by the passed in JID by sending an IQ stanza.
              * @private
-             * @method _converse.api.ping
+             * @method api.ping
              * @param { String } [jid] - The JID of the service to ping
              * @param { Integer } [timeout] - The amount of time in
              *  milliseconds to wait for a response. The default is 10000;
@@ -112,11 +114,11 @@ converse.plugins.add('converse-ping', {
                             'id': u.getUniqueId('ping')
                         }).c('ping', {'xmlns': Strophe.NS.PING});
 
-                    const result = await _converse.api.sendIQ(iq, timeout || 10000, false);
+                    const result = await api.sendIQ(iq, timeout || 10000, false);
                     if (result === null) {
                         log.warn(`Timeout while pinging ${jid}`);
                         if (jid === Strophe.getDomainFromJid(_converse.bare_jid)) {
-                            _converse.api.connection.reconnect();
+                            api.connection.reconnect();
                         }
                     } else if (u.isErrorStanza(result)) {
                         log.error(`Error while pinging ${jid}`);

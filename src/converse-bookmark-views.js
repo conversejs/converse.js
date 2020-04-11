@@ -31,48 +31,19 @@ converse.plugins.add('converse-bookmark-views', {
      */
     dependencies: ["converse-chatboxes", "converse-muc", "converse-muc-views"],
 
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        ChatRoomView: {
-            getHeadingButtons () {
-                const { _converse } = this.__super__;
-                const buttons = this.__super__.getHeadingButtons.call(this);
-                if (_converse.allow_bookmarks) {
-                    const supported = _converse.checkBookmarksSupport();
-                    const bookmarked = this.model.get('bookmarked');
-                    const data = {
-                        'i18n_title': bookmarked ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
-                        'i18n_text': bookmarked ? __('Unbookmark') : __('Bookmark'),
-                        'handler': ev => this.toggleBookmark(ev),
-                        'a_class': 'toggle-bookmark',
-                        'icon_class': 'fa-bookmark',
-                        'name': 'bookmark'
-                    }
-                    const names = buttons.map(t => t.name);
-                    const idx = names.indexOf('details');
-                    const data_promise = supported.then(s => s ? data : '');
-                    return idx > -1 ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)] : [data_promise, ...buttons];
-                }
-                return buttons;
-            }
-        }
-    },
-
     initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        _converse.api.settings.update({
+        api.settings.update({
             hide_open_bookmarks: true,
-            muc_respect_autojoin: true
         });
 
 
@@ -96,7 +67,7 @@ converse.plugins.add('converse-bookmark-views', {
                  */
                 ev.preventDefault();
                 const jid = ev.target.getAttribute('data-room-jid');
-                _converse.api.rooms.open(jid, {'bring_to_foreground': true});
+                api.rooms.open(jid, {'bring_to_foreground': true});
                 _converse.chatboxviews.get(jid).renderBookmarkForm();
             },
         });
@@ -203,7 +174,7 @@ converse.plugins.add('converse-bookmark-views', {
             },
 
             toHTML () {
-                const is_hidden = b => !!(_converse.hide_open_bookmarks && _converse.chatboxes.get(b.get('jid')));
+                const is_hidden = b => !!(api.settings.get('hide_open_bookmarks') && _converse.chatboxes.get(b.get('jid')));
                 return tpl_bookmarks_list({
                     '_converse': _converse,
                     'bookmarks': this.model,
@@ -231,7 +202,7 @@ converse.plugins.add('converse-bookmark-views', {
                 const data = {
                     'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                 }
-                _converse.api.rooms.open(jid, data, true);
+                api.rooms.open(jid, data, true);
             },
 
             removeBookmark: _converse.removeBookmarkViaEvent,
@@ -255,7 +226,7 @@ converse.plugins.add('converse-bookmark-views', {
 
         /************************ BEGIN Event Handlers ************************/
         const initBookmarkViews = async function () {
-            await _converse.api.waitUntil('roomsPanelRendered');
+            await api.waitUntil('roomsPanelRendered');
             _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
             /**
              * Triggered once the _converse.Bookmarks collection and _converse.BookmarksView view
@@ -263,11 +234,30 @@ converse.plugins.add('converse-bookmark-views', {
              * @event _converse#bookmarkViewsInitialized
              * @example _converse.api.listen.on('bookmarkViewsInitialized', () => { ... });
              */
-            _converse.api.trigger('bookmarkViewsInitialized');
+            api.trigger('bookmarkViewsInitialized');
         }
 
-        _converse.api.listen.on('bookmarksInitialized', initBookmarkViews);
-        _converse.api.listen.on('chatRoomViewInitialized', view => view.setBookmarkState());
+        api.listen.on('getHeadingButtons', (view, buttons) => {
+            if (_converse.allow_bookmarks && view.model.get('type') === _converse.CHATROOMS_TYPE) {
+                const bookmarked = view.model.get('bookmarked');
+                const data = {
+                    'i18n_title': bookmarked ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
+                    'i18n_text': bookmarked ? __('Unbookmark') : __('Bookmark'),
+                    'handler': ev => view.toggleBookmark(ev),
+                    'a_class': 'toggle-bookmark',
+                    'icon_class': 'fa-bookmark',
+                    'name': 'bookmark'
+                }
+                const names = buttons.map(t => t.name);
+                const idx = names.indexOf('details');
+                const data_promise = _converse.checkBookmarksSupport().then(s => s ? data : '');
+                return idx > -1 ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)] : [data_promise, ...buttons];
+            }
+            return buttons;
+        });
+
+        api.listen.on('bookmarksInitialized', initBookmarkViews);
+        api.listen.on('chatRoomViewInitialized', view => view.setBookmarkState());
         /************************ END Event Handlers ************************/
     }
 });

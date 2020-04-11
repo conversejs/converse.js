@@ -35,17 +35,19 @@ converse.plugins.add('converse-chat', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
         const { __ } = _converse;
 
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        _converse.api.settings.update({
+        api.settings.update({
+            'allow_message_corrections': 'all',
+            'allow_message_retraction': 'all',
             'auto_join_private_chats': [],
             'clear_messages_on_reconnection': false,
             'filter_by_resource': false,
-            'allow_message_corrections': 'all',
             'send_chat_state_notifications': true
         });
 
@@ -57,7 +59,7 @@ converse.plugins.add('converse-chat', {
             },
 
             async setRosterContact (jid) {
-                const contact = await _converse.api.contacts.get(jid);
+                const contact = await api.contacts.get(jid);
                 if (contact) {
                     this.contact = contact;
                     this.set('nickname', contact.get('nickname'));
@@ -102,7 +104,7 @@ converse.plugins.add('converse-chat', {
                  * @type { _converse.Message}
                  * @example _converse.api.listen.on('messageInitialized', model => { ... });
                  */
-                await _converse.api.trigger('messageInitialized', this, {'Synchronous': true});
+                await api.trigger('messageInitialized', this, {'Synchronous': true});
                 this.initialized.resolve();
             },
 
@@ -150,7 +152,7 @@ converse.plugins.add('converse-chat', {
              */
             mayBeRetracted () {
                 const is_own_message = this.get('sender') === 'me';
-                return is_own_message && ['all', 'own'].includes(_converse.allow_message_retraction);
+                return is_own_message && ['all', 'own'].includes(api.settings.get('allow_message_retraction'));
             },
 
             safeDestroy () {
@@ -211,7 +213,7 @@ converse.plugins.add('converse-chat', {
                     'size': this.file.size,
                     'content-type': this.file.type
                 })
-                return _converse.api.sendIQ(iq);
+                return api.sendIQ(iq);
             },
 
             async getRequestSlotURL () {
@@ -305,7 +307,7 @@ converse.plugins.add('converse-chat', {
                 return {
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
+                    'hidden': ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")),
                     'message_type': 'chat',
                     'nickname': undefined,
                     'num_unread': 0,
@@ -332,7 +334,7 @@ converse.plugins.add('converse-chat', {
                 }
                 this.set({'box_id': `box-${btoa(jid)}`});
                 this.initMessages();
-                this.initCSN();
+                this.initNotifications();
 
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                     this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
@@ -346,7 +348,7 @@ converse.plugins.add('converse-chat', {
                  * @type { _converse.ChatBox}
                  * @example _converse.api.listen.on('chatBoxInitialized', model => { ... });
                  */
-                await _converse.api.trigger('chatBoxInitialized', this, {'Synchronous': true});
+                await api.trigger('chatBoxInitialized', this, {'Synchronous': true});
                 this.initialized.resolve();
             },
 
@@ -360,13 +362,13 @@ converse.plugins.add('converse-chat', {
                 this.messages.browserStorage = _converse.createStore(this.getMessagesCacheKey());
                 this.listenTo(this.messages, 'change:upload', message => {
                     if (message.get('upload') === _converse.SUCCESS) {
-                        _converse.api.send(this.createMessageStanza(message));
+                        api.send(this.createMessageStanza(message));
                     }
                 });
             },
 
-            initCSN () {
-                this.csn = new Model();
+            initNotifications () {
+                this.notifications = new Model();
             },
 
             afterMessagesFetched () {
@@ -377,7 +379,7 @@ converse.plugins.add('converse-chat', {
                  * @type {_converse.ChatBox | _converse.ChatRoom}
                  * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
                  */
-                _converse.api.trigger('afterMessagesFetched', this);
+                api.trigger('afterMessagesFetched', this);
             },
 
             fetchMessages () {
@@ -423,11 +425,11 @@ converse.plugins.add('converse-chat', {
                     this.setEditable(attrs, attrs.time, stanza);
 
                     if (attrs['chat_state'] && attrs.sender === 'them') {
-                        this.csn.set('chat_state', attrs.chat_state);
+                        this.notifications.set('chat_state', attrs.chat_state);
                     }
                     if (u.shouldCreateMessage(attrs)) {
                         const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
-                        this.csn.set({'chat_state': null});
+                        this.notifications.set({'chat_state': null});
                         this.incrementUnreadMsgCounter(msg);
                     }
                 }
@@ -452,7 +454,7 @@ converse.plugins.add('converse-chat', {
                 } catch (e) {
                     log.error(e);
                 } finally {
-                    if (_converse.clear_messages_on_reconnection) {
+                    if (api.settings.get('clear_messages_on_reconnection')) {
                         await this.clearMessages();
                     }
                 }
@@ -465,11 +467,11 @@ converse.plugins.add('converse-chat', {
                  * @type {_converse.ChatBox | _converse.ChatRoom}
                  * @example _converse.api.listen.on('onChatReconnected', chatbox => { ... });
                  */
-                _converse.api.trigger('chatReconnected', this);
+                api.trigger('chatReconnected', this);
             },
 
             async onReconnection () {
-                if (_converse.clear_messages_on_reconnection) {
+                if (api.settings.get('clear_messages_on_reconnection')) {
                     await this.clearMessages();
                 }
                 this.announceReconnection();
@@ -480,8 +482,8 @@ converse.plugins.add('converse-chat', {
                     return 'Ignored ChatBox without JID';
                 }
                 const room_jids = _converse.auto_join_rooms.map(s => isObject(s) ? s.jid : s);
-                const auto_join = _converse.auto_join_private_chats.concat(room_jids);
-                if (_converse.singleton && !auto_join.includes(attrs.jid) && !_converse.auto_join_on_invite) {
+                const auto_join = api.settings.get('auto_join_private_chats').concat(room_jids);
+                if (api.settings.get("singleton") && !auto_join.includes(attrs.jid) && !_converse.auto_join_on_invite) {
                     const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
                     log.warn(msg);
                     return msg;
@@ -792,7 +794,7 @@ converse.plugins.add('converse-chat', {
                     'to': to_jid,
                     'type': 'chat',
                 }).c(type, {'xmlns': Strophe.NS.MARKERS, 'id': id});
-                _converse.api.send(stanza);
+                api.send(stanza);
             },
 
             handleChatMarker (stanza, from_jid) {
@@ -835,7 +837,7 @@ converse.plugins.add('converse-chat', {
                     'type': 'chat',
                 }).c('received', {'xmlns': Strophe.NS.RECEIPTS, 'id': id}).up()
                 .c('store', {'xmlns': Strophe.NS.HINTS}).up();
-                _converse.api.send(receipt_stanza);
+                api.send(receipt_stanza);
             },
 
             handleReceipt (stanza, original_stanza, from_jid) {
@@ -935,7 +937,7 @@ converse.plugins.add('converse-chat', {
 
             /**
              * Responsible for setting the editable attribute of messages.
-             * If _converse.allow_message_corrections is "last", then only the last
+             * If api.settings.get('allow_message_corrections') is "last", then only the last
              * message sent from me will be editable. If set to "all" all messages
              * will be editable. Otherwise no messages will be editable.
              * @method _converse.ChatBox#setEditable
@@ -950,9 +952,9 @@ converse.plugins.add('converse-chat', {
                 if (u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
                     return;
                 }
-                if (_converse.allow_message_corrections === 'all') {
+                if (api.settings.get('allow_message_corrections') === 'all') {
                     attrs.editable = !(attrs.file || attrs.retracted || 'oob_url' in attrs);
-                } else if ((_converse.allow_message_corrections === 'last') && (send_time > this.get('time_sent'))) {
+                } else if ((api.settings.get('allow_message_corrections') === 'last') && (send_time > this.get('time_sent'))) {
                     this.set({'time_sent': send_time});
                     const msg = this.messages.findWhere({'editable': true});
                     if (msg) {
@@ -980,7 +982,7 @@ converse.plugins.add('converse-chat', {
              * @param { String } spoiler_hint - An optional hint, if the message being sent is a spoiler
              * @returns { _converse.Message }
              * @example
-             * const chat = _converse.api.chats.get('buddy1@example.com');
+             * const chat = api.chats.get('buddy1@example.com');
              * chat.sendMessage('hello world');
              */
             async sendMessage (text, spoiler_hint) {
@@ -1003,7 +1005,7 @@ converse.plugins.add('converse-chat', {
                     this.setEditable(attrs, (new Date()).toISOString());
                     message = await this.createMessage(attrs);
                 }
-                _converse.api.send(this.createMessageStanza(message));
+                api.send(this.createMessageStanza(message));
                 return message;
             },
 
@@ -1014,12 +1016,12 @@ converse.plugins.add('converse-chat', {
              * @method _converse.ChatBox#sendChatState
              */
             sendChatState () {
-                if (_converse.send_chat_state_notifications && this.get('chat_state')) {
-                    const allowed = _converse.send_chat_state_notifications;
+                if (api.settings.get('send_chat_state_notifications') && this.get('chat_state')) {
+                    const allowed = api.settings.get('send_chat_state_notifications');
                     if (Array.isArray(allowed) && !allowed.includes(this.get('chat_state'))) {
                         return;
                     }
-                    _converse.api.send(
+                    api.send(
                         $msg({
                             'id': u.getUniqueId(),
                             'to': this.get('jid'),
@@ -1033,7 +1035,7 @@ converse.plugins.add('converse-chat', {
 
 
             async sendFiles (files) {
-                const result = await _converse.api.disco.features.get(Strophe.NS.HTTPUPLOAD, _converse.domain);
+                const result = await api.disco.features.get(Strophe.NS.HTTPUPLOAD, _converse.domain);
                 const item = result.pop();
                 if (!item) {
                     this.createMessage({
@@ -1140,7 +1142,7 @@ converse.plugins.add('converse-chat', {
 
         function rejectMessage (stanza, text) {
             // Reject an incoming message by replying with an error message of type "cancel".
-            _converse.api.send(
+            api.send(
                 $msg({
                     'to': stanza.getAttribute('from'),
                     'type': 'error',
@@ -1159,7 +1161,7 @@ converse.plugins.add('converse-chat', {
             if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                 return;
             }
-            const chatbox = await _converse.api.chatboxes.get(from_jid);
+            const chatbox = await api.chatboxes.get(from_jid);
             if (!chatbox) {
                 return;
             }
@@ -1183,7 +1185,7 @@ converse.plugins.add('converse-chat', {
             let to_jid = stanza.getAttribute('to');
             const to_resource = Strophe.getResourceFromJid(to_jid);
 
-            if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
+            if (api.settings.get('filter_by_resource') && (to_resource && to_resource !== _converse.resource)) {
                 return log.info(`handleMessageStanza: Ignoring incoming message intended for a different resource: ${to_jid}`);
             } else if (utils.isHeadlineMessage(_converse, stanza)) {
                 // XXX: Prosody sends headline messages with the
@@ -1228,15 +1230,15 @@ converse.plugins.add('converse-chat', {
                 return log.error(`Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`);
             }
             const contact_jid = is_me ? Strophe.getBareJidFromJid(to_jid) : from_bare_jid;
-            const contact = await _converse.api.contacts.get(contact_jid);
-            if (contact === undefined && !_converse.allow_non_roster_messaging) {
+            const contact = await api.contacts.get(contact_jid);
+            if (contact === undefined && !api.settings.get("allow_non_roster_messaging")) {
                 log.error(`Blocking messaging with a JID not in our roster because allow_non_roster_messaging is false.`);
                 return log.error(stanza);
             }
             // Get chat box, but only create when the message has something to show to the user
             const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
             const roster_nick = contact?.attributes?.nickname;
-            const chatbox = await _converse.api.chats.get(contact_jid, {'nickname': roster_nick}, has_body);
+            const chatbox = await api.chats.get(contact_jid, {'nickname': roster_nick}, has_body);
             chatbox && await chatbox.queueMessage(stanza, original_stanza, from_jid);
             /**
              * Triggered when a message stanza is been received and processed.
@@ -1246,7 +1248,7 @@ converse.plugins.add('converse-chat', {
              * @property { XMLElement } stanza
              * @example _converse.api.listen.on('message', obj => { ... });
              */
-            _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': chatbox});
+            api.trigger('message', {'stanza': original_stanza, 'chatbox': chatbox});
         }
 
 
@@ -1286,12 +1288,12 @@ converse.plugins.add('converse-chat', {
         function autoJoinChats () {
             // Automatically join private chats, based on the
             // "auto_join_private_chats" configuration setting.
-            _converse.auto_join_private_chats.forEach(jid => {
+            api.settings.get('auto_join_private_chats').forEach(jid => {
                 if (_converse.chatboxes.where({'jid': jid}).length) {
                     return;
                 }
                 if (isString(jid)) {
-                    _converse.api.chats.open(jid);
+                    api.chats.open(jid);
                 } else {
                     log.error('Invalid jid criteria specified for "auto_join_private_chats"');
                 }
@@ -1304,7 +1306,7 @@ converse.plugins.add('converse-chat', {
              * @example _converse.api.listen.on('privateChatsAutoJoined', () => { ... });
              * @example _converse.api.waitUntil('privateChatsAutoJoined').then(() => { ... });
              */
-            _converse.api.trigger('privateChatsAutoJoined');
+            api.trigger('privateChatsAutoJoined');
         }
 
 
@@ -1313,17 +1315,17 @@ converse.plugins.add('converse-chat', {
             if (!utils.isValidJID(jid)) {
                 return log.warn(`Invalid JID "${jid}" provided in URL fragment`);
             }
-            _converse.api.chats.open(jid);
+            api.chats.open(jid);
         }
         _converse.router.route('converse/chat?jid=:jid', openChat);
         /************************ END Route Handlers ************************/
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('chatBoxesFetched', autoJoinChats);
-        _converse.api.listen.on('presencesInitialized', registerMessageHandlers);
+        api.listen.on('chatBoxesFetched', autoJoinChats);
+        api.listen.on('presencesInitialized', registerMessageHandlers);
 
-        _converse.api.listen.on('clearSession', () => {
+        api.listen.on('clearSession', () => {
             if (_converse.shouldClearCache()) {
                 return Promise.all(_converse.chatboxes.map(c => c.messages && c.messages.clearStore({'silent': true})));
             }
@@ -1332,26 +1334,26 @@ converse.plugins.add('converse-chat', {
 
 
         /************************ BEGIN API ************************/
-        Object.assign(_converse.api, {
+        Object.assign(api, {
             /**
              * The "chats" namespace (used for one-on-one chats)
              *
-             * @namespace _converse.api.chats
-             * @memberOf _converse.api
+             * @namespace api.chats
+             * @memberOf api
              */
             chats: {
                 /**
-                 * @method _converse.api.chats.create
+                 * @method api.chats.create
                  * @param {string|string[]} jid|jids An jid or array of jids
                  * @param {object} [attrs] An object containing configuration attributes.
                  */
                 async create (jids, attrs) {
                     if (isString(jids)) {
                         if (attrs && !attrs?.fullname) {
-                            const contact = await _converse.api.contacts.get(jids);
+                            const contact = await api.contacts.get(jids);
                             attrs.fullname = contact?.attributes?.fullname;
                         }
-                        const chatbox = _converse.api.chats.get(jids, attrs, true);
+                        const chatbox = api.chats.get(jids, attrs, true);
                         if (!chatbox) {
                             log.error("Could not open chatbox for JID: "+jids);
                             return;
@@ -1360,9 +1362,9 @@ converse.plugins.add('converse-chat', {
                     }
                     if (Array.isArray(jids)) {
                         return Promise.all(jids.forEach(async jid => {
-                            const contact = await _converse.api.contacts.get(jids);
+                            const contact = await api.contacts.get(jids);
                             attrs.fullname = contact?.attributes?.fullname;
-                            return _converse.api.chats.get(jid, attrs, true).maybeShow();
+                            return api.chats.get(jid, attrs, true).maybeShow();
                         }));
                     }
                     log.error("chats.create: You need to provide at least one JID");
@@ -1372,7 +1374,7 @@ converse.plugins.add('converse-chat', {
                 /**
                  * Opens a new one-on-one chat.
                  *
-                 * @method _converse.api.chats.open
+                 * @method api.chats.open
                  * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
                  * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
                  * @param {Boolean} [attrs.minimized] - Should the chat be created in minimized state.
@@ -1391,7 +1393,7 @@ converse.plugins.add('converse-chat', {
                  *     initialize: function() {
                  *         const _converse = this._converse;
                  *         // Note, buddy@example.org must be in your contacts roster!
-                 *         _converse.api.chats.open('buddy@example.com').then(chat => {
+                 *         api.chats.open('buddy@example.com').then(chat => {
                  *             // Now you can do something with the chat model
                  *         });
                  *     }
@@ -1403,7 +1405,7 @@ converse.plugins.add('converse-chat', {
                  *     initialize: function () {
                  *         const _converse = this._converse;
                  *         // Note, these users must first be in your contacts roster!
-                 *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then(chats => {
+                 *         api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then(chats => {
                  *             // Now you can do something with the chat models
                  *         });
                  *     }
@@ -1411,14 +1413,14 @@ converse.plugins.add('converse-chat', {
                  */
                 async open (jids, attrs, force) {
                     if (isString(jids)) {
-                        const chat = await _converse.api.chats.get(jids, attrs, true);
+                        const chat = await api.chats.get(jids, attrs, true);
                         if (chat) {
                             return chat.maybeShow(force);
                         }
                         return chat;
                     } else if (Array.isArray(jids)) {
                         return Promise.all(
-                            jids.map(j => _converse.api.chats.get(j, attrs, true).then(c => c && c.maybeShow(force)))
+                            jids.map(j => api.chats.get(j, attrs, true).then(c => c && c.maybeShow(force)))
                                 .filter(c => c)
                         );
                     }
@@ -1430,7 +1432,7 @@ converse.plugins.add('converse-chat', {
                 /**
                  * Retrieves a chat or all chats.
                  *
-                 * @method _converse.api.chats.get
+                 * @method api.chats.get
                  * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
                  * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
                  * @param {Boolean} [create=false] - Whether the chat should be created if it's not found.
@@ -1438,22 +1440,22 @@ converse.plugins.add('converse-chat', {
                  *
                  * @example
                  * // To return a single chat, provide the JID of the contact you're chatting with in that chat:
-                 * const model = await _converse.api.chats.get('buddy@example.com');
+                 * const model = await api.chats.get('buddy@example.com');
                  *
                  * @example
                  * // To return an array of chats, provide an array of JIDs:
-                 * const models = await _converse.api.chats.get(['buddy1@example.com', 'buddy2@example.com']);
+                 * const models = await api.chats.get(['buddy1@example.com', 'buddy2@example.com']);
                  *
                  * @example
                  * // To return all open chats, call the method without any parameters::
-                 * const models = await _converse.api.chats.get();
+                 * const models = await api.chats.get();
                  *
                  */
                 async get (jids, attrs={}, create=false) {
                     async function _get (jid) {
-                        let model = await _converse.api.chatboxes.get(jid);
+                        let model = await api.chatboxes.get(jid);
                         if (!model && create) {
-                            model = await _converse.api.chatboxes.create(jid, attrs, _converse.ChatBox);
+                            model = await api.chatboxes.create(jid, attrs, _converse.ChatBox);
                         } else {
                             model = (model && model.get('type') === _converse.PRIVATE_CHAT_TYPE) ? model : null;
                             if (model && Object.keys(attrs).length) {
@@ -1463,7 +1465,7 @@ converse.plugins.add('converse-chat', {
                         return model;
                     }
                     if (jids === undefined) {
-                        const chats = await _converse.api.chatboxes.get();
+                        const chats = await api.chatboxes.get();
                         return chats.filter(c => (c.get('type') === _converse.PRIVATE_CHAT_TYPE));
                     } else if (isString(jids)) {
                         return _get(jids);

@@ -53,6 +53,7 @@
             mock.initConverse(
                 ['chatBoxesInitialized'],
                 { auto_login: false,
+                  discover_connection_methods: false,
                   allow_registration: true },
                 async function (done, _converse) {
 
@@ -93,6 +94,7 @@
             mock.initConverse(
                 ['chatBoxesInitialized'],
                 { auto_login: false,
+                  discover_connection_methods: false,
                   allow_registration: true },
                 async function (done, _converse) {
 
@@ -148,6 +150,7 @@
             mock.initConverse(
                 ['chatBoxesInitialized'],
                 { auto_login: false,
+                  discover_connection_methods: false,
                   allow_registration: true },
                 async function (done, _converse) {
 
@@ -211,6 +214,7 @@
             mock.initConverse(
                 ['chatBoxesInitialized'],
                 { auto_login: false,
+                  discover_connection_methods: false,
                   allow_registration: true },
                 async function (done, _converse) {
 
@@ -292,6 +296,7 @@
                 ['chatBoxesInitialized'],
                 { auto_login: false,
                   view_mode: 'fullscreen',
+                  discover_connection_methods: false,
                   allow_registration: true },
                 async function (done, _converse) {
 

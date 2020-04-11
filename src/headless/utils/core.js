@@ -218,10 +218,15 @@ u.isServiceUnavailableError = function (stanza) {
     return sizzle(`error[type="cancel"] service-unavailable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length > 0;
 }
 
+/**
+ * Merge the second object into the first one.
+ * @private
+ * @method u#stringToNode
+ * @param { Object } first
+ * @param { Object } second
+ */
 u.merge = function merge (first, second) {
-    /* Merge the second object into the first one.
-     */
-    for (var k in second) {
+    for (const k in second) {
         if (isObject(first[k])) {
             merge(first[k], second[k]);
         } else {
@@ -230,7 +235,7 @@ u.merge = function merge (first, second) {
     }
 };
 
-u.applyUserSettings = function applyUserSettings (context, settings, user_settings) {
+u.applySiteSettings = function applySiteSettings (context, settings, user_settings) {
     /* Configuration settings might be nested objects. We only want to
      * add settings which are whitelisted.
      */
@@ -239,7 +244,7 @@ u.applyUserSettings = function applyUserSettings (context, settings, user_settin
             continue;
         }
         if (isObject(settings[k]) && !Array.isArray(settings[k])) {
-            applyUserSettings(context[k], settings[k], user_settings[k]);
+            applySiteSettings(context[k], settings[k], user_settings[k]);
         } else {
             context[k] = user_settings[k];
         }
@@ -493,7 +498,7 @@ u.geoUriToHttp = function(text, geouri_replacement) {
 
 u.httpToGeoUri = function(text, _converse) {
     const replacement = 'geo:$1,$2';
-    return text.replace(_converse.geouri_regex, replacement);
+    return text.replace(_converse.api.settings.get("geouri_regex"), replacement);
 };
 
 u.getSelectValues = function (select) {

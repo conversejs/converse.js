@@ -150,7 +150,7 @@
             await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length);
             const hlview = _converse.chatboxviews.get('notify.example.com');
             await u.isVisible(hlview.el);
-            const close_el = hlview.el.querySelector('.close-chatbox-button');
+            const close_el = await u.waitUntil(() => hlview.el.querySelector('.close-chatbox-button'));
             close_el.click();
             await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length === 0);
             expect(cbview.el.querySelectorAll('.open-headline').length).toBe(0);

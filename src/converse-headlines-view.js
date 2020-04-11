@@ -48,6 +48,7 @@ converse.plugins.add('converse-headlines-view', {
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this;
+        const { api } = _converse;
 
 
         const viewWithHeadlinesPanel = {
@@ -62,7 +63,7 @@ converse.plugins.add('converse-headlines-view', {
                  * @event _converse#headlinesPanelRendered
                  * @example _converse.api.listen.on('headlinesPanelRendered', () => { ... });
                  */
-                _converse.api.trigger('headlinesPanelRendered');
+                api.trigger('headlinesPanelRendered');
                 return this.headlinepanel;
             }
         }
@@ -150,7 +151,7 @@ converse.plugins.add('converse-headlines-view', {
                  * @type { _converse.HeadlinesBoxView }
                  * @example _converse.api.listen.on('headlinesBoxViewInitialized', view => { ... });
                  */
-                _converse.api.trigger('headlinesBoxViewInitialized', this);
+                api.trigger('headlinesBoxViewInitialized', this);
             },
 
             render () {
@@ -170,6 +171,29 @@ converse.plugins.add('converse-headlines-view', {
                 return this;
             },
 
+            /**
+             * Returns a list of objects which represent buttons for the headlines header.
+             * @async
+             * @emits _converse#getHeadingButtons
+             * @private
+             * @method _converse.HeadlinesBoxView#getHeadingButtons
+             */
+            getHeadingButtons () {
+                const buttons = [];
+                if (!api.settings.get("singleton")) {
+                    buttons.push({
+                        'a_class': 'close-chatbox-button',
+                        'handler': ev => this.close(ev),
+                        'i18n_text': __('Close'),
+                        'i18n_title': __('Close these announcements'),
+                        'icon_class': 'fa-times',
+                        'name': 'close',
+                        'standalone': api.settings.get("view_mode") === 'overlayed',
+                    });
+                }
+                return _converse.api.hook('getHeadingButtons', this, buttons);
+            },
+
             // Override to avoid the methods in converse-chatview.js
             'renderMessageForm': function renderMessageForm () {},
             'afterShown': function afterShown () {}
@@ -177,7 +201,7 @@ converse.plugins.add('converse-headlines-view', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('chatBoxViewsInitialized', () => {
+        api.listen.on('chatBoxViewsInitialized', () => {
             const views = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
                 if (!views.get(item.get('id')) && item.get('type') === _converse.HEADLINES_TYPE) {

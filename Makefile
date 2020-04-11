@@ -28,44 +28,44 @@ ALLSPHINXOPTS	= -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./doc
 VERSION_FORMAT	= [0-9]+\.[0-9]+\.[0-9]+
 
 .PHONY: all
-all: stamp-npm dist
+all: node_modules dist
 
 .PHONY: help
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
 	@echo ""
-	@echo " all         Set up dev environment and create all builds"
-	@echo " build       Create minified builds of converse.js and all its dependencies."
-	@echo " clean       Remove all NPM packages."
-	@echo " check       Run all tests."
-	@echo " dev         Set up the development environment and build unminified resources. To force a fresh start, run 'make clean' first."
-	@echo " devserver   Set up the development environment and start the webpack dev server."
-	@echo " doc         Make standalone HTML files of the documentation."
-	@echo " po          Generate gettext PO files for each i18n language."
-	@echo " pot         Generate a gettext POT file to be used for translations."
-	@echo " release     Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
-	@echo " serve       Serve this directory via a webserver on port 8000."
-	@echo " serve_bg    Same as \"serve\", but do it in the background"
-	@echo " stamp-npm   Install NPM dependencies"
-	@echo " watch       Watch for changes on JS and scss files and automatically update the generated files."
-	@echo " logo        Generate PNG logos of multiple sizes."
+	@echo " all         	Set up dev environment and create all builds"
+	@echo " build       	Create minified builds of converse.js and all its dependencies."
+	@echo " clean       	Remove all NPM packages."
+	@echo " check       	Run all tests."
+	@echo " dev         	Set up the development environment and build unminified resources. To force a fresh start, run 'make clean' first."
+	@echo " devserver   	Set up the development environment and start the webpack dev server."
+	@echo " doc         	Make standalone HTML files of the documentation."
+	@echo " po          	Generate gettext PO files for each i18n language."
+	@echo " pot         	Generate a gettext POT file to be used for translations."
+	@echo " release     	Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
+	@echo " serve       	Serve this directory via a webserver on port 8000."
+	@echo " serve_bg    	Same as \"serve\", but do it in the background"
+	@echo " node_modules	Install NPM dependencies"
+	@echo " watch       	Watch for changes on JS and scss files and automatically update the generated files."
+	@echo " logo        	Generate PNG logos of multiple sizes."
 
 
 ########################################################################
 ## Miscellaneous
 
 .PHONY: serve
-serve: stamp-npm
+serve: node_modules
 	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1
 
 .PHONY: serve_bg
-serve_bg: stamp-npm
+serve_bg: node_modules
 	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1 -s &
 
 ########################################################################
 ## Translation machinery
 
-dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js stamp-npm @converse/headless
+dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js node_modules @converse/headless
 	npm run nodeps
 
 GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=6.0.0 dist/converse-no-dependencies.js -c
@@ -114,9 +114,9 @@ $(LERNA):
 package-lock.json: package.json
 	npm install
 
-stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
+node_modules: $(LERNA) package.json package-lock.json src/headless/package.json src/headless/package-lock.json
 	npm run lerna
-	touch stamp-npm
+	npm rebuild node-sass
 
 .PHONY: clean
 clean:
@@ -124,28 +124,28 @@ clean:
 	rm -rf lib bin include parts
 
 .PHONY: dev
-dev: stamp-npm
+dev: node_modules
 	npm run dev
 
 .PHONY: devserver
-devserver: stamp-npm
+devserver: node_modules
 	npm run serve
 
 ########################################################################
 ## Builds
 
-dist/converse.js:: stamp-npm dev
+dist/converse.js:: node_modules dev
 
-dist/converse.css:: stamp-npm dev
+dist/converse.css:: node_modules dev
 
-dist/website.css:: stamp-npm sass
+dist/website.css:: node_modules sass
 	$(SASS) --source-map true --include-path $(BOOTSTRAP) sass/website.scss $@
 
-dist/website.min.css:: stamp-npm dist/website.css
+dist/website.min.css:: node_modules dist/website.css
 	$(CLEANCSS) dist/website.css > $@
 
 .PHONY: watch
-watch: stamp-npm
+watch: node_modules
 	npm run watch
 
 .PHONY: logo
@@ -172,7 +172,7 @@ BUILDS = src/headless/dist/converse-headless.min.js
 
 @converse/headless: src/headless
 
-src/headless/dist/converse-headless.min.js: src webpack.common.js stamp-npm @converse/headless
+src/headless/dist/converse-headless.min.js: src webpack.common.js node_modules @converse/headless
 	npm run headless
 
 
@@ -180,18 +180,18 @@ src/headless/dist/converse-headless.min.js: src webpack.common.js stamp-npm @con
 dist:: build
 
 .PHONY: build
-build:: stamp-npm
+build:: node_modules
 	npm run dev && npm run build && make dist/website.css && make dist/website.min.css
 
 .PHONY: cdn
-cdn:: stamp-npm
+cdn:: node_modules
 	npm run cdn
 
 ########################################################################
 ## Tests
 
 .PHONY: eslint
-eslint: stamp-npm
+eslint: node_modules
 	$(ESLINT) src/*.js
 	$(ESLINT) src/utils/*.js
 	$(ESLINT) src/headless/*.js
@@ -220,7 +220,7 @@ docsdev: ./bin/activate .installed.cfg
 html: doc
 
 .PHONY: doc
-doc: stamp-npm docsdev apidoc
+doc: node_modules docsdev apidoc
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	make apidoc

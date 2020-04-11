@@ -1,7 +1,7 @@
 #conversejs {
     #controlbox {
         .bookmarks-toggle, .bookmarks-toggle .fa {
-            color: var(--chatroom-head-bg-color) !important;
+            color: var(--groupchats-header-color) !important;
             &:hover {
                 color: var(--chatroom-head-bg-color-dark) !important;
             }

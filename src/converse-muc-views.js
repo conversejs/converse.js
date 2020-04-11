@@ -8,7 +8,7 @@ import "converse-modal";
 import "@converse/headless/utils/muc";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
-import { head, isString, isUndefined } from "lodash";
+import { debounce, head, isString, isUndefined } from "lodash";
 import { BootstrapModal } from "./converse-modal.js";
 import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
@@ -90,14 +90,15 @@ converse.plugins.add('converse-muc-views', {
 
     initialize () {
         const { _converse } = this;
+        const { api } = _converse;
 
-        _converse.api.promises.add(['roomsPanelRendered']);
+        api.promises.add(['roomsPanelRendered']);
 
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        _converse.api.settings.update({
+        api.settings.update({
             'auto_list_rooms': false,
             'cache_muc_messages': true,
             'locked_muc_nickname': false,
@@ -109,8 +110,6 @@ converse.plugins.add('converse-muc-views', {
             'muc_mention_autocomplete_show_avatar': true,
             'muc_roomid_policy': null,
             'muc_roomid_policy_hint': null,
-            'muc_show_join_leave': true,
-            'muc_show_join_leave_status': true,
             'roomconfig_whitelist': [],
             'show_retraction_warning': true,
             'visible_toolbar_buttons': {
@@ -142,7 +141,7 @@ converse.plugins.add('converse-muc-views', {
                  * @event _converse#roomsPanelRendered
                  * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
                  */
-                _converse.api.trigger('roomsPanelRendered');
+                api.trigger('roomsPanelRendered');
                 return this.roomspanel;
             },
 
@@ -216,7 +215,7 @@ converse.plugins.add('converse-muc-views', {
                 parent_el.querySelector('a.room-info').classList.remove('selected');
             } else {
                 parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-                _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null)
+                api.disco.info(ev.target.getAttribute('data-room-jid'), null)
                     .then(stanza => insertRoomInfo(parent_el, stanza))
                     .catch(e => log.error(e));
             }
@@ -449,7 +448,7 @@ converse.plugins.add('converse-muc-views', {
                 const jid = ev.target.getAttribute('data-room-jid');
                 const name = ev.target.getAttribute('data-room-name');
                 this.modal.hide();
-                _converse.api.rooms.open(jid, {'name': name});
+                api.rooms.open(jid, {'name': name});
             },
 
             toggleRoomInfo (ev) {
@@ -516,7 +515,7 @@ converse.plugins.add('converse-muc-views', {
                     'from': _converse.connection.jid,
                     'type': "get"
                 }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS});
-                _converse.api.sendIQ(iq)
+                api.sendIQ(iq)
                     .then(iq => this.onRoomsFound(iq))
                     .catch(() => this.informNoRoomsFound())
             },
@@ -606,7 +605,7 @@ converse.plugins.add('converse-muc-views', {
                     jid = data.jid
                     this.model.setDomain(jid);
                 }
-                _converse.api.rooms.open(jid, Object.assign(data, {jid}));
+                api.rooms.open(jid, Object.assign(data, {jid}));
                 this.modal.hide();
                 ev.target.reset();
             },
@@ -701,12 +700,10 @@ converse.plugins.add('converse-muc-views', {
                     this.removeAll();
                 });
 
-                this.listenTo(this.model.csn, 'change', this.renderChatStateNotifications);
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
-                this.listenTo(this.model, 'change', this.renderHeading);
+                this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
                 this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
-                this.listenTo(this.model, 'change:subject', this.setChatRoomSubject);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
                 this.listenTo(this.model, 'destroy', this.hide);
                 this.listenTo(this.model, 'show', this.show);
@@ -724,43 +721,59 @@ converse.plugins.add('converse-muc-views', {
                 this.onMouseMove =  this.onMouseMove.bind(this);
                 this.onMouseUp =  this.onMouseUp.bind(this);
 
-                this.render();
+                await this.render();
+
+                // Needs to be registered after render has been called.
+                this.listenTo(this.model.notifications, 'change', this.renderNotifications);
+
                 this.createSidebarView();
                 await this.updateAfterMessagesFetched();
+
+                // Register later due to await
+                const user_settings = await _converse.api.user.settings.getModel();
+                this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
+
                 this.onConnectionStatusChanged();
                 this.model.maybeShow();
+
                 /**
                  * Triggered once a { @link _converse.ChatRoomView } has been opened
                  * @event _converse#chatRoomViewInitialized
                  * @type { _converse.ChatRoomView }
                  * @example _converse.api.listen.on('chatRoomViewInitialized', view => { ... });
                  */
-                _converse.api.trigger('chatRoomViewInitialized', this);
+                api.trigger('chatRoomViewInitialized', this);
             },
 
-            render () {
+            async render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
                 render(tpl_chatroom({
                     'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
                     'show_send_button': _converse.show_send_button
                 }), this.el);
-                this.renderHeading();
-                this.renderBottomPanel();
+                this.notifications = this.el.querySelector('.chat-content__notifications');
                 this.content = this.el.querySelector('.chat-content');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
-                this.csn = this.el.querySelector('.chat-content__notifications');
-                if (!_converse.muc_show_logs_before_join) {
-                    this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED && this.showSpinner();
+
+                this.renderBottomPanel();
+                if (!_converse.muc_show_logs_before_join &&
+                        this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
+                    this.showSpinner();
                 }
-                if (!this.model.get('hidden')) {
-                    this.show();
-                }
-                return this;
+                // Render header as late as possible since it's async and we
+                // want the rest of the DOM elements to be available ASAP.
+                // Otherwise e.g. this.notifications is not yet defined when accessed elsewhere.
+                await this.renderHeading();
+                !this.model.get('hidden') && this.show();
             },
 
-            renderChatStateNotifications () {
-                const actors_per_state = this.model.csn.toJSON();
-                const message = converse.CHAT_STATES.reduce((result, state) => {
+            renderNotifications () {
+                const actors_per_state = this.model.notifications.toJSON();
+                const states = api.settings.get('muc_show_join_leave') ?
+                    [...converse.CHAT_STATES, ...converse.MUC_TRAFFIC_STATES] :
+                    converse.CHAT_STATES;
+
+                const message = states.reduce((result, state) => {
                     const existing_actors = actors_per_state[state];
                     if (!(existing_actors?.length)) {
                         return result;
@@ -773,6 +786,10 @@ converse.plugins.add('converse-muc-views', {
                             return `${result} ${__('%1$s has stopped typing', actors[0])}\n`;
                         } else if (state === _converse.GONE) {
                             return `${result} ${__('%1$s has gone away', actors[0])}\n`;
+                        } else if (state === 'entered') {
+                            return `${result} ${__('%1$s has entered the groupchat', actors[0])}\n`;
+                        } else if (state === 'exited') {
+                            return `${result} ${__('%1$s has left the groupchat', actors[0])}\n`;
                         }
                     } else if (actors.length > 1) {
                         let actors_str;
@@ -782,17 +799,23 @@ converse.plugins.add('converse-muc-views', {
                             const last_actor = actors.pop();
                             actors_str = __('%1$s and %2$s', actors.join(', '), last_actor);
                         }
+
                         if (state === 'composing') {
                             return `${result} ${__('%1$s are typing', actors_str)}\n`;
                         } else if (state === 'paused') {
                             return `${result} ${__('%1$s have stopped typing', actors_str)}\n`;
                         } else if (state === _converse.GONE) {
                             return `${result} ${__('%1$s have gone away', actors_str)}\n`;
+                        } else if (state === 'entered') {
+                            return `${result} ${__('%1$s have entered the groupchat', actors_str)}\n`;
+                        } else if (state === 'exited') {
+                            return `${result} ${__('%1$s have left the groupchat', actors_str)}\n`;
                         }
                     }
                     return result;
                 }, '');
-                this.csn.innerHTML = message;
+                this.notifications.innerHTML = message;
+                message.includes('\n') && this.scrollDown();
             },
 
             /**
@@ -801,8 +824,9 @@ converse.plugins.add('converse-muc-views', {
              * @method _converse.ChatRoomView#renderHeading
              * @param { _converse.ChatRoom } [item]
              */
-            renderHeading () {
-                render(this.generateHeadingTemplate(), this.el.querySelector('.chat-head-chatroom'));
+            async renderHeading () {
+                const tpl = await this.generateHeadingTemplate();
+                render(tpl, this.el.querySelector('.chat-head-chatroom'));
             },
 
 
@@ -990,7 +1014,7 @@ converse.plugins.add('converse-muc-views', {
                     if (_converse.show_retraction_warning) {
                         messages[1] = retraction_warning;
                     }
-                    const result = await _converse.api.confirm(__('Confirm'), messages);
+                    const result = await api.confirm(__('Confirm'), messages);
                     if (result) {
                         this.retractOwnMessage(message);
                     }
@@ -1000,7 +1024,7 @@ converse.plugins.add('converse-muc-views', {
                         if (_converse.show_retraction_warning) {
                             messages = [messages[0], retraction_warning, messages[1]]
                         }
-                        if (await _converse.api.confirm(__('Confirm'), messages)) {
+                        if (await api.confirm(__('Confirm'), messages)) {
                             this.retractOtherMessage(message);
                         }
                     } else {
@@ -1011,7 +1035,7 @@ converse.plugins.add('converse-muc-views', {
                         if (_converse.show_retraction_warning) {
                             messages = [messages[0], retraction_warning, messages[1]]
                         }
-                        const reason = await _converse.api.prompt(
+                        const reason = await api.prompt(
                             __('Message Retraction'),
                             messages,
                             __('Optional reason')
@@ -1022,7 +1046,7 @@ converse.plugins.add('converse-muc-views', {
                     }
                 } else {
                     const err_msg = __(`Sorry, you're not allowed to retract this message`);
-                    _converse.api.alert('error', __('Error'), err_msg);
+                    api.alert('error', __('Error'), err_msg);
                 }
             },
 
@@ -1057,13 +1081,13 @@ converse.plugins.add('converse-muc-views', {
                 const result = await this.model.retractOtherMessage(message, reason);
                 if (result === null) {
                     const err_msg = __(`A timeout occurred while trying to retract the message`);
-                    _converse.api.alert('error', __('Error'), err_msg);
-                    _converse.log(err_msg, Strophe.LogLevel.WARN);
+                    api.alert('error', __('Error'), err_msg);
+                    log(err_msg, Strophe.LogLevel.WARN);
                 } else if (u.isErrorStanza(result)) {
                     const err_msg = __(`Sorry, you're not allowed to retract this message.`);
-                    _converse.api.alert('error', __('Error'), err_msg);
-                    _converse.log(err_msg, Strophe.LogLevel.WARN);
-                    _converse.log(result, Strophe.LogLevel.WARN);
+                    api.alert('error', __('Error'), err_msg);
+                    log(err_msg, Strophe.LogLevel.WARN);
+                    log(result, Strophe.LogLevel.WARN);
                 }
             },
 
@@ -1155,7 +1179,14 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            getHeadingButtons () {
+            /**
+             * Returns a list of objects which represent buttons for the groupchat header.
+             * @async
+             * @emits _converse#getHeadingButtons
+             * @private
+             * @method _converse.ChatRoomView#getHeadingButtons
+             */
+            getHeadingButtons (subject_hidden) {
                 const buttons = [{
                     'i18n_text': __('Details'),
                     'i18n_title': __('Show more information about this groupchat'),
@@ -1214,33 +1245,33 @@ converse.plugins.add('converse-muc-views', {
                 const subject = this.model.get('subject');
                 if (subject && subject.text) {
                     buttons.push({
-                        'i18n_text': this.model.get('subject_hidden') ? __('Show topic') : __('Hide topic'),
-                        'i18n_title': this.model.get('subject_hidden') ?
+                        'i18n_text': subject_hidden ? __('Show topic') : __('Hide topic'),
+                        'i18n_title': subject_hidden ?
                             __('Show the topic message in the heading') :
                             __('Hide the topic in the heading'),
                         'handler': ev => this.toggleTopic(ev),
-                        'a_class': '',
+                        'a_class': 'hide-topic',
                         'icon_class': 'fa-minus-square',
                         'name': 'toggle-topic'
                     });
                 }
 
-                if (!_converse.singleton) {
+                if (!api.settings.get("singleton")) {
                     buttons.push({
                         'i18n_text': __('Leave'),
                         'i18n_title': __('Leave and close this groupchat'),
                         'handler': async ev => {
                             const messages = [__('Are you sure you want to leave this groupchat?')];
-                            const result = await _converse.api.confirm(__('Confirm'), messages);
+                            const result = await api.confirm(__('Confirm'), messages);
                             result && this.close(ev);
                         },
                         'a_class': 'close-chatbox-button',
-                        'standalone': _converse.view_mode === 'overlayed',
+                        'standalone': api.settings.get("view_mode") === 'overlayed',
                         'icon_class': 'fa-sign-out-alt',
                         'name': 'signout'
                     });
                 }
-                return buttons;
+                return _converse.api.hook('getHeadingButtons', this, buttons);
             },
 
             /**
@@ -1248,13 +1279,15 @@ converse.plugins.add('converse-muc-views', {
              * @private
              * @method _converse.ChatRoomView#generateHeadingTemplate
              */
-            generateHeadingTemplate () {
-                const heading_btns = this.getHeadingButtons();
+            async generateHeadingTemplate () {
+                const subject_hidden = await this.model.isSubjectHidden();
+                const heading_btns = await this.getHeadingButtons(subject_hidden);
                 const standalone_btns = heading_btns.filter(b => b.standalone);
                 const dropdown_btns = heading_btns.filter(b => !b.standalone);
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
                         _converse,
+                        subject_hidden,
                         'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
                         'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
                         'title': this.model.getDisplayName(),
@@ -1262,9 +1295,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             toggleTopic () {
-                this.model.save('subject_hidden', !this.model.get('subject_hidden'));
+                this.model.toggleSubjectHiddenState();
             },
-
 
             showInviteModal (ev) {
                 ev.preventDefault();
@@ -1384,12 +1416,12 @@ converse.plugins.add('converse-muc-views', {
                 if (!roles.length) {
                     return true;
                 }
-                if (!occupant) {
-                    occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
-                }
-                const role = occupant.get('role');
-                if (roles.includes(role)) {
-                    return true;
+                occupant = occupant || this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                if (occupant) {
+                    const role = occupant.get('role');
+                    if (roles.includes(role)) {
+                        return true;
+                    }
                 }
                 if (show_error) {
                     this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'))
@@ -1404,12 +1436,12 @@ converse.plugins.add('converse-muc-views', {
                 if (!affiliations.length) {
                     return true;
                 }
-                if (!occupant) {
-                    occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
-                }
-                const a = occupant.get('affiliation');
-                if (affiliations.includes(a)) {
-                    return true;
+                occupant = occupant || this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                if (occupant) {
+                    const a = occupant.get('affiliation');
+                    if (affiliations.includes(a)) {
+                        return true;
+                    }
                 }
                 if (show_error) {
                     this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'))
@@ -1547,7 +1579,7 @@ converse.plugins.add('converse-muc-views', {
 
             async destroy (reason, new_jid) {
                 const message = [__('Are you sure you want to destroy this groupchat?')];
-                if (await _converse.api.confirm(__('Confirm'), message)) {
+                if (await api.confirm(__('Confirm'), message)) {
                     return this.model.sendDestroyIQ(reason, new_jid).then(() => this.close())
                 }
             },
@@ -1646,7 +1678,7 @@ converse.plugins.add('converse-muc-views', {
                             this.showErrorMessage(__('Your nickname is "%1$s"', this.model.get('nick')))
                         } else {
                             const jid = Strophe.getBareJidFromJid(this.model.get('jid'));
-                            _converse.api.send($pres({
+                            api.send($pres({
                                 from: _converse.connection.jid,
                                 to: `${jid}/${args}`,
                                 id: u.getUniqueId()
@@ -1825,7 +1857,7 @@ converse.plugins.add('converse-muc-views', {
                 if (switch_el) {
                     switch_el.addEventListener('click', async ev => {
                         ev.preventDefault();
-                        const room = await _converse.api.rooms.get(moved_jid, null, true);
+                        const room = await api.rooms.get(moved_jid, null, true);
                         room.maybeShow(true);
                         this.model.destroy();
                     });
@@ -1895,27 +1927,6 @@ converse.plugins.add('converse-muc-views', {
                     this.renderHeading();
                     this.renderBottomPanel();
                 }
-                if (occupant.get('show') === 'online') {
-                    this.showJoinNotification(occupant);
-                }
-            },
-
-            onOccupantRemoved (occupant) {
-                if (this.model.session.get('connection_status') ===  converse.ROOMSTATUS.ENTERED &&
-                        occupant.get('show') === 'online') {
-                    this.showLeaveNotification(occupant);
-                }
-            },
-
-            showJoinOrLeaveNotification (occupant) {
-                if (occupant.get('states').includes('303')) {
-                    return;
-                }
-                if (occupant.get('show') === 'offline') {
-                    this.showLeaveNotification(occupant);
-                } else if (occupant.get('show') === 'online') {
-                    this.showJoinNotification(occupant);
-                }
             },
 
             /**
@@ -1947,115 +1958,6 @@ converse.plugins.add('converse-muc-views', {
                     }
                     el = el.previousElementSibling;
                 }
-            },
-
-            showJoinNotification (occupant) {
-                if (!_converse.muc_show_join_leave ||
-                        this.model.session.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
-                    return;
-                }
-                const nick = occupant.get('nick'),
-                      stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
-                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.msgs_container.lastElementChild, nick),
-                      data = prev_info_el?.dataset || {};
-
-                if (data.leave === nick) {
-                    let message;
-                    if (stat) {
-                        message = __('%1$s has left and re-entered the groupchat. "%2$s"', nick, stat);
-                    } else {
-                        message = __('%1$s has left and re-entered the groupchat', nick);
-                    }
-                    const data = {
-                        'data_name': 'leavejoin',
-                        'data_value': nick,
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    };
-                    this.msgs_container.removeChild(prev_info_el);
-                    this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                    const el = this.msgs_container.lastElementChild;
-                    setTimeout(() => u.addClass('fade-out', el), 5000);
-                    setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
-                } else {
-                    let message;
-                    if (stat) {
-                        message = __('%1$s has entered the groupchat. "%2$s"', nick, stat);
-                    } else {
-                        message = __('%1$s has entered the groupchat', nick);
-                    }
-                    const data = {
-                        'data_name': 'join',
-                        'data_value': nick,
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    };
-                    if (prev_info_el) {
-                        this.msgs_container.removeChild(prev_info_el);
-                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                    } else {
-                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                        this.insertDayIndicator(this.msgs_container.lastElementChild);
-                    }
-                }
-                this.scrollDown();
-            },
-
-            showLeaveNotification (occupant) {
-                if (!_converse.muc_show_join_leave ||
-                        occupant.get('states').includes('303') ||
-                        occupant.get('states').includes('307')) {
-                    return;
-                }
-                const nick = occupant.get('nick'),
-                      stat = _converse.muc_show_join_leave_status ? occupant.get('status') : null,
-                      prev_info_el = this.getPreviousJoinOrLeaveNotification(this.msgs_container.lastElementChild, nick),
-                      dataset = prev_info_el?.dataset || {};
-
-                if (dataset.join === nick) {
-                    let message;
-                    if (stat) {
-                        message = __('%1$s has entered and left the groupchat. "%2$s"', nick, stat);
-                    } else {
-                        message = __('%1$s has entered and left the groupchat', nick);
-                    }
-                    const data = {
-                        'data_name': 'joinleave',
-                        'data_value': nick,
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    };
-                    this.msgs_container.removeChild(prev_info_el);
-                    this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                    const el = this.msgs_container.lastElementChild;
-                    setTimeout(() => u.addClass('fade-out', el), 5000);
-                    setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
-                } else {
-                    let message;
-                    if (stat) {
-                        message = __('%1$s has left the groupchat. "%2$s"', nick, stat);
-                    } else {
-                        message = __('%1$s has left the groupchat', nick);
-                    }
-                    const data = {
-                        'message': message,
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'data_name': 'leave',
-                        'data_value': nick
-                    }
-                    if (prev_info_el) {
-                        this.msgs_container.removeChild(prev_info_el);
-                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                    } else {
-                        this.msgs_container.insertAdjacentHTML('beforeend', tpl_info(data));
-                        this.insertDayIndicator(this.msgs_container.lastElementChild);
-                    }
-                }
-                this.scrollDown();
             },
 
             /**
@@ -2100,26 +2002,6 @@ converse.plugins.add('converse-muc-views', {
                     this.renderAfterTransition();
                 }
                 return this;
-            },
-
-            setChatRoomSubject () {
-                const subject = this.model.get('subject');
-                if (!subject.text && !subject.author) {
-                    return; // Probably a new MUC
-                }
-                const author = subject.author;
-                // For translators: the %1$s part will get
-                // replaced by the user's name.
-                // Example: Topic set by JC Brand
-                const message = subject.text ? __('Topic set by %1$s', author) : __('Topic cleared by %1$s', author);
-                this.msgs_container.insertAdjacentHTML(
-                    'beforeend',
-                    tpl_info({
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    }));
-                this.scrollDown();
             }
         });
 
@@ -2359,8 +2241,8 @@ converse.plugins.add('converse-muc-views', {
                     });
                 }
             }
-            _converse.api.waitUntil('discoInitialized').then(() => {
-                _converse.api.listen.on('serviceDiscovered', featureAdded);
+            api.waitUntil('discoInitialized').then(() => {
+                api.listen.on('serviceDiscovered', featureAdded);
                 // Features could have been added before the controlbox was
                 // initialized. We're only interested in MUC
                 _converse.disco_entities.each(entity => featureAdded(entity.features.findWhere({'var': Strophe.NS.MUC })));
@@ -2381,11 +2263,11 @@ converse.plugins.add('converse-muc-views', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('chatBoxViewsInitialized', () => {
+        api.listen.on('chatBoxViewsInitialized', () => {
 
             function openChatRoomFromURIClicked (ev) {
                 ev.preventDefault();
-                _converse.api.rooms.open(ev.target.href);
+                api.rooms.open(ev.target.href);
             }
             _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
 
@@ -2402,7 +2284,7 @@ converse.plugins.add('converse-muc-views', {
             _converse.chatboxes.on('add', addView);
         });
 
-        _converse.api.listen.on('clearSession', () => {
+        api.listen.on('clearSession', () => {
             const view = _converse.chatboxviews.get('controlbox');
             if (view && view.roomspanel) {
                 view.roomspanel.model.destroy();
@@ -2411,7 +2293,7 @@ converse.plugins.add('converse-muc-views', {
             }
         });
 
-        _converse.api.listen.on('controlBoxInitialized', (view) => {
+        api.listen.on('controlBoxInitialized', (view) => {
             if (!_converse.allow_muc) {
                 return;
             }
@@ -2454,10 +2336,10 @@ converse.plugins.add('converse-muc-views', {
                  */
                 get (jids) {
                     if (Array.isArray(jids)) {
-                        const views = _converse.api.chatviews.get(jids);
+                        const views = api.chatviews.get(jids);
                         return views.filter(v => v.model.get('type') === _converse.CHATROOMS_TYPE)
                     } else {
-                        const view = _converse.api.chatviews.get(jids);
+                        const view = api.chatviews.get(jids);
                         if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
                             return view;
                         } else {

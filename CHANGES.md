@@ -2,6 +2,10 @@
 
 ## 7.0.0 (Unreleased)
 
+*Note for plugin authors:*
+configuration settings should now be accessed via `_converse.api.settings.get` and not directly on the `_converse` object.
+Soon we'll deprecate the latter, so prepare now.
+
 - #1313: Stylistic improvements to the send button
 - #1490: Busy-loop when fetching registration form fails
 - #1535: Add option to destroy a MUC
@@ -14,6 +18,7 @@
 - #1826: A user can now add himself as a contact
 - #1839: Headline messages are shown in controlbox
 - #1896: Don't send receipts for messages fetched from the archive 
+- #1937: Editing a message removes the mentions highlight
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
 - Bugfix. Handle stanza that clears the MUC subject
 - New config option [modtools_disable_assign](https://conversejs.org/docs/html/configuration.html#modtools-disable-assign)
@@ -21,6 +26,9 @@
 - Replace Backbone with [Skeletor](https://github.com/skeletorjs/skeletor)
 - Start using [lit-html](https://lit-html.polymer-project.org/) instead of lodash for templating.
 - [muc_fetch_members](https://conversejs.org/docs/html/configuration.html#muc-fetch-members) now also accepts an array of affiliations to fetch.
+- Remove the configuration setting `muc_show_join_leave_status`. The optional status message is no longer shown at all.
+- Support for XEP-0156 is now enabled by default (which means that
+  [discover_connection_methods](https://conversejs.org/docs/html/configuration.html#discover-connection-methods) now has a default value of `true`).
 
 ## 6.0.0 (2020-01-09)
 

@@ -55,8 +55,9 @@ converse.plugins.add("converse-oauth", {
 
             render () {
                 const { _converse } = this.__super__;
+                const { api } = _converse;
                 const result = this.__super__.render.apply(this, arguments);
-                if (_converse.oauth_providers && !_converse.auto_login) {
+                if (_converse.oauth_providers && !api.settings.get("auto_login")) {
                     this.insertOAuthProviders();
                 }
                 return result;
@@ -68,10 +69,11 @@ converse.plugins.add("converse-oauth", {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { api } = _converse;
+        const { __ } = _converse;
 
-        _converse.api.settings.update({
+        api.settings.update({
             'oauth_providers': {},
         });
 
@@ -79,7 +81,7 @@ converse.plugins.add("converse-oauth", {
             'sync': function sync () {},
 
             initialize () {
-                _converse.user_settings.oauth_providers.forEach(provider => {
+                api.settings.get('oauth_providers').forEach(provider => {
                     const item = new Model(Object.assign(provider, {
                         'login_text': __('Log in with %1$s', provider.name)
                     }));
@@ -102,7 +104,7 @@ converse.plugins.add("converse-oauth", {
             async fetchOAuthProfileDataAndLogin () {
                 const profile = await this.oauth_service.api('me');
                 const response = this.oauth_service.getAuthResponse();
-                _converse.api.user.login(
+                api.user.login(
                     `${profile.name}@${this.provider.get('host')}`,
                     response.access_token
                 );

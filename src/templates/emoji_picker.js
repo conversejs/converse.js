@@ -33,7 +33,7 @@ const emoji_picker_header = (o) => html`
 
 const emoji_item = (o) => {
     let emoji;
-    if (o._converse.use_system_emojis) {
+    if (o._converse.api.settings.get('use_system_emojis')) {
         emoji = unsafeHTML(xss.filterXSS(o.transform(o.emoji.sn), {'whitelist': {'img': []}}));
     }
     return html`
@@ -53,7 +53,7 @@ const search_results = (o) => html`
 `;
 
 const emojis_for_category = (o) => html`
-    <a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}">${ __(o._converse.emoji_category_labels[o.category]) }</a>
+    <a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}">${ __(o._converse.api.settings.get('emoji_category_labels')[o.category]) }</a>
     <ul class="emoji-picker" data-category="${o.category}">
         ${ Object.values(o.emojis_by_category[o.category]).map(emoji => emoji_item(Object.assign({emoji}, o))) }
     </ul>
@@ -63,7 +63,7 @@ const emojis_for_category = (o) => html`
 const skintone_emoji = (o) => {
     const shortname = ':'+o.skintone+':';
     let emoji;
-    if (o._converse.use_system_emojis) {
+    if (o._converse.api.settings.get('use_system_emojis')) {
         emoji = unsafeHTML(xss.filterXSS(o.transform(shortname), {'whitelist': {'img': []}}));
     }
     return html`

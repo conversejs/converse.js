@@ -6,7 +6,7 @@
 
     return describe("Converse.js Utilities", function() {
 
-        it("applyUserSettings: recursively applies user settings", function () {
+        it("applySiteSettings: recursively applies user settings", function () {
             var context = {};
             var settings = {
                 show_toolbar: true,
@@ -37,7 +37,7 @@
                     'invalid': false 
                 }
             };
-            utils.applyUserSettings(context, settings, user_settings);
+            utils.applySiteSettings(context, settings, user_settings);
 
             expect(context.something_else).toBeUndefined();
             expect(context.show_toolbar).toBeFalsy();
@@ -56,7 +56,7 @@
                     'toggle_occupants': true
                 }
             };
-            utils.applyUserSettings(context, settings, user_settings);
+            utils.applySiteSettings(context, settings, user_settings);
             expect(_.keys(context.visible_toolbar_buttons)).toEqual(_.keys(settings.visible_toolbar_buttons));
             expect(context.visible_toolbar_buttons.toggle_occupants).toBeTruthy();
         });

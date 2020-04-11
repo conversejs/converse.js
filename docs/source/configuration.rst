@@ -674,7 +674,7 @@ set to ``'chat'`` as soon as you've been logged in.
 discover_connection_methods
 ---------------------------
 
-* Default: ``false``
+* Default: ``true``
 
 Use `XEP-0156 <https://xmpp.org/extensions/xep-0156.html>`_ to discover whether
 the XMPP host for the current user advertises any Websocket or BOSH connection
@@ -1222,17 +1222,6 @@ muc_show_join_leave
 
 Determines whether Converse will show info messages inside a chatroom
 whenever a user joins or leaves it.
-
-muc_show_join_leave_status
---------------------------
-
-* Default; ``true``
-
-Determines whether Converse shows the optionally included status message when a
-user joins or leaves the MUC. This setting only has an effect if
-``muc_show_join_leave`` is set to ``true``.
-
-See https://xmpp.org/extensions/xep-0045.html#changepres
 
 muc_show_logs_before_join
 -------------------------

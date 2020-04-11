@@ -22,16 +22,17 @@ converse.plugins.add('converse-roster', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { api } = _converse;
+        const { __ } = _converse;
 
-        _converse.api.settings.update({
+        api.settings.update({
             'allow_contact_requests': true,
             'auto_subscribe': false,
             'synchronize_availability': true,
         });
 
-        _converse.api.promises.add([
+        api.promises.add([
             'cachedRoster',
             'roster',
             'rosterContactsFetched',
@@ -73,7 +74,7 @@ converse.plugins.add('converse-roster', {
         _converse.rejectPresenceSubscription = function (jid, message) {
             const pres = $pres({to: jid, type: "unsubscribed"});
             if (message && message !== "") { pres.c("status").t(message); }
-            _converse.api.send(pres);
+            api.send(pres);
         };
 
 
@@ -107,9 +108,9 @@ converse.plugins.add('converse-roster', {
                  * @example _converse.api.listen.on('rosterGroupsFetched', () => { ... });
                  * @example _converse.api.waitUntil('rosterGroupsFetched').then(() => { ... });
                  */
-                _converse.api.trigger('rosterGroupsFetched');
+                api.trigger('rosterGroupsFetched');
                 await _converse.roster.fetchRosterContacts();
-                _converse.api.trigger('rosterContactsFetched');
+                api.trigger('rosterContactsFetched');
             } catch (reason) {
                 log.error(reason);
             } finally {
@@ -231,14 +232,14 @@ converse.plugins.add('converse-roster', {
                  * @type { _converse.RosterContact }
                  * @example _converse.api.listen.on('contactPresenceChanged', contact => { ... });
                  */
-                this.listenTo(this.presence, 'change:show', () => _converse.api.trigger('contactPresenceChanged', this));
+                this.listenTo(this.presence, 'change:show', () => api.trigger('contactPresenceChanged', this));
                 this.listenTo(this.presence, 'change:show', () => this.trigger('presenceChanged'));
                 /**
                  * Synchronous event which provides a hook for further initializing a RosterContact
                  * @event _converse#rosterContactInitialized
                  * @param { _converse.RosterContact } contact
                  */
-                await _converse.api.trigger('rosterContactInitialized', this, {'Synchronous': true});
+                await api.trigger('rosterContactInitialized', this, {'Synchronous': true});
                 this.initialized.resolve();
             },
 
@@ -277,7 +278,7 @@ converse.plugins.add('converse-roster', {
                 if (nick) {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
-                _converse.api.send(pres);
+                api.send(pres);
                 this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
                 return this;
             },
@@ -291,7 +292,7 @@ converse.plugins.add('converse-roster', {
              * @method _converse.RosterContacts#ackSubscribe
              */
             ackSubscribe () {
-                _converse.api.send($pres({
+                api.send($pres({
                     'type': 'subscribe',
                     'to': this.get('jid')
                 }));
@@ -308,7 +309,7 @@ converse.plugins.add('converse-roster', {
              * @param { String } jid - The Jabber ID of the user who is unsubscribing
              */
             ackUnsubscribe () {
-                _converse.api.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
+                api.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
                 this.removeFromRoster();
                 this.destroy();
             },
@@ -335,7 +336,7 @@ converse.plugins.add('converse-roster', {
                 if (message && message !== "") {
                     pres.c("status").t(message);
                 }
-                _converse.api.send(pres);
+                api.send(pres);
                 return this;
             },
 
@@ -349,7 +350,7 @@ converse.plugins.add('converse-roster', {
                 const iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
-                return _converse.api.sendIQ(iq);
+                return api.sendIQ(iq);
             }
         });
 
@@ -441,7 +442,7 @@ converse.plugins.add('converse-roster', {
                      * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
                      * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
                      */
-                    _converse.api.trigger('cachedRoster', result);
+                    api.trigger('cachedRoster', result);
                 } else {
                     _converse.send_initial_presence = true;
                     return _converse.roster.fetchFromServer();
@@ -498,7 +499,7 @@ converse.plugins.add('converse-roster', {
                     .c('query', {'xmlns': Strophe.NS.ROSTER})
                     .c('item', { jid, name });
                 groups.forEach(g => iq.c('group').t(g).up());
-                return _converse.api.sendIQ(iq);
+                return api.sendIQ(iq);
             },
 
             /**
@@ -513,7 +514,7 @@ converse.plugins.add('converse-roster', {
              * @param { Object } attributes - Any additional attributes to be stored on the user's model.
              */
             async addContactToRoster (jid, name, groups, attributes) {
-                await _converse.api.waitUntil('rosterContactsFetched');
+                await api.waitUntil('rosterContactsFetched');
                 groups = groups || [];
                 try {
                     await this.sendContactAddIQ(jid, name, groups);
@@ -573,7 +574,7 @@ converse.plugins.add('converse-roster', {
                     );
                     return;
                 }
-                _converse.api.send($iq({type: 'result', id, from: _converse.connection.jid}));
+                api.send($iq({type: 'result', id, from: _converse.connection.jid}));
 
                 const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
                 this.data.save('version', query.getAttribute('ver'));
@@ -595,12 +596,12 @@ converse.plugins.add('converse-roster', {
                  * @type { XMLElement }
                  * @example _converse.api.listen.on('rosterPush', iq => { ... });
                  */
-                _converse.api.trigger('rosterPush', iq);
+                api.trigger('rosterPush', iq);
                 return;
             },
 
             rosterVersioningSupported () {
-                return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
+                return api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
             },
 
             /**
@@ -617,7 +618,7 @@ converse.plugins.add('converse-roster', {
                 if (this.rosterVersioningSupported()) {
                     stanza.attrs({'ver': this.data.get('version')});
                 }
-                const iq = await _converse.api.sendIQ(stanza, null, false);
+                const iq = await api.sendIQ(stanza, null, false);
                 if (iq.getAttribute('type') !== 'error') {
                     const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
                     if (query) {
@@ -641,7 +642,7 @@ converse.plugins.add('converse-roster', {
                  * @example _converse.api.listen.on('roster', iq => { ... });
                  * @example _converse.api.waitUntil('roster').then(iq => { ... });
                  */
-                _converse.api.trigger('roster', iq);
+                api.trigger('roster', iq);
             },
 
             /* Update or create RosterContact models based on the given `item` XML
@@ -701,7 +702,7 @@ converse.plugins.add('converse-roster', {
                  * @type { _converse.RosterContact }
                  * @example _converse.api.listen.on('contactRequest', contact => { ... });
                  */
-                _converse.api.trigger('contactRequest', this.create(user_data));
+                api.trigger('contactRequest', this.create(user_data));
             },
 
 
@@ -710,13 +711,13 @@ converse.plugins.add('converse-roster', {
                     bare_jid = Strophe.getBareJidFromJid(jid),
                     contact = this.get(bare_jid);
 
-                if (!_converse.allow_contact_requests) {
+                if (!api.settings.get('allow_contact_requests')) {
                     _converse.rejectPresenceSubscription(
                         jid,
                         __("This client does not allow presence subscriptions")
                     );
                 }
-                if (_converse.auto_subscribe) {
+                if (api.settings.get('auto_subscribe')) {
                     if ((!contact) || (contact.get('subscription') !== 'to')) {
                         this.subscribeBack(bare_jid, presence);
                     } else {
@@ -742,8 +743,8 @@ converse.plugins.add('converse-roster', {
 
                 if ((_converse.connection.jid !== jid) &&
                         (presence_type !== 'unavailable') &&
-                        (_converse.synchronize_availability === true ||
-                        _converse.synchronize_availability === resource)) {
+                        (api.settings.get('synchronize_availability') === true ||
+                         api.settings.get('synchronize_availability') === resource)) {
                     // Another resource has changed its status and
                     // synchronize_availability option set to update,
                     // we'll update ours as well.
@@ -889,7 +890,7 @@ converse.plugins.add('converse-roster', {
             }
         }
 
-        _converse.api.listen.on('chatBoxesInitialized', () => {
+        api.listen.on('chatBoxesInitialized', () => {
             _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
 
             _converse.chatboxes.on('add', chatbox => {
@@ -899,9 +900,9 @@ converse.plugins.add('converse-roster', {
             });
         });
 
-        _converse.api.listen.on('beforeTearDown', () => _converse.unregisterPresenceHandler());
+        api.listen.on('beforeTearDown', () => _converse.unregisterPresenceHandler());
 
-        _converse.api.waitUntil('rosterContactsFetched').then(() => {
+        api.waitUntil('rosterContactsFetched').then(() => {
             _converse.roster.on('add', (contact) => {
                 /* When a new contact is added, check if we already have a
                  * chatbox open for it, and if so attach it to the chatbox.
@@ -917,9 +918,9 @@ converse.plugins.add('converse-roster', {
             _converse.presences && await _converse.presences.clearStore();
         }
 
-        _converse.api.listen.on('streamResumptionFailed', () => _converse.session.set('roster_cached', false));
+        api.listen.on('streamResumptionFailed', () => _converse.session.set('roster_cached', false));
 
-        _converse.api.listen.on('clearSession', async () => {
+        api.listen.on('clearSession', async () => {
             await clearPresences();
             if (_converse.shouldClearCache()) {
                 if (_converse.rostergroups) {
@@ -934,7 +935,7 @@ converse.plugins.add('converse-roster', {
             }
         });
 
-        _converse.api.listen.on('statusInitialized', async reconnecting => {
+        api.listen.on('statusInitialized', async reconnecting => {
             if (reconnecting) {
                 // When reconnecting and not resuming a previous session,
                 // we clear all cached presence data, since it might be stale
@@ -957,14 +958,14 @@ converse.plugins.add('converse-roster', {
              * @type { bool }
              * @example _converse.api.listen.on('presencesInitialized', reconnecting => { ... });
              */
-            _converse.api.trigger('presencesInitialized', reconnecting);
+            api.trigger('presencesInitialized', reconnecting);
         });
 
 
         async function initRoster () {
             // Initialize the Bakcbone collections that represent the contats
             // roster and the roster groups.
-            await _converse.api.waitUntil('VCardsInitialized');
+            await api.waitUntil('VCardsInitialized');
             _converse.roster = new _converse.RosterContacts();
             let id = `converse.contacts-${_converse.bare_jid}`;
             _converse.roster.browserStorage = _converse.createStore(id);
@@ -986,10 +987,10 @@ converse.plugins.add('converse-roster', {
              * @example _converse.api.listen.on('rosterInitialized', () => { ... });
              * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
              */
-            _converse.api.trigger('rosterInitialized');
+            api.trigger('rosterInitialized');
         }
 
-        _converse.api.listen.on('presencesInitialized', async (reconnecting) => {
+        api.listen.on('presencesInitialized', async (reconnecting) => {
             if (reconnecting) {
                 /**
                  * Similar to `rosterInitialized`, but instead pertaining to reconnection.
@@ -998,7 +999,7 @@ converse.plugins.add('converse-roster', {
                  * @event _converse#rosterReadyAfterReconnection
                  * @example _converse.api.listen.on('rosterReadyAfterReconnection', () => { ... });
                  */
-                _converse.api.trigger('rosterReadyAfterReconnection');
+                api.trigger('rosterReadyAfterReconnection');
             } else {
                 await initRoster();
             }
@@ -1050,7 +1051,7 @@ converse.plugins.add('converse-roster', {
                  * });
                  */
                 async get (jids) {
-                    await _converse.api.waitUntil('rosterContactsFetched');
+                    await api.waitUntil('rosterContactsFetched');
                     const _getter = jid => _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (jids === undefined) {
                         jids = _converse.roster.pluck('jid');
@@ -1073,7 +1074,7 @@ converse.plugins.add('converse-roster', {
                  *     _converse.api.contacts.add('buddy@example.com', 'Buddy')
                  */
                 async add (jid, name) {
-                    await _converse.api.waitUntil('rosterContactsFetched');
+                    await api.waitUntil('rosterContactsFetched');
                     if (!isString(jid) || !jid.includes('@')) {
                         throw new TypeError('contacts.add: invalid jid');
                     }

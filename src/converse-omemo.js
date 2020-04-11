@@ -66,7 +66,7 @@ function parseBundle (bundle_el) {
 converse.plugins.add('converse-omemo', {
 
     enabled (_converse) {
-        return window.libsignal && !_converse.blacklisted_plugins.includes('converse-omemo') && _converse.config.get('trusted');
+        return window.libsignal && !_converse.api.settings.get("blacklisted_plugins").includes('converse-omemo') && _converse.config.get('trusted');
     },
 
     dependencies: ["converse-chatview", "converse-pubsub", "converse-profile"],
@@ -242,12 +242,13 @@ converse.plugins.add('converse-omemo', {
          */
         const { _converse } = this;
         const { __ } = _converse;
+        const { api } = _converse;
 
-        _converse.api.settings.update({
+        api.settings.update({
             'omemo_default': false,
         });
 
-        _converse.api.promises.add(['OMEMOInitialized']);
+        api.promises.add(['OMEMOInitialized']);
 
         _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
@@ -306,7 +307,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             reportDecryptionError (e) {
-                if (_converse.loglevel === 'debug') {
+                if (api.settings.get("loglevel") === 'debug') {
                     const { __ } = _converse;
                     this.createMessage({
                         'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
@@ -414,10 +415,10 @@ converse.plugins.add('converse-omemo', {
                         err_msgs.push(__("Unable to send an encrypted message due to an unexpected error."));
                         err_msgs.push(e.iq.outerHTML);
                     }
-                    _converse.api.alert('error', __('Error'), err_msgs);
+                    api.alert('error', __('Error'), err_msgs);
                     log.error(e);
                 } else if (e.user_facing) {
-                    _converse.api.alert('error', __('Error'), [e.message]);
+                    api.alert('error', __('Error'), [e.message]);
                     log.error(e);
                 } else {
                     throw e;
@@ -471,7 +472,7 @@ converse.plugins.add('converse-omemo', {
                             this.model.contact.getDisplayName()
                         )];
                     }
-                    return _converse.api.alert('error', __('Error'), messages);
+                    return api.alert('error', __('Error'), messages);
                 }
                 ev.preventDefault();
                 this.model.save({'omemo_active': !this.model.get('omemo_active')});
@@ -500,7 +501,7 @@ converse.plugins.add('converse-omemo', {
         }
 
         async function getDevicesForContact (jid) {
-            await _converse.api.waitUntil('OMEMOInitialized');
+            await api.waitUntil('OMEMOInitialized');
             const devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
             await devicelist.fetchDevices();
             return devicelist.devices;
@@ -828,7 +829,7 @@ converse.plugins.add('converse-omemo', {
 
                 Object.values(this.get('prekeys')).forEach((prekey, id) => item.c('preKeyPublic', {'preKeyId': id}).t(prekey.pubKey).up());
                 const options = {'pubsub#access_model': 'open'};
-                return _converse.api.pubsub.publish(null, node, item, options, false);
+                return api.pubsub.publish(null, node, item, options, false);
             },
 
             async generateMissingPreKeys () {
@@ -933,7 +934,7 @@ converse.plugins.add('converse-omemo', {
 
                 let iq;
                 try {
-                    iq = await _converse.api.sendIQ(stanza)
+                    iq = await api.sendIQ(stanza)
                 } catch (iq) {
                     throw new IQError("Could not fetch bundle", iq);
                 }
@@ -1037,7 +1038,7 @@ converse.plugins.add('converse-omemo', {
 
                 let iq;
                 try {
-                    iq = await _converse.api.sendIQ(stanza);
+                    iq = await api.sendIQ(stanza);
                 } catch (e) {
                     log.error(e);
                     return [];
@@ -1054,7 +1055,7 @@ converse.plugins.add('converse-omemo', {
                 const item = $build('item').c('list', {'xmlns': Strophe.NS.OMEMO})
                 this.devices.filter(d => d.get('active')).forEach(d => item.c('device', {'id': d.get('id')}).up());
                 const options = {'pubsub#access_model': 'open'};
-                return _converse.api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);
+                return api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);
             },
 
             removeOwnDevices (device_ids) {
@@ -1193,7 +1194,7 @@ converse.plugins.add('converse-omemo', {
              * @event _converse#OMEMOInitialized
              * @example _converse.api.listen.on('OMEMOInitialized', () => { ... });
              */
-            _converse.api.trigger('OMEMOInitialized');
+            api.trigger('OMEMOInitialized');
         }
 
         async function onOccupantAdded (chatroom, occupant) {
@@ -1216,20 +1217,20 @@ converse.plugins.add('converse-omemo', {
         async function checkOMEMOSupported (chatbox) {
             let supported;
             if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
-                await _converse.api.waitUntil('OMEMOInitialized');
+                await api.waitUntil('OMEMOInitialized');
                 supported = chatbox.features.get('nonanonymous') && chatbox.features.get('membersonly');
             } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                 supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
             }
             chatbox.set('omemo_supported', supported);
-            if (supported && _converse.omemo_default) {
+            if (supported && api.settings.get('omemo_default')) {
                 chatbox.set('omemo_active', true);
             }
         }
 
         /******************** Event Handlers ********************/
 
-        _converse.api.waitUntil('chatBoxesInitialized').then(() =>
+        api.waitUntil('chatBoxesInitialized').then(() =>
             _converse.chatboxes.on('add', chatbox => {
                 checkOMEMOSupported(chatbox);
                 if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
@@ -1239,24 +1240,24 @@ converse.plugins.add('converse-omemo', {
             })
         );
 
-        _converse.api.listen.on('connected', registerPEPPushHandler);
-        _converse.api.listen.on('renderToolbar', view => view.renderOMEMOToolbarButton());
-        _converse.api.listen.on('statusInitialized', initOMEMO);
-        _converse.api.listen.on('addClientFeatures',
-            () => _converse.api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
+        api.listen.on('connected', registerPEPPushHandler);
+        api.listen.on('renderToolbar', view => view.renderOMEMOToolbarButton());
+        api.listen.on('statusInitialized', initOMEMO);
+        api.listen.on('addClientFeatures',
+            () => api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
 
-        _converse.api.listen.on('userDetailsModalInitialized', (contact) => {
+        api.listen.on('userDetailsModalInitialized', (contact) => {
             const jid = contact.get('jid');
             _converse.generateFingerprints(jid).catch(e => log.error(e));
         });
 
-        _converse.api.listen.on('profileModalInitialized', () => {
+        api.listen.on('profileModalInitialized', () => {
             _converse.generateFingerprints(_converse.bare_jid).catch(e => log.error(e));
         });
 
-        _converse.api.listen.on('afterTearDown', () => (delete _converse.omemo_store));
+        api.listen.on('afterTearDown', () => (delete _converse.omemo_store));
 
-        _converse.api.listen.on('clearSession', () => {
+        api.listen.on('clearSession', () => {
             if (_converse.shouldClearCache() && _converse.devicelists) {
                 _converse.devicelists.clearStore();
                 delete _converse.devicelists;

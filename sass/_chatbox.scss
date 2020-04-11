@@ -213,14 +213,18 @@
             margin-bottom: 0.25em;
         }
         .chat-content {
-            padding: 1em 0 0 0;
-            height: 100%;
-            font-size: var(--message-font-size);
-            color: var(--text-color);
-            overflow-y: auto;
-            border: 0;
             background-color: var(--chat-content-background-color);
+            border: 0;
+            color: var(--text-color);
+            font-size: var(--message-font-size);
+            height: 100%;
             line-height: 1.3em;
+            overflow-y: auto;
+            padding: 1em 0 0 0;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
 
             .chat-content__notifications {
                 height: 1.7em;

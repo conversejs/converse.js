@@ -374,8 +374,8 @@ u.addMentionsMarkup = function (text, references, chatbox) {
         .forEach(ref => {
             const prefix = text.slice(0, ref.begin);
             const offset = ((prefix.match(/&lt;/g) || []).length + (prefix.match(/&gt;/g) || []).length) * 3;
-            const begin = parseInt(ref.begin) + parseInt(offset);
-            const end = parseInt(ref.end) + parseInt(offset);
+            const begin = parseInt(ref.begin, 10) + parseInt(offset, 10);
+            const end = parseInt(ref.end, 10) + parseInt(offset, 10);
             const mention = text.slice(begin, end)
             chatbox;
 

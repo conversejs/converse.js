@@ -208,8 +208,8 @@ converse.plugins.add('converse-message-view', {
                 await api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
                 text = this.model.isMeCommand() ? text.substring(4) : text;
 
-                // mask < and > characters with unprintable character \x02 and \x03
-                text = text.replace(/</g, '\x02').replace(/>/g, '\x03');
+                // mask < and > characters with unprintable character \0x8F and \0x90
+                text = text.replace(/</g, '\x8F').replace(/>/g, '\x90');
 
                 text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
                 text = u.geoUriToHttp(text, api.settings.get("geouri_replacement"));
@@ -219,7 +219,7 @@ converse.plugins.add('converse-message-view', {
                 text = u.addEmoji(text);
 
                 // unmask < and > characters and replace with escaped characters
-                text = text.replace(/\x02/g, '&lt;').replace(/\x03/g, '&gt;');
+                text = text.replace(/\x8F/g, '&lt;').replace(/\x90/g, '&gt;');
 
                 /**
                  * Synchronous event which provides a hook for transforming a chat message's body text

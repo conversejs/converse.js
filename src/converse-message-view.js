@@ -208,18 +208,16 @@ converse.plugins.add('converse-message-view', {
                 await api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
                 text = this.model.isMeCommand() ? text.substring(4) : text;
 
-                // mask < and > characters with unprintable character \0x8F and \0x90
+                // mask < and > characters with unprintable character \0x8F and \0x90 and reverse after adding mentions
                 text = text.replace(/</g, '\x8F').replace(/>/g, '\x90');
-
                 text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
-                text = u.geoUriToHttp(text, api.settings.get("geouri_replacement"));
                 text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
+                text = text.replace(/\x8F/g, '&lt;').replace(/\x90/g, '&gt;');
+
+                text = u.geoUriToHttp(text, api.settings.get("geouri_replacement"));
                 text = u.addHyperlinks(text);
                 text = u.renderNewLines(text);
                 text = u.addEmoji(text);
-
-                // unmask < and > characters and replace with escaped characters
-                text = text.replace(/\x8F/g, '&lt;').replace(/\x90/g, '&gt;');
 
                 /**
                  * Synchronous event which provides a hook for transforming a chat message's body text

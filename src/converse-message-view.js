@@ -207,12 +207,20 @@ converse.plugins.add('converse-message-view', {
                  */
                 await api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
                 text = this.model.isMeCommand() ? text.substring(4) : text;
+
+                // mask < and > characters with unprintable character \x02 and \x03
+                text = text.replace(/</g, '\x02').replace(/>/g, '\x03');
+
                 text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
                 text = u.geoUriToHttp(text, api.settings.get("geouri_replacement"));
                 text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
                 text = u.addHyperlinks(text);
                 text = u.renderNewLines(text);
                 text = u.addEmoji(text);
+
+                // unmask < and > characters and replace with escaped characters
+                text = text.replace(/\x02/g, '&lt;').replace(/\x03/g, '&gt;');
+
                 /**
                  * Synchronous event which provides a hook for transforming a chat message's body text
                  * after the default transformations have been applied.

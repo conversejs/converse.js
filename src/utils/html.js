@@ -376,7 +376,8 @@ u.addMentionsMarkup = function (text, references, chatbox) {
             const offset = ((prefix.match(/&lt;/g) || []).length + (prefix.match(/&gt;/g) || []).length) * 3;
             const begin = parseInt(ref.begin) + parseInt(offset);
             const end = parseInt(ref.end) + parseInt(offset);
-            const mention = text.slice(begin, end);
+            const mention = text.slice(begin, end)
+            chatbox;
 
             if (mention === nick) {
                 text = text.slice(0, begin) + `<span class="mention mention--self badge badge-info">${mention}</span>` + text.slice(end);

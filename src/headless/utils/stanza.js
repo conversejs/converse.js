@@ -350,6 +350,46 @@ const stanza_utils = {
         // as the Model id, to avoid duplicates.
         attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${(attrs.from_muc || attrs.from)}`] || u.getUniqueId();
         return attrs;
+    },
+
+    /**
+     * Parses a passed in MUC presence stanza and returns an object of attributes.
+     * @private
+     * @method stanza_utils#parseMUCPresence
+     * @param { XMLElement } stanza - The presence stanza
+     * @returns { Object }
+     */
+    parseMUCPresence (stanza) {
+        const from = stanza.getAttribute("from");
+        const type = stanza.getAttribute("type");
+        const data = {
+            'from': from,
+            'nick': Strophe.getResourceFromJid(from),
+            'type': type,
+            'states': [],
+            'show': type !== 'unavailable' ? 'online' : 'offline'
+        };
+        Array.from(stanza.children).forEach(child => {
+            if (child.matches('status')) {
+                data.status = child.textContent || null;
+            } else if (child.matches('show')) {
+                data.show = child.textContent || 'online';
+            } else if (child.matches('x') && child.getAttribute('xmlns') === Strophe.NS.MUC_USER) {
+                Array.from(child.children).forEach(item => {
+                    if (item.nodeName === "item") {
+                        data.affiliation = item.getAttribute("affiliation");
+                        data.role = item.getAttribute("role");
+                        data.jid = item.getAttribute("jid");
+                        data.nick = item.getAttribute("nick") || data.nick;
+                    } else if (item.nodeName == 'status' && item.getAttribute("code")) {
+                        data.states.push(item.getAttribute("code"));
+                    }
+                });
+            } else if (child.matches('x') && child.getAttribute('xmlns') === Strophe.NS.VCARDUPDATE) {
+                data.image_hash = child.querySelector('photo')?.textContent;
+            }
+        });
+        return data;
     }
 }
 

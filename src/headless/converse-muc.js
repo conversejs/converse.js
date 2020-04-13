@@ -1566,7 +1566,7 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } pres - The presence stanza
              */
             updateOccupantsOnPresence (pres) {
-                const data = st.parseMUCPresenceStanza(pres);
+                const data = st.parseMUCPresence(pres);
                 if (data.type === 'error' || (!data.jid && !data.nick)) {
                     return true;
                 }
@@ -1592,49 +1592,6 @@ converse.plugins.add('converse-muc', {
                 } else {
                     this.occupants.create(attributes);
                 }
-            },
-
-            parsePresence (pres) {
-                const from = pres.getAttribute("from"),
-                      type = pres.getAttribute("type"),
-                      data = {
-                        'from': from,
-                        'nick': Strophe.getResourceFromJid(from),
-                        'type': type,
-                        'states': [],
-                        'show': type !== 'unavailable' ? 'online' : 'offline'
-                      };
-
-                pres.childNodes.forEach(child => {
-                    switch (child.nodeName) {
-                        case "status":
-                            data.status = child.textContent || null;
-                            break;
-                        case "show":
-                            data.show = child.textContent || 'online';
-                            break;
-                        case "x":
-                            if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {
-                                child.childNodes.forEach(item => {
-                                    switch (item.nodeName) {
-                                        case "item":
-                                            data.affiliation = item.getAttribute("affiliation");
-                                            data.role = item.getAttribute("role");
-                                            data.jid = item.getAttribute("jid");
-                                            data.nick = item.getAttribute("nick") || data.nick;
-                                            break;
-                                        case "status":
-                                            if (item.getAttribute("code")) {
-                                                data.states.push(item.getAttribute("code"));
-                                            }
-                                    }
-                                });
-                            } else if (child.getAttribute("xmlns") === Strophe.NS.VCARDUPDATE) {
-                                data.image_hash = child.querySelector('photo')?.textContent;
-                            }
-                    }
-                });
-                return data;
             },
 
             fetchFeaturesIfConfigurationChanged (stanza) {

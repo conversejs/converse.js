@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-13 14:29+0200\n"
+"POT-Creation-Date: 2020-04-13 14:46+0200\n"
 "PO-Revision-Date: 2020-04-04 18:09+0000\n"
 "Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
@@ -1607,8 +1607,8 @@ msgstr "Все участники группового чата могут ви�
 
 #: dist/converse-no-dependencies.js:64075
 msgid ""
-"Couldn't find a participant with that nickname or JID. They might have left "
-"the groupchat."
+"Couldn't find a participant with that nickname or XMPP address. They might "
+"have left the groupchat."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:64132
@@ -2235,8 +2235,8 @@ msgid "Click to decline the contact request from %1$s"
 msgstr "Кликни, что-бы отклонить запрос на добавление от %1$s"
 
 #: dist/converse-no-dependencies.js:71027
-#, javascript-format
-msgid "Click to chat with %1$s (JID: %2$s)"
+#, fuzzy, javascript-format
+msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "Нажмите для чата с %1$s (Идентификатор Jabber: %2$s)"
 
 #: dist/converse-no-dependencies.js:71160

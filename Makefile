@@ -74,6 +74,9 @@ locale/converse.pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 	rm dist/converse-no-dependencies.js
 
+.PHONY: pot
+pot: locale/converse.pot
+
 .PHONY: po
 po:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./locale/converse.pot -U \;

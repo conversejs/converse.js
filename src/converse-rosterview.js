@@ -418,7 +418,7 @@ converse.plugins.add('converse-rosterview', {
                         display_name,
                         status_icon,
                         'desc_status': STATUSES[show],
-                        'desc_chat': __('Click to chat with %1$s (JID: %2$s)', display_name, item.get('jid')),
+                        'desc_chat': __('Click to chat with %1$s (XMPP address: %2$s)', display_name, item.get('jid')),
                         'desc_remove': __('Click to remove %1$s as a contact', display_name),
                         'allow_contact_removal': api.settings.get('allow_contact_removal'),
                         'num_unread': item.get('num_unread') || 0,

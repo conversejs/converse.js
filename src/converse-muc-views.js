@@ -1451,7 +1451,10 @@ converse.plugins.add('converse-muc-views', {
                 const reason = args.split(nick_or_jid, 2)[1].trim();
                 const occupant = this.model.getOccupant(nick_or_jid);
                 if (!occupant) {
-                    this.showErrorMessage(__("Couldn't find a participant with that nickname or JID. They might have left the groupchat."));
+                    this.showErrorMessage(__(
+                        "Couldn't find a participant with that nickname or XMPP address. "+
+                        "They might have left the groupchat."
+                    ));
                     return;
                 }
 

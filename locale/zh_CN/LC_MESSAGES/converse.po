@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-13 14:29+0200\n"
+"POT-Creation-Date: 2020-04-13 14:46+0200\n"
 "PO-Revision-Date: 2020-04-12 04:11+0000\n"
 "Last-Translator: Michael Lu <yeskky@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -1598,8 +1598,8 @@ msgstr "错误：无法找到聊天室参与者“%1$s”"
 
 #: dist/converse-no-dependencies.js:64075
 msgid ""
-"Couldn't find a participant with that nickname or JID. They might have left "
-"the groupchat."
+"Couldn't find a participant with that nickname or XMPP address. They might "
+"have left the groupchat."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:64132
@@ -2209,7 +2209,7 @@ msgstr "按此拒绝%1$s的联系人请求"
 
 #: dist/converse-no-dependencies.js:71027
 #, fuzzy, javascript-format
-msgid "Click to chat with %1$s (JID: %2$s)"
+msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "按此与此联系人聊天"
 
 #: dist/converse-no-dependencies.js:71160

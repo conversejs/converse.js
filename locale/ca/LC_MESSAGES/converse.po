@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-13 14:29+0200\n"
+"POT-Creation-Date: 2020-04-13 14:46+0200\n"
 "PO-Revision-Date: 2018-03-26 18:34+0000\n"
 "Last-Translator: Seve <seve@delape.net>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
@@ -1665,8 +1665,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:64075
 msgid ""
-"Couldn't find a participant with that nickname or JID. They might have left "
-"the groupchat."
+"Couldn't find a participant with that nickname or XMPP address. They might "
+"have left the groupchat."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:64132
@@ -2290,7 +2290,7 @@ msgstr "Feu clic per rebutjar aquesta sol·licitud de contacte"
 
 #: dist/converse-no-dependencies.js:71027
 #, fuzzy, javascript-format
-msgid "Click to chat with %1$s (JID: %2$s)"
+msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "Feu clic per conversar amb aquest contacte"
 
 #: dist/converse-no-dependencies.js:71160

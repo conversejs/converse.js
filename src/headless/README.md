@@ -2,7 +2,8 @@
 
 [Converse](https://conversejs.org) has a special build called the *headless build*.
 
-You can generate it yourself by running ``make dist/converse-headless.js``
+You can generate it yourself by running ``make src/headless/dist/converse-headless.js``
+in the root of the [converse.js repo](https://github.com/conversejs/converse.js).
 
 The headless build is a bundle of all the non-UI parts of Converse, and its aim
 is to provide you with an XMPP library (and application) on which you can build

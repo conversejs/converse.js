@@ -168,8 +168,6 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 	$(INKSCAPE) -e $@ -w $* $<
 	$(OXIPNG) $@
 
-BUILDS = src/headless/dist/converse-headless.min.js
-
 @converse/headless: src/headless
 
 src/headless/dist/converse-headless.min.js: src webpack.common.js node_modules @converse/headless

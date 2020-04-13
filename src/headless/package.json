@@ -9,6 +9,7 @@
   "files": [
     "*.js",
     "*.json",
+    "dist/",
     "README.md",
     "utils/*.js",
     "templates/*.html",

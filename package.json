@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "serve": "webpack-dev-server --config webpack.serve.js",
-    "clean": "rm -rf node_modules dist *.zip",
+    "clean": "rm -rf node_modules dist *.zip src/headless/dist src/headless/node_modules",
     "headless": "webpack --config webpack.headless.js",
     "nodeps": "webpack --config webpack.nodeps.js",
     "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist/ npm run dev && ASSET_PATH=https://cdn.conversejs.org/dist/ npm run build",

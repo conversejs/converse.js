@@ -65,13 +65,12 @@ serve_bg: node_modules
 ########################################################################
 ## Translation machinery
 
-dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js node_modules @converse/headless
+dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js @converse/headless node_modules
 	npm run nodeps
 
 GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=6.0.0 dist/converse-no-dependencies.js -c
 
-.PHONY: pot
-pot: dist/converse-no-dependencies.js
+locale/converse.pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 	rm dist/converse-no-dependencies.js
 

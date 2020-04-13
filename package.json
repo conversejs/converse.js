@@ -79,7 +79,7 @@
     "css-loader": "^3.5.0",
     "dayjs": "^1.8.15",
     "eslint": "^6.3.0",
-    "eslint-plugin-lodash": "^5.1.0",
+    "eslint-plugin-lodash": "^7.1.0",
     "exports-loader": "^0.7.0",
     "fa-icons": "^0.2.0",
     "fast-text-encoding": "^1.0.0",

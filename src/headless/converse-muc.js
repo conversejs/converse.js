@@ -33,6 +33,7 @@ Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
 Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
 Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
 Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
+Strophe.addNamespace('MUC_HATS', "xmpp:prosody.im/protocol/hats:1");
 
 converse.MUC_NICK_CHANGED_CODE = "303";
 
@@ -2423,6 +2424,7 @@ converse.plugins.add('converse-muc', {
         _converse.ChatRoomOccupant = Model.extend({
 
             defaults: {
+                'hats': [],
                 'show': 'offline',
                 'states': []
             },

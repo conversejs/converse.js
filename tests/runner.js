@@ -64,6 +64,7 @@ var specs = [
     "spec/notification",
     "spec/login",
     "spec/register",
+    "spec/hats",
     "spec/http-file-upload",
     "spec/emojis",
     "spec/xss"

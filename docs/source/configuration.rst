@@ -959,6 +959,17 @@ VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
 
 If no nickame value is found, then an error will be raised.
 
+muc_hats_from_vcard
+-------------------
+
+* Default: ``false``
+
+Since version 7 Converse now has rudimentary support for `XEP-0317 Hats <https://xmpp.org/extensions/xep-0317.html>`_.
+
+Previously we used a non-standard hack of showing the VCard roles as if they
+were hats. Set this value to ``true`` for the old behaviour.
+
+
 muc_mention_autocomplete_min_chars
 -----------------------------------
 

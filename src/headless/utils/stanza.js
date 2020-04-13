@@ -367,6 +367,7 @@ const stanza_utils = {
             'nick': Strophe.getResourceFromJid(from),
             'type': type,
             'states': [],
+            'hats': [],
             'show': type !== 'unavailable' ? 'online' : 'offline'
         };
         Array.from(stanza.children).forEach(child => {
@@ -387,6 +388,11 @@ const stanza_utils = {
                 });
             } else if (child.matches('x') && child.getAttribute('xmlns') === Strophe.NS.VCARDUPDATE) {
                 data.image_hash = child.querySelector('photo')?.textContent;
+            } else if (child.matches('hats') && child.getAttribute('xmlns') === Strophe.NS.MUC_HATS) {
+                data['hats'] = Array.from(child.children).map(c => c.matches('hat') && {
+                    'title': c.getAttribute('title'),
+                    'id': c.getAttribute('id')
+                });
             }
         });
         return data;

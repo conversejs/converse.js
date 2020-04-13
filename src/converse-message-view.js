@@ -67,6 +67,7 @@ converse.plugins.add('converse-message-view', {
 
 
         api.settings.update({
+            'muc_hats_from_vcard': false,
             'show_images_inline': true,
             'time_format': 'HH:mm',
         });
@@ -107,8 +108,9 @@ converse.plugins.add('converse-message-view', {
                 }
 
                 if (this.model.occupant) {
-                    this.listenTo(this.model.occupant, 'change:role', this.debouncedRender);
                     this.listenTo(this.model.occupant, 'change:affiliation', this.debouncedRender);
+                    this.listenTo(this.model.occupant, 'change:hats', this.debouncedRender);
+                    this.listenTo(this.model.occupant, 'change:role', this.debouncedRender);
                     this.debouncedRender();
                 }
 
@@ -228,25 +230,36 @@ converse.plugins.add('converse-message-view', {
             async renderChatMessage () {
                 await api.waitUntil('emojisInitialized');
                 const time = dayjs(this.model.get('time'));
-                const role = this.model.vcard ? this.model.vcard.get('role') : null;
-                const roles = role ? role.split(',') : [];
                 const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
                 const may_be_moderated = this.model.get('type') === 'groupchat' && await this.model.mayBeModerated();
                 const retractable= !is_retracted && (this.model.mayBeRetracted() || may_be_moderated);
+                const is_groupchat_message = this.model.get('type') === 'groupchat';
+
+                let hats = [];
+                if (is_groupchat_message) {
+                    if (api.settings.get('muc_hats_from_vcard')) {
+                        const role = this.model.vcard ? this.model.vcard.get('role') : null;
+                        hats = role ? role.split(',') : [];
+                    } else {
+                        const o = this.model.occupant;
+                        hats = o && o.get('hats').map(h => h.title).filter(h => h) || [];
+                    }
+                }
+
                 const msg = u.stringToElement(tpl_message(
                     Object.assign(
                         this.model.toJSON(), {
                          __,
+                        hats,
+                        is_groupchat_message,
                         is_retracted,
                         retractable,
                         'extra_classes': this.getExtraMessageClasses(),
-                        'is_groupchat_message': this.model.get('type') === 'groupchat',
                         'is_me_message': this.model.isMeCommand(),
                         'label_show': __('Show more'),
                         'occupant': this.model.occupant,
                         'pretty_time': time.format(api.settings.get('time_format')),
                         'retraction_text': is_retracted ? this.getRetractionText() : null,
-                        'roles': roles,
                         'time': time.toISOString(),
                         'username': this.model.getDisplayName()
                     })

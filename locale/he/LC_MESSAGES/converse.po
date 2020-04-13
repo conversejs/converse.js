@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-01-12 07:21+0000\n"
+"PO-Revision-Date: 2020-04-15 16:11+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 3.10.1\n"
+"X-Generator: Weblate 4.0-dev\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -38,9 +38,8 @@ msgid "Retract this message"
 msgstr "משיכת ההודעה הזאת"
 
 #: dist/converse-no-dependencies.js:10739
-#, fuzzy
 msgid "Send the message"
-msgstr "עריכת ההודעה הזאת"
+msgstr "שליחת ההודעה"
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:11061
@@ -104,15 +103,13 @@ msgstr "ביטול"
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:27562
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
-"ההודעה שלך לא נשלחה כיוון שאין לך הרשאה לשלוח הודעות להתכתבות קבוצתית זו."
+msgstr "ההודעה שלך לא נשלחה כיוון שאין לך הרשאה לשלוח אותה."
 
 #: dist/converse-no-dependencies.js:27565
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The message from the server is: \"%1$s\""
-msgstr "הסיבה שסופקה היא: „%1$s”."
+msgstr "ההודעה מהשרת היא: „%1$s”"
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:27568
@@ -126,16 +123,15 @@ msgstr "אירעה שגיאה, עמך הסליחה:"
 
 #: dist/converse-no-dependencies.js:29327
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "החיבור נקטע, מתבצע ניסיון חיבור מחדש."
 
 #: dist/converse-no-dependencies.js:29946
-#, fuzzy
 msgid "An error occurred while connecting to the chat server."
-msgstr "אירעה שגיאה במהלך ניסיון שמירת הטופס."
+msgstr "אירעה שגיאה במהלך ההתחברות לשרת הצ׳אט."
 
 #: dist/converse-no-dependencies.js:29953
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "כתובת ה־XMPP ו/או הססמה שגויים. נא לנסות שוב."
 
 #: dist/converse-no-dependencies.js:29967
 #, javascript-format
@@ -336,9 +332,9 @@ msgid "Topic cleared by %1$s"
 msgstr "נושא התכתבות קבוצתית זו נמחק על ידי %1$s"
 
 #: dist/converse-no-dependencies.js:38511
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "הגישה של %1$s נחסמה"
+msgstr "הגישה של %1$s נחסמה על ידי %2$s"
 
 #: dist/converse-no-dependencies.js:38511
 #, javascript-format
@@ -351,9 +347,9 @@ msgid "%1$s's nickname has changed"
 msgstr "הכינוי של %1$s הוחלף"
 
 #: dist/converse-no-dependencies.js:38515
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s נבעט/ה"
+msgstr "%1$s נבעט/ה על ידי %2$s"
 
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format
@@ -1424,9 +1420,9 @@ msgid "%1$s has left the groupchat"
 msgstr "%1$s עזב/ה את ההתכתבות הקבוצתית הזו"
 
 #: dist/converse-no-dependencies.js:63150
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$s"
-msgstr "נאמר על ידי %1$s"
+msgstr "%1$s וגם %2$s"
 
 #: dist/converse-no-dependencies.js:63154
 #, fuzzy, javascript-format
@@ -1479,9 +1475,8 @@ msgstr "רמז כרשות"
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:63490
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "אין לך הרשאה ליצור התכתבויות קבוצתיות חדשות."
+msgstr "אין לך הרשאות למשוך את ההודעה הזאת, עמך הסליחה"
 
 #: dist/converse-no-dependencies.js:63512
 #, fuzzy

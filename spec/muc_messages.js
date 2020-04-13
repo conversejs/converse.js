@@ -900,6 +900,18 @@
                     'hello <span class="mention">z3r0</span> '+
                     '<span class="mention mention--self badge badge-info">tom</span> '+
                     '<span class="mention">mr.robot</span>, how are you?');
+
+                const quoted_msg = $msg({
+                        from: 'lounge@montague.lit/tom',
+                        id: u.getUniqueId(),
+                        to: 'romeo@montague.lit',
+                        type: 'groupchat'
+                    }).c('body').t('>how are you?\nI am fine. Thanks gibson').up()
+                        .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'32', 'end':'38', 'type':'mention', 'uri':'xmpp:gibson@montague.lit'}).nodeTree;
+                await view.model.queueMessage(quoted_msg);
+                const quoted_message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
+                expect(quoted_message.classList.length).toEqual(1);
+                expect(quoted_message.innerHTML).toBe('&gt;how are you?\nI am fine. Thanks <span class="mention">gibson</span>');
                 done();
             }));
         });

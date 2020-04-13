@@ -27,7 +27,7 @@
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "devDependencies": {
     "skeletor.js": "skeletorjs/skeletor#bf6d9c86f9fcf224fa9d9af5a25380b77aa4b561",
-    "filesize": "^4.1.2",
+    "filesize": "^6.1.0",
     "jed": "1.1.1",
     "localforage": "^1.7.3",
     "lodash": "^4.17.15",

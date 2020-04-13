@@ -99,7 +99,7 @@ converse.plugins.add('converse-headlines', {
                     'type': _converse.HEADLINES_TYPE,
                     'from': from_jid
                 });
-                const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
+                const attrs = await chatbox.parseMessage(message, message);
                 await chatbox.createMessage(attrs);
                 api.trigger('message', {'chatbox': chatbox, 'stanza': message});
             }

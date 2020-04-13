@@ -169,10 +169,10 @@ converse.plugins.add('converse-omemo', {
         },
 
         ChatBox: {
-            async getMessageAttributesFromStanza (stanza, original_stanza) {
+            async parseMessage (stanza, original_stanza) {
                 const { _converse } = this.__super__;
                 const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
-                      attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+                      attrs = await this.__super__.parseMessage.apply(this, arguments);
 
                 if (!encrypted || !_converse.config.get('trusted')) {
                     return attrs;

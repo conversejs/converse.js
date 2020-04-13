@@ -13,7 +13,7 @@ import { clone, debounce, intersection, invoke, isElement, isObject, isString, p
 import converse from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
-import stanza_utils from "./utils/stanza";
+import st from "./utils/stanza";
 import u from "./utils/form";
 
 converse.MUC_TRAFFIC_STATES = ['entered', 'exited'];
@@ -1566,7 +1566,7 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } pres - The presence stanza
              */
             updateOccupantsOnPresence (pres) {
-                const data = this.parsePresence(pres);
+                const data = st.parseMUCPresenceStanza(pres);
                 if (data.type === 'error' || (!data.jid && !data.nick)) {
                     return true;
                 }
@@ -1703,7 +1703,7 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#handleSubjectChange
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              */
             async handleSubjectChange (attrs) {
                 if (isString(attrs.subject) && !attrs.thread && !attrs.message) {
@@ -1861,7 +1861,7 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#findDanglingModeration
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              * @returns { _converse.ChatRoomMessage }
              */
             findDanglingModeration (attrs) {
@@ -1892,7 +1892,7 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#handleModeration
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              * @returns { Boolean } Returns `true` or `false` depending on
              *  whether a message was moderated or not.
              */
@@ -2026,14 +2026,14 @@ converse.plugins.add('converse-muc', {
                 await this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
-                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                const attrs = await this.parseMessage(stanza, original_stanza);
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, original_stanza);
                 }
                 if (message ||
-                        stanza_utils.isReceipt(stanza) ||
-                        stanza_utils.isChatMarker(stanza) ||
+                        st.isReceipt(stanza) ||
+                        st.isChatMarker(stanza) ||
                         this.ignorableCSN(attrs)) {
                     return api.trigger('message', {'stanza': original_stanza});
                 }

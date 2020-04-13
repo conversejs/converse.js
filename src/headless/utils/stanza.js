@@ -284,7 +284,7 @@ const stanza_utils = {
     /**
      * Parses a passed in message stanza and returns an object of attributes.
      * @private
-     * @method stanza_utils#getMessageAttributesFromStanza
+     * @method stanza_utils#parseMessage
      * @param { XMLElement } stanza - The message stanza
      * @param { XMLElement } original_stanza - The original stanza, that contains the
      *  message stanza, if it was contained, otherwise it's the message stanza itself.
@@ -292,7 +292,7 @@ const stanza_utils = {
      * @param { _converse } _converse
      * @returns { Object }
      */
-    getMessageAttributesFromStanza (stanza, original_stanza, chatbox, _converse) {
+    parseMessage (stanza, original_stanza, chatbox, _converse) {
         const is_muc = u.isChatRoom(chatbox);
         let attrs = Object.assign(
             stanza_utils.getStanzaIDs(stanza, original_stanza),

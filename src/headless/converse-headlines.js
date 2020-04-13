@@ -3,8 +3,9 @@
  * @copyright 2020, the Converse.js contributors
  * @description XEP-0045 Multi-User Chat Views
  */
-import converse from "@converse/headless/converse-core";
 import { isString } from "lodash";
+import converse from "@converse/headless/converse-core";
+import st from "./utils/stanza";
 
 const u = converse.env.utils;
 
@@ -80,16 +81,16 @@ converse.plugins.add('converse-headlines', {
             }
         });
 
-        async function onHeadlineMessage (message) {
+        async function onHeadlineMessage (stanza) {
             // Handler method for all incoming messages of type "headline".
-            if (u.isHeadlineMessage(_converse, message)) {
-                const from_jid = message.getAttribute('from');
+            if (u.isHeadlineMessage(_converse, stanza)) {
+                const from_jid = stanza.getAttribute('from');
                 if (from_jid.includes('@') &&
                         !_converse.roster.get(from_jid) &&
                         !api.settings.get("allow_non_roster_messaging")) {
                     return;
                 }
-                if (message.querySelector('body') === null) {
+                if (stanza.querySelector('body') === null) {
                     // Avoid creating a chat box if we have nothing to show inside it.
                     return;
                 }
@@ -99,9 +100,9 @@ converse.plugins.add('converse-headlines', {
                     'type': _converse.HEADLINES_TYPE,
                     'from': from_jid
                 });
-                const attrs = await chatbox.parseMessage(message, message);
+                const attrs = await st.parseMessage(stanza, stanza, chatbox, _converse);
                 await chatbox.createMessage(attrs);
-                api.trigger('message', {'chatbox': chatbox, 'stanza': message});
+                api.trigger('message', {'chatbox': chatbox, 'stanza': stanza});
             }
         }
 

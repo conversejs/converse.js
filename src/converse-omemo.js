@@ -169,18 +169,6 @@ converse.plugins.add('converse-omemo', {
         },
 
         ChatBox: {
-            async parseMessage (stanza, original_stanza) {
-                const { _converse } = this.__super__;
-                const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
-                      attrs = await this.__super__.parseMessage.apply(this, arguments);
-
-                if (!encrypted || !_converse.config.get('trusted')) {
-                    return attrs;
-                } else {
-                    return this.getEncryptionAttributesfromStanza(stanza, original_stanza, attrs);
-                }
-            },
-
             async sendMessage (text, spoiler_hint) {
                 if (this.get('omemo_active') && text) {
                     const { _converse } = this.__super__;
@@ -365,25 +353,6 @@ converse.plugins.add('converse-omemo', {
                         this.reportDecryptionError(e);
                         return attrs;
                     }
-                }
-            },
-
-            getEncryptionAttributesfromStanza (stanza, original_stanza, attrs) {
-                const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
-                      header = encrypted.querySelector('header'),
-                      key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
-                if (key) {
-                    attrs['is_encrypted'] = true;
-                    attrs['encrypted'] = {
-                        'device_id': header.getAttribute('sid'),
-                        'iv': header.querySelector('iv').textContent,
-                        'key': key.textContent,
-                        'payload': encrypted.querySelector('payload')?.textContent || null,
-                        'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
-                    }
-                    return this.decrypt(attrs);
-                } else {
-                    return Promise.resolve(attrs);
                 }
             },
 

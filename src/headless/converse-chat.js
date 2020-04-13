@@ -411,7 +411,7 @@ converse.plugins.add('converse-chat', {
             },
 
             async onMessage (stanza, original_stanza, from_jid) {
-                const attrs = await this.parseMessage(stanza, original_stanza);
+                const attrs = await st.parseMessage(stanza, original_stanza, this, _converse);
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, original_stanza);
@@ -1081,22 +1081,6 @@ converse.plugins.add('converse-chat', {
                 });
             },
 
-            /**
-             * Parses a passed in message stanza and returns an object of attributes.
-             * @private
-             * @method _converse.ChatBox#parseMessage
-             * @param { XMLElement } stanza - The message stanza
-             * @param { XMLElement } original_stanza - The original stanza, that contains the
-             *  message stanza, if it was contained, otherwise it's the message stanza itself.
-             * @returns { Object }
-             */
-            parseMessage (stanza, original_stanza) {
-                // XXX: Eventually we want to get rid of this pass-through
-                // method but currently we still need it because converse-omemo
-                // overrides it.
-                return st.parseMessage(stanza, original_stanza, this, _converse);
-            },
-
             maybeShow () {
                 return this.trigger("show");
             },
@@ -1169,7 +1153,7 @@ converse.plugins.add('converse-chat', {
             if (!should_show) {
                 return;
             }
-            const attrs = await chatbox.parseMessage(stanza, stanza);
+            const attrs = await st.parseMessage(stanza, stanza, chatbox, _converse);
             await chatbox.createMessage(attrs);
         }
 

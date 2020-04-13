@@ -2026,7 +2026,7 @@ converse.plugins.add('converse-muc', {
                 await this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
-                const attrs = await this.parseMessage(stanza, original_stanza);
+                const attrs = await st.parseMessage(stanza, original_stanza, this, _converse);
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, original_stanza);

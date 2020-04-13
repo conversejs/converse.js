@@ -1123,59 +1123,11 @@ converse.plugins.add('converse-muc-views', {
                 if (occupant.get('jid') === _converse.bare_jid) {
                     this.renderHeading();
                 }
-                this.informOfOccupantsAffiliationChange(occupant);
             },
 
-            informOfOccupantsAffiliationChange (occupant) {
-                const previous_affiliation = occupant._previousAttributes.affiliation;
-                const current_affiliation = occupant.get('affiliation');
-
-                if (previous_affiliation === 'admin') {
-                    this.showChatEvent(__("%1$s is no longer an admin of this groupchat", occupant.get('nick')))
-                } else if (previous_affiliation === 'owner') {
-                    this.showChatEvent(__("%1$s is no longer an owner of this groupchat", occupant.get('nick')))
-                } else if (previous_affiliation === 'outcast') {
-                    this.showChatEvent(__("%1$s is no longer banned from this groupchat", occupant.get('nick')))
-                }
-                if (current_affiliation === 'none' && previous_affiliation === 'member') {
-                    this.showChatEvent(__("%1$s is no longer a member of this groupchat", occupant.get('nick')))
-                } if (current_affiliation === 'member') {
-                    this.showChatEvent(__("%1$s is now a member of this groupchat", occupant.get('nick')))
-                } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
-                    // For example: AppleJack is now an (admin|owner) of this groupchat
-                    this.showChatEvent(__('%1$s is now an %2$s of this groupchat', occupant.get('nick'), current_affiliation))
-                }
-            },
-
-            onOccupantRoleChanged (occupant, changed) {
+            onOccupantRoleChanged (occupant) {
                 if (occupant.get('jid') === _converse.bare_jid) {
                     this.renderBottomPanel();
-                }
-                this.informOfOccupantsRoleChange(occupant, changed);
-            },
-
-            informOfOccupantsRoleChange (occupant, changed) {
-                if (changed === "none" || occupant.changed.affiliation) {
-                    // We don't inform of role changes if they accompany affiliation changes.
-                    return;
-                }
-                const previous_role = occupant._previousAttributes.role;
-                if (previous_role === 'moderator') {
-                    this.showChatEvent(__("%1$s is no longer a moderator", occupant.get('nick')))
-                }
-                if (previous_role === 'visitor') {
-                    this.showChatEvent(__("%1$s has been given a voice", occupant.get('nick')))
-                }
-                if (occupant.get('role') === 'visitor') {
-                    this.showChatEvent(__("%1$s has been muted", occupant.get('nick')))
-                }
-                if (occupant.get('role') === 'moderator') {
-                    if (!['owner', 'admin'].includes(occupant.get('affiliation'))) {
-                        // We only show this message if the user isn't already
-                        // an admin or owner, otherwise this isn't new
-                        // information.
-                        this.showChatEvent(__("%1$s is now a moderator", occupant.get('nick')))
-                    }
                 }
             },
 

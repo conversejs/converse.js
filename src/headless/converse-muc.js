@@ -383,6 +383,8 @@ converse.plugins.add('converse-muc', {
                 this.listenTo(this.occupants, 'add', this.onOccupantAdded);
                 this.listenTo(this.occupants, 'remove', this.onOccupantRemoved);
                 this.listenTo(this.occupants, 'change:show', this.onOccupantShowChanged);
+                this.listenTo(this.occupants, 'change:affiliation', this.createAffiliationChangeMessage);
+                this.listenTo(this.occupants, 'change:role', this.createRoleChangeMessage);
 
                 const restored = await this.restoreFromCache()
                 if (!restored) {
@@ -2109,6 +2111,86 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            createAffiliationChangeMessage (occupant) {
+                const previous_affiliation = occupant._previousAttributes.affiliation;
+                const current_affiliation = occupant.get('affiliation');
+                if (previous_affiliation === 'admin') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer an admin of this groupchat", occupant.get('nick'))
+                    });
+                } else if (previous_affiliation === 'owner') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer an owner of this groupchat", occupant.get('nick'))
+                    });
+                } else if (previous_affiliation === 'outcast') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer banned from this groupchat", occupant.get('nick'))
+                    });
+                }
+
+                if (current_affiliation === 'none' && previous_affiliation === 'member') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer a member of this groupchat", occupant.get('nick'))
+                    });
+                }
+
+                if (current_affiliation === 'member') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is now a member of this groupchat", occupant.get('nick'))
+                    });
+                } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
+                    // For example: AppleJack is now an (admin|owner) of this groupchat
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __(
+                            '%1$s is now an %2$s of this groupchat',
+                            occupant.get('nick'),
+                            current_affiliation
+                        )
+                    });
+                }
+            },
+
+            createRoleChangeMessage (occupant, changed) {
+                if (changed === "none" || occupant.changed.affiliation) {
+                    // We don't inform of role changes if they accompany affiliation changes.
+                    return;
+                }
+                const previous_role = occupant._previousAttributes.role;
+                if (previous_role === 'moderator') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer a moderator", occupant.get('nick'))
+                    });
+                }
+                if (previous_role === 'visitor') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s has been given a voice", occupant.get('nick'))
+                    });
+                }
+                if (occupant.get('role') === 'visitor') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s has been muted", occupant.get('nick'))
+                    });
+                }
+                if (occupant.get('role') === 'moderator') {
+                    if (!['owner', 'admin'].includes(occupant.get('affiliation'))) {
+                        // Oly show this message if the user isn't already
+                        // an admin or owner, otherwise this isn't new information.
+                        this.createMessage({
+                            'type': 'info',
+                            'message': __("%1$s is now a moderator", occupant.get('nick'))
+                        });
+                    }
+                }
+            },
 
             /**
              * Create info messages based on a received presence or message stanza
@@ -2122,10 +2204,9 @@ converse.plugins.add('converse-muc', {
                 if (!x) {
                     return;
                 }
-                const codes = sizzle('status', x).map(s => s.getAttribute('code'));
-                codes.forEach(code => {
+                sizzle('status', x).map(s => s.getAttribute('code')).forEach(code => {
                     const data = {
-                        'type': 'info'
+                        'type': 'info',
                     };
                     if (code === '110' || (code === '100' && !is_self)) {
                         return;

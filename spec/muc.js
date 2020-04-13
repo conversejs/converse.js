@@ -2804,8 +2804,8 @@
                             'role': 'visitor'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                let info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy has been muted");
+                const info_msg = await u.waitUntil(() => view.el.querySelector('.chat-info__message'));
+                expect(info_msg.textContent.trim()).toBe("annoyingGuy has been muted");
 
                 presence = $pres({
                         'from': 'lounge@montague.lit/annoyingGuy',
@@ -2818,8 +2818,10 @@
                             'role': 'participant'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy has been given a voice");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                        "annoyingGuy has been given a voice"
+                );
 
                 // Check that we don't see an info message concerning the role,
                 // if the affiliation has changed.
@@ -2834,8 +2836,10 @@
                             'role': 'visitor'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy is no longer a member of this groupchat");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "annoyingGuy is no longer a member of this groupchat"
+                );
                 done();
             }));
 
@@ -3331,7 +3335,10 @@
                             'role': 'participant'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.el.querySelectorAll('.chat-info')[2].textContent.trim()).toBe("annoyingGuy is now an owner of this groupchat");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "annoyingGuy is now an owner of this groupchat"
+                );
                 done();
             }));
 
@@ -3547,7 +3554,6 @@
                 });
                 spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
-                spyOn(view, 'showChatEvent').and.callThrough();
                 spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 // New user enters the groupchat
@@ -3628,8 +3634,11 @@
                             'role': 'moderator'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                let info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("trustworthyguy is now a moderator");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "trustworthyguy is now a moderator"
+                );
+
                 // Call now with the correct amount of arguments.
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
@@ -3638,7 +3647,6 @@
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
-                expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3667,10 +3675,12 @@
                             'jid': 'trustworthyguy@montague.lit',
                             'affiliation': 'member',
                             'role': 'participant'
-                        });
+                });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("trustworthyguy is no longer a moderator");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "trustworthyguy is no longer a moderator"
+                );
                 done();
             }));
 
@@ -3690,7 +3700,6 @@
                 });
                 spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
-                spyOn(view, 'showChatEvent').and.callThrough();
                 spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 // New user enters the groupchat
@@ -3770,8 +3779,10 @@
                             'role': 'visitor'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                let info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy has been muted");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "annoyingGuy has been muted"
+                );
 
                 // Call now with the correct of arguments.
                 // XXX: Calling onFormSubmitted directly, trying
@@ -3781,7 +3792,6 @@
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
-                expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3813,8 +3823,10 @@
                             'role': 'participant'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy has been given a voice");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "annoyingGuy has been given a voice"
+                );
                 done();
             }));
 
@@ -5231,9 +5243,10 @@
                 expect(bottom_panel.textContent.trim()).toBe("You're not allowed to send messages in this room");
 
                 // Check now that things get restored when the user is given a voice
-                let info_msgs = sizzle('.chat-info', view.el);
-                expect(info_msgs.length).toBe(1);
-                expect(info_msgs[0].textContent.trim()).toBe("troll is no longer an owner of this groupchat");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "troll is no longer an owner of this groupchat"
+                );
 
                 stanza = u.toStanza(`
                     <presence
@@ -5247,16 +5260,18 @@
                     </x>
                     </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                info_msgs = sizzle('.chat-info', view.el);
-
                 bottom_panel = view.el.querySelector('.muc-bottom-panel');
                 expect(bottom_panel).toBe(null);
 
                 textarea = view.el.querySelector('.chat-textarea');
                 expect(textarea === null).toBe(false);
 
-                expect(info_msgs.length).toBe(2);
-                expect(info_msgs[1].textContent.trim()).toBe("troll has been given a voice");
+                // Check now that things get restored when the user is given a voice
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "troll has been given a voice"
+                );
+                expect(view.el.querySelectorAll('.chat-info__message').length).toBe(2);
                 done();
             }));
         });

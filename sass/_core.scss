@@ -534,6 +534,10 @@ body.converse-fullscreen {
         display: block !important;
     }
 
+    .form-control--labeled {
+        margin-top: 0.5em;
+    }
+
     .nav-pills .nav-link.active,
     .nav-pills .show > .nav-link {
         background-color: var(--primary-color);
@@ -556,11 +560,7 @@ body.converse-fullscreen {
     .btn-primary, .button-primary, .badge-primary {
         background-color: var(--primary-color);
         border-color: transparent;
-        &:hover {
-            background-color: var(--primary-color-dark);
-            border-color: transparent;
-        }
-        &.active {
+        &:focus, &:hover, &:active {
             background-color: var(--primary-color-dark) !important;
             border-color: transparent !important;
         }

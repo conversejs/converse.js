@@ -6,9 +6,16 @@ const i18n_cancel = __('Cancel');
 const i18n_ok = __('OK');
 
 
-const tpl_reason = (o) => html`
+const tpl_field = (f) => html`
     <div class="form-group">
-        <input type="text" name="reason" class="form-control" placeholder="${o.placeholder}"/>
+        <label>
+            ${f.label || ''}
+            <input type="text"
+                name="${f.name}"
+                class="${(f.challenge_failed) ? 'error' : ''} form-control form-control--labeled"
+                ?required="${f.required}"
+                placeholder="${f.placeholder}" />
+        </label>
     </div>
 `;
 
@@ -16,7 +23,7 @@ const tpl_reason = (o) => html`
 export default (o) => html`
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header ${o.level}">
+        <div class="modal-header ${o.level || ''}">
           <h5 class="modal-title">${o.title}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
@@ -28,7 +35,7 @@ export default (o) => html`
               <div class="form-group">
                   ${ o.messages.map(message => html`<p>${message}</p>`) }
               </div>
-              ${ (o.type === 'prompt') ? tpl_reason(o) : '' }
+              ${ o.fields.map(f => tpl_field(f)) }
               <div class="form-group">
                   <button type="submit" class="btn btn-primary">${i18n_ok}</button>
                   <input type="button" class="btn btn-secondary" data-dismiss="modal" value="${i18n_cancel}"/>

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-02-21 02:32+0000\n"
+"PO-Revision-Date: 2020-04-15 16:11+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11.1\n"
+"X-Generator: Weblate 4.0-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -781,7 +781,7 @@ msgstr "Velg en fil å sende"
 #: dist/converse-no-dependencies.js:53488
 #: dist/converse-no-dependencies.js:63629
 msgid "Details"
-msgstr ""
+msgstr "Detaljer"
 
 #: dist/converse-no-dependencies.js:53489
 #, fuzzy
@@ -1297,7 +1297,7 @@ msgstr "Begrunnelse"
 
 #: dist/converse-no-dependencies.js:61968
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "Skriv her for å filtrere søkeresultatene"
 
 #: dist/converse-no-dependencies.js:61972
 msgid "Show users"
@@ -1601,19 +1601,21 @@ msgstr "Vis rom"
 
 #: dist/converse-no-dependencies.js:63701
 msgid "Hide topic"
-msgstr ""
+msgstr "Skjul emne"
 
 #: dist/converse-no-dependencies.js:63702
+#, fuzzy
 msgid "Show the topic message in the heading"
-msgstr ""
+msgstr "Vis emne i hode"
 
 #: dist/converse-no-dependencies.js:63702
+#, fuzzy
 msgid "Hide the topic in the heading"
-msgstr ""
+msgstr "Skjul emne i hode"
 
 #: dist/converse-no-dependencies.js:63714
 msgid "Leave"
-msgstr ""
+msgstr "Forlat"
 
 #: dist/converse-no-dependencies.js:63715
 #, fuzzy
@@ -1666,6 +1668,8 @@ msgid ""
 "Couldn't find a participant with that nickname or XMPP address. They might "
 "have left the groupchat."
 msgstr ""
+"Fant ikke noen deltager med det kallenavnet eller XMPP-adressen. Vedkommende "
+"kan ha forlatt gruppesludringen."
 
 #: dist/converse-no-dependencies.js:64132
 #, fuzzy

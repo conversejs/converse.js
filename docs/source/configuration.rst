@@ -1656,7 +1656,7 @@ be turned off by setting this config variable to ``false``.
 show_send_button
 ----------------
 
-* Default: ``false``
+* Default: ``true``
 
 Adds a button to the chat which can be clicked or tapped in order to send the
 message.

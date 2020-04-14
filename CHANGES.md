@@ -29,6 +29,8 @@ Soon we'll deprecate the latter, so prepare now.
 - Remove the configuration setting `muc_show_join_leave_status`. The optional status message is no longer shown at all.
 - Support for XEP-0156 is now enabled by default (which means that
   [discover_connection_methods](https://conversejs.org/docs/html/configuration.html#discover-connection-methods) now has a default value of `true`).
+- [show_send_button](https://conversejs.org/docs/html/configuration.html#show-send-button) now has a default value of `true`.
+- New configuration setting [muc_hats_from_vcard](https://conversejs.org/docs/html/configuration.html#muc-hats-from-vcard).
 
 ## 6.0.0 (2020-01-09)
 

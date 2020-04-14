@@ -79,7 +79,8 @@ function getEncryptionAttributes (stanza, original_stanza, attrs, chatbox, _conv
     if (!encrypted || !_converse.config.get('trusted')) {
         return attrs;
     }
-    const key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
+    const device_id = _converse.omemo_store?.get('device_id');
+    const key = device_id && sizzle(`key[rid="${device_id}"]`, encrypted).pop();
     if (key) {
         const header = encrypted.querySelector('header');
         attrs['is_encrypted'] = true;

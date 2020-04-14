@@ -413,7 +413,6 @@ converse.plugins.add('converse-muc', {
                     await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
                     await this.fetchOccupants();
                     await this.fetchMessages();
-                    await this.clearMessageQueue();
                     return true;
                 } else {
                     await this.clearCache();
@@ -455,6 +454,13 @@ converse.plugins.add('converse-muc', {
                 this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
                 api.send(stanza);
                 return this;
+            },
+
+            async fetchMessages () {
+                await _converse.ChatBox.prototype.fetchMessages.call(this);
+                const queued_messages = this.message_queue.map(m => this.queueMessage(m));
+                this.message_queue = [];
+                return Promise.all(queued_messages);
             },
 
             async clearCache () {
@@ -509,20 +515,14 @@ converse.plugins.add('converse-muc', {
             },
 
             initMessages () {
+                this.message_queue = [];
                 _converse.ChatBox.prototype.initMessages.call(this);
-                this.message_queue = [];
-            },
-
-            async clearMessageQueue () {
-                await Promise.all(this.message_queue.map(m => this.queueMessage(m)));
-                this.message_queue = [];
             },
 
             async onConnectionStatusChanged () {
                 if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                     await this.occupants.fetchMembers();
                     await this.fetchMessages();
-                    await this.clearMessageQueue();
                     /**
                      * Triggered when the user has entered a new MUC
                      * @event _converse#enteredNewRoom
@@ -1896,7 +1896,7 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza - The message stanza.
              */
             queueMessage (stanza) {
-                if (this.messages.fetched) {
+                if (this.messages?.fetched) {
                     this.msg_chain = (this.msg_chain || this.messages.fetched);
                     this.msg_chain = this.msg_chain.then(() => this.onMessage(stanza));
                     return this.msg_chain;

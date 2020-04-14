@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-14 03:27+0000\n"
+"PO-Revision-Date: 2020-04-15 16:11+0000\n"
 "Last-Translator: Michael Lu <yeskky@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
@@ -167,11 +167,11 @@ msgid "Sorry, looks like file upload is not supported by your server."
 msgstr "抱歉，服务器不支持文件上传。"
 
 #: dist/converse-no-dependencies.js:32250
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
-msgstr "文件的大小为%2$s，超过了服务器允许的最大值%1$s。"
+msgstr "文件的大小为%1$s，超过了服务器允许的最大值%2$s。"
 
 #: dist/converse-no-dependencies.js:34664
 msgid "Smileys and emotions"
@@ -244,7 +244,6 @@ msgid "Groupchat logging is now disabled"
 msgstr "聊天室日志当前已禁用"
 
 #: dist/converse-no-dependencies.js:35363
-#, fuzzy
 msgid "This groupchat is now no longer anonymous"
 msgstr "此群聊现在不再是匿名的"
 
@@ -365,17 +364,17 @@ msgid "%1$s has been removed for not being a member"
 msgstr "%1$s因不是成员而被移除"
 
 #: dist/converse-no-dependencies.js:38529
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
 msgstr "%1$s不再是此群聊的管理员"
 
 #: dist/converse-no-dependencies.js:38534
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
 msgstr "%1$s不再是此群聊的所有者"
 
 #: dist/converse-no-dependencies.js:38539
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
 msgstr "%1$s不再被禁止参加此群聊"
 
@@ -596,7 +595,7 @@ msgid "Download audio file \"%1$s\""
 msgstr "下载音频文件"
 
 #: dist/converse-no-dependencies.js:50426
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download image \"%1$s\""
 msgstr "下载图片 \"%1$s\""
 
@@ -621,7 +620,6 @@ msgid "Message versions"
 msgstr "消息版本"
 
 #: dist/converse-no-dependencies.js:52172
-#, fuzzy
 msgid "Show more"
 msgstr "显示更多"
 
@@ -725,14 +723,14 @@ msgstr "%1$s正在输入"
 
 #: dist/converse-no-dependencies.js:53163
 #: dist/converse-no-dependencies.js:63135
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has stopped typing"
 msgstr "%1$s已停止输入"
 
 #: dist/converse-no-dependencies.js:53165
 #: dist/converse-no-dependencies.js:54471
 #: dist/converse-no-dependencies.js:63137
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone away"
 msgstr "%1$s已经离开"
 

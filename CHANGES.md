@@ -19,6 +19,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #1839: Headline messages are shown in controlbox
 - #1896: Don't send receipts for messages fetched from the archive 
 - #1937: Editing a message removes the mentions highlight
+- #1963: Mentions are visually incorrect when used in message replies
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
 - Bugfix. Handle stanza that clears the MUC subject
 - New config option [modtools_disable_assign](https://conversejs.org/docs/html/configuration.html#modtools-disable-assign)

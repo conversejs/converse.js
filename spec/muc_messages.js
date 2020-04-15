@@ -902,6 +902,47 @@
                     '<span class="mention">mr.robot</span>, how are you?');
                 done();
             }));
+
+            it("highlights all users mentioned via XEP-0372 references in a quoted message",
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                const muc_jid = 'lounge@montague.lit';
+                await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+                const view = _converse.api.chatviews.get(muc_jid);
+                ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
+                    _converse.connection._dataRecv(test_utils.createRequest(
+                        $pres({
+                            'to': 'tom@montague.lit/resource',
+                            'from': `lounge@montague.lit/${nick}`
+                        })
+                        .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': `${nick}@montague.lit/resource`,
+                            'role': 'participant'
+                        }))
+                    );
+                });
+                const msg = $msg({
+                        from: 'lounge@montague.lit/gibson',
+                        id: u.getUniqueId(),
+                        to: 'romeo@montague.lit',
+                        type: 'groupchat'
+                    }).c('body').t('>hello z3r0 tom mr.robot, how are you?').up()
+                        .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'7', 'end':'11', 'type':'mention', 'uri':'xmpp:z3r0@montague.lit'}).up()
+                        .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'12', 'end':'15', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
+                        .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'16', 'end':'24', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
+                await view.model.queueMessage(msg);
+                const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
+                expect(message.classList.length).toEqual(1);
+                expect(message.innerHTML).toBe(
+                    '&gt;hello <span class="mention">z3r0</span> '+
+                    '<span class="mention mention--self badge badge-info">tom</span> '+
+                    '<span class="mention">mr.robot</span>, how are you?');
+                done();
+            }));
         });
 
         describe("in which someone is mentioned", function () {

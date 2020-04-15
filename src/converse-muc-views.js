@@ -1014,19 +1014,14 @@ converse.plugins.add('converse-muc-views', {
                     if (_converse.show_retraction_warning) {
                         messages[1] = retraction_warning;
                     }
-                    const result = await api.confirm(__('Confirm'), messages);
-                    if (result) {
-                        this.retractOwnMessage(message);
-                    }
+                    !!(await api.confirm(__('Confirm'), messages)) && this.retractOwnMessage(message);
                 } else if (await message.mayBeModerated()) {
                     if (message.get('sender') === 'me') {
                         let messages = [__('Are you sure you want to retract this message?')];
                         if (_converse.show_retraction_warning) {
                             messages = [messages[0], retraction_warning, messages[1]]
                         }
-                        if (await api.confirm(__('Confirm'), messages)) {
-                            this.retractOtherMessage(message);
-                        }
+                        !!(await api.confirm(__('Confirm'), messages)) && this.retractOtherMessage(message);
                     } else {
                         let messages = [
                             __('You are about to retract this message.'),
@@ -1040,9 +1035,7 @@ converse.plugins.add('converse-muc-views', {
                             messages,
                             __('Optional reason')
                         );
-                        if (reason !== false) {
-                            this.retractOtherMessage(message, reason);
-                        }
+                        (reason !== false) && this.retractOtherMessage(message, reason);
                     }
                 } else {
                     const err_msg = __(`Sorry, you're not allowed to retract this message`);
@@ -1158,31 +1151,6 @@ converse.plugins.add('converse-muc-views', {
                     });
                 }
 
-                const conn_status = this.model.session.get('connection_status');
-                if (conn_status === converse.ROOMSTATUS.ENTERED) {
-                    const allowed_commands = this.getAllowedCommands();
-                    if (allowed_commands.includes('modtools')) {
-                        buttons.push({
-                            'i18n_text': __('Moderate'),
-                            'i18n_title': __('Moderate this groupchat'),
-                            'handler': () => this.showModeratorToolsModal(),
-                            'a_class': 'moderate-chatroom-button',
-                            'icon_class': 'fa-user-cog',
-                            'name': 'moderate'
-                        });
-                    }
-                    if (allowed_commands.includes('destroy')) {
-                        buttons.push({
-                            'i18n_text': __('Destroy'),
-                            'i18n_title': __('Remove this groupchat'),
-                            'handler': ev => this.destroy(ev),
-                            'a_class': 'destroy-chatroom-button',
-                            'icon_class': 'fa-trash',
-                            'name': 'destroy'
-                        });
-                    }
-                }
-
                 if (this.model.invitesAllowed()) {
                     buttons.push({
                         'i18n_text': __('Invite'),
@@ -1206,6 +1174,32 @@ converse.plugins.add('converse-muc-views', {
                         'icon_class': 'fa-minus-square',
                         'name': 'toggle-topic'
                     });
+                }
+
+
+                const conn_status = this.model.session.get('connection_status');
+                if (conn_status === converse.ROOMSTATUS.ENTERED) {
+                    const allowed_commands = this.getAllowedCommands();
+                    if (allowed_commands.includes('modtools')) {
+                        buttons.push({
+                            'i18n_text': __('Moderate'),
+                            'i18n_title': __('Moderate this groupchat'),
+                            'handler': () => this.showModeratorToolsModal(),
+                            'a_class': 'moderate-chatroom-button',
+                            'icon_class': 'fa-user-cog',
+                            'name': 'moderate'
+                        });
+                    }
+                    if (allowed_commands.includes('destroy')) {
+                        buttons.push({
+                            'i18n_text': __('Destroy'),
+                            'i18n_title': __('Remove this groupchat'),
+                            'handler': ev => this.destroy(ev),
+                            'a_class': 'destroy-chatroom-button',
+                            'icon_class': 'fa-trash',
+                            'name': 'destroy'
+                        });
+                    }
                 }
 
                 if (!api.settings.get("singleton")) {
@@ -1532,10 +1526,30 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            async destroy (reason, new_jid) {
-                const message = [__('Are you sure you want to destroy this groupchat?')];
-                if (await api.confirm(__('Confirm'), message)) {
-                    return this.model.sendDestroyIQ(reason, new_jid).then(() => this.close())
+            async destroy () {
+                const messages = [__('Are you sure you want to destroy this groupchat?')];
+                let fields = [{
+                    'name': 'challenge',
+                    'label': __('Please enter the XMPP address of this groupchat to confirm'),
+                    'challenge': this.model.get('jid'),
+                    'placeholder': __('name@example.org'),
+                    'required': true
+                }, {
+                    'name': 'reason',
+                    'label': __('Optional reason for destroying this groupchat'),
+                    'placeholder': __('Reason')
+                }, {
+                    'name': 'newjid',
+                    'label': __('Optional XMPP address for a new groupchat that replaces this one'),
+                    'placeholder': __('replacement@example.org')
+                }];
+                try {
+                    fields = await api.confirm(__('Confirm'), messages, fields);
+                    const reason = fields.filter(f => f.name === 'reason').pop()?.value;
+                    const newjid = fields.filter(f => f.name === 'newjid').pop()?.value;
+                    return this.model.sendDestroyIQ(reason, newjid).then(() => this.close())
+                } catch (e) {
+                    log.error(e);
                 }
             },
 
@@ -1583,7 +1597,7 @@ converse.plugins.add('converse-muc-views', {
                         if (!this.verifyAffiliations(['owner'])) {
                             break;
                         }
-                        this.destroy(args).catch(e => this.onCommandError(e));
+                        this.destroy().catch(e => this.onCommandError(e));
                         break;
                     }
                     case 'help': {

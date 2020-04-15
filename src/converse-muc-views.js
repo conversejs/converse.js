@@ -449,7 +449,7 @@ converse.plugins.add('converse-muc-views', {
                 const jid = ev.target.getAttribute('data-room-jid');
                 const name = ev.target.getAttribute('data-room-name');
                 this.modal.hide();
-                api.rooms.open(jid, {'name': name});
+                api.rooms.open(jid, {'name': name}, true);
             },
 
             toggleRoomInfo (ev) {
@@ -585,7 +585,7 @@ converse.plugins.add('converse-muc-views', {
                     jid = data.jid
                     this.model.setDomain(jid);
                 }
-                api.rooms.open(jid, Object.assign(data, {jid}));
+                api.rooms.open(jid, Object.assign(data, {jid}), true);
                 this.modal.hide();
                 ev.target.reset();
             },

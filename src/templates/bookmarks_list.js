@@ -12,7 +12,7 @@ const bookmark_item = (o) => html`
     <div class="list-item controlbox-padded room-item available-chatroom d-flex flex-row ${ (o.is_hidden(o.bm)) ? 'hidden' : ''}" data-room-jid="${o.bm.get('jid')}">
         <a class="list-item-link open-room w-100" data-room-jid="${o.bm.get('jid')}"
            title="${open_title}"
-          @click=${o.openRoom}>${o.bm.getDisplayName()}</a>
+           @click=${o.openRoom}>${o.bm.getDisplayName()}</a>
 
         <a class="list-item-action remove-bookmark fa fa-bookmark align-self-center ${ o.bm.get('bookmarked') ? 'button-on' : '' }"
            data-room-jid="${o.bm.get('jid')}"

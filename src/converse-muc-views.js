@@ -14,25 +14,24 @@ import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
+import st from "@converse/headless/utils/stanza";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
 import tpl_chatroom from "templates/chatroom.js";
 import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_details_modal from "templates/chatroom_details_modal.js";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
-import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_chatroom_head from "templates/chatroom_head.js";
-import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
-import tpl_muc_password_form from "templates/muc_password_form.js";
-import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_info from "templates/info.html";
 import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
 import tpl_moderator_tools_modal from "templates/moderator_tools_modal.js";
+import tpl_muc_config_form from "templates/muc_config_form.js";
+import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
+import tpl_muc_password_form from "templates/muc_password_form.js";
+import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_room_description from "templates/room_description.html";
-import tpl_room_item from "templates/room_item.html";
 import tpl_room_panel from "templates/room_panel.html";
-import tpl_rooms_results from "templates/rooms_results.html";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
@@ -408,15 +407,10 @@ converse.plugins.add('converse-muc-views', {
         _converse.ListChatRoomsModal = BootstrapModal.extend({
             id: "list-chatrooms-modal",
 
-            events: {
-                'submit form': 'showRooms',
-                'click a.room-info': 'toggleRoomInfo',
-                'change input[name=nick]': 'setNick',
-                'change input[name=server]': 'setDomainFromEvent',
-                'click .open-room': 'openRoom'
-            },
-
             initialize () {
+                this.items = [];
+                this.loading_items = false;
+
                 BootstrapModal.prototype.initialize.apply(this, arguments);
                 if (_converse.muc_domain && !this.model.get('muc_domain')) {
                     this.model.save('muc_domain', _converse.muc_domain);
@@ -426,10 +420,17 @@ converse.plugins.add('converse-muc-views', {
 
             toHTML () {
                 const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
-                return tpl_list_chatrooms_modal(Object.assign(this.model.toJSON(), {
-                    'show_form': !_converse.locked_muc_domain,
-                    'server_placeholder': muc_domain ? muc_domain : __('conference.example.org')
-                }));
+                return tpl_list_chatrooms_modal(
+                    Object.assign(this.model.toJSON(), {
+                        'show_form': !_converse.locked_muc_domain,
+                        'server_placeholder': muc_domain ? muc_domain : __('conference.example.org'),
+                        'items': this.items,
+                        'loading_items': this.loading_items,
+                        'openRoom': ev => this.openRoom(ev),
+                        'setDomainFromEvent': ev => this.setDomainFromEvent(ev),
+                        'submitForm': ev => this.showRooms(ev),
+                        'toggleRoomInfo': ev => this.toggleRoomInfo(ev)
+                    }));
             },
 
             afterRender () {
@@ -457,59 +458,35 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onDomainChange () {
-                if (_converse.auto_list_rooms) {
-                    this.updateRoomsList();
-                }
+                _converse.auto_list_rooms && this.updateRoomsList();
             },
 
-            roomStanzaItemToHTMLElement (groupchat) {
-                const name = Strophe.unescapeNode(groupchat.getAttribute('name') || groupchat.getAttribute('jid'));
-                const div = document.createElement('div');
-                div.innerHTML = tpl_room_item({
-                    'name': Strophe.xmlunescape(name),
-                    'jid': groupchat.getAttribute('jid'),
-                    'open_title': __('Click to open this groupchat'),
-                    'info_title': __('Show more information on this groupchat')
-                });
-                return div.firstElementChild;
-            },
-
-            removeSpinner () {
-                sizzle('.spinner', this.el).forEach(u.removeElement);
-            },
-
-            informNoRoomsFound () {
-                const chatrooms_el = this.el.querySelector('.available-chatrooms');
-                chatrooms_el.innerHTML = tpl_rooms_results({'feedback_text': __('No groupchats found')});
-                const input_el = this.el.querySelector('input[name="server"]');
-                input_el.classList.remove('hidden')
-                this.removeSpinner();
-            },
-
+            /**
+             * Handle the IQ stanza returned from the server, containing
+             * all its public groupchats.
+             * @private
+             * @method _converse.ChatRoomView#onRoomsFound
+             * @param { HTMLElement } iq
+             */
             onRoomsFound (iq) {
-                /* Handle the IQ stanza returned from the server, containing
-                 * all its public groupchats.
-                 */
-                const available_chatrooms = this.el.querySelector('.available-chatrooms');
-                const rooms = sizzle('query item', iq);
+                const rooms = iq ? sizzle('query item', iq) : [];
                 if (rooms.length) {
-                    available_chatrooms.innerHTML = tpl_rooms_results({'feedback_text': __('Groupchats found:')});
-                    const fragment = document.createDocumentFragment();
-                    rooms.map(this.roomStanzaItemToHTMLElement)
-                         .filter(r => r)
-                         .forEach(child => fragment.appendChild(child));
-
-                    available_chatrooms.appendChild(fragment);
-                    this.removeSpinner();
+                    this.model.set({'feedback_text': __('Groupchats found')}, {'silent': true});
+                    this.items = rooms.map(st.getAttributes);
+                    this.loading_items = false;
+                    this.render();
                 } else {
-                    this.informNoRoomsFound();
+                    this.model.set('feedback_text', __('No groupchats found'));
                 }
                 return true;
             },
 
+            /**
+             * Send an IQ stanza to the server asking for all groupchats
+             * @private
+             * @method _converse.ChatRoomView#updateRoomsList
+             */
             updateRoomsList () {
-                /* Send an IQ stanza to the server asking for all groupchats
-                 */
                 const iq = $iq({
                     'to': this.model.get('muc_domain'),
                     'from': _converse.connection.jid,
@@ -517,11 +494,14 @@ converse.plugins.add('converse-muc-views', {
                 }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS});
                 api.sendIQ(iq)
                     .then(iq => this.onRoomsFound(iq))
-                    .catch(() => this.informNoRoomsFound())
+                    .catch(() => this.onRoomsFound())
             },
 
             showRooms (ev) {
                 ev.preventDefault();
+                this.loading_items = true;
+                this.render();
+
                 const data = new FormData(ev.target);
                 this.model.setDomain(data.get('server'));
                 this.updateRoomsList();

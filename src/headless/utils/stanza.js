@@ -129,6 +129,20 @@ const stanza_utils = {
     },
 
     /**
+     * Returns an object containing all attribute names and values for a particular element.
+     * @private
+     * @method stanza_utils#getAttributes
+     * @param { XMLElement } stanza
+     * @returns { Object }
+     */
+    getAttributes (stanza) {
+        return stanza.getAttributeNames().reduce((acc, name) => {
+            acc[name] = Strophe.xmlunescape(stanza.getAttribute(name))
+            return acc;
+        }, {});
+    },
+
+    /**
      * Extract the XEP-0359 stanza IDs from the passed in stanza
      * and return a map containing them.
      * @private

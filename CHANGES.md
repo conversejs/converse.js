@@ -6,6 +6,7 @@
 configuration settings should now be accessed via `_converse.api.settings.get` and not directly on the `_converse` object.
 Soon we'll deprecate the latter, so prepare now.
 
+- #515 Add support for XEP-0050 Ad-Hoc commands
 - #1313: Stylistic improvements to the send button
 - #1490: Busy-loop when fetching registration form fails
 - #1535: Add option to destroy a MUC

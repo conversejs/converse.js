@@ -26,7 +26,7 @@ const URL_REGEX = /\b(https?\:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 function getAutoCompleteProperty (name, options) {
     return {
         'muc#roomconfig_lang': 'language',
-        'muc#roomconfig_roomsecret': options.new_password ? 'new-password' : 'current-password'
+        'muc#roomconfig_roomsecret': options?.new_password ? 'new-password' : 'current-password'
     }[name];
 }
 
@@ -660,7 +660,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'id': u.getUniqueId(),
             'label': field.getAttribute('label') || '',
             'name': name,
-            'fixed_username': options.fixed_username,
+            'fixed_username': options?.fixed_username,
             'autocomplete': getAutoCompleteProperty(name, options),
             'placeholder': null,
             'required': !!field.querySelector('required'),

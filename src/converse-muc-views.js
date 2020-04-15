@@ -12,6 +12,7 @@ import { debounce, head, isString, isUndefined } from "lodash";
 import { BootstrapModal } from "./converse-modal.js";
 import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
+import RoomDetailsModal from 'modals/muc-details.js';
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import st from "@converse/headless/utils/stanza";
@@ -19,7 +20,6 @@ import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
 import tpl_chatroom from "templates/chatroom.js";
 import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
-import tpl_chatroom_details_modal from "templates/chatroom_details_modal.js";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
 import tpl_chatroom_head from "templates/chatroom_head.js";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
@@ -610,30 +610,6 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.RoomDetailsModal = BootstrapModal.extend({
-            id: "room-details-modal",
-
-            initialize () {
-                BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.listenTo(this.model, 'change', this.render);
-                this.listenTo(this.model.features, 'change', this.render);
-                this.listenTo(this.model.occupants, 'add', this.render);
-                this.listenTo(this.model.occupants, 'change', this.render);
-            },
-
-            toHTML () {
-                return tpl_chatroom_details_modal(Object.assign(
-                    this.model.toJSON(), {
-                        'config': this.model.config.toJSON(),
-                        'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
-                        'features': this.model.features.toJSON(),
-                        'num_occupants': this.model.occupants.length,
-                    })
-                );
-            }
-        });
-
-
         /**
          * NativeView which renders a groupchat, based upon
          * { @link _converse.ChatBoxView } for normal one-on-one chat boxes.
@@ -1080,7 +1056,7 @@ converse.plugins.add('converse-muc-views', {
             showRoomDetailsModal (ev) {
                 ev.preventDefault();
                 if (this.model.room_details_modal === undefined) {
-                    this.model.room_details_modal = new _converse.RoomDetailsModal({'model': this.model});
+                    this.model.room_details_modal = new RoomDetailsModal({'model': this.model});
                 }
                 this.model.room_details_modal.show(ev);
             },
@@ -1106,20 +1082,21 @@ converse.plugins.add('converse-muc-views', {
 
             /**
              * Returns a list of objects which represent buttons for the groupchat header.
-             * @async
              * @emits _converse#getHeadingButtons
              * @private
              * @method _converse.ChatRoomView#getHeadingButtons
              */
             getHeadingButtons (subject_hidden) {
-                const buttons = [{
+                const buttons = [];
+                buttons.push({
                     'i18n_text': __('Details'),
                     'i18n_title': __('Show more information about this groupchat'),
                     'handler': ev => this.showRoomDetailsModal(ev),
                     'a_class': 'show-room-details-modal',
                     'icon_class': 'fa-info-circle',
                     'name': 'details'
-                }];
+                });
+
                 if (this.model.getOwnAffiliation() === 'owner') {
                     buttons.push({
                         'i18n_text': __('Configure'),

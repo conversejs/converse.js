@@ -7,12 +7,12 @@ import "@converse/headless/converse-status";
 import "@converse/headless/converse-vcard";
 import "converse-modal";
 import { BootstrapModal } from "./converse-modal.js";
+import UserSettingsModal from "modals/user-settings";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import sizzle from 'sizzle';
 import tpl_chat_status_modal from "templates/chat_status_modal";
-import tpl_client_info_modal from "templates/client_info_modal";
 import tpl_profile from "templates/profile.js";
 import tpl_profile_modal from "templates/profile_modal";
 
@@ -182,26 +182,11 @@ converse.plugins.add('converse-profile', {
             }
         });
 
-        _converse.ClientInfoModal = BootstrapModal.extend({
-            id: "converse-client-info-modal",
-
-            toHTML () {
-                return tpl_client_info_modal(
-                    Object.assign(
-                        this.model.toJSON(),
-                        this.model.vcard.toJSON(),
-                        { 'version_name': _converse.VERSION_NAME }
-                    )
-                );
-            }
-        });
-
         _converse.XMPPStatusView = _converse.ViewWithAvatar.extend({
             tagName: "div",
             events: {
                 "click a.show-profile": "showProfileModal",
                 "click a.change-status": "showStatusChangeModal",
-                "click .show-client-info": "showClientInfoModal",
                 "click .logout": "logOut"
             },
 
@@ -218,8 +203,9 @@ converse.plugins.add('converse-profile', {
                     _converse,
                     chat_status,
                     'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
+                    "showUserSettingsModal": ev => this.showUserSettingsModal(ev),
                     'status_message': this.model.get('status_message') ||
-                                        __("I am %1$s", this.getPrettyStatus(chat_status))
+                                        __("I am %1$s", this.getPrettyStatus(chat_status)),
                 }));
             },
 
@@ -228,6 +214,7 @@ converse.plugins.add('converse-profile', {
             },
 
             showProfileModal (ev) {
+                ev.preventDefault();
                 if (this.profile_modal === undefined) {
                     this.profile_modal = new _converse.ProfileModal({model: this.model});
                 }
@@ -235,17 +222,19 @@ converse.plugins.add('converse-profile', {
             },
 
             showStatusChangeModal (ev) {
+                ev.preventDefault();
                 if (this.status_modal === undefined) {
                     this.status_modal = new _converse.ChatStatusModal({model: this.model});
                 }
                 this.status_modal.show(ev);
             },
 
-            showClientInfoModal(ev) {
-                if (this.client_info_modal === undefined) {
-                    this.client_info_modal = new _converse.ClientInfoModal({model: this.model});
+            showUserSettingsModal(ev) {
+                ev.preventDefault();
+                if (this.user_settings_modal === undefined) {
+                    this.user_settings_modal = new UserSettingsModal({model: this.model, _converse});
                 }
-                this.client_info_modal.show(ev);
+                this.user_settings_modal.show(ev);
             },
 
             logOut (ev) {

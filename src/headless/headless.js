@@ -2,6 +2,7 @@
  * --------------------
  * Any of the following components may be removed if they're not needed.
  */
+import "./converse-adhoc";       // XEP-0050 Ad Hoc Commands
 import "./converse-bookmarks";   // XEP-0199 XMPP Ping
 import "./converse-bosh";        // XEP-0206 BOSH
 import "./converse-caps";        // XEP-0115 Entity Capabilities

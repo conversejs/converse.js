@@ -14,7 +14,7 @@ export default (o) => html`
                 <canvas class="avatar align-self-center" height="40" width="40"></canvas>
             </a>
             <span class="username w-100 align-self-center">${o.fullname}</span>
-            ${o._converse.api.settings.get('show_client_info') ? html`<a class="controlbox-heading__btn show-client-info fa fa-info-circle align-self-center" title="${i18n_details}"></a>` : ''}
+            ${o._converse.api.settings.get('show_client_info') ? html`<a class="controlbox-heading__btn show-client-info fa fa-cog align-self-center" title="${i18n_details}" @click=${o.showUserSettingsModal}></a>` : ''}
             ${o._converse.api.settings.get('allow_logout') ? html`<a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="${i18n_logout}"></a>` : ''}
         </div>
         <div class="d-flex xmpp-status">

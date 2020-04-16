@@ -107,7 +107,7 @@
     "sass-loader": "^8.0.2",
     "sinon": "^9.0.2",
     "sizzle": "^2.3.5",
-    "style-loader": "^0.23.1",
+    "style-loader": "^1.1.4",
     "uglify-es": "^3.3.9",
     "uglify-js": "^3.8.1",
     "urijs": "^1.19.2",

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-15 16:11+0000\n"
+"PO-Revision-Date: 2020-04-17 17:11+0000\n"
 "Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.0.1-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1447,17 +1447,17 @@ msgid "%1$s and %2$s"
 msgstr "%1$s und %2$s"
 
 #: dist/converse-no-dependencies.js:63154
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are typing"
-msgstr "%1$s schreibt"
+msgstr "%1$s tippt"
 
 #: dist/converse-no-dependencies.js:63156
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have stopped typing"
 msgstr "%1$s tippt nicht mehr"
 
 #: dist/converse-no-dependencies.js:63158
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have gone away"
 msgstr "%1$s ist jetzt abwesend"
 
@@ -1516,9 +1516,8 @@ msgid "Show more information about this groupchat"
 msgstr "Weitere Informationen zu diesem Gruppenchat anzeigen"
 
 #: dist/converse-no-dependencies.js:63641
-#, fuzzy
 msgid "Configure"
-msgstr "Bestätigen"
+msgstr "Konfigurieren"
 
 #: dist/converse-no-dependencies.js:63642
 msgid "Configure this groupchat"
@@ -1558,25 +1557,23 @@ msgstr "Thema ausblenden"
 
 #: dist/converse-no-dependencies.js:63702
 msgid "Show the topic message in the heading"
-msgstr ""
+msgstr "Thema in der Überschrift anzeigen"
 
 #: dist/converse-no-dependencies.js:63702
 msgid "Hide the topic in the heading"
-msgstr ""
+msgstr "Thema in der Überschrift ausblenden"
 
 #: dist/converse-no-dependencies.js:63714
 msgid "Leave"
 msgstr "Verlassen"
 
 #: dist/converse-no-dependencies.js:63715
-#, fuzzy
 msgid "Leave and close this groupchat"
-msgstr "Diesen Gruppenchat verlassen"
+msgstr "Verlassen und diesen Gruppenchat schließen"
 
 #: dist/converse-no-dependencies.js:63725
-#, fuzzy
 msgid "Are you sure you want to leave this groupchat?"
-msgstr "Möchten Sie den Gruppenchat „%1$s” wirklich verlassen?"
+msgstr "Sind Sie sicher, dass Sie diesen Gruppenchat verlassen wollen?"
 
 #: dist/converse-no-dependencies.js:63862
 msgid "Hide the list of participants"
@@ -1616,6 +1613,8 @@ msgid ""
 "Couldn't find a participant with that nickname or XMPP address. They might "
 "have left the groupchat."
 msgstr ""
+"Konnte keinen Teilnehmer mit diesem Spitznamen oder dieser XMPP-Adresse "
+"finden. Möglicherweise haben sie den Gruppenchat verlassen."
 
 #: dist/converse-no-dependencies.js:64132
 msgid "Sorry, an error happened while running the command."

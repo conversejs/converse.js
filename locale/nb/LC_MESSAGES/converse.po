@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-15 16:11+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"PO-Revision-Date: 2020-04-17 17:11+0000\n"
+"Last-Translator: george k <norhorn@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.0.1-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -345,9 +345,9 @@ msgid "Topic cleared by %1$s"
 msgstr "Emnet fjernet av %1$s"
 
 #: dist/converse-no-dependencies.js:38511
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%1$s  har blitt utestengt"
+msgstr "%1$s har blitt utestengt %2$s"
 
 #: dist/converse-no-dependencies.js:38511
 #, javascript-format
@@ -360,9 +360,9 @@ msgid "%1$s's nickname has changed"
 msgstr "%1$s sitt kallenavn er endret"
 
 #: dist/converse-no-dependencies.js:38515
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s  ble kastet ut"
+msgstr "%1$s ble kastet ut %2$s"
 
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format

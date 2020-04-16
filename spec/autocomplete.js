@@ -58,7 +58,7 @@
             textarea.value = '@';
             view.onKeyUp(at_event);
 
-            expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(4);
+            await u.waitUntil(() => view.el.querySelectorAll('.suggestion-box__results li').length === 4);
             expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
             expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
             expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
@@ -100,7 +100,7 @@
             }
             view.onKeyDown(tab_event);
             view.onKeyUp(tab_event);
-            expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
+            await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === false);
             expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(1);
             expect(view.el.querySelector('.suggestion-box__results li').textContent).toBe('some1');
 
@@ -115,7 +115,7 @@
                 textarea.value = textarea.value.slice(0, textarea.value.length-1)
                 view.onKeyUp(backspace_event);
             }
-            expect(view.el.querySelector('.suggestion-box__results').hidden).toBeTruthy();
+            await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === true);
 
             presence = $pres({
                     'to': 'romeo@montague.lit/orchard',
@@ -132,7 +132,7 @@
             textarea.value = "hello s s";
             view.onKeyDown(tab_event);
             view.onKeyUp(tab_event);
-            expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
+            await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === false);
             expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
 
             const up_arrow_event = {
@@ -170,10 +170,11 @@
             textarea.value = "hello z";
             view.onKeyDown(tab_event);
             view.onKeyUp(tab_event);
+            await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === false);
 
             view.onKeyDown(tab_event);
             view.onKeyUp(tab_event);
-            expect(textarea.value).toBe('hello @z3r0 ');
+            await u.waitUntil(() => textarea.value === 'hello @z3r0 ');
             done();
         }));
 
@@ -212,7 +213,7 @@
             view.onKeyDown(backspace_event);
             textarea.value = "hello @some1"; // Mimic backspace
             view.onKeyUp(backspace_event);
-            expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
+            await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === false);
             expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(1);
             expect(view.el.querySelector('.suggestion-box__results li').textContent).toBe('some1');
             done();

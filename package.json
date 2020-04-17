@@ -103,7 +103,7 @@
     "sass-loader": "^8.0.2",
     "sinon": "^9.0.2",
     "sizzle": "^2.3.5",
-    "style-loader": "^1.1.4",
+    "style-loader": "^0.23.1",
     "urijs": "^1.19.2",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",

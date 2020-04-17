@@ -1,5 +1,5 @@
 import { BootstrapModal } from "../converse-modal.js";
-import tpl_client_info_modal from "templates/client_info_modal";
+import tpl_user_settings_modal from "templates/user_settings_modal";
 
 let _converse;
 
@@ -12,7 +12,7 @@ export default BootstrapModal.extend({
     },
 
     toHTML () {
-        return tpl_client_info_modal(
+        return tpl_user_settings_modal(
             Object.assign(
                 this.model.toJSON(),
                 this.model.vcard.toJSON(),

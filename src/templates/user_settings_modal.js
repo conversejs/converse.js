@@ -1,9 +1,10 @@
+import '../components/adhoc-commands.js';
+import xss from "xss/dist/xss";
 import { __ } from '@converse/headless/i18n';
+import { api } from "@converse/headless/converse-core";
 import { html } from "lit-html";
 import { modal_header_close_button } from "./buttons"
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import '../components/adhoc-commands.js';
-import xss from "xss/dist/xss";
 
 
 const i18n_modal_title = __('Settings');
@@ -35,7 +36,11 @@ const tpl_navigation = (o) => html`
 `;
 
 
-export default (o) => html`
+export default (o) => {
+    const show_client_info = api.settings.get('show_client_info');
+    const allow_adhoc_commands = api.settings.get('allow_adhoc_commands');
+    const show_both_tabs = show_client_info && allow_adhoc_commands;
+    return html`
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -43,10 +48,12 @@ export default (o) => html`
                 ${modal_header_close_button}
             </div>
             <div class="modal-body">
-                ${ tpl_navigation(o) }
+                ${ show_both_tabs ? tpl_navigation(o) : '' }
 
                 <div class="tab-content">
-                    <div class="tab-pane tab-pane--columns active" id="about-tabpanel" role="tabpanel" aria-labelledby="about-tab">
+                    <div class="tab-pane tab-pane--columns ${show_client_info ? 'active' : ''}"
+                         id="about-tabpanel" role="tabpanel" aria-labelledby="about-tab">
+
                         <span class="modal-alert"></span>
                         <br/>
                         <div class="container brand-heading-container">
@@ -57,11 +64,14 @@ export default (o) => html`
                         </div>
                     </div>
 
-                    <div class="tab-pane tab-pane--columns" id="commands-tabpanel" role="tabpanel" aria-labelledby="commands-tab">
+                    <div class="tab-pane tab-pane--columns ${!show_client_info  && allow_adhoc_commands ? 'active' : ''}"
+                         id="commands-tabpanel"
+                         role="tabpanel"
+                         aria-labelledby="commands-tab">
                         <converse-adhoc-commands/>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-`;
+`};

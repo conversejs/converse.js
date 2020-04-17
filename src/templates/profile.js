@@ -1,21 +1,23 @@
-import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
-
+import { api } from "@converse/headless/converse-core";
+import { html } from "lit-html";
 
 const i18n_logout = __('Log out');
 const i18n_change_status = __('Click to change your chat status');
 const i18n_details = __('Show details about this chat client');
 
 
-export default (o) => html`
+export default (o) => {
+    const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');
+    return html`
     <div class="userinfo controlbox-padded">
         <div class="controlbox-section profile d-flex">
             <a class="show-profile" href="#">
                 <canvas class="avatar align-self-center" height="40" width="40"></canvas>
             </a>
             <span class="username w-100 align-self-center">${o.fullname}</span>
-            ${o._converse.api.settings.get('show_client_info') ? html`<a class="controlbox-heading__btn show-client-info fa fa-cog align-self-center" title="${i18n_details}" @click=${o.showUserSettingsModal}></a>` : ''}
-            ${o._converse.api.settings.get('allow_logout') ? html`<a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="${i18n_logout}"></a>` : ''}
+            ${show_settings_button  ? html`<a class="controlbox-heading__btn show-client-info fa fa-cog align-self-center" title="${i18n_details}" @click=${o.showUserSettingsModal}></a>` : ''}
+            ${api.settings.get('allow_logout') ? html`<a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="${i18n_logout}"></a>` : ''}
         </div>
         <div class="d-flex xmpp-status">
             <a class="change-status" title="${i18n_change_status}" data-toggle="modal" data-target="#changeStatusModal">
@@ -29,4 +31,4 @@ export default (o) => html`
             </a>
         </div>
     </div>
-`;
+`};

@@ -98,6 +98,15 @@ Here's an example of Converse being initialized with these options:
         allow_logout: false
     });
 
+
+allow_adhoc_commands
+--------------------
+
+* Default:  ``true``
+
+Allows privileged users to run XEP-0050 Ad-Hoc commands via the settings modal.
+
+
 allow_bookmarks
 ---------------
 

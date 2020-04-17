@@ -32,6 +32,7 @@ converse.plugins.add('converse-profile', {
         const { __ } = _converse;
 
         api.settings.update({
+            'allow_adhoc_commands': true,
             'show_client_info': true
         });
 
@@ -200,7 +201,6 @@ converse.plugins.add('converse-profile', {
                 return tpl_profile(Object.assign(
                     this.model.toJSON(),
                     this.model.vcard.toJSON(), {
-                    _converse,
                     chat_status,
                     'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
                     "showUserSettingsModal": ev => this.showUserSettingsModal(ev),

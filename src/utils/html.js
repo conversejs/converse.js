@@ -26,7 +26,7 @@ const URL_REGEX = /\b(https?\:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 function getAutoCompleteProperty (name, options) {
     return {
         'muc#roomconfig_lang': 'language',
-        'muc#roomconfig_roomsecret': options.new_password ? 'new-password' : 'current-password'
+        'muc#roomconfig_roomsecret': options?.new_password ? 'new-password' : 'current-password'
     }[name];
 }
 
@@ -372,12 +372,17 @@ u.addMentionsMarkup = function (text, references, chatbox) {
     references
         .sort((a, b) => b.begin - a.begin)
         .forEach(ref => {
-            const mention = text.slice(ref.begin, ref.end)
+            const prefix = text.slice(0, ref.begin);
+            const offset = ((prefix.match(/&lt;/g) || []).length + (prefix.match(/&gt;/g) || []).length) * 3;
+            const begin = parseInt(ref.begin, 10) + parseInt(offset, 10);
+            const end = parseInt(ref.end, 10) + parseInt(offset, 10);
+            const mention = text.slice(begin, end)
             chatbox;
+
             if (mention === nick) {
-                text = text.slice(0, ref.begin) + `<span class="mention mention--self badge badge-info">${mention}</span>` + text.slice(ref.end);
+                text = text.slice(0, begin) + `<span class="mention mention--self badge badge-info">${mention}</span>` + text.slice(end);
             } else {
-                text = text.slice(0, ref.begin) + `<span class="mention">${mention}</span>` + text.slice(ref.end);
+                text = text.slice(0, begin) + `<span class="mention">${mention}</span>` + text.slice(end);
             }
         });
     return text;
@@ -655,7 +660,7 @@ u.xForm2webForm = function (field, stanza, options) {
             'id': u.getUniqueId(),
             'label': field.getAttribute('label') || '',
             'name': name,
-            'fixed_username': options.fixed_username,
+            'fixed_username': options?.fixed_username,
             'autocomplete': getAutoCompleteProperty(name, options),
             'placeholder': null,
             'required': !!field.querySelector('required'),

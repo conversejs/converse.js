@@ -381,7 +381,6 @@
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
-
             await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await u.waitUntil(() => initializedOMEMO(_converse));

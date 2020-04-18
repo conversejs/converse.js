@@ -62,7 +62,7 @@ converse.plugins.add('converse-chatview', {
         api.settings.update({
             'auto_focus': true,
             'message_limit': 0,
-            'show_send_button': false,
+            'show_send_button': true,
             'show_retraction_warning': true,
             'show_toolbar': true,
             'visible_toolbar_buttons': {

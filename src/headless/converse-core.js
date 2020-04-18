@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { __, i18n } from './i18n';
-import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash';
+import { assignIn, debounce, invoke, isElement, isFunction, isObject, isString, pick } from 'lodash';
 import { Collection } from "skeletor.js/src/collection";
 import { Events } from 'skeletor.js/src/events.js';
 import { Model } from 'skeletor.js/src/model.js';
@@ -97,6 +97,7 @@ const PROMISES = [
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/converse.js
 const CORE_PLUGINS = [
+    'converse-adhoc',
     'converse-bookmarks',
     'converse-bosh',
     'converse-caps',
@@ -307,7 +308,7 @@ function initUserSettings () {
  * @namespace _converse.api
  * @memberOf _converse
  */
-const api = _converse.api = {
+export const api = _converse.api = {
     /**
      * This grouping collects API functions related to the XMPP connection.
      *
@@ -887,7 +888,8 @@ const api = _converse.api = {
             promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
             promise.catch(e => {
                 if (e === null) {
-                    throw new TimeoutError(`Timeout error after ${timeout}ms for the following IQ stanza: ${stanza}`);
+                    const el = isElement(stanza) ? stanza : stanza.nodeTree;
+                    throw new TimeoutError(`Timeout error after ${timeout}ms for the following IQ stanza: ${el}`);
                 }
             });
         } else {

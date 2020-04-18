@@ -117,21 +117,24 @@ export const Confirm = BootstrapModal.extend({
 
     onConfimation (ev) {
         ev.preventDefault();
-        this.confirmation.resolve(true);
-        this.modal.hide();
-    }
-});
-
-
-export const Prompt = Confirm.extend({
-    toHTML () {
-        return tpl_prompt(this.model.toJSON());
-    },
-
-    onConfimation (ev) {
-        ev.preventDefault();
         const form_data = new FormData(ev.target);
-        this.confirmation.resolve(form_data.get('reason'));
+        const fields = (this.model.get('fields') || [])
+            .map(field => {
+                const value = form_data.get(field.name).trim();
+                field.value = value;
+                if (field.challenge) {
+                    field.challenge_failed = (value !== field.challenge);
+                }
+                return field;
+            });
+
+        if (fields.filter(c => c.challenge_failed).length) {
+            this.model.set('fields', fields);
+            // Setting an array doesn't trigger a change event
+            this.model.trigger('change');
+            return;
+        }
+        this.confirmation.resolve(fields);
         this.modal.hide();
     }
 });
@@ -165,7 +168,7 @@ converse.plugins.add('converse-modal', {
 
         /************************ BEGIN API ************************/
         // We extend the default converse.js API to add methods specific to MUC chat rooms.
-        let alert, prompt, confirm;
+        let alert;
 
         Object.assign(_converse.api, {
             /**
@@ -173,33 +176,30 @@ converse.plugins.add('converse-modal', {
              * @method _converse.api.confirm
              * @param { String } title - The header text for the confirmation dialog
              * @param { (String[]|String) } messages - The text to show to the user
-             * @returns { Promise } A promise which resolves with true or false
+             * @param { Array<Field> } fields - An object representing a fields presented to the user.
+             * @property { String } Field.label - The form label for the input field.
+             * @property { String } Field.name - The name for the input field.
+             * @property { String } [Field.challenge] - A challenge value that must be provided by the user.
+             * @property { String } [Field.placeholder] - The placeholder for the input field.
+             * @property { Boolean} [Field.required] - Whether the field is required or not
+             * @returns { Promise<Array|false> } A promise which resolves with an array of
+             *  filled in fields or `false` if the confirm dialog was closed or canceled.
              */
-            async confirm (title, messages=[]) {
+            async confirm (title, messages=[], fields=[]) {
                 if (isString(messages)) {
                     messages = [messages];
                 }
-                if (confirm === undefined) {
-                    const model = new Model({
-                        'title': title,
-                        'messages': messages,
-                        'type': 'confirm'
-                    })
-                    confirm = new Confirm({model});
-                } else {
-                    confirm.confirmation = u.getResolveablePromise();
-                    confirm.model.set({
-                        'title': title,
-                        'messages': messages,
-                        'type': 'confirm'
-                    });
-                }
+                const model = new Model({title, messages, fields, 'type': 'confirm'})
+                const confirm = new Confirm({model});
                 confirm.show();
+                let result;
                 try {
-                    return await confirm.confirmation;
+                    result = await confirm.confirmation;
                 } catch (e) {
-                    return false;
+                    result = false;
                 }
+                confirm.remove();
+                return result;
             },
 
             /**
@@ -208,35 +208,32 @@ converse.plugins.add('converse-modal', {
              * @param { String } title - The header text for the prompt
              * @param { (String[]|String) } messages - The prompt text to show to the user
              * @param { String } placeholder - The placeholder text for the prompt input
-             * @returns { Promise } A promise which resolves with the text provided by the
+             * @returns { Promise<String|false> } A promise which resolves with the text provided by the
              *  user or `false` if the user canceled the prompt.
              */
             async prompt (title, messages=[], placeholder='') {
                 if (isString(messages)) {
                     messages = [messages];
                 }
-                if (prompt === undefined) {
-                    const model = new Model({
-                        'title': title,
-                        'messages': messages,
+                const model = new Model({
+                    title,
+                    messages,
+                    'fields': [{
+                        'name': 'reason',
                         'placeholder': placeholder,
-                        'type': 'prompt'
-                    })
-                    prompt = new Prompt({model});
-                } else {
-                    prompt.confirmation = u.getResolveablePromise();
-                    prompt.model.set({
-                        'title': title,
-                        'messages': messages,
-                        'type': 'prompt'
-                    });
-                }
+                    }],
+                    'type': 'prompt'
+                })
+                const prompt = new Confirm({model});
                 prompt.show();
+                let result;
                 try {
-                    return await prompt.confirmation;
+                    result = (await prompt.confirmation).pop()?.value;
                 } catch (e) {
-                    return false;
+                    result = false;
                 }
+                prompt.remove();
+                return result;
             },
 
             /**

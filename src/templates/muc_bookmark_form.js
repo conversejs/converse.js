@@ -18,7 +18,7 @@ export default (o) => html`
         </fieldset>
         <fieldset class="form-group">
             <label for="converse_muc_bookmark_nick">${i18n_nick}</label>
-            <input class="form-control" type="text" name="nick" value="${o.nick}" id="converse_muc_bookmark_nick"/>
+            <input class="form-control" type="text" name="nick" value="${o.nick | ''}" id="converse_muc_bookmark_nick"/>
         </fieldset>
         <fieldset class="form-group form-check">
             <input class="form-check-input" id="converse_muc_bookmark_autojoin" type="checkbox" name="autojoin"/>

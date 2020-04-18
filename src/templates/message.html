@@ -8,7 +8,7 @@
             {[ if (o.is_me_message) { ]}<time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>{[ } ]}
             <span class="chat-msg__author">{[ if (o.is_me_message) { ]}**{[ }; ]}{{{o.username}}}</span>
             {[ if (!o.is_me_message) { ]}
-                {[o.roles.forEach(function (role) { ]} <span class="badge badge-secondary">{{{role}}}</span> {[ }); ]}
+                {[o.hats.forEach(function (hat) { ]} <span class="badge badge-secondary">{{{hat}}}</span> {[ }); ]}
                 <time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>
             {[ } ]}
             {[ if (o.is_encrypted) { ]}<span class="fa fa-lock"></span>{[ } ]}

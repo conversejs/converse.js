@@ -60,7 +60,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 -   vCard support [XEP 54](https://xmpp.org/extensions/xep-0054.html)
 -   Service discovery [XEP 30](https://xmpp.org/extensions/xep-0030.html)
 -   In-band registration [XEP 77](https://xmpp.org/extensions/xep-0077.html)
--   Roster item exchange [XEP 144](https://xmpp.org/extensions/tmp/xep-0144-1.1.html)
+-   Roster item exchange [XEP 144](https://xmpp.org/extensions/xep-0144.html)
 -   Chat statuses (online, busy, away, offline)
 -   Typing and state notifications [XEP 85](https://xmpp.org/extensions/xep-0085.html)
 -   File sharing / HTTP File Upload [XEP 363](https://xmpp.org/extensions/xep-0363.html)
@@ -71,7 +71,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 -   Hidden Messages (aka Spoilers) [XEP 382](https://xmpp.org/extensions/xep-0382.html)
 -   Client state indication [XEP 352](https://xmpp.org/extensions/xep-0352.html)
 -   Last Message Correction [XEP 308](https://xmpp.org/extensions/xep-0308.html)
--   OMEMO encrypted messaging [XEP 384](https://xmpp.org/extensions/xep-0384.html")
+-   OMEMO encrypted messaging [XEP 384](https://xmpp.org/extensions/xep-0384.html)
 -   Anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html)
 -   Message Retractions [XEP-424](https://xmpp.org/extensions/xep-0424.html)
 -   Message Moderation [XEP-425](https://xmpp.org/extensions/xep-0425.html)
@@ -96,7 +96,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 
 We use behavior-driven tests written with [jasmine.js](https://jasmine.github.io/).
 
-Open [tests.html](https://github.com/conversejs/converse.js/blob/master/tests.html) in your browser, and the tests will run automatically.
+Open [tests/index.html](https://github.com/conversejs/converse.js/blob/master/tests/index.html) in your browser, and the tests will run automatically.
 
 ## Licence
 

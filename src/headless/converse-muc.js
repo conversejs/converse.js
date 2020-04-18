@@ -13,7 +13,7 @@ import { clone, debounce, intersection, invoke, isElement, isObject, isString, p
 import converse from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
-import stanza_utils from "./utils/stanza";
+import st from "./utils/stanza";
 import u from "./utils/form";
 
 converse.MUC_TRAFFIC_STATES = ['entered', 'exited'];
@@ -33,6 +33,7 @@ Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
 Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
 Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
 Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
+Strophe.addNamespace('MUC_HATS', "xmpp:prosody.im/protocol/hats:1");
 
 converse.MUC_NICK_CHANGED_CODE = "303";
 
@@ -383,6 +384,8 @@ converse.plugins.add('converse-muc', {
                 this.listenTo(this.occupants, 'add', this.onOccupantAdded);
                 this.listenTo(this.occupants, 'remove', this.onOccupantRemoved);
                 this.listenTo(this.occupants, 'change:show', this.onOccupantShowChanged);
+                this.listenTo(this.occupants, 'change:affiliation', this.createAffiliationChangeMessage);
+                this.listenTo(this.occupants, 'change:role', this.createRoleChangeMessage);
 
                 const restored = await this.restoreFromCache()
                 if (!restored) {
@@ -410,7 +413,6 @@ converse.plugins.add('converse-muc', {
                     await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
                     await this.fetchOccupants();
                     await this.fetchMessages();
-                    await this.clearMessageQueue();
                     return true;
                 } else {
                     await this.clearCache();
@@ -452,6 +454,13 @@ converse.plugins.add('converse-muc', {
                 this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
                 api.send(stanza);
                 return this;
+            },
+
+            async fetchMessages () {
+                await _converse.ChatBox.prototype.fetchMessages.call(this);
+                const queued_messages = this.message_queue.map(m => this.queueMessage(m));
+                this.message_queue = [];
+                return Promise.all(queued_messages);
             },
 
             async clearCache () {
@@ -506,20 +515,14 @@ converse.plugins.add('converse-muc', {
             },
 
             initMessages () {
+                this.message_queue = [];
                 _converse.ChatBox.prototype.initMessages.call(this);
-                this.message_queue = [];
-            },
-
-            async clearMessageQueue () {
-                await Promise.all(this.message_queue.map(m => this.queueMessage(m)));
-                this.message_queue = [];
             },
 
             async onConnectionStatusChanged () {
                 if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                     await this.occupants.fetchMembers();
                     await this.fetchMessages();
-                    await this.clearMessageQueue();
                     /**
                      * Triggered when the user has entered a new MUC
                      * @event _converse#enteredNewRoom
@@ -1564,7 +1567,7 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } pres - The presence stanza
              */
             updateOccupantsOnPresence (pres) {
-                const data = this.parsePresence(pres);
+                const data = st.parseMUCPresence(pres);
                 if (data.type === 'error' || (!data.jid && !data.nick)) {
                     return true;
                 }
@@ -1590,49 +1593,6 @@ converse.plugins.add('converse-muc', {
                 } else {
                     this.occupants.create(attributes);
                 }
-            },
-
-            parsePresence (pres) {
-                const from = pres.getAttribute("from"),
-                      type = pres.getAttribute("type"),
-                      data = {
-                        'from': from,
-                        'nick': Strophe.getResourceFromJid(from),
-                        'type': type,
-                        'states': [],
-                        'show': type !== 'unavailable' ? 'online' : 'offline'
-                      };
-
-                pres.childNodes.forEach(child => {
-                    switch (child.nodeName) {
-                        case "status":
-                            data.status = child.textContent || null;
-                            break;
-                        case "show":
-                            data.show = child.textContent || 'online';
-                            break;
-                        case "x":
-                            if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {
-                                child.childNodes.forEach(item => {
-                                    switch (item.nodeName) {
-                                        case "item":
-                                            data.affiliation = item.getAttribute("affiliation");
-                                            data.role = item.getAttribute("role");
-                                            data.jid = item.getAttribute("jid");
-                                            data.nick = item.getAttribute("nick") || data.nick;
-                                            break;
-                                        case "status":
-                                            if (item.getAttribute("code")) {
-                                                data.states.push(item.getAttribute("code"));
-                                            }
-                                    }
-                                });
-                            } else if (child.getAttribute("xmlns") === Strophe.NS.VCARDUPDATE) {
-                                data.image_hash = child.querySelector('photo')?.textContent;
-                            }
-                    }
-                });
-                return data;
             },
 
             fetchFeaturesIfConfigurationChanged (stanza) {
@@ -1701,7 +1661,7 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#handleSubjectChange
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              */
             async handleSubjectChange (attrs) {
                 if (isString(attrs.subject) && !attrs.thread && !attrs.message) {
@@ -1859,7 +1819,7 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#findDanglingModeration
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              * @returns { _converse.ChatRoomMessage }
              */
             findDanglingModeration (attrs) {
@@ -1890,7 +1850,7 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#handleModeration
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              * @returns { Boolean } Returns `true` or `false` depending on
              *  whether a message was moderated or not.
              */
@@ -1936,7 +1896,7 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza - The message stanza.
              */
             queueMessage (stanza) {
-                if (this.messages.fetched) {
+                if (this.messages?.fetched) {
                     this.msg_chain = (this.msg_chain || this.messages.fetched);
                     this.msg_chain = this.msg_chain.then(() => this.onMessage(stanza));
                     return this.msg_chain;
@@ -2024,14 +1984,14 @@ converse.plugins.add('converse-muc', {
                 await this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
-                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                const attrs = await st.parseMessage(stanza, original_stanza, this, _converse);
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, original_stanza);
                 }
                 if (message ||
-                        stanza_utils.isReceipt(stanza) ||
-                        stanza_utils.isChatMarker(stanza) ||
+                        st.isReceipt(stanza) ||
+                        st.isChatMarker(stanza) ||
                         this.ignorableCSN(attrs)) {
                     return api.trigger('message', {'stanza': original_stanza});
                 }
@@ -2109,6 +2069,86 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            createAffiliationChangeMessage (occupant) {
+                const previous_affiliation = occupant._previousAttributes.affiliation;
+                const current_affiliation = occupant.get('affiliation');
+                if (previous_affiliation === 'admin') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer an admin of this groupchat", occupant.get('nick'))
+                    });
+                } else if (previous_affiliation === 'owner') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer an owner of this groupchat", occupant.get('nick'))
+                    });
+                } else if (previous_affiliation === 'outcast') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer banned from this groupchat", occupant.get('nick'))
+                    });
+                }
+
+                if (current_affiliation === 'none' && previous_affiliation === 'member') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer a member of this groupchat", occupant.get('nick'))
+                    });
+                }
+
+                if (current_affiliation === 'member') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is now a member of this groupchat", occupant.get('nick'))
+                    });
+                } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
+                    // For example: AppleJack is now an (admin|owner) of this groupchat
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __(
+                            '%1$s is now an %2$s of this groupchat',
+                            occupant.get('nick'),
+                            current_affiliation
+                        )
+                    });
+                }
+            },
+
+            createRoleChangeMessage (occupant, changed) {
+                if (changed === "none" || occupant.changed.affiliation) {
+                    // We don't inform of role changes if they accompany affiliation changes.
+                    return;
+                }
+                const previous_role = occupant._previousAttributes.role;
+                if (previous_role === 'moderator') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s is no longer a moderator", occupant.get('nick'))
+                    });
+                }
+                if (previous_role === 'visitor') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s has been given a voice", occupant.get('nick'))
+                    });
+                }
+                if (occupant.get('role') === 'visitor') {
+                    this.createMessage({
+                        'type': 'info',
+                        'message': __("%1$s has been muted", occupant.get('nick'))
+                    });
+                }
+                if (occupant.get('role') === 'moderator') {
+                    if (!['owner', 'admin'].includes(occupant.get('affiliation'))) {
+                        // Oly show this message if the user isn't already
+                        // an admin or owner, otherwise this isn't new information.
+                        this.createMessage({
+                            'type': 'info',
+                            'message': __("%1$s is now a moderator", occupant.get('nick'))
+                        });
+                    }
+                }
+            },
 
             /**
              * Create info messages based on a received presence or message stanza
@@ -2122,10 +2162,9 @@ converse.plugins.add('converse-muc', {
                 if (!x) {
                     return;
                 }
-                const codes = sizzle('status', x).map(s => s.getAttribute('code'));
-                codes.forEach(code => {
+                sizzle('status', x).map(s => s.getAttribute('code')).forEach(code => {
                     const data = {
-                        'type': 'info'
+                        'type': 'info',
                     };
                     if (code === '110' || (code === '100' && !is_self)) {
                         return;
@@ -2385,6 +2424,7 @@ converse.plugins.add('converse-muc', {
         _converse.ChatRoomOccupant = Model.extend({
 
             defaults: {
+                'hats': [],
                 'show': 'offline',
                 'states': []
             },

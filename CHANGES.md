@@ -6,6 +6,7 @@
 configuration settings should now be accessed via `_converse.api.settings.get` and not directly on the `_converse` object.
 Soon we'll deprecate the latter, so prepare now.
 
+- #515 Add support for XEP-0050 Ad-Hoc commands
 - #1313: Stylistic improvements to the send button
 - #1490: Busy-loop when fetching registration form fails
 - #1535: Add option to destroy a MUC
@@ -19,16 +20,21 @@ Soon we'll deprecate the latter, so prepare now.
 - #1839: Headline messages are shown in controlbox
 - #1896: Don't send receipts for messages fetched from the archive 
 - #1937: Editing a message removes the mentions highlight
+- #1963: Mentions are visually incorrect when used in message replies
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
 - Bugfix. Handle stanza that clears the MUC subject
-- New config option [modtools_disable_assign](https://conversejs.org/docs/html/configuration.html#modtools-disable-assign)
-- New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
 - Replace Backbone with [Skeletor](https://github.com/skeletorjs/skeletor)
 - Start using [lit-html](https://lit-html.polymer-project.org/) instead of lodash for templating.
 - [muc_fetch_members](https://conversejs.org/docs/html/configuration.html#muc-fetch-members) now also accepts an array of affiliations to fetch.
 - Remove the configuration setting `muc_show_join_leave_status`. The optional status message is no longer shown at all.
 - Support for XEP-0156 is now enabled by default (which means that
   [discover_connection_methods](https://conversejs.org/docs/html/configuration.html#discover-connection-methods) now has a default value of `true`).
+- [show_send_button](https://conversejs.org/docs/html/configuration.html#show-send-button) now has a default value of `true`.
+- The [api.confirm](https://conversejs.org/docs/html/api/-_converse.api.html#.confirm) method now accepts a list of fields and returns the filled in list upon confirmation.
+- New config option [modtools_disable_assign](https://conversejs.org/docs/html/configuration.html#modtools-disable-assign)
+- New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
+- New config option [allow_adhoc_commands](https://conversejs.org/docs/html/configuration.html#allow-adhoc-commands)
+- New config option [muc_hats_from_vcard](https://conversejs.org/docs/html/configuration.html#muc-hats-from-vcard).
 
 ## 6.0.0 (2020-01-09)
 

@@ -9,7 +9,7 @@ import { Model } from 'skeletor.js/src/model.js';
 import converse from "./converse-core";
 import filesize from "filesize";
 import log from "./log";
-import stanza_utils from "./utils/stanza";
+import st from "./utils/stanza";
 
 const { $msg, Strophe, sizzle, utils } = converse.env;
 const u = converse.env.utils;
@@ -411,7 +411,7 @@ converse.plugins.add('converse-chat', {
             },
 
             async onMessage (stanza, original_stanza, from_jid) {
-                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                const attrs = await st.parseMessage(stanza, original_stanza, this, _converse);
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, original_stanza);
@@ -527,7 +527,7 @@ converse.plugins.add('converse-chat', {
 
             getUpdatedMessageAttributes (message, stanza) {  // eslint-disable-line no-unused-vars
                 return {
-                    'is_archived': stanza_utils.isArchived(stanza),
+                    'is_archived': st.isArchived(stanza),
                 }
             },
 
@@ -610,7 +610,7 @@ converse.plugins.add('converse-chat', {
              * @private
              * @method _converse.ChatBox#findDanglingRetraction
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              * @returns { _converse.Message }
              */
             findDanglingRetraction (attrs) {
@@ -637,7 +637,7 @@ converse.plugins.add('converse-chat', {
              * @private
              * @method _converse.ChatBox#handleRetraction
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              * @returns { Boolean } Returns `true` or `false` depending on
              *  whether a message was retracted or not.
              */
@@ -677,7 +677,7 @@ converse.plugins.add('converse-chat', {
              * @private
              * @method _converse.ChatBox#handleCorrection
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              * @returns { _converse.Message|undefined } Returns the corrected
              *  message or `undefined` if not applicable.
              */
@@ -710,7 +710,7 @@ converse.plugins.add('converse-chat', {
              * @private
              * @method _converse.ChatBox#getDuplicateMessage
              * @param { object } attrs - Attributes representing a received
-             *  message, as returned by {@link stanza_utils.getMessageAttributesFromStanza}
+             *  message, as returned by {@link st.parseMessage}
              * @returns {Promise<_converse.Message>}
              */
             getDuplicateMessage (attrs) {
@@ -1081,22 +1081,6 @@ converse.plugins.add('converse-chat', {
                 });
             },
 
-            /**
-             * Parses a passed in message stanza and returns an object of attributes.
-             * @private
-             * @method _converse.ChatBox#getMessageAttributesFromStanza
-             * @param { XMLElement } stanza - The message stanza
-             * @param { XMLElement } original_stanza - The original stanza, that contains the
-             *  message stanza, if it was contained, otherwise it's the message stanza itself.
-             * @returns { Object }
-             */
-            getMessageAttributesFromStanza (stanza, original_stanza) {
-                // XXX: Eventually we want to get rid of this pass-through
-                // method but currently we still need it because converse-omemo
-                // overrides it.
-                return stanza_utils.getMessageAttributesFromStanza(stanza, original_stanza, this, _converse);
-            },
-
             maybeShow () {
                 return this.trigger("show");
             },
@@ -1169,7 +1153,7 @@ converse.plugins.add('converse-chat', {
             if (!should_show) {
                 return;
             }
-            const attrs = await chatbox.getMessageAttributesFromStanza(stanza, stanza);
+            const attrs = await st.parseMessage(stanza, stanza, chatbox, _converse);
             await chatbox.createMessage(attrs);
         }
 

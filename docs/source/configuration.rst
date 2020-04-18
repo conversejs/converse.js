@@ -98,6 +98,15 @@ Here's an example of Converse being initialized with these options:
         allow_logout: false
     });
 
+
+allow_adhoc_commands
+--------------------
+
+* Default:  ``true``
+
+Allows privileged users to run XEP-0050 Ad-Hoc commands via the settings modal.
+
+
 allow_bookmarks
 ---------------
 
@@ -959,6 +968,17 @@ VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
 
 If no nickame value is found, then an error will be raised.
 
+muc_hats_from_vcard
+-------------------
+
+* Default: ``false``
+
+Since version 7 Converse now has rudimentary support for `XEP-0317 Hats <https://xmpp.org/extensions/xep-0317.html>`_.
+
+Previously we used a non-standard hack of showing the VCard roles as if they
+were hats. Set this value to ``true`` for the old behaviour.
+
+
 muc_mention_autocomplete_min_chars
 -----------------------------------
 
@@ -1645,7 +1665,7 @@ be turned off by setting this config variable to ``false``.
 show_send_button
 ----------------
 
-* Default: ``false``
+* Default: ``true``
 
 Adds a button to the chat which can be clicked or tapped in order to send the
 message.

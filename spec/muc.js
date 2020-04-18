@@ -2804,8 +2804,8 @@
                             'role': 'visitor'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                let info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy has been muted");
+                const info_msg = await u.waitUntil(() => view.el.querySelector('.chat-info__message'));
+                expect(info_msg.textContent.trim()).toBe("annoyingGuy has been muted");
 
                 presence = $pres({
                         'from': 'lounge@montague.lit/annoyingGuy',
@@ -2818,8 +2818,10 @@
                             'role': 'participant'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy has been given a voice");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                        "annoyingGuy has been given a voice"
+                );
 
                 // Check that we don't see an info message concerning the role,
                 // if the affiliation has changed.
@@ -2834,8 +2836,10 @@
                             'role': 'visitor'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy is no longer a member of this groupchat");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "annoyingGuy is no longer a member of this groupchat"
+                );
                 done();
             }));
 
@@ -3331,7 +3335,10 @@
                             'role': 'participant'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.el.querySelectorAll('.chat-info')[2].textContent.trim()).toBe("annoyingGuy is now an owner of this groupchat");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "annoyingGuy is now an owner of this groupchat"
+                );
                 done();
             }));
 
@@ -3547,7 +3554,6 @@
                 });
                 spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
-                spyOn(view, 'showChatEvent').and.callThrough();
                 spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 // New user enters the groupchat
@@ -3628,8 +3634,11 @@
                             'role': 'moderator'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                let info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("trustworthyguy is now a moderator");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "trustworthyguy is now a moderator"
+                );
+
                 // Call now with the correct amount of arguments.
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
@@ -3638,7 +3647,6 @@
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
-                expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3667,10 +3675,12 @@
                             'jid': 'trustworthyguy@montague.lit',
                             'affiliation': 'member',
                             'role': 'participant'
-                        });
+                });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("trustworthyguy is no longer a moderator");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "trustworthyguy is no longer a moderator"
+                );
                 done();
             }));
 
@@ -3690,7 +3700,6 @@
                 });
                 spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
-                spyOn(view, 'showChatEvent').and.callThrough();
                 spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 // New user enters the groupchat
@@ -3770,8 +3779,10 @@
                             'role': 'visitor'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                let info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy has been muted");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "annoyingGuy has been muted"
+                );
 
                 // Call now with the correct of arguments.
                 // XXX: Calling onFormSubmitted directly, trying
@@ -3781,7 +3792,6 @@
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
-                expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3813,8 +3823,10 @@
                             'role': 'participant'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_msgs.pop().textContent.trim()).toBe("annoyingGuy has been given a voice");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "annoyingGuy has been given a voice"
+                );
                 done();
             }));
 
@@ -3824,27 +3836,43 @@
                     async function (done, _converse) {
 
                 const muc_jid = 'lounge@montague.lit';
+                const new_muc_jid = 'foyer@montague.lit';
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-                const view = _converse.api.chatviews.get(muc_jid);
-                spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
-                const textarea = view.el.querySelector('.chat-textarea');
-                textarea.value = '/destroy bored';
+                let view = _converse.api.chatviews.get(muc_jid);
+                spyOn(_converse.api, 'confirm').and.callThrough();
+                let textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = '/destroy';
                 view.onFormSubmitted(new Event('submit'));
+                let modal = await u.waitUntil(() => document.querySelector('.modal-dialog'));
+                await u.waitUntil(() => u.isVisible(modal));
 
-                const sent_IQs = _converse.connection.IQ_stanzas;
-                const sent_IQ = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('destroy')).pop());
+                let challenge_el = modal.querySelector('[name="challenge"]');
+                challenge_el.value = muc_jid+'e';
+                const reason_el = modal.querySelector('[name="reason"]');
+                reason_el.value = 'Moved to a new location';
+                const newjid_el = modal.querySelector('[name="newjid"]');
+                newjid_el.value = new_muc_jid;
+                let submit = modal.querySelector('[type="submit"]');
+                submit.click();
+                expect(u.isVisible(modal)).toBeTruthy();
+                expect(u.hasClass('error', challenge_el)).toBeTruthy();
+                challenge_el.value = muc_jid;
+                submit.click();
+
+                let sent_IQs = _converse.connection.IQ_stanzas;
+                let sent_IQ = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('destroy')).pop());
                 expect(Strophe.serialize(sent_IQ)).toBe(
-                    `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
+                    `<iq id="${sent_IQ.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#owner">`+
-                            `<destroy>`+
+                            `<destroy jid="${new_muc_jid}">`+
                                 `<reason>`+
-                                    `bored`+
+                                    `Moved to a new location`+
                                 `</reason>`+
                             `</destroy>`+
                         `</query>`+
                     `</iq>`);
 
-                const result_stanza = $iq({
+                let result_stanza = $iq({
                     'type': 'result',
                     'id': sent_IQ.getAttribute('id'),
                     'from': view.model.get('jid'),
@@ -3856,6 +3884,41 @@
                 await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
                 await u.waitUntil(() => _converse.chatboxes.length === 1);
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+
+                // Try again without reason or new JID
+                _converse.connection.IQ_stanzas = [];
+                sent_IQs = _converse.connection.IQ_stanzas;
+                await test_utils.openAndEnterChatRoom(_converse, new_muc_jid, 'romeo');
+                view = _converse.api.chatviews.get(new_muc_jid);
+                textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = '/destroy';
+                view.onFormSubmitted(new Event('submit'));
+                modal = await u.waitUntil(() => document.querySelector('.modal-dialog'));
+                await u.waitUntil(() => u.isVisible(modal));
+
+                challenge_el = modal.querySelector('[name="challenge"]');
+                challenge_el.value = new_muc_jid;
+                submit = modal.querySelector('[type="submit"]');
+                submit.click();
+
+                sent_IQ = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector('destroy')).pop());
+                expect(Strophe.serialize(sent_IQ)).toBe(
+                    `<iq id="${sent_IQ.getAttribute('id')}" to="${new_muc_jid}" type="set" xmlns="jabber:client">`+
+                        `<query xmlns="http://jabber.org/protocol/muc#owner">`+
+                            `<destroy/>`+
+                        `</query>`+
+                    `</iq>`);
+
+                result_stanza = $iq({
+                    'type': 'result',
+                    'id': sent_IQ.getAttribute('id'),
+                    'from': view.model.get('jid'),
+                    'to': _converse.connection.jid
+                });
+                expect(_converse.chatboxes.length).toBe(2);
+                _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
+                await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
+                await u.waitUntil(() => _converse.chatboxes.length === 1);
                 done();
             }));
         });
@@ -5231,9 +5294,10 @@
                 expect(bottom_panel.textContent.trim()).toBe("You're not allowed to send messages in this room");
 
                 // Check now that things get restored when the user is given a voice
-                let info_msgs = sizzle('.chat-info', view.el);
-                expect(info_msgs.length).toBe(1);
-                expect(info_msgs[0].textContent.trim()).toBe("troll is no longer an owner of this groupchat");
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "troll is no longer an owner of this groupchat"
+                );
 
                 stanza = u.toStanza(`
                     <presence
@@ -5247,16 +5311,18 @@
                     </x>
                     </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                info_msgs = sizzle('.chat-info', view.el);
-
                 bottom_panel = view.el.querySelector('.muc-bottom-panel');
                 expect(bottom_panel).toBe(null);
 
                 textarea = view.el.querySelector('.chat-textarea');
                 expect(textarea === null).toBe(false);
 
-                expect(info_msgs.length).toBe(2);
-                expect(info_msgs[1].textContent.trim()).toBe("troll has been given a voice");
+                // Check now that things get restored when the user is given a voice
+                await u.waitUntil(() =>
+                    Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
+                    "troll has been given a voice"
+                );
+                expect(view.el.querySelectorAll('.chat-info__message').length).toBe(2);
                 done();
             }));
         });

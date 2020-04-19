@@ -852,7 +852,7 @@ converse.plugins.add('converse-muc', {
                     }
                 }
                 if (api.connection.connected()) {
-                    this.sendUnavailablePresence(exit_msg);
+                    api.user.presence.send('unavailable', this.getRoomJIDAndNick(), exit_msg);
                 }
                 u.safeSave(this.session, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
                 this.removeHandlers();
@@ -875,18 +875,6 @@ converse.plugins.add('converse-muc', {
             canModerateMessages () {
                 const self = this.getOwnOccupant();
                 return self && self.isModerator() && api.disco.supports(Strophe.NS.MODERATE, this.get('jid'));
-            },
-
-            sendUnavailablePresence (exit_msg) {
-                const presence = $pres({
-                    type: "unavailable",
-                    from: _converse.connection.jid,
-                    to: this.getRoomJIDAndNick()
-                });
-                if (exit_msg !== null) {
-                    presence.c("status", exit_msg);
-                }
-                _converse.connection.sendPresence(presence);
             },
 
             /**

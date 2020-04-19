@@ -140,8 +140,9 @@
                 const view = _converse.xmppstatusview;
                 modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
                 modal.el.querySelector('[type="submit"]').click();
-                const last_stanza = _converse.connection.sent_stanzas.pop();
-                expect(Strophe.serialize(last_stanza)).toBe(
+                const sent_stanzas = _converse.connection.sent_stanzas;
+                const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop());
+                expect(Strophe.serialize(sent_presence)).toBe(
                     `<presence xmlns="jabber:client">`+
                         `<show>dnd</show>`+
                         `<priority>0</priority>`+
@@ -169,8 +170,9 @@
                 const msg = 'I am happy';
                 modal.el.querySelector('input[name="status_message"]').value = msg;
                 modal.el.querySelector('[type="submit"]').click();
-                const last_stanza = _converse.connection.sent_stanzas.pop();
-                expect(Strophe.serialize(last_stanza)).toBe(
+                const sent_stanzas = _converse.connection.sent_stanzas;
+                const sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop());
+                expect(Strophe.serialize(sent_presence)).toBe(
                     `<presence xmlns="jabber:client">`+
                         `<status>I am happy</status>`+
                         `<priority>0</priority>`+

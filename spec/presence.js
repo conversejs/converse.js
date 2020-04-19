@@ -8,6 +8,7 @@
     ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
+    const Strophe = converse.env.Strophe;
     const u = converse.env.utils;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
@@ -37,7 +38,7 @@
         }));
 
         it("has a given priority", mock.initConverse((done, _converse) => {
-            let pres = _converse.xmppstatus.constructPresence('online', 'Hello world');
+            let pres = _converse.xmppstatus.constructPresence('online', null, 'Hello world');
             expect(pres.toLocaleString()).toBe(
                 `<presence xmlns="jabber:client">`+
                     `<status>Hello world</status>`+
@@ -46,7 +47,7 @@
                 `</presence>`
             );
             _converse.priority = 2;
-            pres = _converse.xmppstatus.constructPresence('away', 'Going jogging');
+            pres = _converse.xmppstatus.constructPresence('away', null, 'Going jogging');
             expect(pres.toLocaleString()).toBe(
                 `<presence xmlns="jabber:client">`+
                     `<show>away</show>`+
@@ -57,7 +58,7 @@
             );
 
             delete _converse.priority;
-            pres = _converse.xmppstatus.constructPresence('dnd', 'Doing taxes');
+            pres = _converse.xmppstatus.constructPresence('dnd', null, 'Doing taxes');
             expect(pres.toLocaleString()).toBe(
                 `<presence xmlns="jabber:client">`+
                     `<show>dnd</show>`+
@@ -75,8 +76,6 @@
                 async (done, _converse) => {
 
             test_utils.openControlBox(_converse);
-            const view = _converse.xmppstatusview;
-            spyOn(view.model, 'sendPresence').and.callThrough();
             spyOn(_converse.connection, 'send').and.callThrough();
 
             const cbview = _converse.chatboxviews.get('controlbox');
@@ -86,8 +85,10 @@
             const msg = 'My custom status';
             modal.el.querySelector('input[name="status_message"]').value = msg;
             modal.el.querySelector('[type="submit"]').click();
-            expect(view.model.sendPresence).toHaveBeenCalled();
-            expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
+
+            const sent_stanzas = _converse.connection.sent_stanzas;
+            let sent_presence = await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop());
+            expect(Strophe.serialize(sent_presence))
                 .toBe(`<presence xmlns="jabber:client">`+
                         `<status>My custom status</status>`+
                         `<priority>0</priority>`+
@@ -100,10 +101,16 @@
             await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "false", 1000);
             modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
             modal.el.querySelector('[type="submit"]').click();
-            expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
-                .toBe(`<presence xmlns="jabber:client"><show>dnd</show><status>My custom status</status><priority>0</priority>`+
+            await u.waitUntil(() => sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).length === 2);
+            sent_presence = sent_stanzas.filter(s => Strophe.serialize(s).match('presence')).pop();
+            expect(Strophe.serialize(sent_presence))
+                .toBe(
+                    `<presence xmlns="jabber:client">`+
+                        `<show>dnd</show>`+
+                        `<status>My custom status</status>`+
+                        `<priority>0</priority>`+
                         `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
-                        `</presence>`)
+                    `</presence>`)
             done();
         }));
     });

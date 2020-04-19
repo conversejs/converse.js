@@ -90,7 +90,6 @@ const PROMISES = [
     'connectionInitialized',
     'initialized',
     'pluginsInitialized',
-    'statusInitialized'
 ];
 
 // Core plugins are whitelisted automatically
@@ -712,7 +711,6 @@ export const api = _converse.api = {
      * * [rosterContactsFetched](/docs/html/events.html#rosterContactsFetched)
      * * [rosterGroupsFetched](/docs/html/events.html#rosterGroupsFetched)
      * * [rosterInitialized](/docs/html/events.html#rosterInitialized)
-     * * [statusInitialized](/docs/html/events.html#statusInitialized)
      * * [roomsPanelRendered](/docs/html/events.html#roomsPanelRendered)
      *
      * The various plugins might also provide promises, and they do this by using the

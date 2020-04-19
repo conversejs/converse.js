@@ -834,7 +834,7 @@ converse.plugins.add('converse-rosterview', {
                 u.addClass('fa-spin', ev.target);
                 _converse.roster.data.save('version', null);
                 await _converse.roster.fetchFromServer();
-                _converse.xmppstatus.sendPresence();
+                api.user.presence.send();
                 u.removeClass('fa-spin', ev.target);
             },
 

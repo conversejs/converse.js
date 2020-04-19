@@ -23,6 +23,7 @@ converse.plugins.add('converse-status', {
             default_state: 'online',
             priority: 0,
         });
+        api.promises.add(['statusInitialized']);
 
         _converse.XMPPStatus = Model.extend({
             defaults () {
@@ -35,7 +36,7 @@ converse.plugins.add('converse-status', {
                         return;
                     }
                     if ('status' in item.changed || 'status_message' in item.changed) {
-                        this.sendPresence(this.get('status'), this.get('status_message'));
+                        api.user.presence.send(this.get('status'), null, this.get('status_message'));
                     }
                 });
             },
@@ -49,12 +50,11 @@ converse.plugins.add('converse-status', {
                 return '';
             },
 
-            constructPresence (type, status_message) {
-                let presence;
+            constructPresence (type, to=null, status_message) {
                 type = isString(type) ? type : (this.get('status') || api.settings.get("default_state"));
                 status_message = isString(status_message) ? status_message : this.get('status_message');
-                // Most of these presence types are actually not explicitly sent,
-                // but I add all of them here for reference and future proofing.
+                let presence;
+                const attrs = {to};
                 if ((type === 'unavailable') ||
                         (type === 'probe') ||
                         (type === 'error') ||
@@ -62,14 +62,17 @@ converse.plugins.add('converse-status', {
                         (type === 'unsubscribed') ||
                         (type === 'subscribe') ||
                         (type === 'subscribed')) {
-                    presence = $pres({'type': type});
+                    attrs['type'] = type;
+                    presence = $pres(attrs);
                 } else if (type === 'offline') {
-                    presence = $pres({'type': 'unavailable'});
+                    attrs['type'] = 'unavailable';
+                    presence = $pres(attrs);
                 } else if (type === 'online') {
-                    presence = $pres();
+                    presence = $pres(attrs);
                 } else {
-                    presence = $pres().c('show').t(type).up();
+                    presence = $pres(attrs).c('show').t(type).up();
                 }
+
                 if (status_message) {
                     presence.c('status').t(status_message).up();
                 }
@@ -82,10 +85,6 @@ converse.plugins.add('converse-status', {
                     presence.c('idle', {xmlns: Strophe.NS.IDLE, since: idle_since.toISOString()});
                 }
                 return presence;
-            },
-
-            sendPresence (type, status_message) {
-                api.send(this.constructPresence(type, status_message));
             }
         });
 
@@ -118,7 +117,7 @@ converse.plugins.add('converse-status', {
             }
             if (_converse.idle) {
                 _converse.idle = false;
-                _converse.xmppstatus.sendPresence();
+                api.user.presence.send();
             }
             if (_converse.auto_changed_status === true) {
                 _converse.auto_changed_status = false;
@@ -148,7 +147,7 @@ converse.plugins.add('converse-status', {
                     _converse.idle_seconds > api.settings.get("idle_presence_timeout") &&
                     !_converse.idle) {
                 _converse.idle = true;
-                _converse.xmppstatus.sendPresence();
+                api.user.presence.send();
             }
             if (api.settings.get("auto_away") > 0 &&
                     _converse.idle_seconds > api.settings.get("auto_away") &&
@@ -246,20 +245,38 @@ converse.plugins.add('converse-status', {
         /************************ BEGIN API ************************/
         Object.assign(_converse.api.user, {
             /**
+             * @namespace _converse.api.user.presence
+             * @memberOf _converse.api.user
+             */
+            presence: {
+                /**
+                 * Send out a presence stanza
+                 * @method _converse.api.user.presence.send
+                 * @param { String } type
+                 * @param { String } to
+                 * @param { String } [status] - An optional status message
+                 */
+                async send (type, to, status) {
+                    await api.waitUntil('statusInitialized');
+                    api.send(_converse.xmppstatus.constructPresence(type, to, status));
+                }
+            },
+
+            /**
              * Set and get the user's chat status, also called their *availability*.
-             *
              * @namespace _converse.api.user.status
              * @memberOf _converse.api.user
              */
             status: {
-                /** Return the current user's availability status.
-                 *
+                /**
+                 * Return the current user's availability status.
                  * @method _converse.api.user.status.get
                  * @example _converse.api.user.status.get();
                  */
                 get () {
                     return _converse.xmppstatus.get('status');
                 },
+
                 /**
                  * The user's status can be set to one of the following values:
                  *
@@ -267,8 +284,8 @@ converse.plugins.add('converse-status', {
                  * @param {string} value The user's chat status (e.g. 'away', 'dnd', 'offline', 'online', 'unavailable' or 'xa')
                  * @param {string} [message] A custom status message
                  *
-                 * @example this._converse.api.user.status.set('dnd');
-                 * @example this._converse.api.user.status.set('dnd', 'In a meeting');
+                 * @example _converse.api.user.status.set('dnd');
+                 * @example _converse.api.user.status.set('dnd', 'In a meeting');
                  */
                 set (value, message) {
                     const data = {'status': value};
@@ -280,7 +297,6 @@ converse.plugins.add('converse-status', {
                     if (isString(message)) {
                         data.status_message = message;
                     }
-                    _converse.xmppstatus.sendPresence(value);
                     _converse.xmppstatus.save(data);
                 },
 

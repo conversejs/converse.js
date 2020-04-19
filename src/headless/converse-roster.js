@@ -80,7 +80,7 @@ converse.plugins.add('converse-roster', {
 
         _converse.sendInitialPresence = function () {
             if (_converse.send_initial_presence) {
-                _converse.xmppstatus.sendPresence();
+                api.user.presence.send();
             }
         };
 
@@ -771,7 +771,7 @@ converse.plugins.add('converse-roster', {
                     //
                     // As a workaround for now we simply send our presence again,
                     // otherwise we're treated as offline.
-                    _converse.xmppstatus.sendPresence();
+                    api.user.presence.send();
                 }
             },
 

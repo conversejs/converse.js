@@ -58,8 +58,7 @@ $mobile_portrait_length: 480px !default;
 
     --chat-content-background-color: white;
 
-    --chat-topic-display: block;
-    --chat-info-display: block;
+    --chat-info-color: var(--chatroom-head-bg-color);
 
     --highlight-color: #DCF9F6;
     --highlight-color-darker: #B0E8E2;
@@ -197,11 +196,11 @@ $mobile_portrait_length: 480px !default;
     --controlbox-heading-font-weight: bold;
     --groupchats-header-color: var(--redder-orange);
 
-    --chat-topic-display: none;
-    --chat-info-display: none;
     --chat-textarea-background-color: #F6F6F6;
     --chat-correcting-color: #FFFFC0;
     --chat-head-text-color: #AAA;
+
+    --chat-info-color: var(--subdued-color);
 
     --chatbox-border-radius: 0px;
 

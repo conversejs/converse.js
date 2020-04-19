@@ -133,13 +133,11 @@
                     flex-direction: row;
                 }
                 .chat-topic {
-                    display: var(--chat-topic-display);
                     font-weight: bold;
                     color: var(--chatroom-head-bg-color);
                 }
                 .chat-info {
-                    display: var(--chat-info-display);
-                    color: var(--chatroom-head-bg-color);
+                    color: var(--chat-info-color);
                     line-height: normal;
                     &.badge {
                         color: var(--chat-head-text-color);

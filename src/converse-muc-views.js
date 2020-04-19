@@ -1363,6 +1363,9 @@ converse.plugins.add('converse-muc-views', {
             },
 
             getNickOrJIDFromCommandArgs (args) {
+                if (u.isValidJID(args.trim())) {
+                    return args.trim();
+                }
                 if (!args.startsWith('@')) {
                     args = '@'+ args;
                 }
@@ -1399,21 +1402,25 @@ converse.plugins.add('converse-muc-views', {
                 if (!nick_or_jid) {
                     return false;
                 }
+
+                let jid;
                 const reason = args.split(nick_or_jid, 2)[1].trim();
                 const occupant = this.model.getOccupant(nick_or_jid);
-                if (!occupant) {
-                    this.showErrorMessage(__(
-                        "Couldn't find a participant with that nickname or XMPP address. "+
-                        "They might have left the groupchat."
-                    ));
-                    return;
+                if (occupant) {
+                    jid = occupant.get('jid');
+                } else {
+                    if (u.isValidJID(nick_or_jid)) {
+                        jid = nick_or_jid;
+                    } else {
+                        this.showErrorMessage(__(
+                            "Couldn't find a participant with that nickname. "+
+                            "They might have left the groupchat."
+                        ));
+                        return;
+                    }
                 }
-
-                const attrs = {
-                    'jid': occupant.get('jid'),
-                    'reason': reason
-                }
-                if (_converse.auto_register_muc_nickname && occupant) {
+                const attrs = { jid, reason };
+                if (occupant && _converse.auto_register_muc_nickname) {
                     attrs['nick'] = occupant.get('nick');
                 }
                 this.model.setAffiliation(affiliation, [attrs])

@@ -20,7 +20,6 @@ import tpl_info from "templates/info.html";
 import tpl_new_day from "templates/new_day.html";
 import tpl_spinner from "templates/spinner.html";
 import tpl_spoiler_button from "templates/spoiler_button.html";
-import tpl_status_message from "templates/status_message.html";
 import tpl_toolbar from "templates/toolbar.html";
 import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.js";
@@ -1194,15 +1193,7 @@ converse.plugins.add('converse-chatview', {
                     } else if (show === 'online') {
                         text = __('%1$s is online', fullname);
                     }
-                    if (text) {
-                        this.msgs_container.insertAdjacentHTML(
-                            'beforeend',
-                            tpl_status_message({
-                                'message': text,
-                                'isodate': (new Date()).toISOString(),
-                            }));
-                        this.scrollDown();
-                    }
+                    text && this.model.createMessage({'message': text, 'type': 'info'});
                 }
             },
 

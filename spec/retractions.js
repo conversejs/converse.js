@@ -706,14 +706,18 @@
                 _converse.connection._dataRecv(test_utils.createRequest(error));
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-error').length === 1);
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 0);
-                expect(view.model.messages.length).toBe(2);
-                expect(view.model.messages.last().get('retracted')).toBeFalsy();
-                expect(view.model.messages.last().get('is_ephemeral')).toBeFalsy();
-                expect(view.model.messages.last().get('editable')).toBeTruthy();
+                expect(view.model.messages.length).toBe(3);
+                expect(view.model.messages.at(1).get('retracted')).toBeFalsy();
+                expect(view.model.messages.at(1).get('is_ephemeral')).toBeFalsy();
+                expect(view.model.messages.at(1).get('editable')).toBeTruthy();
+
+                const err_msg = "Sorry, something went wrong while trying to retract your message."
+                expect(view.model.messages.at(2).get('message')).toBe(err_msg);
+                expect(view.model.messages.at(2).get('type')).toBe('error');
 
                 expect(view.el.querySelectorAll('.chat-error').length).toBe(1);
                 const errmsg = view.el.querySelector('.chat-error');
-                expect(errmsg.textContent).toBe("Sorry, something went wrong while trying to retract your message.");
+                expect(errmsg.textContent.trim()).toBe("Sorry, something went wrong while trying to retract your message.");
                 done();
             }));
 
@@ -746,15 +750,15 @@
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
 
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 0);
-                expect(view.model.messages.length).toBe(2);
-                expect(view.model.messages.last().get('retracted')).toBeFalsy();
-                expect(view.model.messages.last().get('is_ephemeral')).toBeFalsy();
-                expect(view.model.messages.last().get('editable')).toBeTruthy();
+                expect(view.model.messages.length).toBe(4);
+                expect(view.model.messages.at(1).get('retracted')).toBeFalsy();
+                expect(view.model.messages.at(1).get('is_ephemeral')).toBeFalsy();
+                expect(view.model.messages.at(1).get('editable')).toBeTruthy();
 
                 const error_messages = view.el.querySelectorAll('.chat-error');
                 expect(error_messages.length).toBe(2);
-                expect(error_messages[0].textContent).toBe("Sorry, something went wrong while trying to retract your message.");
-                expect(error_messages[1].textContent).toBe("Timeout Error: No response from server");
+                expect(error_messages[0].textContent.trim()).toBe("Sorry, something went wrong while trying to retract your message.");
+                expect(error_messages[1].textContent.trim()).toBe("Timeout Error: No response from server");
                 done();
             }));
 

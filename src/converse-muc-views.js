@@ -1008,13 +1008,9 @@ converse.plugins.add('converse-muc-views', {
             retractOwnMessage(message) {
                 this.model.retractOwnMessage(message)
                     .catch(e => {
-                        const errmsg = __('Sorry, something went wrong while trying to retract your message.');
-                        if (u.isErrorStanza(e)) {
-                            this.showErrorMessage(errmsg);
-                        } else {
-                            this.showErrorMessage(errmsg);
-                            this.showErrorMessage(e.message);
-                        }
+                        const message = __('Sorry, something went wrong while trying to retract your message.');
+                        this.model.createMessage({message, 'type': 'error'});
+                        !u.isErrorStanza(e) && this.model.createMessage({'message': e.message, 'type': 'error'});
                         log.error(e);
                     });
             },
@@ -1327,7 +1323,8 @@ converse.plugins.add('converse-muc-views', {
                     }
                 }
                 if (show_error) {
-                    this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'))
+                    const message = __('Forbidden: you do not have the necessary role in order to do that.');
+                    this.model.createMessage({message, 'type': 'error'});
                 }
                 return false;
             },
@@ -1347,16 +1344,19 @@ converse.plugins.add('converse-muc-views', {
                     }
                 }
                 if (show_error) {
-                    this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'))
+                    const message = __('Forbidden: you do not have the necessary affiliation in order to do that.');
+                    this.model.createMessage({message, 'type': 'error'});
                 }
                 return false;
             },
 
             validateRoleOrAffiliationChangeArgs (command, args) {
                 if (!args) {
-                    this.showErrorMessage(
-                        __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command)
+                    const message = __(
+                        'Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
+                        command
                     );
+                    this.model.createMessage({message, 'type': 'error'});
                     return false;
                 }
                 return true;
@@ -1371,17 +1371,20 @@ converse.plugins.add('converse-muc-views', {
                 }
                 const [text, references] = this.model.parseTextForReferences(args); // eslint-disable-line no-unused-vars
                 if (!references.length) {
-                    this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
+                    const message = __("Error: couldn't find a groupchat participant based on your arguments");
+                    this.model.createMessage({message, 'type': 'error'});
                     return;
                 }
                 if (references.length > 1) {
-                    this.showErrorMessage(__("Error: found multiple groupchat participant based on your arguments"));
+                    const message = __("Error: found multiple groupchat participant based on your arguments");
+                    this.model.createMessage({message, 'type': 'error'});
                     return;
                 }
                 const nick_or_jid = references.pop().value;
                 const reason = args.split(nick_or_jid, 2)[1];
                 if (reason && !reason.startsWith(' ')) {
-                    this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
+                    const message = __("Error: couldn't find a groupchat participant based on your arguments");
+                    this.model.createMessage({message, 'type': 'error'});
                     return;
                 }
                 return nick_or_jid;
@@ -1412,10 +1415,11 @@ converse.plugins.add('converse-muc-views', {
                     if (u.isValidJID(nick_or_jid)) {
                         jid = nick_or_jid;
                     } else {
-                        this.showErrorMessage(__(
+                        const message = __(
                             "Couldn't find a participant with that nickname. "+
                             "They might have left the groupchat."
-                        ));
+                        );
+                        this.model.createMessage({message, 'type': 'error'});
                         return;
                     }
                 }
@@ -1459,10 +1463,10 @@ converse.plugins.add('converse-muc-views', {
 
             onCommandError (err) {
                 log.fatal(err);
-                this.showErrorMessage(
+                const message =
                     __("Sorry, an error happened while running the command.") + " " +
-                    __("Check your browser's developer console for details.")
-                );
+                    __("Check your browser's developer console for details.");
+                this.model.createMessage({message, 'type': 'error'});
             },
 
             getAllowedCommands () {
@@ -1608,7 +1612,9 @@ converse.plugins.add('converse-muc-views', {
                             break;
                         } else if (args.length === 0) {
                             // e.g. Your nickname is "coolguy69"
-                            this.showErrorMessage(__('Your nickname is "%1$s"', this.model.get('nick')))
+                            const message = __('Your nickname is "%1$s"', this.model.get('nick'));
+                            this.model.createMessage({message, 'type': 'error'});
+
                         } else {
                             const jid = Strophe.getBareJidFromJid(this.model.get('jid'));
                             api.send($pres({
@@ -1628,10 +1634,13 @@ converse.plugins.add('converse-muc-views', {
                     }
                     case 'register': {
                         if (args.length > 1) {
-                            this.showErrorMessage(__('Error: invalid number of arguments'))
+                            this.model.createMessage({
+                                'message': __('Error: invalid number of arguments'),
+                                'type': 'error'
+                            });
                         } else {
                             this.model.registerNickname().then(err_msg => {
-                                if (err_msg) this.showErrorMessage(err_msg)
+                                err_msg && this.model.createMessage({'message': err_msg, 'type': 'error'});
                             });
                         }
                         break;
@@ -2018,10 +2027,10 @@ converse.plugins.add('converse-muc-views', {
                     await this.model.sendConfiguration(configArray);
                 } catch (e) {
                     log.error(e);
-                    this.showErrorMessage(
+                    const message =
                         __("Sorry, an error occurred while trying to submit the config form.") + " " +
-                        __("Check your browser's developer console for details.")
-                    );
+                        __("Check your browser's developer console for details.");
+                    this.model.createMessage({message, 'type': 'error'});
                 }
                 await this.model.refreshDiscoInfo();
                 this.chatroomview.closeForm();

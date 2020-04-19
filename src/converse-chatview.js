@@ -15,7 +15,6 @@ import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
-import tpl_error_message from "templates/error_message.html";
 import tpl_help_message from "templates/help_message.html";
 import tpl_info from "templates/info.html";
 import tpl_new_day from "templates/new_day.html";
@@ -516,14 +515,6 @@ converse.plugins.add('converse-chatview', {
                 this.insertDayIndicator(this.msgs_container.lastElementChild);
                 this.scrollDown();
                 return isodate;
-            },
-
-            showErrorMessage (message) {
-                this.msgs_container.insertAdjacentHTML(
-                    'beforeend',
-                    tpl_error_message({'message': message, 'isodate': (new Date()).toISOString() })
-                );
-                this.scrollDown();
             },
 
             addSpinner (append=false) {

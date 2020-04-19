@@ -1776,7 +1776,6 @@
                         .t("We didn't like the name").nodeTree;
 
                 const view = _converse.chatboxviews.get('problematic@muc.montague.lit');
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-msg').textContent.trim())
                     .toBe('This groupchat no longer exists');
@@ -3062,7 +3061,7 @@
                     keyCode: 13
                 });
                 expect(_converse.connection.send).not.toHaveBeenCalled();
-                expect(view.el.querySelectorAll('.chat-error').length).toBe(1);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-error').length);
                 expect(view.el.querySelector('.chat-error').textContent.trim())
                     .toBe('Error: couldn\'t find a groupchat participant based on your arguments');
 
@@ -3266,7 +3265,6 @@
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 spyOn(view.model, 'setAffiliation').and.callThrough();
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 let presence = $pres({
@@ -3290,17 +3288,20 @@
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
-                expect(view.showErrorMessage).toHaveBeenCalledWith(
+                const err_msg = await u.waitUntil(() => view.el.querySelector('.chat-error'));
+                expect(err_msg.textContent.trim()).toBe(
                     "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
+
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
                 textarea.value = '/owner nobody You\'re responsible';
                 view.onFormSubmitted(new Event('submit'));
-
-                expect(view.showErrorMessage).toHaveBeenCalledWith(
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-error').length === 2);
+                expect(Array.from(view.el.querySelectorAll('.chat-error')).pop().textContent.trim()).toBe(
                     "Error: couldn't find a groupchat participant based on your arguments");
+
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
 
                 // Call now with the correct of arguments.
@@ -3312,7 +3313,6 @@
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
                 expect(view.model.setAffiliation).toHaveBeenCalled();
-                expect(view.showErrorMessage.calls.count()).toBe(2);
                 // Check that the member list now gets updated
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3357,7 +3357,6 @@
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 spyOn(view.model, 'setAffiliation').and.callThrough();
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 let presence = $pres({
@@ -3381,8 +3380,7 @@
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
-                expect(view.showErrorMessage).toHaveBeenCalled();
-                expect(view.el.querySelector('.message:last-child').textContent.trim()).toBe(
+                await u.waitUntil(() => view.el.querySelector('.message:last-child')?.textContent?.trim() ===
                     "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
 
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
@@ -3394,7 +3392,6 @@
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
-                expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setAffiliation).toHaveBeenCalled();
                 // Check that the member list now gets updated
                 expect(sent_IQ.toLocaleString()).toBe(
@@ -3422,7 +3419,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 2);
-                expect(view.el.querySelectorAll('.chat-info__message')[0].textContent.trim()).toBe("annoyingGuy has been banned by romeo");
+                expect(view.el.querySelectorAll('.chat-info__message')[1].textContent.trim()).toBe("annoyingGuy has been banned by romeo");
                 expect(view.el.querySelector('.chat-info:last-child q').textContent.trim()).toBe("You're annoying");
                 presence = $pres({
                         'from': 'lounge@montague.lit/joe2',
@@ -3439,7 +3436,7 @@
 
                 textarea.value = '/ban joe22';
                 view.onFormSubmitted(new Event('submit'));
-                expect(view.el.querySelector('.message:last-child').textContent.trim()).toBe(
+                await u.waitUntil(() => view.el.querySelector('.message:last-child')?.textContent?.trim() ===
                     "Error: couldn't find a groupchat participant based on your arguments");
                 done();
             }));
@@ -3461,7 +3458,6 @@
                 await test_utils.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
                 const view = _converse.api.chatviews.get(muc_jid);
                 spyOn(view.model, 'setRole').and.callThrough();
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 let presence = $pres({
@@ -3485,7 +3481,7 @@
                     keyCode: 13
                 });
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
-                expect(view.showErrorMessage).toHaveBeenCalledWith(
+                await u.waitUntil(() => view.el.querySelector('.message:last-child')?.textContent?.trim() ===
                     "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
@@ -3496,7 +3492,6 @@
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
-                expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3532,7 +3527,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
                 await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 2);
-                expect(view.el.querySelectorAll('.chat-info__message')[0].textContent.trim()).toBe("annoying guy has been kicked out by romeo");
+                expect(view.el.querySelectorAll('.chat-info__message')[1].textContent.trim()).toBe("annoying guy has been kicked out by romeo");
                 expect(view.el.querySelector('.chat-info:last-child q').textContent.trim()).toBe("You're annoying");
                 done();
             }));
@@ -3553,7 +3548,6 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 spyOn(view.model, 'setRole').and.callThrough();
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 // New user enters the groupchat
@@ -3590,7 +3584,7 @@
                 });
 
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
-                expect(view.showErrorMessage).toHaveBeenCalledWith(
+                await u.waitUntil(() => view.el.querySelector('.message:last-child')?.textContent?.trim() ===
                     "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.");
 
                 expect(view.model.setRole).not.toHaveBeenCalled();
@@ -3602,7 +3596,6 @@
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
-                expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -3699,7 +3692,6 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 spyOn(view.model, 'setRole').and.callThrough();
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 // New user enters the groupchat
@@ -3712,7 +3704,7 @@
                  * </x>
                  * </presence>
                  */
-                var presence = $pres({
+                let presence = $pres({
                         'from': 'lounge@montague.lit/annoyingGuy',
                         'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
                         'to': 'romeo@montague.lit/desktop'
@@ -3736,7 +3728,7 @@
                 });
 
                 expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
-                expect(view.showErrorMessage).toHaveBeenCalledWith(
+                await u.waitUntil(() => view.el.querySelector('.message:last-child')?.textContent?.trim() ===
                     "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
@@ -3747,7 +3739,6 @@
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
-                expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
@@ -4060,7 +4051,6 @@
                       .c('error').attrs({by:'lounge@montague.lit', type:'auth'})
                           .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent.trim())
                     .toBe('You have been banned from this groupchat.');
@@ -4084,7 +4074,6 @@
                           .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
                 const view = _converse.chatboxviews.get(muc_jid);
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('.chatroom-body form.chatroom-form label:first', view.el).pop().textContent.trim())
                     .toBe('Please choose your nickname');
@@ -4128,7 +4117,6 @@
                         .c('conflict').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
                 const view = _converse.chatboxviews.get(muc_jid);
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view.model, 'join').and.callThrough();
 
                 // Simulate repeatedly that there's already someone in the groupchat
@@ -4191,7 +4179,6 @@
                     }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                       .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                           .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent.trim())
                     .toBe('You are not allowed to create new groupchats.');
@@ -4233,7 +4220,6 @@
                       .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                           .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent.trim())
                     .toBe("Your nickname doesn't conform to this groupchat's policies.");
@@ -4275,7 +4261,6 @@
                       .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                           .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent.trim())
                     .toBe("This groupchat does not (yet) exist.");
@@ -4317,7 +4302,6 @@
                       .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
                           .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent.trim())
                     .toBe("This groupchat has reached its maximum number of participants.");

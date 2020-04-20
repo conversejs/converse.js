@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { __, i18n } from './i18n';
-import { assignIn, debounce, invoke, isElement, isFunction, isObject, isString, pick } from 'lodash';
+import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import { Collection } from "skeletor.js/src/collection";
 import { Events } from 'skeletor.js/src/events.js';
 import { Model } from 'skeletor.js/src/model.js';

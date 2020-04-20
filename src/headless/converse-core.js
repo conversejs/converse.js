@@ -886,8 +886,9 @@ export const api = _converse.api = {
             promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
             promise.catch(e => {
                 if (e === null) {
-                    const el = isElement(stanza) ? stanza : stanza.nodeTree;
-                    throw new TimeoutError(`Timeout error after ${timeout}ms for the following IQ stanza: ${el}`);
+                    throw new TimeoutError(
+                        `Timeout error after ${timeout}ms for the following IQ stanza: ${Strophe.serialize(stanza)}`
+                    );
                 }
             });
         } else {

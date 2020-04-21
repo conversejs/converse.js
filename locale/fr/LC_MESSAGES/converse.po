@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
 "PO-Revision-Date: 2020-04-21 23:45+0000\n"
-"Last-Translator: Jeannette L <j.lavoie@net-c.ca>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -106,7 +106,7 @@ msgstr "Annuler"
 #: dist/converse-no-dependencies.js:27562
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
-"Votre message n'a pas pu être délivré car vous n'êtes pas autorisé à "
+"Votre message n'a pas été délivré car vous n'avez pas été autorisé à "
 "l'envoyer."
 
 #: dist/converse-no-dependencies.js:27565

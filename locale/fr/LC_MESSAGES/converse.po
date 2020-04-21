@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
 "PO-Revision-Date: 2020-04-21 23:52+0000\n"
-"Last-Translator: anonymous <noreply@weblate.org>\n"
+"Last-Translator: Jeannette L <j.lavoie@net-c.ca>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -1419,7 +1419,7 @@ msgstr "Adresse du salon"
 
 #: dist/converse-no-dependencies.js:62909
 msgid "Groupchat id is invalid."
-msgstr "L’identifiant du groupe de discussion est invalide"
+msgstr "L’identifiant du groupe de discussion est invalide."
 
 #: dist/converse-no-dependencies.js:62928
 #, javascript-format

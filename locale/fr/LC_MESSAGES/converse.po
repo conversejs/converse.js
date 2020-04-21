@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-21 23:45+0000\n"
-"Last-Translator: anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-04-21 23:51+0000\n"
+"Last-Translator: Jeannette L <j.lavoie@net-c.ca>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -106,8 +106,8 @@ msgstr "Annuler"
 #: dist/converse-no-dependencies.js:27562
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
-"Votre message n'a pas été délivré car vous n'avez pas été autorisé à "
-"l'envoyer."
+"Votre message n’a pas été délivré car vous n’avez pas été autorisé à "
+"l’envoyer."
 
 #: dist/converse-no-dependencies.js:27565
 #, javascript-format
@@ -1603,6 +1603,8 @@ msgid ""
 "Couldn't find a participant with that nickname or XMPP address. They might "
 "have left the groupchat."
 msgstr ""
+"Impossible de trouver de participant avec ce pseudo ou cette adresse XMPP. "
+"Il se peut qu’il ait quitté le salon."
 
 #: dist/converse-no-dependencies.js:64132
 msgid "Sorry, an error happened while running the command."
@@ -1754,9 +1756,8 @@ msgid "Click to open this server message"
 msgstr "Cliquez pour ouvrir le message du serveur"
 
 #: dist/converse-no-dependencies.js:65432
-#, fuzzy
 msgid "Close these announcements"
-msgstr "Annonces"
+msgstr "Fermer ces annonces"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:65610
@@ -2226,9 +2227,9 @@ msgid "Click to decline the contact request from %1$s"
 msgstr "Cliquez pour décliner la demande d’ajout de contact de %1$s"
 
 #: dist/converse-no-dependencies.js:71027
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
-msgstr "Cliquez pour discuter avec %1$s (JID : %2$s)"
+msgstr "Cliquez pour discuter avec %1$s (adresse XMPP : %2$s)"
 
 #: dist/converse-no-dependencies.js:71160
 msgid "Are you sure you want to decline this contact request?"

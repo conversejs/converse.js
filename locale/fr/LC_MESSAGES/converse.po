@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-21 23:52+0000\n"
-"Last-Translator: anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-04-23 00:11+0000\n"
+"Last-Translator: Jeannette L <j.lavoie@net-c.ca>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -26,15 +26,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:10577
 msgid "Uploading file:"
-msgstr "Envoi de fichier :"
+msgstr "Téléversement du fichier :"
 
 #: dist/converse-no-dependencies.js:10701
 msgid "This message has been edited"
-msgstr "Ce message a été édité"
+msgstr "Ce message a été modifié"
 
 #: dist/converse-no-dependencies.js:10707
 msgid "Edit this message"
-msgstr "Éditer ce message"
+msgstr "Modifier ce message"
 
 #: dist/converse-no-dependencies.js:10713
 msgid "Retract this message"
@@ -170,16 +170,19 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
 msgstr ""
-"Désolé, l’envoi de fichier a échoué. Votre serveur a répondu : « %1$s »"
+"Désolé, le téléversement du fichier a échoué. Votre serveur a répondu : « %1$"
+"s »"
 
 #: dist/converse-no-dependencies.js:31026
 msgid "Sorry, could not succesfully upload your file."
-msgstr "Désolé, l’envoi de fichier a échoué."
+msgstr "Désolé, le téléversement du fichier a échoué."
 
 #: dist/converse-no-dependencies.js:32204
 #: dist/converse-no-dependencies.js:32225
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr "Désolé, votre serveur semble ne pas proposer l’envoi de fichier."
+msgstr ""
+"Désolé, votre serveur semble ne pas prendre en charge le téléversement de "
+"fichiers."
 
 #: dist/converse-no-dependencies.js:32250
 #, javascript-format
@@ -1395,7 +1398,7 @@ msgstr "chat.exemple.org"
 #: dist/converse-no-dependencies.js:62734
 #: dist/converse-no-dependencies.js:70113
 msgid "Show more information on this groupchat"
-msgstr "Afficher davantage d’informations sur ce salon"
+msgstr "Afficher plus d’informations sur ce salon"
 
 #: dist/converse-no-dependencies.js:62744
 msgid "No groupchats found"
@@ -1535,7 +1538,7 @@ msgstr "Supprimer ce salon"
 
 #: dist/converse-no-dependencies.js:63687
 msgid "Invite someone to join this groupchat"
-msgstr "Inviter une personne à rejoindre ce salon"
+msgstr "Inviter quelqu’un à rejoindre ce salon"
 
 #: dist/converse-no-dependencies.js:63701
 msgid "Show topic"
@@ -1753,7 +1756,7 @@ msgstr "Annonces"
 
 #: dist/converse-no-dependencies.js:65347
 msgid "Click to open this server message"
-msgstr "Cliquez pour ouvrir le message du serveur"
+msgstr "Cliquez pour ouvrir le message de ce serveur"
 
 #: dist/converse-no-dependencies.js:65432
 msgid "Close these announcements"
@@ -1824,7 +1827,7 @@ msgstr "Cliquez pour changer votre statut"
 
 #: dist/converse-no-dependencies.js:65913
 msgid "Show details about this chat client"
-msgstr "Afficher davantage d’informations sur ce client"
+msgstr "Afficher plus d’informations sur ce client"
 
 #: dist/converse-no-dependencies.js:66017
 msgid "Your avatar image"

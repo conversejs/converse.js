@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
 "PO-Revision-Date: 2020-04-23 00:11+0000\n"
-"Last-Translator: Jeannette L <j.lavoie@net-c.ca>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -1617,8 +1617,7 @@ msgstr "Désolé, une erreur est survenue lors de l'exécution de la commande."
 #: dist/converse-no-dependencies.js:64805
 msgid "Check your browser's developer console for details."
 msgstr ""
-"Veuillez vérifier la console de développement de votre navigateur pour plus "
-"de détails."
+"Vérifiez les erreurs dans la console de développement de votre navigateur."
 
 #: dist/converse-no-dependencies.js:64178
 msgid "Are you sure you want to destroy this groupchat?"
@@ -1678,7 +1677,7 @@ msgstr "Changer le rôle de l’utilisateur en modérateur"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Grant ownership of this groupchat"
-msgstr "Accorder la propriété à ce salon"
+msgstr "Accorder la propriété de ce salon"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Register your nickname"
@@ -1747,7 +1746,7 @@ msgstr "Chercher un salon"
 #: dist/converse-no-dependencies.js:64805
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr ""
-"Désolé, une erreur est survenue en tentant de soumettre le formulaire de "
+"Désolé, une erreur est survenue lors de la validation du formulaire de "
 "configuration."
 
 #: dist/converse-no-dependencies.js:65343

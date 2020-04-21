@@ -28,7 +28,6 @@ const $iq = strophe.default.$iq;
 const $msg = strophe.default.$msg;
 const $pres = strophe.default.$pres;
 
-
 dayjs.extend(advancedFormat);
 
 // Add Strophe Namespaces

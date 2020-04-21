@@ -70,16 +70,25 @@ var specs = [
     "spec/xss"
 ];
 
-require(['console-reporter', 'mock', 'sinon'], (ConsoleReporter, mock, sinon) => {
-    if (window.view_mode) {
-        mock.view_mode = window.view_mode;
-    }
-    window.sinon = sinon;
-    // Load the specs
-    require(specs, jasmine => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000;
-        const jasmineEnv = jasmine.getEnv();
-        jasmineEnv.addReporter(new ConsoleReporter());
-        window.onload();
+
+function load () {
+    require(['console-reporter', 'mock', 'sinon'], (ConsoleReporter, mock, sinon) => {
+        if (window.view_mode) {
+            mock.view_mode = window.view_mode;
+        }
+        window.sinon = sinon;
+        // Load the specs
+        require(specs, jasmine => {
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000;
+            const jasmineEnv = jasmine.getEnv();
+            jasmineEnv.addReporter(new ConsoleReporter());
+            window.onload();
+        });
     });
-});
+}
+
+if (window.converse) {
+    load();
+} else {
+    window.addEventListener('converse-loaded', load);
+}

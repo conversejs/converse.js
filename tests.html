@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Converse.js</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Converse.js: A free chat client for your website" />
+    <script src="3rdparty/libsignal-protocol.js"></script>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
+    <link rel="shortcut icon" type="image/png" href="node_modules/jasmine-core/images/jasmine_favicon.png">
+    <link rel="stylesheet" type="text/css" media="screen" href="node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
+    <script data-main="tests/runner" src="../node_modules/requirejs/require.js"></script>
+    <style>
+        .tests-brand-heading {
+            margin-top: 1em;
+            font-size: 200%;
+        }
+    </style>
+</head>
+<body class="reset"></body>
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <h1 class="brand-heading tests-brand-heading">
+              <i class="icon-conversejs"></i> Converse</h1>
+          <h2 id="project_tagline">Tests</h2>
+        </header>
+    </div>
+    <script>
+        converse.load();
+    </script>
+</html>

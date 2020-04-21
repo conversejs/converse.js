@@ -1,9 +1,6 @@
 (function (root, factory) {
     define("mock", [], factory);
 }(this, function () {
-
-    converse.load();
-
     const _ = converse.env._;
     const u = converse.env.utils;
     const Promise = converse.env.Promise;

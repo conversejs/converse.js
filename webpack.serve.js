@@ -13,6 +13,11 @@ module.exports = merge(common, {
         new HTMLWebpackPlugin({
             title: 'Converse.js Dev',
             template: 'webpack.html'
+        }),
+        new HTMLWebpackPlugin({
+            filename: 'tests.html',
+            title: 'Converse.js Tests',
+            template: 'tests.html'
         })
     ],
 });

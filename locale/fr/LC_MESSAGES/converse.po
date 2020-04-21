@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
 "PO-Revision-Date: 2020-04-21 23:51+0000\n"
-"Last-Translator: Jeannette L <j.lavoie@net-c.ca>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -717,7 +717,7 @@ msgstr "Pas de confiance"
 
 #: dist/converse-no-dependencies.js:52740
 msgid "No OMEMO-enabled devices found"
-msgstr "Aucun appareil avec le chiffrement OMEMO trouvé"
+msgstr "Aucun client compatible avec le chiffrement OMEMO n'a été trouvé"
 
 #: dist/converse-no-dependencies.js:52990
 msgid "Sorry, something went wrong while trying to refresh"
@@ -834,9 +834,9 @@ msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
-"Veuillez noter que les autres clients (et serveurs) XMPP/Jabber ne "
-"pourraient pas supporter les rétractations et que ce message ne pourrait pas "
-"être enlever partout."
+"Sachez que d'autres clients (et serveurs) XMPP/Jabber peuvent ne pas encore "
+"prendre en charge les rétractations et que ce message peut ne pas être "
+"supprimé partout."
 
 #: dist/converse-no-dependencies.js:54224
 #: dist/converse-no-dependencies.js:63413
@@ -1150,7 +1150,7 @@ msgstr "Inviter"
 
 #: dist/converse-no-dependencies.js:61462
 msgid "Invite someone to this groupchat"
-msgstr "Inviter quelqu'un dans ce groupe de discussion"
+msgstr "Inviter une personne à ce groupe de discussion"
 
 #: dist/converse-no-dependencies.js:61464
 msgid "user@example.org"

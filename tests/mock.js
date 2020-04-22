@@ -1,6 +1,37 @@
-(function (root, factory) {
-    define("mock", [], factory);
-}(this, function () {
+const mock = {};
+window.mock = mock;
+let _converse, initConverse;
+
+mock.initConverse = function (promise_names=[], settings=null, func) {
+    if (typeof promise_names === "function") {
+        func = promise_names;
+        promise_names = []
+        settings = null;
+    }
+
+    return async done => {
+        if (_converse && _converse.api.connection.connected()) {
+            await _converse.api.user.logout();
+        }
+        const el = document.querySelector('#conversejs');
+        if (el) {
+            el.parentElement.removeChild(el);
+        }
+        document.title = "Converse Tests";
+
+        await initConverse(settings);
+        await Promise.all((promise_names || []).map(_converse.api.waitUntil));
+        try {
+            await func(done, _converse);
+        } catch(e) {
+            console.error(e);
+            fail(e);
+            await done();
+        }
+    }
+};
+
+window.addEventListener('converse-loaded', () => {
     const _ = converse.env._;
     const u = converse.env.utils;
     const Promise = converse.env.Promise;
@@ -24,7 +55,6 @@
             this.decryptPreKeyWhisperMessage = (key_and_tag) => {
                 return Promise.resolve(key_and_tag);
             };
-
             this.decryptWhisperMessage = (key_and_tag) => {
                 return Promise.resolve(key_and_tag);
             }
@@ -65,8 +95,6 @@
             }
         }
     };
-
-    const mock = {};
 
     mock.default_muc_features = [
         'http://jabber.org/protocol/muc',
@@ -150,9 +178,6 @@
     mock.event = {
         'preventDefault': function () {}
     };
-
-
-    let _converse;
 
     const OriginalConnection = Strophe.Connection;
 
@@ -252,7 +277,7 @@
         window.sessionStorage.removeItem(cache_key+'fetched');
     }
 
-    async function initConverse (settings) {
+    initConverse = async (settings) => {
         clearStores();
         await clearIndexedDB();
 
@@ -309,34 +334,4 @@
         window.converse_disable_effects = true;
         return _converse;
     }
-
-    mock.initConverse = function (promise_names=[], settings=null, func) {
-        if (_.isFunction(promise_names)) {
-            func = promise_names;
-            promise_names = []
-            settings = null;
-        }
-
-        return async done => {
-            if (_converse && _converse.api.connection.connected()) {
-                await _converse.api.user.logout();
-            }
-            const el = document.querySelector('#conversejs');
-            if (el) {
-                el.parentElement.removeChild(el);
-            }
-            document.title = "Converse Tests";
-
-            await initConverse(settings);
-            await Promise.all((promise_names || []).map(_converse.api.waitUntil));
-            try {
-                await func(done, _converse);
-            } catch(e) {
-                console.error(e);
-                fail(e);
-                await done();
-            }
-        }
-    };
-    return mock;
-}));
+});

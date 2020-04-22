@@ -1,6 +1,5 @@
-(function (root, factory) {
-    define(["jasmine", "mock"], factory);
-} (this, function (jasmine, mock) {
+window.addEventListener('converse-loaded', () => {
+    const mock = window.mock;
     const u = converse.env.utils;
 
     return describe("The XMPPStatus model", function () {
@@ -21,4 +20,4 @@
             done();
         }));
     });
-}));
+});

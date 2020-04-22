@@ -1,6 +1,5 @@
-(function (root, factory) {
-    define(["jasmine", "mock"], factory);
-} (this, function (jasmine, mock) {
+window.addEventListener('converse-loaded', () => {
+    const mock = window.mock;
 
     return describe("The _converse Event Emitter", function() {
 
@@ -61,4 +60,4 @@
             done();
         }));
     });
-}));
+});

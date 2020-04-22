@@ -1,13 +1,6 @@
-/*jshint sub:true*/
-/*eslint dot-notation: "off"*/
-(function (root, factory) {
-    define([
-        "jasmine",
-        "mock",
-        "test-utils",
-    ], factory);
-} (this, function (jasmine, mock, test_utils) {
-    "use strict";
+window.addEventListener('converse-loaded', () => {
+    const mock = window.mock;
+    const test_utils = window.test_utils;
     const Strophe = converse.env.Strophe;
     const u = converse.env.utils;
     // See: https://xmpp.org/rfcs/rfc3921.html
@@ -294,5 +287,4 @@
             done();
         }));
     });
-}));
-
+});

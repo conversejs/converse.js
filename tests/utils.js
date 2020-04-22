@@ -1,6 +1,4 @@
-(function (root, factory) {
-    define(['mock'], factory);
-}(this, function (mock) {
+window.addEventListener('converse-loaded', () => {
     const _ = converse.env._;
     const $msg = converse.env.$msg;
     const $pres = converse.env.$pres;
@@ -8,7 +6,10 @@
     const Strophe = converse.env.Strophe;
     const sizzle = converse.env.sizzle;
     const u = converse.env.utils;
+    const mock = window.mock;
     const utils = {};
+
+    window.test_utils = utils;
 
     utils.waitUntilDiscoConfirmed = async function (_converse, entity_jid, identities, features=[], items=[], type='info') {
         const iq = await u.waitUntil(() => {
@@ -337,10 +338,10 @@
 
     utils.createContacts = async function (_converse, type, length) {
         /* Create current (as opposed to requesting or pending) contacts
-         * for the user's roster.
-         *
-         * These contacts are not grouped. See below.
-         */
+            * for the user's roster.
+            *
+            * These contacts are not grouped. See below.
+            */
         await _converse.api.waitUntil('rosterContactsFetched');
         let names, subscription, requesting, ask;
         if (type === 'requesting') {
@@ -414,13 +415,13 @@
 
     utils.createChatMessage = function (_converse, sender_jid, message) {
         return $msg({
-                   from: sender_jid,
-                   to: _converse.connection.jid,
-                   type: 'chat',
-                   id: (new Date()).getTime()
-               })
-               .c('body').t(message).up()
-               .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                    from: sender_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: (new Date()).getTime()
+                })
+                .c('body').t(message).up()
+                .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
     }
 
     utils.sendMessage = function (view, message) {
@@ -433,5 +434,4 @@
         });
         return promise;
     };
-    return utils;
-}));
+});

@@ -1,9 +1,8 @@
-(function (root, factory) {
-    define(["jasmine", "mock", "test-utils"], factory);
-} (this, function (jasmine, mock, test_utils) {
+window.addEventListener('converse-loaded', () => {
+    const mock = window.mock;
+    const test_utils = window.test_utils;
     const { $iq, $pres, $msg, _, Strophe } = converse.env;
     const u = converse.env.utils;
-
 
     async function deviceListFetched (_converse, jid) {
         const selector = `iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`;
@@ -1536,4 +1535,4 @@
             done();
         }));
     });
-}));
+});

@@ -1,6 +1,6 @@
-(function (root, factory) {
-    define(["jasmine", "mock", "test-utils"], factory);
-} (this, function (jasmine, mock, test_utils) {
+window.addEventListener('converse-loaded', () => {
+    const mock = window.mock;
+    const test_utils = window.test_utils;
     const Strophe = converse.env.Strophe;
     const $iq = converse.env.$iq;
     const { _, sizzle}  = converse.env;
@@ -362,4 +362,4 @@
             done();
         }));
     });
-}));
+});

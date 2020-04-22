@@ -1,8 +1,6 @@
-(function (root, factory) {
-    define(["jasmine"], factory);
-} (this, function () {
-    var utils = converse.env.utils,
-        _ = converse.env._;
+window.addEventListener('converse-loaded', () => {
+    const utils = converse.env.utils;
+    const _ = converse.env._;
 
     return describe("Converse.js Utilities", function() {
 
@@ -61,4 +59,4 @@
             expect(context.visible_toolbar_buttons.toggle_occupants).toBeTruthy();
         });
     });
-}));
+});

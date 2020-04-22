@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-17 17:11+0000\n"
-"Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
+"PO-Revision-Date: 2020-04-22 00:05+0000\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0.1-dev\n"
+"X-Generator: Weblate 4.0.2-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -161,7 +161,7 @@ msgstr "Leider konnte die Upload-URL nicht ermittelt werden."
 
 #: dist/converse-no-dependencies.js:30981
 msgid "Sorry, could not determine file upload URL."
-msgstr "Leider konnte die Upload-URL für die Datei nicht ermittelt werden."
+msgstr "Konnte die Hochlade-URL leider nicht bestimmen."
 
 #: dist/converse-no-dependencies.js:31024
 #, javascript-format
@@ -180,8 +180,7 @@ msgstr "Leider konnte Ihre Datei nicht erfolgreich hochgeladen werden."
 #: dist/converse-no-dependencies.js:32225
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
-"Leider sieht es so aus, als ob der Datei-Upload von Ihrem Server nicht "
-"unterstützt wird."
+"Scheint als werde das Hochladen von Dateien auf dem Server nicht unterstützt."
 
 #: dist/converse-no-dependencies.js:32250
 #, javascript-format
@@ -315,22 +314,21 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37534
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Sie dürfen sich nicht an diesem Gruppenchat anmelden."
+msgstr "Sie dürfen nicht diesem Gruppenchat beitreten."
 
 #: dist/converse-no-dependencies.js:37536
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
-"Sie dürfen sich nicht in diesem Gruppenchat anmelden, da er nur für "
-"Mitglieder ist."
+"Es ist Ihnen nicht erlaubt diesem Raum beizutreten da sie kein Mitglied sind."
 
 #: dist/converse-no-dependencies.js:37581
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
-"Sie können Ihren Spitznamen in diesem Gruppenchat nicht registrieren, er "
-"unterstützt keine Registrierung."
+"Registrierung fehlgeschlagen, dieser Raum unterstützt keine Registrierung "
+"von Nicknames."
 
 #: dist/converse-no-dependencies.js:37583
 msgid ""

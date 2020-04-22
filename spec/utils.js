@@ -1,62 +1,58 @@
-window.addEventListener('converse-loaded', () => {
-    const utils = converse.env.utils;
-    const _ = converse.env._;
+describe("Converse.js Utilities", function() {
 
-    return describe("Converse.js Utilities", function() {
+    it("applySiteSettings: recursively applies user settings", function () {
+        const context = {};
+        const settings = {
+            show_toolbar: true,
+            chatview_avatar_width: 32,
+            chatview_avatar_height: 32,
+            auto_join_rooms: [],
+            visible_toolbar_buttons: {
+                'emojis': true,
+                'call': false,
+                'clear': true,
+                'toggle_occupants': true
+            }
+        };
+        Object.assign(context, settings);
 
-        it("applySiteSettings: recursively applies user settings", function () {
-            var context = {};
-            var settings = {
-                show_toolbar: true,
-                chatview_avatar_width: 32,
-                chatview_avatar_height: 32,
-                auto_join_rooms: [],
-                visible_toolbar_buttons: {
-                    'emojis': true,
-                    'call': false,
-                    'clear': true,
-                    'toggle_occupants': true
-                }
-            };
-            _.extend(context, settings);
+        let user_settings = {
+            something_else: 'xxx',
+            show_toolbar: false,
+            chatview_avatar_width: 32,
+            chatview_avatar_height: 48,
+            auto_join_rooms: [
+                'anonymous@conference.nomnom.im',
+            ],
+            visible_toolbar_buttons: {
+                'emojis': false,
+                'call': false,
+                'toggle_occupants':false,
+                'invalid': false
+            }
+        };
+        const utils = converse.env.utils;
+        utils.applySiteSettings(context, settings, user_settings);
 
-            var user_settings = {
-                something_else: 'xxx',
-                show_toolbar: false,
-                chatview_avatar_width: 32,
-                chatview_avatar_height: 48,
-                auto_join_rooms: [
-                    'anonymous@conference.nomnom.im',
-                ],
-                visible_toolbar_buttons: {
-                    'emojis': false,
-                    'call': false,
-                    'toggle_occupants':false,
-                    'invalid': false 
-                }
-            };
-            utils.applySiteSettings(context, settings, user_settings);
+        expect(context.something_else).toBeUndefined();
+        expect(context.show_toolbar).toBeFalsy();
+        expect(context.chatview_avatar_width).toBe(32);
+        expect(context.chatview_avatar_height).toBe(48);
+        expect(Object.keys(context.visible_toolbar_buttons)).toEqual(Object.keys(settings.visible_toolbar_buttons));
+        expect(context.visible_toolbar_buttons.emojis).toBeFalsy();
+        expect(context.visible_toolbar_buttons.call).toBeFalsy();
+        expect(context.visible_toolbar_buttons.toggle_occupants).toBeFalsy();
+        expect(context.visible_toolbar_buttons.invalid).toBeFalsy();
+        expect(context.auto_join_rooms.length).toBe(1);
+        expect(context.auto_join_rooms[0]).toBe('anonymous@conference.nomnom.im');
 
-            expect(context.something_else).toBeUndefined();
-            expect(context.show_toolbar).toBeFalsy();
-            expect(context.chatview_avatar_width).toBe(32);
-            expect(context.chatview_avatar_height).toBe(48);
-            expect(_.keys(context.visible_toolbar_buttons)).toEqual(_.keys(settings.visible_toolbar_buttons));
-            expect(context.visible_toolbar_buttons.emojis).toBeFalsy();
-            expect(context.visible_toolbar_buttons.call).toBeFalsy();
-            expect(context.visible_toolbar_buttons.toggle_occupants).toBeFalsy();
-            expect(context.visible_toolbar_buttons.invalid).toBeFalsy();
-            expect(context.auto_join_rooms.length).toBe(1);
-            expect(context.auto_join_rooms[0]).toBe('anonymous@conference.nomnom.im');
-
-            user_settings = {
-                visible_toolbar_buttons: {
-                    'toggle_occupants': true
-                }
-            };
-            utils.applySiteSettings(context, settings, user_settings);
-            expect(_.keys(context.visible_toolbar_buttons)).toEqual(_.keys(settings.visible_toolbar_buttons));
-            expect(context.visible_toolbar_buttons.toggle_occupants).toBeTruthy();
-        });
+        user_settings = {
+            visible_toolbar_buttons: {
+                'toggle_occupants': true
+            }
+        };
+        utils.applySiteSettings(context, settings, user_settings);
+        expect(Object.keys(context.visible_toolbar_buttons)).toEqual(Object.keys(settings.visible_toolbar_buttons));
+        expect(context.visible_toolbar_buttons.toggle_occupants).toBeTruthy();
     });
 });

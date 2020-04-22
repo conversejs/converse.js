@@ -2,6 +2,7 @@
 BABEL			?= node_modules/.bin/babel
 BOOTSTRAP		= ./node_modules/
 BUILDDIR		= ./docs
+KARMA			?= ./node_modules/.bin/karma
 CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT			?= ./node_modules/.bin/eslint
@@ -197,7 +198,11 @@ eslint: node_modules
 
 .PHONY: check
 check: eslint dev
-	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --disable-gpu --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
+	$(KARMA) start karma.conf.js $(ARGS)
+
+.PHONY: test
+test:
+	$(KARMA) start karma.conf.js $(ARGS)
 
 ########################################################################
 ## Documentation

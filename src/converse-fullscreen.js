@@ -7,7 +7,7 @@ import "@converse/headless/converse-muc";
 import "converse-chatview";
 import "converse-controlbox";
 import "converse-singleton";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import tpl_brand_heading from "templates/inverse_brand_heading.html";
 
 

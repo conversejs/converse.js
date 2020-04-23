@@ -5,7 +5,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-muc";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import tpl_bookmarks_list from "templates/bookmarks_list.js"
 import tpl_muc_bookmark_form from "templates/muc_bookmark_form.js";
 import { Model } from 'skeletor.js/src/model.js';

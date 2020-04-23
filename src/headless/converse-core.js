@@ -3,12 +3,12 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { __, i18n } from './i18n';
-import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import { Collection } from "skeletor.js/src/collection";
 import { Events } from 'skeletor.js/src/events.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { Router } from 'skeletor.js/src/router.js';
+import { __, i18n } from './i18n';
+import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import 'strophe.js/src/websocket';
 import './polyfill';
 import * as strophe from 'strophe.js/src/core';
@@ -162,9 +162,7 @@ const DEFAULT_SETTINGS = {
  * @global
  * @namespace _converse
  */
-// Strictly speaking _converse is not a global, but we need to set it as
-// such to get JSDoc to create the correct document site strucure.
-const _converse = {
+export const _converse = {
     'templates': {},
     'promises': {},
 
@@ -1738,8 +1736,8 @@ function setUnloadEvent () {
     }
 }
 
+export const converse = window.converse;
 
-window.converse = window.converse || {};
 
 /**
  * ### The Public API
@@ -1754,7 +1752,7 @@ window.converse = window.converse || {};
  * @global
  * @namespace converse
  */
-Object.assign(window.converse, {
+Object.assign(converse, {
 
     CHAT_STATES: ['active', 'composing', 'gone', 'inactive', 'paused'],
 
@@ -1914,4 +1912,3 @@ Object.assign(window.converse, {
  * @example window.addEventListener('converse-loaded', () => converse.initialize());
  */
 window.dispatchEvent(new CustomEvent('converse-loaded'));
-export default converse;

@@ -10,7 +10,7 @@ import "./converse-emoji";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
 import st from "./utils/stanza";

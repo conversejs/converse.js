@@ -6,7 +6,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import log from "./log";
 
 const { Strophe, $iq } = converse.env;

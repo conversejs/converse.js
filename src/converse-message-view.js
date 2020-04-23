@@ -6,7 +6,7 @@
 import "./utils/html";
 import "@converse/headless/converse-emoji";
 import URI from "urijs";
-import converse from  "@converse/headless/converse-core";
+import { converse } from  "@converse/headless/converse-core";
 import { BootstrapModal } from "./converse-modal.js";
 import { debounce } from 'lodash'
 import { render } from "lit-html";

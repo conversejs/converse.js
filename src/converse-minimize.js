@@ -9,7 +9,7 @@ import { Overview } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
 import { __ } from '@converse/headless/i18n';
 import { debounce, sum } from 'lodash';
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.html";
 import tpl_trimmed_chat from "templates/trimmed_chat.html";

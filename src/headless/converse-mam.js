@@ -7,7 +7,7 @@
 import "./converse-disco";
 import "./converse-rsm";
 import { intersection, pick } from 'lodash'
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import log from "./log";
 import sizzle from "sizzle";
 

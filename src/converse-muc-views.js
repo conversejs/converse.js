@@ -13,7 +13,7 @@ import { BootstrapModal } from "./converse-modal.js";
 import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import RoomDetailsModal from 'modals/muc-details.js';
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import st from "@converse/headless/utils/stanza";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";

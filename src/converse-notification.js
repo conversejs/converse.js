@@ -3,7 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 
 const { Strophe, sizzle } = converse.env;

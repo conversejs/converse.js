@@ -9,7 +9,7 @@ import "converse-profile";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { concat, debounce, difference, invokeMap, range, omit } from "lodash";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
 

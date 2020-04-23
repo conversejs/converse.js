@@ -9,7 +9,7 @@ import { isString } from "lodash";
 import { render } from 'lit-html';
 import { __ } from '@converse/headless/i18n';
 import bootstrap from "bootstrap.native";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_alert_component from "templates/alert.js";
 import tpl_alert_modal from "templates/alert_modal.js";

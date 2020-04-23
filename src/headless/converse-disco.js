@@ -7,7 +7,7 @@
 import { isEmpty, isObject } from "lodash";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import log from "./log";
 import sizzle from "sizzle";
 

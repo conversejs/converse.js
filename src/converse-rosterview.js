@@ -11,7 +11,7 @@ import { BootstrapModal } from "./converse-modal.js";
 import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { OrderedListView } from "skeletor.js/src/overview";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_contact_modal from "templates/add_contact_modal.js";
 import tpl_group_header from "templates/group_header.html";

@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import SHA1 from 'strophe.js/src/sha1';
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import { get } from "lodash";
 
 const { Strophe, $build } = converse.env;

@@ -10,7 +10,7 @@ import { BootstrapModal } from "./converse-modal.js";
 import { Overview } from "skeletor.js/src/overview";
 import { debounce, isString } from "lodash";
 import { html, render } from "lit-html";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";

@@ -4,7 +4,7 @@
  * @description This is the MUC utilities module.
  */
 import { difference, indexOf } from "lodash";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import u from "./core";
 
 const { Strophe, sizzle } = converse.env;

@@ -7,7 +7,7 @@ import "converse-chatview";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from "skeletor.js/src/view";
 import bootstrap from "bootstrap.native";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_brand_heading from "templates/converse_brand_heading.html";
 import tpl_controlbox from "templates/controlbox.html";

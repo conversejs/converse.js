@@ -7,7 +7,7 @@ import "@converse/headless/converse-status";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "./log";
 
 const { Strophe, $iq, $pres, dayjs, sizzle } = converse.env;

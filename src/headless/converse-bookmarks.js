@@ -6,7 +6,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-muc";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import log from "./log";

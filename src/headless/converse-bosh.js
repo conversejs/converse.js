@@ -6,7 +6,7 @@
  */
 import 'strophe.js/src/bosh';
 import { Model } from 'skeletor.js/src/model.js';
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import log from "./log";
 
 const { Strophe } = converse.env;

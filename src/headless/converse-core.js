@@ -1071,7 +1071,7 @@ async function attemptNonPreboundSession (credentials, automatic) {
         } else if (!_converse.isTestEnv() && 'credentials' in navigator) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
-            log.warn("attemptNonPreboundSession: Could not find any credentials to log in with");
+            !_converse.isTestEnv() && log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
         }
     } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.api.settings.get("authentication")) && (!automatic || _converse.api.settings.get("auto_login"))) {
         connect();

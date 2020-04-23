@@ -17,6 +17,7 @@ import st from "./utils/stanza";
 import u from "./utils/form";
 
 converse.MUC_TRAFFIC_STATES = ['entered', 'exited'];
+converse.MUC_ROLE_CHANGES = ['op', 'deop', 'voice', 'mute'];
 
 const MUC_ROLE_WEIGHTS = {
     'moderator':    1,
@@ -1938,7 +1939,12 @@ converse.plugins.add('converse-muc', {
                 };
                 const actors_per_chat_state = converse.CHAT_STATES.reduce(reducer, {});
                 const actors_per_traffic_state = converse.MUC_TRAFFIC_STATES.reduce(reducer, {});
-                this.notifications.set(Object.assign(actors_per_chat_state, actors_per_traffic_state));
+                const actors_per_role_change = converse.MUC_ROLE_CHANGES.reduce(reducer, {});
+                this.notifications.set(Object.assign(
+                    actors_per_chat_state,
+                    actors_per_traffic_state,
+                    actors_per_role_change
+                ));
                 window.setTimeout(() => this.removeNotification(actor, state), 10000);
             },
 
@@ -2109,31 +2115,17 @@ converse.plugins.add('converse-muc', {
                 }
                 const previous_role = occupant._previousAttributes.role;
                 if (previous_role === 'moderator') {
-                    this.createMessage({
-                        'type': 'info',
-                        'message': __("%1$s is no longer a moderator", occupant.get('nick'))
-                    });
-                }
-                if (previous_role === 'visitor') {
-                    this.createMessage({
-                        'type': 'info',
-                        'message': __("%1$s has been given a voice", occupant.get('nick'))
-                    });
+                    this.updateNotifications(occupant.get('nick'), 'deop');
+                } else if (previous_role === 'visitor') {
+                    this.updateNotifications(occupant.get('nick'), 'voice');
                 }
                 if (occupant.get('role') === 'visitor') {
-                    this.createMessage({
-                        'type': 'info',
-                        'message': __("%1$s has been muted", occupant.get('nick'))
-                    });
-                }
-                if (occupant.get('role') === 'moderator') {
+                    this.updateNotifications(occupant.get('nick'), 'mute');
+                } else if (occupant.get('role') === 'moderator') {
                     if (!['owner', 'admin'].includes(occupant.get('affiliation'))) {
                         // Oly show this message if the user isn't already
                         // an admin or owner, otherwise this isn't new information.
-                        this.createMessage({
-                            'type': 'info',
-                            'message': __("%1$s is now a moderator", occupant.get('nick'))
-                        });
+                        this.updateNotifications(occupant.get('nick'), 'op');
                     }
                 }
             },

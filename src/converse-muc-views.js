@@ -725,7 +725,7 @@ converse.plugins.add('converse-muc-views', {
             renderNotifications () {
                 const actors_per_state = this.model.notifications.toJSON();
                 const states = api.settings.get('muc_show_join_leave') ?
-                    [...converse.CHAT_STATES, ...converse.MUC_TRAFFIC_STATES] :
+                    [...converse.CHAT_STATES, ...converse.MUC_TRAFFIC_STATES, ...converse.MUC_ROLE_CHANGES] :
                     converse.CHAT_STATES;
 
                 const message = states.reduce((result, state) => {
@@ -736,15 +736,23 @@ converse.plugins.add('converse-muc-views', {
                     const actors = existing_actors.map(a => this.model.getOccupant(a)?.getDisplayName() || a);
                     if (actors.length === 1) {
                         if (state === 'composing') {
-                            return `${result} ${__('%1$s is typing', actors[0])}\n`;
+                            return `${result}${__('%1$s is typing', actors[0])}\n`;
                         } else if (state === 'paused') {
-                            return `${result} ${__('%1$s has stopped typing', actors[0])}\n`;
+                            return `${result}${__('%1$s has stopped typing', actors[0])}\n`;
                         } else if (state === _converse.GONE) {
-                            return `${result} ${__('%1$s has gone away', actors[0])}\n`;
+                            return `${result}${__('%1$s has gone away', actors[0])}\n`;
                         } else if (state === 'entered') {
-                            return `${result} ${__('%1$s has entered the groupchat', actors[0])}\n`;
+                            return `${result}${__('%1$s has entered the groupchat', actors[0])}\n`;
                         } else if (state === 'exited') {
-                            return `${result} ${__('%1$s has left the groupchat', actors[0])}\n`;
+                            return `${result}${__('%1$s has left the groupchat', actors[0])}\n`;
+                        } else if (state === 'op') {
+                            return `${result}${__("%1$s is now a moderator", actors[0])}\n`;
+                        } else if (state === 'deop') {
+                            return `${result}${__("%1$s is no longer a moderator", actors[0])}\n`;
+                        } else if (state === 'voice') {
+                            return `${result}${__("%1$s has been given a voice", actors[0])}\n`;
+                        } else if (state === 'mute') {
+                            return `${result}${__("%1$s has been muted", actors[0])}\n`;
                         }
                     } else if (actors.length > 1) {
                         let actors_str;
@@ -756,15 +764,23 @@ converse.plugins.add('converse-muc-views', {
                         }
 
                         if (state === 'composing') {
-                            return `${result} ${__('%1$s are typing', actors_str)}\n`;
+                            return `${result}${__('%1$s are typing', actors_str)}\n`;
                         } else if (state === 'paused') {
-                            return `${result} ${__('%1$s have stopped typing', actors_str)}\n`;
+                            return `${result}${__('%1$s have stopped typing', actors_str)}\n`;
                         } else if (state === _converse.GONE) {
-                            return `${result} ${__('%1$s have gone away', actors_str)}\n`;
+                            return `${result}${__('%1$s have gone away', actors_str)}\n`;
                         } else if (state === 'entered') {
-                            return `${result} ${__('%1$s have entered the groupchat', actors_str)}\n`;
+                            return `${result}${__('%1$s have entered the groupchat', actors_str)}\n`;
                         } else if (state === 'exited') {
-                            return `${result} ${__('%1$s have left the groupchat', actors_str)}\n`;
+                            return `${result}${__('%1$s have left the groupchat', actors_str)}\n`;
+                        } else if (state === 'op') {
+                            return `${result}${__("%1$s are now moderators", actors[0])}\n`;
+                        } else if (state === 'deop') {
+                            return `${result}${__("%1$s are no longer moderator", actors[0])}\n`;
+                        } else if (state === 'voice') {
+                            return `${result}${__("%1$s have been given voices", actors[0])}\n`;
+                        } else if (state === 'mute') {
+                            return `${result}${__("%1$s have been muted", actors[0])}\n`;
                         }
                     }
                     return result;

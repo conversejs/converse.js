@@ -918,7 +918,7 @@ describe("Groupchats", function () {
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "some1 and newgirl have entered the groupchat\n newguy has left the groupchat");
+                "some1 and newgirl have entered the groupchat\nnewguy has left the groupchat");
 
             // When the user immediately joins again, we collapse the
             // multiple join/leave messages.
@@ -949,7 +949,7 @@ describe("Groupchats", function () {
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "some1 and newgirl have entered the groupchat\n newguy has left the groupchat");
+                "some1 and newgirl have entered the groupchat\nnewguy has left the groupchat");
 
             presence = $pres({
                     to: 'romeo@montague.lit/_converse.js-29092160',
@@ -963,7 +963,7 @@ describe("Groupchats", function () {
                 });
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "some1, newgirl and nomorenicks have entered the groupchat\n newguy has left the groupchat");
+                "some1, newgirl and nomorenicks have entered the groupchat\nnewguy has left the groupchat");
 
             presence = $pres({
                     to: 'romeo@montague.lit/_converse.js-290918392',
@@ -977,7 +977,7 @@ describe("Groupchats", function () {
                 });
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "some1 and newgirl have entered the groupchat\n newguy and nomorenicks have left the groupchat");
+                "some1 and newgirl have entered the groupchat\nnewguy and nomorenicks have left the groupchat");
 
             presence = $pres({
                     to: 'romeo@montague.lit/_converse.js-29092160',
@@ -991,7 +991,7 @@ describe("Groupchats", function () {
                 });
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "some1, newgirl and nomorenicks have entered the groupchat\n newguy has left the groupchat");
+                "some1, newgirl and nomorenicks have entered the groupchat\nnewguy has left the groupchat");
 
             // Test a member joining and leaving
             presence = $pres({
@@ -1031,7 +1031,7 @@ describe("Groupchats", function () {
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "some1, newgirl and nomorenicks have entered the groupchat\n newguy and insider have left the groupchat");
+                "some1, newgirl and nomorenicks have entered the groupchat\nnewguy and insider have left the groupchat");
 
             expect(view.model.occupants.length).toBe(5);
             expect(view.model.occupants.findWhere({'jid': 'insider@montague.lit'}).get('show')).toBe('offline');
@@ -1051,7 +1051,7 @@ describe("Groupchats", function () {
 
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "some1 and nomorenicks have entered the groupchat\n newguy, insider and newgirl have left the groupchat");
+                "some1 and nomorenicks have entered the groupchat\nnewguy, insider and newgirl have left the groupchat");
             expect(view.model.occupants.length).toBe(4);
             done();
         }));
@@ -1102,7 +1102,7 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "romeo, fabio and jcbrand have entered the groupchat\n Dele Olajide has left the groupchat");
+                "romeo, fabio and jcbrand have entered the groupchat\nDele Olajide has left the groupchat");
 
             presence = u.toStanza(
                 `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="coven@chat.shakespeare.lit/Dele Olajide">
@@ -1134,7 +1134,7 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "romeo, fabio and others have entered the groupchat\n fuvuv has left the groupchat");
+                "romeo, fabio and others have entered the groupchat\nfuvuv has left the groupchat");
 
             presence = u.toStanza(
                 `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" type="unavailable" from="coven@chat.shakespeare.lit/fabio">
@@ -1145,7 +1145,7 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "romeo, jcbrand and Dele Olajide have entered the groupchat\n fuvuv and fabio have left the groupchat");
+                "romeo, jcbrand and Dele Olajide have entered the groupchat\nfuvuv and fabio have left the groupchat");
 
             presence = u.toStanza(
                 `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="coven@chat.shakespeare.lit/fabio">
@@ -1157,7 +1157,7 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "romeo, jcbrand and others have entered the groupchat\n fuvuv has left the groupchat");
+                "romeo, jcbrand and others have entered the groupchat\nfuvuv has left the groupchat");
 
             // XXX: hack so that we can test leave/enter of occupants
             // who were already in the room when we joined.
@@ -1172,7 +1172,7 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "romeo, jcbrand and Dele Olajide have entered the groupchat\n fuvuv and fabio have left the groupchat");
+                "romeo, jcbrand and Dele Olajide have entered the groupchat\nfuvuv and fabio have left the groupchat");
 
             presence = u.toStanza(
                 `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" type="unavailable" from="coven@chat.shakespeare.lit/Dele Olajide">
@@ -1182,7 +1182,7 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "romeo and jcbrand have entered the groupchat\n fuvuv, fabio and Dele Olajide have left the groupchat");
+                "romeo and jcbrand have entered the groupchat\nfuvuv, fabio and Dele Olajide have left the groupchat");
 
             presence = u.toStanza(
                 `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="coven@chat.shakespeare.lit/fabio">
@@ -1193,7 +1193,7 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                "romeo, jcbrand and fabio have entered the groupchat\n fuvuv and Dele Olajide have left the groupchat");
+                "romeo, jcbrand and fabio have entered the groupchat\nfuvuv and Dele Olajide have left the groupchat");
 
             expect(1).toBe(1);
             done();
@@ -2802,8 +2802,8 @@ describe("Groupchats", function () {
                         'role': 'visitor'
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
-            const info_msg = await u.waitUntil(() => view.el.querySelector('.chat-info__message'));
-            expect(info_msg.textContent.trim()).toBe("annoyingGuy has been muted");
+            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
+                "romeo has entered the groupchat\nannoyingGuy has been muted");
 
             presence = $pres({
                     'from': 'lounge@montague.lit/annoyingGuy',
@@ -2816,10 +2816,8 @@ describe("Groupchats", function () {
                         'role': 'participant'
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
-            await u.waitUntil(() =>
-                Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
-                    "annoyingGuy has been given a voice"
-            );
+            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
+                "romeo has entered the groupchat\nannoyingGuy has been given a voice");
 
             // Check that we don't see an info message concerning the role,
             // if the affiliation has changed.
@@ -3626,10 +3624,10 @@ describe("Groupchats", function () {
                         'role': 'moderator'
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
-            await u.waitUntil(() =>
-                Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
-                "trustworthyguy is now a moderator"
-            );
+            // Check now that things get restored when the user is given a voice
+            await u.waitUntil(
+                () => view.el.querySelector('.chat-content__notifications').textContent.split('\n', 2).pop()?.trim() ===
+                    "trustworthyguy is now a moderator");
 
             // Call now with the correct amount of arguments.
             // XXX: Calling onFormSubmitted directly, trying
@@ -3669,10 +3667,7 @@ describe("Groupchats", function () {
                         'role': 'participant'
             });
             _converse.connection._dataRecv(mock.createRequest(presence));
-            await u.waitUntil(() =>
-                Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
-                "trustworthyguy is no longer a moderator"
-            );
+            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.includes("trustworthyguy is no longer a moderator"));
             done();
         }));
 
@@ -3769,10 +3764,7 @@ describe("Groupchats", function () {
                         'role': 'visitor'
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
-            await u.waitUntil(() =>
-                Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
-                "annoyingGuy has been muted"
-            );
+            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.includes("annoyingGuy has been muted"));
 
             // Call now with the correct of arguments.
             // XXX: Calling onFormSubmitted directly, trying
@@ -3813,10 +3805,7 @@ describe("Groupchats", function () {
                         'role': 'participant'
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
-            await u.waitUntil(() =>
-                Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
-                "annoyingGuy has been given a voice"
-            );
+            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.includes("annoyingGuy has been given a voice"));
             done();
         }));
 
@@ -5180,7 +5169,7 @@ describe("Groupchats", function () {
                         type: 'groupchat'
                     }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 await view.model.queueMessage(msg);
-                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim()  == 'nomorenicks is typing\n newguy has stopped typing');
+                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim()  == 'nomorenicks is typing\nnewguy has stopped typing');
                 done();
             }));
         });
@@ -5301,11 +5290,7 @@ describe("Groupchats", function () {
             expect(textarea === null).toBe(false);
 
             // Check now that things get restored when the user is given a voice
-            await u.waitUntil(() =>
-                Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
-                "troll has been given a voice"
-            );
-            expect(view.el.querySelectorAll('.chat-info__message').length).toBe(2);
+            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === "troll has been given a voice");
             done();
         }));
     });

@@ -648,7 +648,7 @@ describe("Message Retractions", function () {
             _converse.connection._dataRecv(mock.createRequest(reflection));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1);
 
-            expect(view.model.messages.length).toBe(2);
+            expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.last().get('retracted')).toBeTruthy();
             expect(view.model.messages.last().get('is_ephemeral')).toBe(false);
             expect(view.model.messages.last().get('editable')).toBe(false);
@@ -670,14 +670,11 @@ describe("Message Retractions", function () {
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
-            await u.waitUntil(() =>
-                Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
-                "romeo is no longer a moderator"
-            );
+            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.includes("romeo is no longer a moderator"));
             const retraction_stanza = await sendAndThenRetractMessage(_converse, view);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
 
-            expect(view.model.messages.length).toBe(2);
+            expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.last().get('retracted')).toBeTruthy();
             const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent.trim()).toBe('romeo has removed this message');
@@ -700,14 +697,14 @@ describe("Message Retractions", function () {
             _converse.connection._dataRecv(mock.createRequest(error));
             await u.waitUntil(() => view.el.querySelectorAll('.chat-error').length === 1);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 0);
-            expect(view.model.messages.length).toBe(3);
-            expect(view.model.messages.at(1).get('retracted')).toBeFalsy();
-            expect(view.model.messages.at(1).get('is_ephemeral')).toBeFalsy();
-            expect(view.model.messages.at(1).get('editable')).toBeTruthy();
+            expect(view.model.messages.length).toBe(2);
+            expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
+            expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
+            expect(view.model.messages.at(0).get('editable')).toBeTruthy();
 
             const err_msg = "Sorry, something went wrong while trying to retract your message."
-            expect(view.model.messages.at(2).get('message')).toBe(err_msg);
-            expect(view.model.messages.at(2).get('type')).toBe('error');
+            expect(view.model.messages.at(1).get('message')).toBe(err_msg);
+            expect(view.model.messages.at(1).get('type')).toBe('error');
 
             expect(view.el.querySelectorAll('.chat-error').length).toBe(1);
             const errmsg = view.el.querySelector('.chat-error');
@@ -729,14 +726,11 @@ describe("Message Retractions", function () {
             const occupant = view.model.getOwnOccupant();
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
-            await u.waitUntil(() =>
-                Array.from(view.el.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
-                "romeo is no longer a moderator"
-            );
+            await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.includes("romeo is no longer a moderator"))
             await sendAndThenRetractMessage(_converse, view);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
 
-            expect(view.model.messages.length).toBe(2);
+            expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.last().get('retracted')).toBeTruthy();
             const el = view.el.querySelector('.chat-msg--retracted .chat-msg__message div');
             expect(el.textContent.trim()).toBe('romeo has removed this message');
@@ -744,10 +738,10 @@ describe("Message Retractions", function () {
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
 
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 0);
-            expect(view.model.messages.length).toBe(4);
-            expect(view.model.messages.at(1).get('retracted')).toBeFalsy();
-            expect(view.model.messages.at(1).get('is_ephemeral')).toBeFalsy();
-            expect(view.model.messages.at(1).get('editable')).toBeTruthy();
+            expect(view.model.messages.length).toBe(3);
+            expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
+            expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
+            expect(view.model.messages.at(0).get('editable')).toBeTruthy();
 
             const error_messages = view.el.querySelectorAll('.chat-error');
             expect(error_messages.length).toBe(2);

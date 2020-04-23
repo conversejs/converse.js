@@ -235,10 +235,6 @@
                 font-style: italic;
                 line-height: var(--line-height-small);
                 padding: 0 1em 0.3em;
-
-                &:before {
-                    content: " ";
-                }
             }
 
             video {

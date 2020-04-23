@@ -98,7 +98,8 @@ converse.plugins.add('converse-mam', {
                     }, options);
 
                 const result = await api.archive.query(query);
-                /* eslint-disable no-await-in-loop */
+                api.hook('MAMResult', this, { result, query });
+
                 for (const message of result.messages) {
                     try {
                         await msg_handler(message);

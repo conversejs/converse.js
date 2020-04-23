@@ -6,14 +6,14 @@
  */
 import "converse-modal";
 import "@converse/headless/utils/muc";
+import { BootstrapModal } from "./converse-modal.js";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
-import { debounce, head, isString, isUndefined } from "lodash";
-import { BootstrapModal } from "./converse-modal.js";
-import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
+import { api, converse } from "@converse/headless/converse-core";
+import { debounce, head, isString, isUndefined } from "lodash";
+import { render } from "lit-html";
 import RoomDetailsModal from 'modals/muc-details.js';
-import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import st from "@converse/headless/utils/stanza";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
@@ -89,7 +89,6 @@ converse.plugins.add('converse-muc-views', {
 
     initialize () {
         const { _converse } = this;
-        const { api } = _converse;
 
         api.promises.add(['roomsPanelRendered']);
 

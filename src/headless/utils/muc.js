@@ -11,7 +11,7 @@ const { Strophe, sizzle } = converse.env;
 
 /**
  * The MUC utils object. Contains utility functions related to multi-user chat.
- * @namespace stanza_utils
+ * @namespace muc_utils
  */
 const muc_utils = {
     /**

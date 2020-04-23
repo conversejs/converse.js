@@ -6,16 +6,120 @@
  */
 import "./converse-disco";
 import "./converse-rsm";
+import { api } from "@converse/headless/converse-core";
 import { intersection, pick } from 'lodash'
 import { converse } from "./converse-core";
 import log from "./log";
 import sizzle from "sizzle";
 
+let _converse;
 const { Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;
 
 // XEP-0313 Message Archive Management
 const MAM_ATTRIBUTES = ['with', 'start', 'end'];
+
+
+/**
+ * The MUC utils object. Contains utility functions related to multi-user chat.
+ * @mixin MAMEnabledChat
+ */
+const MAMEnabledChat = {
+    /**
+     * Fetches messages that might have been archived *after*
+     * the last archived message in our local cache.
+     * @private
+     */
+    fetchNewestMessages () {
+        if (this.disable_mam) {
+            return;
+        }
+        const most_recent_msg = this.getMostRecentMessage();
+        if (most_recent_msg) {
+            const stanza_id = most_recent_msg.get(`stanza_id ${this.get('jid')}`);
+            if (stanza_id) {
+                this.fetchArchivedMessages({'after': stanza_id}, 'forwards');
+            } else {
+                this.fetchArchivedMessages({'start': most_recent_msg.get('time')}, 'forwards');
+            }
+        } else {
+            this.fetchArchivedMessages({'before': ''});
+        }
+    },
+
+    /**
+     * Fetch XEP-0313 archived messages based on the passed in criteria.
+     * @private
+     * @param { Object } options
+     * @param { integer } [options.max] - The maxinum number of items to return.
+     *  Defaults to "archived_messages_page_size"
+     * @param { string } [options.after] - The XEP-0359 stanza ID of a message
+     *  after which messages should be returned. Implies forward paging.
+     * @param { string } [options.before] - The XEP-0359 stanza ID of a message
+     *  before which messages should be returned. Implies backward paging.
+     * @param { string } [options.end] - A date string in ISO-8601 format,
+     *  before which messages should be returned. Implies backward paging.
+     * @param { string } [options.start] - A date string in ISO-8601 format,
+     *  after which messages should be returned. Implies forward paging.
+     * @param { string } [options.with] - The JID of the entity with
+     *  which messages were exchanged.
+     * @param { boolean } [options.groupchat] - True if archive in groupchat.
+     * @param { boolean } [page] - Whether this function should recursively
+     *  page through the entire result set if a limited number of results
+     *  were returned.
+     */
+    async fetchArchivedMessages (options={}, page) {
+        if (this.disable_mam) {
+            return;
+        }
+        const is_groupchat = this.get('type') === _converse.CHATROOMS_TYPE;
+        const mam_jid = is_groupchat ? this.get('jid') : _converse.bare_jid;
+        if (!(await api.disco.supports(Strophe.NS.MAM, mam_jid))) {
+            return;
+        }
+        const msg_handler = is_groupchat ? s => this.queueMessage(s) : s => _converse.handleMessageStanza(s);
+
+        const query = Object.assign({
+                'groupchat': is_groupchat,
+                'max': api.settings.get('archived_messages_page_size'),
+                'with': this.get('jid'),
+            }, options);
+
+        const result = await api.archive.query(query);
+        /**
+         * *Hook* which allows plugins to inspect and potentially modify the result of a MAM query
+         * from {@link MAMEnabledChat.fetchArchivedMessages}.
+         * @event _converse#MAMResult
+         */
+        api.hook('MAMResult', this, { result, query });
+
+        for (const message of result.messages) {
+            try {
+                await msg_handler(message);
+            } catch (e) {
+                log.error(e);
+            }
+        }
+
+        if (result.error) {
+            result.error.retry = () => this.fetchArchivedMessages(options, page);
+            this.createMessageFromError(result.error);
+        }
+
+        if (page && result.rsm) {
+            if (page === 'forwards') {
+                options = result.rsm.next(api.settings.get('archived_messages_page_size'), options.before);
+            } else if (page === 'backwards') {
+                options = result.rsm.previous(api.settings.get('archived_messages_page_size'), options.after);
+            }
+            return this.fetchArchivedMessages(options, page);
+        } else {
+            // TODO: Add a special kind of message which will
+            // render as a link to fetch further messages, either
+            // to fetch older messages or to fill in a gap.
+        }
+    }
+}
 
 
 converse.plugins.add('converse-mam', {
@@ -27,8 +131,7 @@ converse.plugins.add('converse-mam', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by Converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
+        _converse = this._converse;
 
         api.settings.update({
             archived_messages_page_size: '50',
@@ -36,97 +139,6 @@ converse.plugins.add('converse-mam', {
             message_archiving_timeout: 20000, // Time (in milliseconds) to wait before aborting MAM request
         });
 
-        const MAMEnabledChat = {
-            /**
-             * Fetches messages that might have been archived *after*
-             * the last archived message in our local cache.
-             * @private
-             */
-            fetchNewestMessages () {
-                if (this.disable_mam) {
-                    return;
-                }
-                const most_recent_msg = this.getMostRecentMessage();
-                if (most_recent_msg) {
-                    const stanza_id = most_recent_msg.get(`stanza_id ${this.get('jid')}`);
-                    if (stanza_id) {
-                        this.fetchArchivedMessages({'after': stanza_id}, 'forwards');
-                    } else {
-                        this.fetchArchivedMessages({'start': most_recent_msg.get('time')}, 'forwards');
-                    }
-                } else {
-                    this.fetchArchivedMessages({'before': ''});
-                }
-            },
-
-            /**
-             * Fetch XEP-0313 archived messages based on the passed in criteria.
-             * @private
-             * @param { Object } options
-             * @param { integer } [options.max] - The maxinum number of items to return.
-             *  Defaults to "archived_messages_page_size"
-             * @param { string } [options.after] - The XEP-0359 stanza ID of a message
-             *  after which messages should be returned. Implies forward paging.
-             * @param { string } [options.before] - The XEP-0359 stanza ID of a message
-             *  before which messages should be returned. Implies backward paging.
-             * @param { string } [options.end] - A date string in ISO-8601 format,
-             *  before which messages should be returned. Implies backward paging.
-             * @param { string } [options.start] - A date string in ISO-8601 format,
-             *  after which messages should be returned. Implies forward paging.
-             * @param { string } [options.with] - The JID of the entity with
-             *  which messages were exchanged.
-             * @param { boolean } [options.groupchat] - True if archive in groupchat.
-             * @param { boolean } [page] - Whether this function should recursively
-             *  page through the entire result set if a limited number of results
-             *  were returned.
-             */
-            async fetchArchivedMessages (options={}, page) {
-                if (this.disable_mam) {
-                    return;
-                }
-                const is_groupchat = this.get('type') === _converse.CHATROOMS_TYPE;
-                const mam_jid = is_groupchat ? this.get('jid') : _converse.bare_jid;
-                if (!(await api.disco.supports(Strophe.NS.MAM, mam_jid))) {
-                    return;
-                }
-                const msg_handler = is_groupchat ? s => this.queueMessage(s) : s => _converse.handleMessageStanza(s);
-
-                const query = Object.assign({
-                        'groupchat': is_groupchat,
-                        'max': api.settings.get('archived_messages_page_size'),
-                        'with': this.get('jid'),
-                    }, options);
-
-                const result = await api.archive.query(query);
-                api.hook('MAMResult', this, { result, query });
-
-                for (const message of result.messages) {
-                    try {
-                        await msg_handler(message);
-                    } catch (e) {
-                        log.error(e);
-                    }
-                }
-
-                if (result.error) {
-                    result.error.retry = () => this.fetchArchivedMessages(options, page);
-                    this.createMessageFromError(result.error);
-                }
-
-                if (page && result.rsm) {
-                    if (page === 'forwards') {
-                        options = result.rsm.next(api.settings.get('archived_messages_page_size'), options.before);
-                    } else if (page === 'backwards') {
-                        options = result.rsm.previous(api.settings.get('archived_messages_page_size'), options.after);
-                    }
-                    return this.fetchArchivedMessages(options, page);
-                } else {
-                    // TODO: Add a special kind of message which will
-                    // render as a link to fetch further messages, either
-                    // to fetch older messages or to fill in a gap.
-                }
-            }
-        }
         Object.assign(_converse.ChatBox.prototype, MAMEnabledChat);
 
 

@@ -518,8 +518,7 @@ describe("Groupchats", function () {
                 _converse.connection._dataRecv(mock.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                 await new Promise(resolve => view.model.once('change:subject', resolve));
-
-                const head_desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'));
+                const head_desc = await u.waitUntil(() => view.el.querySelector('.chat-head__desc'), 1000);
                 expect(head_desc?.textContent.trim()).toBe(text);
 
                 stanza = u.toStanza(
@@ -701,7 +700,7 @@ describe("Groupchats", function () {
                     'type': 'groupchat'
                 }).c('body').t(message).tree();
 
-            await view.model.queueMessage(msg);
+            await view.model.handleMessageStanza(msg);
 
             spyOn(view.model, 'clearMessages').and.callThrough();
             await view.model.close();
@@ -732,7 +731,7 @@ describe("Groupchats", function () {
                     'type': 'groupchat'
                 }).c('body').t(message).tree();
 
-            await view.model.queueMessage(msg);
+            await view.model.handleMessageStanza(msg);
             await u.waitUntil(()  => view.el.querySelector('.chat-msg__text a'));
             view.el.querySelector('.chat-msg__text a').click();
             await u.waitUntil(() => _converse.chatboxes.length === 3)
@@ -1269,7 +1268,7 @@ describe("Groupchats", function () {
                     'type': 'groupchat'
                 }).c('body').t('Some message').tree();
 
-            await view.model.queueMessage(msg);
+            await view.model.handleMessageStanza(msg);
             await u.waitUntil(() => sizzle('.chat-msg:last .chat-msg__text', view.content).pop());
 
             let stanza = u.toStanza(
@@ -1318,7 +1317,7 @@ describe("Groupchats", function () {
                     'to': 'romeo@montague.lit',
                     'type': 'groupchat'
                 }).c('body').t(message).tree();
-            await view.model.queueMessage(msg);
+            await view.model.handleMessageStanza(msg);
             await u.waitUntil(() => sizzle('.chat-msg:last .chat-msg__text', view.content).pop());
             expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Dyon van de Wege')).toBeTruthy();
             expect(view.el.querySelector('.chat-msg__text').textContent.trim()).toBe('is tired');
@@ -1330,7 +1329,7 @@ describe("Groupchats", function () {
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t(message).tree();
-            await view.model.queueMessage(msg);
+            await view.model.handleMessageStanza(msg);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
             expect(sizzle('.chat-msg__author:last', view.el).pop().textContent.includes('**Romeo Montague')).toBeTruthy();
             expect(sizzle('.chat-msg__text:last', view.el).pop().textContent.trim()).toBe('is as well');
@@ -2016,7 +2015,7 @@ describe("Groupchats", function () {
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t(text);
-            await view.model.queueMessage(message.nodeTree);
+            await view.model.handleMessageStanza(message.nodeTree);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
             expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.content.querySelector('.chat-msg__text').textContent.trim()).toBe(text);
@@ -2061,7 +2060,7 @@ describe("Groupchats", function () {
                             by="lounge@montague.lit"/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="${view.model.messages.at(0).get('origin_id')}"/>
                 </message>`);
-            await view.model.queueMessage(stanza);
+            await view.model.handleMessageStanza(stanza);
             expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
             expect(sizzle('.chat-msg__text:last').pop().textContent.trim()).toBe(text);
             expect(view.model.messages.length).toBe(1);
@@ -2083,7 +2082,7 @@ describe("Groupchats", function () {
             const promises = [];
             for (let i=0; i<20; i++) {
                 promises.push(
-                    view.model.queueMessage(
+                    view.model.handleMessageStanza(
                         $msg({
                             from: 'lounge@montague.lit/someone',
                             to: 'romeo@montague.lit.com',
@@ -2096,7 +2095,7 @@ describe("Groupchats", function () {
             // Give enough time for `markScrolled` to have been called
             setTimeout(async () => {
                 view.content.scrollTop = 0;
-                await view.model.queueMessage(
+                await view.model.handleMessageStanza(
                     $msg({
                         from: 'lounge@montague.lit/someone',
                         to: 'romeo@montague.lit.com',
@@ -4863,8 +4862,7 @@ describe("Groupchats", function () {
             view.model.set({'minimized': true});
 
             const nick = mock.chatroom_names[0];
-
-            await view.model.queueMessage($msg({
+            await view.model.handleMessageStanza($msg({
                     from: muc_jid+'/'+nick,
                     id: u.getUniqueId(),
                     to: 'romeo@montague.lit',
@@ -4875,7 +4873,7 @@ describe("Groupchats", function () {
             expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);
             expect(roomspanel.el.querySelector('.msgs-indicator').textContent.trim()).toBe('1');
 
-            await view.model.queueMessage($msg({
+            await view.model.handleMessageStanza($msg({
                 'from': muc_jid+'/'+nick,
                 'id': u.getUniqueId(),
                 'to': 'romeo@montague.lit',
@@ -5027,7 +5025,7 @@ describe("Groupchats", function () {
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                await view.model.queueMessage(msg);
+                await view.model.handleMessageStanza(msg);
                 await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy and nomorenicks are typing');
 
                 // <composing> state for a different occupant
@@ -5037,7 +5035,7 @@ describe("Groupchats", function () {
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                await view.model.queueMessage(msg);
+                await view.model.handleMessageStanza(msg);
                 await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy, nomorenicks and majortom are typing');
 
                 // <composing> state for a different occupant
@@ -5047,7 +5045,7 @@ describe("Groupchats", function () {
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                await view.model.queueMessage(msg);
+                await view.model.handleMessageStanza(msg);
                 await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy, nomorenicks and others are typing');
 
                 // Check that new messages appear under the chat state notifications
@@ -5057,7 +5055,7 @@ describe("Groupchats", function () {
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('hello world').tree();
-                await view.model.queueMessage(msg);
+                await view.model.handleMessageStanza(msg);
                 await new Promise(resolve => view.once('messageInserted', resolve));
 
                 const messages = view.el.querySelectorAll('.message');
@@ -5146,7 +5144,7 @@ describe("Groupchats", function () {
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                await view.model.queueMessage(msg);
+                await view.model.handleMessageStanza(msg);
                 await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
                 expect(view.el.querySelector('.chat-content__notifications').textContent.trim()).toBe('newguy is typing');
 
@@ -5157,7 +5155,7 @@ describe("Groupchats", function () {
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                await view.model.queueMessage(msg);
+                await view.model.handleMessageStanza(msg);
 
                 await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim()  == 'newguy and nomorenicks are typing');
 
@@ -5168,7 +5166,7 @@ describe("Groupchats", function () {
                         to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                await view.model.queueMessage(msg);
+                await view.model.handleMessageStanza(msg);
                 await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim()  == 'nomorenicks is typing\nnewguy has stopped typing');
                 done();
             }));

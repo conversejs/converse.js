@@ -37,7 +37,7 @@ describe("The nickname autocomplete feature", function () {
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('Hello world').tree();
-        await view.model.queueMessage(msg);
+        await view.model.handleMessageStanza(msg);
 
         // Test that pressing @ brings up all options
         const textarea = view.el.querySelector('textarea.chat-textarea');

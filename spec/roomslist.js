@@ -289,7 +289,7 @@ describe("A groupchat shown in the groupchats list", function () {
         const view = _converse.chatboxviews.get(room_jid);
         view.model.set({'minimized': true});
         const nick = mock.chatroom_names[0];
-        await view.model.queueMessage(
+        await view.model.handleMessageStanza(
             $msg({
                 from: room_jid+'/'+nick,
                 id: u.getUniqueId(),
@@ -303,7 +303,7 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
 
         // If the user is mentioned, the counter also gets updated
-        await view.model.queueMessage(
+        await view.model.handleMessageStanza(
             $msg({
                 from: room_jid+'/'+nick,
                 id: u.getUniqueId(),
@@ -316,7 +316,7 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(indicator_el.textContent).toBe('1');
 
         spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
-        await view.model.queueMessage(
+        await view.model.handleMessageStanza(
             $msg({
                 from: room_jid+'/'+nick,
                 id: u.getUniqueId(),

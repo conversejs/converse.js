@@ -104,14 +104,11 @@ describe("A Groupchat Message", function () {
         `);
         const view = _converse.api.chatviews.get(muc_jid);
         spyOn(view.model, 'onMessage').and.callThrough();
-
-
-        await view.model.queueMessage(received_stanza);
-        spyOn(converse.env.log, 'warn');
+        spyOn(converse.env.log, 'error');
         _converse.connection._dataRecv(mock.createRequest(received_stanza));
-        await u.waitUntil(() => view.model.onMessage.calls.count());
-        expect(converse.env.log.warn).toHaveBeenCalledWith(
-            'onMessage: Ignoring unencapsulated forwarded groupchat message'
+        await u.waitUntil(() => view.model.onMessage.calls.count() === 1);
+        expect(converse.env.log.error).toHaveBeenCalledWith(
+            `Ignoring unencapsulated forwarded message from ${muc_jid}/mallory`
         );
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
         expect(view.model.messages.length).toBe(0);
@@ -137,7 +134,7 @@ describe("A Groupchat Message", function () {
             }).c('body').t(message)
               .c('active', {'xmlns': "http://jabber.org/protocol/chatstates"})
               .tree();
-        await view.model.queueMessage(msg);
+        await view.model.handleMessageStanza(msg);
         await new Promise(resolve => view.once('messageInserted', resolve));
         expect(view.el.querySelector('.chat-msg')).not.toBe(null);
         done();
@@ -160,7 +157,7 @@ describe("A Groupchat Message", function () {
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t(message).tree();
-        await view.model.queueMessage(msg);
+        await view.model.handleMessageStanza(msg);
         await new Promise(resolve => view.once('messageInserted', resolve));
         expect(u.hasClass('mentioned', view.el.querySelector('.chat-msg'))).toBeTruthy();
         done();
@@ -182,7 +179,7 @@ describe("A Groupchat Message", function () {
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('First message').tree();
-        await view.model.queueMessage(msg);
+        await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
 
         msg = $msg({
@@ -191,7 +188,7 @@ describe("A Groupchat Message", function () {
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('Another message').tree();
-        await view.model.queueMessage(msg);
+        await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
         expect(view.model.messages.length).toBe(2);
         done();
@@ -237,7 +234,7 @@ describe("A Groupchat Message", function () {
             </message>`);
 
         spyOn(view.model, 'updateMessage');
-        await view.model.queueMessage(stanza);
+        view.model.handleMAMResult({ 'messages': [stanza] });
         await u.waitUntil(() => view.model.getDuplicateMessage.calls.count() === 2);
         result = await view.model.getDuplicateMessage.calls.all()[1].returnValue;
         expect(result instanceof _converse.Message).toBe(true);
@@ -342,11 +339,10 @@ describe("A Groupchat Message", function () {
                     'type': 'groupchat'
             }).c('body').t('I am groot').tree();
         const view = _converse.api.chatviews.get(muc_jid);
-        spyOn(converse.env.log, 'warn');
-        await view.model.queueMessage(msg);
-        expect(converse.env.log.warn).toHaveBeenCalledWith(
-            'onMessage: Ignoring XEP-0280 "groupchat" message carbon, '+
-            'according to the XEP groupchat messages SHOULD NOT be carbon copied'
+        spyOn(converse.env.log, 'error');
+        await view.model.handleMAMResult({ 'messages': [msg] });
+        expect(converse.env.log.error).toHaveBeenCalledWith(
+            'Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied'
         );
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
         expect(view.model.messages.length).toBe(0);
@@ -367,7 +363,7 @@ describe("A Groupchat Message", function () {
             to: 'romeo@montague.lit',
             type: 'groupchat'
         }).c('body').t('I wrote this message!').tree();
-        await view.model.queueMessage(msg);
+        await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
         expect(view.model.messages.last().occupant.get('affiliation')).toBe('owner');
         expect(view.model.messages.last().occupant.get('role')).toBe('moderator');
@@ -393,7 +389,7 @@ describe("A Groupchat Message", function () {
             to: 'romeo@montague.lit',
             type: 'groupchat'
         }).c('body').t('Another message!').tree();
-        await view.model.queueMessage(msg);
+        await view.model.handleMessageStanza(msg);
         await new Promise(resolve => view.once('messageInserted', resolve));
         expect(view.model.messages.last().occupant.get('affiliation')).toBe('member');
         expect(view.model.messages.last().occupant.get('role')).toBe('participant');
@@ -430,7 +426,7 @@ describe("A Groupchat Message", function () {
             to: 'romeo@montague.lit',
             type: 'groupchat'
         }).c('body').t('Message from someone not in the MUC right now').tree();
-        await view.model.queueMessage(msg);
+        await view.model.handleMessageStanza(msg);
         await new Promise(resolve => view.once('messageInserted', resolve));
         expect(view.model.messages.last().occupant).toBeUndefined();
         // Check that there's a new "add" event handler, for when the occupant appears.
@@ -495,7 +491,7 @@ describe("A Groupchat Message", function () {
                 to: 'romeo@montague.lit',
                 type: 'groupchat'
             }).c('body').t('I wrote this message!').tree();
-        await view.model.queueMessage(msg);
+        await view.model.handleMessageStanza(msg);
         expect(view.model.messages.last().get('sender')).toBe('me');
         done();
     }));
@@ -520,7 +516,7 @@ describe("A Groupchat Message", function () {
             }).tree();
         _converse.connection._dataRecv(mock.createRequest(stanza));
         const msg_id = u.getUniqueId();
-        await view.model.queueMessage($msg({
+        await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
                 'to': _converse.connection.jid,
                 'type': 'groupchat',
@@ -532,7 +528,7 @@ describe("A Groupchat Message", function () {
         expect(view.el.querySelector('.chat-msg__text').textContent)
             .toBe('But soft, what light through yonder airlock breaks?');
 
-        await view.model.queueMessage($msg({
+        await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
                 'to': _converse.connection.jid,
                 'type': 'groupchat',
@@ -544,7 +540,7 @@ describe("A Groupchat Message", function () {
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
 
-        await view.model.queueMessage($msg({
+        await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
                 'to': _converse.connection.jid,
                 'type': 'groupchat',
@@ -641,7 +637,7 @@ describe("A Groupchat Message", function () {
         expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
 
         // Check that messages from other users are skipped
-        await view.model.queueMessage($msg({
+        await view.model.handleMessageStanza($msg({
             'from': muc_jid+'/someone-else',
             'id': u.getUniqueId(),
             'to': 'romeo@montague.lit',
@@ -703,7 +699,7 @@ describe("A Groupchat Message", function () {
                            by="lounge@montague.lit"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
             </message>`);
-        await view.model.queueMessage(stanza);
+        await view.model.handleMessageStanza(stanza);
         await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
         expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
         expect(view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(1);
@@ -776,13 +772,11 @@ describe("A Groupchat Message", function () {
                 <received xmlns="urn:xmpp:receipts" id="${msg_obj.get('msgid')}"/>
                 <origin-id xmlns="urn:xmpp:sid:0" id="CE08D448-5ED8-4B6A-BB5B-07ED9DFE4FF0"/>
             </message>`);
-        spyOn(_converse.api, "trigger").and.callThrough();
-        spyOn(stanza_utils, "isReceipt").and.callThrough();
+        spyOn(stanza_utils, "parseMUCMessage").and.callThrough();
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => stanza_utils.isReceipt.calls.count() === 1);
+        await u.waitUntil(() => stanza_utils.parseMUCMessage.calls.count() === 1);
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
         done();
     }));
 
@@ -814,9 +808,9 @@ describe("A Groupchat Message", function () {
                 <received xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
             </message>`);
         const stanza_utils = converse.env.stanza_utils;
-        spyOn(stanza_utils, "isChatMarker").and.callThrough();
+        spyOn(stanza_utils, "getChatMarker").and.callThrough();
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => stanza_utils.isChatMarker.calls.count() === 1);
+        await u.waitUntil(() => stanza_utils.getChatMarker.calls.count() === 1);
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -826,7 +820,7 @@ describe("A Groupchat Message", function () {
                 <displayed xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => stanza_utils.isChatMarker.calls.count() === 2);
+        await u.waitUntil(() => stanza_utils.getChatMarker.calls.count() === 2);
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -837,7 +831,7 @@ describe("A Groupchat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        await u.waitUntil(() => stanza_utils.isChatMarker.calls.count() === 3);
+        await u.waitUntil(() => stanza_utils.getChatMarker.calls.count() === 3);
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
@@ -848,8 +842,8 @@ describe("A Groupchat Message", function () {
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => stanza_utils.isChatMarker.calls.count() === 4);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+        await u.waitUntil(() => stanza_utils.getChatMarker.calls.count() === 4);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
         expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
         done();
     }));
@@ -887,7 +881,7 @@ describe("A Groupchat Message", function () {
                     .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'6', 'end':'10', 'type':'mention', 'uri':'xmpp:z3r0@montague.lit'}).up()
                     .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                     .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
-            await view.model.queueMessage(msg);
+            await view.model.handleMessageStanza(msg);
             const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
             expect(message.classList.length).toEqual(1);
             expect(message.innerHTML).toBe(
@@ -928,7 +922,7 @@ describe("A Groupchat Message", function () {
                     .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'7', 'end':'11', 'type':'mention', 'uri':'xmpp:z3r0@montague.lit'}).up()
                     .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'12', 'end':'15', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                     .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'16', 'end':'24', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
-            await view.model.queueMessage(msg);
+            await view.model.handleMessageStanza(msg);
             const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
             expect(message.classList.length).toEqual(1);
             expect(message.innerHTML).toBe(
@@ -972,7 +966,7 @@ describe("A Groupchat Message", function () {
                         type="groupchat">
                     <body>Boo!</body>
                 </message>`);
-            await view.model.queueMessage(stanza);
+            await view.model.handleMessageStanza(stanza);
 
             // Run a few unit tests for the parseTextForReferences method
             let [text, references] = view.model.parseTextForReferences('hello z3r0')

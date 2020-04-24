@@ -6,7 +6,7 @@ describe("A headlines box", function () {
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
 
-        const { u, $msg} = converse.env;
+        const { $msg } = converse.env;
         /* XMPP spam message:
          *
          *  <message xmlns="jabber:client"
@@ -17,7 +17,6 @@ describe("A headlines box", function () {
          *      <body>SORRY FOR THIS ADVERT</body
          *  </message
          */
-        sinon.spy(u, 'isHeadlineMessage');
         const stanza = $msg({
                 'xmlns': 'jabber:client',
                 'to': 'romeo@montague.lit',
@@ -27,10 +26,7 @@ describe("A headlines box", function () {
             .c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t("-wwdmz").up()
             .c('body').t('SORRY FOR THIS ADVERT');
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        expect(u.isHeadlineMessage.called).toBeTruthy();
-        expect(u.isHeadlineMessage.returned(false)).toBeTruthy();
         expect(_converse.api.headlines.get().length === 0);
-        u.isHeadlineMessage.restore();
         done();
     }));
 
@@ -51,7 +47,6 @@ describe("A headlines box", function () {
          *  </x>
          *  </message>
          */
-        sinon.spy(u, 'isHeadlineMessage');
         const stanza = $msg({
                 'type': 'headline',
                 'from': 'notify.example.com',
@@ -65,9 +60,6 @@ describe("A headlines box", function () {
 
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.chatboxviews.keys().includes('notify.example.com'));
-        expect(u.isHeadlineMessage.called).toBeTruthy();
-        expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
-        u.isHeadlineMessage.restore(); // unwraps
         const view = _converse.chatboxviews.get('notify.example.com');
         expect(view.model.get('show_avatar')).toBeFalsy();
         expect(view.el.querySelector('img.avatar')).toBe(null);
@@ -155,9 +147,8 @@ describe("A headlines box", function () {
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
 
-        const { u, $msg, _ } = converse.env;
+        const { $msg, _ } = converse.env;
         _converse.allow_non_roster_messaging = false;
-        sinon.spy(u, 'isHeadlineMessage');
         const stanza = $msg({
                 'type': 'headline',
                 'from': 'andre5114@jabber.snc.ru/Spark',
@@ -168,9 +159,6 @@ describe("A headlines box", function () {
             .c('body').t('Здравствуйте друзья');
         _converse.connection._dataRecv(mock.createRequest(stanza));
         expect(_.without('controlbox', _converse.chatboxviews.keys()).length).toBe(0);
-        expect(u.isHeadlineMessage.called).toBeTruthy();
-        expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
-        u.isHeadlineMessage.restore(); // unwraps
         done();
     }));
 });

@@ -11,9 +11,11 @@ import { intersection, pick } from 'lodash'
 import { converse } from "./converse-core";
 import log from "./log";
 import sizzle from "sizzle";
+import st from "./utils/stanza";
 
 let _converse;
 const { Strophe, $iq, dayjs } = converse.env;
+const { NS } = Strophe;
 const u = converse.env.utils;
 
 // XEP-0313 Message Archive Management
@@ -47,6 +49,26 @@ const MAMEnabledChat = {
         }
     },
 
+    async handleMAMResult (result, query, options, page_direction) {
+        const is_muc = this.get('type') === _converse.CHATROOMS_TYPE;
+        result.messages = result.messages.map(
+            s => (is_muc ? st.parseMUCMessage(s, this, _converse) : st.parseMessage(s, _converse))
+        );
+
+        /**
+         * Synchronous event which allows listeners to first do some
+         * work based on the MAM result before calling the handlers here.
+         * @event _converse#MAMResult
+         */
+        await api.trigger('MAMResult', result, query,  {'synchronous': true});
+
+        result.messages.forEach(m => this.queueMessage(m));
+        if (result.error) {
+            result.error.retry = () => this.fetchArchivedMessages(options, page_direction);
+            this.createMessageFromError(result.error);
+        }
+    },
+
     /**
      * Fetch XEP-0313 archived messages based on the passed in criteria.
      * @private
@@ -64,55 +86,34 @@ const MAMEnabledChat = {
      * @param { string } [options.with] - The JID of the entity with
      *  which messages were exchanged.
      * @param { boolean } [options.groupchat] - True if archive in groupchat.
-     * @param { boolean } [page] - Whether this function should recursively
-     *  page through the entire result set if a limited number of results
-     *  were returned.
+     * @param { ('forwards'|'backwards')} [page_direction] - Determines whether this function should
+     *  recursively page through the entire result set if a limited number of results were returned.
      */
-    async fetchArchivedMessages (options={}, page) {
+    async fetchArchivedMessages (options={}, page_direction) {
         if (this.disable_mam) {
             return;
         }
-        const is_groupchat = this.get('type') === _converse.CHATROOMS_TYPE;
-        const mam_jid = is_groupchat ? this.get('jid') : _converse.bare_jid;
-        if (!(await api.disco.supports(Strophe.NS.MAM, mam_jid))) {
+        const is_muc = this.get('type') === _converse.CHATROOMS_TYPE;
+        const mam_jid = is_muc ? this.get('jid') : _converse.bare_jid;
+        if (!(await api.disco.supports(NS.MAM, mam_jid))) {
             return;
         }
-        const msg_handler = is_groupchat ? s => this.queueMessage(s) : s => _converse.handleMessageStanza(s);
-
         const query = Object.assign({
-                'groupchat': is_groupchat,
-                'max': api.settings.get('archived_messages_page_size'),
-                'with': this.get('jid'),
-            }, options);
+            'groupchat': is_muc,
+            'max': api.settings.get('archived_messages_page_size'),
+            'with': this.get('jid'),
+        }, options);
 
         const result = await api.archive.query(query);
-        /**
-         * *Hook* which allows plugins to inspect and potentially modify the result of a MAM query
-         * from {@link MAMEnabledChat.fetchArchivedMessages}.
-         * @event _converse#MAMResult
-         */
-        api.hook('MAMResult', this, { result, query });
+        await this.handleMAMResult(result, query, options, page_direction);
 
-        for (const message of result.messages) {
-            try {
-                await msg_handler(message);
-            } catch (e) {
-                log.error(e);
-            }
-        }
-
-        if (result.error) {
-            result.error.retry = () => this.fetchArchivedMessages(options, page);
-            this.createMessageFromError(result.error);
-        }
-
-        if (page && result.rsm) {
-            if (page === 'forwards') {
+        if (page_direction && result.rsm) {
+            if (page_direction === 'forwards') {
                 options = result.rsm.next(api.settings.get('archived_messages_page_size'), options.before);
-            } else if (page === 'backwards') {
+            } else if (page_direction === 'backwards') {
                 options = result.rsm.previous(api.settings.get('archived_messages_page_size'), options.after);
             }
-            return this.fetchArchivedMessages(options, page);
+            return this.fetchArchivedMessages(options, page_direction);
         } else {
             // TODO: Add a special kind of message which will
             // render as a link to fetch further messages, either
@@ -162,12 +163,12 @@ converse.plugins.add('converse-mam', {
              * Per JID preferences will be set in chat boxes, so it'll
              * probbaly be handled elsewhere in any case.
              */
-            const preference = sizzle(`prefs[xmlns="${Strophe.NS.MAM}"]`, iq).pop();
+            const preference = sizzle(`prefs[xmlns="${NS.MAM}"]`, iq).pop();
             const default_pref = preference.getAttribute('default');
             if (default_pref !== api.settings.get('message_archiving')) {
                 const stanza = $iq({'type': 'set'})
                     .c('prefs', {
-                        'xmlns':Strophe.NS.MAM,
+                        'xmlns':NS.MAM,
                         'default':api.settings.get('message_archiving')
                     });
                 Array.from(preference.children).forEach(child => stanza.cnode(child).up());
@@ -185,11 +186,11 @@ converse.plugins.add('converse-mam', {
 
         function getMAMPrefsFromFeature (feature) {
             const prefs = feature.get('preferences') || {};
-            if (feature.get('var') !== Strophe.NS.MAM || api.settings.get('message_archiving') === undefined) {
+            if (feature.get('var') !== NS.MAM || api.settings.get('message_archiving') === undefined) {
                 return;
             }
             if (prefs['default'] !== api.settings.get('message_archiving')) {
-                api.sendIQ($iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}))
+                api.sendIQ($iq({'type': 'get'}).c('prefs', {'xmlns': NS.MAM}))
                     .then(iq => _converse.onMAMPreferences(iq, feature))
                     .catch(_converse.onMAMError);
             }
@@ -207,7 +208,7 @@ converse.plugins.add('converse-mam', {
         }
 
         /************************ BEGIN Event Handlers ************************/
-        api.listen.on('addClientFeatures', () => api.disco.own.features.add(Strophe.NS.MAM));
+        api.listen.on('addClientFeatures', () => api.disco.own.features.add(NS.MAM));
         api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
         api.listen.on('chatRoomViewInitialized', view => {
             if (_converse.muc_show_logs_before_join) {
@@ -437,18 +438,18 @@ converse.plugins.add('converse-mam', {
                     }
 
                     const jid = attrs.to || _converse.bare_jid;
-                    const supported = await api.disco.supports(Strophe.NS.MAM, jid);
+                    const supported = await api.disco.supports(NS.MAM, jid);
                     if (!supported) {
-                        log.warn(`Did not fetch MAM archive for ${jid} because it doesn't support ${Strophe.NS.MAM}`);
+                        log.warn(`Did not fetch MAM archive for ${jid} because it doesn't support ${NS.MAM}`);
                         return {'messages': []};
                     }
 
                     const queryid = u.getUniqueId();
-                    const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
+                    const stanza = $iq(attrs).c('query', {'xmlns':NS.MAM, 'queryid':queryid});
                     if (options) {
-                        stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
+                        stanza.c('x', {'xmlns':NS.XFORM, 'type': 'submit'})
                                 .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
-                                .c('value').t(Strophe.NS.MAM).up().up();
+                                .c('value').t(NS.MAM).up().up();
 
                         if (options['with'] && !options.groupchat) {
                             stanza.c('field', {'var':'with'}).c('value')
@@ -474,7 +475,7 @@ converse.plugins.add('converse-mam', {
 
                     const messages = [];
                     const message_handler = _converse.connection.addHandler(stanza => {
-                        const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+                        const result = sizzle(`message > result[xmlns="${NS.MAM}"]`, stanza).pop();
                         if (result === undefined || result.getAttribute('queryid') !== queryid) {
                             return true;
                         }
@@ -490,7 +491,7 @@ converse.plugins.add('converse-mam', {
                         }
                         messages.push(stanza);
                         return true;
-                    }, Strophe.NS.MAM);
+                    }, NS.MAM);
 
                     let error;
                     const iq_result = await api.sendIQ(stanza, api.settings.get('message_archiving_timeout'), false)
@@ -508,9 +509,9 @@ converse.plugins.add('converse-mam', {
                     _converse.connection.deleteHandler(message_handler);
 
                     let rsm;
-                    const fin = iq_result && sizzle(`fin[xmlns="${Strophe.NS.MAM}"]`, iq_result).pop();
+                    const fin = iq_result && sizzle(`fin[xmlns="${NS.MAM}"]`, iq_result).pop();
                     if (fin && [null, 'false'].includes(fin.getAttribute('complete'))) {
-                        const set = sizzle(`set[xmlns="${Strophe.NS.RSM}"]`, fin).pop();
+                        const set = sizzle(`set[xmlns="${NS.RSM}"]`, fin).pop();
                         if (set) {
                             rsm = new _converse.RSM({'xml': set});
                             Object.assign(rsm, Object.assign(pick(options, [...MAM_ATTRIBUTES, ..._converse.RSM_ATTRIBUTES]), rsm));

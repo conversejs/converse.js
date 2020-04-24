@@ -512,9 +512,8 @@ describe("A Chat Message", function () {
 
         // Ideally we wouldn't have to filter out headline
         // messages, but Prosody gives them the wrong 'type' :(
-        sinon.spy(converse.env.log, 'info');
+        spyOn(converse.env.log, 'info');
         sinon.spy(_converse.api.chatboxes, 'get');
-        sinon.spy(u, 'isHeadlineMessage');
         const msg = $msg({
                 from: 'montague.lit',
                 to: _converse.bare_jid,
@@ -522,16 +521,12 @@ describe("A Chat Message", function () {
                 id: u.getUniqueId()
             }).c('body').t("This headline message will not be shown").tree();
         await _converse.handleMessageStanza(msg);
-        expect(converse.env.log.info.calledWith(
-            "handleMessageStanza: Ignoring incoming headline message from JID: montague.lit"
-        )).toBeTruthy();
-        expect(u.isHeadlineMessage.called).toBeTruthy();
-        expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
+        expect(converse.env.log.info).toHaveBeenCalledWith(
+            "handleMessageStanza: Ignoring incoming server message from JID: montague.lit"
+        );
         expect(_converse.api.chatboxes.get.called).toBeFalsy();
         // Remove sinon spies
-        converse.env.log.info.restore();
         _converse.api.chatboxes.get.restore();
-        u.isHeadlineMessage.restore();
         done();
     }));
 
@@ -1561,7 +1556,7 @@ describe("A Chat Message", function () {
                  *  </message>
                  */
                 const error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
-                const sender_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 let fullname = _converse.xmppstatus.get('fullname'); // eslint-disable-line no-unused-vars
                 fullname = _.isEmpty(fullname) ? _converse.bare_jid: fullname;
                 await _converse.api.chats.open(sender_jid)
@@ -1757,7 +1752,7 @@ describe("A Chat Message", function () {
             await mock.waitForRoster(_converse, 'current');
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
             // Send a message from a different resource
-            spyOn(converse.env.log, 'info');
+            spyOn(converse.env.log, 'error');
             spyOn(_converse.api.chatboxes, 'create').and.callThrough();
             _converse.filter_by_resource = true;
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1770,8 +1765,8 @@ describe("A Chat Message", function () {
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
             await _converse.handleMessageStanza(msg);
 
-            expect(converse.env.log.info).toHaveBeenCalledWith(
-                "handleMessageStanza: Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
+            expect(converse.env.log.error.calls.all().pop().args[0]).toBe(
+                "Ignoring incoming message intended for a different resource: romeo@montague.lit/some-other-resource",
             );
             expect(_converse.api.chatboxes.create).not.toHaveBeenCalled();
             _converse.filter_by_resource = false;

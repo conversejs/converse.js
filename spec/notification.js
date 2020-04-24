@@ -95,10 +95,7 @@ describe("Notifications", function () {
                     await u.waitUntil(() => _converse.chatboxviews.keys().length);
                     const view = _converse.chatboxviews.get('notify.example.com');
                     await new Promise(resolve => view.once('messageInserted', resolve));
-                    expect(
-                        _.includes(_converse.chatboxviews.keys(),
-                            'notify.example.com')
-                        ).toBeTruthy();
+                    expect(_converse.chatboxviews.keys().includes('notify.example.com')).toBeTruthy();
                     expect(_converse.showMessageNotification).toHaveBeenCalled();
                     done();
                 }));
@@ -175,7 +172,7 @@ describe("Notifications", function () {
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(text);
-                await view.model.queueMessage(message.nodeTree);
+                await view.model.handleMessageStanza(message.nodeTree);
                 await u.waitUntil(() => _converse.playSoundNotification.calls.count());
                 expect(_converse.playSoundNotification).toHaveBeenCalled();
 
@@ -186,7 +183,7 @@ describe("Notifications", function () {
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(text);
-                await view.model.queueMessage(message.nodeTree);
+                await view.model.handleMessageStanza(message.nodeTree);
                 expect(_converse.playSoundNotification, 1);
                 _converse.play_sounds = false;
 
@@ -197,7 +194,7 @@ describe("Notifications", function () {
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(text);
-                await view.model.queueMessage(message.nodeTree);
+                await view.model.handleMessageStanza(message.nodeTree);
                 expect(_converse.playSoundNotification, 1);
                 _converse.play_sounds = false;
                 done();

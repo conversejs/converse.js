@@ -132,17 +132,15 @@ window.addEventListener('converse-loaded', () => {
     };
 
     mock.openChatBoxes = function (converse, amount) {
-        const views = [];
         for (let i=0; i<amount; i++) {
             const jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            views.push(converse.roster.get(jid).trigger("open"));
+            converse.roster.get(jid).openChat();
         }
-        return views;
     };
 
     mock.openChatBoxFor = async function (_converse, jid) {
         await _converse.api.waitUntil('rosterContactsFetched');
-        _converse.roster.get(jid).trigger("open");
+        _converse.roster.get(jid).openChat();
         return u.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
     };
 

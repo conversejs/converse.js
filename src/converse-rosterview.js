@@ -300,7 +300,6 @@ converse.plugins.add('converse-rosterview', {
                 this.listenTo(this.model, "change", this.debouncedRender);
                 this.listenTo(this.model, "destroy", this.remove);
                 this.listenTo(this.model, "highlight", this.highlight);
-                this.listenTo(this.model, "open", this.openChat);
                 this.listenTo(this.model, "remove", this.remove);
                 this.listenTo(this.model, 'vcard:change', this.debouncedRender);
                 this.listenTo(this.model.presence, "change:show", this.debouncedRender);
@@ -453,8 +452,7 @@ converse.plugins.add('converse-rosterview', {
 
             openChat (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const attrs = this.model.attributes;
-                api.chats.open(attrs.jid, attrs, true);
+                this.model.openChat();
             },
 
             async removeContact (ev) {

@@ -248,6 +248,11 @@ converse.plugins.add('converse-roster', {
                 this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
             },
 
+            openChat () {
+                const attrs = this.attributes;
+                api.chats.open(attrs.jid, attrs, true);
+            },
+
             getDisplayName () {
                 // Gets overridden in converse-vcard where the fullname is may be returned
                 if (this.get('nickname')) {

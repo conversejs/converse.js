@@ -212,6 +212,7 @@ describe("Message Archive Management", function () {
                 await mock.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
                 const sent_IQs = _converse.connection.IQ_stanzas;
                 const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
@@ -252,7 +253,6 @@ describe("Message Archive Management", function () {
                             .c('count').t('16');
                 _converse.connection._dataRecv(mock.createRequest(iq_result));
 
-                const view = _converse.chatboxviews.get(contact_jid);
                 await new Promise(resolve => view.once('messageInserted', resolve));
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('message')).toBe("Thrice the brinded cat hath mew'd.");

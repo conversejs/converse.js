@@ -1241,20 +1241,27 @@ converse.plugins.add('converse-muc-views', {
 
             onConnectionStatusChanged () {
                 const conn_status = this.model.session.get('connection_status');
-                if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {
-                    this.showNicknameForm();
-                } else if (conn_status === converse.ROOMSTATUS.PASSWORD_REQUIRED) {
-                    this.renderPasswordForm();
-                } else if (conn_status === converse.ROOMSTATUS.CONNECTING) {
-                    this.showSpinner();
-                } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
-                    this.renderBottomPanel();
-                    this.hideSpinner();
-                    this.maybeFocus();
-                } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
-                    this.showDisconnectMessage();
-                } else if (conn_status === converse.ROOMSTATUS.DESTROYED) {
-                    this.showDestroyedMessage();
+                switch (conn_status) {
+                    case converse.ROOMSTATUS.NICKNAME_REQUIRED:
+                        this.showNicknameForm();
+                        break;
+                    case converse.ROOMSTATUS.PASSWORD_REQUIRED:
+                        this.renderPasswordForm();
+                        break;
+                    case converse.ROOMSTATUS.CONNECTING:
+                        this.showSpinner();
+                        break;
+                    case converse.ROOMSTATUS.ENTERED:
+                        this.renderBottomPanel();
+                        this.hideSpinner();
+                        this.maybeFocus();
+                        break;
+                    case converse.ROOMSTATUS.DISCONNECTED:
+                        this.showDisconnectMessage();
+                        break;
+                    case converse.ROOMSTATUS.DESTROYED:
+                        this.showDestroyedMessage();
+                        break;
                 }
             },
 

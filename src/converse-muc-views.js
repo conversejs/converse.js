@@ -2183,7 +2183,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             setVisibility () {
-                if (this.chatroomview.model.get('hidden_occupants')) {
+                if (this.chatroomview.model.get('hidden_occupants') ||
+                    this.chatroomview.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     u.hideElement(this.el);
                 } else {
                     u.showElement(this.el);

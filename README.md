@@ -120,7 +120,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 
 We use behavior-driven tests written with [jasmine.js](https://jasmine.github.io/).
 
-Open [tests/index.html](https://github.com/conversejs/converse.js/blob/master/tests/index.html) in your browser, and the tests will run automatically.
+You ran run `make check` to execute all the tests.
 
 ## Licence
 

@@ -33,7 +33,6 @@ import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_room_description from "templates/room_description.html";
 import tpl_room_panel from "templates/room_panel.html";
 import tpl_spinner from "templates/spinner.html";
-import xss from "xss/dist/xss";
 
 const { Strophe, sizzle, $iq, $pres } = converse.env;
 const u = converse.env.utils;
@@ -543,7 +542,7 @@ converse.plugins.add('converse-muc-views', {
                     'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
                     'chatroom_placeholder': placeholder,
                     'muc_roomid_policy_error_msg': this.muc_roomid_policy_error_msg,
-                    'muc_roomid_policy_hint': xss.filterXSS(_converse.muc_roomid_policy_hint, {'whiteList': {b: [], br: [], em: []}})
+                    'muc_roomid_policy_hint': _converse.muc_roomid_policy_hint
                 }));
             },
 

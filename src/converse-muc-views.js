@@ -1687,12 +1687,11 @@ converse.plugins.add('converse-muc-views', {
             },
 
             showNicknameForm () {
-                const isNicknameFormRendered = !!this.el.querySelector('.muc-nickname-form');
-                if (isNicknameFormRendered) {
-                    this.showNicknameFormContents();
-                } else {
-                    this.renderNicknameForm();
+                const nicknameForm = this.el.querySelector('.muc-nickname-form');
+                if (nicknameForm) {
+                    u.removeElement(nicknameForm);
                 }
+                this.renderNicknameForm();
             },
 
             /**
@@ -1729,11 +1728,12 @@ converse.plugins.add('converse-muc-views', {
                     __('Choose a nickname to enter') :
                     __('Please choose your nickname');
 
-                const html = tpl_chatroom_nickname_form(Object.assign({
+                const templateData = Object.assign({
                     heading,
                     'label_nickname': __('Nickname'),
                     'label_join': __('Enter groupchat'),
-                }, this.model.toJSON()));
+                }, this.model.toJSON());
+                const html = tpl_chatroom_nickname_form(templateData);
 
                 if (_converse.muc_show_logs_before_join) {
                     const container = this.el.querySelector('.muc-bottom-panel');

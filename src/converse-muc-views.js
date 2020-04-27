@@ -468,15 +468,16 @@ converse.plugins.add('converse-muc-views', {
              * @param { HTMLElement } iq
              */
             onRoomsFound (iq) {
+                this.loading_items = false;
                 const rooms = iq ? sizzle('query item', iq) : [];
                 if (rooms.length) {
                     this.model.set({'feedback_text': __('Groupchats found')}, {'silent': true});
                     this.items = rooms.map(st.getAttributes);
-                    this.loading_items = false;
-                    this.render();
                 } else {
-                    this.model.set('feedback_text', __('No groupchats found'));
+                    this.items = [];
+                    this.model.set({'feedback_text': __('No groupchats found')}, {'silent': true});
                 }
+                this.render();
                 return true;
             },
 

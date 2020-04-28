@@ -2,13 +2,13 @@
 
 const { Promise, $msg, $pres, sizzle } = converse.env;
 const u = converse.env.utils;
-const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe("Emojis", function () {
     describe("The emoji picker", function () {
 
         beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
-        afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout));
+        afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
         it("can be opened by clicking a button in the chat toolbar",
             mock.initConverse(

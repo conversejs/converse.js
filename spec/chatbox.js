@@ -1296,6 +1296,8 @@ describe("Chatboxes", function () {
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.model.messages.length);
             expect(view.model.get('num_unread')).toBe(1);
+            const msgid = view.model.messages.last().get('id');
+            expect(view.model.get('first_unread_id')).toBe(msgid);
             done();
         }));
 
@@ -1329,9 +1331,12 @@ describe("Chatboxes", function () {
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
             _converse.windowState = 'hidden';
-            _converse.handleMessageStanza(msgFactory());
+            const msg = msgFactory();
+            _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
+            const msgid = chatbox.messages.last().get('id');
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             done();
         }));
 
@@ -1347,9 +1352,12 @@ describe("Chatboxes", function () {
             const chatbox = _converse.chatboxes.get(sender_jid);
             chatbox.save('scrolled', true);
             _converse.windowState = 'hidden';
-            _converse.handleMessageStanza(msgFactory());
+            const msg = msgFactory();
+            _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
+            const msgid = chatbox.messages.last().get('id');
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             done();
         }));
 
@@ -1364,9 +1372,12 @@ describe("Chatboxes", function () {
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
             _converse.windowState = 'hidden';
-            _converse.handleMessageStanza(msgFactory());
+            const msg = msgFactory();
+            _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
+            const msgid = chatbox.messages.last().get('id');
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(0);
             done();
@@ -1384,11 +1395,15 @@ describe("Chatboxes", function () {
             const chatbox = _converse.chatboxes.get(sender_jid);
             chatbox.save('scrolled', true);
             _converse.windowState = 'hidden';
-            _converse.handleMessageStanza(msgFactory());
+            const msg = msgFactory();
+            _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
+            const msgid = chatbox.messages.last().get('id');
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(1);
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             done();
         }));
     });

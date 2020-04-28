@@ -4754,7 +4754,7 @@ describe("Groupchats", function () {
 
             await u.waitUntil(() => modal.el.querySelectorAll('.available-chatrooms li').length === 11);
             const rooms = modal.el.querySelectorAll('.available-chatrooms li');
-            expect(rooms[0].textContent.trim()).toBe("Groupchats found:");
+            expect(rooms[0].textContent.trim()).toBe("Groupchats found");
             expect(rooms[1].textContent.trim()).toBe("A Lonely Heath");
             expect(rooms[2].textContent.trim()).toBe("A Dark Cave");
             expect(rooms[3].textContent.trim()).toBe("The Palace");
@@ -4832,7 +4832,7 @@ describe("Groupchats", function () {
 
             await u.waitUntil(() => modal.el.querySelectorAll('.available-chatrooms li').length === 4);
             const rooms = modal.el.querySelectorAll('.available-chatrooms li');
-            expect(rooms[0].textContent.trim()).toBe("Groupchats found:");
+            expect(rooms[0].textContent.trim()).toBe("Groupchats found");
             expect(rooms[1].textContent.trim()).toBe("A Lonely Heath");
             expect(rooms[2].textContent.trim()).toBe("A Dark Cave");
             expect(rooms[3].textContent.trim()).toBe("The Palace");

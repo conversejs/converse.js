@@ -21,7 +21,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #1896: Don't send receipts for messages fetched from the archive
 - #1937: Editing a message removes the mentions highlight
 - #1963: Mentions are visually incorrect when used in message replies
-- #1999: Jump to first unread message marker
+- #1999: Jump to first unread message
 - #2002: fix rendering of `muc_roomid_policy_hint`
 
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`

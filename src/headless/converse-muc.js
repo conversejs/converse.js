@@ -2364,9 +2364,12 @@ converse.plugins.add('converse-muc', {
                     let first_unread = this.get('first_unread');
 
                     if (this.get('num_unread_general') == 0) {
-                      if (first_unread) first_unread.set("first_unread", false);
+                      if (first_unread) {
+                          const msg = this.messages.where({'msgid': first_unread});
+                          if (msg.length > 0) msg[0].set("first_unread", false);
+                      }
                       message.set("first_unread", true);
-                      first_unread = message;
+                      first_unread = message.get('msgid');
                     }
                     const settings = {'first_unread': first_unread, 'num_unread_general': this.get('num_unread_general') + 1};
                     if (this.isUserMentioned(message)) {

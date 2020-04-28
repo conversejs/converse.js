@@ -146,7 +146,7 @@ converse.plugins.add('converse-message-view', {
                     return this.renderFileUploadProgresBar();
                 }
                 const isValidChange = prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop);
-                const props = ['moderated', 'retracted', 'correcting', 'message', 'type', 'upload', 'received', 'editable'];
+                const props = ['moderated', 'retracted', 'correcting', 'message', 'type', 'upload', 'received', 'editable', 'first_unread'];
                 if (props.filter(isValidChange).length) {
                     await this.debouncedRender();
                 }
@@ -260,6 +260,7 @@ converse.plugins.add('converse-message-view', {
                         'occupant': this.model.occupant,
                         'pretty_time': time.format(api.settings.get('time_format')),
                         'retraction_text': is_retracted ? this.getRetractionText() : null,
+                        'first_unread': this.model.get('first_unread'),
                         'time': time.toISOString(),
                         'username': this.model.getDisplayName()
                     })

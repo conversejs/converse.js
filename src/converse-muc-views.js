@@ -1723,9 +1723,15 @@ converse.plugins.add('converse-muc-views', {
                     container.innerHTML = html;
                     u.addClass('muc-bottom-panel--nickname', container);
                 } else {
-                    this.hideChatRoomContents();
-                    const container = this.el.querySelector('.chatroom-body');
-                    container.insertAdjacentHTML('beforeend', html);
+                    const form = this.el.querySelector('.muc-nickname-form');
+                    if (form) {
+                        sizzle('.spinner', this.el).forEach(u.removeElement);
+                        form.outerHTML = html;
+                    } else {
+                        this.hideChatRoomContents();
+                        const container = this.el.querySelector('.chatroom-body');
+                        container.insertAdjacentHTML('beforeend', html);
+                    }
                 }
                 u.safeSave(this.model.session, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
             },

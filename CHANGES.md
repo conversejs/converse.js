@@ -22,6 +22,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #1937: Editing a message removes the mentions highlight
 - #1963: Mentions are visually incorrect when used in message replies
 - #2002: fix rendering of `muc_roomid_policy_hint`
+- #2006: fix rendering of emojis in case `use_system_emojis == false`
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
 - Bugfix. Handle stanza that clears the MUC subject
 - Replace Backbone with [Skeletor](https://github.com/skeletorjs/skeletor)

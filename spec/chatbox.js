@@ -1296,6 +1296,7 @@ describe("Chatboxes", function () {
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.model.messages.length);
             expect(view.model.get('num_unread')).toBe(1);
+            expect(view.model.get('first_unread')).toBeDefined();
             done();
         }));
 
@@ -1332,6 +1333,7 @@ describe("Chatboxes", function () {
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
+            expect(chatbox.get('first_unread')).toBeDefined();
             done();
         }));
 
@@ -1350,6 +1352,7 @@ describe("Chatboxes", function () {
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
+            expect(chatbox.get('first_unread')).toBeDefined();
             done();
         }));
 
@@ -1367,6 +1370,7 @@ describe("Chatboxes", function () {
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
+            expect(chatbox.get('first_unread')).toBeDefined();
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(0);
             done();
@@ -1387,8 +1391,10 @@ describe("Chatboxes", function () {
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
+            expect(chatbox.get('first_unread')).toBeDefined();
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(1);
+            expect(chatbox.get('first_unread')).toBeDefined();
             done();
         }));
     });

@@ -2361,7 +2361,14 @@ converse.plugins.add('converse-muc', {
                 const body = message.get('message');
                 if (!body) { return; }
                 if (u.isNewMessage(message) && this.isHidden()) {
-                    const settings = {'num_unread_general': this.get('num_unread_general') + 1};
+                    let first_unread = this.get('first_unread');
+
+                    if (this.get('num_unread_general') == 0) {
+                      if (first_unread) first_unread.set("first_unread", false);
+                      message.set("first_unread", true);
+                      first_unread = message;
+                    }
+                    const settings = {'first_unread': first_unread, 'num_unread_general': this.get('num_unread_general') + 1};
                     if (this.isUserMentioned(message)) {
                         settings.num_unread = this.get('num_unread') + 1;
                         _converse.incrementMsgCounter();

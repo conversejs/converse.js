@@ -4,6 +4,9 @@
     <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>
     {[ } ]}
     <div class="chat-msg__content chat-msg__content--{{{o.sender}}} {{{o.is_me_message ? 'chat-msg__content--action' : ''}}}">
+        {[ if (o.first_unread) { ]}
+            <div class="message date-separator"><hr class="separator"><span class="separator-text">{{{o.__('unread messages')}}}</span></div>
+        {[ } ]}
         <span class="chat-msg__heading">
             {[ if (o.is_me_message) { ]}<time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>{[ } ]}
             <span class="chat-msg__author">{[ if (o.is_me_message) { ]}**{[ }; ]}{{{o.username}}}</span>

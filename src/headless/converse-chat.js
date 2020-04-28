@@ -1100,7 +1100,14 @@ converse.plugins.add('converse-chat', {
                     return;
                 }
                 if (utils.isNewMessage(message) && this.isHidden()) {
-                    this.save({'num_unread': this.get('num_unread') + 1});
+                    let first_unread = this.get('first_unread');
+
+                    if (this.get('num_unread') == 0) {
+                      if (first_unread) first_unread.set("first_unread", false);
+                      message.set("first_unread", true);
+                      first_unread = message;
+                    }
+                    this.save({'first_unread': first_unread, 'num_unread': this.get('num_unread') + 1});
                     _converse.incrementMsgCounter();
                 }
             },

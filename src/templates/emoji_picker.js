@@ -10,7 +10,7 @@ const skintones = ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'];
 
 
 const emoji_category = (o) => {
-    const category_emoji = unsafeHTML(xss.filterXSS(o.transformCategory(o.emoji_categories[o.category]), {'whitelist': {'img': []}}));
+    const category_emoji = unsafeHTML(xss.filterXSS(o.transformCategory(o.emoji_categories[o.category]), {'whiteList': {'img': []}}));
     return html`
         <li data-category="${o.category}"
             class="emoji-category ${o.category} ${(o.current_category === o.category) ? 'picked' : ''}"
@@ -34,7 +34,7 @@ const emoji_picker_header = (o) => html`
 const emoji_item = (o) => {
     let emoji;
     if (o._converse.api.settings.get('use_system_emojis')) {
-        emoji = unsafeHTML(xss.filterXSS(o.transform(o.emoji.sn), {'whitelist': {'img': []}}));
+        emoji = unsafeHTML(xss.filterXSS(o.transform(o.emoji.sn), {'whiteList': {'img': []}}));
     }
     return html`
         <li class="emoji insert-emoji ${o.shouldBeHidden(o.emoji.sn) ? 'hidden' : ''}" data-emoji="${o.emoji.sn}" title="${o.emoji.sn}">
@@ -64,7 +64,7 @@ const skintone_emoji = (o) => {
     const shortname = ':'+o.skintone+':';
     let emoji;
     if (o._converse.api.settings.get('use_system_emojis')) {
-        emoji = unsafeHTML(xss.filterXSS(o.transform(shortname), {'whitelist': {'img': []}}));
+        emoji = unsafeHTML(xss.filterXSS(o.transform(shortname), {'whiteList': {'img': []}}));
     }
     return html`
         <li data-skintone="${o.skintone}" class="emoji-skintone ${(o.current_skintone === o.skintone) ? 'picked' : ''}">

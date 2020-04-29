@@ -36,6 +36,7 @@
     "url": "git://github.com/conversejs/converse.js.git"
   },
   "keywords": [
+	"converse.js",
     "XMPP",
     "Jabber",
     "chat",

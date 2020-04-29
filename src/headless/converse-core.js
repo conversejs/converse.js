@@ -163,6 +163,7 @@ const DEFAULT_SETTINGS = {
  * @namespace _converse
  */
 export const _converse = {
+    log,
     'templates': {},
     'promises': {},
 

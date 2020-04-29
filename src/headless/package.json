@@ -15,6 +15,15 @@
     "templates/*.html",
     "templates/*.svg"
   ],
+  "keywords": [
+	"converse.js",
+    "XMPP",
+    "Jabber",
+    "chat",
+    "messaging",
+    "chatrooms",
+    "webchat"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/conversejs/converse.js.git"

@@ -1,4 +1,9 @@
-# Converse
+<h2 align="center">
+  <a href="https://conversejs.org" target="_blank" rel="noopener">
+    <img alt="Converse.js" src="https://raw.githubusercontent.com/conversejs/converse.js/readme-logo/logo/readme.png" width="480">
+  </a>
+</h2>
+
 
 [![XMPP Chat](https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
 [![Travis](https://api.travis-ci.org/conversejs/converse.js.png?branch=master)](https://travis-ci.org/conversejs/converse.js)

@@ -40,7 +40,7 @@ const i18n_topic_author = __('Topic author');
 
 
 const subject = (o) => html`
-    <p class="room-info"><strong>${i18n_topic}</strong>: ${unsafeHTML(xss.filterXSS(o.subject.text, {'whitelist': {}}))}</p>
+    <p class="room-info"><strong>${i18n_topic}</strong>: ${unsafeHTML(xss.filterXSS(o.subject.text, {'whiteList': {}}))}</p>
         <p class="room-info"><strong>${i18n_topic_author}</strong>: ${o.subject && o.subject.author}</p>
 `;
 

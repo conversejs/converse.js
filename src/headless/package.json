@@ -42,7 +42,7 @@
     "localforage": "^1.7.3",
     "lodash": "^4.17.15",
     "pluggable.js": "2.0.1",
-    "strophe.js": "1.3.4",
+    "strophe.js": "1.3.5",
     "twemoji": "^12.1.2"
   }
 }

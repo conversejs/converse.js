@@ -1297,7 +1297,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => view.model.messages.length);
             expect(view.model.get('num_unread')).toBe(1);
             const msgid = msg.getAttribute('id');
-            expect(view.model.get('first_unread')).toBe(msgid);
+            expect(view.model.get('first_unread_id')).toBe(msgid);
             done();
         }));
 
@@ -1336,7 +1336,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = msg.getAttribute('id');
-            expect(chatbox.get('first_unread')).toBe(msgid);
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             done();
         }));
 
@@ -1357,7 +1357,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = msg.getAttribute('id');
-            expect(chatbox.get('first_unread')).toBe(msgid);
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             done();
         }));
 
@@ -1377,7 +1377,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = msg.getAttribute('id');
-            expect(chatbox.get('first_unread')).toBe(msgid);
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(0);
             done();
@@ -1400,10 +1400,10 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => chatbox.messages.length);
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = msg.getAttribute('id');
-            expect(chatbox.get('first_unread')).toBe(msgid);
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(1);
-            expect(chatbox.get('first_unread')).toBe(msgid);
+            expect(chatbox.get('first_unread_id')).toBe(msgid);
             done();
         }));
     });

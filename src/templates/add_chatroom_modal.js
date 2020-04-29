@@ -1,7 +1,8 @@
 import { html } from "lit-html";
+import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { __ } from '@converse/headless/i18n';
 import { modal_header_close_button } from "./buttons"
-
+import xss from "xss/dist/xss";
 
 const i18n_join = __('Join');
 const i18n_enter = __('Enter a new Groupchat');
@@ -32,7 +33,7 @@ export default (o) => html`
                         ${ (o.muc_roomid_policy_error_msg) ? html`<label class="roomid-policy-error">${o.muc_roomid_policy_error_msg}</label>` : '' }
                         <input type="text" required="required" name="chatroom" class="form-control roomjid-input" placeholder="${o.chatroom_placeholder}"/>
                     </div>
-                    ${ o.muc_roomid_policy_hint ?  html`<div class="form-group">{{o.muc_roomid_policy_hint}}</div>` : '' }
+                    ${ o.muc_roomid_policy_hint ?  html`<div class="form-group">${unsafeHTML(xss.filterXSS(o.muc_roomid_policy_hint, {'whiteList': {b: [], br: [], em: []}}))}</div>` : '' }
                     ${ !o._converse.locked_muc_nickname ? nickname_input(o) : '' }
                     <input type="submit" class="btn btn-primary" name="join" value="${i18n_join || ''}" ?disabled=${o.muc_roomid_policy_error_msg}>
                 </form>

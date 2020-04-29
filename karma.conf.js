@@ -14,8 +14,7 @@ module.exports = function(config) {
       "dist/converse.css",
       { pattern: "dist/webfonts/**/*.*", included: false },
       { pattern: "node_modules/sinon/pkg/sinon.js", type: 'module' },
-      { pattern: "tests/console-reporter.js", type: 'module' },
-      { pattern: "tests/mock.js", type: 'module' },
+      { pattern: "spec/mock.js", type: 'module' },
 
       { pattern: "spec/spoilers.js", type: 'module' },
       { pattern: "spec/roomslist.js", type: 'module' },

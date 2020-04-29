@@ -260,7 +260,6 @@ converse.plugins.add('converse-message-view', {
                         'occupant': this.model.occupant,
                         'pretty_time': time.format(api.settings.get('time_format')),
                         'retraction_text': is_retracted ? this.getRetractionText() : null,
-                        'first_unread': this.model.get('first_unread'),
                         'time': time.toISOString(),
                         'username': this.model.getDisplayName()
                     })

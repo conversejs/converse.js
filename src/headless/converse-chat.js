@@ -1112,7 +1112,7 @@ converse.plugins.add('converse-chat', {
              */
             setFirstUnreadMsgId (message) {
                 if (this.get('num_unread') == 0) {
-                    let first_unread_id = this.get('first_unread_id');
+                    const first_unread_id = this.get('first_unread_id');
 
                     if (first_unread_id) {
                       const msg = this.messages.where({'msgid': first_unread_id});

@@ -1129,7 +1129,7 @@ converse.plugins.add('converse-chat', {
                       if (msg) msg.set("first_unread", false);
                     }
                     message.set("first_unread", true);
-                    this.set({'first_unread_id': message.get('msgid')});
+                    this.set({'first_unread_id': message.get('id')});
                 }
             },
 

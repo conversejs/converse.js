@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-23 00:11+0000\n"
-"Last-Translator: Jeannette L <j.lavoie@net-c.ca>\n"
+"PO-Revision-Date: 2020-05-02 10:11+0000\n"
+"Last-Translator: opsi-gei <krummel@gei.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0.2-dev\n"
+"X-Generator: Weblate 4.1-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1131,14 +1131,12 @@ msgid "This groupchat is publicly searchable"
 msgstr "Dieser Gruppenchat ist öffentlich auffindbar"
 
 #: dist/converse-no-dependencies.js:61406
-#, fuzzy
 msgid "Hide the groupchat topic"
-msgstr "Raum betreten"
+msgstr "Gruppen-Chatraum verbergen"
 
 #: dist/converse-no-dependencies.js:61408
-#, fuzzy
 msgid "This groupchat is bookmarked"
-msgstr "Dieser Raum ist moderiert"
+msgstr "Dieser Raum ist als Lesezechen gekennzeichnet"
 
 #: dist/converse-no-dependencies.js:61460
 #: dist/converse-no-dependencies.js:63686
@@ -1261,7 +1259,7 @@ msgstr "Grund"
 
 #: dist/converse-no-dependencies.js:61968
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "Hier Filter für Suchergebnisse eingeben"
 
 #: dist/converse-no-dependencies.js:61972
 msgid "Show users"
@@ -1521,19 +1519,16 @@ msgid "Configure this groupchat"
 msgstr "Diesen Gruppenchat konfigurieren"
 
 #: dist/converse-no-dependencies.js:63659
-#, fuzzy
 msgid "Moderate"
 msgstr "Moderiert"
 
 #: dist/converse-no-dependencies.js:63660
-#, fuzzy
 msgid "Moderate this groupchat"
-msgstr "Diesen Gruppenchat verlassen"
+msgstr "Diesen Gruppenchat moderieren"
 
 #: dist/converse-no-dependencies.js:63672
-#, fuzzy
 msgid "Destroy"
-msgstr "Gruppenchat auflösen"
+msgstr "Gruppenchat zerstören"
 
 #: dist/converse-no-dependencies.js:63673
 #: dist/converse-no-dependencies.js:64268
@@ -1624,9 +1619,8 @@ msgid "Check your browser's developer console for details."
 msgstr "Einzelheiten finden Sie in der Entwicklerkonsole Ihres Browsers."
 
 #: dist/converse-no-dependencies.js:64178
-#, fuzzy
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr "Möchten Sie den Gruppenchat „%1$s” wirklich verlassen?"
+msgstr "Möchten Sie den Gruppenchat „%1$s” wirklich zerstören?"
 
 #: dist/converse-no-dependencies.js:64267
 msgid "You can run the following commands"
@@ -1764,9 +1758,8 @@ msgid "Click to open this server message"
 msgstr "Klicken Sie hier, um diese Servernachricht zu öffnen"
 
 #: dist/converse-no-dependencies.js:65432
-#, fuzzy
 msgid "Close these announcements"
-msgstr "Ankündigungen"
+msgstr "Ankündigungen schließen"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:65610
@@ -2142,7 +2135,7 @@ msgstr "Möchten Sie den Gruppenchat „%1$s” wirklich verlassen?"
 
 #: dist/converse-no-dependencies.js:70460
 msgid "name@example.org"
-msgstr "z.B. benutzer@beispiel.org"
+msgstr "benutzer@beispiel.org"
 
 #: dist/converse-no-dependencies.js:70462
 msgid "Add"
@@ -2206,7 +2199,7 @@ msgstr "Nach Gruppennamen filtern"
 
 #: dist/converse-no-dependencies.js:70791
 msgid "Filter by status"
-msgstr "Suche via Status"
+msgstr "Filterung via Status"
 
 #: dist/converse-no-dependencies.js:70792
 msgid "Any"

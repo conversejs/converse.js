@@ -1737,7 +1737,7 @@ function setUnloadEvent () {
     }
 }
 
-export const converse = window.converse;
+export const converse = window.converse || {};
 
 
 /**
@@ -1912,4 +1912,6 @@ Object.assign(converse, {
  * @event converse-loaded
  * @example window.addEventListener('converse-loaded', () => converse.initialize());
  */
-window.dispatchEvent(new CustomEvent('converse-loaded'));
+const ev = new CustomEvent('converse-loaded')
+ev.converse = converse;
+window.dispatchEvent(ev);

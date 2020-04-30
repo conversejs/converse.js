@@ -256,6 +256,7 @@ converse.plugins.add('converse-dragresize', {
                 if (!api.settings.get('allow_dragresize')) {
                     return true;
                 }
+                ev.preventDefault();
                 // Record element attributes for mouseMove().
                 const flyout = this.el.querySelector('.box-flyout'),
                       style = window.getComputedStyle(flyout);
@@ -279,6 +280,7 @@ converse.plugins.add('converse-dragresize', {
                 if (!api.settings.get('allow_dragresize')) {
                     return true;
                 }
+                ev.preventDefault();
                 const flyout = this.el.querySelector('.box-flyout'),
                       style = window.getComputedStyle(flyout);
                 this.width = parseInt(style.width.replace(/px$/, ''), 10);

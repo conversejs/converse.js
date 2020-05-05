@@ -185,6 +185,82 @@ describe("XSS", function () {
                 `<a target="_blank" rel="noopener" href="https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=%213m6%211e1%213m4%211sQ7SdHo_bPLPlLlU8GSGWaQ%212e0%217i13312%218i6656%214m5%213m4%211s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08%218m2%213d52.3773668%214d4.5489388%215m1%211e2">https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=!3m6!1e1!3m4!1sQ7SdHo_bPLPlLlU8GSGWaQ!2e0!7i13312!8i6656!4m5!3m4!1s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08!8m2!3d52.3773668!4d4.5489388!5m1!1e2</a>`);
             done();
         }));
+
+        it("will avoid malformed and unsafe urls urls from rendering as anchors",
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            await mock.waitForRoster(_converse, 'current');
+            await mock.openControlBox(_converse);
+
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid)
+            const view = _converse.api.chatviews.get(contact_jid);
+
+            const bad_urls =[
+                'http://^$^(*^#$%^_1*(',
+                'file://devili.sh'
+            ];
+
+            const good_urls =[{
+                entered: 'http://www.google.com',
+                href: 'http://www.google.com/'
+            }, {
+                entered: 'https://www.google.com/',
+                href: 'https://www.google.com/'
+            }, {
+                entered: 'www.url.com/something?else=1',
+                href: 'http://www.url.com/something?else=1',
+            }, {
+                entered: 'xmpp://anything/?join',
+                href: 'xmpp://anything/?join',
+            }, {
+                entered: 'WWW.SOMETHING.COM/?x=dKasdDAsd4JAsd3OAJSD23osajAidj',
+                href: 'http://WWW.SOMETHING.COM/?x=dKasdDAsd4JAsd3OAJSD23osajAidj',
+            }];
+
+            function checkNonParsedURL (url) {
+                const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+                expect(msg.textContent).toEqual(url);
+                expect(msg.innerHTML).toEqual(url);
+            }
+
+            function checkParsedURL ({ entered, href }) {
+                const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+                expect(msg.textContent).toEqual(entered);
+                expect(msg.innerHTML).toEqual(`<a target="_blank" rel="noopener" href="${href}">${entered}</a>`);
+            }
+
+            function checkParsedXMPPURL ({ entered, href }) {
+                const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+                expect(msg.textContent).toEqual(entered);
+                expect(msg.innerHTML).toEqual(`<a target="_blank" rel="noopener" class="open-chatroom" href="${href}">${entered}</a>`);
+            }
+
+            await mock.sendMessage(view, bad_urls[0]);
+            checkNonParsedURL(bad_urls[0]);
+
+            await mock.sendMessage(view, bad_urls[1]);
+            checkNonParsedURL(bad_urls[1]);
+
+            await mock.sendMessage(view, good_urls[0].entered);
+            checkParsedURL(good_urls[0]);
+
+            await mock.sendMessage(view, good_urls[1].entered);
+            checkParsedURL(good_urls[1]);
+
+            await mock.sendMessage(view, good_urls[2].entered);
+            checkParsedURL(good_urls[2]);
+
+            await mock.sendMessage(view, good_urls[3].entered);
+            checkParsedXMPPURL(good_urls[3]);
+
+            await mock.sendMessage(view, good_urls[4].entered);
+            checkParsedURL(good_urls[4]);
+
+            done();
+        }));
     });
 
     describe("A Groupchat", function () {

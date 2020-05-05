@@ -389,16 +389,17 @@ u.addMentionsMarkup = function (text, references, chatbox) {
     return text;
 };
 
-u.convertUriToHyperlink = function (uri) {
-    let url = uri.normalize()._string;
-    const pretty_url = uri._parts.urn ? url : uri.readable();
-    if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
-        url = 'http://' + url;
+u.convertUriToHyperlink = function (uri, urlAsTyped) {
+    let normalizedUrl = uri.normalize()._string;
+    const pretty_url = uri._parts.urn ? normalizedUrl : uri.readable();
+    const visibleUrl = u.escapeHTML(urlAsTyped || pretty_url);
+    if (!uri._parts.protocol && !normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+        normalizedUrl = 'http://' + normalizedUrl;
     }
     if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
-        return `<a target="_blank" rel="noopener" class="open-chatroom" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+        return `<a target="_blank" rel="noopener" class="open-chatroom" href="${normalizedUrl}">${visibleUrl}</a>`;
     }
-    return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+    return `<a target="_blank" rel="noopener" href="${normalizedUrl}">${visibleUrl}</a>`;
 };
 
 function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOLS) {
@@ -416,9 +417,10 @@ function isUrlValid (urlString) {
 }
 
 u.convertUrlToHyperlink = function (url) {
+    const urlWithProtocol = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
     const uri = getURI(url);
-    if (uri !== null && isUrlValid(url) && isProtocolApproved(uri._parts.protocol)) {
-        const hyperlink = this.convertUriToHyperlink(uri);
+    if (uri !== null && isUrlValid(urlWithProtocol) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
+        const hyperlink = this.convertUriToHyperlink(uri, url);
         return hyperlink;
     }
     return url;

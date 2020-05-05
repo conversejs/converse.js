@@ -33,10 +33,11 @@ Soon we'll deprecate the latter, so prepare now.
   [discover_connection_methods](https://conversejs.org/docs/html/configuration.html#discover-connection-methods) now has a default value of `true`).
 - [show_send_button](https://conversejs.org/docs/html/configuration.html#show-send-button) now has a default value of `true`.
 - The [api.confirm](https://conversejs.org/docs/html/api/-_converse.api.html#.confirm) method now accepts a list of fields and returns the filled in list upon confirmation.
+- New config option [allow_adhoc_commands](https://conversejs.org/docs/html/configuration.html#allow-adhoc-commands)
 - New config option [modtools_disable_assign](https://conversejs.org/docs/html/configuration.html#modtools-disable-assign)
 - New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
-- New config option [allow_adhoc_commands](https://conversejs.org/docs/html/configuration.html#allow-adhoc-commands)
 - New config option [muc_hats_from_vcard](https://conversejs.org/docs/html/configuration.html#muc-hats-from-vcard).
+- New config option [muc_send_probes](https://conversejs.org/docs/html/configuration.html#muc-send-probes).
 
 ## 6.0.0 (2020-01-09)
 

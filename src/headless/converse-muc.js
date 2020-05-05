@@ -125,6 +125,7 @@ converse.plugins.add('converse-muc', {
             'muc_history_max_stanzas': undefined,
             'muc_instant_rooms': true,
             'muc_nickname_from_jid': false,
+            'muc_send_probes': false,
             'muc_show_join_leave': true,
             'muc_show_logs_before_join': false
         });
@@ -305,7 +306,14 @@ converse.plugins.add('converse-muc', {
                     return log.error(`Could not get collection.chatbox for message: ${JSON.stringify(this.toJSON())}`);
                 }
                 const nick = Strophe.getResourceFromJid(this.get('from'));
-                this.occupant = chatbox.occupants.findWhere({'nick': nick});
+                this.occupant = chatbox.occupants.findWhere({ nick });
+
+                if (!this.occupant && api.settings.get("muc_send_probes")) {
+                    this.occupant = chatbox.occupants.create({ nick, 'type': 'unavailable' });
+                    const jid = `${chatbox.get('jid')}/${nick}`;
+                    api.user.presence.send('probe', jid);
+                }
+
                 if (this.occupant) {
                     this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
                 } else {

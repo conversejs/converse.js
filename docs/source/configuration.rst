@@ -1181,6 +1181,25 @@ automatically be "john". If now john@differentdomain.com tries to join the
 room, his nickname will be "john-2", and if john@somethingelse.com joins, then
 his nickname will be "john-3", and so forth.
 
+muc_send_probes
+---------------
+
+* Default: ``false``
+
+If set to ``true``,  then whenever Converse receives a MUC message with an author for which we don't have
+any information (i.e. because that user is currently not in the MUC), then Converse will send out a ``<presence>``
+stanza of type ``probe`` in order to request the authors presence data.
+
+Note, although this behavior is described in the `presence business rules of XEP-0045, section 17.3 point 4 <https://xmpp.org/extensions/xep-0045.html#bizrules-presence>`_,
+few XMPP servers support this.
+
+Prosody has some experimental support in it's contrib branch (hopefully soon to
+be merged to trunk).
+
+The point of sending out presence probes is in order to receive
+presence-related metadata, such as `XEP-0317 Hats <https://xmpp.org/extensions/xep-0317.html>`_.
+
+
 muc_respect_autojoin
 --------------------
 

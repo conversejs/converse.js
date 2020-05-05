@@ -288,6 +288,7 @@ converse.plugins.add('converse-muc', {
             onOccupantAdded (occupant) {
                 if (occupant.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
                     this.occupant = occupant;
+                    this.trigger('occupantAdded');
                     this.listenTo(this.occupant, 'destroy', this.onOccupantRemoved);
                     const chatbox = this?.collection?.chatbox;
                     if (!chatbox) {

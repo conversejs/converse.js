@@ -116,6 +116,7 @@ converse.plugins.add('converse-message-view', {
 
                 this.listenTo(this.model, 'change', this.onChanged);
                 this.listenTo(this.model, 'destroy', this.fadeOut);
+                this.listenTo(this.model, 'occupantAdded', this.debouncedRender);
                 this.listenTo(this.model, 'vcard:change', this.debouncedRender);
             },
 

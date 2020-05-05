@@ -60,7 +60,8 @@ const MAMEnabledChat = {
          * work based on the MAM result before calling the handlers here.
          * @event _converse#MAMResult
          */
-        await api.trigger('MAMResult', result, query,  {'synchronous': true});
+        const data = { query, 'chatbox': this, 'messages': result.messages };
+        await api.trigger('MAMResult', data, {'synchronous': true});
 
         result.messages.forEach(m => this.queueMessage(m));
         if (result.error) {

@@ -2389,7 +2389,7 @@ converse.plugins.add('converse-muc', {
 
 
         /**
-         * Represents an participant in a MUC
+         * Represents a participant in a MUC
          * @class
          * @namespace _converse.ChatRoomOccupant
          * @memberOf _converse
@@ -2440,6 +2440,12 @@ converse.plugins.add('converse-muc', {
         });
 
 
+        /**
+         * A list of {@link _converse.ChatRoomOccupant} instances, representing participants in a MUC.
+         * @class
+         * @namespace _converse.ChatRoomOccupants
+         * @memberOf _converse
+         */
         _converse.ChatRoomOccupants = Collection.extend({
             model: _converse.ChatRoomOccupant,
 
@@ -2502,20 +2508,20 @@ converse.plugins.add('converse-muc', {
                 api.trigger('membersFetched');
             },
 
+            /**
+             * Try to find an existing occupant based on the passed in
+             * data object.
+             *
+             * If we have a JID, we use that as lookup variable,
+             * otherwise we use the nick. We don't always have both,
+             * but should have at least one or the other.
+             * @private
+             * @method _converse.ChatRoomOccupants#findOccupant
+             * @param { Object } data
+             */
             findOccupant (data) {
-                /* Try to find an existing occupant based on the passed in
-                 * data object.
-                 *
-                 * If we have a JID, we use that as lookup variable,
-                 * otherwise we use the nick. We don't always have both,
-                 * but should have at least one or the other.
-                 */
                 const jid = Strophe.getBareJidFromJid(data.jid);
-                if (jid !== null) {
-                    return this.findWhere({'jid': jid});
-                } else {
-                    return this.findWhere({'nick': data.nick});
-                }
+                return (jid && this.findWhere({ jid })) || this.findWhere({'nick': data.nick});
             }
         });
 

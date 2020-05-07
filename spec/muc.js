@@ -5292,4 +5292,50 @@ describe("Groupchats", function () {
             done();
         }));
     });
+
+    describe("when muc_send_probes is true", function () {
+
+        it("sends presence probes when muc_send_probes is true",
+            mock.initConverse(
+                ['rosterGroupsFetched'], {'muc_send_probes': true},
+                async function (done, _converse) {
+
+            const muc_jid = 'lounge@montague.lit';
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+
+            const stanza = u.toStanza(`
+                <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="${muc_jid}/ralphm">
+                    <body>This message will trigger a presence probe</body>
+                </message>`);
+            _converse.connection._dataRecv(mock.createRequest(stanza));
+            const view = _converse.chatboxviews.get(muc_jid);
+
+            await u.waitUntil(() => view.model.messages.length);
+            const occupant = view.model.messages.at(0)?.occupant;
+            expect(occupant).toBeDefined();
+            expect(occupant.get('nick')).toBe('ralphm');
+            expect(occupant.get('affiliation')).toBeUndefined();
+            expect(occupant.get('role')).toBeUndefined();
+
+            const sent_stanzas = _converse.connection.sent_stanzas;
+            const probe = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('presence[type="probe"]')).pop());
+            expect(Strophe.serialize(probe)).toBe(
+                `<presence to="${muc_jid}/ralphm" type="probe" xmlns="jabber:client">`+
+                    `<priority>0</priority>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `</presence>`);
+
+            const presence = u.toStanza(
+                `<presence xmlns="jabber:client" to="${converse.jid}" from="${muc_jid}/ralphm">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="member" jid="ralph@example.org/Conversations.ZvLu" role="participant"/>
+                    </x>
+                </presence>`);
+            _converse.connection._dataRecv(mock.createRequest(presence));
+
+            expect(occupant.get('affiliation')).toBe('member');
+            expect(occupant.get('role')).toBe('participant');
+            done();
+        }));
+    });
 });

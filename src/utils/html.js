@@ -22,7 +22,7 @@ import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
 
 const URL_REGEX = /\b(https?\:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
-const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp'];
+const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
 
 function getAutoCompleteProperty (name, options) {
     return {

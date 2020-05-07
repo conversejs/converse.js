@@ -619,7 +619,13 @@ converse.plugins.add('converse-muc', {
 
             async handleErrormessageStanza (stanza) {
                 if (await this.shouldShowErrorMessage(stanza)) {
-                    this.createMessage(await st.parseMUCMessage(stanza, this, _converse));
+                    const attrs = await st.parseMUCMessage(stanza, this, _converse);
+                    const message = attrs.msgid && this.messages.findWhere({'msgid': attrs.msgid});
+                    if (message) {
+                        message.save({'error': attrs.error});
+                    } else {
+                        this.createMessage(attrs);
+                    }
                 }
             },
 
@@ -981,8 +987,9 @@ converse.plugins.add('converse-muc', {
                 var references;
                 [text, references] = this.parseTextForReferences(text);
                 const origin_id = u.getUniqueId();
-
+                const body = text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined;
                 return {
+                    body,
                     is_spoiler,
                     origin_id,
                     references,
@@ -991,7 +998,7 @@ converse.plugins.add('converse-muc', {
                     'from': `${this.get('jid')}/${this.get('nick')}`,
                     'fullname': this.get('nick'),
                     'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
-                    'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
+                    'message': body,
                     'nick': this.get('nick'),
                     'sender': 'me',
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,

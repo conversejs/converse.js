@@ -5,6 +5,51 @@ const u = converse.env.utils;
 
 describe("A Groupchat Message", function () {
 
+
+    describe("which is succeeded by an error message", function () {
+
+        it("will have the error displayed below it",
+            mock.initConverse(
+                ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+            const muc_jid = 'lounge@montague.lit';
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.api.chatviews.get(muc_jid);
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = 'hello world'
+            const enter_event = {
+                'target': textarea,
+                'preventDefault': function preventDefault () {},
+                'stopPropagation': function stopPropagation () {},
+                'keyCode': 13 // Enter
+            }
+            view.onKeyDown(enter_event);
+            await new Promise(resolve => view.once('messageInserted', resolve));
+
+            const msg = view.model.messages.at(0);
+            const err_msg_text = "Message rejected because you're sending messages too quickly";
+            const error = u.toStanza(`
+                <message xmlns="jabber:client" id="${msg.get('msgid')}" from="${muc_jid}" to="${_converse.jid}" type="error">
+                    <error type="wait">
+                        <policy-violation xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                        <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">${err_msg_text}</text>
+                    </error>
+                    <body>hello world</body>
+                </message>
+            `);
+            _converse.connection._dataRecv(mock.createRequest(error));
+            expect(await u.waitUntil(() => view.el.querySelector('.chat-msg__error')?.textContent?.trim())).toBe(err_msg_text);
+            expect(view.model.messages.length).toBe(1);
+            const message = view.model.messages.at(0);
+            expect(message.get('received')).toBeUndefined();
+            expect(message.get('body')).toBe('hello world');
+            expect(message.get('error')).toBe(err_msg_text);
+            done();
+        }));
+    });
+
+
     describe("an info message", function () {
 
         it("is not rendered as a followup message",

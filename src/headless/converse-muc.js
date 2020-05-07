@@ -2058,6 +2058,16 @@ converse.plugins.add('converse-muc', {
 
             createAffiliationChangeMessage (occupant) {
                 const previous_affiliation = occupant._previousAttributes.affiliation;
+
+                if (!previous_affiliation) {
+                    // If no previous affiliation was set, then we don't
+                    // interpret this as an affiliation change.
+                    // For example, if muc_send_probes is true, then occupants
+                    // are created based on incoming messages, in which case
+                    // we don't yet know the affiliation
+                    return
+                }
+
                 const current_affiliation = occupant.get('affiliation');
                 if (previous_affiliation === 'admin') {
                     this.createMessage({

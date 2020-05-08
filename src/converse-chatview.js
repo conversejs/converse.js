@@ -10,18 +10,16 @@ import { BootstrapModal } from "./converse-modal.js";
 import { Overview } from "skeletor.js/src/overview";
 import { debounce, isString } from "lodash";
 import { html, render } from "lit-html";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
-import tpl_error_message from "templates/error_message.html";
 import tpl_help_message from "templates/help_message.html";
 import tpl_info from "templates/info.html";
 import tpl_new_day from "templates/new_day.html";
 import tpl_spinner from "templates/spinner.html";
 import tpl_spoiler_button from "templates/spoiler_button.html";
-import tpl_status_message from "templates/status_message.html";
 import tpl_toolbar from "templates/toolbar.html";
 import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.js";
@@ -516,14 +514,6 @@ converse.plugins.add('converse-chatview', {
                 this.insertDayIndicator(this.msgs_container.lastElementChild);
                 this.scrollDown();
                 return isodate;
-            },
-
-            showErrorMessage (message) {
-                this.msgs_container.insertAdjacentHTML(
-                    'beforeend',
-                    tpl_error_message({'message': message, 'isodate': (new Date()).toISOString() })
-                );
-                this.scrollDown();
             },
 
             addSpinner (append=false) {
@@ -1203,15 +1193,7 @@ converse.plugins.add('converse-chatview', {
                     } else if (show === 'online') {
                         text = __('%1$s is online', fullname);
                     }
-                    if (text) {
-                        this.msgs_container.insertAdjacentHTML(
-                            'beforeend',
-                            tpl_status_message({
-                                'message': text,
-                                'isodate': (new Date()).toISOString(),
-                            }));
-                        this.scrollDown();
-                    }
+                    text && this.model.createMessage({'message': text, 'type': 'info'});
                 }
             },
 

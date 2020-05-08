@@ -55,8 +55,7 @@ function absoluteOffsetLeft(el) {
 
 /**
  * Adds the ability to navigate the DOM with the arrow keys
- * @class
- * @namespace DOMNavigator
+ * @class DOMNavigator
  */
 class DOMNavigator {
     /**
@@ -162,7 +161,6 @@ class DOMNavigator {
 
     /**
      * Initialize the navigator.
-     * @method DOMNavigator#init
      */
     init () {
         this.selected = null;
@@ -180,7 +178,6 @@ class DOMNavigator {
 
     /**
      * Enable this navigator.
-     * @method DOMNavigator#enable
      */
     enable () {
         this.getElements();
@@ -191,7 +188,6 @@ class DOMNavigator {
 
     /**
      * Disable this navigator.
-     * @method DOMNavigator#disable
      */
     disable () {
         if (this.keydownHandler) {
@@ -204,7 +200,6 @@ class DOMNavigator {
 
     /**
      * Destroy this navigator removing any event registered and any other data.
-     * @method DOMNavigator#destroy
      */
     destroy () {
         this.disable();
@@ -214,7 +209,6 @@ class DOMNavigator {
     }
 
     /**
-     * @method DOMNavigator#getNextElement
      * @param {'down'|'right'|'left'|'up'} direction
      * @returns { HTMLElement }
      */
@@ -266,7 +260,6 @@ class DOMNavigator {
 
     /**
      * Select the given element.
-     * @method DOMNavigator#select
      * @param { Element } el The DOM element to select.
      * @param { string } [direction] The direction.
      */
@@ -287,7 +280,6 @@ class DOMNavigator {
 
     /**
      * Remove the current selection
-     * @method DOMNavigator#unselect
      */
     unselect () {
         if (this.selected) {
@@ -298,7 +290,6 @@ class DOMNavigator {
 
     /**
      * Scroll the container to an element.
-     * @method DOMNavigator#scrollTo
      * @param { HTMLElement } el The destination element.
      * @param { String } direction The direction of the current navigation.
      * @return void.
@@ -345,7 +336,6 @@ class DOMNavigator {
 
     /**
      * Indicate if an element is in the container viewport.
-     * @method DOMNavigator#inScrollContainerViewport
      * @param { HTMLElement } el The element to check.
      * @return { Boolean } true if the given element is in the container viewport, otherwise false.
      */
@@ -372,7 +362,6 @@ class DOMNavigator {
 
     /**
      * Find and store the navigable elements
-     * @method DOMNavigator#getElements
      */
     getElements (direction) {
         const selector = this.options.getSelector ? this.options.getSelector(direction) : this.options.selector;
@@ -384,7 +373,6 @@ class DOMNavigator {
 
     /**
      * Return an array of navigable elements after an offset.
-     * @method DOMNavigator#elementsAfter
      * @param { number } left The left offset.
      * @param { number } top The top offset.
      * @return { Array } An array of elements.
@@ -395,7 +383,6 @@ class DOMNavigator {
 
     /**
      * Return an array of navigable elements before an offset.
-     * @method DOMNavigator#elementsBefore
      * @param { number } left The left offset.
      * @param { number } top The top offset.
      * @return { Array } An array of elements.
@@ -406,7 +393,6 @@ class DOMNavigator {
 
     /**
      * Handle the key down event.
-     * @method DOMNavigator#handleKeydown
      * @param { Event } event The event object.
      */
     handleKeydown (ev) {

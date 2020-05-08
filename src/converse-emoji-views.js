@@ -4,13 +4,14 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-emoji";
-import { View } from "skeletor.js/src/view";
-import { debounce, find } from "lodash";
 import DOMNavigator from "./dom-navigator";
 import bootstrap from "bootstrap.native";
 import emoji_picker from "templates/emoji_picker.js";
 import sizzle from 'sizzle';
 import tpl_emoji_button from "templates/emoji_button.html";
+import { View } from "skeletor.js/src/view";
+import { converse } from '@converse/headless/converse-core';
+import { debounce, find } from "lodash";
 
 const u = converse.env.utils;
 

@@ -7,7 +7,7 @@ import "./converse-status";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { has, isString } from "lodash";
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import log from "@converse/headless/log";
 import tpl_vcard from "./templates/vcard.html";
 

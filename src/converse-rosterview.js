@@ -11,7 +11,7 @@ import { BootstrapModal } from "./converse-modal.js";
 import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { OrderedListView } from "skeletor.js/src/overview";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_contact_modal from "templates/add_contact_modal.js";
 import tpl_group_header from "templates/group_header.html";
@@ -300,7 +300,6 @@ converse.plugins.add('converse-rosterview', {
                 this.listenTo(this.model, "change", this.debouncedRender);
                 this.listenTo(this.model, "destroy", this.remove);
                 this.listenTo(this.model, "highlight", this.highlight);
-                this.listenTo(this.model, "open", this.openChat);
                 this.listenTo(this.model, "remove", this.remove);
                 this.listenTo(this.model, 'vcard:change', this.debouncedRender);
                 this.listenTo(this.model.presence, "change:show", this.debouncedRender);
@@ -453,8 +452,7 @@ converse.plugins.add('converse-rosterview', {
 
             openChat (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const attrs = this.model.attributes;
-                api.chats.open(attrs.jid, attrs, true);
+                this.model.openChat();
             },
 
             async removeContact (ev) {
@@ -834,7 +832,7 @@ converse.plugins.add('converse-rosterview', {
                 u.addClass('fa-spin', ev.target);
                 _converse.roster.data.save('version', null);
                 await _converse.roster.fetchFromServer();
-                _converse.xmppstatus.sendPresence();
+                api.user.presence.send();
                 u.removeClass('fa-spin', ev.target);
             },
 

@@ -9,7 +9,7 @@ import "converse-modal";
 import { BootstrapModal } from "./converse-modal.js";
 import UserSettingsModal from "modals/user-settings";
 import bootstrap from "bootstrap.native";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import sizzle from 'sizzle';
 import tpl_chat_status_modal from "templates/chat_status_modal";

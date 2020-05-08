@@ -5,7 +5,7 @@
  */
 import "./converse-emoji";
 import { Collection } from "skeletor.js/src/collection";
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import { isString } from "lodash";
 import log from "./log";
 

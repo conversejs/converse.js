@@ -6,7 +6,7 @@
 import { Model } from 'skeletor.js/src/model.js';
 import { find, uniq } from "lodash";
 import * as twemoji from "twemoji";
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 
 const u = converse.env.utils;
 

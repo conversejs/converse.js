@@ -6,14 +6,14 @@
  */
 import "converse-modal";
 import "@converse/headless/utils/muc";
+import { BootstrapModal } from "./converse-modal.js";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
-import { debounce, head, isString, isUndefined } from "lodash";
-import { BootstrapModal } from "./converse-modal.js";
-import { render } from "lit-html";
 import { __ } from '@converse/headless/i18n';
+import { api, converse } from "@converse/headless/converse-core";
+import { debounce, head, isString, isUndefined } from "lodash";
+import { render } from "lit-html";
 import RoomDetailsModal from 'modals/muc-details.js';
-import converse from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import st from "@converse/headless/utils/stanza";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
@@ -33,7 +33,6 @@ import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_room_description from "templates/room_description.html";
 import tpl_room_panel from "templates/room_panel.html";
 import tpl_spinner from "templates/spinner.html";
-import xss from "xss/dist/xss";
 
 const { Strophe, sizzle, $iq, $pres } = converse.env;
 const u = converse.env.utils;
@@ -89,7 +88,6 @@ converse.plugins.add('converse-muc-views', {
 
     initialize () {
         const { _converse } = this;
-        const { api } = _converse;
 
         api.promises.add(['roomsPanelRendered']);
 
@@ -469,15 +467,16 @@ converse.plugins.add('converse-muc-views', {
              * @param { HTMLElement } iq
              */
             onRoomsFound (iq) {
+                this.loading_items = false;
                 const rooms = iq ? sizzle('query item', iq) : [];
                 if (rooms.length) {
                     this.model.set({'feedback_text': __('Groupchats found')}, {'silent': true});
                     this.items = rooms.map(st.getAttributes);
-                    this.loading_items = false;
-                    this.render();
                 } else {
-                    this.model.set('feedback_text', __('No groupchats found'));
+                    this.items = [];
+                    this.model.set({'feedback_text': __('No groupchats found')}, {'silent': true});
                 }
+                this.render();
                 return true;
             },
 
@@ -543,7 +542,7 @@ converse.plugins.add('converse-muc-views', {
                     'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
                     'chatroom_placeholder': placeholder,
                     'muc_roomid_policy_error_msg': this.muc_roomid_policy_error_msg,
-                    'muc_roomid_policy_hint': xss.filterXSS(_converse.muc_roomid_policy_hint, {'whiteList': {b: [], br: [], em: []}})
+                    'muc_roomid_policy_hint': _converse.muc_roomid_policy_hint
                 }));
             },
 
@@ -726,7 +725,7 @@ converse.plugins.add('converse-muc-views', {
             renderNotifications () {
                 const actors_per_state = this.model.notifications.toJSON();
                 const states = api.settings.get('muc_show_join_leave') ?
-                    [...converse.CHAT_STATES, ...converse.MUC_TRAFFIC_STATES] :
+                    [...converse.CHAT_STATES, ...converse.MUC_TRAFFIC_STATES, ...converse.MUC_ROLE_CHANGES] :
                     converse.CHAT_STATES;
 
                 const message = states.reduce((result, state) => {
@@ -737,15 +736,23 @@ converse.plugins.add('converse-muc-views', {
                     const actors = existing_actors.map(a => this.model.getOccupant(a)?.getDisplayName() || a);
                     if (actors.length === 1) {
                         if (state === 'composing') {
-                            return `${result} ${__('%1$s is typing', actors[0])}\n`;
+                            return `${result}${__('%1$s is typing', actors[0])}\n`;
                         } else if (state === 'paused') {
-                            return `${result} ${__('%1$s has stopped typing', actors[0])}\n`;
+                            return `${result}${__('%1$s has stopped typing', actors[0])}\n`;
                         } else if (state === _converse.GONE) {
-                            return `${result} ${__('%1$s has gone away', actors[0])}\n`;
+                            return `${result}${__('%1$s has gone away', actors[0])}\n`;
                         } else if (state === 'entered') {
-                            return `${result} ${__('%1$s has entered the groupchat', actors[0])}\n`;
+                            return `${result}${__('%1$s has entered the groupchat', actors[0])}\n`;
                         } else if (state === 'exited') {
-                            return `${result} ${__('%1$s has left the groupchat', actors[0])}\n`;
+                            return `${result}${__('%1$s has left the groupchat', actors[0])}\n`;
+                        } else if (state === 'op') {
+                            return `${result}${__("%1$s is now a moderator", actors[0])}\n`;
+                        } else if (state === 'deop') {
+                            return `${result}${__("%1$s is no longer a moderator", actors[0])}\n`;
+                        } else if (state === 'voice') {
+                            return `${result}${__("%1$s has been given a voice", actors[0])}\n`;
+                        } else if (state === 'mute') {
+                            return `${result}${__("%1$s has been muted", actors[0])}\n`;
                         }
                     } else if (actors.length > 1) {
                         let actors_str;
@@ -757,15 +764,23 @@ converse.plugins.add('converse-muc-views', {
                         }
 
                         if (state === 'composing') {
-                            return `${result} ${__('%1$s are typing', actors_str)}\n`;
+                            return `${result}${__('%1$s are typing', actors_str)}\n`;
                         } else if (state === 'paused') {
-                            return `${result} ${__('%1$s have stopped typing', actors_str)}\n`;
+                            return `${result}${__('%1$s have stopped typing', actors_str)}\n`;
                         } else if (state === _converse.GONE) {
-                            return `${result} ${__('%1$s have gone away', actors_str)}\n`;
+                            return `${result}${__('%1$s have gone away', actors_str)}\n`;
                         } else if (state === 'entered') {
-                            return `${result} ${__('%1$s have entered the groupchat', actors_str)}\n`;
+                            return `${result}${__('%1$s have entered the groupchat', actors_str)}\n`;
                         } else if (state === 'exited') {
-                            return `${result} ${__('%1$s have left the groupchat', actors_str)}\n`;
+                            return `${result}${__('%1$s have left the groupchat', actors_str)}\n`;
+                        } else if (state === 'op') {
+                            return `${result}${__("%1$s are now moderators", actors[0])}\n`;
+                        } else if (state === 'deop') {
+                            return `${result}${__("%1$s are no longer moderator", actors[0])}\n`;
+                        } else if (state === 'voice') {
+                            return `${result}${__("%1$s have been given voices", actors[0])}\n`;
+                        } else if (state === 'mute') {
+                            return `${result}${__("%1$s have been muted", actors[0])}\n`;
                         }
                     }
                     return result;
@@ -1008,13 +1023,9 @@ converse.plugins.add('converse-muc-views', {
             retractOwnMessage(message) {
                 this.model.retractOwnMessage(message)
                     .catch(e => {
-                        const errmsg = __('Sorry, something went wrong while trying to retract your message.');
-                        if (u.isErrorStanza(e)) {
-                            this.showErrorMessage(errmsg);
-                        } else {
-                            this.showErrorMessage(errmsg);
-                            this.showErrorMessage(e.message);
-                        }
+                        const message = __('Sorry, something went wrong while trying to retract your message.');
+                        this.model.createMessage({message, 'type': 'error'});
+                        !u.isErrorStanza(e) && this.model.createMessage({'message': e.message, 'type': 'error'});
                         log.error(e);
                     });
             },
@@ -1327,7 +1338,8 @@ converse.plugins.add('converse-muc-views', {
                     }
                 }
                 if (show_error) {
-                    this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'))
+                    const message = __('Forbidden: you do not have the necessary role in order to do that.');
+                    this.model.createMessage({message, 'type': 'error'});
                 }
                 return false;
             },
@@ -1347,38 +1359,47 @@ converse.plugins.add('converse-muc-views', {
                     }
                 }
                 if (show_error) {
-                    this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'))
+                    const message = __('Forbidden: you do not have the necessary affiliation in order to do that.');
+                    this.model.createMessage({message, 'type': 'error'});
                 }
                 return false;
             },
 
             validateRoleOrAffiliationChangeArgs (command, args) {
                 if (!args) {
-                    this.showErrorMessage(
-                        __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command)
+                    const message = __(
+                        'Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
+                        command
                     );
+                    this.model.createMessage({message, 'type': 'error'});
                     return false;
                 }
                 return true;
             },
 
             getNickOrJIDFromCommandArgs (args) {
+                if (u.isValidJID(args.trim())) {
+                    return args.trim();
+                }
                 if (!args.startsWith('@')) {
                     args = '@'+ args;
                 }
                 const [text, references] = this.model.parseTextForReferences(args); // eslint-disable-line no-unused-vars
                 if (!references.length) {
-                    this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
+                    const message = __("Error: couldn't find a groupchat participant based on your arguments");
+                    this.model.createMessage({message, 'type': 'error'});
                     return;
                 }
                 if (references.length > 1) {
-                    this.showErrorMessage(__("Error: found multiple groupchat participant based on your arguments"));
+                    const message = __("Error: found multiple groupchat participant based on your arguments");
+                    this.model.createMessage({message, 'type': 'error'});
                     return;
                 }
                 const nick_or_jid = references.pop().value;
                 const reason = args.split(nick_or_jid, 2)[1];
                 if (reason && !reason.startsWith(' ')) {
-                    this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
+                    const message = __("Error: couldn't find a groupchat participant based on your arguments");
+                    this.model.createMessage({message, 'type': 'error'});
                     return;
                 }
                 return nick_or_jid;
@@ -1399,21 +1420,26 @@ converse.plugins.add('converse-muc-views', {
                 if (!nick_or_jid) {
                     return false;
                 }
+
+                let jid;
                 const reason = args.split(nick_or_jid, 2)[1].trim();
                 const occupant = this.model.getOccupant(nick_or_jid);
-                if (!occupant) {
-                    this.showErrorMessage(__(
-                        "Couldn't find a participant with that nickname or XMPP address. "+
-                        "They might have left the groupchat."
-                    ));
-                    return;
+                if (occupant) {
+                    jid = occupant.get('jid');
+                } else {
+                    if (u.isValidJID(nick_or_jid)) {
+                        jid = nick_or_jid;
+                    } else {
+                        const message = __(
+                            "Couldn't find a participant with that nickname. "+
+                            "They might have left the groupchat."
+                        );
+                        this.model.createMessage({message, 'type': 'error'});
+                        return;
+                    }
                 }
-
-                const attrs = {
-                    'jid': occupant.get('jid'),
-                    'reason': reason
-                }
-                if (_converse.auto_register_muc_nickname && occupant) {
+                const attrs = { jid, reason };
+                if (occupant && _converse.auto_register_muc_nickname) {
                     attrs['nick'] = occupant.get('nick');
                 }
                 this.model.setAffiliation(affiliation, [attrs])
@@ -1452,10 +1478,10 @@ converse.plugins.add('converse-muc-views', {
 
             onCommandError (err) {
                 log.fatal(err);
-                this.showErrorMessage(
+                const message =
                     __("Sorry, an error happened while running the command.") + " " +
-                    __("Check your browser's developer console for details.")
-                );
+                    __("Check your browser's developer console for details.");
+                this.model.createMessage({message, 'type': 'error'});
             },
 
             getAllowedCommands () {
@@ -1601,7 +1627,9 @@ converse.plugins.add('converse-muc-views', {
                             break;
                         } else if (args.length === 0) {
                             // e.g. Your nickname is "coolguy69"
-                            this.showErrorMessage(__('Your nickname is "%1$s"', this.model.get('nick')))
+                            const message = __('Your nickname is "%1$s"', this.model.get('nick'));
+                            this.model.createMessage({message, 'type': 'error'});
+
                         } else {
                             const jid = Strophe.getBareJidFromJid(this.model.get('jid'));
                             api.send($pres({
@@ -1621,10 +1649,13 @@ converse.plugins.add('converse-muc-views', {
                     }
                     case 'register': {
                         if (args.length > 1) {
-                            this.showErrorMessage(__('Error: invalid number of arguments'))
+                            this.model.createMessage({
+                                'message': __('Error: invalid number of arguments'),
+                                'type': 'error'
+                            });
                         } else {
                             this.model.registerNickname().then(err_msg => {
-                                if (err_msg) this.showErrorMessage(err_msg)
+                                err_msg && this.model.createMessage({'message': err_msg, 'type': 'error'});
                             });
                         }
                         break;
@@ -1692,9 +1723,15 @@ converse.plugins.add('converse-muc-views', {
                     container.innerHTML = html;
                     u.addClass('muc-bottom-panel--nickname', container);
                 } else {
-                    this.hideChatRoomContents();
-                    const container = this.el.querySelector('.chatroom-body');
-                    container.insertAdjacentHTML('beforeend', html);
+                    const form = this.el.querySelector('.muc-nickname-form');
+                    if (form) {
+                        sizzle('.spinner', this.el).forEach(u.removeElement);
+                        form.outerHTML = html;
+                    } else {
+                        this.hideChatRoomContents();
+                        const container = this.el.querySelector('.chatroom-body');
+                        container.insertAdjacentHTML('beforeend', html);
+                    }
                 }
                 u.safeSave(this.model.session, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
             },
@@ -2011,10 +2048,10 @@ converse.plugins.add('converse-muc-views', {
                     await this.model.sendConfiguration(configArray);
                 } catch (e) {
                     log.error(e);
-                    this.showErrorMessage(
+                    const message =
                         __("Sorry, an error occurred while trying to submit the config form.") + " " +
-                        __("Check your browser's developer console for details.")
-                    );
+                        __("Check your browser's developer console for details.");
+                    this.model.createMessage({message, 'type': 'error'});
                 }
                 await this.model.refreshDiscoInfo();
                 this.chatroomview.closeForm();
@@ -2129,7 +2166,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             setVisibility () {
-                if (this.chatroomview.model.get('hidden_occupants')) {
+                if (this.chatroomview.model.get('hidden_occupants') ||
+                    this.chatroomview.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     u.hideElement(this.el);
                 } else {
                     u.showElement(this.el);

@@ -8,7 +8,7 @@
  */
 import "@converse/headless/converse-muc";
 import RoomDetailsModal from 'modals/muc-details.js';
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import tpl_rooms_list from "templates/rooms_list.js";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';

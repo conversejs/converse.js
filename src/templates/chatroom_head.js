@@ -3,7 +3,7 @@ import { __ } from '@converse/headless/i18n';
 import { html } from "lit-html";
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { until } from 'lit-html/directives/until.js';
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import xss from "xss/dist/xss";
 
 const u = converse.env.utils;

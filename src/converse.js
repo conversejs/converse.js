@@ -33,7 +33,7 @@ import "converse-uniview";
 
 import "../sass/converse.scss";
 
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 
 const WHITELISTED_PLUGINS = [
     'converse-autocomplete',

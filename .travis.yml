@@ -1,4 +1,4 @@
-dist: xenial
+dist: bionic
 language: node_js
 cache:
     directories:
@@ -6,7 +6,11 @@ cache:
 addons:
   chrome: stable
 node_js:
- - "10"
+ - "14"
 install: make node_modules
-before_script: make serve_bg
-script: make check
+services:
+  - xvfb
+before_script:
+  - make serve_bg
+  - export DISPLAY=:99.0
+script: make check ARGS=--single-run

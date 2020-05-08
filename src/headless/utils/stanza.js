@@ -1,41 +1,15 @@
 import * as strophe from 'strophe.js/src/core';
-import { propertyOf } from "lodash";
 import dayjs from 'dayjs';
-import log from '@converse/headless/log';
 import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
+import log from "../log";
+import { __ } from '@converse/headless/i18n';
+import { api } from "@converse/headless/converse-core";
 
 const Strophe = strophe.default.Strophe;
+const $msg = strophe.default.$msg;
+const { NS } = Strophe;
 
-
-function getSenderAttributes (stanza, chatbox, _converse) {
-    if (u.isChatRoom(chatbox)) {
-        const from = stanza.getAttribute('from');
-        const nick = Strophe.unescapeNode(Strophe.getResourceFromJid(from));
-        return {
-            'from':  from,
-            'from_muc': Strophe.getBareJidFromJid(from),
-            'nick': nick,
-            'sender': nick === chatbox.get('nick') ? 'me': 'them',
-            'received': (new Date()).toISOString(),
-        }
-    } else {
-        const from = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
-        if (from === _converse.bare_jid) {
-            return {
-                from,
-                'sender': 'me',
-                'fullname': _converse.xmppstatus.get('fullname')
-            }
-        } else {
-            return {
-                from,
-                'sender': 'them',
-                'fullname': chatbox.get('fullname')
-            }
-        }
-    }
-}
 
 function getSpoilerAttributes (stanza) {
     const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, stanza).pop();
@@ -59,14 +33,14 @@ function getOutOfBandAttributes (stanza) {
 function getCorrectionAttributes (stanza, original_stanza) {
     const el = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
     if (el) {
-        const replaced_id = el.getAttribute('id');
-        const msgid = replaced_id;
-        if (replaced_id) {
+        const replace_id = el.getAttribute('id');
+        const msgid = replace_id;
+        if (replace_id) {
             const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
             const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString();
             return {
                 msgid,
-                replaced_id,
+                replace_id,
                 'edited': time
             }
         }
@@ -74,64 +48,327 @@ function getCorrectionAttributes (stanza, original_stanza) {
     return {};
 }
 
-function getEncryptionAttributes (stanza, original_stanza, attrs, chatbox, _converse) {
-    const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
+
+function getEncryptionAttributes (stanza, _converse) {
+    const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
     if (!encrypted || !_converse.config.get('trusted')) {
-        return attrs;
+        return {};
     }
     const device_id = _converse.omemo_store?.get('device_id');
     const key = device_id && sizzle(`key[rid="${device_id}"]`, encrypted).pop();
     if (key) {
         const header = encrypted.querySelector('header');
-        attrs['is_encrypted'] = true;
-        attrs['encrypted'] = {
-            'device_id': header.getAttribute('sid'),
-            'iv': header.querySelector('iv').textContent,
-            'key': key.textContent,
-            'payload': encrypted.querySelector('payload')?.textContent || null,
-            'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
+        return {
+            'is_encrypted': true,
+            'encrypted': {
+                'device_id': header.getAttribute('sid'),
+                'iv': header.querySelector('iv').textContent,
+                'key': key.textContent,
+                'payload': encrypted.querySelector('payload')?.textContent || null,
+                'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
+            }
         }
-        // Returns a promise
-        return chatbox.decrypt(attrs);
+    }
+    return {};
+}
+
+
+function isReceiptRequest (stanza, attrs) {
+    return (
+        attrs.sender !== 'me' &&
+        !attrs.is_carbon &&
+        !attrs.is_mam &&
+        sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).length
+    );
+}
+
+
+function getReceiptId (stanza) {
+    const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop();
+    return receipt?.getAttribute('id');
+}
+
+/**
+ * Returns the XEP-0085 chat state contained in a message stanza
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ */
+function getChatState (stanza) {
+    return sizzle(`
+        composing[xmlns="${NS.CHATSTATES}"],
+        paused[xmlns="${NS.CHATSTATES}"],
+        inactive[xmlns="${NS.CHATSTATES}"],
+        active[xmlns="${NS.CHATSTATES}"],
+        gone[xmlns="${NS.CHATSTATES}"]`, stanza).pop()?.nodeName;
+}
+
+/**
+ * Determines whether the passed in stanza is a XEP-0280 Carbon
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ * @returns { Boolean }
+ */
+function isCarbon (stanza) {
+    const xmlns = Strophe.NS.CARBONS;
+    return sizzle(`message > received[xmlns="${xmlns}"]`, stanza).length > 0 ||
+            sizzle(`message > sent[xmlns="${xmlns}"]`, stanza).length > 0;
+}
+
+/**
+ * Extract the XEP-0359 stanza IDs from the passed in stanza
+ * and return a map containing them.
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ * @returns { Object }
+ */
+function getStanzaIDs (stanza, original_stanza) {
+    const attrs = {};
+    // Store generic stanza ids
+    const sids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
+    const sid_attrs = sids.reduce((acc, s) => {
+        acc[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id');
+        return acc;
+    }, {});
+    Object.assign(attrs, sid_attrs);
+
+    // Store the archive id
+    const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
+    if (result) {
+        const by_jid = original_stanza.getAttribute('from');
+        if (by_jid) {
+            attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
+        } else {
+            attrs[`stanza_id`] = result.getAttribute('id');
+        }
+    }
+
+    // Store the origin id
+    const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+    if (origin_id) {
+        attrs['origin_id'] = origin_id.getAttribute('id');
+    }
+    return attrs;
+}
+
+/**
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ * @param { XMLElement } original_stanza - The original stanza, that contains the
+ *  message stanza, if it was contained, otherwise it's the message stanza itself.
+ * @returns { Object }
+ */
+function getModerationAttributes (stanza) {
+    const fastening = sizzle(`apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
+    if (fastening) {
+        const applies_to_id = fastening.getAttribute('id');
+        const moderated = sizzle(`moderated[xmlns="${Strophe.NS.MODERATE}"]`, fastening).pop();
+        if (moderated) {
+            const retracted = sizzle(`retract[xmlns="${Strophe.NS.RETRACT}"]`, moderated).pop();
+            if (retracted) {
+                return {
+                    'editable': false,
+                    'moderated': 'retracted',
+                    'moderated_by': moderated.getAttribute('by'),
+                    'moderated_id': applies_to_id,
+                    'moderation_reason': moderated.querySelector('reason')?.textContent
+                }
+            }
+        }
     } else {
-        return attrs;
+        const tombstone = sizzle(`> moderated[xmlns="${Strophe.NS.MODERATE}"]`, stanza).pop();
+        if (tombstone) {
+            const retracted = sizzle(`retracted[xmlns="${Strophe.NS.RETRACT}"]`, tombstone).pop();
+            if (retracted) {
+                return {
+                    'editable': false,
+                    'is_tombstone': true,
+                    'moderated_by': tombstone.getAttribute('by'),
+                    'retracted': tombstone.getAttribute('stamp'),
+                    'moderation_reason': tombstone.querySelector('reason')?.textContent
+
+                }
+            }
+        }
+    }
+    return {};
+}
+
+
+/**
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ * @param { XMLElement } original_stanza - The original stanza, that contains the
+ *  message stanza, if it was contained, otherwise it's the message stanza itself.
+ * @returns { Object }
+ */
+function getRetractionAttributes (stanza, original_stanza) {
+    const fastening = sizzle(`> apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
+    if (fastening) {
+        const applies_to_id = fastening.getAttribute('id');
+        const retracted = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, fastening).pop();
+        if (retracted) {
+            const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
+            const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString();
+            return {
+                'editable': false,
+                'retracted': time,
+                'retracted_id': applies_to_id
+            }
+        }
+    } else {
+        const tombstone = sizzle(`> retracted[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
+        if (tombstone) {
+            return {
+                'editable': false,
+                'is_tombstone': true,
+                'retracted': tombstone.getAttribute('stamp')
+            }
+        }
+    }
+    return {};
+}
+
+function getReferences (stanza) {
+    const text = stanza.querySelector('body')?.textContent;
+    return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
+        const begin = ref.getAttribute('begin');
+        const end = ref.getAttribute('end');
+        return  {
+            'begin': begin,
+            'end': end,
+            'type': ref.getAttribute('type'),
+            'value': text.slice(begin, end),
+            'uri': ref.getAttribute('uri')
+        };
+    });
+}
+
+/**
+ * Returns the human readable error message contained in an message stanza of type 'error'.
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ */
+function getErrorMessage (stanza) {
+    if (stanza.getAttribute('type') === 'error') {
+        const error = stanza.querySelector('error');
+        return error.querySelector('text')?.textContent ||
+            __('Sorry, an error occurred:') + ' ' + error.innerHTML;
+    }
+}
+
+
+function rejectMessage (stanza, text) {
+    // Reject an incoming message by replying with an error message of type "cancel".
+    api.send(
+        $msg({
+            'to': stanza.getAttribute('from'),
+            'type': 'error',
+            'id': stanza.getAttribute('id')
+        }).c('error', {'type': 'cancel'})
+            .c('not-allowed', {xmlns:"urn:ietf:params:xml:ns:xmpp-stanzas"}).up()
+            .c('text', {xmlns:"urn:ietf:params:xml:ns:xmpp-stanzas"}).t(text)
+    );
+    log.warn(`Rejecting message stanza with the following reason: ${text}`);
+    log.warn(stanza);
+}
+
+
+/**
+ * Returns the human readable error message contained in a `groupchat` message stanza of type `error`.
+ * @private
+ * @param { XMLElement } stanza - The message stanza
+ */
+function getMUCErrorMessage (stanza) {
+    if (stanza.getAttribute('type') === 'error') {
+        const forbidden = sizzle(`error forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).pop();
+        const text = sizzle(`error text[xmlns="${Strophe.NS.STANZAS}"]`, stanza).pop();
+        if (forbidden) {
+            const msg = __("Your message was not delivered because you weren't allowed to send it.");
+            const server_msg = text ? __('The message from the server is: "%1$s"', text.textContent) : '';
+            return server_msg ? `${msg} ${server_msg}` : msg;
+        } else if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
+            return __("Your message was not delivered because you're not present in the groupchat.");
+        } else {
+            return text?.textContent;
+        }
+    }
+}
+
+
+class StanzaParseError extends Error {
+    constructor (message, stanza) {
+        super(message, stanza);
+        this.name = 'StanzaParseError';
+        this.stanza = stanza;
+    }
+}
+
+
+function rejectUnencapsulatedForward (stanza) {
+    const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
+    if (bare_forward) {
+        rejectMessage(
+            stanza,
+            'Forwarded messages not part of an encapsulating protocol are not supported'
+        );
+        const from_jid = stanza.getAttribute('from');
+        return new StanzaParseError(`Ignoring unencapsulated forwarded message from ${from_jid}`, stanza);
     }
 }
 
 
 /**
- * The stanza utils object. Contains utility functions related to stanza
- * processing.
- * @namespace stanza_utils
+ * The stanza utils object. Contains utility functions related to stanza processing.
+ * @namespace st
  */
-const stanza_utils = {
+const st = {
 
-    isReceipt (stanza) {
-        return sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).length > 0;
+    isHeadline (stanza) {
+        return stanza.getAttribute('type') === 'headline';
     },
 
-    isChatMarker (stanza) {
-        return sizzle(
-            `received[xmlns="${Strophe.NS.MARKERS}"],
-             displayed[xmlns="${Strophe.NS.MARKERS}"],
-             acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
+    isServerMessage (stanza) {
+        const from_jid = stanza.getAttribute('from');
+        if (stanza.getAttribute('type') !== 'error' && from_jid && !from_jid.includes('@')) {
+            // Some servers (e.g. Prosody) don't set the stanza
+            // type to "headline" when sending server messages.
+            // For now we check if an @ signal is included, and if not,
+            // we assume it's a headline stanza.
+            return true;
+        }
+        return false;
     },
 
     /**
-     * Determines whether the passed in stanza represents a XEP-0313 MAM stanza
+     * Determines whether the passed in stanza is a XEP-0333 Chat Marker
      * @private
-     * @method stanza_utils#isArchived
+     * @method st#getChatMarker
+     * @param { XMLElement } stanza - The message stanza
+     * @returns { Boolean }
+     */
+    getChatMarker (stanza) {
+        // If we receive more than one marker (which shouldn't happen), we take
+        // the highest level of acknowledgement.
+        return sizzle(`
+            acknowledged[xmlns="${Strophe.NS.MARKERS}"],
+            displayed[xmlns="${Strophe.NS.MARKERS}"],
+            received[xmlns="${Strophe.NS.MARKERS}"]`, stanza).pop();
+    },
+
+    /**
+     * Determines whether the passed in stanza is a XEP-0313 MAM stanza
+     * @private
+     * @method st#isArchived
      * @param { XMLElement } stanza - The message stanza
      * @returns { Boolean }
      */
     isArchived (original_stanza) {
-        return !!sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
+        return !!sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
     },
 
     /**
      * Returns an object containing all attribute names and values for a particular element.
-     * @private
-     * @method stanza_utils#getAttributes
+     * @method st#getAttributes
      * @param { XMLElement } stanza
      * @returns { Object }
      */
@@ -142,235 +379,319 @@ const stanza_utils = {
         }, {});
     },
 
-    /**
-     * Extract the XEP-0359 stanza IDs from the passed in stanza
-     * and return a map containing them.
-     * @private
-     * @method stanza_utils#getStanzaIDs
-     * @param { XMLElement } stanza - The message stanza
-     * @returns { Object }
-     */
-    getStanzaIDs (stanza, original_stanza) {
-        const attrs = {};
-        // Store generic stanza ids
-        const sids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
-        const sid_attrs = sids.reduce((acc, s) => {
-            acc[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id');
-            return acc;
-        }, {});
-        Object.assign(attrs, sid_attrs);
-
-        // Store the archive id
-        const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
-        if (result) {
-            const by_jid = original_stanza.getAttribute('from');
-            attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
-        }
-
-        // Store the origin id
-        const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-        if (origin_id) {
-            attrs['origin_id'] = origin_id.getAttribute('id');
-        }
-        return attrs;
-    },
-
-    /** @method stanza_utils#getModerationAttributes
-     * @param { XMLElement } stanza - The message stanza
-     * @param { XMLElement } original_stanza - The original stanza, that contains the
-     *  message stanza, if it was contained, otherwise it's the message stanza itself.
-     * @param { _converse.ChatRoom } room - The MUC in which the moderation stanza is received.
-     * @returns { Object }
-     */
-    getModerationAttributes (stanza, original_stanza, room) {
-        const fastening = sizzle(`apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
-        if (fastening) {
-            const applies_to_id = fastening.getAttribute('id');
-            const moderated = sizzle(`moderated[xmlns="${Strophe.NS.MODERATE}"]`, fastening).pop();
-            if (moderated) {
-                const retracted = sizzle(`retract[xmlns="${Strophe.NS.RETRACT}"]`, moderated).pop();
-                if (retracted) {
-                    const from = stanza.getAttribute('from');
-                    if (from !== room.get('jid')) {
-                        log.warn("getModerationAttributes: ignore moderation stanza that's not from the MUC!");
-                        log.error(original_stanza);
-                        return {};
-                    }
-                    return {
-                        'editable': false,
-                        'moderated': 'retracted',
-                        'moderated_by': moderated.getAttribute('by'),
-                        'moderated_id': applies_to_id,
-                        'moderation_reason': moderated.querySelector('reason')?.textContent
-                    }
-                }
-            }
-        } else {
-            const tombstone = sizzle(`> moderated[xmlns="${Strophe.NS.MODERATE}"]`, stanza).pop();
-            if (tombstone) {
-                const retracted = sizzle(`retracted[xmlns="${Strophe.NS.RETRACT}"]`, tombstone).pop();
-                if (retracted) {
-                    return {
-                        'editable': false,
-                        'is_tombstone': true,
-                        'moderated_by': tombstone.getAttribute('by'),
-                        'retracted': tombstone.getAttribute('stamp'),
-                        'moderation_reason': tombstone.querySelector('reason')?.textContent
-
-                    }
-                }
-            }
-        }
-        return {};
-    },
-
 
     /**
-     * @method stanza_utils#getRetractionAttributes
+     * Parses a passed in message stanza and returns an object of attributes.
+     * @method st#parseMessage
      * @param { XMLElement } stanza - The message stanza
-     * @param { XMLElement } original_stanza - The original stanza, that contains the
-     *  message stanza, if it was contained, otherwise it's the message stanza itself.
-     * @returns { Object }
-     */
-    getRetractionAttributes (stanza, original_stanza) {
-        const fastening = sizzle(`> apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
-        if (fastening) {
-            const applies_to_id = fastening.getAttribute('id');
-            const retracted = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, fastening).pop();
-            if (retracted) {
-                const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
-                const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString();
-                return {
-                    'editable': false,
-                    'retracted': time,
-                    'retracted_id': applies_to_id
-                }
-            }
-        } else {
-            const tombstone = sizzle(`> retracted[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
-            if (tombstone) {
-                return {
-                    'editable': false,
-                    'is_tombstone': true,
-                    'retracted': tombstone.getAttribute('stamp')
-                }
-            }
-        }
-        return {};
-    },
-
-    getReferences (stanza) {
-        const text = propertyOf(stanza.querySelector('body'))('textContent');
-        return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
-            const begin = ref.getAttribute('begin');
-            const end = ref.getAttribute('end');
-            return  {
-                'begin': begin,
-                'end': end,
-                'type': ref.getAttribute('type'),
-                'value': text.slice(begin, end),
-                'uri': ref.getAttribute('uri')
-            };
-        });
-    },
-
-    getErrorMessage (stanza, is_muc, _converse) {
-        const { __ } = _converse;
-        if (is_muc) {
-            const forbidden = sizzle(`error forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).pop();
-            if (forbidden) {
-                const msg = __("Your message was not delivered because you weren't allowed to send it.");
-                const text = sizzle(`error text[xmlns="${Strophe.NS.STANZAS}"]`, stanza).pop();
-                const server_msg = text ? __('The message from the server is: "%1$s"', text.textContent) : '';
-                return server_msg ? `${msg} ${server_msg}` : msg;
-            } else if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
-                return __("Your message was not delivered because you're not present in the groupchat.");
-            }
-        }
-        const error = stanza.querySelector('error');
-        return propertyOf(error.querySelector('text'))('textContent') ||
-            __('Sorry, an error occurred:') + ' ' + error.innerHTML;
-    },
-
-    /**
-     * Given a message stanza, return the text contained in its body.
-     * @private
-     * @method stanza_utils#getMessageBody
-     * @param { XMLElement } stanza
-     * @param { Boolean } is_muc
      * @param { _converse } _converse
+     * @returns { (MessageAttributes|Error) }
      */
-    getMessageBody (stanza, is_muc, _converse) {
-        const type = stanza.getAttribute('type');
-        if (type === 'error') {
-            return stanza_utils.getErrorMessage(stanza, is_muc, _converse);
-        } else {
-            const body = stanza.querySelector('body');
-            if (body) {
-                return body.textContent.trim();
+    async parseMessage (stanza, _converse) {
+        const err = rejectUnencapsulatedForward(stanza);
+        if (err) {
+            return err;
+        }
+
+        let to_jid = stanza.getAttribute('to');
+        const to_resource = Strophe.getResourceFromJid(to_jid);
+        if (api.settings.get('filter_by_resource') && (to_resource && to_resource !== _converse.resource)) {
+            return new StanzaParseError(`Ignoring incoming message intended for a different resource: ${to_jid}`, stanza);
+        }
+
+        let from_jid = stanza.getAttribute('from') || _converse.bare_jid;
+        if (isCarbon(stanza)) {
+            if (from_jid === _converse.bare_jid) {
+                const selector = `[xmlns="${Strophe.NS.CARBONS}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
+                stanza = sizzle(selector, stanza).pop();
+                to_jid = stanza.getAttribute('to');
+                from_jid = stanza.getAttribute('from');
+            } else {
+                // Prevent message forging via carbons: https://xmpp.org/extensions/xep-0280.html#security
+                rejectMessage(stanza, 'Rejecting carbon from invalid JID');
+                return new StanzaParseError(`Rejecting carbon from invalid JID ${to_jid}`, stanza);
             }
         }
-    },
 
-    getChatState (stanza) {
-        return stanza.getElementsByTagName('composing').length && 'composing' ||
-            stanza.getElementsByTagName('paused').length && 'paused' ||
-            stanza.getElementsByTagName('inactive').length && 'inactive' ||
-            stanza.getElementsByTagName('active').length && 'active' ||
-            stanza.getElementsByTagName('gone').length && 'gone';
+        if (st.isArchived(stanza)) {
+            if (from_jid === _converse.bare_jid) {
+                const selector = `[xmlns="${Strophe.NS.MAM}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
+                stanza = sizzle(selector, stanza).pop();
+                to_jid = stanza.getAttribute('to');
+                from_jid = stanza.getAttribute('from');
+            } else {
+                return new StanzaParseError(`Invalid Stanza: alleged MAM message from ${stanza.getAttribute('from')}`, stanza);
+            }
+        }
+
+        const from_bare_jid = Strophe.getBareJidFromJid(from_jid);
+        const is_me = from_bare_jid === _converse.bare_jid;
+        if (is_me && to_jid === null) {
+            return new StanzaParseError(
+                `Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`,
+                stanza
+            );
+        }
+
+
+        const is_headline = st.isHeadline(stanza);
+        const is_server_message = st.isServerMessage(stanza);
+        let contact, contact_jid;
+        if (!is_headline && !is_server_message) {
+            contact_jid = is_me ? Strophe.getBareJidFromJid(to_jid) : from_bare_jid;
+            contact = await api.contacts.get(contact_jid);
+            if (contact === undefined && !api.settings.get("allow_non_roster_messaging")) {
+                log.error(stanza);
+                return new StanzaParseError(
+                    `Blocking messaging with a JID not in our roster because allow_non_roster_messaging is false.`,
+                    stanza
+                );
+            }
+        }
+        /**
+         * @typedef { Object } MessageAttributes
+         * The object which {@link st.parseMessage} returns
+         * @property { ('me'|'them') } sender - Whether the message was sent by the current user or someone else
+         * @property { Array<Object> } references - A list of objects representing XEP-0372 references
+         * @property { Boolean } editable - Is this message editable via XEP-0308?
+         * @property { Boolean } is_archived -  Is this message from a XEP-0313 MAM archive?
+         * @property { Boolean } is_carbon - Is this message a XEP-0280 Carbon?
+         * @property { Boolean } is_delayed - Was delivery of this message was delayed as per XEP-0203?
+         * @property { Boolean } is_encrypted -  Is this message XEP-0384  encrypted?
+         * @property { Boolean } is_headline - Is this a "headline" message?
+         * @property { Boolean } is_markable - Can this message be marked with a XEP-0333 chat marker?
+         * @property { Boolean } is_marker - Is this message a XEP-0333 Chat Marker?
+         * @property { Boolean } is_only_emojis - Does the message body contain only emojis?
+         * @property { Boolean } is_receipt_request - Does this message request a XEP-0184 receipt?
+         * @property { Boolean } is_spoiler - Is this a XEP-0382 spoiler message?
+         * @property { Boolean } is_tombstone - Is this a XEP-0424 tombstone?
+         * @property { Object } encrypted -  XEP-0384 encryption payload attributes
+         * @property { String } body - The contents of the <body> tag of the message stanza
+         * @property { String } chat_state - The XEP-0085 chat state notification contained in this message
+         * @property { String } contact_jid - The JID of the other person or entity
+         * @property { String } edit - An ISO8601 string recording the time that the message was edited per XEP-0308
+         * @property { String } error - The error message, in case it's an error stanza
+         * @property { String } from - The sender JID
+         * @property { String } fullname - The full name of the sender
+         * @property { String } marker - The XEP-0333 Chat Marker value
+         * @property { String } marker_id - The `id` attribute of a XEP-0333 chat marker
+         * @property { String } msgid - The root `id` attribute of the stanza
+         * @property { String } nick - The roster nickname of the sender
+         * @property { String } oob_desc - The description of the XEP-0066 out of band data
+         * @property { String } oob_url - The URL of the XEP-0066 out of band data
+         * @property { String } origin_id - The XEP-0359 Origin ID
+         * @property { String } receipt_id - The `id` attribute of a XEP-0184 <receipt> element
+         * @property { String } received - An ISO8601 string recording the time that the message was received
+         * @property { String } replace_id - The `id` attribute of a XEP-0308 <replace> element
+         * @property { String } retracted - An ISO8601 string recording the time that the message was retracted
+         * @property { String } retracted_id - The `id` attribute of a XEP-424 <retracted> element
+         * @property { String } spoiler_hint  The XEP-0382 spoiler hint
+         * @property { String } stanza_id - The XEP-0359 Stanza ID. Note: the key is actualy `stanza_id ${by_jid}` and there can be multiple.
+         * @property { String } subject - The <subject> element value
+         * @property { String } thread - The <thread> element value
+         * @property { String } time - The time (in ISO8601 format), either given by the XEP-0203 <delay> element, or of receipt.
+         * @property { String } to - The recipient JID
+         * @property { String } type - The type of message
+         */
+        const original_stanza = stanza;
+        const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
+        const marker = st.getChatMarker(stanza);
+        const now =  (new Date()).toISOString();
+        let attrs = Object.assign({
+                contact_jid,
+                is_headline,
+                is_server_message,
+                'body': stanza.querySelector('body')?.textContent?.trim(),
+                'chat_state': getChatState(stanza),
+                'error': getErrorMessage(stanza),
+                'from': Strophe.getBareJidFromJid(stanza.getAttribute('from')),
+                'is_archived': st.isArchived(original_stanza),
+                'is_carbon': isCarbon(original_stanza),
+                'is_delayed': !!delay,
+                'is_markable': !!sizzle(`markable[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length,
+                'is_marker': !!marker,
+                'marker_id': marker && marker.getAttribute('id'),
+                'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
+                'nick': contact?.attributes?.nickname,
+                'receipt_id': getReceiptId(stanza),
+                'received': (new Date()).toISOString(),
+                'references': getReferences(stanza),
+                'sender': is_me ? 'me' : 'them',
+                'subject': stanza.querySelector('subject')?.textContent,
+                'thread': stanza.querySelector('thread')?.textContent,
+                'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : now,
+                'to': stanza.getAttribute('to'),
+                'type': stanza.getAttribute('type')
+            },
+            getOutOfBandAttributes(stanza),
+            getSpoilerAttributes(stanza),
+            getCorrectionAttributes(stanza, original_stanza),
+            getStanzaIDs(stanza, original_stanza),
+            getRetractionAttributes(stanza, original_stanza),
+            getEncryptionAttributes(stanza, _converse)
+        );
+
+        if (attrs.is_archived) {
+            const from = original_stanza.getAttribute('from');
+            if (from && contact_jid && from !== contact_jid) {
+                return new StanzaParseError(`Invalid Stanza: Forged MAM message from ${from}`, stanza);
+            }
+        }
+        attrs = Object.assign({
+            'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
+            'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
+            'is_receipt_request': isReceiptRequest(stanza, attrs)
+        }, attrs);
+
+        // We prefer to use one of the XEP-0359 unique and stable stanza IDs
+        // as the Model id, to avoid duplicates.
+        attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${(attrs.from)}`] || u.getUniqueId();
+        return attrs;
     },
 
     /**
      * Parses a passed in message stanza and returns an object of attributes.
-     * @private
-     * @method stanza_utils#parseMessage
+     * @method st#parseMUCMessage
      * @param { XMLElement } stanza - The message stanza
      * @param { XMLElement } original_stanza - The original stanza, that contains the
      *  message stanza, if it was contained, otherwise it's the message stanza itself.
-     * @param { _converse.ChatBox|_converse.ChatRoom } chatbox
+     * @param { _converse.ChatRoom } chatbox
      * @param { _converse } _converse
-     * @returns { Object }
+     * @returns { (MUCMessageAttributes|Error) }
      */
-    async parseMessage (stanza, original_stanza, chatbox, _converse) {
-        const is_muc = u.isChatRoom(chatbox);
-        let attrs = Object.assign(
-            stanza_utils.getStanzaIDs(stanza, original_stanza),
-            stanza_utils.getRetractionAttributes(stanza, original_stanza),
-            is_muc ? stanza_utils.getModerationAttributes(stanza, original_stanza, chatbox) : {},
-        );
-        const text = stanza_utils.getMessageBody(stanza, is_muc, _converse) || undefined;
+    parseMUCMessage (stanza, chatbox, _converse) {
+        const err = rejectUnencapsulatedForward(stanza);
+        if (err) {
+            return err;
+        }
+
+        const selector = `[xmlns="${NS.MAM}"] > forwarded[xmlns="${NS.FORWARD}"] > message`;
+        const original_stanza = stanza;
+        stanza = sizzle(selector, stanza).pop() || stanza;
+
+        if (sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length) {
+            return new StanzaParseError(
+                `Invalid Stanza: Forged MAM groupchat message from ${stanza.getAttribute('from')}`,
+                stanza
+            );
+        }
         const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
-        attrs = Object.assign(
-            {
-                'chat_state': stanza_utils.getChatState(stanza),
-                'is_archived': stanza_utils.isArchived(original_stanza),
+        const from = stanza.getAttribute('from');
+        const marker = st.getChatMarker(stanza);
+        const now =  (new Date()).toISOString();
+        /**
+         * @typedef { Object } MUCMessageAttributes
+         * The object which {@link st.parseMUCMessage} returns
+         * @property { ('me'|'them') } sender - Whether the message was sent by the current user or someone else
+         * @property { Array<Object> } references - A list of objects representing XEP-0372 references
+         * @property { Boolean } editable - Is this message editable via XEP-0308?
+         * @property { Boolean } is_archived -  Is this message from a XEP-0313 MAM archive?
+         * @property { Boolean } is_carbon - Is this message a XEP-0280 Carbon?
+         * @property { Boolean } is_delayed - Was delivery of this message was delayed as per XEP-0203?
+         * @property { Boolean } is_encrypted -  Is this message XEP-0384  encrypted?
+         * @property { Boolean } is_headline - Is this a "headline" message?
+         * @property { Boolean } is_markable - Can this message be marked with a XEP-0333 chat marker?
+         * @property { Boolean } is_marker - Is this message a XEP-0333 Chat Marker?
+         * @property { Boolean } is_only_emojis - Does the message body contain only emojis?
+         * @property { Boolean } is_receipt_request - Does this message request a XEP-0184 receipt?
+         * @property { Boolean } is_spoiler - Is this a XEP-0382 spoiler message?
+         * @property { Boolean } is_tombstone - Is this a XEP-0424 tombstone?
+         * @property { Object } encrypted -  XEP-0384 encryption payload attributes
+         * @property { String } body - The contents of the <body> tag of the message stanza
+         * @property { String } chat_state - The XEP-0085 chat state notification contained in this message
+         * @property { String } edit - An ISO8601 string recording the time that the message was edited per XEP-0308
+         * @property { String } error - The error message, in case it's an error stanza
+         * @property { String } from - The sender JID
+         * @property { String } from_muc - The JID of the MUC from which this message was sent
+         * @property { String } fullname - The full name of the sender
+         * @property { String } marker - The XEP-0333 Chat Marker value
+         * @property { String } marker_id - The `id` attribute of a XEP-0333 chat marker
+         * @property { String } moderated - The type of XEP-0425 moderation (if any) that was applied
+         * @property { String } moderated_by - The JID of the user that moderated this message
+         * @property { String } moderated_id - The  XEP-0359 Stanza ID of the message that this one moderates
+         * @property { String } moderation_reason - The reason provided why this message moderates another
+         * @property { String } msgid - The root `id` attribute of the stanza
+         * @property { String } nick - The MUC nickname of the sender
+         * @property { String } oob_desc - The description of the XEP-0066 out of band data
+         * @property { String } oob_url - The URL of the XEP-0066 out of band data
+         * @property { String } origin_id - The XEP-0359 Origin ID
+         * @property { String } receipt_id - The `id` attribute of a XEP-0184 <receipt> element
+         * @property { String } received - An ISO8601 string recording the time that the message was received
+         * @property { String } replace_id - The `id` attribute of a XEP-0308 <replace> element
+         * @property { String } retracted - An ISO8601 string recording the time that the message was retracted
+         * @property { String } retracted_id - The `id` attribute of a XEP-424 <retracted> element
+         * @property { String } spoiler_hint  The XEP-0382 spoiler hint
+         * @property { String } stanza_id - The XEP-0359 Stanza ID. Note: the key is actualy `stanza_id ${by_jid}` and there can be multiple.
+         * @property { String } subject - The <subject> element value
+         * @property { String } thread - The <thread> element value
+         * @property { String } time - The time (in ISO8601 format), either given by the XEP-0203 <delay> element, or of receipt.
+         * @property { String } to - The recipient JID
+         * @property { String } type - The type of message
+         */
+        let attrs = Object.assign({
+                from,
+                'body': stanza.querySelector('body')?.textContent?.trim(),
+                'chat_state': getChatState(stanza),
+                'error': getMUCErrorMessage(stanza),
+                'from_muc': Strophe.getBareJidFromJid(from),
+                'is_archived': st.isArchived(original_stanza),
+                'is_carbon': isCarbon(original_stanza),
                 'is_delayed': !!delay,
-                'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
-                'message': text,
+                'is_headline': st.isHeadline(stanza),
+                'is_markable': !!sizzle(`markable[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length,
+                'is_marker': !!marker,
+                'marker_id': marker && marker.getAttribute('id'),
                 'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
-                'references': stanza_utils.getReferences(stanza),
-                'subject': propertyOf(stanza.querySelector('subject'))('textContent'),
-                'thread': propertyOf(stanza.querySelector('thread'))('textContent'),
-                'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString(),
-                'type': stanza.getAttribute('type')
+                'nick': Strophe.unescapeNode(Strophe.getResourceFromJid(from)),
+                'receipt_id': getReceiptId(stanza),
+                'received': (new Date()).toISOString(),
+                'references': getReferences(stanza),
+                'subject': stanza.querySelector('subject')?.textContent,
+                'thread': stanza.querySelector('thread')?.textContent,
+                'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : now,
+                'to': stanza.getAttribute('to'),
+                'type': stanza.getAttribute('type'),
             },
-            attrs,
-            getSenderAttributes(stanza, chatbox, _converse),
             getOutOfBandAttributes(stanza),
             getSpoilerAttributes(stanza),
             getCorrectionAttributes(stanza, original_stanza),
-        )
-       attrs = await getEncryptionAttributes(stanza, original_stanza, attrs, chatbox, _converse)
-        // We prefer to use one of the XEP-0359 unique and stable stanza IDs
-        // as the Model id, to avoid duplicates.
+            getStanzaIDs(stanza, original_stanza),
+            getRetractionAttributes(stanza, original_stanza),
+            getModerationAttributes(stanza),
+            getEncryptionAttributes(stanza, _converse)
+        );
+
+        attrs = Object.assign({
+            'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
+            'is_receipt_request': isReceiptRequest(stanza, attrs),
+            'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
+            'sender': attrs.nick === chatbox.get('nick') ? 'me': 'them',
+        }, attrs);
+
+        if (attrs.is_archived && original_stanza.getAttribute('from') !== attrs.from_muc) {
+            return new StanzaParseError(
+                `Invalid Stanza: Forged MAM message from ${original_stanza.getAttribute('from')}`,
+                stanza
+            );
+        } else if (attrs.is_archived && original_stanza.getAttribute('from') !== chatbox.get('jid')) {
+            return new StanzaParseError(
+                `Invalid Stanza: Forged MAM groupchat message from ${stanza.getAttribute('from')}`,
+                stanza
+            );
+        } else if (attrs.is_carbon) {
+            return new StanzaParseError(
+                "Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied",
+                stanza
+            );
+        }
+        // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
         attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${(attrs.from_muc || attrs.from)}`] || u.getUniqueId();
         return attrs;
     },
 
     /**
      * Parses a passed in MUC presence stanza and returns an object of attributes.
-     * @private
-     * @method stanza_utils#parseMUCPresence
+     * @method st#parseMUCPresence
      * @param { XMLElement } stanza - The presence stanza
      * @returns { Object }
      */
@@ -414,4 +735,4 @@ const stanza_utils = {
     }
 }
 
-export default stanza_utils;
+export default st;

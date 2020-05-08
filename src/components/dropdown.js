@@ -2,7 +2,7 @@ import { html } from 'lit-element';
 import { CustomElement } from './element.js';
 import { until } from 'lit-html/directives/until.js';
 import DOMNavigator from "../dom-navigator";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 
 
 const u = converse.env.utils;

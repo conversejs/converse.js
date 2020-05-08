@@ -21,6 +21,6 @@ import "./converse-status";      // XEP-0199 XMPP Ping
 import "./converse-vcard";       // XEP-0054 VCard-temp
 /* END: Removable components */
 
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 
 export default converse;

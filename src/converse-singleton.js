@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  * @description A plugin which restricts Converse to only one chat.
  */
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 
 
 converse.plugins.add('converse-singleton', {

@@ -4,10 +4,8 @@
  * @description XEP-0045 Multi-User Chat Views
  */
 import { isString } from "lodash";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import st from "./utils/stanza";
-
-const u = converse.env.utils;
 
 
 converse.plugins.add('converse-headlines', {
@@ -83,7 +81,7 @@ converse.plugins.add('converse-headlines', {
 
         async function onHeadlineMessage (stanza) {
             // Handler method for all incoming messages of type "headline".
-            if (u.isHeadlineMessage(_converse, stanza)) {
+            if (st.isHeadline(stanza) || st.isServerMessage(stanza)) {
                 const from_jid = stanza.getAttribute('from');
                 if (from_jid.includes('@') &&
                         !_converse.roster.get(from_jid) &&
@@ -100,7 +98,7 @@ converse.plugins.add('converse-headlines', {
                     'type': _converse.HEADLINES_TYPE,
                     'from': from_jid
                 });
-                const attrs = await st.parseMessage(stanza, stanza, chatbox, _converse);
+                const attrs = await st.parseMessage(stanza, _converse);
                 await chatbox.createMessage(attrs);
                 api.trigger('message', {'chatbox': chatbox, 'stanza': stanza});
             }
@@ -109,10 +107,7 @@ converse.plugins.add('converse-headlines', {
 
         /************************ BEGIN Event Handlers ************************/
         function registerHeadlineHandler () {
-            _converse.connection.addHandler(message => {
-                onHeadlineMessage(message);
-                return true
-            }, null, 'message');
+            _converse.connection.addHandler(message => (onHeadlineMessage(message) || true), null, 'message');
         }
         api.listen.on('connected', registerHeadlineHandler);
         api.listen.on('reconnected', registerHeadlineHandler);

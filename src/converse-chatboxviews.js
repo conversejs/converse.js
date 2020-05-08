@@ -7,7 +7,7 @@ import "@converse/headless/converse-chatboxes";
 import { Overview } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
 import { result } from "lodash";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import tpl_avatar from "templates/avatar.svg";
 import tpl_background_logo from "templates/background_logo.html";
 import tpl_chatboxes from "templates/chatboxes.html";

@@ -6,7 +6,7 @@
 import "./utils/html";
 import "@converse/headless/converse-emoji";
 import URI from "urijs";
-import converse from  "@converse/headless/converse-core";
+import { converse } from  "@converse/headless/converse-core";
 import { BootstrapModal } from "./converse-modal.js";
 import { debounce } from 'lodash'
 import { render } from "lit-html";
@@ -107,16 +107,15 @@ converse.plugins.add('converse-message-view', {
                     });
                 }
 
-                if (this.model.occupant) {
-                    this.listenTo(this.model.occupant, 'change:affiliation', this.debouncedRender);
-                    this.listenTo(this.model.occupant, 'change:hats', this.debouncedRender);
-                    this.listenTo(this.model.occupant, 'change:role', this.debouncedRender);
-                    this.debouncedRender();
-                }
-
+                this.model.occupant && this.addOccupantListeners();
                 this.listenTo(this.model, 'change', this.onChanged);
                 this.listenTo(this.model, 'destroy', this.fadeOut);
+                this.listenTo(this.model, 'occupantAdded', () => {
+                    this.addOccupantListeners();
+                    this.debouncedRender();
+                });
                 this.listenTo(this.model, 'vcard:change', this.debouncedRender);
+                this.debouncedRender();
             },
 
             async render () {
@@ -153,6 +152,12 @@ converse.plugins.add('converse-message-view', {
                 if (edited) {
                     this.onMessageEdited();
                 }
+            },
+
+            addOccupantListeners () {
+                this.listenTo(this.model.occupant, 'change:affiliation', this.debouncedRender);
+                this.listenTo(this.model.occupant, 'change:hats', this.debouncedRender);
+                this.listenTo(this.model.occupant, 'change:role', this.debouncedRender);
             },
 
             fadeOut () {

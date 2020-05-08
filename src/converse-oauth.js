@@ -6,7 +6,7 @@
 import { Collection } from "skeletor.js/src/collection";
 import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import hello from "hellojs";
 import tpl_oauth_providers from "templates/oauth_providers.js";
 

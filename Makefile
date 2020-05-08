@@ -2,6 +2,7 @@
 BABEL			?= node_modules/.bin/babel
 BOOTSTRAP		= ./node_modules/
 BUILDDIR		= ./docs
+KARMA			?= ./node_modules/.bin/karma
 CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT			?= ./node_modules/.bin/eslint
@@ -34,7 +35,7 @@ help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
 	@echo ""
 	@echo " all         	Set up dev environment and create all builds"
-	@echo " build       	Create minified builds of converse.js and all its dependencies."
+	@echo " dist       		Create minified builds of converse.js and all its dependencies."
 	@echo " clean       	Remove all NPM packages."
 	@echo " check       	Run all tests."
 	@echo " dev         	Set up the development environment and build unminified resources. To force a fresh start, run 'make clean' first."
@@ -99,7 +100,7 @@ release:
 	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' demo/*.html
 	make pot
 	make po
-	make build
+	make dist
 	npm pack
 
 .PHONY: postrelease
@@ -135,9 +136,9 @@ devserver: node_modules
 ########################################################################
 ## Builds
 
-dist/converse.js:: node_modules dev
+dist/converse.js:: node_modules
 
-dist/converse.css:: node_modules dev
+dist/converse.css:: node_modules
 
 dist/website.css:: node_modules sass
 	$(SASS) --source-map true --include-path $(BOOTSTRAP) sass/website.scss $@
@@ -174,13 +175,11 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 src/headless/dist/converse-headless.min.js: src webpack.common.js node_modules @converse/headless
 	npm run headless
 
-
-.PHONY: dist
-dist:: build
-
-.PHONY: build
-build:: node_modules
+dist:: node_modules src/*
 	npm run dev && npm run build && make dist/website.css && make dist/website.min.css
+
+.PHONY: install
+install:: dist
 
 .PHONY: cdn
 cdn:: node_modules
@@ -199,7 +198,11 @@ eslint: node_modules
 
 .PHONY: check
 check: eslint dev
-	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --disable-gpu --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
+	$(KARMA) start karma.conf.js $(ARGS)
+
+.PHONY: test
+test:
+	$(KARMA) start karma.conf.js $(ARGS)
 
 ########################################################################
 ## Documentation

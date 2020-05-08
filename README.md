@@ -1,4 +1,9 @@
-# Converse
+<h2 align="center">
+  <a href="https://conversejs.org" target="_blank" rel="noopener">
+    <img alt="Converse.js" src="https://raw.githubusercontent.com/conversejs/converse.js/readme-logo/logo/readme.png" width="480">
+  </a>
+</h2>
+
 
 [![XMPP Chat](https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
 [![Travis](https://api.travis-ci.org/conversejs/converse.js.png?branch=master)](https://travis-ci.org/conversejs/converse.js)
@@ -54,28 +59,52 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 -   Custom status messages
 -   Desktop notifications
 -   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://conversejs.github.io/pluggable.js/)
--   Multi-user chat rooms [XEP 45](https://xmpp.org/extensions/xep-0045.html)
--   Chatroom bookmarks [XEP 48](https://xmpp.org/extensions/xep-0048.html)
--   Direct invitations to chat rooms [XEP 249](https://xmpp.org/extensions/xep-0249.html)
--   vCard support [XEP 54](https://xmpp.org/extensions/xep-0054.html)
--   Service discovery [XEP 30](https://xmpp.org/extensions/xep-0030.html)
--   In-band registration [XEP 77](https://xmpp.org/extensions/xep-0077.html)
--   Roster item exchange [XEP 144](https://xmpp.org/extensions/xep-0144.html)
 -   Chat statuses (online, busy, away, offline)
--   Typing and state notifications [XEP 85](https://xmpp.org/extensions/xep-0085.html)
--   File sharing / HTTP File Upload [XEP 363](https://xmpp.org/extensions/xep-0363.html)
--   Messages appear in all connnected chat clients / Message Carbons [XEP 280](https://xmpp.org/extensions/xep-0280.html)
--   Third person "/me" messages [XEP 245](https://xmpp.org/extensions/xep-0245.html)
--   XMPP Ping [XEP 199](https://xmpp.org/extensions/xep-0199.html)
--   Server-side archiving of messages [XEP 313](https://xmpp.org/extensions/xep-0313.html)
--   Hidden Messages (aka Spoilers) [XEP 382](https://xmpp.org/extensions/xep-0382.html)
--   Client state indication [XEP 352](https://xmpp.org/extensions/xep-0352.html)
--   Last Message Correction [XEP 308](https://xmpp.org/extensions/xep-0308.html)
--   OMEMO encrypted messaging [XEP 384](https://xmpp.org/extensions/xep-0384.html)
 -   Anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html)
--   Message Retractions [XEP-424](https://xmpp.org/extensions/xep-0424.html)
--   Message Moderation [XEP-425](https://xmpp.org/extensions/xep-0425.html)
 -   Translated into over 30 languages
+
+### Supported XMPP Extensions
+
+- [RFC-7395](https://tools.ietf.org/html/rfc7395) XMPP Subprotocol support for WebSocket
+- [XEP-0004](https://xmpp.org/extensions/xep-0004.html) Data Forms
+- [XEP-0030](https://xmpp.org/extensions/xep-0030.html) Service discovery
+- [XEP-0045](https://xmpp.org/extensions/xep-0045.html) Multi-user chat rooms
+- [XEP-0048](https://xmpp.org/extensions/xep-0048.html) Bookmarks
+- [XEP-0050](https://xmpp.org/extensions/xep-0050.html) Ad-Hoc Commands
+- [XEP-0054](https://xmpp.org/extensions/xep-0054.html) VCard-temp
+- [XEP-0059](https://xmpp.org/extensions/xep-0059.html) Result Set Management
+- [XEP-0060](https://xmpp.org/extensions/xep-0060.html) Publish-Subscribe (limited support)
+- [XEP-0066](https://xmpp.org/extensions/xep-0066.html) Out of Band Data
+- [XEP-0077](https://xmpp.org/extensions/xep-0077.html) In-band registration
+- [XEP-0085](https://xmpp.org/extensions/xep-0085.html) Chat State Notifications
+- [XEP-0124](https://xmpp.org/extensions/xep-0124.html) Bidirectional-streams Over Synchronous HTTP (BOSH)
+- [XEP-0144](https://xmpp.org/extensions/xep-0144.html) Roster item exchange
+- [XEP-0156](https://xmpp.org/extensions/xep-0156.html) Disovering Alternative XMPP Connection Methods
+- [XEP-0163](https://xmpp.org/extensions/xep-0163.html) Personal Eventing Protocol (limited support)
+- [XEP-0184](https://xmpp.org/extensions/xep-0184.html) Message Receipt
+- [XEP-0198](https://xmpp.org/extensions/xep-0198.html) Stream Management
+- [XEP-0199](https://xmpp.org/extensions/xep-0199.html) XMPP Ping
+- [XEP-0203](https://xmpp.org/extensions/xep-0203.html) Delayed Delivery
+- [XEP-0206](https://xmpp.org/extensions/xep-0206.html) XMPP Over BOSH
+- [XEP-0245](https://xmpp.org/extensions/xep-0245.html) The /me Command
+- [XEP-0249](https://xmpp.org/extensions/xep-0249.html) Direct MUC Invitations
+- [XEP-0280](https://xmpp.org/extensions/xep-0280.html) Message Carbons
+- [XEP-0297](https://xmpp.org/extensions/xep-0297.html) Stanza Forwarding (limited support)
+- [XEP-0308](https://xmpp.org/extensions/xep-0308.html) Last Message Correction
+- [XEP-0313](https://xmpp.org/extensions/xep-0313.html) Message Archive Management
+- [XEP-0317](https://xmpp.org/extensions/xep-0317.html) Hats (limited support)
+- [XEP-0333](https://xmpp.org/extensions/xep-0333.html) Chat Markers (limited support)
+- [XEP-0352](https://xmpp.org/extensions/xep-0352.html) Client State Indication
+- [XEP-0357](https://xmpp.org/extensions/xep-0357.html) Push Notifications
+- [XEP-0359](https://xmpp.org/extensions/xep-0359.html) Unique and Stable Stanza IDs
+- [XEP-0363](https://xmpp.org/extensions/xep-0363.html) HTTP File Upload
+- [XEP-0372](https://xmpp.org/extensions/xep-0372.html) References
+- [XEP-0382](https://xmpp.org/extensions/xep-0382.html) Spoiler messages
+- [XEP-0384](https://xmpp.org/extensions/xep-0384.html) OMEMO Encryption
+- [XEP-0422](https://xmpp.org/extensions/xep-0422.html) Message Fastening (limited support)
+- [XEP-0424](https://xmpp.org/extensions/xep-0424.html) Message Retractions
+- [XEP-0425](https://xmpp.org/extensions/xep-0425.html) Message Moderation
+
 
 ## Integration into other servers and frameworks
 
@@ -96,7 +125,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 
 We use behavior-driven tests written with [jasmine.js](https://jasmine.github.io/).
 
-Open [tests/index.html](https://github.com/conversejs/converse.js/blob/master/tests/index.html) in your browser, and the tests will run automatically.
+You ran run `make check` to execute all the tests.
 
 ## Licence
 

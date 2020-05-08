@@ -6,7 +6,7 @@
 import { find, isMatch, isObject, isString, pick } from "lodash";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import filesize from "filesize";
 import log from "./log";
 import st from "./utils/stanza";
@@ -397,6 +397,12 @@ converse.plugins.add('converse-chat', {
                 return this.messages.fetched;
             },
 
+            async handleErrormessageStanza (stanza) {
+                if (await this.shouldShowErrorMessage(stanza)) {
+                    this.createMessage(await st.parseMessage(stanza, _converse));
+                }
+            },
+
             /**
              * Queue an incoming `chat` message stanza for processing.
              * @async
@@ -404,25 +410,29 @@ converse.plugins.add('converse-chat', {
              * @method _converse.ChatRoom#queueMessage
              * @param { XMLElement } stanza - The message stanza.
              */
-            queueMessage (stanza, original_stanza, from_jid) {
+            queueMessage (attrs) {
                 this.msg_chain = (this.msg_chain || this.messages.fetched);
-                this.msg_chain = this.msg_chain.then(() => this.onMessage(stanza, original_stanza, from_jid));
+                this.msg_chain = this.msg_chain.then(() => this.onMessage(attrs));
                 return this.msg_chain;
             },
 
-            async onMessage (stanza, original_stanza, from_jid) {
-                const attrs = await st.parseMessage(stanza, original_stanza, this, _converse);
+            async onMessage (attrs) {
+                attrs = await attrs;
+                if (u.isErrorObject(attrs)) {
+                    attrs.stanza && log.error(attrs.stanza);
+                    return log.error(attrs.message);
+                }
+                // TODO: move to OMEMO
+                attrs = attrs.encrypted ? await this.decrypt(attrs) : attrs;
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
-                    this.updateMessage(message, original_stanza);
+                    this.updateMessage(message, attrs);
                 } else if (
-                    !this.handleReceipt (stanza, original_stanza, from_jid) &&
-                    !this.handleChatMarker(stanza, from_jid)
+                        !this.handleReceipt(attrs) &&
+                        !this.handleChatMarker(attrs) &&
+                        !(await this.handleRetraction(attrs))
                 ) {
-                    if (await this.handleRetraction(attrs)) {
-                        return;
-                    }
-                    this.setEditable(attrs, attrs.time, stanza);
+                    this.setEditable(attrs, attrs.time);
 
                     if (attrs['chat_state'] && attrs.sender === 'them') {
                         this.notifications.set('chat_state', attrs.chat_state);
@@ -525,17 +535,16 @@ converse.plugins.add('converse-chat', {
                 }
             },
 
-            getUpdatedMessageAttributes (message, stanza) {  // eslint-disable-line no-unused-vars
-                return {
-                    'is_archived': st.isArchived(stanza),
-                }
+            getUpdatedMessageAttributes (message, attrs) {
+                // Filter the attrs object, restricting it to only the `is_archived` key.
+                return (({ is_archived }) => ({ is_archived }))(attrs)
             },
 
-            updateMessage (message, stanza) {
+            updateMessage (message, attrs) {
                 // Overridden in converse-muc and converse-mam
-                const attrs = this.getUpdatedMessageAttributes(message, stanza);
+                const new_attrs = this.getUpdatedMessageAttributes(message, attrs);
                 if (attrs) {
-                    message.save(attrs);
+                    message.save(new_attrs);
                 }
             },
 
@@ -682,10 +691,10 @@ converse.plugins.add('converse-chat', {
              *  message or `undefined` if not applicable.
              */
             handleCorrection (attrs) {
-                if (!attrs.replaced_id || !attrs.from) {
+                if (!attrs.replace_id || !attrs.from) {
                     return;
                 }
-                const message = this.messages.findWhere({'msgid': attrs.replaced_id, 'from': attrs.from});
+                const message = this.messages.findWhere({'msgid': attrs.replace_id, 'from': attrs.from});
                 if (!message) {
                     return;
                 }
@@ -797,35 +806,23 @@ converse.plugins.add('converse-chat', {
                 api.send(stanza);
             },
 
-            handleChatMarker (stanza, from_jid) {
-                const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
+            handleChatMarker (attrs) {
+                const to_bare_jid = Strophe.getBareJidFromJid(attrs.to);
                 if (to_bare_jid !== _converse.bare_jid) {
                     return false;
                 }
-                const markers = sizzle(`[xmlns="${Strophe.NS.MARKERS}"]`, stanza);
-                if (markers.length === 0) {
-                    return false;
-                } else if (markers.length > 1) {
-                    log.error('handleChatMarker: Ignoring incoming stanza with multiple message markers');
-                    log.error(stanza);
-                    return false;
-                } else {
-                    const marker = markers.pop();
-                    if (marker.nodeName === 'markable') {
-                        if (this.contact && !u.isMAMMessage(stanza) && !u.isCarbonMessage(stanza)) {
-                            this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
-                        }
-                        return false;
-                    } else {
-                        const msgid = marker && marker.getAttribute('id'),
-                            message = msgid && this.messages.findWhere({msgid}),
-                            field_name = `marker_${marker.nodeName}`;
-
-                        if (message && !message.get(field_name)) {
-                            message.save({field_name: (new Date()).toISOString()});
-                        }
-                        return true;
+                if (attrs.is_markable) {
+                    if (this.contact && !attrs.is_mam && !attrs.is_carbon) {
+                        this.sendMarker(attrs.from, attrs.msgid, 'received');
                     }
+                    return false;
+                } else if (attrs.marker_id) {
+                    const message = this.messages.findWhere({'msgid': attrs.marker_id});
+                    const field_name = `marker_${attrs.marker}`;
+                    if (message && !message.get(field_name)) {
+                        message.save({field_name: (new Date()).toISOString()});
+                    }
+                    return true;
                 }
             },
 
@@ -840,18 +837,12 @@ converse.plugins.add('converse-chat', {
                 api.send(receipt_stanza);
             },
 
-            handleReceipt (stanza, original_stanza, from_jid) {
-                const is_me = Strophe.getBareJidFromJid(from_jid) === _converse.bare_jid;
-                const requests_receipt = sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop() !== undefined;
-                if (requests_receipt && !is_me && !u.isCarbonMessage(stanza) && !u.isMAMMessage(original_stanza)) {
-                    this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
-                }
-                const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
-                if (to_bare_jid === _converse.bare_jid) {
-                    const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop();
-                    if (receipt) {
-                        const msgid = receipt && receipt.getAttribute('id'),
-                            message = msgid && this.messages.findWhere({msgid});
+            handleReceipt (attrs) {
+                if (attrs.sender === 'them') {
+                    if (attrs.is_receipt_request) {
+                        this.sendReceiptStanza(attrs.from, attrs.msgid);
+                    } else if (attrs.receipt_id) {
+                        const message = this.messages.findWhere({'msgid': attrs.receipt_id});
                         if (message && !message.get('received')) {
                             message.save({'received': (new Date()).toISOString()});
                         }
@@ -945,8 +936,8 @@ converse.plugins.add('converse-chat', {
              * @param { Object } attrs An object containing message attributes.
              * @param { String } send_time - time when the message was sent
              */
-            setEditable (attrs, send_time, stanza) {
-                if (stanza && u.isHeadlineMessage(_converse, stanza)) {
+            setEditable (attrs, send_time) {
+                if (attrs.is_headline) {
                     return;
                 }
                 if (u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
@@ -1006,6 +997,16 @@ converse.plugins.add('converse-chat', {
                     message = await this.createMessage(attrs);
                 }
                 api.send(this.createMessageStanza(message));
+
+               /**
+                * Triggered when a message is being sent out
+                * @event _converse#sendMessage
+                * @type { Object }
+                * @property { Object } data
+                * @property { (_converse.ChatBox | _converse.ChatRoom) } data.chatbox
+                * @property { (_converse.Message | _converse.ChatRoomMessage } data.message
+                */
+                api.trigger('sendMessage', {'chatbox': this, message});
                 return message;
             },
 
@@ -1124,37 +1125,13 @@ converse.plugins.add('converse-chat', {
         });
 
 
-        function rejectMessage (stanza, text) {
-            // Reject an incoming message by replying with an error message of type "cancel".
-            api.send(
-                $msg({
-                    'to': stanza.getAttribute('from'),
-                    'type': 'error',
-                    'id': stanza.getAttribute('id')
-                }).c('error', {'type': 'cancel'})
-                    .c('not-allowed', {xmlns:"urn:ietf:params:xml:ns:xmpp-stanzas"}).up()
-                    .c('text', {xmlns:"urn:ietf:params:xml:ns:xmpp-stanzas"}).t(text)
-            );
-            log.warn(`Rejecting message stanza with the following reason: ${text}`);
-            log.warn(stanza);
-        }
-
-
         async function handleErrorMessage (stanza) {
             const from_jid =  Strophe.getBareJidFromJid(stanza.getAttribute('from'));
             if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                 return;
             }
             const chatbox = await api.chatboxes.get(from_jid);
-            if (!chatbox) {
-                return;
-            }
-            const should_show = await chatbox.shouldShowErrorMessage(stanza);
-            if (!should_show) {
-                return;
-            }
-            const attrs = await st.parseMessage(stanza, stanza, chatbox, _converse);
-            await chatbox.createMessage(attrs);
+            chatbox?.handleErrormessageStanza(stanza);
         }
 
 
@@ -1162,77 +1139,30 @@ converse.plugins.add('converse-chat', {
          * Handler method for all incoming single-user chat "message" stanzas.
          * @private
          * @method _converse#handleMessageStanza
-         * @param { XMLElement } stanza - The incoming message stanza
+         * @param { MessageAttributes } attrs - The message attributes
          */
         _converse.handleMessageStanza = async function (stanza) {
-            const original_stanza = stanza;
-            let to_jid = stanza.getAttribute('to');
-            const to_resource = Strophe.getResourceFromJid(to_jid);
-
-            if (api.settings.get('filter_by_resource') && (to_resource && to_resource !== _converse.resource)) {
-                return log.info(`handleMessageStanza: Ignoring incoming message intended for a different resource: ${to_jid}`);
-            } else if (utils.isHeadlineMessage(_converse, stanza)) {
-                // XXX: Prosody sends headline messages with the
-                // wrong type ('chat'), so we need to filter them out here.
-                return log.info(`handleMessageStanza: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`);
+            if (st.isServerMessage(stanza)) {
+                // Prosody sends headline messages with type `chat`, so we need to filter them out here.
+                const from = stanza.getAttribute('from');
+                return log.info(`handleMessageStanza: Ignoring incoming server message from JID: ${from}`);
             }
-
-            const bare_forward = sizzle(`message > forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).length;
-            if (bare_forward) {
-                return rejectMessage(
-                    stanza,
-                    'Forwarded messages not part of an encapsulating protocol are not supported'
-                );
+            const attrs = await st.parseMessage(stanza, _converse);
+            if (u.isErrorObject(attrs)) {
+                attrs.stanza && log.error(attrs.stanza);
+                return log.error(attrs.message);
             }
-            let from_jid = stanza.getAttribute('from') || _converse.bare_jid;
-            if (u.isCarbonMessage(stanza)) {
-                if (from_jid === _converse.bare_jid) {
-                    const selector = `[xmlns="${Strophe.NS.CARBONS}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
-                    stanza = sizzle(selector, stanza).pop();
-                    to_jid = stanza.getAttribute('to');
-                    from_jid = stanza.getAttribute('from');
-                } else {
-                    // Prevent message forging via carbons: https://xmpp.org/extensions/xep-0280.html#security
-                    return rejectMessage(stanza, 'Rejecting carbon from invalid JID');
-                }
-            }
-
-            if (u.isMAMMessage(stanza)) {
-                if (from_jid === _converse.bare_jid) {
-                    const selector = `[xmlns="${Strophe.NS.MAM}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
-                    stanza = sizzle(selector, stanza).pop();
-                    to_jid = stanza.getAttribute('to');
-                    from_jid = stanza.getAttribute('from');
-                } else {
-                    return log.warn(`handleMessageStanza: Ignoring alleged MAM message from ${stanza.getAttribute('from')}`);
-                }
-            }
-
-            const from_bare_jid = Strophe.getBareJidFromJid(from_jid);
-            const is_me = from_bare_jid === _converse.bare_jid;
-            if (is_me && to_jid === null) {
-                return log.error(`Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`);
-            }
-            const contact_jid = is_me ? Strophe.getBareJidFromJid(to_jid) : from_bare_jid;
-            const contact = await api.contacts.get(contact_jid);
-            if (contact === undefined && !api.settings.get("allow_non_roster_messaging")) {
-                log.error(`Blocking messaging with a JID not in our roster because allow_non_roster_messaging is false.`);
-                return log.error(stanza);
-            }
-            // Get chat box, but only create when the message has something to show to the user
-            const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
-            const roster_nick = contact?.attributes?.nickname;
-            const chatbox = await api.chats.get(contact_jid, {'nickname': roster_nick}, has_body);
-            chatbox && await chatbox.queueMessage(stanza, original_stanza, from_jid);
+            const has_body = !!sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length;
+            const chatbox = await api.chats.get(attrs.contact_jid, {'nickname': attrs.nick }, has_body);
+            chatbox && await chatbox.queueMessage(attrs);
             /**
              * Triggered when a message stanza is been received and processed.
              * @event _converse#message
              * @type { object }
-             * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
              * @property { XMLElement } stanza
              * @example _converse.api.listen.on('message', obj => { ... });
              */
-            api.trigger('message', {'stanza': original_stanza, 'chatbox': chatbox});
+            api.trigger('message', {'stanza': stanza});
         }
 
 

@@ -18,9 +18,11 @@ Soon we'll deprecate the latter, so prepare now.
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact
 - #1839: Headline messages are shown in controlbox
-- #1896: Don't send receipts for messages fetched from the archive 
+- #1896: Don't send receipts for messages fetched from the archive
 - #1937: Editing a message removes the mentions highlight
 - #1963: Mentions are visually incorrect when used in message replies
+- #2002: fix rendering of `muc_roomid_policy_hint`
+- #2006: fix rendering of emojis in case `use_system_emojis == false`
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
 - Bugfix. Handle stanza that clears the MUC subject
 - Replace Backbone with [Skeletor](https://github.com/skeletorjs/skeletor)
@@ -31,10 +33,11 @@ Soon we'll deprecate the latter, so prepare now.
   [discover_connection_methods](https://conversejs.org/docs/html/configuration.html#discover-connection-methods) now has a default value of `true`).
 - [show_send_button](https://conversejs.org/docs/html/configuration.html#show-send-button) now has a default value of `true`.
 - The [api.confirm](https://conversejs.org/docs/html/api/-_converse.api.html#.confirm) method now accepts a list of fields and returns the filled in list upon confirmation.
+- New config option [allow_adhoc_commands](https://conversejs.org/docs/html/configuration.html#allow-adhoc-commands)
 - New config option [modtools_disable_assign](https://conversejs.org/docs/html/configuration.html#modtools-disable-assign)
 - New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
-- New config option [allow_adhoc_commands](https://conversejs.org/docs/html/configuration.html#allow-adhoc-commands)
 - New config option [muc_hats_from_vcard](https://conversejs.org/docs/html/configuration.html#muc-hats-from-vcard).
+- New config option [muc_send_probes](https://conversejs.org/docs/html/configuration.html#muc-send-probes).
 
 ## 6.0.0 (2020-01-09)
 

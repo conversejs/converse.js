@@ -6,7 +6,7 @@
  */
 import 'strophe.js/src/bosh';
 import { Model } from 'skeletor.js/src/model.js';
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import log from "./log";
 
 const { Strophe } = converse.env;
@@ -93,7 +93,7 @@ converse.plugins.add('converse-bosh', {
                     _converse.connection.restore(jid, _converse.onConnectStatusChanged);
                     return true;
                 } catch (e) {
-                    log.warn("Could not restore session for jid: "+jid+" Error message: "+e.message);
+                    !_converse.isTestEnv() && log.warn("Could not restore session for jid: "+jid+" Error message: "+e.message);
                     return false;
                 }
             }

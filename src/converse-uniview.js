@@ -11,7 +11,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-chatview";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 
 const u = converse.env.utils;
 

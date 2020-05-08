@@ -3,8 +3,9 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
+import st from "@converse/headless/utils/stanza";
 
 const { Strophe, sizzle } = converse.env;
 const u = converse.env.utils;
@@ -79,7 +80,7 @@ converse.plugins.add('converse-notification', {
                 return false;
             } else if (message.getAttribute('type') === 'groupchat') {
                 return _converse.shouldNotifyOfGroupMessage(message);
-            } else if (u.isHeadlineMessage(_converse, message)) {
+            } else if (st.isHeadline(message)) {
                 // We want to show notifications for headline messages.
                 return _converse.isMessageToHiddenChat(message);
             }

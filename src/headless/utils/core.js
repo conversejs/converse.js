@@ -42,16 +42,6 @@ u.toStanza = function (string) {
     return node.firstElementChild;
 }
 
-u.isMAMMessage = function (stanza) {
-    return sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
-}
-
-u.isCarbonMessage = function (stanza) {
-    const xmlns = Strophe.NS.CARBONS;
-    return sizzle(`message > received[xmlns="${xmlns}"]`, stanza).length > 0 ||
-            sizzle(`message > sent[xmlns="${xmlns}"]`, stanza).length > 0;
-}
-
 u.getLongestSubstring = function (string, candidates) {
     function reducer (accumulator, current_value) {
         if (string.startsWith(current_value)) {
@@ -142,6 +132,7 @@ u.isEmptyMessage = function (attrs) {
         !attrs['message'];
 };
 
+//TODO: Remove
 u.isOnlyChatStateNotification = function (msg) {
     if (msg instanceof Element) {
         // See XEP-0085 Chat State Notification
@@ -173,25 +164,6 @@ u.isOnlyMessageDeliveryReceipt = function (msg) {
 u.isChatRoom = function (model) {
     return model && (model.get('type') === 'chatroom');
 }
-
-u.isHeadlineMessage = function (_converse, message) {
-    const from_jid = message.getAttribute('from');
-    if (message.getAttribute('type') === 'headline') {
-        return true;
-    }
-    const chatbox = _converse.chatboxes.get(Strophe.getBareJidFromJid(from_jid));
-    if (u.isChatRoom(chatbox)) {
-        return false;
-    }
-    if (message.getAttribute('type') !== 'error' && from_jid && !from_jid.includes('@')) {
-        // Some servers (I'm looking at you Prosody) don't set the message
-        // type to "headline" when sending server messages. For now we
-        // check if an @ signal is included, and if not, we assume it's
-        // a headline message.
-        return true;
-    }
-    return false;
-};
 
 u.isErrorObject = function (o) {
     return o instanceof Error;

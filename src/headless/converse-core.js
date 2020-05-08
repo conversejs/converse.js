@@ -3,12 +3,12 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { __, i18n } from './i18n';
-import { assignIn, debounce, invoke, isElement, isFunction, isObject, isString, pick } from 'lodash';
 import { Collection } from "skeletor.js/src/collection";
 import { Events } from 'skeletor.js/src/events.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { Router } from 'skeletor.js/src/router.js';
+import { __, i18n } from './i18n';
+import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash';
 import 'strophe.js/src/websocket';
 import './polyfill';
 import * as strophe from 'strophe.js/src/core';
@@ -27,7 +27,6 @@ const $build = strophe.default.$build;
 const $iq = strophe.default.$iq;
 const $msg = strophe.default.$msg;
 const $pres = strophe.default.$pres;
-
 
 dayjs.extend(advancedFormat);
 
@@ -90,7 +89,6 @@ const PROMISES = [
     'connectionInitialized',
     'initialized',
     'pluginsInitialized',
-    'statusInitialized'
 ];
 
 // Core plugins are whitelisted automatically
@@ -164,9 +162,8 @@ const DEFAULT_SETTINGS = {
  * @global
  * @namespace _converse
  */
-// Strictly speaking _converse is not a global, but we need to set it as
-// such to get JSDoc to create the correct document site strucure.
-const _converse = {
+export const _converse = {
+    log,
     'templates': {},
     'promises': {},
 
@@ -712,7 +709,6 @@ export const api = _converse.api = {
      * * [rosterContactsFetched](/docs/html/events.html#rosterContactsFetched)
      * * [rosterGroupsFetched](/docs/html/events.html#rosterGroupsFetched)
      * * [rosterInitialized](/docs/html/events.html#rosterInitialized)
-     * * [statusInitialized](/docs/html/events.html#statusInitialized)
      * * [roomsPanelRendered](/docs/html/events.html#roomsPanelRendered)
      *
      * The various plugins might also provide promises, and they do this by using the
@@ -888,8 +884,9 @@ export const api = _converse.api = {
             promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
             promise.catch(e => {
                 if (e === null) {
-                    const el = isElement(stanza) ? stanza : stanza.nodeTree;
-                    throw new TimeoutError(`Timeout error after ${timeout}ms for the following IQ stanza: ${el}`);
+                    throw new TimeoutError(
+                        `Timeout error after ${timeout}ms for the following IQ stanza: ${Strophe.serialize(stanza)}`
+                    );
                 }
             });
         } else {
@@ -1075,7 +1072,7 @@ async function attemptNonPreboundSession (credentials, automatic) {
         } else if (!_converse.isTestEnv() && 'credentials' in navigator) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
-            log.warn("attemptNonPreboundSession: Could not find any credentials to log in with");
+            !_converse.isTestEnv() && log.warn("attemptNonPreboundSession: Couldn't find credentials to log in with");
         }
     } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.api.settings.get("authentication")) && (!automatic || _converse.api.settings.get("auto_login"))) {
         connect();
@@ -1740,8 +1737,8 @@ function setUnloadEvent () {
     }
 }
 
+export const converse = window.converse || {};
 
-window.converse = window.converse || {};
 
 /**
  * ### The Public API
@@ -1756,7 +1753,7 @@ window.converse = window.converse || {};
  * @global
  * @namespace converse
  */
-Object.assign(window.converse, {
+Object.assign(converse, {
 
     CHAT_STATES: ['active', 'composing', 'gone', 'inactive', 'paused'],
 
@@ -1915,5 +1912,6 @@ Object.assign(window.converse, {
  * @event converse-loaded
  * @example window.addEventListener('converse-loaded', () => converse.initialize());
  */
-window.dispatchEvent(new CustomEvent('converse-loaded'));
-export default converse;
+const ev = new CustomEvent('converse-loaded')
+ev.converse = converse;
+window.dispatchEvent(ev);

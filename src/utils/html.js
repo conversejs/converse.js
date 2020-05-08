@@ -22,6 +22,7 @@ import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
 
 const URL_REGEX = /\b(https?\:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
+const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp'];
 
 function getAutoCompleteProperty (name, options) {
     return {
@@ -95,7 +96,7 @@ function renderAudioURL (_converse, uri) {
 
 function renderImageURL (_converse, uri) {
     if (!_converse.api.settings.get('show_images_inline')) {
-        return u.convertToHyperlink(uri);
+        return u.convertUriToHyperlink(uri);
     }
     const { __ } = _converse;
     return tpl_image({
@@ -388,29 +389,53 @@ u.addMentionsMarkup = function (text, references, chatbox) {
     return text;
 };
 
-
-u.convertToHyperlink = function (url) {
-    const uri = getURI(url);
-    if (uri === null) {
-        return url;
-    }
-    url = uri.normalize()._string;
-    const pretty_url = uri._parts.urn ? url : uri.readable();
-    if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
-        url = 'http://' + url;
+u.convertUriToHyperlink = function (uri, urlAsTyped) {
+    let normalizedUrl = uri.normalize()._string;
+    const pretty_url = uri._parts.urn ? normalizedUrl : uri.readable();
+    const visibleUrl = u.escapeHTML(urlAsTyped || pretty_url);
+    if (!uri._parts.protocol && !normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+        normalizedUrl = 'http://' + normalizedUrl;
     }
     if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
-        return `<a target="_blank" rel="noopener" class="open-chatroom" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+        return `<a target="_blank" rel="noopener" class="open-chatroom" href="${normalizedUrl}">${visibleUrl}</a>`;
     }
-    return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+    return `<a target="_blank" rel="noopener" href="${normalizedUrl}">${visibleUrl}</a>`;
+};
+
+function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOLS) {
+    return !!safeProtocolsList.includes(protocol);
 }
 
+// Will return false if URL is malformed or contains disallowed characters
+function isUrlValid (urlString) {
+    try {
+        const url = new URL(urlString);
+        return !!url;
+    } catch (error) {
+        return false;
+    }
+}
+
+u.convertUrlToHyperlink = function (url) {
+    const urlWithProtocol = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
+    const uri = getURI(url);
+    if (uri !== null && isUrlValid(urlWithProtocol) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
+        const hyperlink = this.convertUriToHyperlink(uri, url);
+        return hyperlink;
+    }
+    return url;
+};
 
 u.addHyperlinks = function (text) {
-    const parse_options = {
-        'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
-    };
-    return URI.withinString(text, url => u.convertToHyperlink(url), parse_options);
+    try {
+        const parse_options = {
+            'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
+        };
+        return URI.withinString(text, url => u.convertUrlToHyperlink(url), parse_options);
+    } catch (error) {
+        log.debug(error);
+        return text;
+    }
 };
 
 

@@ -1,4 +1,4 @@
-import converse from "./converse-core";
+import { converse } from "./converse-core";
 import log from "@converse/headless/log";
 import sizzle from 'sizzle';
 import st from "./utils/stanza";

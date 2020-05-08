@@ -7,7 +7,7 @@ import "@converse/headless/converse-status";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash";
-import converse from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 import log from "./log";
 
 const { Strophe, $iq, $pres, dayjs, sizzle } = converse.env;
@@ -80,7 +80,7 @@ converse.plugins.add('converse-roster', {
 
         _converse.sendInitialPresence = function () {
             if (_converse.send_initial_presence) {
-                _converse.xmppstatus.sendPresence();
+                api.user.presence.send();
             }
         };
 
@@ -246,6 +246,11 @@ converse.plugins.add('converse-roster', {
             setPresence () {
                 const jid = this.get('jid');
                 this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
+            },
+
+            openChat () {
+                const attrs = this.attributes;
+                api.chats.open(attrs.jid, attrs, true);
             },
 
             getDisplayName () {
@@ -771,7 +776,7 @@ converse.plugins.add('converse-roster', {
                     //
                     // As a workaround for now we simply send our presence again,
                     // otherwise we're treated as offline.
-                    _converse.xmppstatus.sendPresence();
+                    api.user.presence.send();
                 }
             },
 

@@ -1002,9 +1002,9 @@ converse.plugins.add('converse-chat', {
                 * Triggered when a message is being sent out
                 * @event _converse#sendMessage
                 * @type { Object }
-                * @property { Object } data
+                * @param { Object } data
                 * @property { (_converse.ChatBox | _converse.ChatRoom) } data.chatbox
-                * @property { (_converse.Message | _converse.ChatRoomMessage } data.message
+                * @property { (_converse.Message | _converse.ChatRoomMessage) } data.message
                 */
                 api.trigger('sendMessage', {'chatbox': this, message});
                 return message;

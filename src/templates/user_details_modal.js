@@ -37,7 +37,7 @@ const device_fingerprint = (o) => {
                         <input type="radio" name="${o.device.get('id')}" value="-1" ?checked=${o.device.get('trusted') === -1}>${i18n_untrusted}
                     </label>
                 </div>
-                <span class="fingerprint">${o.utils.formatFingerprint(o.device.get('bundle').fingerprint)}</span>
+                <code class="fingerprint">${o.utils.formatFingerprint(o.device.get('bundle').fingerprint)}</code>
                 </form>
             </li>
         `;

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-05-07 07:12+0000\n"
+"PO-Revision-Date: 2020-05-12 07:41+0000\n"
 "Last-Translator: IZARO BASURKO <izarobasurko@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -382,14 +382,14 @@ msgid "%1$s is no longer banned from this groupchat"
 msgstr "%1$s ez dago jada gela honetan debekatua"
 
 #: dist/converse-no-dependencies.js:38546
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr "%1$s ez da jada gela honetako jabeetako bat"
+msgstr "%1$s ez da jada gela honetako partaide"
 
 #: dist/converse-no-dependencies.js:38553
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a member of this groupchat"
-msgstr "%1$s orain gela honetako kide iraunkorra da"
+msgstr "%1$s orain gela honetako kidea da"
 
 #: dist/converse-no-dependencies.js:38559
 #, javascript-format
@@ -402,9 +402,9 @@ msgid "%1$s is no longer a moderator"
 msgstr "%1$s jada ez da moderatzailea"
 
 #: dist/converse-no-dependencies.js:38581
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice"
-msgstr "%1$s  -k ahots berri bat jaso du berriro"
+msgstr "%1$s -(e)k idatz dezake berriro"
 
 #: dist/converse-no-dependencies.js:38588
 #, javascript-format
@@ -425,9 +425,8 @@ msgstr ""
 "aukeratu beste bat."
 
 #: dist/converse-no-dependencies.js:38715
-#, fuzzy
 msgid "Password incorrect"
-msgstr "Pasahitzez babestua"
+msgstr "Pasahitza ez da zuzena"
 
 #: dist/converse-no-dependencies.js:38723
 msgid "You are not on the member list of this groupchat."

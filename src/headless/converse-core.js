@@ -375,22 +375,17 @@ export const api = _converse.api = {
                     _converse.connection._proto = new Strophe.Websocket(_converse.connection);
                     _converse.connection.service = api.settings.get("websocket_url");
                 }
-            }
-            if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === _converse.ANONYMOUS) {
+            } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === _converse.ANONYMOUS) {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
                 await _converse.setUserJID(api.settings.get("jid"));
             }
 
-            if (_converse.connection.authenticated) {
-                if (_converse.connection.reconnecting) {
-                    debouncedReconnect();
-                } else {
-                    return reconnect();
-                }
+            if (_converse.connection.reconnecting) {
+                debouncedReconnect();
             } else {
-                log.warn("Not attempting to reconnect because we're not authenticated");
+                return reconnect();
             }
         },
 
@@ -1370,7 +1365,7 @@ async function getLoginCredentialsFromBrowser () {
 
 function cleanup () {
     // Make sure everything is reset in case this is a subsequent call to
-    // convesre.initialize (happens during tests).
+    // converse.initialize (happens during tests).
     _converse.router.history.stop();
     unregisterGlobalEventHandlers();
     delete _converse.controlboxtoggle;

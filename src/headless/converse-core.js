@@ -1642,30 +1642,32 @@ function unregisterGlobalEventHandlers () {
  * @memberOf _converse
  */
 _converse.onDisconnected = function () {
-    const reason = _converse.disconnection_reason;
-    if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
-        if (api.settings.get("auto_reconnect") &&
-            (api.settings.get("credentials_url") || api.settings.get("authentication") === _converse.ANONYMOUS)) {
-            /**
-             * If `credentials_url` is set, we reconnect, because we might
-             * be receiving expirable tokens from the credentials_url.
-             *
-             * If `authentication` is anonymous, we reconnect because we
-             * might have tried to attach with stale BOSH session tokens
-             * or with a cached JID and password
-             */
-            return api.connection.reconnect();
-        } else {
+    if (api.settings.get("auto_reconnect")) {
+        const reason = _converse.disconnection_reason;
+        if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
+            if (api.settings.get("credentials_url") || api.settings.get("authentication") === _converse.ANONYMOUS) {
+                // If `credentials_url` is set, we reconnect, because we might
+                // be receiving expirable tokens from the credentials_url.
+                //
+                // If `authentication` is anonymous, we reconnect because we
+                // might have tried to attach with stale BOSH session tokens
+                // or with a cached JID and password
+                return api.connection.reconnect();
+            } else {
+                return finishDisconnection();
+            }
+        } else if (
+            _converse.disconnection_cause === _converse.LOGOUT ||
+            reason === Strophe.ErrorCondition.NO_AUTH_MECH ||
+            reason === "host-unknown" ||
+            reason === "remote-connection-failed"
+        ) {
             return finishDisconnection();
         }
-    } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-            (reason !== undefined && reason === Strophe?.ErrorCondition.NO_AUTH_MECH) ||
-            reason === "host-unknown" ||
-            reason === "remote-connection-failed" ||
-            !api.settings.get("auto_reconnect")) {
+        api.connection.reconnect();
+    } else {
         return finishDisconnection();
     }
-    api.connection.reconnect();
 };
 
 

@@ -156,6 +156,19 @@ const DEFAULT_SETTINGS = {
 };
 
 
+const CONNECTION_STATUS = {};
+CONNECTION_STATUS[Strophe.Status.ATTACHED] = 'ATTACHED';
+CONNECTION_STATUS[Strophe.Status.AUTHENTICATING] = 'AUTHENTICATING';
+CONNECTION_STATUS[Strophe.Status.AUTHFAIL] = 'AUTHFAIL';
+CONNECTION_STATUS[Strophe.Status.CONNECTED] = 'CONNECTED';
+CONNECTION_STATUS[Strophe.Status.CONNECTING] = 'CONNECTING';
+CONNECTION_STATUS[Strophe.Status.CONNFAIL] = 'CONNFAIL';
+CONNECTION_STATUS[Strophe.Status.DISCONNECTED] = 'DISCONNECTED';
+CONNECTION_STATUS[Strophe.Status.DISCONNECTING] = 'DISCONNECTING';
+CONNECTION_STATUS[Strophe.Status.ERROR] = 'ERROR';
+CONNECTION_STATUS[Strophe.Status.RECONNECTING] = 'RECONNECTING';
+CONNECTION_STATUS[Strophe.Status.REDIRECT] = 'REDIRECT';
+
 /**
  * A private, closured object containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
@@ -164,6 +177,7 @@ const DEFAULT_SETTINGS = {
  */
 export const _converse = {
     log,
+    CONNECTION_STATUS,
     'templates': {},
     'promises': {},
 
@@ -185,20 +199,6 @@ export const _converse = {
     PREBIND: 'prebind',
 
     STANZA_TIMEOUT: 10000,
-
-    CONNECTION_STATUS: {
-        0: 'ERROR',
-        1: 'CONNECTING',
-        2: 'CONNFAIL',
-        3: 'AUTHENTICATING',
-        4: 'AUTHFAIL',
-        5: 'CONNECTED',
-        6: 'DISCONNECTED',
-        7: 'DISCONNECTING',
-        8: 'ATTACHED',
-        9: 'REDIRECT',
-        10: 'RECONNECTING'
-    },
 
     SUCCESS: 'success',
     FAILURE: 'failure',

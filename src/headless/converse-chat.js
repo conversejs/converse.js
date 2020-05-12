@@ -1126,10 +1126,10 @@ converse.plugins.add('converse-chat', {
 
                     if (first_unread_id) {
                       const msg = this.messages.get(first_unread_id);
-                      if (msg) msg.set("first_unread", false);
+                      if (msg) msg.save("first_unread", false);
                     }
-                    message.set("first_unread", true);
-                    this.set({'first_unread_id': message.get('id')});
+                    message.save("first_unread", true);
+                    this.save({'first_unread_id': message.get('id')});
                 }
             },
 

@@ -503,7 +503,7 @@ body.converse-fullscreen {
     }
 
     .error {
-        color: var(--error-color);
+        color: var(--error-color) !important;
     }
     .info {
         color: var(--info-color);

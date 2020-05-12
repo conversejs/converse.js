@@ -630,7 +630,7 @@ converse.plugins.add('converse-register', {
                         _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                         return false;
                     }
-                    error = error[0].firstChild.tagName.toLowerCase();
+                    error = error[0].firstElementChild.tagName.toLowerCase();
                     if (error === 'conflict') {
                         _converse.connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
                     } else if (error === 'not-acceptable') {

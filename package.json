@@ -74,7 +74,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.5.3",
-    "dayjs": "1.8.15",
+    "dayjs": "1.8.26",
     "eslint": "^6.8.0",
     "eslint-plugin-lodash": "^7.1.0",
     "exports-loader": "^0.7.0",

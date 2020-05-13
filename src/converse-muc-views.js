@@ -666,19 +666,19 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
                 this.listenTo(this.model.features, 'change:open', this.renderHeading);
 
-                this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
-                this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
-                this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
-                this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
-                this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
-
                 // Bind so that we can pass it to addEventListener and removeEventListener
                 this.onMouseMove =  this.onMouseMove.bind(this);
                 this.onMouseUp =  this.onMouseUp.bind(this);
 
                 await this.render();
 
-                // Needs to be registered after render has been called.
+                // Need to be registered after render has been called.
+                this.model.occupants.forEach(o => this.onOccupantAdded(o));
+                this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
+                this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
+                this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
+                this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
+                this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
                 this.listenTo(this.model.notifications, 'change', this.renderNotifications);
 
                 this.createSidebarView();

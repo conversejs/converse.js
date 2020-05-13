@@ -16,6 +16,9 @@ import muc_utils from "./utils/muc";
 import st from "./utils/stanza";
 import u from "./utils/form";
 
+export const ROLES = ['moderator', 'participant', 'visitor'];
+export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
+
 converse.MUC_TRAFFIC_STATES = ['entered', 'exited'];
 converse.MUC_ROLE_CHANGES = ['op', 'deop', 'voice', 'mute'];
 

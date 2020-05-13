@@ -9,12 +9,6 @@ const u = converse.env.utils;
 
 export class BaseDropdown extends CustomElement {
 
-    static get properties () {
-        return {
-            '': { type: Array }
-        }
-    }
-
     firstUpdated () {
         this.menu = this.querySelector('.dropdown-menu');
         this.dropdown = this.firstElementChild;

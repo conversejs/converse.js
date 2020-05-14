@@ -1403,7 +1403,7 @@ describe("Chatboxes", function () {
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(0);
             await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
-            expect(sent_stanzas[1].querySelector('acknowledged')).toBeDefined();
+            expect(sent_stanzas[1].nodeTree.querySelector('acknowledged')).toBeDefined();
             done();
         }));
 

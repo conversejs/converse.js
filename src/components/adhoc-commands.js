@@ -1,14 +1,15 @@
 import "./autocomplete.js"
-import { __ } from '@converse/headless/i18n';
 import { CustomElement } from './element.js';
+import { __ } from '@converse/headless/i18n';
 import { api } from "@converse/headless/converse-core";
+import { converse } from '@converse/headless/converse-core';
 import { html } from "lit-html";
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
 
-const { Strophe, $iq } = window.converse.env;
-const u = window.converse.env.utils;
+const { Strophe, $iq } = converse.env;
+const u = converse.env.utils;
 
 const i18n_hide = __('Hide');
 const i18n_choose_service = __('On which entity do you want to run commands?');

@@ -144,8 +144,19 @@ converse.plugins.add('converse-message-view', {
                 if (this.model.changed.progress) {
                     return this.renderFileUploadProgresBar();
                 }
+                // TODO: We can remove this once we render messages via lit-html
                 const isValidChange = prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop);
-                const props = ['moderated', 'retracted', 'correcting', 'message', 'type', 'upload', 'received', 'editable', 'first_unread'];
+                const props = [
+                    'correcting',
+                    'editable',
+                    'error',
+                    'message',
+                    'moderated',
+                    'received',
+                    'retracted',
+                    'type',
+                    'upload',
+                ];
                 if (props.filter(isValidChange).length) {
                     await this.debouncedRender();
                 }

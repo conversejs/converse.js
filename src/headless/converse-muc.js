@@ -2390,17 +2390,24 @@ converse.plugins.add('converse-muc', {
                 const body = message.get('message');
                 if (!body) { return; }
                 if (u.isNewMessage(message) && this.isHidden()) {
-                    this.setFirstUnreadMsgId(message);
+                    if (this.get('num_unread_general') == 0) {
+                        this.setFirstUnreadMsgId(message);
+                    }
                     const settings = {'num_unread_general': this.get('num_unread_general') + 1};
                     if (this.isUserMentioned(message)) {
                         settings.num_unread = this.get('num_unread') + 1;
                         _converse.incrementMsgCounter();
                     }
                     this.save(settings);
+                    this.sendMarker(message.get('from'), message.get('msgid'), 'displayed');
                 }
             },
 
             clearUnreadMsgCounter() {
+                if (this.get('num_unread_general') > 0) {
+                    const msg = this.messages.last();
+                    if (msg) this.sendMarker(msg.get('from'), msg.get('msgid'), 'acknowledged');
+                }
                 u.safeSave(this, {
                     'num_unread': 0,
                     'num_unread_general': 0

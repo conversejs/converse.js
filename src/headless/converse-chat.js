@@ -1110,8 +1110,11 @@ converse.plugins.add('converse-chat', {
                     return;
                 }
                 if (utils.isNewMessage(message) && this.isHidden()) {
-                    this.setFirstUnreadMsgId(message);
+                    if (this.get('num_unread') == 0) {
+                        this.setFirstUnreadMsgId(message);
+                    }
                     this.save({'num_unread': this.get('num_unread') + 1});
+                    this.sendMarker(message.get('from'), message.get('msgid'), 'displayed');
                     _converse.incrementMsgCounter();
                 }
             },
@@ -1121,19 +1124,21 @@ converse.plugins.add('converse-chat', {
              * @param {_converse.Message} message
              */
             setFirstUnreadMsgId (message) {
-                if (this.get('num_unread') == 0) {
-                    const first_unread_id = this.get('first_unread_id');
+                const first_unread_id = this.get('first_unread_id');
 
-                    if (first_unread_id) {
-                      const msg = this.messages.get(first_unread_id);
-                      if (msg) msg.save("first_unread", false);
-                    }
-                    message.save("first_unread", true);
-                    this.save({'first_unread_id': message.get('id')});
+                if (first_unread_id) {
+                  const msg = this.messages.get(first_unread_id);
+                  if (msg) msg.save("first_unread", false);
                 }
+                message.save("first_unread", true);
+                this.save({'first_unread_id': message.get('id')});
             },
 
             clearUnreadMsgCounter () {
+                if (this.get('num_unread') > 0) {
+                    const msg = this.messages.last();
+                    if (msg) this.sendMarker(msg.get('from'), msg.get('msgid'), 'acknowledged');
+                }
                 u.safeSave(this, {'num_unread': 0});
             },
 

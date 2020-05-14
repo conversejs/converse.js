@@ -610,8 +610,8 @@ converse.plugins.add('converse-rosterview', {
                 if (q.length === 0) {
                     return [];
                 }
-                let matches;
                 q = q.toLowerCase();
+                const contacts = this.model.contacts;
                 if (type === 'state') {
                     const sticky_groups = [_converse.HEADER_REQUESTING_CONTACTS, _converse.HEADER_UNREAD];
                     if (sticky_groups.includes(this.model.get('name'))) {
@@ -620,18 +620,15 @@ converse.plugins.add('converse-rosterview', {
                         // match the state in question.
                         return [];
                     } else if (q === 'unread_messages') {
-                        matches = this.model.contacts.filter({'num_unread': 0});
+                        return contacts.filter({'num_unread': 0});
                     } else if (q === 'online') {
-                        matches = this.model.contacts.filter(c => ["offline", "unavailable"].includes(c.presence.get('show')));
+                        return contacts.filter(c => ["offline", "unavailable"].includes(c.presence.get('show')));
                     } else {
-                        matches = this.model.contacts.filter(c => !c.presence.get('show').includes(q));
+                        return contacts.filter(c => !c.presence.get('show').includes(q));
                     }
                 } else  {
-                    matches = this.model.contacts.filter((contact) => {
-                        return !contact.getDisplayName().toLowerCase().includes(q.toLowerCase());
-                    });
+                    return contacts.filter(c => !c.getFilterCriteria().includes(q));
                 }
-                return matches;
             },
 
             /**
@@ -784,14 +781,14 @@ converse.plugins.add('converse-rosterview', {
                 this.filter_view.model.fetch();
             },
 
+            /**
+             * Called whenever the filter settings have been changed or
+             * when contacts have been added, removed or changed.
+             *
+             * Debounced for 100ms so that it doesn't get called for every
+             * contact fetched from browser storage.
+             */
             updateFilter: debounce(function () {
-                /* Filter the roster again.
-                 * Called whenever the filter settings have been changed or
-                 * when contacts have been added, removed or changed.
-                 *
-                 * Debounced so that it doesn't get called for every
-                 * contact fetched from browser storage.
-                 */
                 const type = this.filter_view.model.get('filter_type');
                 if (type === 'state') {
                     this.filter(this.filter_view.model.get('chat_state'), type);

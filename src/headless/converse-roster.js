@@ -253,6 +253,23 @@ converse.plugins.add('converse-roster', {
                 api.chats.open(attrs.jid, attrs, true);
             },
 
+            /**
+             * Return a string of tab-separated values that are to be used when
+             * matching against filter text.
+             *
+             * The goal is to be able to filter against the VCard fullname,
+             * roster nickname and JID.
+             * @returns { String } Lower-cased, tab-separated values
+             */
+            getFilterCriteria () {
+                const nick = this.get('nickname');
+                const jid = this.get('jid');
+                let criteria = this.getDisplayName();
+                criteria = !criteria.includes(jid) ? criteria.concat(`   ${jid}`) : criteria;
+                criteria = !criteria.includes(nick) ? criteria.concat(`   ${nick}`) : criteria;
+                return criteria.toLowerCase();
+            },
+
             getDisplayName () {
                 // Gets overridden in converse-vcard where the fullname is may be returned
                 if (this.get('nickname')) {

@@ -1,8 +1,7 @@
 import "./autocomplete.js"
 import { CustomElement } from './element.js';
 import { __ } from '@converse/headless/i18n';
-import { api } from "@converse/headless/converse-core";
-import { converse } from '@converse/headless/converse-core';
+import { api, converse } from "@converse/headless/converse-core";
 import { html } from "lit-html";
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import log from "@converse/headless/log";
@@ -64,6 +63,7 @@ async function getAutoCompleteList () {
 }
 
 const tpl_adhoc = (o) => html`
+    ${ o.alert ? html`<div class="alert alert-${o.alert_type}" role="alert">${o.alert}</div>` : '' }
     <form class="converse-form" @submit=${o.fetchCommands}>
         <fieldset class="form-group">
             <label>
@@ -126,9 +126,11 @@ export class AdHocCommands extends CustomElement {
 
     static get properties () {
         return {
-            'view': { type: String },
+            'alert': { type: String },
+            'alert_type': { type: String },
+            'nonce': { type: String }, // Used to force re-rendering
             'showform': { type: String },
-            'nonce': { type: String } // Used to force re-rendering
+            'view': { type: String },
         }
     }
 
@@ -141,6 +143,8 @@ export class AdHocCommands extends CustomElement {
 
     render () {
         return tpl_adhoc({
+            'alert': this.alert,
+            'alert_type': this.alert_type,
             'commands': this.commands,
             'fetchCommands': ev => this.fetchCommands(ev),
             'hideCommandForm': ev => this.hideCommandForm(ev),
@@ -153,11 +157,32 @@ export class AdHocCommands extends CustomElement {
 
     async fetchCommands (ev) {
         ev.preventDefault();
+        delete this.alert_type;
+        delete this.alert;
+
         const form_data = new FormData(ev.target);
         const jid = form_data.get('jid').trim();
-        if (await api.disco.supports(Strophe.NS.ADHOC, jid)) {
-            this.commands = await api.adhoc.getCommands(jid);
-            this.view = 'list-commands';
+        let supported;
+        try {
+            supported = await api.disco.supports(Strophe.NS.ADHOC, jid)
+        } catch (e) {
+            log.error(e);
+        }
+        if (supported) {
+            try {
+                this.commands = await api.adhoc.getCommands(jid);
+                this.view = 'list-commands';
+            } catch (e) {
+                log.error(e);
+                this.alert_type = 'danger';
+                this.alert = __('Sorry, an error occurred while looking for commands on that entity.');
+                this.commands = [];
+                log.error(e);
+                return;
+            }
+        } else {
+            this.alert_type = 'danger';
+            this.alert = __("The specified entity doesn't support ad-hoc commands");
         }
     }
 

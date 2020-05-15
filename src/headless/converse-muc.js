@@ -382,8 +382,8 @@ converse.plugins.add('converse-muc', {
                 this.initialized = u.getResolveablePromise();
                 this.debouncedRejoin = debounce(this.rejoin, 250);
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
-                this.initMessages();
                 this.initNotifications();
+                this.initMessages();
                 this.initOccupants();
                 this.initDiscoModels(); // sendChatState depends on this.features
                 this.registerHandlers();
@@ -618,15 +618,43 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            async handleErrormessageStanza (stanza) {
-                if (await this.shouldShowErrorMessage(stanza)) {
-                    const attrs = await st.parseMUCMessage(stanza, this, _converse);
-                    const message = attrs.msgid && this.messages.findWhere({'msgid': attrs.msgid});
-                    if (message) {
-                        message.save({'error': attrs.error});
-                    } else {
-                        this.createMessage(attrs);
+            async handleErrorMessageStanza (stanza) {
+                const attrs = await st.parseMUCMessage(stanza, this, _converse);
+                if (!await this.shouldShowErrorMessage(attrs)) {
+                    return;
+                }
+                const message = this.getMessageReferencedByError(attrs);
+                if (message) {
+                    const new_attrs = {
+                        'error': attrs.error,
+                        'error_condition': attrs.error_condition,
+                        'error_text': attrs.error_text,
+                        'error_type': attrs.error_type,
+                    };
+                    if (attrs.msgid === message.get('retraction_id')) {
+                        // The error message refers to a retraction
+                        new_attrs.retraction_id = undefined;
+                        if (!attrs.error) {
+                            if (attrs.error_condition === 'forbidden') {
+                                new_attrs.error = __("You're not allowed to retract your message.");
+                            } else if (attrs.error_condition === 'not-acceptable') {
+                                new_attrs.error = __("Your retraction was not delivered because you're not present in the groupchat.");
+                            } else {
+                                new_attrs.error = __('Sorry, an error occurred while trying to retract your message.');
+                            }
+                        }
+                    } else if (!attrs.error) {
+                        if (attrs.error_condition === 'forbidden') {
+                            new_attrs.error = __("Your message was not delivered because you weren't allowed to send it.");
+                        } else if (attrs.error_condition === 'not-acceptable') {
+                            new_attrs.error = __("Your message was not delivered because you're not present in the groupchat.");
+                        } else {
+                            new_attrs.error = __('Sorry, an error occurred while trying to send your message.');
+                        }
                     }
+                    message.save(new_attrs);
+                } else {
+                    this.createMessage(attrs);
                 }
             },
 
@@ -749,20 +777,38 @@ converse.plugins.add('converse-muc', {
              * @param { _converse.Message } message - The message which we're retracting.
              */
             async retractOwnMessage(message) {
+                const origin_id = message.get('origin_id');
+                if (!origin_id) {
+                    throw new Error("Can't retract message without a XEP-0359 Origin ID");
+                }
                 const editable = message.get('editable');
+                const stanza = $msg({
+                        'id': u.getUniqueId(),
+                        'to': this.get('jid'),
+                        'type': "groupchat"
+                    })
+                    .c('store', {xmlns: Strophe.NS.HINTS}).up()
+                    .c("apply-to", {
+                        'id': origin_id,
+                        'xmlns': Strophe.NS.FASTEN
+                    }).c('retract', {xmlns: Strophe.NS.RETRACT});
+
                 // Optimistic save
-                message.save({
+                message.set({
                     'retracted': (new Date()).toISOString(),
-                    'retracted_id': message.get('origin_id'),
+                    'retracted_id': origin_id,
+                    'retraction_id': stanza.nodeTree.getAttribute('id'),
                     'editable': false
                 });
                 try {
-                    await this.sendRetractionMessage(message)
+                    await this.sendTimedMessage(stanza);
                 } catch (e) {
                     message.save({
                         editable,
+                        'error_type': 'timeout',
+                        'error': __('A timeout happened while while trying to retract your message.'),
                         'retracted': undefined,
-                        'retracted_id': undefined,
+                        'retracted_id': undefined
                     });
                     throw e;
                 }
@@ -797,30 +843,6 @@ converse.plugins.add('converse-muc', {
                     });
                 }
                 return result;
-            },
-
-            /**
-             * Sends a message stanza to retract a message in this groupchat.
-             * @private
-             * @method _converse.ChatRoom#sendRetractionMessage
-             * @param { _converse.Message } message - The message which we're retracting.
-             */
-            sendRetractionMessage (message) {
-                const origin_id = message.get('origin_id');
-                if (!origin_id) {
-                    throw new Error("Can't retract message without a XEP-0359 Origin ID");
-                }
-                const msg = $msg({
-                        'id': u.getUniqueId(),
-                        'to': this.get('jid'),
-                        'type': "groupchat"
-                    })
-                    .c('store', {xmlns: Strophe.NS.HINTS}).up()
-                    .c("apply-to", {
-                        'id': origin_id,
-                        'xmlns': Strophe.NS.FASTEN
-                    }).c('retract', {xmlns: Strophe.NS.RETRACT});
-                return this.sendTimedMessage(msg);
             },
 
             /**
@@ -1815,13 +1837,11 @@ converse.plugins.add('converse-muc', {
              * @method _converse.ChatRoom#shouldShowErrorMessage
              * @returns {Promise<boolean>}
              */
-            async shouldShowErrorMessage (stanza) {
-                if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
-                    if (await this.rejoinIfNecessary()) {
-                        return false;
-                    }
+            async shouldShowErrorMessage (attrs) {
+                if (attrs['error_condition'] === 'not-acceptable' && await this.rejoinIfNecessary()) {
+                    return false;
                 }
-                return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, stanza);
+                return _converse.ChatBox.prototype.shouldShowErrorMessage.call(this, attrs);
             },
 
             /**

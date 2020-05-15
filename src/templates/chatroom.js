@@ -1,8 +1,4 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
-
-const i18n_no_history = __('No message history available.');
-
 
 export default (o) => html`
     <div class="flyout box-flyout">
@@ -10,10 +6,8 @@ export default (o) => html`
         <div class="chat-body chatroom-body row no-gutters">
             <div class="chat-area col">
                 <div class="chat-content ${ o.show_send_button ? 'chat-content-sendbutton' : '' }" aria-live="polite">
-                    <div class="chat-content__messages">
-                        ${ o.muc_show_logs_before_join ? html`<div class="empty-history-feedback"><span>${ i18n_no_history }</span></div>`  : '' }
-                    </div>
-                    <div class="chat-content__notifications"></div>
+                    <div class="chat-content__messages smooth-scroll" @scroll=${o.markScrolled}></div>
+                    <div class="chat-content__help"></div>
                 </div>
                 <div class="bottom-panel"></div>
             </div>

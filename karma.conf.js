@@ -13,6 +13,12 @@ module.exports = function(config) {
       "dist/converse.js",
       "dist/converse.css",
       { pattern: "dist/webfonts/**/*.*", included: false },
+      { pattern: "dist/\@fortawesome/fontawesome-free/sprites/solid.svg",
+        watched: false,
+        included: false,
+        served: true,
+        nocache: false
+      },
       { pattern: "node_modules/sinon/pkg/sinon.js", type: 'module' },
       { pattern: "spec/mock.js", type: 'module' },
 
@@ -50,9 +56,13 @@ module.exports = function(config) {
       { pattern: "spec/hats.js", type: 'module' },
       { pattern: "spec/http-file-upload.js", type: 'module' },
       { pattern: "spec/emojis.js", type: 'module' },
-      { pattern: "spec/xss.js", type: 'module' },
-
+      { pattern: "spec/xss.js", type: 'module' }
     ],
+
+    proxies: {
+      "/dist/\@fortawesome/fontawesome-free/sprites/solid.svg": "/base/dist/\@fortawesome/fontawesome-free/sprites/solid.svg"
+    },
+
     exclude: ['**/*.sw?'],
 
     // preprocess matching files before serving them to the browser

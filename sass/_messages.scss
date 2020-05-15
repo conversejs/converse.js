@@ -196,7 +196,7 @@
                 a {
                     word-wrap: break-word;
                     word-break: break-all;
-                    display: inline-block;
+                    display: inline;
                     &.chat-image__link {
                         display: block;
                     }
@@ -222,7 +222,6 @@
 
             .chat-msg__error {
                 color: var(--error-color);
-                font-weight: bold;
             }
 
             .chat-msg__media {

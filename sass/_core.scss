@@ -340,7 +340,7 @@ body.converse-fullscreen {
     q {
       quotes: "“" "”" "‘" "’";
       &.reason {
-        display: block;
+        display: inline;
       }
     }
     q:before {

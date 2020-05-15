@@ -5,8 +5,12 @@ const Strophe = converse.env.Strophe;
 const _ = converse.env._;
 const sizzle = converse.env.sizzle;
 const u = converse.env.utils;
+const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe("XEP-0357 Push Notifications", function () {
+
+    beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
+    afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     it("can be enabled",
         mock.initConverse(

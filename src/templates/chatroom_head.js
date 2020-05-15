@@ -1,10 +1,8 @@
 import '../components/dropdown.js';
 import { __ } from '@converse/headless/i18n';
 import { html } from "lit-html";
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { until } from 'lit-html/directives/until.js';
 import { converse } from "@converse/headless/converse-core";
-import xss from "xss/dist/xss";
 
 const u = converse.env.utils;
 const i18n_hide_topic = __('Hide the groupchat topic');
@@ -15,7 +13,7 @@ const tpl_standalone_btns = (o) => o.standalone_btns.reverse().map(b => until(b,
 
 
 export default (o) => {
-    const subject = o.subject ? u.addHyperlinks(xss.filterXSS(o.subject.text, {'whiteList': {}})) : '';
+    const subject = o.subject ? u.addHyperlinks(o.subject.text) : '';
     const show_subject = (subject && !o.subject_hidden);
     return html`
         <div class="chatbox-title ${ show_subject ? '' :  "chatbox-title--no-desc"}">
@@ -28,6 +26,6 @@ export default (o) => {
                 ${ o.dropdown_btns.length ? html`<converse-dropdown .items=${o.dropdown_btns}></converse-dropdown>` : '' }
             </div>
         </div>
-        ${ show_subject ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">${unsafeHTML(subject)}</p>` : '' }
+        ${ show_subject ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">${subject}</p>` : '' }
     `;
 }

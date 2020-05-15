@@ -5,8 +5,12 @@ const $msg = converse.env.$msg;
 const Strophe = converse.env.Strophe;
 const u = converse.env.utils;
 const sizzle = converse.env.sizzle;
+const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe("Chatboxes", function () {
+
+    beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
+    afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     describe("A Chatbox", function () {
 
@@ -20,7 +24,8 @@ describe("Chatboxes", function () {
             const view = _converse.chatboxviews.get(contact_jid);
             mock.sendMessage(view, '/help');
 
-            const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
+            await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view.el).length);
+            const info_messages = await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view.el));
             expect(info_messages.length).toBe(4);
             expect(info_messages.pop().textContent).toBe('/help: Show this menu');
             expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
@@ -35,7 +40,8 @@ describe("Chatboxes", function () {
                 }).c('body').t('hello world').tree();
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
-            expect(view.msgs_container.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
+            const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body';
+            await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === 'hello world');
             done();
         }));
 
@@ -58,30 +64,36 @@ describe("Chatboxes", function () {
 
             await _converse.handleMessageStanza(msg);
             const view = _converse.chatboxviews.get(sender_jid);
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
             expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
-            expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Mercutio')).toBeTruthy();
+            expect(view.el.querySelector('.chat-msg__author').textContent.includes('**Mercutio')).toBeTruthy();
             expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
+
             message = '/me is as well';
             await mock.sendMessage(view, message);
             expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
             await u.waitUntil(() => sizzle('.chat-msg__author:last', view.el).pop().textContent.trim() === '**Romeo Montague');
             const last_el = sizzle('.chat-msg__text:last', view.el).pop();
-            expect(last_el.textContent).toBe('is as well');
+            await u.waitUntil(() => last_el.textContent === 'is as well');
             expect(u.hasClass('chat-msg--followup', last_el)).toBe(false);
+
             // Check that /me messages after a normal message don't
             // get the 'chat-msg--followup' class.
             message = 'This a normal message';
             await mock.sendMessage(view, message);
-            let message_el = view.el.querySelector('.message:last-child');
-            expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
+            const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body';
+            await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === message);
+            let el = view.el.querySelector('converse-chat-message:last-child .chat-msg__body');
+            expect(u.hasClass('chat-msg--followup', el)).toBeFalsy();
+
             message = '/me wrote a 3rd person message';
             await mock.sendMessage(view, message);
-            message_el = view.el.querySelector('.message:last-child');
+            await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === message.replace('/me ', ''));
+            el = view.el.querySelector('converse-chat-message:last-child .chat-msg__body');
             expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
+
             expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('wrote a 3rd person message');
             expect(u.isVisible(sizzle('.chat-msg__author:last', view.el).pop())).toBeTruthy();
-            expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
             done();
         }));
 
@@ -451,7 +463,7 @@ describe("Chatboxes", function () {
                     keyCode: 13 // Enter
                 };
                 view.onKeyDown(ev);
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 view.onKeyUp(ev);
                 expect(counter.textContent).toBe('200');
 
@@ -1166,8 +1178,6 @@ describe("Chatboxes", function () {
             expect(document.title).toBe('Converse Tests');
 
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const view = await mock.openChatBoxFor(_converse, sender_jid)
-
             const previous_state = _converse.windowState;
             const message = 'This message will increment the message counter';
             const msg = $msg({
@@ -1184,7 +1194,6 @@ describe("Chatboxes", function () {
             spyOn(_converse, 'clearMsgCounter').and.callThrough();
 
             await _converse.handleMessageStanza(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(_converse.incrementMsgCounter).toHaveBeenCalled();
             expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
             expect(document.title).toBe('Messages (1) Converse Tests');
@@ -1604,9 +1613,8 @@ describe("Chatboxes", function () {
 
             await mock.waitForRoster(_converse, 'current', 1);
 
-            const message = "geo:37.786971,-122.399677",
-                  contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-
+            const message = "geo:37.786971,-122.399677";
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
@@ -1614,10 +1622,9 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
-            expect(msg.innerHTML).toEqual(
+            expect(msg.innerHTML.replace(/\<!----\>/g, '')).toEqual(
                 '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
-                'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.7869'+
-                '71&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
+                'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
             done();
         }));
     });

@@ -35,6 +35,7 @@
         "lodash/prefer-startswith": "off",
         "lodash/preferred-alias": "off",
         "lodash/matches-prop-shorthand": "off",
+        "lodash/prop-shorthand": "off",
         "accessor-pairs": "error",
         "array-bracket-spacing": "off",
         "array-callback-return": "error",

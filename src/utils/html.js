@@ -4,7 +4,6 @@
  * @description This is the DOM/HTML utilities module.
  */
 import URI from "urijs";
-import { isFunction } from "lodash";
 import log from '@converse/headless/log';
 import sizzle from "sizzle";
 import tpl_audio from  "../templates/audio.js";
@@ -20,8 +19,10 @@ import tpl_image from "../templates/image.js";
 import tpl_select_option from "../templates/select_option.html";
 import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
+import { api } from  "@converse/headless/converse-core";
+import { html } from "lit-html";
+import { isFunction } from "lodash";
 
-const URL_REGEX = /\b(https?\:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
 
 function getAutoCompleteProperty (name, options) {
@@ -96,7 +97,7 @@ function renderAudioURL (_converse, uri) {
 
 function renderImageURL (_converse, uri) {
     if (!_converse.api.settings.get('show_images_inline')) {
-        return u.convertUriToHyperlink(uri);
+        return u.convertURIoHyperlink(uri);
     }
     const { __ } = _converse;
     return tpl_image({
@@ -178,60 +179,6 @@ function loadImage (url) {
     });
 }
 
-
-async function renderImage (img_url, link_url, el, callback) {
-    if (u.isImageURL(img_url)) {
-        let img;
-        try {
-            img = await loadImage(img_url);
-        } catch (e) {
-            log.error(e);
-            return callback();
-        }
-        sizzle(`a[href="${link_url}"]`, el).forEach(a => {
-            a.innerHTML = "";
-            u.addClass('chat-image__link', a);
-            u.addClass('chat-image', img);
-            u.addClass('img-thumbnail', img);
-            a.insertAdjacentElement('afterBegin', img);
-        });
-    }
-    callback();
-}
-
-
-/**
- * Returns a Promise which resolves once all images have been loaded.
- * @method u#renderImageURLs
- * @param { _converse }
- * @param { HTMLElement }
- * @returns { Promise }
- */
-u.renderImageURLs = function (_converse, el) {
-    if (!_converse.api.settings.get('show_images_inline')) {
-        return Promise.resolve();
-    }
-    const list = el.textContent.match(URL_REGEX) || [];
-    return Promise.all(
-        list.map(url =>
-            new Promise(resolve => {
-                let image_url = getURI(url);
-                if (['imgur.com', 'pbs.twimg.com'].includes(image_url.hostname()) && !u.isImageURL(url)) {
-                    const format = (image_url.hostname() === 'pbs.twimg.com') ? image_url.search(true).format : 'png';
-                    image_url = image_url.removeSearch(/.*/).toString() + `.${format}`;
-                    renderImage(image_url, url, el, resolve);
-                } else {
-                    renderImage(url, url, el, resolve);
-                }
-            })
-        )
-    )
-};
-
-
-u.renderNewLines = function (text) {
-    return text.replace(/\n\n+/g, '<br/><br/>').replace(/\n/g, '<br/>');
-};
 
 u.calculateElementHeight = function (el) {
     /* Return the height of the passed in DOM element,
@@ -364,42 +311,43 @@ u.escapeHTML = function (string) {
         .replace(/"/g, "&quot;");
 };
 
-
-u.addMentionsMarkup = function (text, references, chatbox) {
-    if (chatbox.get('message_type') !== 'groupchat') {
-        return text;
+u.convertToImageTag = async function (url) {
+    const uri = getURI(url);
+    const img_url_without_ext = ['imgur.com', 'pbs.twimg.com'].includes(uri.hostname());
+    let src;
+    if (u.isImageURL(url) || img_url_without_ext) {
+        if (img_url_without_ext) {
+            const format = (uri.hostname() === 'pbs.twimg.com') ? uri.search(true).format : 'png';
+            src = uri.removeSearch(/.*/).toString() + `.${format}`;
+        } else {
+            src = url;
+        }
+        try {
+            await loadImage(src);
+        } catch (e) {
+            log.error(e);
+            return u.convertUrlToHyperlink(url);
+        }
+        return tpl_image({url, src});
     }
-    const nick = chatbox.get('nick');
-    references
-        .sort((a, b) => b.begin - a.begin)
-        .forEach(ref => {
-            const prefix = text.slice(0, ref.begin);
-            const offset = ((prefix.match(/&lt;/g) || []).length + (prefix.match(/&gt;/g) || []).length) * 3;
-            const begin = parseInt(ref.begin, 10) + parseInt(offset, 10);
-            const end = parseInt(ref.end, 10) + parseInt(offset, 10);
-            const mention = text.slice(begin, end)
-            chatbox;
+}
 
-            if (mention === nick) {
-                text = text.slice(0, begin) + `<span class="mention mention--self badge badge-info">${mention}</span>` + text.slice(end);
-            } else {
-                text = text.slice(0, begin) + `<span class="mention">${mention}</span>` + text.slice(end);
-            }
-        });
-    return text;
-};
 
-u.convertUriToHyperlink = function (uri, urlAsTyped) {
-    let normalizedUrl = uri.normalize()._string;
-    const pretty_url = uri._parts.urn ? normalizedUrl : uri.readable();
-    const visibleUrl = u.escapeHTML(urlAsTyped || pretty_url);
-    if (!uri._parts.protocol && !normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
-        normalizedUrl = 'http://' + normalizedUrl;
+u.convertURIoHyperlink = function (uri, urlAsTyped) {
+    let normalized_url = uri.normalize()._string;
+    const pretty_url = uri._parts.urn ? normalized_url : uri.readable();
+    const visible_url = urlAsTyped || pretty_url;
+    if (!uri._parts.protocol && !normalized_url.startsWith('http://') && !normalized_url.startsWith('https://')) {
+        normalized_url = 'http://' + normalized_url;
     }
     if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
-        return `<a target="_blank" rel="noopener" class="open-chatroom" href="${normalizedUrl}">${visibleUrl}</a>`;
+        return html`
+            <a target="_blank"
+               rel="noopener"
+               @click=${ev => api.rooms.open(ev.target.href)}
+               href="${normalized_url}">${visible_url}</a>`;
     }
-    return `<a target="_blank" rel="noopener" href="${normalizedUrl}">${visibleUrl}</a>`;
+    return html`<a target="_blank" rel="noopener" href="${normalized_url}">${visible_url}</a>`;
 };
 
 function isProtocolApproved (protocol, safeProtocolsList = APPROVED_URL_PROTOCOLS) {
@@ -417,27 +365,59 @@ function isUrlValid (urlString) {
 }
 
 u.convertUrlToHyperlink = function (url) {
-    const urlWithProtocol = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
+    const http_url = RegExp('^w{3}.', 'ig').test(url) ? `http://${url}` : url;
     const uri = getURI(url);
-    if (uri !== null && isUrlValid(urlWithProtocol) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
-        const hyperlink = this.convertUriToHyperlink(uri, url);
-        return hyperlink;
+    if (uri !== null && isUrlValid(http_url) && (isProtocolApproved(uri._parts.protocol) || !uri._parts.protocol)) {
+        return this.convertURIoHyperlink(uri, url);
     }
     return url;
 };
 
 u.addHyperlinks = function (text) {
+    const objs = [];
+    const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
     try {
-        const parse_options = {
-            'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
-        };
-        return URI.withinString(text, url => u.convertUrlToHyperlink(url), parse_options);
+        URI.withinString(text, (url, start, end) => {
+            objs.push({url, start, end})
+            return url;
+        } , parse_options);
     } catch (error) {
         log.debug(error);
-        return text;
+        return [text];
     }
+
+    const show_images = api.settings.get('show_images_inline');
+
+    let list = [text];
+    if (objs.length) {
+        objs.sort((a, b) => b.start - a.start)
+            .forEach(url_obj => {
+                const text = list.shift();
+                const url_text = text.slice(url_obj.start, url_obj.end);
+                list = [
+                    text.slice(0, url_obj.start),
+                    show_images && u.isImageURL(url_text) ?
+                        u.convertToImageTag(url_text) :
+                        u.convertUrlToHyperlink(url_text),
+                    text.slice(url_obj.end),
+                    ...list
+                ];
+            });
+    } else {
+        list = [text];
+    }
+    return list;
+}
+
+u.geoUriToHttp = function(text, geouri_replacement) {
+    const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
+    return text.replace(regex, geouri_replacement);
 };
 
+u.httpToGeoUri = function(text, _converse) {
+    const replacement = 'geo:$1,$2';
+    return text.replace(_converse.api.settings.get("geouri_regex"), replacement);
+};
 
 u.slideInAllElements = function (elements, duration=300) {
     return Promise.all(Array.from(elements).map(e => u.slideIn(e, duration)));

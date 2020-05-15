@@ -331,8 +331,8 @@ converse.plugins.add('converse-chat', {
                     return;
                 }
                 this.set({'box_id': `box-${btoa(jid)}`});
-                this.initMessages();
                 this.initNotifications();
+                this.initMessages();
 
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                     this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
@@ -395,9 +395,39 @@ converse.plugins.add('converse-chat', {
                 return this.messages.fetched;
             },
 
-            async handleErrormessageStanza (stanza) {
-                if (await this.shouldShowErrorMessage(stanza)) {
-                    this.createMessage(await st.parseMessage(stanza, _converse));
+            async handleErrorMessageStanza (stanza) {
+                const attrs = await st.parseMessage(stanza, _converse);
+                if (!await this.shouldShowErrorMessage(attrs)) {
+                    return;
+                }
+                const message = this.getMessageReferencedByError(attrs);
+                if (message) {
+                    const new_attrs = {
+                        'error': attrs.error,
+                        'error_condition': attrs.error_condition,
+                        'error_text': attrs.error_text,
+                        'error_type': attrs.error_type,
+                    };
+                    if (attrs.msgid === message.get('retraction_id')) {
+                        // The error message refers to a retraction
+                        new_attrs.retraction_id = undefined;
+                        if (!attrs.error) {
+                            if (attrs.error_condition === 'forbidden') {
+                                new_attrs.error = __("You're not allowed to retract your message.");
+                            } else {
+                                new_attrs.error = __('Sorry, an error occurred while trying to retract your message.');
+                            }
+                        }
+                    } else if (!attrs.error) {
+                        if (attrs.error_condition === 'forbidden') {
+                            new_attrs.error = __("You're not allowed to send a message.");
+                        } else {
+                            new_attrs.error = __('Sorry, an error occurred while trying to send your message.');
+                        }
+                    }
+                    message.save(new_attrs);
+                } else {
+                    this.createMessage(attrs);
                 }
             },
 
@@ -510,7 +540,11 @@ converse.plugins.add('converse-chat', {
 
             async createMessageFromError (error) {
                 if (error instanceof _converse.TimeoutError) {
-                    const msg = await this.createMessage({'type': 'error', 'message': error.message, 'retry': true});
+                    const msg = await this.createMessage({
+                        'type': 'error',
+                        'message': error.message,
+                        'retry': true
+                    });
                     msg.error = error;
                 }
             },
@@ -580,26 +614,28 @@ converse.plugins.add('converse-chat', {
             },
 
             /**
+             * Given an error `<message>` stanza's attributes, find the saved message model which is
+             * referenced by that error.
+             * @param { Object } attrs
+             */
+            getMessageReferencedByError (attrs) {
+                const id = attrs.msgid;
+                return id && this.messages.models.find(m => [m.get('msgid'), m.get('retraction_id')].includes(id));
+            },
+
+            /**
              * @private
              * @method _converse.ChatBox#shouldShowErrorMessage
              * @returns {boolean}
              */
-            shouldShowErrorMessage (stanza) {
-                const id = stanza.getAttribute('id');
-                if (id) {
-                    const msgs = this.messages.where({'msgid': id});
-                    const referenced_msgs = msgs.filter(m => m.get('type') !== 'error');
-                    if (!referenced_msgs.length && stanza.querySelector('body') === null) {
-                        // If the error refers to a message not included in our store,
-                        // and it doesn't have a <body> tag, we assume that this was a
-                        // CSI message (which we don't store).
-                        // See https://github.com/conversejs/converse.js/issues/1317
-                        return;
-                    }
-                    const dupes = msgs.filter(m => m.get('type') === 'error');
-                    if (dupes.length) {
-                        return;
-                    }
+            shouldShowErrorMessage (attrs) {
+                const msg = this.getMessageReferencedByError(attrs);
+                if (!msg && attrs.body === null) {
+                    // If the error refers to a message not included in our store,
+                    // and it doesn't have a <body> tag, we assume that this was a
+                    // CSI message (which we don't store).
+                    // See https://github.com/conversejs/converse.js/issues/1317
+                    return;
                 }
                 // Gets overridden in ChatRoom
                 return true;
@@ -765,6 +801,7 @@ converse.plugins.add('converse-chat', {
                 message.save({
                     'retracted': (new Date()).toISOString(),
                     'retracted_id': message.get('origin_id'),
+                    'retraction_id': message.get('id'),
                     'is_ephemeral': true,
                     'editable': false
                 });
@@ -1044,9 +1081,9 @@ converse.plugins.add('converse-chat', {
                     });
                     return;
                 }
-                const data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
-                      max_file_size = window.parseInt((data?.attributes || {})['max-file-size']?.value),
-                      slot_request_url = item?.id;
+                const data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop();
+                const max_file_size = window.parseInt((data?.attributes || {})['max-file-size']?.value);
+                const slot_request_url = item?.id;
 
                 if (!slot_request_url) {
                     this.createMessage({
@@ -1147,7 +1184,7 @@ converse.plugins.add('converse-chat', {
                 return;
             }
             const chatbox = await api.chatboxes.get(from_jid);
-            chatbox?.handleErrormessageStanza(stanza);
+            chatbox?.handleErrorMessageStanza(stanza);
         }
 
 

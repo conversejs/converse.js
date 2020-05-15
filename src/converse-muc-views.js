@@ -17,7 +17,6 @@ import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
 import tpl_chatroom_head from "templates/chatroom_head.js";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
-import tpl_info from "templates/info.html";
 import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
 import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
@@ -438,8 +437,6 @@ converse.plugins.add('converse-muc-views', {
             is_chatroom: true,
             events: {
                 'change input.fileupload': 'onFileSelection',
-                'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
-                'click .chat-msg__action-retract': 'onMessageRetractButtonClicked',
                 'click .chatbox-navback': 'showControlBox',
                 'click .hide-occupants': 'hideOccupants',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
@@ -463,24 +460,15 @@ converse.plugins.add('converse-muc-views', {
             async initialize () {
                 this.initDebounced();
 
-                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-                this.listenTo(this.model.messages, 'change:edited', this.onMessageEdited);
-                this.listenTo(this.model.messages, 'rendered', this.scrollDown);
-                this.model.messages.on('reset', () => {
-                    this.msgs_container.innerHTML = '';
-                    this.removeAll();
-                });
-
-                this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
-
                 this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
                 this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
                 this.listenTo(this.model, 'destroy', this.hide);
                 this.listenTo(this.model, 'show', this.show);
-
                 this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
                 this.listenTo(this.model.features, 'change:open', this.renderHeading);
+                this.listenTo(this.model.messages, 'rendered', this.scrollDown);
+                this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
                 // Bind so that we can pass it to addEventListener and removeEventListener
                 this.onMouseMove =  this.onMouseMove.bind(this);
@@ -489,13 +477,19 @@ converse.plugins.add('converse-muc-views', {
                 await this.render();
 
                 // Need to be registered after render has been called.
+                this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
+                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'change', this.renderChatHistory);
+                this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
+                this.listenTo(this.model.notifications, 'change', this.renderNotifications);
+
                 this.model.occupants.forEach(o => this.onOccupantAdded(o));
                 this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
-                this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
-                this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
-                this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
+                this.listenTo(this.model.occupants, 'change', this.renderChatHistory);
                 this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
-                this.listenTo(this.model.notifications, 'change', this.renderNotifications);
+                this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
+                this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
+                this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
 
                 this.createSidebarView();
                 await this.updateAfterMessagesFetched();
@@ -522,9 +516,11 @@ converse.plugins.add('converse-muc-views', {
                     'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
                     'show_send_button': _converse.show_send_button
                 }), this.el);
+
                 this.notifications = this.el.querySelector('.chat-content__notifications');
                 this.content = this.el.querySelector('.chat-content');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
+                this.help_container = this.el.querySelector('.chat-content__help');
 
                 this.renderBottomPanel();
                 if (!_converse.muc_show_logs_before_join &&
@@ -538,13 +534,13 @@ converse.plugins.add('converse-muc-views', {
                 !this.model.get('hidden') && this.show();
             },
 
-            renderNotifications () {
+            getNotifications () {
                 const actors_per_state = this.model.notifications.toJSON();
                 const states = api.settings.get('muc_show_join_leave') ?
                     [...converse.CHAT_STATES, ...converse.MUC_TRAFFIC_STATES, ...converse.MUC_ROLE_CHANGES] :
                     converse.CHAT_STATES;
 
-                const message = states.reduce((result, state) => {
+                return states.reduce((result, state) => {
                     const existing_actors = actors_per_state[state];
                     if (!(existing_actors?.length)) {
                         return result;
@@ -601,8 +597,34 @@ converse.plugins.add('converse-muc-views', {
                     }
                     return result;
                 }, '');
-                this.notifications.innerHTML = message;
-                message.includes('\n') && this.scrollDown();
+            },
+
+            getHelpMessages () {
+                const setting = api.settings.get("muc_disable_slash_commands");
+                const disabled_commands = Array.isArray(setting) ? setting : [];
+                return [
+                    `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
+                    `<strong>/ban</strong>: ${__('Ban user by changing their affiliation to outcast')}`,
+                    `<strong>/clear</strong>: ${__('Clear the chat area')}`,
+                    `<strong>/close</strong>: ${__('Close this groupchat')}`,
+                    `<strong>/deop</strong>: ${__('Change user role to participant')}`,
+                    `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
+                    `<strong>/help</strong>: ${__('Show this menu')}`,
+                    `<strong>/kick</strong>: ${__('Kick user from groupchat')}`,
+                    `<strong>/me</strong>: ${__('Write in 3rd person')}`,
+                    `<strong>/member</strong>: ${__('Grant membership to a user')}`,
+                    `<strong>/modtools</strong>: ${__('Opens up the moderator tools GUI')}`,
+                    `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`,
+                    `<strong>/nick</strong>: ${__('Change your nickname')}`,
+                    `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
+                    `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
+                    `<strong>/register</strong>: ${__("Register your nickname")}`,
+                    `<strong>/revoke</strong>: ${__("Revoke the user's current affiliation")}`,
+                    `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
+                    `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
+                    `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
+                    ].filter(line => disabled_commands.every(c => (!line.startsWith(c+'<', 9))))
+                        .filter(line => this.getAllowedCommands().some(c => line.startsWith(c+'<', 9)));
             },
 
             /**
@@ -785,12 +807,7 @@ converse.plugins.add('converse-muc-views', {
                 return _converse.ChatBoxView.prototype.onKeyUp.call(this, ev);
             },
 
-            async onMessageRetractButtonClicked (ev) {
-                ev.preventDefault();
-                const msg_el = u.ancestor(ev.target, '.message');
-                const msgid = msg_el.getAttribute('data-msgid');
-                const time = msg_el.getAttribute('data-isodate');
-                const message = this.model.messages.findWhere({msgid, time});
+            async onMessageRetractButtonClicked (message) {
                 const retraction_warning =
                     __("Be aware that other XMPP/Jabber clients (and servers) may "+
                         "not yet support retractions and that this message may not "+
@@ -801,7 +818,7 @@ converse.plugins.add('converse-muc-views', {
                     if (_converse.show_retraction_warning) {
                         messages[1] = retraction_warning;
                     }
-                    !!(await api.confirm(__('Confirm'), messages)) && this.retractOwnMessage(message);
+                    !!(await api.confirm(__('Confirm'), messages)) && this.model.retractOwnMessage(message);
                 } else if (await message.mayBeModerated()) {
                     if (message.get('sender') === 'me') {
                         let messages = [__('Are you sure you want to retract this message?')];
@@ -828,22 +845,6 @@ converse.plugins.add('converse-muc-views', {
                     const err_msg = __(`Sorry, you're not allowed to retract this message`);
                     api.alert('error', __('Error'), err_msg);
                 }
-            },
-
-            /**
-             * Retract one of your messages in this groupchat.
-             * @private
-             * @method _converse.ChatRoomView#retractOwnMessage
-             * @param { _converse.Message } message - The message which we're retracting.
-             */
-            retractOwnMessage(message) {
-                this.model.retractOwnMessage(message)
-                    .catch(e => {
-                        const message = __('Sorry, something went wrong while trying to retract your message.');
-                        this.model.createMessage({message, 'type': 'error'});
-                        !u.isErrorStanza(e) && this.model.createMessage({'message': e.message, 'type': 'error'});
-                        log.error(e);
-                    });
             },
 
             /**
@@ -1363,10 +1364,7 @@ converse.plugins.add('converse-muc-views', {
                     return false;
                 }
                 const args = text.slice(('/'+command).length+1).trim();
-                const disabled_commands = Array.isArray(_converse.muc_disable_slash_commands) ?
-                        _converse.muc_disable_slash_commands : [];
-                const allowed_commands = this.getAllowedCommands();
-                if (!allowed_commands.includes(command)) {
+                if (!this.getAllowedCommands().includes(command)) {
                     return false;
                 }
 
@@ -1401,31 +1399,7 @@ converse.plugins.add('converse-muc-views', {
                         break;
                     }
                     case 'help': {
-                        this.showHelpMessages([`<strong>${__("You can run the following commands")}</strong>`]);
-                        this.showHelpMessages([
-                            `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
-                            `<strong>/ban</strong>: ${__('Ban user by changing their affiliation to outcast')}`,
-                            `<strong>/clear</strong>: ${__('Clear the chat area')}`,
-                            `<strong>/close</strong>: ${__('Close this groupchat')}`,
-                            `<strong>/deop</strong>: ${__('Change user role to participant')}`,
-                            `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
-                            `<strong>/help</strong>: ${__('Show this menu')}`,
-                            `<strong>/kick</strong>: ${__('Kick user from groupchat')}`,
-                            `<strong>/me</strong>: ${__('Write in 3rd person')}`,
-                            `<strong>/member</strong>: ${__('Grant membership to a user')}`,
-                            `<strong>/modtools</strong>: ${__('Opens up the moderator tools GUI')}`,
-                            `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`,
-                            `<strong>/nick</strong>: ${__('Change your nickname')}`,
-                            `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
-                            `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
-                            `<strong>/register</strong>: ${__("Register your nickname")}`,
-                            `<strong>/revoke</strong>: ${__("Revoke the user's current affiliation")}`,
-                            `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
-                            `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
-                            `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
-                            ].filter(line => disabled_commands.every(c => (!line.startsWith(c+'<', 9))))
-                             .filter(line => allowed_commands.some(c => line.startsWith(c+'<', 9)))
-                        );
+                        this.model.set({'show_help_messages': true});
                         break;
                     } case 'kick': {
                         this.setRole(command, args, [], ['moderator']);
@@ -1671,35 +1645,6 @@ converse.plugins.add('converse-muc-views', {
                 const container = this.el.querySelector('.disconnect-container');
                 container.innerHTML = tpl_chatroom_disconnect({messages})
                 u.showElement(container);
-            },
-
-            removeEmptyHistoryFeedback () {
-                const el = this.msgs_container.firstElementChild;
-                if (_converse.muc_show_logs_before_join && el && el.matches('.empty-history-feedback')) {
-                    this.msgs_container.removeChild(this.msgs_container.firstElementChild);
-                }
-            },
-
-            insertDayIndicator () {
-                this.removeEmptyHistoryFeedback();
-                return _converse.ChatBoxView.prototype.insertDayIndicator.apply(this, arguments);
-            },
-
-            insertMessage (view) {
-                this.removeEmptyHistoryFeedback();
-                return _converse.ChatBoxView.prototype.insertMessage.call(this, view);
-            },
-
-            insertNotification (message) {
-                this.removeEmptyHistoryFeedback();
-                this.msgs_container.insertAdjacentHTML(
-                    'beforeend',
-                    tpl_info({
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    })
-                );
             },
 
             onOccupantAdded (occupant) {

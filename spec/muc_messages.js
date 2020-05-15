@@ -2,9 +2,12 @@
 
 const { Promise, Strophe, $msg, $pres, sizzle, stanza_utils } = converse.env;
 const u = converse.env.utils;
+const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe("A Groupchat Message", function () {
 
+    beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
+    afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     describe("which is succeeded by an error message", function () {
 
@@ -25,7 +28,7 @@ describe("A Groupchat Message", function () {
                 'keyCode': 13 // Enter
             }
             view.onKeyDown(enter_event);
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             const msg = view.model.messages.at(0);
             const err_msg_text = "Message rejected because you're sending messages too quickly";
@@ -44,7 +47,7 @@ describe("A Groupchat Message", function () {
             const message = view.model.messages.at(0);
             expect(message.get('received')).toBeUndefined();
             expect(message.get('body')).toBe('hello world');
-            expect(message.get('error')).toBe(err_msg_text);
+            expect(message.get('error_text')).toBe(err_msg_text);
             done();
         }));
     });
@@ -180,7 +183,7 @@ describe("A Groupchat Message", function () {
               .c('active', {'xmlns': "http://jabber.org/protocol/chatstates"})
               .tree();
         await view.model.handleMessageStanza(msg);
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.el.querySelector('.chat-msg')).not.toBe(null);
         done();
     }));
@@ -203,7 +206,7 @@ describe("A Groupchat Message", function () {
                 type: 'groupchat'
             }).c('body').t(message).tree();
         await view.model.handleMessageStanza(msg);
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(u.hasClass('mentioned', view.el.querySelector('.chat-msg'))).toBeTruthy();
         done();
     }));
@@ -435,7 +438,7 @@ describe("A Groupchat Message", function () {
             type: 'groupchat'
         }).c('body').t('Another message!').tree();
         await view.model.handleMessageStanza(msg);
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.last().occupant.get('affiliation')).toBe('member');
         expect(view.model.messages.last().occupant.get('role')).toBe('participant');
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
@@ -472,7 +475,7 @@ describe("A Groupchat Message", function () {
             type: 'groupchat'
         }).c('body').t('Message from someone not in the MUC right now').tree();
         await view.model.handleMessageStanza(msg);
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.last().occupant).toBeUndefined();
         // Check that there's a new "add" event handler, for when the occupant appears.
         expect(view.model.occupants._events.add.length).toBe(add_events+1);
@@ -583,7 +586,7 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
             'But soft, what light through yonder chimney breaks?', 500);
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
+        await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
 
         await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
@@ -597,8 +600,9 @@ describe("A Groupchat Message", function () {
             'But soft, what light through yonder window breaks?', 500);
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
-        view.el.querySelector('.chat-msg__content .fa-edit').click();
-        const modal = view.model.messages.at(0).message_versions_modal;
+        const edit = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
+        edit.click();
+        const modal = await u.waitUntil(() => view.el.querySelector('converse-chat-message').message_versions_modal);
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         const older_msgs = modal.el.querySelectorAll('.older-msg');
         expect(older_msgs.length).toBe(2);
@@ -641,11 +645,10 @@ describe("A Groupchat Message", function () {
             target: textarea,
             keyCode: 38 // Up arrow
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(true);
+        await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')));
 
         spyOn(_converse.connection, 'send');
         textarea.value = 'But soft, what light through yonder window breaks?';
@@ -688,7 +691,7 @@ describe("A Groupchat Message", function () {
             'to': 'romeo@montague.lit',
             'type': 'groupchat'
         }).c('body').t('Hello world').tree());
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
 
         // Test that pressing the down arrow cancels message correction
@@ -729,7 +732,7 @@ describe("A Groupchat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(0);
 
         const msg_obj = view.model.messages.at(0);
@@ -807,7 +810,7 @@ describe("A Groupchat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
 
         const msg_obj = view.model.messages.at(0);
@@ -841,7 +844,7 @@ describe("A Groupchat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.el.querySelector('.chat-msg .chat-msg__body').textContent.trim())
             .toBe("But soft, what light through yonder airlock breaks?");
@@ -929,7 +932,7 @@ describe("A Groupchat Message", function () {
             await view.model.handleMessageStanza(msg);
             const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
             expect(message.classList.length).toEqual(1);
-            expect(message.innerHTML).toBe(
+            expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
                 'hello <span class="mention">z3r0</span> '+
                 '<span class="mention mention--self badge badge-info">tom</span> '+
                 '<span class="mention">mr.robot</span>, how are you?');
@@ -970,7 +973,7 @@ describe("A Groupchat Message", function () {
             await view.model.handleMessageStanza(msg);
             const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
             expect(message.classList.length).toEqual(1);
-            expect(message.innerHTML).toBe(
+            expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
                 '&gt;hello <span class="mention">z3r0</span> '+
                 '<span class="mention mention--self badge badge-info">tom</span> '+
                 '<span class="mention">mr.robot</span>, how are you?');
@@ -1144,7 +1147,7 @@ describe("A Groupchat Message", function () {
             }
             spyOn(_converse.connection, 'send');
             view.onKeyDown(enter_event);
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
@@ -1191,7 +1194,14 @@ describe("A Groupchat Message", function () {
             }
             spyOn(_converse.connection, 'send');
             view.onKeyDown(enter_event);
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+
+            const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
+            await u.waitUntil(() =>
+                view.content.querySelector(last_msg_sel).innerHTML.replace(/<!---->/g, '') ===
+                    'hello <span class="mention">z3r0</span> <span class="mention">gibson</span> <span class="mention">mr.robot</span>, how are you?'
+            );
+
             const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
@@ -1269,7 +1279,7 @@ describe("A Groupchat Message", function () {
                 'keyCode': 13 // Enter
             }
             view.onKeyDown(enter_event);
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             const msg = _converse.connection.send.calls.all()[0].args[0];
             expect(msg.toLocaleString())

@@ -60,7 +60,7 @@ describe("A XEP-0317 MUC Hat", function () {
         await u.waitUntil(() => view.model.getOccupant("Terry").get('hats').length === 3);
         hats = view.model.getOccupant("Terry").get('hats');
         expect(hats.map(h => h.title).join(' ')).toBe("Teacher's Assistant Dark Mage Mad hatter");
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg .badge').length === 3);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg .badge').length === 3, 1000);
         badges = Array.from(view.el.querySelectorAll('.chat-msg .badge'));
         expect(badges.map(b => b.textContent.trim()).join(' ' )).toBe("Teacher's Assistant Dark Mage Mad hatter");
 

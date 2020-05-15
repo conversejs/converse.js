@@ -20,6 +20,7 @@ module.exports = merge(common, {
         new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
         new CopyWebpackPlugin([
             {from: 'sounds'},
+            {from: 'node_modules/@fortawesome/fontawesome-free/sprites/solid.svg', to: '@fortawesome/fontawesome-free/sprites/solid.svg'},
             {from: 'images/favicon.ico', to: 'images/favicon.ico'},
             {from: 'images/custom_emojis', to: 'images/custom_emojis'},
             {from: 'logo/conversejs-filled-192.png', to: 'images/logo'},

@@ -199,7 +199,7 @@ describe("The OMEMO module", function() {
                         .up().up()
                     .c('payload').t(obj.payload);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.length).toBe(2);
         expect(view.el.querySelectorAll('.chat-msg__body')[1].textContent.trim())
             .toBe('This is an encrypted message from the contact');
@@ -218,7 +218,7 @@ describe("The OMEMO module", function() {
                     .up().up()
                 .c('payload').t(obj.payload);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         await u.waitUntil(() => view.model.messages.length > 1);
         expect(view.model.messages.length).toBe(3);
         expect(view.el.querySelectorAll('.chat-msg__body')[2].textContent.trim())
@@ -435,7 +435,7 @@ describe("The OMEMO module", function() {
             </message>
         `);
         _converse.connection._dataRecv(mock.createRequest(carbon));
-        await new Promise(resolve => view.once('messageInserted', resolve));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.length).toBe(1);
         expect(view.el.querySelector('.chat-msg__body').textContent.trim())
             .toBe('This is an encrypted carbon message from another device of mine');
@@ -1258,7 +1258,7 @@ describe("The OMEMO module", function() {
 
     it("adds a toolbar button for starting an encrypted groupchat session",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitUntilDiscoConfirmed(
@@ -1416,8 +1416,7 @@ describe("The OMEMO module", function() {
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => !view.model.get('omemo_supported'));
-
-        expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
+        await u.waitUntil(() => view.el.querySelector('.chat-error .chat-info__message')?.textContent.trim() ===
             "oldguy doesn't appear to have a client that supports OMEMO. "+
             "Encrypted chat will no longer be possible in this grouchat."
         );

@@ -1,14 +1,14 @@
 /*global mock */
 
-const _ = converse.env._,
-      $pres = converse.env.$pres,
-      $iq = converse.env.$iq,
-      $msg = converse.env.$msg,
-      Model = converse.env.Model,
-      Strophe = converse.env.Strophe,
-      Promise = converse.env.Promise,
-      sizzle = converse.env.sizzle,
-      u = converse.env.utils;
+const _ = converse.env._;
+const $pres = converse.env.$pres;
+const $iq = converse.env.$iq;
+const $msg = converse.env.$msg;
+const Model = converse.env.Model;
+const Strophe = converse.env.Strophe;
+const Promise = converse.env.Promise;
+const sizzle = converse.env.sizzle;
+const u = converse.env.utils;
 
 describe("Groupchats", function () {
 
@@ -527,7 +527,7 @@ describe("Groupchats", function () {
                         <body>This is a message</body>
                     </message>`);
                 _converse.connection._dataRecv(mock.createRequest(stanza));
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(sizzle('.chat-msg__subject', view.el).length).toBe(1);
                 expect(sizzle('.chat-msg__subject', view.el).pop().textContent.trim()).toBe('This is a message subject');
                 expect(sizzle('.chat-msg__text').length).toBe(1);
@@ -562,7 +562,7 @@ describe("Groupchats", function () {
                         <body>This is a message</body>
                     </message>`);
                 _converse.connection._dataRecv(mock.createRequest(stanza));
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(sizzle('.chat-msg__subject', view.el).length).toBe(1);
                 expect(sizzle('.chat-msg__subject', view.el).pop().textContent.trim()).toBe('This is a message subject');
                 expect(sizzle('.chat-msg__text').length).toBe(1);
@@ -645,8 +645,7 @@ describe("Groupchats", function () {
                     </message>`)));
                 await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 2);
 
-                let el = sizzle('.chat-info__message', view.el).pop();
-                expect(el.textContent.trim()).toBe('Topic set by ralphm');
+                await u.waitUntil(() => sizzle('.chat-info__message', view.el).pop()?.textContent.trim() === 'Topic set by ralphm');
                 await u.waitUntil(() => desc.textContent.trim()  === 'This is a new topic');
 
                 // Doesn't show multiple subsequent topic change notifications
@@ -666,7 +665,7 @@ describe("Groupchats", function () {
                 await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 4);
                 await u.waitUntil(() => desc.textContent.trim()  === "Some1's topic");
                 expect(sizzle('.chat-info__message', view.el).length).toBe(2);
-                el = sizzle('.chat-info__message', view.el).pop();
+                const el = sizzle('.chat-info__message', view.el).pop();
                 expect(el.textContent.trim()).toBe('Topic set by some1');
 
                 // Removes current topic
@@ -676,8 +675,8 @@ describe("Groupchats", function () {
                     </message>`);
                 _converse.connection._dataRecv(mock.createRequest(stanza));
                 await u.waitUntil(() => view.model.handleSubjectChange.calls.count() === 5);
-                await u.waitUntil(() => view.el.querySelector('.chat-head__desc') === null);
-                expect(view.el.querySelector('.chat-info:last-child').textContent.trim()).toBe("Topic cleared by some1");
+                await u.waitUntil(() => view.el.querySelector('.chat-head__desc').textContent.replace(/<!---->/g, '') === '');
+                await u.waitUntil(() => view.el.querySelector('converse-chat-message:last-child .chat-info').textContent.trim() === "Topic cleared by some1");
                 done();
             }));
         });
@@ -701,12 +700,11 @@ describe("Groupchats", function () {
                 }).c('body').t(message).tree();
 
             await view.model.handleMessageStanza(msg);
-
             spyOn(view.model, 'clearMessages').and.callThrough();
             await view.model.close();
             await u.waitUntil(() => view.model.clearMessages.calls.count());
             expect(view.model.messages.length).toBe(0);
-            expect(view.msgs_container.innerHTML).toBe('');
+            expect(view.el.querySelector('converse-chat-history')).toBe(null);
             done()
         }));
 
@@ -861,7 +859,7 @@ describe("Groupchats", function () {
                 'type': 'groupchat'
             }).c('body').t('hello world').tree();
             _converse.connection._dataRecv(mock.createRequest(msg));
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             // Add another entrant, otherwise the above message will be
             // collapsed if "newguy" leaves immediately again
@@ -1082,7 +1080,6 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === "romeo, fabio and Dele Olajide have entered the groupchat");
-
             presence = u.toStanza(
                 `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="coven@chat.shakespeare.lit/jcbrand">
                     <x xmlns="http://jabber.org/protocol/muc#user">
@@ -1157,10 +1154,6 @@ describe("Groupchats", function () {
             _converse.connection._dataRecv(mock.createRequest(presence));
             await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
                 "romeo, jcbrand and others have entered the groupchat\nfuvuv has left the groupchat");
-
-            // XXX: hack so that we can test leave/enter of occupants
-            // who were already in the room when we joined.
-            view.msgs_container.innerHTML = '';
 
             presence = u.toStanza(
                 `<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" type="unavailable" from="coven@chat.shakespeare.lit/fabio">
@@ -2042,7 +2035,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', jasmine.any(_converse.Message));
             expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
@@ -2102,7 +2095,7 @@ describe("Groupchats", function () {
                         type: 'groupchat',
                         id: u.getUniqueId(),
                     }).c('body').t(message).tree());
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 // Now check that the message appears inside the chatbox in the DOM
                 const msg_txt = sizzle('.chat-msg:last .chat-msg__text', view.content).pop().textContent;
                 expect(msg_txt).toEqual(message);
@@ -2898,8 +2891,10 @@ describe("Groupchats", function () {
             textarea.value = '/help';
             view.onKeyDown(enter);
 
-            let info_messages = sizzle('.chat-info:not(.chat-event)', view.el);
-            expect(info_messages.length).toBe(20);
+            await u.waitUntil(() => sizzle('converse-chat-help .chat-info', view.el).length);
+            const chat_help_el = view.el.querySelector('converse-chat-help');
+            let info_messages = sizzle('.chat-info', chat_help_el);
+            expect(info_messages.length).toBe(19);
             expect(info_messages.pop().textContent.trim()).toBe('/voice: Allow muted user to post messages');
             expect(info_messages.pop().textContent.trim()).toBe('/topic: Set groupchat subject (alias for /subject)');
             expect(info_messages.pop().textContent.trim()).toBe('/subject: Set groupchat subject');
@@ -2919,47 +2914,49 @@ describe("Groupchats", function () {
             expect(info_messages.pop().textContent.trim()).toBe('/clear: Clear the chat area');
             expect(info_messages.pop().textContent.trim()).toBe('/ban: Ban user by changing their affiliation to outcast');
             expect(info_messages.pop().textContent.trim()).toBe('/admin: Change user\'s affiliation to admin');
-            expect(info_messages.pop().textContent.trim()).toBe('You can run the following commands');
 
             const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
             occupant.set('affiliation', 'admin');
-            textarea = view.el.querySelector('.chat-textarea');
-            textarea.value = '/clear';
-            view.onKeyDown(enter);
-            await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
+
+            view.el.querySelector('.close-chat-help').click();
+            await u.waitUntil(() => chat_help_el.hidden);
 
             textarea.value = '/help';
             view.onKeyDown(enter);
-            info_messages = sizzle('.chat-info:not(.chat-event)', view.el);
-            expect(info_messages.length).toBe(19);
+            await u.waitUntil(() => !chat_help_el.hidden);
+            info_messages = sizzle('.chat-info', chat_help_el);
+            expect(info_messages.length).toBe(18);
             let commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
             expect(commands).toEqual([
-                "You can run the following commands",
                 "/admin", "/ban", "/clear", "/deop", "/destroy",
                 "/help", "/kick", "/me", "/member", "/modtools", "/mute", "/nick",
                 "/op", "/register", "/revoke", "/subject", "/topic", "/voice"
             ]);
             occupant.set('affiliation', 'member');
-            textarea.value = '/clear';
-            view.onKeyDown(enter);
-            await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
+            view.el.querySelector('.close-chat-help').click();
+            await u.waitUntil(() => chat_help_el.hidden);
 
             textarea.value = '/help';
             view.onKeyDown(enter);
-            info_messages = sizzle('.chat-info', view.el).slice(1);
+            await u.waitUntil(() => !chat_help_el.hidden);
+            info_messages = sizzle('.chat-info', chat_help_el);
             expect(info_messages.length).toBe(9);
             commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
             expect(commands).toEqual(["/clear", "/help", "/kick", "/me", "/modtools", "/mute", "/nick", "/register", "/voice"]);
 
+            view.el.querySelector('.close-chat-help').click();
+            await u.waitUntil(() => chat_help_el.hidden);
+            expect(view.model.get('show_help_messages')).toBe(false);
+
             occupant.set('role', 'participant');
+            // Role changes causes rerender, so we need to get the new textarea
             textarea = view.el.querySelector('.chat-textarea');
-            textarea.value = '/clear';
-            view.onKeyDown(enter);
-            await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
 
             textarea.value = '/help';
             view.onKeyDown(enter);
-            info_messages = sizzle('.chat-info', view.el).slice(1);
+            await u.waitUntil(() => view.model.get('show_help_messages'));
+            await u.waitUntil(() => !chat_help_el.hidden);
+            info_messages = sizzle('.chat-info', chat_help_el);
             expect(info_messages.length).toBe(5);
             commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
             expect(commands).toEqual(["/clear", "/help", "/me", "/nick", "/register"]);
@@ -2967,13 +2964,13 @@ describe("Groupchats", function () {
             // Test that /topic is available if all users may change the subject
             // Note: we're making a shortcut here, this value should never be set manually
             view.model.config.set('changesubject', true);
-            textarea.value = '/clear';
-            view.onKeyDown(enter);
-            await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length === 0);
+            view.el.querySelector('.close-chat-help').click();
+            await u.waitUntil(() => chat_help_el.hidden);
 
             textarea.value = '/help';
             view.onKeyDown(enter);
-            info_messages = sizzle('.chat-info', view.el).slice(1);
+            await u.waitUntil(() => !chat_help_el.hidden, 1000);
+            info_messages = sizzle('.chat-info', chat_help_el);
             expect(info_messages.length).toBe(7);
             commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
             expect(commands).toEqual(["/clear", "/help", "/me", "/nick", "/register", "/subject", "/topic"]);
@@ -2995,8 +2992,9 @@ describe("Groupchats", function () {
             textarea.value = '/help';
             view.onKeyDown(enter);
 
+            await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view.el).length);
             const info_messages = sizzle('.chat-info:not(.chat-event)', view.el);
-            expect(info_messages.length).toBe(18);
+            expect(info_messages.length).toBe(17);
             expect(info_messages.pop().textContent.trim()).toBe('/topic: Set groupchat subject (alias for /subject)');
             expect(info_messages.pop().textContent.trim()).toBe('/subject: Set groupchat subject');
             expect(info_messages.pop().textContent.trim()).toBe('/revoke: Revoke the user\'s current affiliation');
@@ -3014,7 +3012,6 @@ describe("Groupchats", function () {
             expect(info_messages.pop().textContent.trim()).toBe('/clear: Clear the chat area');
             expect(info_messages.pop().textContent.trim()).toBe('/ban: Ban user by changing their affiliation to outcast');
             expect(info_messages.pop().textContent.trim()).toBe('/admin: Change user\'s affiliation to admin');
-            expect(info_messages.pop().textContent.trim()).toBe('You can run the following commands');
             done();
         }));
 
@@ -3432,7 +3429,7 @@ describe("Groupchats", function () {
 
             textarea.value = '/ban joe22';
             view.onFormSubmitted(new Event('submit'));
-            await u.waitUntil(() => view.el.querySelector('.message:last-child')?.textContent?.trim() ===
+            await u.waitUntil(() => view.el.querySelector('converse-chat-message:last-child')?.textContent?.trim() ===
                 "Error: couldn't find a groupchat participant based on your arguments");
             done();
         }));
@@ -3520,6 +3517,7 @@ describe("Groupchats", function () {
                     }).c('actor', {'nick': 'romeo'}).up()
                       .c('reason').t("You're annoying").up().up()
                     .c('status', {'code': '307'});
+
             _converse.connection._dataRecv(mock.createRequest(presence));
 
             await u.waitUntil(() => view.el.querySelectorAll('.chat-info').length === 2);
@@ -4996,11 +4994,13 @@ describe("Groupchats", function () {
 
                 // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
 
-                const timeout_functions = [];
-                spyOn(window, 'setTimeout').and.callFake(f => {
+                const remove_notifications_timeouts = [];
+                const setTimeout = window.setTimeout;
+                spyOn(window, 'setTimeout').and.callFake((f, w) => {
                     if (f.toString() === "() => this.removeNotification(actor, state)") {
-                        timeout_functions.push(f)
+                        remove_notifications_timeouts.push(f)
                     }
+                    setTimeout(f, w);
                 });
 
                 // <composing> state
@@ -5014,7 +5014,7 @@ describe("Groupchats", function () {
 
                 csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
                 expect(csntext.trim()).toEqual('newguy is typing');
-                expect(timeout_functions.length).toBe(1);
+                expect(remove_notifications_timeouts.length).toBe(1);
 
                 expect(view.el.querySelector('.chat-content__notifications').textContent.trim()).toEqual('newguy is typing');
 
@@ -5048,7 +5048,6 @@ describe("Groupchats", function () {
                 await view.model.handleMessageStanza(msg);
                 await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy, nomorenicks and others are typing');
 
-                // Check that new messages appear under the chat state notifications
                 msg = $msg({
                     from: `${muc_jid}/some1`,
                     id: u.getUniqueId(),
@@ -5056,7 +5055,7 @@ describe("Groupchats", function () {
                     type: 'groupchat'
                 }).c('body').t('hello world').tree();
                 await view.model.handleMessageStanza(msg);
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve), 1000);
 
                 const messages = view.el.querySelectorAll('.message');
                 expect(messages.length).toBe(2);
@@ -5064,7 +5063,7 @@ describe("Groupchats", function () {
                 expect(view.el.querySelector('.chat-msg .chat-msg__text').textContent.trim()).toBe('hello world');
 
                 // Test that the composing notifications get removed via timeout.
-                timeout_functions[0]();
+                remove_notifications_timeouts[0]();
                 await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'nomorenicks, majortom and groundcontrol are typing');
                 done();
             }));
@@ -5186,34 +5185,42 @@ describe("Groupchats", function () {
             const textarea = view.el.querySelector('.chat-textarea');
             textarea.value = 'Hello world';
             view.onFormSubmitted(new Event('submit'));
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             let stanza = u.toStanza(`
-                <message xmlns="jabber:client" type="error" to="troll@montague.lit/resource" from="trollbox@montague.lit">
+                <message id="${view.model.messages.at(0).get('msgid')}"
+                         xmlns="jabber:client"
+                         type="error"
+                         to="troll@montague.lit/resource"
+                         from="trollbox@montague.lit">
                     <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
-            await new Promise(resolve => view.once('messageInserted', resolve));
-            expect(view.el.querySelector('.chat-error').textContent.trim()).toBe(
+            await u.waitUntil(() => view.el.querySelector('.chat-msg__error')?.textContent.trim(), 1000);
+            expect(view.el.querySelector('.chat-msg__error').textContent.trim()).toBe(
                 "Your message was not delivered because you weren't allowed to send it.");
 
             textarea.value = 'Hello again';
             view.onFormSubmitted(new Event('submit'));
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__text').length === 2);
 
             stanza = u.toStanza(`
-                <message xmlns="jabber:client" type="error" to="troll@montague.lit/resource" from="trollbox@montague.lit">
+                <message id="${view.model.messages.at(1).get('msgid')}"
+                         xmlns="jabber:client"
+                         type="error"
+                         to="troll@montague.lit/resource"
+                         from="trollbox@montague.lit">
                     <error type="auth">
                         <forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                         <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Thou shalt not!</text>
                     </error>
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
-            await new Promise(resolve => view.once('messageInserted', resolve));
 
-            expect(view.el.querySelector('.message:last-child').textContent.trim()).toBe(
-                'Your message was not delivered because you weren\'t allowed to send it. '+
-                'The message from the server is: "Thou shalt not!"')
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__error').length === 2);
+            const sel = 'converse-message-history converse-chat-message:last-child .chat-msg__error';
+            await u.waitUntil(() => view.el.querySelector(sel)?.textContent.trim());
+            expect(view.el.querySelector(sel).textContent.trim()).toBe('Thou shalt not!')
             done();
         }));
 

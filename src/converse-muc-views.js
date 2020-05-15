@@ -17,7 +17,6 @@ import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
 import tpl_chatroom_head from "templates/chatroom_head.js";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
-import tpl_info from "templates/info.html";
 import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
 import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
@@ -1686,18 +1685,6 @@ converse.plugins.add('converse-muc-views', {
             insertMessage (view) {
                 this.removeEmptyHistoryFeedback();
                 return _converse.ChatBoxView.prototype.insertMessage.call(this, view);
-            },
-
-            insertNotification (message) {
-                this.removeEmptyHistoryFeedback();
-                this.msgs_container.insertAdjacentHTML(
-                    'beforeend',
-                    tpl_info({
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    })
-                );
             },
 
             onOccupantAdded (occupant) {

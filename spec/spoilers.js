@@ -36,7 +36,7 @@ describe("A spoiler message", function () {
         await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
         expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Mercutio');
         const message_content = view.el.querySelector('.chat-msg__text');
-        expect(message_content.textContent).toBe(spoiler);
+        await u.waitUntil(() => message_content.textContent === spoiler);
         const spoiler_hint_el = view.el.querySelector('.spoiler-hint');
         expect(spoiler_hint_el.textContent).toBe(spoiler_hint);
         done();
@@ -72,9 +72,10 @@ describe("A spoiler message", function () {
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         await u.waitUntil(() => u.isVisible(view.el));
         await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
+        await u.waitUntil(() => u.isVisible(view.el.querySelector('.chat-msg__author')));
         expect(view.el.querySelector('.chat-msg__author').textContent.includes('Mercutio')).toBeTruthy();
         const message_content = view.el.querySelector('.chat-msg__text');
-        expect(message_content.textContent).toBe(spoiler);
+        await u.waitUntil(() => message_content.textContent === spoiler);
         const spoiler_hint_el = view.el.querySelector('.spoiler-hint');
         expect(spoiler_hint_el.textContent).toBe('');
         done();
@@ -136,23 +137,26 @@ describe("A spoiler message", function () {
         expect(spoiler_el === null).toBeFalsy();
         expect(spoiler_el.textContent).toBe('');
 
+        const spoiler = 'This is the spoiler';
         const body_el = stanza.querySelector('body');
-        expect(body_el.textContent).toBe('This is the spoiler');
+        expect(body_el.textContent).toBe(spoiler);
 
         /* Test the HTML spoiler message */
         expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
 
+        const message_content = view.el.querySelector('.chat-msg__text');
+        await u.waitUntil(() => message_content.textContent === spoiler);
+
         const spoiler_msg_el = view.el.querySelector('.chat-msg__text.spoiler');
-        expect(spoiler_msg_el.textContent).toBe('This is the spoiler');
         expect(Array.from(spoiler_msg_el.classList).includes('collapsed')).toBeTruthy();
 
         spoiler_toggle = view.el.querySelector('.spoiler-toggle');
-        expect(spoiler_toggle.textContent).toBe('Show more');
+        expect(spoiler_toggle.textContent.trim()).toBe('Show more');
         spoiler_toggle.click();
-        expect(Array.from(spoiler_msg_el.classList).includes('collapsed')).toBeFalsy();
-        expect(spoiler_toggle.textContent).toBe('Show less');
+        await u.waitUntil(() => !Array.from(spoiler_msg_el.classList).includes('collapsed'));
+        expect(spoiler_toggle.textContent.trim()).toBe('Show less');
         spoiler_toggle.click();
-        expect(Array.from(spoiler_msg_el.classList).includes('collapsed')).toBeTruthy();
+        await u.waitUntil(() => Array.from(spoiler_msg_el.classList).includes('collapsed'));
         done();
     }));
 
@@ -217,23 +221,26 @@ describe("A spoiler message", function () {
         expect(spoiler_el === null).toBeFalsy();
         expect(spoiler_el.textContent).toBe('This is the hint');
 
+        const spoiler = 'This is the spoiler'
         const body_el = stanza.querySelector('body');
-        expect(body_el.textContent).toBe('This is the spoiler');
+        expect(body_el.textContent).toBe(spoiler);
 
         /* Test the HTML spoiler message */
         expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
 
+        const message_content = view.el.querySelector('.chat-msg__text');
+        await u.waitUntil(() => message_content.textContent === spoiler);
+
         const spoiler_msg_el = view.el.querySelector('.chat-msg__text.spoiler');
-        expect(spoiler_msg_el.textContent).toBe('This is the spoiler');
         expect(Array.from(spoiler_msg_el.classList).includes('collapsed')).toBeTruthy();
 
         spoiler_toggle = view.el.querySelector('.spoiler-toggle');
-        expect(spoiler_toggle.textContent).toBe('Show more');
+        expect(spoiler_toggle.textContent.trim()).toBe('Show more');
         spoiler_toggle.click();
-        expect(Array.from(spoiler_msg_el.classList).includes('collapsed')).toBeFalsy();
-        expect(spoiler_toggle.textContent).toBe('Show less');
+        await u.waitUntil(() => !Array.from(spoiler_msg_el.classList).includes('collapsed'));
+        expect(spoiler_toggle.textContent.trim()).toBe('Show less');
         spoiler_toggle.click();
-        expect(Array.from(spoiler_msg_el.classList).includes('collapsed')).toBeTruthy();
+        await u.waitUntil(() => Array.from(spoiler_msg_el.classList).includes('collapsed'));
         done();
     }));
 });

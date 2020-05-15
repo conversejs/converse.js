@@ -3,14 +3,15 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import "./components/message.js";
 import "./utils/html";
 import "@converse/headless/converse-emoji";
 import URI from "urijs";
 import filesize from "filesize";
 import log from "@converse/headless/log";
 import tpl_file_progress from "templates/file_progress.html";
-import tpl_info from "templates/info.html";
-import tpl_message from "templates/message.html";
+import tpl_info from "templates/info.js";
+import tpl_message from "templates/message.js";
 import tpl_message_versions_modal from "templates/message_versions_modal.js";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
@@ -112,7 +113,6 @@ converse.plugins.add('converse-message-view', {
                     this.debouncedRender();
                 });
                 this.listenTo(this.model, 'vcard:change', this.debouncedRender);
-                this.debouncedRender();
             },
 
             async render () {
@@ -141,22 +141,7 @@ converse.plugins.add('converse-message-view', {
                 if (this.model.changed.progress) {
                     return this.renderFileUploadProgresBar();
                 }
-                // TODO: We can remove this once we render messages via lit-html
-                const isValidChange = prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop);
-                const props = [
-                    'correcting',
-                    'editable',
-                    'error',
-                    'message',
-                    'moderated',
-                    'received',
-                    'retracted',
-                    'type',
-                    'upload',
-                ];
-                if (props.filter(isValidChange).length) {
-                    await this.debouncedRender();
-                }
+                await this.debouncedRender();
                 if (edited) {
                     this.onMessageEdited();
                 }
@@ -244,8 +229,6 @@ converse.plugins.add('converse-message-view', {
                 await api.waitUntil('emojisInitialized');
                 const time = dayjs(this.model.get('time'));
                 const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
-                const may_be_moderated = this.model.get('type') === 'groupchat' && await this.model.mayBeModerated();
-                const retractable= !is_retracted && (this.model.mayBeRetracted() || may_be_moderated);
                 const is_groupchat_message = this.model.get('type') === 'groupchat';
 
                 let hats = [];
@@ -258,42 +241,40 @@ converse.plugins.add('converse-message-view', {
                     }
                 }
 
-                const msg = u.stringToElement(tpl_message(
+                render(tpl_message(
                     Object.assign(
                         this.model.toJSON(), {
-                         __,
-                        hats,
-                        is_groupchat_message,
-                        is_retracted,
-                        retractable,
                         'extra_classes': this.getExtraMessageClasses(),
                         'is_me_message': this.model.isMeCommand(),
-                        'label_show': __('Show more'),
+                        'model': this.model,
                         'occupant': this.model.occupant,
                         'pretty_time': time.format(api.settings.get('time_format')),
                         'retraction_text': is_retracted ? this.getRetractionText() : null,
                         'time': time.toISOString(),
-                        'username': this.model.getDisplayName()
+                        'username': this.model.getDisplayName(),
+                        hats,
+                        is_groupchat_message,
+                        is_retracted
                     })
-                ));
+                ), this.el);
 
-                const url = this.model.get('oob_url');
-                url && render(this.transformOOBURL(url), msg.querySelector('.chat-msg__media'));
+                // const url = this.model.get('oob_url');
+                // url && render(this.transformOOBURL(url), msg.querySelector('.chat-msg__media'));
 
-                if (!is_retracted) {
-                    const text = this.model.getMessageText();
-                    const msg_content = msg.querySelector('.chat-msg__text');
-                    if (text && text !== url) {
-                        msg_content.innerHTML = await this.transformBodyText(text);
-                        if (api.settings.get('show_images_inline')) {
-                            u.renderImageURLs(_converse, msg_content).then(() => this.triggerRendered());
-                        }
-                    }
-                }
-                if (this.model.get('type') !== 'headline') {
-                    this.renderAvatar(msg);
-                }
-                this.replaceElement(msg);
+                // if (!is_retracted) {
+                //     const text = this.model.getMessageText();
+                //     const msg_content = msg.querySelector('.chat-msg__text');
+                //     if (text && text !== url) {
+                //         msg_content.innerHTML = await this.transformBodyText(text);
+                //         if (api.settings.get('show_images_inline')) {
+                //             u.renderImageURLs(_converse, msg_content).then(() => this.triggerRendered());
+                //         }
+                //     }
+                // }
+                // if (this.model.get('type') !== 'headline') {
+                //     this.renderAvatar(msg);
+                // }
+                // this.replaceElement(msg);
                 this.triggerRendered();
             },
 
@@ -306,13 +287,13 @@ converse.plugins.add('converse-message-view', {
             },
 
             renderInfoMessage () {
-                const msg = u.stringToElement(
+                render(
                     tpl_info(Object.assign(this.model.toJSON(), {
                         'extra_classes': 'chat-info',
                         'isodate': dayjs(this.model.get('time')).toISOString()
-                    }))
+                    })),
+                    this.el
                 );
-                return this.replaceElement(msg);
             },
 
             getRetractionText () {

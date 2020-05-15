@@ -463,16 +463,6 @@ u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true
     el.dispatchEvent(evt);
 };
 
-u.geoUriToHttp = function(text, geouri_replacement) {
-    const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
-    return text.replace(regex, geouri_replacement);
-};
-
-u.httpToGeoUri = function(text, _converse) {
-    const replacement = 'geo:$1,$2';
-    return text.replace(_converse.api.settings.get("geouri_regex"), replacement);
-};
-
 u.getSelectValues = function (select) {
     const result = [];
     const options = select && select.options;

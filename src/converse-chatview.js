@@ -11,7 +11,6 @@ import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
 import tpl_help_message from "templates/help_message.html";
-import tpl_info from "templates/info.html";
 import tpl_new_day from "templates/new_day.html";
 import tpl_spinner from "templates/spinner.html";
 import tpl_spoiler_button from "templates/spoiler_button.html";
@@ -175,7 +174,6 @@ converse.plugins.add('converse-chatview', {
                 'click .chatbox-navback': 'showControlBox',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 'click .send-button': 'onFormSubmitted',
-                'click .spoiler-toggle': 'toggleSpoilerMessage',
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-clear': 'clearMessages',
                 'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
@@ -497,20 +495,6 @@ converse.plugins.add('converse-chatview', {
                  */
                 api.trigger('chatBoxInsertedIntoDOM', this);
                 return this;
-            },
-
-            showChatEvent (message) {
-                const isodate = (new Date()).toISOString();
-                this.msgs_container.insertAdjacentHTML(
-                    'beforeend',
-                    tpl_info({
-                        'extra_classes': 'chat-event',
-                        'message': message,
-                        'isodate': isodate,
-                    }));
-                this.insertDayIndicator(this.msgs_container.lastElementChild);
-                this.scrollDown();
-                return isodate;
             },
 
             addSpinner (append=false) {
@@ -1148,31 +1132,6 @@ converse.plugins.add('converse-chatview', {
                 this.model.set('composing_spoiler', !this.model.get('composing_spoiler'));
                 this.renderMessageForm();
                 this.focus();
-            },
-
-            toggleSpoilerMessage (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                }
-                const toggle_el = ev.target,
-                    icon_el = toggle_el.firstElementChild;
-
-                u.slideToggleElement(
-                    toggle_el.parentElement.parentElement.querySelector('.spoiler')
-                );
-                if (toggle_el.getAttribute("data-toggle-state") == "closed") {
-                    toggle_el.textContent = 'Show less';
-                    icon_el.classList.remove("fa-eye");
-                    icon_el.classList.add("fa-eye-slash");
-                    toggle_el.insertAdjacentElement('afterBegin', icon_el);
-                    toggle_el.setAttribute("data-toggle-state", "open");
-                } else {
-                    toggle_el.textContent = 'Show more';
-                    icon_el.classList.remove("fa-eye-slash");
-                    icon_el.classList.add("fa-eye");
-                    toggle_el.insertAdjacentElement('afterBegin', icon_el);
-                    toggle_el.setAttribute("data-toggle-state", "closed");
-                }
             },
 
             onPresenceChanged (item) {

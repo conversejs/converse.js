@@ -1114,7 +1114,9 @@ converse.plugins.add('converse-chat', {
                         this.setFirstUnreadMsgId(message);
                     }
                     this.save({'num_unread': this.get('num_unread') + 1});
-                    this.sendMarker(message.get('from'), message.get('msgid'), 'displayed');
+                    if (message.get('is_markable')) {
+                        this.sendMarker(message.get('from'), message.get('msgid'), 'displayed');
+                    }
                     _converse.incrementMsgCounter();
                 }
             },
@@ -1137,7 +1139,9 @@ converse.plugins.add('converse-chat', {
             clearUnreadMsgCounter () {
                 if (this.get('num_unread') > 0) {
                     const msg = this.messages.last();
-                    if (msg) this.sendMarker(msg.get('from'), msg.get('msgid'), 'acknowledged');
+                    if (msg && msg.get('is_markable')) {
+                        this.sendMarker(msg.get('from'), msg.get('msgid'), 'acknowledged');
+                    }
                 }
                 u.safeSave(this, {'num_unread': 0});
             },

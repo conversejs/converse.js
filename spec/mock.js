@@ -445,6 +445,7 @@ window.addEventListener('converse-loaded', () => {
                     id: (new Date()).getTime()
                 })
                 .c('body').t(message).up()
+                .c('markable', {'xmlns': Strophe.NS.MARKERS}).up()
                 .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
     }
 

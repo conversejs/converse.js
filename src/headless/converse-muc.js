@@ -2399,14 +2399,18 @@ converse.plugins.add('converse-muc', {
                         _converse.incrementMsgCounter();
                     }
                     this.save(settings);
-                    this.sendMarker(message.get('from'), message.get('msgid'), 'displayed');
+                    if (message.get('is_markable')) {
+                        this.sendMarker(message.get('from'), message.get('msgid'), 'displayed');
+                    }
                 }
             },
 
             clearUnreadMsgCounter() {
                 if (this.get('num_unread_general') > 0) {
                     const msg = this.messages.last();
-                    if (msg) this.sendMarker(msg.get('from'), msg.get('msgid'), 'acknowledged');
+                    if (msg && msg.get('is_markable')) {
+                        this.sendMarker(msg.get('from'), msg.get('msgid'), 'acknowledged');
+                    }
                 }
                 u.safeSave(this, {
                     'num_unread': 0,

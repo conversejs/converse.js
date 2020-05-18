@@ -399,7 +399,7 @@ export const api = _converse.api = {
             if (type.toLowerCase() === 'websocket') {
                 return _converse.connection._proto instanceof Strophe.Websocket;
             } else if (type.toLowerCase() === 'bosh') {
-                return _converse.connection._proto instanceof Strophe.Bosh;
+                return Strophe.BOSH && _converse.connection._proto instanceof Strophe.Bosh;
             }
         }
     },

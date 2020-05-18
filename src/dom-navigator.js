@@ -5,6 +5,9 @@
  * @copyright Rubens Mariuzzo, JC Brand
  */
 import u from './utils/html';
+import { converse } from  "@converse/headless/converse-core";
+
+const { keycodes } = converse;
 
 
 /**
@@ -91,15 +94,15 @@ class DOMNavigator {
      */
     static get DEFAULTS () {
         return {
-            home: [`${converse.keycodes.SHIFT}+${converse.keycodes.UP_ARROW}`],
-            end: [`${converse.keycodes.SHIFT}+${converse.keycodes.DOWN_ARROW}`],
-            up: [converse.keycodes.UP_ARROW],
-            down: [converse.keycodes.DOWN_ARROW],
+            home: [`${keycodes.SHIFT}+${keycodes.UP_ARROW}`],
+            end: [`${keycodes.SHIFT}+${keycodes.DOWN_ARROW}`],
+            up: [keycodes.UP_ARROW],
+            down: [keycodes.DOWN_ARROW],
             left: [
-                converse.keycodes.LEFT_ARROW,
-                `${converse.keycodes.SHIFT}+${converse.keycodes.TAB}`
+                keycodes.LEFT_ARROW,
+                `${keycodes.SHIFT}+${keycodes.TAB}`
             ],
-            right: [converse.keycodes.RIGHT_ARROW, converse.keycodes.TAB],
+            right: [keycodes.RIGHT_ARROW, keycodes.TAB],
             getSelector: null,
             jump_to_picked: null,
             jump_to_picked_direction: null,
@@ -396,7 +399,7 @@ class DOMNavigator {
      * @param { Event } event The event object.
      */
     handleKeydown (ev) {
-        const keys = converse.keycodes;
+        const keys = keycodes;
         const direction = ev.shiftKey ? this.keys[`${keys.SHIFT}+${ev.which}`] : this.keys[ev.which];
         if (direction) {
             ev.preventDefault();

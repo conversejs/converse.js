@@ -1302,7 +1302,7 @@ describe("Chatboxes", function () {
             expect(view.model.get('num_unread')).toBe(1);
             const msgid = view.model.messages.last().get('id');
             expect(view.model.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => view.model.sendMarker.calls.count() === 1);
+            await u.waitUntil(() => view.model.sendMarker.calls.count() === 2);
             expect(sent_stanzas[0].nodeTree.querySelector('displayed')).toBeDefined();
             done();
         }));
@@ -1347,7 +1347,7 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
             expect(sent_stanzas[0].nodeTree.querySelector('displayed')).toBeDefined();
             done();
         }));
@@ -1373,7 +1373,7 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
             expect(sent_stanzas[0].nodeTree.querySelector('displayed')).toBeDefined();
             done();
         }));
@@ -1398,11 +1398,11 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
-            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
             expect(sent_stanzas[0].nodeTree.querySelector('displayed')).toBeDefined();
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(0);
-            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 3);
             expect(sent_stanzas[1].nodeTree.querySelector('acknowledged')).toBeDefined();
             done();
         }));

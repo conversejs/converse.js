@@ -8,7 +8,7 @@
  */
 import "@converse/headless/converse-muc";
 import RoomDetailsModal from 'modals/muc-details.js';
-import { converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import tpl_rooms_list from "templates/rooms_list.js";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
@@ -39,8 +39,6 @@ converse.plugins.add('converse-roomslist', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
 
         // Promises exposed by this plugin
         api.promises.add('roomsListInitialized');

@@ -4,15 +4,16 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-chatview";
-import { Model } from 'skeletor.js/src/model.js';
-import { View } from "skeletor.js/src/view";
 import bootstrap from "bootstrap.native";
-import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_brand_heading from "templates/converse_brand_heading.html";
 import tpl_controlbox from "templates/controlbox.html";
 import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
 import tpl_login_panel from "templates/login_panel.js";
+import { Model } from 'skeletor.js/src/model.js';
+import { View } from "skeletor.js/src/view";
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
@@ -98,10 +99,6 @@ converse.plugins.add('converse-controlbox', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-        const { __ } = _converse;
-
         api.settings.update({
             allow_logout: true,
             default_domain: undefined,

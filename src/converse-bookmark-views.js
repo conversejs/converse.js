@@ -5,7 +5,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-muc";
-import { converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import tpl_bookmarks_list from "templates/bookmarks_list.js"
 import tpl_muc_bookmark_form from "templates/muc_bookmark_form.js";
 import { Model } from 'skeletor.js/src/model.js';
@@ -35,8 +35,6 @@ converse.plugins.add('converse-bookmark-views', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
 
         // Configuration values for this plugin
         // ====================================

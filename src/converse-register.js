@@ -10,7 +10,7 @@ import "converse-controlbox";
 import { __ } from '@converse/headless/i18n';
 import { View } from "skeletor.js/src/view";
 import { pick } from "lodash";
-import { converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_form_input from "templates/form_input.html";
 import tpl_form_username from "templates/form_username.html";
@@ -64,9 +64,6 @@ converse.plugins.add('converse-register', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-
         _converse.CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
         _converse.CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
         _converse.CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';

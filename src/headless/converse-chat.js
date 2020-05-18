@@ -3,13 +3,13 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { find, isMatch, isObject, isString, pick } from "lodash";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
-import { converse } from "./converse-core";
 import filesize from "filesize";
 import log from "./log";
 import st from "./utils/stanza";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
+import { _converse, api, converse } from "./converse-core";
+import { find, isMatch, isObject, isString, pick } from "lodash";
 
 const { $msg, Strophe, sizzle, utils } = converse.env;
 const u = converse.env.utils;
@@ -34,8 +34,6 @@ converse.plugins.add('converse-chat', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
         const { __ } = _converse;
 
         // Configuration values for this plugin

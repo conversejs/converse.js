@@ -10,7 +10,8 @@ import emoji_picker from "templates/emoji_picker.js";
 import sizzle from 'sizzle';
 import tpl_emoji_button from "templates/emoji_button.html";
 import { View } from "skeletor.js/src/view";
-import { converse } from '@converse/headless/converse-core';
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from '@converse/headless/converse-core';
 import { debounce, find } from "lodash";
 
 const u = converse.env.utils;
@@ -68,10 +69,6 @@ converse.plugins.add('converse-emoji-views', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-        const { __ } = _converse;
-
         api.settings.update({
             'use_system_emojis': true,
             'visible_toolbar_buttons': {

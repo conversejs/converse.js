@@ -6,10 +6,10 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-muc";
-import { converse } from "@converse/headless/converse-core";
+import log from "./log";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
-import log from "./log";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const { Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
@@ -60,8 +60,6 @@ converse.plugins.add('converse-bookmarks', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
         const { __ } = _converse;
 
         // Configuration values for this plugin

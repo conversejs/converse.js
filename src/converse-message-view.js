@@ -6,10 +6,6 @@
 import "./utils/html";
 import "@converse/headless/converse-emoji";
 import URI from "urijs";
-import { converse } from  "@converse/headless/converse-core";
-import { BootstrapModal } from "./converse-modal.js";
-import { debounce } from 'lodash'
-import { render } from "lit-html";
 import filesize from "filesize";
 import log from "@converse/headless/log";
 import tpl_file_progress from "templates/file_progress.html";
@@ -18,6 +14,11 @@ import tpl_message from "templates/message.html";
 import tpl_message_versions_modal from "templates/message_versions_modal.js";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
+import { BootstrapModal } from "./converse-modal.js";
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from  "@converse/headless/converse-core";
+import { debounce } from 'lodash'
+import { render } from "lit-html";
 
 const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
@@ -31,10 +32,6 @@ converse.plugins.add('converse-message-view', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-        const { __ } = _converse;
-
 
         function onTagFoundDuringXSSFilter (tag, html, options) {
             /* This function gets called by the XSS library whenever it finds

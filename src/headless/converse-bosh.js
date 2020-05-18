@@ -6,7 +6,7 @@
  */
 import 'strophe.js/src/bosh';
 import { Model } from 'skeletor.js/src/model.js';
-import { converse } from "./converse-core";
+import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 
 const { Strophe } = converse.env;
@@ -21,9 +21,6 @@ converse.plugins.add('converse-bosh', {
     },
 
     initialize () {
-        const { _converse } = this;
-        const { api } = _converse;
-
         api.settings.update({
             bosh_service_url: undefined,
             prebind_url: null

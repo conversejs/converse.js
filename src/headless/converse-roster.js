@@ -7,7 +7,7 @@ import "@converse/headless/converse-status";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash";
-import { converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import log from "./log";
 
 const { Strophe, $iq, $pres, dayjs, sizzle } = converse.env;
@@ -22,8 +22,6 @@ converse.plugins.add('converse-roster', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
         const { __ } = _converse;
 
         api.settings.update({

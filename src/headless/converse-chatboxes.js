@@ -5,7 +5,7 @@
  */
 import "./converse-emoji";
 import { Collection } from "skeletor.js/src/collection";
-import { converse } from "./converse-core";
+import { _converse, api, converse } from "./converse-core";
 import { isString } from "lodash";
 import log from "./log";
 
@@ -25,8 +25,6 @@ converse.plugins.add('converse-chatboxes', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
 
         api.promises.add([
             'chatBoxesFetched',

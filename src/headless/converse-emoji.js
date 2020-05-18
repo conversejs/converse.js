@@ -6,7 +6,7 @@
 import { Model } from 'skeletor.js/src/model.js';
 import { find, uniq } from "lodash";
 import * as twemoji from "twemoji";
-import { converse } from "./converse-core";
+import { _converse, api, converse } from "./converse-core";
 
 const u = converse.env.utils;
 
@@ -60,8 +60,6 @@ converse.plugins.add('converse-emoji', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
         const { ___ } = _converse;
 
         api.settings.update({

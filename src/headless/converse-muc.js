@@ -10,7 +10,7 @@ import "./converse-emoji";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
-import { converse } from "./converse-core";
+import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
 import st from "./utils/stanza";
@@ -108,8 +108,6 @@ converse.plugins.add('converse-muc', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
         const { __, ___ } = _converse;
 
         // Configuration values for this plugin

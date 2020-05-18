@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "./converse-disco";
-import { converse } from "./converse-core";
+import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 
 const { Strophe, $iq } = converse.env;
@@ -17,12 +17,6 @@ converse.plugins.add('converse-pubsub', {
     dependencies: ["converse-disco"],
 
     initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by converse.js's plugin machinery.
-         */
-        const { _converse } = this;
-        const { api } = _converse;
-
 
         /************************ BEGIN API ************************/
         // We extend the default converse.js API to add methods specific to MUC groupchats.

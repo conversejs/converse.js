@@ -6,12 +6,6 @@
 import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
-import { compact, debounce, has, isString, uniq, without } from "lodash";
-import { BootstrapModal } from "./converse-modal.js";
-import { View } from 'skeletor.js/src/view.js';
-import { Model } from 'skeletor.js/src/model.js';
-import { OrderedListView } from "skeletor.js/src/overview";
-import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_contact_modal from "templates/add_contact_modal.js";
 import tpl_group_header from "templates/group_header.html";
@@ -20,6 +14,13 @@ import tpl_requesting_contact from "templates/requesting_contact.html";
 import tpl_roster from "templates/roster.html";
 import tpl_roster_filter from "templates/roster_filter.js";
 import tpl_roster_item from "templates/roster_item.html";
+import { BootstrapModal } from "./converse-modal.js";
+import { Model } from 'skeletor.js/src/model.js';
+import { OrderedListView } from "skeletor.js/src/overview";
+import { View } from 'skeletor.js/src/view.js';
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
+import { compact, debounce, has, isString, uniq, without } from "lodash";
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
@@ -33,9 +34,6 @@ converse.plugins.add('converse-rosterview', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-        const { __ } = _converse;
 
         api.settings.update({
             'autocomplete_add_contact': true,

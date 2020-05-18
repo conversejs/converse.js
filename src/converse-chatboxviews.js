@@ -4,13 +4,13 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-chatboxes";
-import { Overview } from "skeletor.js/src/overview";
-import { View } from "skeletor.js/src/view";
-import { result } from "lodash";
-import { converse } from "@converse/headless/converse-core";
 import tpl_avatar from "templates/avatar.svg";
 import tpl_background_logo from "templates/background_logo.html";
 import tpl_chatboxes from "templates/chatboxes.html";
+import { Overview } from "skeletor.js/src/overview";
+import { View } from "skeletor.js/src/view";
+import { _converse, api, converse } from "@converse/headless/converse-core";
+import { result } from "lodash";
 
 const u = converse.env.utils;
 
@@ -47,8 +47,6 @@ converse.plugins.add('converse-chatboxviews', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
 
         api.promises.add(['chatBoxViewsInitialized']);
 

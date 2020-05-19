@@ -4,12 +4,12 @@
  * @license Mozilla Public License (MPLv2)
  * @description Converse plugin which add support for XEP-0030: Service Discovery
  */
-import { isEmpty, isObject } from "lodash";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
-import { converse } from "./converse-core";
 import log from "./log";
 import sizzle from "sizzle";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
+import { _converse, api, converse } from "./converse-core";
+import { isEmpty, isObject } from "lodash";
 
 const { Strophe, $iq, utils } = converse.env;
 
@@ -19,8 +19,6 @@ converse.plugins.add('converse-disco', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
 
         // Promises exposed by this plugin
         api.promises.add('discoInitialized');

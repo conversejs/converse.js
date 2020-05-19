@@ -5,7 +5,7 @@
  */
 import { isNaN, isObject, isString } from "lodash";
 import { Model } from 'skeletor.js/src/model.js';
-import { converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const { Strophe, $build, $pres } = converse.env;
 
@@ -13,8 +13,6 @@ const { Strophe, $build, $pres } = converse.env;
 converse.plugins.add('converse-status', {
 
     initialize () {
-        const { _converse } = this;
-        const { api } = _converse;
 
         api.settings.update({
             auto_away: 0, // Seconds after which user status is set to 'away'

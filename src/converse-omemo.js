@@ -6,12 +6,13 @@
 /* global libsignal */
 
 import "converse-profile";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
-import { concat, debounce, difference, invokeMap, range, omit } from "lodash";
-import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
+import { concat, debounce, difference, invokeMap, range, omit } from "lodash";
 
 const { Strophe, sizzle, $build, $iq, $msg } = converse.env;
 const u = converse.env.utils;
@@ -81,7 +82,6 @@ converse.plugins.add('converse-omemo', {
             },
 
             initialize () {
-                const { _converse } = this.__super__;
                 this.debouncedRender = debounce(this.render, 50);
                 this.devicelist = _converse.devicelists.get(_converse.bare_jid);
                 this.listenTo(this.devicelist.devices, 'change:bundle', this.debouncedRender);
@@ -93,8 +93,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             beforeRender () {
-                const { _converse } = this.__super__,
-                      device_id = _converse.omemo_store.get('device_id');
+                const device_id = _converse.omemo_store.get('device_id');
 
                 if (device_id) {
                     this.current_device = this.devicelist.devices.get(device_id);
@@ -121,8 +120,6 @@ converse.plugins.add('converse-omemo', {
                 this.devicelist.removeOwnDevices(device_ids)
                     .then(this.modal.hide)
                     .catch(err => {
-                        const { _converse } = this.__super__,
-                              { __ } = _converse;
                         log.error(err);
                         _converse.api.alert(
                             Strophe.LogLevel.ERROR,
@@ -132,8 +129,6 @@ converse.plugins.add('converse-omemo', {
             },
 
             generateOMEMODeviceBundle (ev) {
-                const { _converse } = this.__super__,
-                      { __, api } = _converse;
                 ev.preventDefault();
                 if (confirm(__(
                     "Are you sure you want to generate new OMEMO keys? " +
@@ -150,7 +145,6 @@ converse.plugins.add('converse-omemo', {
             },
 
             initialize () {
-                const { _converse } = this.__super__;
                 const jid = this.model.get('jid');
                 this.devicelist = _converse.devicelists.getDeviceList(jid);
                 this.listenTo(this.devicelist.devices, 'change:bundle', this.render);
@@ -171,7 +165,6 @@ converse.plugins.add('converse-omemo', {
         ChatBox: {
             async sendMessage (text, spoiler_hint) {
                 if (this.get('omemo_active') && text) {
-                    const { _converse } = this.__super__;
                     const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                     attrs['is_encrypted'] = true;
                     attrs['plaintext'] = attrs.message;
@@ -228,13 +221,8 @@ converse.plugins.add('converse-omemo', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by Converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { __ } = _converse;
-        const { api } = _converse;
 
-        api.settings.update({
-            'omemo_default': false,
-        });
+        api.settings.update({'omemo_default': false});
 
         api.promises.add(['OMEMOInitialized']);
 
@@ -296,7 +284,6 @@ converse.plugins.add('converse-omemo', {
 
             reportDecryptionError (e) {
                 if (api.settings.get("loglevel") === 'debug') {
-                    const { __ } = _converse;
                     this.createMessage({
                         'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
                         'type': 'error',
@@ -590,7 +577,6 @@ converse.plugins.add('converse-omemo', {
         }
 
         _converse.createOMEMOMessageStanza = function (chatbox, message, devices) {
-            const { __ } = _converse;
             const body = __("This is an OMEMO encrypted message which your client doesn’t seem to support. "+
                             "Find more information on https://conversations.im/omemo");
 

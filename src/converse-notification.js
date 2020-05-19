@@ -3,9 +3,10 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import st from "@converse/headless/utils/stanza";
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const { Strophe, sizzle } = converse.env;
 const u = converse.env.utils;
@@ -19,10 +20,6 @@ converse.plugins.add('converse-notification', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { __ } = _converse;
-        const { api } = _converse;
-
         _converse.supports_html5_notification = "Notification" in window;
 
         api.settings.update({

@@ -4,12 +4,12 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "./converse-status";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
-import { has, isString } from "lodash";
-import { converse } from "./converse-core";
 import log from "@converse/headless/log";
 import tpl_vcard from "./templates/vcard.html";
+import { Collection } from "skeletor.js/src/collection";
+import { Model } from 'skeletor.js/src/model.js';
+import { _converse, api, converse } from "./converse-core";
+import { has, isString } from "lodash";
 
 const { Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;
@@ -64,9 +64,6 @@ converse.plugins.add('converse-vcard', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-
         api.promises.add('VCardsInitialized');
 
 

@@ -4,12 +4,12 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-chatview";
-import { View } from 'skeletor.js/src/view.js';
-import { __ } from '@converse/headless/i18n';
-import { render } from "lit-html";
-import { converse } from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_headline_panel from "templates/headline_panel.js";
+import { View } from 'skeletor.js/src/view.js';
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
+import { render } from "lit-html";
 
 const u = converse.env.utils;
 
@@ -47,9 +47,6 @@ converse.plugins.add('converse-headlines-view', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-
 
         const viewWithHeadlinesPanel = {
             renderHeadlinesPanel () {

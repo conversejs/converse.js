@@ -7,7 +7,7 @@ import "@converse/headless/converse-status";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash";
-import { converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import log from "./log";
 
 const { Strophe, $iq, $pres, dayjs, sizzle } = converse.env;
@@ -22,8 +22,6 @@ converse.plugins.add('converse-roster', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
         const { __ } = _converse;
 
         api.settings.update({
@@ -251,6 +249,23 @@ converse.plugins.add('converse-roster', {
             openChat () {
                 const attrs = this.attributes;
                 api.chats.open(attrs.jid, attrs, true);
+            },
+
+            /**
+             * Return a string of tab-separated values that are to be used when
+             * matching against filter text.
+             *
+             * The goal is to be able to filter against the VCard fullname,
+             * roster nickname and JID.
+             * @returns { String } Lower-cased, tab-separated values
+             */
+            getFilterCriteria () {
+                const nick = this.get('nickname');
+                const jid = this.get('jid');
+                let criteria = this.getDisplayName();
+                criteria = !criteria.includes(jid) ? criteria.concat(`   ${jid}`) : criteria;
+                criteria = !criteria.includes(nick) ? criteria.concat(`   ${nick}`) : criteria;
+                return criteria.toLowerCase();
             },
 
             getDisplayName () {

@@ -6,7 +6,7 @@
 import "converse-chatview";
 import "converse-controlbox";
 import { debounce } from "lodash";
-import { converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import tpl_dragresize from "templates/dragresize.html";
 
 const u = converse.env.utils;
@@ -133,9 +133,6 @@ converse.plugins.add('converse-dragresize', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-
         api.settings.update({
             'allow_dragresize': true,
         });

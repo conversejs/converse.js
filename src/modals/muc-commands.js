@@ -1,12 +1,12 @@
 import { BootstrapModal } from "../converse-modal.js";
 import { __ } from '@converse/headless/i18n';
-import { api } from "@converse/headless/converse-core";
+import { api, converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
 import tpl_muc_commands_modal from "../templates/muc_commands_modal.js";
 
-const { Strophe, $iq } = window.converse.env;
-const u = window.converse.env.utils;
+const { Strophe, $iq } = converse.env;
+const u = converse.env.utils;
 
 
 export default BootstrapModal.extend({

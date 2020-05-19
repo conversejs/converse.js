@@ -6,14 +6,12 @@
  */
 import "./converse-disco";
 import "./converse-rsm";
-import { api } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import { intersection, pick } from 'lodash'
-import { converse } from "./converse-core";
 import log from "./log";
 import sizzle from "sizzle";
 import st from "./utils/stanza";
 
-let _converse;
 const { Strophe, $iq, dayjs } = converse.env;
 const { NS } = Strophe;
 const u = converse.env.utils;
@@ -133,8 +131,6 @@ converse.plugins.add('converse-mam', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by Converse.js's plugin machinery.
          */
-        _converse = this._converse;
-
         api.settings.update({
             archived_messages_page_size: '50',
             message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)

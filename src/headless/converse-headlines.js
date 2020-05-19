@@ -4,7 +4,7 @@
  * @description XEP-0045 Multi-User Chat Views
  */
 import { isString } from "lodash";
-import { converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import st from "./utils/stanza";
 
 
@@ -45,8 +45,6 @@ converse.plugins.add('converse-headlines', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
 
         /**
          * Shows headline messages

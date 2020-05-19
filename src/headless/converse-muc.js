@@ -10,11 +10,14 @@ import "./converse-emoji";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
-import { converse } from "./converse-core";
+import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
 import st from "./utils/stanza";
 import u from "./utils/form";
+
+export const ROLES = ['moderator', 'participant', 'visitor'];
+export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 
 converse.MUC_TRAFFIC_STATES = ['entered', 'exited'];
 converse.MUC_ROLE_CHANGES = ['op', 'deop', 'voice', 'mute'];
@@ -105,8 +108,6 @@ converse.plugins.add('converse-muc', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
         const { __, ___ } = _converse;
 
         // Configuration values for this plugin
@@ -2053,7 +2054,7 @@ converse.plugins.add('converse-muc', {
                 if (code === '301') {
                     return actor ? __("%1$s has been banned by %2$s", nick, actor) : __("%1$s has been banned", nick);
                 } else if (code === '303') {
-                    return ___("%1$s's nickname has changed", nick);
+                    return ___("%1$s\'s nickname has changed", nick);
                 } else  if (code === '307') {
                     return actor ? __("%1$s has been kicked out by %2$s", nick, actor) : __("%1$s has been kicked out", nick);
                 } else if (code === '321') {
@@ -2387,6 +2388,7 @@ converse.plugins.add('converse-muc', {
                 const body = message.get('message');
                 if (!body) { return; }
                 if (u.isNewMessage(message) && this.isHidden()) {
+                    this.setFirstUnreadMsgId(message);
                     const settings = {'num_unread_general': this.get('num_unread_general') + 1};
                     if (this.isUserMentioned(message)) {
                         settings.num_unread = this.get('num_unread') + 1;

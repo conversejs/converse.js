@@ -4,15 +4,9 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import "converse-modal";
 import "@converse/headless/utils/muc";
-import { BootstrapModal } from "./converse-modal.js";
-import { Model } from 'skeletor.js/src/model.js';
-import { View } from 'skeletor.js/src/view.js';
-import { __ } from '@converse/headless/i18n';
-import { api, converse } from "@converse/headless/converse-core";
-import { debounce, head, isString, isUndefined } from "lodash";
-import { render } from "lit-html";
+import "converse-modal";
+import ModeratorToolsModal from "./modals/moderator-tools.js";
 import RoomDetailsModal from 'modals/muc-details.js';
 import log from "@converse/headless/log";
 import st from "@converse/headless/utils/stanza";
@@ -25,7 +19,6 @@ import tpl_chatroom_head from "templates/chatroom_head.js";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
 import tpl_info from "templates/info.html";
 import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
-import tpl_moderator_tools_modal from "templates/moderator_tools_modal.js";
 import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
 import tpl_muc_password_form from "templates/muc_password_form.js";
@@ -33,12 +26,17 @@ import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_room_description from "templates/room_description.html";
 import tpl_room_panel from "templates/room_panel.html";
 import tpl_spinner from "templates/spinner.html";
+import { BootstrapModal } from "./converse-modal.js";
+import { Model } from 'skeletor.js/src/model.js';
+import { View } from 'skeletor.js/src/view.js';
+import { __ } from '@converse/headless/i18n';
+import { api, converse } from "@converse/headless/converse-core";
+import { debounce, head, isString, isUndefined } from "lodash";
+import { render } from "lit-html";
 
 const { Strophe, sizzle, $iq, $pres } = converse.env;
 const u = converse.env.utils;
 
-const ROLES = ['moderator', 'participant', 'visitor'];
-const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 const OWNER_COMMANDS = ['owner'];
 const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
@@ -217,189 +215,6 @@ converse.plugins.add('converse-muc-views', {
                     .catch(e => log.error(e));
             }
         }
-
-
-        _converse.ModeratorToolsModal = BootstrapModal.extend({
-            id: "converse-modtools-modal",
-
-            initialize (attrs) {
-                this.chatroomview = attrs.chatroomview;
-                BootstrapModal.prototype.initialize.apply(this, arguments);
-
-                this.affiliations_filter = '';
-                this.roles_filter = '';
-
-                this.listenTo(this.model, 'change:role', () => {
-                    this.users_with_role = this.chatroomview.model.getOccupantsWithRole(this.model.get('role'));
-                    this.render();
-                });
-                this.listenTo(this.model, 'change:affiliation', async () => {
-                    this.loading_users_with_affiliation = true;
-                    this.users_with_affiliation = null;
-                    this.render();
-                    const chatroom = this.chatroomview.model;
-                    const affiliation = this.model.get('affiliation');
-                    if (this.shouldFetchAffiliationsList()) {
-                        this.users_with_affiliation = await chatroom.getAffiliationList(affiliation);
-                    } else {
-                        this.users_with_affiliation = chatroom.getOccupantsWithAffiliation(affiliation);
-                    }
-                    this.loading_users_with_affiliation = false;
-                    this.render();
-                });
-            },
-
-            toHTML () {
-                const occupant = this.chatroomview.model.occupants.findWhere({'jid': _converse.bare_jid});
-                return tpl_moderator_tools_modal(Object.assign(this.model.toJSON(), {
-                    'affiliations_filter': this.affiliations_filter,
-                    'assignAffiliation': ev => this.assignAffiliation(ev),
-                    'assignRole': ev => this.assignRole(ev),
-                    'assignable_affiliations': this.getAssignableAffiliations(occupant),
-                    'assignable_roles': this.getAssignableRoles(occupant),
-                    'filterAffiliationResults': ev => this.filterAffiliationResults(ev),
-                    'filterRoleResults': ev => this.filterRoleResults(ev),
-                    'loading_users_with_affiliation': this.loading_users_with_affiliation,
-                    'queryAffiliation': ev => this.queryAffiliation(ev),
-                    'queryRole': ev => this.queryRole(ev),
-                    'queryable_affiliations': AFFILIATIONS.filter(a => !_converse.modtools_disable_query.includes(a)),
-                    'queryable_roles': ROLES.filter(a => !_converse.modtools_disable_query.includes(a)),
-                    'roles_filter': this.roles_filter,
-                    'switchTab': ev => this.switchTab(ev),
-                    'toggleForm': ev => this.toggleForm(ev),
-                    'users_with_affiliation': this.users_with_affiliation,
-                    'users_with_role': this.users_with_role
-                }));
-            },
-
-            getAssignableAffiliations (occupant) {
-                const disabled = _converse.modtools_disable_assign;
-                if (!Array.isArray(disabled)) {
-                    return disabled ? [] : AFFILIATIONS;
-                } else if (occupant.get('affiliation') === 'owner') {
-                    return AFFILIATIONS.filter(a => !disabled.includes(a));
-                } else if (occupant.get('affiliation') === 'admin') {
-                    return AFFILIATIONS.filter(a => !['owner', ...disabled].includes(a));
-                } else {
-                    return [];
-                }
-            },
-
-            getAssignableRoles (occupant) {
-                const disabled = _converse.modtools_disable_assign;
-                if (!Array.isArray(disabled)) {
-                    return disabled ? [] : ROLES;
-                } else if (occupant.get('role') === 'moderator') {
-                    return ROLES.filter(r => !disabled.includes(r));
-                } else {
-                    return [];
-                }
-            },
-
-            shouldFetchAffiliationsList () {
-                const affiliation = this.model.get('affiliation');
-                if (affiliation === 'none') {
-                    return false;
-                }
-                const chatroom = this.chatroomview.model;
-                const auto_fetched_affs = chatroom.occupants.getAutoFetchedAffiliationLists();
-                if (auto_fetched_affs.includes(affiliation)) {
-                    return false;
-                } else {
-                    return true;
-                }
-            },
-
-            toggleForm (ev) {
-                ev.stopPropagation();
-                ev.preventDefault();
-                const form_class = ev.target.getAttribute('data-form');
-                const form = u.ancestor(ev.target, '.list-group-item').querySelector(`.${form_class}`);
-                if (u.hasClass('hidden', form)) {
-                    u.removeClass('hidden', form);
-                } else {
-                    u.addClass('hidden', form);
-                }
-            },
-
-            filterRoleResults (ev) {
-                this.roles_filter = ev.target.value;
-                this.render();
-            },
-
-            filterAffiliationResults (ev) {
-                this.affiliations_filter = ev.target.value;
-                this.render();
-            },
-
-            queryRole (ev) {
-                ev.stopPropagation();
-                ev.preventDefault();
-                const data = new FormData(ev.target);
-                const role = data.get('role');
-                this.model.set({'role': null}, {'silent': true});
-                this.model.set({'role': role});
-            },
-
-            queryAffiliation (ev) {
-                ev.stopPropagation();
-                ev.preventDefault();
-                const data = new FormData(ev.target);
-                const affiliation = data.get('affiliation');
-                this.model.set({'affiliation': null}, {'silent': true});
-                this.model.set({'affiliation': affiliation});
-            },
-
-            assignAffiliation (ev) {
-                ev.stopPropagation();
-                ev.preventDefault();
-                const data = new FormData(ev.target);
-                const affiliation = data.get('affiliation');
-                const attrs = {
-                    'jid': data.get('jid'),
-                    'reason': data.get('reason')
-                }
-                const current_affiliation = this.model.get('affiliation');
-                this.chatroomview.model.setAffiliation(affiliation, [attrs])
-                    .then(async () => {
-                        this.alert(__('Affiliation changed'), 'primary');
-                        await this.chatroomview.model.occupants.fetchMembers()
-                        this.model.set({'affiliation': null}, {'silent': true});
-                        this.model.set({'affiliation': current_affiliation});
-                    })
-                    .catch(err => {
-                        this.alert(__('Sorry, something went wrong while trying to set the affiliation'), 'danger');
-                        log.error(err);
-                    });
-            },
-
-            assignRole (ev) {
-                ev.stopPropagation();
-                ev.preventDefault();
-                const data = new FormData(ev.target);
-                const occupant = this.chatroomview.model.getOccupant(data.get('jid') || data.get('nick'));
-                const role = data.get('role');
-                const reason = data.get('reason');
-                const current_role = this.model.get('role');
-                this.chatroomview.model.setRole(occupant, role, reason,
-                    () => {
-                        this.alert(__('Role changed'), 'primary');
-                        this.model.set({'role': null}, {'silent': true});
-                        this.model.set({'role': current_role});
-                    },
-                    (e) => {
-                        if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
-                            this.alert(__('You\'re not allowed to make that change'), 'danger');
-                        } else {
-                            this.alert(__('Sorry, something went wrong while trying to set the role'), 'danger');
-                            if (u.isErrorObject(e)) {
-                                log.error(e);
-                            }
-                        }
-                    }
-                );
-            }
-        });
 
 
         _converse.ListChatRoomsModal = BootstrapModal.extend({
@@ -666,19 +481,19 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
                 this.listenTo(this.model.features, 'change:open', this.renderHeading);
 
-                this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
-                this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
-                this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
-                this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
-                this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
-
                 // Bind so that we can pass it to addEventListener and removeEventListener
                 this.onMouseMove =  this.onMouseMove.bind(this);
                 this.onMouseUp =  this.onMouseUp.bind(this);
 
                 await this.render();
 
-                // Needs to be registered after render has been called.
+                // Need to be registered after render has been called.
+                this.model.occupants.forEach(o => this.onOccupantAdded(o));
+                this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
+                this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
+                this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
+                this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
+                this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
                 this.listenTo(this.model.notifications, 'change', this.renderNotifications);
 
                 this.createSidebarView();
@@ -1057,7 +872,7 @@ converse.plugins.add('converse-muc-views', {
                 }
                 if (isUndefined(this.model.modtools_modal)) {
                     const model = new Model({'affiliation': affiliation});
-                    this.modtools_modal = new _converse.ModeratorToolsModal({'model': model, 'chatroomview': this});
+                    this.modtools_modal = new ModeratorToolsModal({model, _converse, 'chatroomview': this});
                 } else {
                     this.modtools_modal.set('affiliation', affiliation);
                 }

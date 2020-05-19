@@ -6,12 +6,6 @@
 import "@converse/headless/converse-chatboxes";
 import "@converse/headless/converse-roster";
 import "converse-modal";
-import { compact, debounce, has, isString, uniq, without } from "lodash";
-import { BootstrapModal } from "./converse-modal.js";
-import { View } from 'skeletor.js/src/view.js';
-import { Model } from 'skeletor.js/src/model.js';
-import { OrderedListView } from "skeletor.js/src/overview";
-import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_add_contact_modal from "templates/add_contact_modal.js";
 import tpl_group_header from "templates/group_header.html";
@@ -20,6 +14,13 @@ import tpl_requesting_contact from "templates/requesting_contact.html";
 import tpl_roster from "templates/roster.html";
 import tpl_roster_filter from "templates/roster_filter.js";
 import tpl_roster_item from "templates/roster_item.html";
+import { BootstrapModal } from "./converse-modal.js";
+import { Model } from 'skeletor.js/src/model.js';
+import { OrderedListView } from "skeletor.js/src/overview";
+import { View } from 'skeletor.js/src/view.js';
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
+import { compact, debounce, has, isString, uniq, without } from "lodash";
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
@@ -33,9 +34,6 @@ converse.plugins.add('converse-rosterview', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-        const { __ } = _converse;
 
         api.settings.update({
             'autocomplete_add_contact': true,
@@ -610,8 +608,8 @@ converse.plugins.add('converse-rosterview', {
                 if (q.length === 0) {
                     return [];
                 }
-                let matches;
                 q = q.toLowerCase();
+                const contacts = this.model.contacts;
                 if (type === 'state') {
                     const sticky_groups = [_converse.HEADER_REQUESTING_CONTACTS, _converse.HEADER_UNREAD];
                     if (sticky_groups.includes(this.model.get('name'))) {
@@ -620,18 +618,15 @@ converse.plugins.add('converse-rosterview', {
                         // match the state in question.
                         return [];
                     } else if (q === 'unread_messages') {
-                        matches = this.model.contacts.filter({'num_unread': 0});
+                        return contacts.filter({'num_unread': 0});
                     } else if (q === 'online') {
-                        matches = this.model.contacts.filter(c => ["offline", "unavailable"].includes(c.presence.get('show')));
+                        return contacts.filter(c => ["offline", "unavailable"].includes(c.presence.get('show')));
                     } else {
-                        matches = this.model.contacts.filter(c => !c.presence.get('show').includes(q));
+                        return contacts.filter(c => !c.presence.get('show').includes(q));
                     }
                 } else  {
-                    matches = this.model.contacts.filter((contact) => {
-                        return !contact.getDisplayName().toLowerCase().includes(q.toLowerCase());
-                    });
+                    return contacts.filter(c => !c.getFilterCriteria().includes(q));
                 }
-                return matches;
             },
 
             /**
@@ -784,14 +779,14 @@ converse.plugins.add('converse-rosterview', {
                 this.filter_view.model.fetch();
             },
 
+            /**
+             * Called whenever the filter settings have been changed or
+             * when contacts have been added, removed or changed.
+             *
+             * Debounced for 100ms so that it doesn't get called for every
+             * contact fetched from browser storage.
+             */
             updateFilter: debounce(function () {
-                /* Filter the roster again.
-                 * Called whenever the filter settings have been changed or
-                 * when contacts have been added, removed or changed.
-                 *
-                 * Debounced so that it doesn't get called for every
-                 * contact fetched from browser storage.
-                 */
                 const type = this.filter_view.model.get('filter_type');
                 if (type === 'state') {
                     this.filter(this.filter_view.model.get('chat_state'), type);

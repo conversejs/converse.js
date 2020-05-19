@@ -218,6 +218,9 @@ describe("XSS", function () {
             }, {
                 entered: 'WWW.SOMETHING.COM/?x=dKasdDAsd4JAsd3OAJSD23osajAidj',
                 href: 'http://WWW.SOMETHING.COM/?x=dKasdDAsd4JAsd3OAJSD23osajAidj',
+            }, {
+                entered: 'mailto:test@mail.org',
+                href: 'mailto:test@mail.org',
             }];
 
             function checkNonParsedURL (url) {
@@ -258,6 +261,9 @@ describe("XSS", function () {
 
             await mock.sendMessage(view, good_urls[4].entered);
             checkParsedURL(good_urls[4]);
+
+            await mock.sendMessage(view, good_urls[5].entered);
+            checkParsedURL(good_urls[5]);
 
             done();
         }));

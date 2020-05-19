@@ -6,7 +6,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import { filter, reject } from 'lodash';
 import log from "@converse/headless/log";
 
@@ -21,9 +21,6 @@ converse.plugins.add('converse-push', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-
         api.settings.update({
             'push_app_servers': [],
             'enable_muc_push': false

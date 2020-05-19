@@ -6,11 +6,6 @@
 import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
-import { BootstrapModal } from "./converse-modal.js";
-import { Overview } from "skeletor.js/src/overview";
-import { debounce, isString } from "lodash";
-import { html, render } from "lit-html";
-import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
@@ -24,6 +19,12 @@ import tpl_toolbar from "templates/toolbar.html";
 import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.js";
 import xss from "xss/dist/xss";
+import { BootstrapModal } from "./converse-modal.js";
+import { Overview } from "skeletor.js/src/overview";
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
+import { debounce, isString } from "lodash";
+import { html, render } from "lit-html";
 
 
 const { Strophe, sizzle, dayjs } = converse.env;
@@ -53,10 +54,6 @@ converse.plugins.add('converse-chatview', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-        const { __ } = _converse;
-
         api.settings.update({
             'auto_focus': true,
             'message_limit': 0,

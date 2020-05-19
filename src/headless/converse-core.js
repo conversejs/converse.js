@@ -156,6 +156,19 @@ const DEFAULT_SETTINGS = {
 };
 
 
+const CONNECTION_STATUS = {};
+CONNECTION_STATUS[Strophe.Status.ATTACHED] = 'ATTACHED';
+CONNECTION_STATUS[Strophe.Status.AUTHENTICATING] = 'AUTHENTICATING';
+CONNECTION_STATUS[Strophe.Status.AUTHFAIL] = 'AUTHFAIL';
+CONNECTION_STATUS[Strophe.Status.CONNECTED] = 'CONNECTED';
+CONNECTION_STATUS[Strophe.Status.CONNECTING] = 'CONNECTING';
+CONNECTION_STATUS[Strophe.Status.CONNFAIL] = 'CONNFAIL';
+CONNECTION_STATUS[Strophe.Status.DISCONNECTED] = 'DISCONNECTED';
+CONNECTION_STATUS[Strophe.Status.DISCONNECTING] = 'DISCONNECTING';
+CONNECTION_STATUS[Strophe.Status.ERROR] = 'ERROR';
+CONNECTION_STATUS[Strophe.Status.RECONNECTING] = 'RECONNECTING';
+CONNECTION_STATUS[Strophe.Status.REDIRECT] = 'REDIRECT';
+
 /**
  * A private, closured object containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
@@ -164,6 +177,7 @@ const DEFAULT_SETTINGS = {
  */
 export const _converse = {
     log,
+    CONNECTION_STATUS,
     'templates': {},
     'promises': {},
 
@@ -185,20 +199,6 @@ export const _converse = {
     PREBIND: 'prebind',
 
     STANZA_TIMEOUT: 10000,
-
-    CONNECTION_STATUS: {
-        0: 'ERROR',
-        1: 'CONNECTING',
-        2: 'CONNFAIL',
-        3: 'AUTHENTICATING',
-        4: 'AUTHFAIL',
-        5: 'CONNECTED',
-        6: 'DISCONNECTED',
-        7: 'DISCONNECTING',
-        8: 'ATTACHED',
-        9: 'REDIRECT',
-        10: 'RECONNECTING'
-    },
 
     SUCCESS: 'success',
     FAILURE: 'failure',
@@ -375,22 +375,17 @@ export const api = _converse.api = {
                     _converse.connection._proto = new Strophe.Websocket(_converse.connection);
                     _converse.connection.service = api.settings.get("websocket_url");
                 }
-            }
-            if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === _converse.ANONYMOUS) {
+            } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get("authentication") === _converse.ANONYMOUS) {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
                 await _converse.setUserJID(api.settings.get("jid"));
             }
 
-            if (_converse.connection.authenticated) {
-                if (_converse.connection.reconnecting) {
-                    debouncedReconnect();
-                } else {
-                    return reconnect();
-                }
+            if (_converse.connection.reconnecting) {
+                debouncedReconnect();
             } else {
-                log.warn("Not attempting to reconnect because we're not authenticated");
+                return reconnect();
             }
         },
 
@@ -404,7 +399,7 @@ export const api = _converse.api = {
             if (type.toLowerCase() === 'websocket') {
                 return _converse.connection._proto instanceof Strophe.Websocket;
             } else if (type.toLowerCase() === 'bosh') {
-                return _converse.connection._proto instanceof Strophe.Bosh;
+                return Strophe.BOSH && _converse.connection._proto instanceof Strophe.Bosh;
             }
         }
     },
@@ -1370,7 +1365,7 @@ async function getLoginCredentialsFromBrowser () {
 
 function cleanup () {
     // Make sure everything is reset in case this is a subsequent call to
-    // convesre.initialize (happens during tests).
+    // converse.initialize (happens during tests).
     _converse.router.history.stop();
     unregisterGlobalEventHandlers();
     delete _converse.controlboxtoggle;
@@ -1647,30 +1642,32 @@ function unregisterGlobalEventHandlers () {
  * @memberOf _converse
  */
 _converse.onDisconnected = function () {
-    const reason = _converse.disconnection_reason;
-    if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
-        if (api.settings.get("auto_reconnect") &&
-            (api.settings.get("credentials_url") || api.settings.get("authentication") === _converse.ANONYMOUS)) {
-            /**
-             * If `credentials_url` is set, we reconnect, because we might
-             * be receiving expirable tokens from the credentials_url.
-             *
-             * If `authentication` is anonymous, we reconnect because we
-             * might have tried to attach with stale BOSH session tokens
-             * or with a cached JID and password
-             */
-            return api.connection.reconnect();
-        } else {
+    if (api.settings.get("auto_reconnect")) {
+        const reason = _converse.disconnection_reason;
+        if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
+            if (api.settings.get("credentials_url") || api.settings.get("authentication") === _converse.ANONYMOUS) {
+                // If `credentials_url` is set, we reconnect, because we might
+                // be receiving expirable tokens from the credentials_url.
+                //
+                // If `authentication` is anonymous, we reconnect because we
+                // might have tried to attach with stale BOSH session tokens
+                // or with a cached JID and password
+                return api.connection.reconnect();
+            } else {
+                return finishDisconnection();
+            }
+        } else if (
+            _converse.disconnection_cause === _converse.LOGOUT ||
+            reason === Strophe.ErrorCondition.NO_AUTH_MECH ||
+            reason === "host-unknown" ||
+            reason === "remote-connection-failed"
+        ) {
             return finishDisconnection();
         }
-    } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-            (reason !== undefined && reason === Strophe?.ErrorCondition.NO_AUTH_MECH) ||
-            reason === "host-unknown" ||
-            reason === "remote-connection-failed" ||
-            !api.settings.get("auto_reconnect")) {
+        api.connection.reconnect();
+    } else {
         return finishDisconnection();
     }
-    api.connection.reconnect();
 };
 
 

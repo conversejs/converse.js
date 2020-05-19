@@ -6,15 +6,16 @@
 import "@converse/headless/converse-status";
 import "@converse/headless/converse-vcard";
 import "converse-modal";
-import { BootstrapModal } from "./converse-modal.js";
 import UserSettingsModal from "modals/user-settings";
 import bootstrap from "bootstrap.native";
-import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import sizzle from 'sizzle';
 import tpl_chat_status_modal from "templates/chat_status_modal";
 import tpl_profile from "templates/profile.js";
 import tpl_profile_modal from "templates/profile_modal";
+import { BootstrapModal } from "./converse-modal.js";
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const u = converse.env.utils;
 
@@ -27,9 +28,6 @@ converse.plugins.add('converse-profile', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-        const { __ } = _converse;
 
         api.settings.update({
             'allow_adhoc_commands': true,

@@ -6,7 +6,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { converse } from "./converse-core";
+import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 
 const { Strophe, $iq } = converse.env;
@@ -21,9 +21,6 @@ converse.plugins.add('converse-ping', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        const { _converse } = this;
-        const { api } = _converse;
-
         let lastStanzaDate;
 
         api.settings.update({

@@ -1190,14 +1190,22 @@ If set to ``true``,  then whenever Converse receives a MUC message with an autho
 any information (i.e. because that user is currently not in the MUC), then Converse will send out a ``<presence>``
 stanza of type ``probe`` in order to request the authors presence data.
 
-Note, although this behavior is described in the `presence business rules of XEP-0045, section 17.3 point 4 <https://xmpp.org/extensions/xep-0045.html#bizrules-presence>`_,
-few XMPP servers support this.
-
 Prosody has some experimental support in it's contrib branch (hopefully soon to
 be merged to trunk).
 
 The point of sending out presence probes is in order to receive
 presence-related metadata, such as `XEP-0317 Hats <https://xmpp.org/extensions/xep-0317.html>`_.
+
+.. note::
+  Although this behavior is described in the `presence business rules of XEP-0045, section 17.3 point 4 <https://xmpp.org/extensions/xep-0045.html#bizrules-presence>`_,
+  few XMPP servers support this.
+
+.. note::
+  If member lists are fetched via muc_fetch_members, then the occupants created
+  based on those member lists won't be probed again later (given that the
+  occupants are already created). Certain metadata like XEP-0317 hats are not
+  included in the member lists, which means that this metadata will be missing for
+  those occupants.
 
 
 muc_respect_autojoin

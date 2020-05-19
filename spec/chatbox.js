@@ -6,7 +6,7 @@ const Strophe = converse.env.Strophe;
 const u = converse.env.utils;
 const sizzle = converse.env.sizzle;
 
-describe("Chatboxes", function () {
+fdescribe("Chatboxes", function () {
 
     describe("A Chatbox", function () {
 
@@ -40,7 +40,7 @@ describe("Chatboxes", function () {
         }));
 
 
-        it("supports the /me command", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
+        fit("supports the /me command", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
             await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
@@ -58,30 +58,33 @@ describe("Chatboxes", function () {
 
             await _converse.handleMessageStanza(msg);
             const view = _converse.chatboxviews.get(sender_jid);
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
             expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
-            expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Mercutio')).toBeTruthy();
+            expect(view.el.querySelector('.chat-msg__author').textContent.includes('**Mercutio')).toBeTruthy();
             expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
+
             message = '/me is as well';
             await mock.sendMessage(view, message);
             expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
             await u.waitUntil(() => sizzle('.chat-msg__author:last', view.el).pop().textContent.trim() === '**Romeo Montague');
             const last_el = sizzle('.chat-msg__text:last', view.el).pop();
-            expect(last_el.textContent).toBe('is as well');
+            await u.waitUntil(() => last_el.textContent === 'is as well');
             expect(u.hasClass('chat-msg--followup', last_el)).toBe(false);
+
             // Check that /me messages after a normal message don't
             // get the 'chat-msg--followup' class.
             message = 'This a normal message';
             await mock.sendMessage(view, message);
-            let message_el = view.el.querySelector('.message:last-child');
-            expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
+            await u.waitUntil(() => view.el.querySelector('.message:last-child').textContent === message);
+            expect(u.hasClass('chat-msg--followup', view.el.querySelector('.message:last-child'))).toBeFalsy();
+
             message = '/me wrote a 3rd person message';
             await mock.sendMessage(view, message);
-            message_el = view.el.querySelector('.message:last-child');
+            await u.waitUntil(() => view.el.querySelector('.message:last-child').textContent === message);
             expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
+
             expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('wrote a 3rd person message');
             expect(u.isVisible(sizzle('.chat-msg__author:last', view.el).pop())).toBeTruthy();
-            expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
             done();
         }));
 
@@ -1155,7 +1158,7 @@ describe("Chatboxes", function () {
 
     describe("A Message Counter", function () {
 
-        it("is incremented when the message is received and the window is not focused",
+        fit("is incremented when the message is received and the window is not focused",
                 mock.initConverse(
                     ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -1183,8 +1186,9 @@ describe("Chatboxes", function () {
             spyOn(_converse, 'incrementMsgCounter').and.callThrough();
             spyOn(_converse, 'clearMsgCounter').and.callThrough();
 
+            const promise = new Promise(resolve => view.once('messageInserted', resolve));
             await _converse.handleMessageStanza(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await promise;
             expect(_converse.incrementMsgCounter).toHaveBeenCalled();
             expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
             expect(document.title).toBe('Messages (1) Converse Tests');
@@ -1542,7 +1546,7 @@ describe("Chatboxes", function () {
         }));
     });
 
-    fdescribe("A Minimized ChatBoxView's Unread Message Count", function () {
+    describe("A Minimized ChatBoxView's Unread Message Count", function () {
 
         it("is displayed when scrolled up chatbox is minimized after receiving unread messages",
             mock.initConverse(
@@ -1597,7 +1601,7 @@ describe("Chatboxes", function () {
             done();
         }));
 
-        fit("will render Openstreetmap-URL from geo-URI",
+        it("will render Openstreetmap-URL from geo-URI",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {

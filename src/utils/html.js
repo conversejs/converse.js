@@ -19,6 +19,7 @@ import tpl_image from "../templates/image.js";
 import tpl_select_option from "../templates/select_option.html";
 import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
+import { api } from  "@converse/headless/converse-core";
 import { html } from "lit-html";
 import { isFunction } from "lodash";
 
@@ -340,7 +341,11 @@ u.convertURIoHyperlink = function (uri, urlAsTyped) {
         normalized_url = 'http://' + normalized_url;
     }
     if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
-        return html`<a target="_blank" rel="noopener" class="open-chatroom" href="${normalized_url}">${visibleUrl}</a>`;
+        return html`
+            <a target="_blank"
+               rel="noopener"
+               @click=${ev => api.rooms.open(ev.target.href)}
+               href="${normalized_url}">${visibleUrl}</a>`;
     }
     return html`<a target="_blank" rel="noopener" href="${normalized_url}">${visibleUrl}</a>`;
 };

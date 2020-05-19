@@ -6,22 +6,12 @@
 import "./components/message.js";
 import "./utils/html";
 import "@converse/headless/converse-emoji";
-import URI from "urijs";
-import filesize from "filesize";
-import log from "@converse/headless/log";
-import tpl_file_progress from "templates/file_progress.html";
-import tpl_info from "templates/info.js";
 import tpl_message from "templates/message.js";
-import tpl_message_versions_modal from "templates/message_versions_modal.js";
 import tpl_spinner from "templates/spinner.html";
-import xss from "xss/dist/xss";
-import { BootstrapModal } from "./converse-modal.js";
-import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from  "@converse/headless/converse-core";
 import { debounce } from 'lodash'
 import { render } from "lit-html";
 
-const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -33,48 +23,10 @@ converse.plugins.add('converse-message-view', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-
-        function onTagFoundDuringXSSFilter (tag, html, options) {
-            /* This function gets called by the XSS library whenever it finds
-             * what it thinks is a new HTML tag.
-             *
-             * It thinks that something like <https://example.com> is an HTML
-             * tag and then escapes the <> chars.
-             *
-             * We want to avoid this, because it prevents these URLs from being
-             * shown properly (whithout the trailing &gt;).
-             *
-             * The URI lib correctly trims a trailing >, but not a trailing &gt;
-             */
-            if (options.isClosing) {
-                // Closing tags don't match our use-case
-                return;
-            }
-            const uri = new URI(tag);
-            const protocol = uri.protocol().toLowerCase();
-            if (!["https", "http", "xmpp", "ftp"].includes(protocol)) {
-                // Not a URL, the tag will get filtered as usual
-                return;
-            }
-            if (uri.equals(tag) && `<${tag}>` === html.toLocaleLowerCase()) {
-                // We have something like <https://example.com>, and don't want
-                // to filter it.
-                return html;
-            }
-        }
-
-
         api.settings.update({
             'muc_hats_from_vcard': false,
             'show_images_inline': true,
             'time_format': 'HH:mm',
-        });
-
-        _converse.MessageVersionsModal = BootstrapModal.extend({
-            id: "message-versions-modal",
-            toHTML () {
-                return tpl_message_versions_modal(this.model.toJSON());
-            }
         });
 
 
@@ -84,6 +36,7 @@ converse.plugins.add('converse-message-view', {
          * @memberOf _converse
          */
         _converse.MessageView = _converse.ViewWithAvatar.extend({
+            className: 'msg-wrapper',
             events: {
                 'click .chat-msg__edit-modal': 'showMessageVersionsModal',
                 'click .retry': 'onRetryClicked'
@@ -116,21 +69,42 @@ converse.plugins.add('converse-message-view', {
             },
 
             async render () {
+                await api.waitUntil('emojisInitialized');
                 const is_followup = u.hasClass('chat-msg--followup', this.el);
-                if (this.model.get('file') && !this.model.get('oob_url')) {
-                    if (!this.model.file) {
-                        log.error("Attempted to render a file upload message with no file data");
-                        return this.el;
+                const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
+                const is_groupchat_message = this.model.get('type') === 'groupchat';
+
+                let hats = [];
+                if (is_groupchat_message) {
+                    if (api.settings.get('muc_hats_from_vcard')) {
+                        const role = this.model.vcard ? this.model.vcard.get('role') : null;
+                        hats = role ? role.split(',') : [];
+                    } else {
+                        hats = this.model.occupant?.get('hats') || [];
                     }
-                    this.renderFileUploadProgresBar();
-                } else if (this.model.get('type') === 'error') {
-                    this.renderErrorMessage();
-                } else if (this.model.get('type') === 'info') {
-                    this.renderInfoMessage();
-                } else {
-                    await this.renderChatMessage();
+                }
+
+                render(tpl_message(
+                    Object.assign(
+                        this.model.toJSON(), {
+                        'is_me_message': this.model.isMeCommand(),
+                        'model': this.model,
+                        'occupant': this.model.occupant,
+                        'username': this.model.getDisplayName(),
+                        hats,
+                        is_groupchat_message,
+                        is_retracted
+                    })
+                ), this.el);
+
+                if (this.model.collection) {
+                    // If the model gets destroyed in the meantime, it no
+                    // longer has a collection.
+                    this.model.collection.trigger('rendered', this);
                 }
                 is_followup && u.addClass('chat-msg--followup', this.el);
+                this.el.setAttribute('data-isodate', this.model.get('time'));
+                this.el.setAttribute('data-msgid', this.model.get('msgid'));
                 return this.el;
             },
 
@@ -182,185 +156,6 @@ converse.plugins.add('converse-message-view', {
                     {'once': true}
                 );
                 u.addClass('onload', this.el);
-            },
-
-            replaceElement (msg) {
-                if (this.el.parentElement) {
-                    this.el.parentElement.replaceChild(msg, this.el);
-                }
-                this.setElement(msg);
-                return this.el;
-            },
-
-            transformOOBURL (url) {
-                return u.getOOBURLMarkup(_converse, url);
-            },
-
-            async transformBodyText (text) {
-                /**
-                 * Synchronous event which provides a hook for transforming a chat message's body text
-                 * before the default transformations have been applied.
-                 * @event _converse#beforeMessageBodyTransformed
-                 * @param { _converse.MessageView } view - The view representing the message
-                 * @param { string } text - The message text
-                 * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
-                 */
-                await api.trigger('beforeMessageBodyTransformed', this, text, {'Synchronous': true});
-                text = this.model.isMeCommand() ? text.substring(4) : text;
-                text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
-                text = u.geoUriToHttp(text, api.settings.get("geouri_replacement"));
-                text = u.addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
-                text = u.addHyperlinks(text);
-                text = u.renderNewLines(text);
-                text = u.addEmoji(text);
-                /**
-                 * Synchronous event which provides a hook for transforming a chat message's body text
-                 * after the default transformations have been applied.
-                 * @event _converse#afterMessageBodyTransformed
-                 * @param { _converse.MessageView } view - The view representing the message
-                 * @param { string } text - The message text
-                 * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
-                 */
-                await api.trigger('afterMessageBodyTransformed', this, text, {'Synchronous': true});
-                return text;
-            },
-
-            async renderChatMessage () {
-                await api.waitUntil('emojisInitialized');
-                const time = dayjs(this.model.get('time'));
-                const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
-                const is_groupchat_message = this.model.get('type') === 'groupchat';
-
-                let hats = [];
-                if (is_groupchat_message) {
-                    if (api.settings.get('muc_hats_from_vcard')) {
-                        const role = this.model.vcard ? this.model.vcard.get('role') : null;
-                        hats = role ? role.split(',') : [];
-                    } else {
-                        hats = this.model.occupant?.get('hats') || [];
-                    }
-                }
-
-                render(tpl_message(
-                    Object.assign(
-                        this.model.toJSON(), {
-                        'extra_classes': this.getExtraMessageClasses(),
-                        'is_me_message': this.model.isMeCommand(),
-                        'model': this.model,
-                        'occupant': this.model.occupant,
-                        'pretty_time': time.format(api.settings.get('time_format')),
-                        'retraction_text': is_retracted ? this.getRetractionText() : null,
-                        'time': time.toISOString(),
-                        'username': this.model.getDisplayName(),
-                        hats,
-                        is_groupchat_message,
-                        is_retracted
-                    })
-                ), this.el);
-
-                // const url = this.model.get('oob_url');
-                // url && render(this.transformOOBURL(url), msg.querySelector('.chat-msg__media'));
-
-                // if (!is_retracted) {
-                //     const text = this.model.getMessageText();
-                //     const msg_content = msg.querySelector('.chat-msg__text');
-                //     if (text && text !== url) {
-                //         msg_content.innerHTML = await this.transformBodyText(text);
-                //         if (api.settings.get('show_images_inline')) {
-                //             u.renderImageURLs(_converse, msg_content).then(() => this.triggerRendered());
-                //         }
-                //     }
-                // }
-                // if (this.model.get('type') !== 'headline') {
-                //     this.renderAvatar(msg);
-                // }
-                // this.replaceElement(msg);
-                this.triggerRendered();
-            },
-
-            triggerRendered () {
-                if (this.model.collection) {
-                    // If the model gets destroyed in the meantime, it no
-                    // longer has a collection.
-                    this.model.collection.trigger('rendered', this);
-                }
-            },
-
-            renderInfoMessage () {
-                render(
-                    tpl_info(Object.assign(this.model.toJSON(), {
-                        'extra_classes': 'chat-info',
-                        'isodate': dayjs(this.model.get('time')).toISOString()
-                    })),
-                    this.el
-                );
-            },
-
-            getRetractionText () {
-                if (this.model.get('type') === 'groupchat' && this.model.get('moderated_by')) {
-                    const retracted_by_mod = this.model.get('moderated_by');
-                    const chatbox = this.model.collection.chatbox;
-                    if (!this.model.mod) {
-                        this.model.mod =
-                            chatbox.occupants.findOccupant({'jid': retracted_by_mod}) ||
-                            chatbox.occupants.findOccupant({'nick': Strophe.getResourceFromJid(retracted_by_mod)});
-                    }
-                    const modname = this.model.mod ? this.model.mod.getDisplayName() : 'A moderator';
-                    return __('%1$s has removed this message', modname);
-                } else {
-                    return __('%1$s has removed this message', this.model.getDisplayName());
-                }
-            },
-
-            renderErrorMessage () {
-                const msg = u.stringToElement(
-                    tpl_info(Object.assign(this.model.toJSON(), {
-                        'extra_classes': 'chat-error',
-                        'isodate': dayjs(this.model.get('time')).toISOString()
-                    }))
-                );
-                return this.replaceElement(msg);
-            },
-
-            renderFileUploadProgresBar () {
-                const msg = u.stringToElement(tpl_file_progress(
-                    Object.assign(this.model.toJSON(), {
-                        '__': __,
-                        'filename': this.model.file.name,
-                        'filesize': filesize(this.model.file.size)
-                    })));
-                this.replaceElement(msg);
-                this.renderAvatar();
-            },
-
-            showMessageVersionsModal (ev) {
-                ev.preventDefault();
-                if (this.model.message_versions_modal === undefined) {
-                    this.model.message_versions_modal = new _converse.MessageVersionsModal({'model': this.model});
-                }
-                this.model.message_versions_modal.show(ev);
-            },
-
-            getExtraMessageClasses () {
-                const is_retracted = this.model.get('retracted') || this.model.get('moderated') === 'retracted';
-                const extra_classes = [
-                    ...(this.model.get('is_delayed') ? ['delayed'] : []), ...(is_retracted ? ['chat-msg--retracted'] : [])
-                ];
-                if (this.model.get('type') === 'groupchat') {
-                    if (this.model.occupant) {
-                        extra_classes.push(this.model.occupant.get('role'));
-                        extra_classes.push(this.model.occupant.get('affiliation'));
-                    }
-                    if (this.model.get('sender') === 'them' && this.model.collection.chatbox.isUserMentioned(this.model)) {
-                        // Add special class to mark groupchat messages
-                        // in which we are mentioned.
-                        extra_classes.push('mentioned');
-                    }
-                }
-                if (this.model.get('correcting')) {
-                    extra_classes.push('correcting');
-                }
-                return extra_classes.filter(c => c).join(" ");
             }
         });
     }

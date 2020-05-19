@@ -550,12 +550,13 @@ converse.plugins.add('converse-chatview', {
              * @returns { Date }
              */
             getLastMessageDate (cutoff) {
-                const first_msg = u.getFirstChildElement(this.msgs_container, '.message:not(.chat-state-notification)');
+                const sel = '.msg-wrapper';
+                const first_msg = u.getFirstChildElement(this.msgs_container, sel);
                 const oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
                 if (oldest_date !== null && dayjs(oldest_date).isAfter(cutoff)) {
                     return null;
                 }
-                const last_msg = u.getLastChildElement(this.msgs_container, '.message:not(.chat-state-notification)');
+                const last_msg = u.getLastChildElement(this.msgs_container, sel);
                 const most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
                 if (most_recent_date === null) {
                     return null;
@@ -569,7 +570,6 @@ converse.plugins.add('converse-chatview', {
                  * them here, otherwise we get a null reference later
                  * upon element insertion.
                  */
-                const sel = '.message:not(.chat-state-notification)';
                 const msg_dates = sizzle(sel, this.msgs_container).map(e => e.getAttribute('data-isodate'));
                 const cutoff_iso = cutoff.toISOString();
                 msg_dates.push(cutoff_iso);

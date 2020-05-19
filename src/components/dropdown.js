@@ -1,8 +1,8 @@
-import { html } from 'lit-element';
-import { CustomElement } from './element.js';
-import { until } from 'lit-html/directives/until.js';
 import DOMNavigator from "../dom-navigator";
+import { CustomElement } from './element.js';
 import { converse } from "@converse/headless/converse-core";
+import { html } from 'lit-element';
+import { until } from 'lit-html/directives/until.js';
 
 const u = converse.env.utils;
 

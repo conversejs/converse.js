@@ -23,13 +23,13 @@ export default (o) => html`
         occupant_affiliation=${o.model.occupant ? o.model.occupant.get('affiliation') : ''}
         occupant_role=${o.model.occupant ? o.model.occupant.get('role') : ''}
         oob_url=${o.model.get('oob_url') || ''}
-        pretty_time=${o.pretty_time}
         pretty_type=${o.model.get('pretty_type')}
         received=${o.model.get('received')}
         sender=${o.model.get('sender')}
         spoiler_hint=${o.model.get('spoiler_hint') || ''}
+        progress=${o.model.get('progress') || ''}
         subject=${o.model.get('subject') || ''}
         time=${o.model.get('time')}
-        message_type=${o.model.get('type')}
+        message_type=${o.model.get('type') || ''}
         username=${o.username}></converse-chat-message>
 `;

@@ -1,6 +1,5 @@
 import URI from "urijs";
 import log from '@converse/headless/log';
-import tpl_avatar from "templates/avatar.js";
 import xss from "xss/dist/xss";
 import { _converse, api, converse } from  "@converse/headless/converse-core";
 import { directive, html } from "lit-html";
@@ -137,18 +136,25 @@ function addHyperlinks (text) {
         log.debug(error);
         return [text];
     }
+
+    const show_images = api.settings.get('show_images_inline');
+
     let list = [];
-    objs.sort((a, b) => b.start - a.start)
-        .forEach(url_obj => {
-            const new_list = [
-                text.slice(0, url_obj.start),
-                u.isImageURL(text) ? u.convertToImageTag(text) : u.convertUrlToHyperlink(text),
-                text.slice(url_obj.end),
-                ...list
-            ];
-            list = new_list.filter(i => i);
-            text = text.slice(0, url_obj.start);
-        });
+    if (objs.length) {
+        objs.sort((a, b) => b.start - a.start)
+            .forEach(url_obj => {
+                const new_list = [
+                    text.slice(0, url_obj.start),
+                    show_images && u.isImageURL(text) ? u.convertToImageTag(text) : u.convertUrlToHyperlink(text),
+                    text.slice(url_obj.end),
+                    ...list
+                ];
+                list = new_list.filter(i => i);
+                text = text.slice(0, url_obj.start);
+            });
+    } else {
+        list = [text];
+    }
     return list;
 }
 
@@ -181,24 +187,4 @@ export const renderBodyText = directive(component => async part => {
     part.setValue(await renderer.render());
     part.commit();
     model.collection && model.collection.trigger('rendered', model);
-    component.registerClickHandlers();
-});
-
-
-export const renderAvatar = directive(o => part => {
-    if (o.type === 'headline' || o.is_me_message) {
-        part.setValue('');
-        return;
-    }
-    if (o.model.vcard) {
-        const data = {
-            'classes': 'avatar chat-msg__avatar',
-            'width': 36,
-            'height': 36,
-        }
-        const image_type = o.model.vcard.get('image_type');
-        const image = o.model.vcard.get('image');
-        data['image'] = "data:" + image_type + ";base64," + image;
-        part.setValue(tpl_avatar(data));
-    }
 });

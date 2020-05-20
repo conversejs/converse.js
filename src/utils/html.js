@@ -373,6 +373,40 @@ u.convertUrlToHyperlink = function (url) {
     return url;
 };
 
+u.addHyperlinks = function (text) {
+    const objs = [];
+    const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
+    try {
+        URI.withinString(text, (url, start, end) => {
+            objs.push({url, start, end})
+            return url;
+        } , parse_options);
+    } catch (error) {
+        log.debug(error);
+        return [text];
+    }
+
+    const show_images = api.settings.get('show_images_inline');
+
+    let list = [];
+    if (objs.length) {
+        objs.sort((a, b) => b.start - a.start)
+            .forEach(url_obj => {
+                const new_list = [
+                    text.slice(0, url_obj.start),
+                    show_images && u.isImageURL(text) ? u.convertToImageTag(text) : u.convertUrlToHyperlink(text),
+                    text.slice(url_obj.end),
+                    ...list
+                ];
+                list = new_list.filter(i => i);
+                text = text.slice(0, url_obj.start);
+            });
+    } else {
+        list = [text];
+    }
+    return list;
+}
+
 u.geoUriToHttp = function(text, geouri_replacement) {
     const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
     return text.replace(regex, geouri_replacement);

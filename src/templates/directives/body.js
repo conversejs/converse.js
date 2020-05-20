@@ -1,5 +1,4 @@
 import URI from "urijs";
-import log from '@converse/headless/log';
 import xss from "xss/dist/xss";
 import { _converse, api, converse } from  "@converse/headless/converse-core";
 import { directive, html } from "lit-html";
@@ -88,7 +87,7 @@ class MessageBodyRenderer extends String {
             text = u.addEmoji(text);
             return addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
         }
-        const list = await Promise.all(addHyperlinks(text));
+        const list = await Promise.all(u.addHyperlinks(text));
         this.list = list.reduce((acc, i) => isString(i) ? [...acc, ...process(i)] : [...acc, i], []);
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text
@@ -124,60 +123,26 @@ const tpl_mention_with_nick = (o) => html`<span class="mention mention--self bad
 const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
 
 
-function addHyperlinks (text) {
-    const objs = [];
-    const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
-    try {
-        URI.withinString(text, (url, start, end) => {
-            objs.push({url, start, end})
-            return url;
-        } , parse_options);
-    } catch (error) {
-        log.debug(error);
-        return [text];
-    }
-
-    const show_images = api.settings.get('show_images_inline');
-
-    let list = [];
-    if (objs.length) {
-        objs.sort((a, b) => b.start - a.start)
-            .forEach(url_obj => {
-                const new_list = [
-                    text.slice(0, url_obj.start),
-                    show_images && u.isImageURL(text) ? u.convertToImageTag(text) : u.convertUrlToHyperlink(text),
-                    text.slice(url_obj.end),
-                    ...list
-                ];
-                list = new_list.filter(i => i);
-                text = text.slice(0, url_obj.start);
-            });
-    } else {
-        list = [text];
-    }
-    return list;
-}
-
-
 function addMentionsMarkup (text, references, chatbox) {
-    if (chatbox.get('message_type') !== 'groupchat') {
+    if (chatbox.get('message_type') === 'groupchat' && references.length) {
+        let list = [];
+        const nick = chatbox.get('nick');
+        references
+            .sort((a, b) => b.begin - a.begin)
+            .forEach(ref => {
+                const mention = text.slice(ref.begin, ref.end)
+                chatbox;
+                if (mention === nick) {
+                    list = [text.slice(0, ref.begin), new Markup(mention, tpl_mention_with_nick({mention})), text.slice(ref.end),  ...list];
+                } else {
+                    list = [text.slice(0, ref.begin), new Markup(mention, tpl_mention({mention})), text.slice(ref.end), ...list];
+                }
+                text = text.slice(0, ref.begin);
+            });
+        return list;
+    } else {
         return [text];
     }
-    const nick = chatbox.get('nick');
-    let list = [];
-    references
-        .sort((a, b) => b.begin - a.begin)
-        .forEach(ref => {
-            const mention = text.slice(ref.begin, ref.end)
-            chatbox;
-            if (mention === nick) {
-                list = [text.slice(0, ref.begin), new Markup(mention, tpl_mention_with_nick({mention})), text.slice(ref.end),  ...list];
-            } else {
-                list = [text.slice(0, ref.begin), new Markup(mention, tpl_mention({mention})), text.slice(ref.end), ...list];
-            }
-            text = text.slice(0, ref.begin);
-        });
-    return list;
 }
 
 

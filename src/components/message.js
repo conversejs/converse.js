@@ -116,12 +116,14 @@ class Message extends CustomElement {
     }
 
     render () {
-        this.pretty_time = dayjs(this.time).format(api.settings.get('time_format'));
+        const format = api.settings.get('time_format');
+        this.pretty_time = dayjs(this.time).format(format);
         if (this.model.get('file') && !this.model.get('oob_url')) {
             return tpl_file_progress(this);
         } else if (['error', 'info'].includes(this.message_type)) {
             return tpl_info(
                 Object.assign(this.model.toJSON(), {
+                    'onRetryClicked': ev => this.onRetryClicked(ev),
                     'extra_classes': this.message_type,
                     'isodate': dayjs(this.model.get('time')).toISOString()
                 })
@@ -129,6 +131,14 @@ class Message extends CustomElement {
         } else {
             return tpl_chat_message(this);
         }
+    }
+
+    async onRetryClicked () {
+        // FIXME
+        // this.showSpinner();
+        await this.model.error.retry();
+        this.model.destroy();
+        this.parentElement.removeChild(this);
     }
 
     isFollowup () {

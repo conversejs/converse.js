@@ -461,8 +461,9 @@ converse.plugins.add('converse-muc-views', {
             async initialize () {
                 this.initDebounced();
 
-                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-                this.listenTo(this.model.messages, 'change:edited', this.onMessageEdited);
+                this.listenTo(this.model.messages, 'add', debounce(this.renderChatContent, 100));
+                this.listenTo(this.model.messages, 'change', debounce(this.renderChatContent, 100));
+
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
                     this.msgs_container.innerHTML = '';

@@ -3,8 +3,8 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import "./components/chat_content.js";
 import "converse-chatboxviews";
-import "converse-message-view";
 import "converse-modal";
 import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.js";
@@ -45,7 +45,6 @@ converse.plugins.add('converse-chatview', {
         "converse-chatboxviews",
         "converse-chat",
         "converse-disco",
-        "converse-message-view",
         "converse-modal"
     ],
 
@@ -56,9 +55,12 @@ converse.plugins.add('converse-chatview', {
         api.settings.update({
             'auto_focus': true,
             'message_limit': 0,
-            'show_send_button': true,
+            'muc_hats_from_vcard': false,
+            'show_images_inline': true,
             'show_retraction_warning': true,
+            'show_send_button': true,
             'show_toolbar': true,
+            'time_format': 'HH:mm',
             'visible_toolbar_buttons': {
                 'call': false,
                 'clear': true,
@@ -189,7 +191,9 @@ converse.plugins.add('converse-chatview', {
             async initialize () {
                 this.initDebounced();
 
-                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'add', debounce(this.renderChatContent, 100));
+                this.listenTo(this.model.messages, 'change', debounce(this.renderChatContent, 100));
+
                 this.listenTo(this.model.messages, 'rendered', this.scrollDown);
                 this.model.messages.on('reset', () => {
                     this.msgs_container.innerHTML = '';
@@ -231,7 +235,7 @@ converse.plugins.add('converse-chatview', {
                 this.markScrolled = debounce(this._markScrolled, 100);
             },
 
-            render () {
+            async render () {
                 const result = tpl_chatbox(
                     Object.assign(
                         this.model.toJSON(), {
@@ -245,6 +249,7 @@ converse.plugins.add('converse-chatview', {
                 this.notifications = this.el.querySelector('.chat-content__notifications');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
                 this.renderChatStateNotification();
+                await this.renderChatContent();
                 this.renderMessageForm();
                 this.renderHeading();
                 return this;
@@ -260,6 +265,12 @@ converse.plugins.add('converse-chatview', {
                 } else {
                     this.notifications.innerText = '';
                 }
+            },
+
+            async renderChatContent () {
+                await api.waitUntil('emojisInitialized');
+                const tpl = (o) => html`<converse-chat-content .messages=${o.messages}></converse-chat-content>`;
+                render(tpl({'messages': Array.from(this.model.messages)}), this.msgs_container);
             },
 
             renderToolbar () {
@@ -471,7 +482,7 @@ converse.plugins.add('converse-chatview', {
 
             async updateAfterMessagesFetched () {
                 await this.model.messages.fetched;
-                await Promise.all(this.model.messages.map(m => this.onMessageAdded(m)));
+                this.renderChatContent();
                 this.insertIntoDOM();
                 this.scrollDown();
                 this.content.addEventListener('scroll', () => this.markScrolled());
@@ -751,35 +762,6 @@ converse.plugins.add('converse-chatview', {
                 if (message.get('correcting')) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                 }
-            },
-
-            /**
-             * Handler that gets called when a new message object is created.
-             * @private
-             * @method _converse.ChatBoxView#onMessageAdded
-             * @param { object } message - The message object that was added.
-             */
-            async onMessageAdded (message) {
-                const id = message.get('id');
-                if (id && this.get(id)) {
-                    // We already have a view for this message
-                    return;
-                }
-                if (!message.get('dangling_retraction')) {
-                    await this.showMessage(message);
-                }
-                /**
-                 * Triggered once a message has been added to a chatbox.
-                 * @event _converse#messageAdded
-                 * @type {object}
-                 * @property { _converse.Message } message - The message instance
-                 * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
-                 * @example _converse.api.listen.on('messageAdded', data => { ... });
-                 */
-                api.trigger('messageAdded', {
-                    'message': message,
-                    'chatbox': this.model
-                });
             },
 
             parseMessageForCommands (text) {
@@ -1135,8 +1117,8 @@ converse.plugins.add('converse-chatview', {
             },
 
             onPresenceChanged (item) {
-                const show = item.get('show'),
-                      fullname = this.model.getDisplayName();
+                const show = item.get('show');
+                const fullname = this.model.getDisplayName();
 
                 let text;
                 if (u.isVisible(this.el)) {

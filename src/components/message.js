@@ -215,7 +215,7 @@ class Message extends CustomElement {
 
     renderAvatarByline () {
         return html`
-            ${ this.hats.map(role => html`<span class="badge badge-secondary">${role}</span>`) }
+            ${ this.hats.map(h => html`<span class="badge badge-secondary">${h.title}</span>`) }
             <time timestamp="${this.time}" class="chat-msg__time">${this.pretty_time}</time>
         `;
     }

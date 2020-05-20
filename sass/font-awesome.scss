@@ -66,21 +66,26 @@
 
 #conversejs, .converse-website {
   /* Apparent font-awesome bug? The circle has some kind of bottom margin */
-  .far {
+
+  fa-icon:before {
+    content: none !important;
+  }
+
+  .far:not(fa-icon) {
     font-family: 'ConverseFontAwesomeRegular' !important;
     font-weight: 400;
   }
-  .fa,
-  .fas {
+  .fa:not(fa-icon),
+  .fas:not(fa-icon) {
     font-family: 'ConverseFontAwesomeSolid' !important;
     font-weight: 900;
   }
 
-  .fab {
+  .fab:not(fa-icon) {
     font-family: 'ConverseFontAwesomeBrands';
   }
 
-  .fa, .far, .fas, .fab {
+  .fa:not(fa-icon), .far:not(fa-icon), .fas:not(fa-icon), .fab:not(fa-icon) {
       display: inline-block;
       font-size: inherit;
       text-rendering: auto;

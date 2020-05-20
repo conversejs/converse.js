@@ -728,42 +728,6 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            /**
-             * Inserts a chat message into the content area of the chat box.
-             * Will also insert a new day indicator if the message is on a different day.
-             * @private
-             * @method _converse.ChatBoxView#showMessage
-             * @param { _converse.Message } message - The message object
-             */
-            async showMessage (message) {
-                await message.initialized;
-                const view = this.add(message.get('id'), new _converse.MessageView({'model': message}));
-                await view.render();
-                this.insertMessage(view);
-                this.insertDayIndicator(view.el);
-                this.setScrollPosition(view.el);
-
-                if (u.isNewMessage(message)) {
-                    if (message.get('sender') === 'me') {
-                        // We remove the "scrolled" flag so that the chat area
-                        // gets scrolled down. We always want to scroll down
-                        // when the user writes a message as opposed to when a
-                        // message is received.
-                        this.model.set('scrolled', false);
-                    } else if (this.model.get('scrolled', true)) {
-                        this.showNewMessagesIndicator();
-                    }
-                }
-                if (this.shouldShowOnTextMessage()) {
-                    this.show();
-                } else {
-                    this.scrollDown();
-                }
-                if (message.get('correcting')) {
-                    this.insertIntoTextArea(message.get('message'), true, true);
-                }
-            },
-
             parseMessageForCommands (text) {
                 const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
                 if (match) {

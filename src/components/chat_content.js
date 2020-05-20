@@ -31,7 +31,8 @@ function getDayIndicator (model) {
 
 
 function renderMessage (model) {
-    if (model.get('dangling_retraction')) {
+    // XXX: leaky abstraction "is_only_key" from converse-omemo
+    if (model.get('dangling_retraction') || model.get('is_only_key')) {
         return '';
     }
     const day = getDayIndicator(model);

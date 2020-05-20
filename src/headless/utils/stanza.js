@@ -727,7 +727,7 @@ const st = {
             } else if (child.matches('hats') && child.getAttribute('xmlns') === Strophe.NS.MUC_HATS) {
                 data['hats'] = Array.from(child.children).map(c => c.matches('hat') && {
                     'title': c.getAttribute('title'),
-                    'id': c.getAttribute('id')
+                    'uri': c.getAttribute('uri')
                 });
             }
         });

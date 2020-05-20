@@ -254,8 +254,7 @@ converse.plugins.add('converse-message-view', {
                         const role = this.model.vcard ? this.model.vcard.get('role') : null;
                         hats = role ? role.split(',') : [];
                     } else {
-                        const o = this.model.occupant;
-                        hats = o && o.get('hats').map(h => h.title).filter(h => h) || [];
+                        hats = this.model.occupant?.get('hats') || [];
                     }
                 }
 

@@ -825,6 +825,7 @@ converse.plugins.add('converse-chatview', {
 
             async onFormSubmitted (ev) {
                 ev.preventDefault();
+                this.model.clearActiveFirstUnreadMsgId();
                 const textarea = this.el.querySelector('.chat-textarea');
                 const message_text = textarea.value.trim();
                 if (api.settings.get('message_limit') && message_text.length > api.settings.get('message_limit') ||

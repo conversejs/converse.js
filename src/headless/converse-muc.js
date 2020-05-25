@@ -2389,28 +2389,26 @@ converse.plugins.add('converse-muc', {
                 if (!message) { return; }
                 const body = message.get('message');
                 if (!body) { return; }
-                if (u.isNewMessage(message) && this.isHidden()) {
-                    if (this.get('num_unread_general') == 0) {
-                        this.setFirstUnreadMsgId(message);
-                    }
-                    const settings = {'num_unread_general': this.get('num_unread_general') + 1};
-                    if (this.isUserMentioned(message)) {
-                        settings.num_unread = this.get('num_unread') + 1;
-                        _converse.incrementMsgCounter();
-                    }
-                    this.save(settings);
-                    if (message.get('is_markable')) {
-                        this.sendMarker(message.get('from'), message.get('msgid'), 'displayed');
+                if (u.isNewMessage(message)) {
+                    if (this.isHidden()) {
+                        if (this.get('num_unread_general') == 0) {
+                            this.setFirstUnreadMsgId(message);
+                        }
+                        const settings = {'num_unread_general': this.get('num_unread_general') + 1};
+                        if (this.isUserMentioned(message)) {
+                            settings.num_unread = this.get('num_unread') + 1;
+                            _converse.incrementMsgCounter();
+                        }
+                        this.save(settings);
+                    } else {
+                        this.sendDisplayedMarker(message);
                     }
                 }
             },
 
             clearUnreadMsgCounter() {
-                if (this.get('num_unread_general') > 0) {
-                    const msg = this.messages.last();
-                    if (msg && msg.get('is_markable')) {
-                        this.sendMarker(msg.get('from'), msg.get('msgid'), 'acknowledged');
-                    }
+                if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0) {
+                    this.sendDisplayedMarker(this.messages.last());
                 }
                 u.safeSave(this, {
                     'num_unread': 0,

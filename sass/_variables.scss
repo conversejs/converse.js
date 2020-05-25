@@ -8,6 +8,7 @@ $mobile_portrait_length: 480px !default;
     --redder-orange: #E77051;
     --orange: #E7A151;
     --light-blue: #578EA9;
+    --lighter-blue: #85B47B;
 
     --chat-status-online: var(--green);
     --chat-status-busy: var(--redder-orange);
@@ -206,6 +207,8 @@ $mobile_portrait_length: 480px !default;
 
     --heading-display: inline;
     --heading-color: #9B4D;
+
+    --link-hover-color: var(--lighter-blue);
 
     --chatroom-head-color: #7E7E7E;
     --chatroom-head-bg-color: white;

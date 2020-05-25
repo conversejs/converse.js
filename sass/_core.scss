@@ -310,6 +310,7 @@ body.converse-fullscreen {
         text-decoration: none;
         color: var(--link-color);
         text-shadow: none;
+        cursor: pointer;
         &:hover {
             color: var(--link-hover-color);
             text-decoration: none;

@@ -1134,7 +1134,7 @@ converse.plugins.add('converse-chat', {
 
             sendDisplayedMarker(msg) {
                 if (msg && msg.get('is_markable')) {
-                    const from_jid = converse_chat_Strophe.getBareJidFromJid(msg.get('from'));
+                    const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
                     this.sendMarker(from_jid, msg.get('msgid'), 'displayed', msg.get('type'));
                 }
             },

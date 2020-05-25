@@ -2013,7 +2013,7 @@ describe("A XEP-0333 Chat Marker", function () {
             .map(s => _.isElement(s) ? s : s.nodeTree)
             .filter(e => e.nodeName === 'message');
 
-        expect(sent_messages.length).toBe(1);
+        expect(sent_messages.length).toBe(2);
         expect(Strophe.serialize(sent_messages[0])).toBe(
             `<message id="${sent_messages[0].getAttribute('id')}" to="${contact_jid}" type="chat" xmlns="jabber:client">`+
                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+

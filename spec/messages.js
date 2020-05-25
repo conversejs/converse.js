@@ -1979,7 +1979,7 @@ describe("A XEP-0333 Chat Marker", function () {
         spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
         spyOn(view.model, 'sendMarker').and.callThrough();
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => view.model.sendMarker.calls.count() === 1);
+        await u.waitUntil(() => view.model.sendMarker.calls.count() === 2);
         expect(Strophe.serialize(sent_stanzas[0])).toBe(
             `<message from="romeo@montague.lit/orchard" `+
                     `id="${sent_stanzas[0].nodeTree.getAttribute('id')}" `+

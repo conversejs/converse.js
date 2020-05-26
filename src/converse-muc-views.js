@@ -12,11 +12,11 @@ import log from "@converse/headless/log";
 import st from "@converse/headless/utils/stanza";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
 import tpl_chatroom from "templates/chatroom.js";
-import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
+import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.js";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
 import tpl_chatroom_head from "templates/chatroom_head.js";
-import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
+import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.js";
 import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
 import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
@@ -25,6 +25,7 @@ import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_room_description from "templates/room_description.html";
 import tpl_room_panel from "templates/room_panel.html";
 import tpl_spinner from "templates/spinner.html";
+import tpl_spinnerjs from "templates/spinner.js";
 import { BootstrapModal } from "./converse-modal.js";
 import { Model } from 'skeletor.js/src/model.js';
 import { View } from 'skeletor.js/src/view.js';
@@ -54,6 +55,18 @@ const COMMAND_TO_AFFILIATION = {
     'member': 'member',
     'owner': 'owner',
     'revoke': 'none'
+}
+
+/**
+ * Turns a lit-html template to HTML string
+ * @function _templateToHTML
+ * @param {TemplateResult} templateResult
+ * @return {String} HTML string
+ */
+function _templateToHTML (templateResult) {
+    const div = document.createElement('div');
+    render(templateResult, div);
+    return div.innerHTML;
 }
 
 converse.plugins.add('converse-muc-views', {
@@ -515,12 +528,35 @@ converse.plugins.add('converse-muc-views', {
                 api.trigger('chatRoomViewInitialized', this);
             },
 
+            _state: {
+                'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
+                'show_send_button': _converse.show_send_button,
+                'is_loading': false
+            },
+
+            _stateHasUpdated () {
+                console.log('State:', this._state);
+                this._render();
+            },
+
+            // @TODO Will eventually need debounce but
+            // whatever system we use will handle this anyways
+            _setState (newState) {
+                this._state = {
+                    ...this._state,
+                    ...newState
+                };
+                this._stateHasUpdated();
+            },
+
+            _render () {
+                const templateResult = tpl_chatroom(this._state);
+                render(templateResult, this.el);
+            },
+
             async render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
-                render(tpl_chatroom({
-                    'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
-                    'show_send_button': _converse.show_send_button
-                }), this.el);
+                render(tpl_chatroom(this._state), this.el);
                 this.notifications = this.el.querySelector('.chat-content__notifications');
                 this.content = this.el.querySelector('.chat-content');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
@@ -620,7 +656,8 @@ converse.plugins.add('converse-muc-views', {
                 const container = this.el.querySelector('.bottom-panel');
                 const entered = this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
                 const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
-                container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit, entered});
+                const templateResult = tpl_chatroom_bottom_panel({__, can_edit, entered});
+                render(templateResult, container);
                 if (entered && can_edit) {
                     this.renderMessageForm();
                     this.initMentionAutoComplete();
@@ -1527,7 +1564,7 @@ converse.plugins.add('converse-muc-views', {
                     __('Choose a nickname to enter') :
                     __('Please choose your nickname');
 
-                const html = tpl_chatroom_nickname_form(Object.assign({
+                const templateResult = tpl_chatroom_nickname_form(Object.assign({
                     heading,
                     'label_nickname': __('Nickname'),
                     'label_join': __('Enter groupchat'),
@@ -1535,17 +1572,17 @@ converse.plugins.add('converse-muc-views', {
 
                 if (_converse.muc_show_logs_before_join) {
                     const container = this.el.querySelector('.muc-bottom-panel');
-                    container.innerHTML = html;
+                    render(templateResult, container)
                     u.addClass('muc-bottom-panel--nickname', container);
                 } else {
                     const form = this.el.querySelector('.muc-nickname-form');
                     if (form) {
                         sizzle('.spinner', this.el).forEach(u.removeElement);
-                        form.outerHTML = html;
+                        form.outerHTML = _templateToHTML(templateResult);
                     } else {
                         this.hideChatRoomContents();
                         const container = this.el.querySelector('.chatroom-body');
-                        container.insertAdjacentHTML('beforeend', html);
+                        container.insertAdjacentHTML('beforeend', _templateToHTML(templateResult));
                     }
                 }
                 u.safeSave(this.model.session, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
@@ -1748,10 +1785,12 @@ converse.plugins.add('converse-muc-views', {
             },
 
             showSpinner () {
-                sizzle('.spinner', this.el).forEach(u.removeElement);
+                // sizzle('.spinner', this.el).forEach(u.removeElement);
                 this.hideChatRoomContents();
-                const container_el = this.el.querySelector('.chatroom-body');
-                container_el.insertAdjacentHTML('afterbegin', tpl_spinner());
+                
+                // const container_el = this.el.querySelector('.chatroom-body');
+                // container_el.insertAdjacentHTML('afterbegin', tpl_spinner());
+                this._setState({ is_loading: true });
             },
 
             /**
@@ -1767,6 +1806,7 @@ converse.plugins.add('converse-muc-views', {
                     u.removeElement(spinner);
                     this.renderAfterTransition();
                 }
+                this._setState({ is_loading: false });
                 return this;
             }
         });

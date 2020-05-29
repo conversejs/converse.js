@@ -456,7 +456,8 @@ converse.plugins.add('converse-muc-views', {
                 'keyup .chat-textarea': 'onKeyUp',
                 'mousedown .dragresize-occupants-left': 'onStartResizeOccupants',
                 'paste .chat-textarea': 'onPaste',
-                'submit .muc-nickname-form': 'submitNickname'
+                'submit .muc-nickname-form': 'submitNickname',
+                'click .converse-overlayed  .chat-head-chatroom': 'minimize'
             },
 
             async initialize () {
@@ -990,6 +991,7 @@ converse.plugins.add('converse-muc-views', {
                         'i18n_text': __('Leave'),
                         'i18n_title': __('Leave and close this groupchat'),
                         'handler': async ev => {
+                            ev.stopPropagation();
                             const messages = [__('Are you sure you want to leave this groupchat?')];
                             const result = await api.confirm(__('Confirm'), messages);
                             result && this.close(ev);

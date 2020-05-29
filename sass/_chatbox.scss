@@ -483,7 +483,11 @@
         min-height: calc(var(--overlayed-chat-height) / 2);
     }
     .chat-head {
+        cursor: pointer;
         min-height: var(--overlayed-chat-head-height);
+    }
+    .minimized-chats-flyout .chat-head {
+        cursor: default;
     }
     .chat-textarea {
         max-height: var(--overlayed-max-chat-textarea-height);

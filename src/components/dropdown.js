@@ -29,7 +29,8 @@ export class BaseDropdown extends CustomElement {
         this.button.setAttribute('aria-expanded', true);
     }
 
-    toggleMenu () {
+    toggleMenu (event) {
+        event.stopPropagation();
         if (u.hasClass('show', this.menu)) {
             this.hideMenu();
         } else {

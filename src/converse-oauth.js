@@ -74,7 +74,7 @@ converse.plugins.add("converse-oauth", {
         const { __ } = _converse;
 
         api.settings.update({
-            'oauth_providers': {},
+            'oauth_providers': [],
         });
 
         _converse.OAuthProviders = Collection.extend({

@@ -213,7 +213,7 @@ export class AdHocCommands extends CustomElement {
 
         const iq = $iq({to: jid, type: "set"})
             .c("command", {
-                'sessionid': cmd.session,
+                'sessionid': cmd.sessionid,
                 'node': cmd.node,
                 'xmlns': Strophe.NS.ADHOC
             }).c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});

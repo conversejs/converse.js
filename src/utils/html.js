@@ -648,11 +648,12 @@ u.xForm2webForm = function (field, stanza, options) {
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('type') === 'boolean') {
+        const value = field.querySelector('value')?.textContent;
         return tpl_form_checkbox({
             'id': u.getUniqueId(),
             'name': field.getAttribute('var'),
             'label': field.getAttribute('label') || '',
-            'checked': field.querySelector('value')?.textContent === "1" && 'checked="1"' || '',
+            'checked': (value === "1" || value === "true") && 'checked="1"' || '',
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('var') === 'url') {

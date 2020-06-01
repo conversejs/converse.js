@@ -17,7 +17,8 @@ const i18n_edit_message = __('Edit this message');
 const i18n_edited = __('This message has been edited');
 const i18n_show = __('Show more');
 const i18n_show_less = __('Show less');
-const i18n_uploading = __('Uploading file:')
+const i18n_uploading = __('Uploading file:');
+const i18n_new_messages = __('New messages');
 
 
 class Message extends CustomElement {
@@ -30,19 +31,19 @@ class Message extends CustomElement {
             editable: { type: Boolean },
             error: { type: String },
             error_text: { type: String },
-            first_unread: { type: Boolean },
             from: { type: String },
             has_mentions: { type: Boolean },
             hats: { type: Array },
+            edited: { type: String },
             is_delayed: { type: Boolean },
             is_encrypted: { type: Boolean },
+            is_first_unread: { type: Boolean },
             is_me_message: { type: Boolean },
             is_only_emojis: { type: Boolean },
             is_retracted: { type: Boolean },
             is_spoiler: { type: Boolean },
             is_spoiler_visible: { type: Boolean },
             message_type: { type: String },
-            edited: { type: String },
             model: { type: Object },
             moderated_by: { type: String },
             moderation_reason: { type: String },
@@ -125,6 +126,7 @@ class Message extends CustomElement {
     renderChatMessage () {
         const is_groupchat_message = (this.message_type === 'groupchat');
         return html`
+            ${ this.is_first_unread ? html`<div class="message date-separator"><hr class="separator"><span class="separator-text">${ i18n_new_messages }</span></div>` : '' }
             <div class="message chat-msg ${this.message_type} ${this.getExtraMessageClasses()}
                     ${ this.is_me_message ? 'chat-msg--action' : '' }
                     ${this.isFollowup() ? 'chat-msg--followup' : ''}"
@@ -132,7 +134,6 @@ class Message extends CustomElement {
 
                 ${ renderAvatar(this) }
                 <div class="chat-msg__content chat-msg__content--${this.sender} ${this.is_me_message ? 'chat-msg__content--action' : ''}">
-                    ${this.first_unread ? html`<div class="message date-separator"><hr class="separator"><span class="separator-text">{{{this.__('unread messages')}}}</span></div>` : '' }
                     <span class="chat-msg__heading">
                         ${ (this.is_me_message) ? html`
                             <time timestamp="${this.time}" class="chat-msg__time">${this.pretty_time}</time>

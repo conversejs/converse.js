@@ -1353,7 +1353,7 @@ describe("Chatboxes", function () {
             done();
         }));
 
-        it("is incremeted when message is received, chatbox is scrolled down and the window is not focused",
+        it("is incremented when message is received, chatbox is scrolled down and the window is not focused",
             mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -1375,7 +1375,7 @@ describe("Chatboxes", function () {
             done();
         }));
 
-        it("is incremeted when message is received, chatbox is scrolled up and the window is not focused",
+        it("is incremented when message is received, chatbox is scrolled up and the window is not focused",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {

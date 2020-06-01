@@ -6,6 +6,30 @@ const u = converse.env.utils;
 
 describe("A Chat Message", function () {
 
+    it("will be demarcated if it's the first newly received message",
+        mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            async function (done, _converse) {
+
+        await mock.waitForRoster(_converse, 'current', 1);
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.api.chatviews.get(contact_jid);
+        await _converse.handleMessageStanza(mock.createChatMessage(_converse, contact_jid, 'This message will be read'));
+
+        _converse.windowState = 'hidden';
+        await _converse.handleMessageStanza(mock.createChatMessage(_converse, contact_jid, 'This message will be new'));
+
+        await u.waitUntil(() => view.model.messages.length);
+        expect(view.model.get('num_unread')).toBe(1);
+        expect(view.model.get('first_unread_id')).toBe(view.model.messages.last().get('id'));
+
+        await u.waitUntil(() => view.el.querySelectorAll('converse-chat-message').length === 2);
+        const last_msg_el = view.el.querySelector('converse-chat-message:last-child');
+        expect(last_msg_el.firstElementChild?.textContent).toBe('New messages');
+        done();
+    }));
+
+
     it("is rejected if it's an unencapsulated forwarded message",
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {},

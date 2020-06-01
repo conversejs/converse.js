@@ -1145,26 +1145,14 @@ converse.plugins.add('converse-chat', {
                     return;
                 }
                 if (utils.isNewMessage(message) && this.isHidden()) {
-                    this.setFirstUnreadMsgId(message);
-                    this.save({'num_unread': this.get('num_unread') + 1});
-                    _converse.incrementMsgCounter();
-                }
-            },
-
-            /**
-             * Sets the msgid of the first unread realtime message in a ChatBox.
-             * @param {_converse.Message} message
-             */
-            setFirstUnreadMsgId (message) {
-                if (this.get('num_unread') == 0) {
-                    const first_unread_id = this.get('first_unread_id');
-
-                    if (first_unread_id) {
-                      const msg = this.messages.get(first_unread_id);
-                      if (msg) msg.save("first_unread", false);
+                    const settings = {
+                        'num_unread': this.get('num_unread') + 1
+                    };
+                    if (this.get('num_unread') === 0) {
+                        settings['first_unread_id'] = message.get('id');
                     }
-                    message.save("first_unread", true);
-                    this.save({'first_unread_id': message.get('id')});
+                    this.save(settings);
+                    _converse.incrementMsgCounter();
                 }
             },
 

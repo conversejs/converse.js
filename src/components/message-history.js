@@ -20,6 +20,7 @@ const tpl_message = (o) => html`
         ?has_mentions=${o.has_mentions}
         ?is_delayed=${o.is_delayed}
         ?is_encrypted=${o.is_encrypted}
+        ?is_first_unread=${o.is_first_unread}
         ?is_me_message=${o.is_me_message}
         ?is_only_emojis=${o.is_only_emojis}
         ?is_retracted=${o.is_retracted}
@@ -67,6 +68,18 @@ function getDayIndicator (model) {
     }
 }
 
+function getHats (model) {
+    if (model.get('type') === 'groupchat') {
+        if (api.settings.get('muc_hats_from_vcard')) {
+            const role = model.vcard ? model.vcard.get('role') : null;
+            return role ? role.split(',') : [];
+        } else {
+            return model.occupant?.get('hats') || [];
+        }
+    }
+    return [];
+}
+
 
 class MessageHistory extends CustomElement {
 
@@ -91,30 +104,18 @@ class MessageHistory extends CustomElement {
         }
         const day = getDayIndicator(model);
         const templates = day ? [day] : [];
-        const is_retracted = model.get('retracted') || model.get('moderated') === 'retracted';
         const is_groupchat = model.get('type') === 'groupchat';
-
-        let hats = [];
-        if (is_groupchat) {
-            if (api.settings.get('muc_hats_from_vcard')) {
-                const role = model.vcard ? model.vcard.get('role') : null;
-                hats = role ? role.split(',') : [];
-            } else {
-                hats = model.occupant?.get('hats') || [];
-            }
-        }
-
         const chatbox = this.chatview.model;
-        const has_mentions = is_groupchat && model.get('sender') === 'them' && chatbox.isUserMentioned(model);
         const message = tpl_message(
             Object.assign(model.toJSON(), {
                 'chatview': this.chatview,
+                'has_mentions': is_groupchat && model.get('sender') === 'them' && chatbox.isUserMentioned(model),
+                'hats': getHats(model),
+                'is_first_unread': chatbox.get('first_unread_id') === model.get('id'),
                 'is_me_message': model.isMeCommand(),
+                'is_retracted': model.get('retracted') || model.get('moderated') === 'retracted',
                 'occupant': model.occupant,
                 'username': model.getDisplayName(),
-                has_mentions,
-                hats,
-                is_retracted,
                 model,
             }));
         return [...templates, message];

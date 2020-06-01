@@ -181,14 +181,18 @@
         .emoji-picker.toolbar-menu {
             li {
                 &.insert-emoji {
-                    height: 20px;
-                    width: 20px;
+                    height: calc(var(--font-size) * 1.5);
+                    width: calc(var(--font-size) * 1.5);
                 }
             }
             .emoji-picker {
                 .insert-emoji {
                     a {
                         font-size: var(--font-size);
+                        line-height: calc(var(--font-size) * 1.5);
+                        padding: 0;
+                        height: calc(var(--font-size) * 1.5);
+                        width: calc(var(--font-size) * 1.5);
                     }
                 }
             }

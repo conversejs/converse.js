@@ -1326,13 +1326,19 @@ describe("Chatboxes", function () {
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                   msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
 
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
+
             const view = await mock.openChatBoxFor(_converse, sender_jid)
+            spyOn(view.model, 'sendMarker').and.callThrough();
             view.model.save('scrolled', true);
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.model.messages.length);
             expect(view.model.get('num_unread')).toBe(1);
             const msgid = view.model.messages.last().get('id');
             expect(view.model.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => view.model.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             done();
         }));
 
@@ -1345,11 +1351,15 @@ describe("Chatboxes", function () {
 
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                   msg = mock.createChatMessage(_converse, sender_jid, 'This message will be read');
-
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             await _converse.handleMessageStanza(msg);
             expect(chatbox.get('num_unread')).toBe(0);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
+            expect(sent_stanzas[1].nodeTree.querySelector('displayed')).toBeDefined();
             done();
         }));
 
@@ -1363,8 +1373,12 @@ describe("Chatboxes", function () {
             const msgFactory = function () {
                 return mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
             };
+
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             _converse.windowState = 'hidden';
             const msg = msgFactory();
             _converse.handleMessageStanza(msg);
@@ -1372,6 +1386,8 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             done();
         }));
 
@@ -1383,8 +1399,11 @@ describe("Chatboxes", function () {
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             chatbox.save('scrolled', true);
             _converse.windowState = 'hidden';
             const msg = msgFactory();
@@ -1393,6 +1412,8 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             done();
         }));
 
@@ -1404,8 +1425,11 @@ describe("Chatboxes", function () {
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             _converse.windowState = 'hidden';
             const msg = msgFactory();
             _converse.handleMessageStanza(msg);
@@ -1413,8 +1437,12 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(0);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
+            expect(sent_stanzas[1].nodeTree.querySelector('displayed')).toBeDefined();
             done();
         }));
 
@@ -1426,8 +1454,11 @@ describe("Chatboxes", function () {
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             chatbox.save('scrolled', true);
             _converse.windowState = 'hidden';
             const msg = msgFactory();
@@ -1436,9 +1467,13 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(1);
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             done();
         }));
     });

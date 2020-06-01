@@ -831,12 +831,19 @@ converse.plugins.add('converse-chat', {
                 return _converse.connection.send(msg);
             },
 
-            sendMarker(to_jid, id, type) {
+            sendMarkerForMessage (msg) {
+                if (msg?.get('is_markable')) {
+                    const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
+                    this.sendMarker(from_jid, msg.get('msgid'), 'displayed', msg.get('type'));
+                }
+            },
+
+            sendMarker (to_jid, id, type, msg_type) {
                 const stanza = $msg({
                     'from': _converse.connection.jid,
                     'id': u.getUniqueId(),
                     'to': to_jid,
-                    'type': 'chat',
+                    'type': msg_type ? msg_type : 'chat'
                 }).c(type, {'xmlns': Strophe.NS.MARKERS, 'id': id});
                 api.send(stanza);
             },
@@ -1141,22 +1148,29 @@ converse.plugins.add('converse-chat', {
              * @param {_converse.Message} message
              */
             incrementUnreadMsgCounter (message) {
-                if (!message || !message.get('message')) {
-                    return;
+                if (!message?.get('body')) {
+                    return
                 }
-                if (utils.isNewMessage(message) && this.isHidden()) {
-                    const settings = {
-                        'num_unread': this.get('num_unread') + 1
-                    };
-                    if (this.get('num_unread') === 0) {
-                        settings['first_unread_id'] = message.get('id');
+                if (utils.isNewMessage(message)) {
+                    if (this.isHidden()) {
+                        const settings = {
+                            'num_unread': this.get('num_unread') + 1
+                        };
+                        if (this.get('num_unread') === 0) {
+                            settings['first_unread_id'] = message.get('id');
+                        }
+                        this.save(settings);
+                        _converse.incrementMsgCounter();
+                    } else {
+                        this.sendMarkerForMessage(message);
                     }
-                    this.save(settings);
-                    _converse.incrementMsgCounter();
                 }
             },
 
-            clearUnreadMsgCounter () {
+            clearUnreadMsgCounter() {
+                if (this.get('num_unread') > 0) {
+                    this.sendMarkerForMessage(this.messages.last());
+                }
                 u.safeSave(this, {'num_unread': 0});
             },
 

@@ -2404,25 +2404,32 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } - The <messsage> stanza
              */
             incrementUnreadMsgCounter (message) {
-                if (!message) { return; }
-                const body = message.get('message');
-                if (!body) { return; }
-                if (u.isNewMessage(message) && this.isHidden()) {
-                    const settings = {
-                        'num_unread_general': this.get('num_unread_general') + 1
-                    };
-                    if (this.get('num_unread') === 0) {
-                        settings['first_unread_id'] = message.get('id');
+                if (!message?.get('body')) {
+                    return
+                }
+                if (u.isNewMessage(message)) {
+                    if (this.isHidden()) {
+                        const settings = {
+                            'num_unread_general': this.get('num_unread_general') + 1
+                        };
+                        if (this.get('num_unread_general') === 0) {
+                            settings['first_unread_id'] = message.get('id');
+                        }
+                        if (this.isUserMentioned(message)) {
+                            settings.num_unread = this.get('num_unread') + 1;
+                            _converse.incrementMsgCounter();
+                        }
+                        this.save(settings);
+                    } else {
+                        this.sendMarkerForMessage(message);
                     }
-                    if (this.isUserMentioned(message)) {
-                        settings.num_unread = this.get('num_unread') + 1;
-                        _converse.incrementMsgCounter();
-                    }
-                    this.save(settings);
                 }
             },
 
             clearUnreadMsgCounter() {
+                if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0) {
+                    this.sendMarkerForMessage(this.messages.last());
+                }
                 u.safeSave(this, {
                     'num_unread': 0,
                     'num_unread_general': 0

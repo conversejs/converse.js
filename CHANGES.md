@@ -24,6 +24,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #1999: Demarcate first unread message
 - #2002: fix rendering of `muc_roomid_policy_hint`
 - #2006: fix rendering of emojis in case `use_system_emojis == false`
+- #2028: Implement XEP-0333 `displayed` chat marker
 - Filter roster contacts via all available information (JID, nickname and VCard full name).
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
 - Bugfix. Handle stanza that clears the MUC subject

@@ -178,6 +178,14 @@
 
 #conversejs.converse-overlayed  {
     .chatbox {
+        .emoji-picker__header {
+            .emoji-category {
+                img {
+                    height: var(--font-size) !important;
+                    width: var(--font-size) !important;
+                }
+            }
+        }
         .emoji-picker.toolbar-menu {
             li {
                 &.insert-emoji {
@@ -193,6 +201,10 @@
                         padding: 0;
                         height: calc(var(--font-size) * 1.5);
                         width: calc(var(--font-size) * 1.5);
+                    }
+                    img {
+                        height: var(--font-size);
+                        width: var(--font-size);
                     }
                 }
             }

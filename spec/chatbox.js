@@ -46,6 +46,32 @@ describe("Chatboxes", function () {
         }));
 
 
+        it("has a /clear command", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            await mock.openControlBox(_converse);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            spyOn(window, 'confirm').and.returnValue(true);
+
+            for (const i of Array(10).keys()) {
+                mock.sendMessage(view, `Message ${i}`);
+            }
+            await u.waitUntil(() => sizzle('converse-chat-message', view.el).length === 10);
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = '/clear';
+            view.onKeyDown({
+                target: textarea,
+                preventDefault: function preventDefault () {},
+                keyCode: 13 // Enter
+            });
+            expect(window.confirm).toHaveBeenCalled();
+            await u.waitUntil(() => sizzle('converse-chat-message', view.el).length === 0);
+            done();
+        }));
+
+
         it("supports the /me command", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
             await mock.waitForRoster(_converse, 'current');
             await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);

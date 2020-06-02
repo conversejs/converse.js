@@ -941,68 +941,108 @@ converse.plugins.add('converse-muc', {
                 ])].filter(n => n);
             },
 
-            getReferenceForMention (mention, index) {
-                const nicknames = this.getAllKnownNicknames();
-                const longest_match = u.getLongestSubstring(mention, nicknames);
-                if (!longest_match) {
-                    return null;
-                }
-                if ((mention[longest_match.length] || '').match(/[A-Za-zäëïöüâêîôûáéíóúàèìòùÄËÏÖÜÂÊÎÔÛÁÉÍÓÚÀÈÌÒÙ0-9]/i)) {
-                    // avoid false positives, i.e. mentions that have
-                    // further alphabetical characters than our longest
-                    // match.
-                    return null;
-                }
-
-                let uri;
-                const occupant = this.occupants.findOccupant({'nick': longest_match}) ||
-                        u.isValidJID(longest_match) && this.occupants.findOccupant({'jid': longest_match});
-
-                if (occupant) {
-                    uri = occupant.get('jid') || `${this.get('jid')}/${occupant.get('nick')}`;
-                } else if (nicknames.includes(longest_match)) {
-                    // TODO: show a warning to the user that the person is not currently in the chat
-                    uri = `${this.get('jid')}/${longest_match}`;
-                } else {
-                    return;
-                }
-                const obj = {
-                    'begin': index,
-                    'end': index + longest_match.length,
-                    'value': longest_match,
-                    'type': 'mention',
-                    'uri': encodeURI(`xmpp:${uri}`)
-                };
-                return obj;
+            mapCleanReferences (reference) {
+                /* eslint-disable */
+                const { mentionedAs, ...rest } = reference;
+                return { ...rest }; // @TODO
             },
 
-            extractReference (text, index) {
-                for (let i=index; i<text.length; i++) {
-                    if (text[i] === '@' && (i === 0 || text[i - 1] === ' ')) {
-                        const match = text.slice(i+1),
-                              ref = this.getReferenceForMention(match, i);
-                        if (ref) {
-                            return [text.slice(0, i) + match, ref, i]
-                        }
+            mapAddCoordsToReferences (indexes) {
+                return (reference, index) => {
+                    const begin = indexes[index] - index;
+                    return {
+                        ...reference,
+                        begin,
+                        end: begin + reference.value.length // add one for the @
                     }
                 }
-                return;
+            },
+
+            mapAddUriToReferences (makeUriFromReference) {
+                return (reference) => ({
+                    ...reference,
+                    uri: makeUriFromReference(reference)
+                })
+            },
+
+            filterIsNicknameMentioned (mentions) {
+                // testing against lowercase nickname to be able to
+                // produce matches that are case insensitive
+                return nickname => mentions.includes(nickname.toLowerCase());
+            },
+
+            mapFormatMentions (mention) {
+                return mention.slice(1).toLowerCase();
+            },
+
+            filterMentionsInWords (word) {
+                const mentionRegExp = /^\@[\w\-]+$/;
+                return mentionRegExp.test(word);
+            },
+
+            getOccupantByNickname (nickname) {
+                return this.occupants.findOccupant({ nick: nickname })
+                    || u.isValidJID(nickname)
+                    && this.occupants.findOccupant({' jid': nickname });
+            },
+
+            makeUriFromReference (reference) {
+                const nickname = reference.value;
+                const occupant = this.getOccupantByNickname(nickname);
+                const uri = occupant
+                    ? occupant.get('jid')
+                    : `${this.get('jid')}/${nickname}`;
+                return encodeURI(`xmpp:${uri}`);
+            },
+
+            reduceReferencesWithNicknames (knownNicknames) {
+                const lowercaseNicknames = knownNicknames.map(nick => nick.toLowerCase());
+                return (accum, reference) => {
+                    const lowercaseMentionNoAtSign = reference.mentionedAs.slice(1).toLowerCase();
+                    const index = lowercaseNicknames.indexOf(lowercaseMentionNoAtSign)
+                    if (index == -1) {
+                        return accum
+                    }
+                    return [...accum, {
+                        ...reference,
+                        value: knownNicknames[index]
+                    }];
+                }
+            },
+
+            mapMentionsToTempReferences (mention) {
+                return {
+                    mentionedAs: mention,
+                    type: 'mention'
+                }
+            },
+
+            mapMentionsToBeginIndexes (text) {
+                let acc = 0;
+                return (mention) => {
+                    const result = text.indexOf(mention, acc);
+                    acc = result + 1;
+                    return result;
+                }
             },
 
             parseTextForReferences (text) {
-                const refs = [];
-                let index = 0;
-                while (index < (text || '').length) {
-                    const result = this.extractReference(text, index);
-                    if (result) {
-                        text = result[0]; // @ gets filtered out
-                        refs.push(result[1]);
-                        index = result[2];
-                    } else {
-                        break;
-                    }
-                }
-                return [text, refs];
+                const words = text.split(' ');
+                const mentions = words.filter(this.filterMentionsInWords);
+                if (!mentions.length) return [text, []];
+
+                const knownNicknames = this.getAllKnownNicknames();
+                const indexes = mentions.map(this.mapMentionsToBeginIndexes(text));
+                const references = mentions
+                    .map(this.mapMentionsToTempReferences)
+                    .reduce(this.reduceReferencesWithNicknames(knownNicknames), [])
+                    .map(this.mapAddUriToReferences(this.makeUriFromReference.bind(this)))
+                    .map(this.mapAddCoordsToReferences(indexes))
+                const updatedText = references.reduce((updatedText, reference) => {
+                    const { mentionedAs, value } = reference;
+                    return updatedText.replace(mentionedAs, value);
+                }, text);
+                return [updatedText, references];
             },
 
             getOutgoingMessageAttributes (text, spoiler_hint) {

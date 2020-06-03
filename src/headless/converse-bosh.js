@@ -17,7 +17,7 @@ const BOSH_SESSION_ID = 'converse.bosh-session';
 converse.plugins.add('converse-bosh', {
 
     enabled () {
-        return true;
+        return !_converse.api.settings.get("blacklisted_plugins").includes('converse-bosh');
     },
 
     initialize () {

@@ -273,8 +273,19 @@ Object.assign(_converse, Events);
 pluggable.enable(_converse, '_converse', 'pluggable');
 
 
-// Populated via the _converse.api.users.settings API
-let user_settings;
+let user_settings; // User settings, populated via api.users.settings
+let initialization_settings = {}; // Container for settings passed in via converse.initialize
+
+
+function initSettings (settings) {
+    _converse.settings = {};
+    initialization_settings = settings;
+    // Allow only whitelisted settings to be overwritten via converse.initialize
+    const allowed_settings = pick(settings, Object.keys(DEFAULT_SETTINGS));
+    assignIn(_converse.settings, DEFAULT_SETTINGS, allowed_settings);
+    assignIn(_converse, DEFAULT_SETTINGS, allowed_settings); // FIXME: remove
+}
+
 
 function initUserSettings () {
     if (!_converse.bare_jid) {
@@ -641,8 +652,13 @@ export const api = _converse.api = {
          */
         update (settings) {
             u.merge(DEFAULT_SETTINGS, settings);
-            u.merge(_converse, settings);
-            u.applySiteSettings(_converse, settings, site_settings);
+            // When updating the settings, we need to avoid overwriting the
+            // initialization_settings (i.e. the settings passed in via converse.initialize).
+            const allowed_keys = Object.keys(DEFAULT_SETTINGS);
+            const allowed_site_settings = pick(initialization_settings, allowed_keys);
+            const updated_settings = assignIn(pick(settings, allowed_keys), allowed_site_settings);
+            u.merge(_converse.settings, updated_settings);
+            u.merge(_converse, updated_settings); // FIXME: remove
         },
 
         /**
@@ -1705,18 +1721,6 @@ async function initLocale () {
             _converse.locale = 'en';
         }
     }
-}
-
-
-let site_settings;
-
-function initSettings (settings) {
-    _converse.settings = {};
-    assignIn(_converse.settings, DEFAULT_SETTINGS);
-    // Allow only whitelisted configuration attributes to be overwritten
-    assignIn(_converse.settings, pick(settings, Object.keys(DEFAULT_SETTINGS)));
-    assignIn(_converse, _converse.settings);
-    site_settings = settings;
 }
 
 

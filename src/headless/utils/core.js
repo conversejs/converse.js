@@ -207,22 +207,6 @@ u.merge = function merge (first, second) {
     }
 };
 
-u.applySiteSettings = function applySiteSettings (context, settings, user_settings) {
-    /* Configuration settings might be nested objects. We only want to
-     * add settings which are whitelisted.
-     */
-    for (var k in settings) {
-        if (user_settings[k] === undefined) {
-            continue;
-        }
-        if (isObject(settings[k]) && !Array.isArray(settings[k])) {
-            applySiteSettings(context[k], settings[k], user_settings[k]);
-        } else {
-            context[k] = user_settings[k];
-        }
-    }
-};
-
 /**
  * Converts an HTML string into a DOM Node.
  * Expects that the HTML string has only one top-level element,

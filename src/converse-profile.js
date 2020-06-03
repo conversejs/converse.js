@@ -83,16 +83,17 @@ converse.plugins.add('converse-profile', {
                 reader.readAsDataURL(file);
             },
 
-            setVCard (data) {
-                api.vcard.set(_converse.bare_jid, data)
-                .then(() => api.vcard.update(this.model.vcard, true))
-                .catch((err) => {
+            async setVCard (data) {
+                try {
+                    await api.vcard.set(_converse.bare_jid, data);
+                } catch (err) {
                     log.fatal(err);
-                    api.show('error', __('Error'), [
+                    this.alert([
                         __("Sorry, an error happened while trying to save your profile data."),
                         __("You can check your browser's developer console for any error output.")
-                    ]);
-                });
+                    ].join(" "));
+                    return;
+                }
                 this.modal.hide();
             },
 

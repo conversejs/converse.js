@@ -67,6 +67,12 @@ converse.plugins.add('converse-vcard', {
         api.promises.add('VCardsInitialized');
 
 
+        /**
+         * Represents a VCard
+         * @class
+         * @namespace _converse.VCard
+         * @memberOf _converse
+         */
         _converse.VCard = Model.extend({
             defaults: {
                 'image': _converse.DEFAULT_IMAGE,
@@ -268,6 +274,10 @@ converse.plugins.add('converse-vcard', {
                 /**
                  * Enables setting new values for a VCard.
                  *
+                 * Sends out an IQ stanza to set the user's VCard and if
+                 * successful, it updates the {@link _converse.VCard}
+                 * for the passed in JID.
+                 *
                  * @method _converse.api.vcard.set
                  * @param {string} jid The JID for which the VCard should be set
                  * @param {object} data A map of VCard keys and values
@@ -282,12 +292,19 @@ converse.plugins.add('converse-vcard', {
                  *     // Failure
                  * }).
                  */
-                set (jid, data) {
+                async set (jid, data) {
                     if (!jid) {
                         throw Error("No jid provided for the VCard data");
                     }
                     const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
-                    return api.sendIQ(createStanza("set", jid, vcard_el));
+                    let result;
+                    try {
+                        result = await api.sendIQ(createStanza("set", jid, vcard_el));
+                    } catch (e) {
+                        throw (e);
+                    }
+                    await api.vcard.update(jid, true);
+                    return result;
                 },
 
                 /**
@@ -345,6 +362,11 @@ converse.plugins.add('converse-vcard', {
                  */
                 async update (model, force) {
                     const data = await this.get(model, force);
+                    model = isString(model) ? _converse.vcards.findWhere({'jid': model}) : model;
+                    if (!model) {
+                        log.error(`Could not find a VCard model for ${model}`);
+                        return;
+                    }
                     delete data['stanza']
                     model.save(data);
                 }

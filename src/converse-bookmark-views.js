@@ -100,10 +100,7 @@ converse.plugins.add('converse-bookmark-views', {
             },
 
             toggleBookmark (ev) {
-                if (ev) {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                }
+                ev?.preventDefault();
                 const models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                 if (!models.length) {
                     this.renderBookmarkForm();

@@ -115,7 +115,7 @@ class Message extends CustomElement {
         const size = filesize(this.model.file.size);
         return html`
             <div class="message chat-msg">
-                ${ renderAvatar(this) }
+                ${ renderAvatar(this.getAvatarData()) }
                 <div class="chat-msg__content">
                     <span class="chat-msg__text">${i18n_uploading} <strong>${filename}</strong>, ${size}</span>
                     <progress value="${this.progress}"/>
@@ -132,7 +132,7 @@ class Message extends CustomElement {
                     ${this.isFollowup() ? 'chat-msg--followup' : ''}"
                     data-isodate="${this.time}" data-msgid="${this.msgid}" data-from="${this.from}" data-encrypted="${this.is_encrypted}">
 
-                ${ renderAvatar(this) }
+                ${ (this.is_me_message || this.type === 'headline') ? '' : renderAvatar(this.getAvatarData()) }
                 <div class="chat-msg__content chat-msg__content--${this.sender} ${this.is_me_message ? 'chat-msg__content--action' : ''}">
                     <span class="chat-msg__heading">
                         ${ (this.is_me_message) ? html`
@@ -163,6 +163,18 @@ class Message extends CustomElement {
                     </div>
                 </div>
             </div>`;
+    }
+
+    getAvatarData () {
+        const image_type = this.model.vcard.get('image_type');
+        const image_data = this.model.vcard.get('image');
+        const image = "data:" + image_type + ";base64," + image_data;
+        return {
+            'classes': 'chat-msg__avatar',
+            'height': 36,
+            'width': 36,
+            image,
+        };
     }
 
     async onRetryClicked () {

@@ -38,8 +38,6 @@ converse.plugins.add('converse-profile', {
         _converse.ProfileModal = BootstrapModal.extend({
             id: "user-profile-modal",
             events: {
-                'change input[type="file"': "updateFilePreview",
-                'click .change-avatar': "openFileSelection",
                 'submit .profile-form': 'onFormSubmitted'
             },
 
@@ -58,29 +56,25 @@ converse.plugins.add('converse-profile', {
             toHTML () {
                 return tpl_profile_modal(Object.assign(
                     this.model.toJSON(),
-                    this.model.vcard.toJSON(), {
-                    '_converse': _converse,
-                    'utils': u,
-                    'view': this
-                }));
+                    this.model.vcard.toJSON(),
+                    this.getAvatarData(),
+                    { 'view': this }
+                ));
+            },
+
+            getAvatarData () {
+                const image_type = this.model.vcard.get('image_type');
+                const image_data = this.model.vcard.get('image');
+                const image = "data:" + image_type + ";base64," + image_data;
+                return {
+                    'height': 128,
+                    'width': 128,
+                    image,
+                };
             },
 
             afterRender () {
                 this.tabs = sizzle('.nav-item .nav-link', this.el).map(e => new bootstrap.Tab(e));
-            },
-
-            openFileSelection (ev) {
-                ev.preventDefault();
-                this.el.querySelector('input[type="file"]').click();
-            },
-
-            updateFilePreview (ev) {
-                const file = ev.target.files[0],
-                      reader = new FileReader();
-                reader.onloadend = () => {
-                    this.el.querySelector('.avatar').setAttribute('src', reader.result);
-                };
-                reader.readAsDataURL(file);
             },
 
             async setVCard (data) {
@@ -99,10 +93,9 @@ converse.plugins.add('converse-profile', {
 
             onFormSubmitted (ev) {
                 ev.preventDefault();
-                const reader = new FileReader(),
-                      form_data = new FormData(ev.target),
-                      image_file = form_data.get('image');
-
+                const reader = new FileReader();
+                const form_data = new FormData(ev.target);
+                const image_file = form_data.get('image');
                 const data = {
                     'fn': form_data.get('fn'),
                     'nickname': form_data.get('nickname'),

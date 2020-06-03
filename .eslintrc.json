@@ -198,6 +198,7 @@
         "no-unused-expressions": "off",
         "no-use-before-define": "off",
         "no-useless-call": "error",
+        "no-useless-catch": "off",
         "no-useless-computed-key": "error",
         "no-useless-concat": "off",
         "no-useless-constructor": "error",

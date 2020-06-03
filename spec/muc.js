@@ -5057,8 +5057,7 @@ describe("Groupchats", function () {
                 await view.model.handleMessageStanza(msg);
                 await new Promise(resolve => view.model.messages.once('rendered', resolve), 1000);
 
-                const messages = view.el.querySelectorAll('.message');
-                expect(messages.length).toBe(2);
+                await u.waitUntil(() => view.el.querySelectorAll('.message').length === 2);
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(view.el.querySelector('.chat-msg .chat-msg__text').textContent.trim()).toBe('hello world');
 

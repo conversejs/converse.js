@@ -1,7 +1,7 @@
 #conversejs.converse-embedded,
 #conversejs {
-    .badge-room-color {
-        background-color: var(--chatroom-head-bg-color);
+    .badge--muc {
+        background-color: var(--groupchats-header-color);
     }
 
     .add-chatroom {

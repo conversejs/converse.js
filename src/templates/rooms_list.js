@@ -12,7 +12,7 @@ const i18n_open = __('Click to open this groupchat');
 const i18n_rooms = __('Open Groupchats');
 
 
-const unread_indicator = (o) => html`<span class="list-item-badge badge badge-room-color msgs-indicator">${ o.room.get('num_unread') }</span>`;
+const unread_indicator = (o) => html`<span class="list-item-badge badge badge--muc msgs-indicator">${ o.room.get('num_unread') }</span>`;
 
 
 const bookmark = (o) => {

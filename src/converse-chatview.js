@@ -98,7 +98,7 @@ converse.plugins.add('converse-chatview', {
                     this.model.toJSON(),
                     vcard_json, {
                     '_converse': _converse,
-                    'allow_contact_removal': _converse.allow_contact_removal,
+                    'allow_contact_removal': api.settings.get('allow_contact_removal'),
                     'display_name': this.model.getDisplayName(),
                     'is_roster_contact': this.model.contact !== undefined,
                     'removeContact': ev => this.removeContact(ev),
@@ -133,7 +133,7 @@ converse.plugins.add('converse-chatview', {
 
             removeContact (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (!_converse.allow_contact_removal) { return; }
+                if (!api.settings.get('allow_contact_removal')) { return; }
                 const result = confirm(__("Are you sure you want to remove this contact?"));
                 if (result === true) {
                     this.modal.hide();

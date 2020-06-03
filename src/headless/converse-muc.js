@@ -197,7 +197,7 @@ converse.plugins.add('converse-muc', {
                 return log.warn(`invalid jid "${jid}" provided in url fragment`);
             }
             await api.waitUntil('roomsAutoJoined');
-            if (_converse.allow_bookmarks) {
+            if (api.settings.get('allow_bookmarks')) {
                 await api.waitUntil('bookmarksInitialized');
             }
             api.rooms.open(jid);
@@ -483,7 +483,7 @@ converse.plugins.add('converse-muc', {
                     // Looks like we haven't restored occupants from cache, so we clear it.
                     this.occupants.clearStore();
                 }
-                if (_converse.clear_messages_on_reconnection) {
+                if (api.settings.get('clear_messages_on_reconnection')) {
                     await this.clearMessages();
                 }
             },
@@ -1049,13 +1049,13 @@ converse.plugins.add('converse-muc', {
              * @method _converse.ChatRoom#sendChatState
              */
             sendChatState () {
-                if (!_converse.send_chat_state_notifications ||
+                if (!api.settings.get('send_chat_state_notifications') ||
                         !this.get('chat_state') ||
                         this.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
                         this.features.get('moderated') && this.getOwnRole() === 'visitor') {
                     return;
                 }
-                const allowed = _converse.send_chat_state_notifications;
+                const allowed = api.settings.get('send_chat_state_notifications');
                 if (Array.isArray(allowed) && !allowed.includes(this.get('chat_state'))) {
                     return;
                 }
@@ -2739,7 +2739,7 @@ converse.plugins.add('converse-muc', {
             window.addEventListener(_converse.unloadevent, () => {
                 const using_websocket = api.connection.isType('websocket');
                 if (using_websocket &&
-                        (!_converse.enable_smacks || !_converse.session.get('smacks_stream_id'))) {
+                        (!api.settings.get('enable_smacks') || !_converse.session.get('smacks_stream_id'))) {
                     // For non-SMACKS websocket connections, or non-resumeable
                     // connections, we disconnect all chatrooms when the page unloads.
                     // See issue #1111

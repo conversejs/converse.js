@@ -616,9 +616,12 @@ describe("Message Retractions", function () {
             expect(occupant.get('role')).toBe('moderator');
             occupant.save('role', 'member');
             const retraction_stanza = await sendAndThenRetractMessage(_converse, view);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg--retracted').length === 1, 1000);
+            console.log('XXX: First message retracted by author');
 
             const msg_obj = view.model.messages.last();
+            expect(msg_obj.get('retracted')).toBeTruthy();
+
             expect(Strophe.serialize(retraction_stanza)).toBe(
                 `<message id="${retraction_stanza.getAttribute('id')}" to="${muc_jid}" type="groupchat" xmlns="jabber:client">`+
                     `<store xmlns="urn:xmpp:hints"/>`+
@@ -627,7 +630,6 @@ describe("Message Retractions", function () {
                     `</apply-to>`+
                 `</message>`);
 
-            await u.waitUntil(() => view.model.messages.last().get('retracted'));
             const message = view.model.messages.last();
             expect(message.get('is_ephemeral')).toBe(false);
             expect(message.get('editable')).toBeFalsy();
@@ -645,9 +647,11 @@ describe("Message Retractions", function () {
 
             spyOn(view.model, 'handleRetraction').and.callThrough();
             _converse.connection._dataRecv(mock.createRequest(reflection));
-            await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1);
+            await u.waitUntil(() => view.model.handleRetraction.calls.count() === 1, 1000);
+            console.log('XXX: Handle retraction was called on reflection');
 
-            await u.waitUntil(() => view.model.messages.length === 1);
+            await u.waitUntil(() => view.model.messages.length === 1, 1000);
+            console.log('XXX: We have one message');
             expect(view.model.messages.last().get('retracted')).toBeTruthy();
             expect(view.model.messages.last().get('is_ephemeral')).toBe(false);
             expect(view.model.messages.last().get('editable')).toBe(false);

@@ -180,7 +180,7 @@ converse.plugins.add('converse-chat', {
             getMessageText () {
                 if (this.get('is_encrypted')) {
                     return this.get('plaintext') ||
-                           (_converse.loglevel === 'debug' ? __('Unencryptable OMEMO message') : null);
+                           (api.settings.get('loglevel') === 'debug' ? __('Unencryptable OMEMO message') : null);
                 }
                 return this.get('message');
             },
@@ -521,7 +521,7 @@ converse.plugins.add('converse-chat', {
                 }
                 const room_jids = _converse.auto_join_rooms.map(s => isObject(s) ? s.jid : s);
                 const auto_join = api.settings.get('auto_join_private_chats').concat(room_jids);
-                if (api.settings.get("singleton") && !auto_join.includes(attrs.jid) && !_converse.auto_join_on_invite) {
+                if (api.settings.get("singleton") && !auto_join.includes(attrs.jid) && !api.settings.get('auto_join_on_invite')) {
                     const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
                     log.warn(msg);
                     return msg;

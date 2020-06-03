@@ -74,9 +74,8 @@ converse.plugins.add('converse-muc-views', {
     overrides: {
         ControlBoxView: {
             renderControlBoxPane () {
-                const { _converse } = this.__super__;
                 this.__super__.renderControlBoxPane.apply(this, arguments);
-                if (_converse.allow_muc) {
+                if (api.settings.get('allow_muc')) {
                     this.renderRoomsPanel();
                 }
             }
@@ -224,17 +223,17 @@ converse.plugins.add('converse-muc-views', {
                 this.loading_items = false;
 
                 BootstrapModal.prototype.initialize.apply(this, arguments);
-                if (_converse.muc_domain && !this.model.get('muc_domain')) {
-                    this.model.save('muc_domain', _converse.muc_domain);
+                if (api.settings.get('muc_domain') && !this.model.get('muc_domain')) {
+                    this.model.save('muc_domain', api.settings.get('muc_domain'));
                 }
                 this.listenTo(this.model, 'change:muc_domain', this.onDomainChange);
             },
 
             toHTML () {
-                const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
+                const muc_domain = this.model.get('muc_domain') || api.settings.get('muc_domain');
                 return tpl_list_chatrooms_modal(
                     Object.assign(this.model.toJSON(), {
-                        'show_form': !_converse.locked_muc_domain,
+                        'show_form': !api.settings.get('locked_muc_domain'),
                         'server_placeholder': muc_domain ? muc_domain : __('conference.example.org'),
                         'items': this.items,
                         'loading_items': this.loading_items,
@@ -246,7 +245,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             afterRender () {
-                if (_converse.locked_muc_domain) {
+                if (api.settings.get('locked_muc_domain')) {
                     this.updateRoomsList();
                 } else {
                     this.el.addEventListener('shown.bs.modal',
@@ -270,7 +269,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onDomainChange () {
-                _converse.auto_list_rooms && this.updateRoomsList();
+                api.settings.get('auto_list_rooms') && this.updateRoomsList();
             },
 
             /**
@@ -347,16 +346,16 @@ converse.plugins.add('converse-muc-views', {
 
             toHTML () {
                 let placeholder = '';
-                if (!_converse.locked_muc_domain) {
-                    const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
+                if (!api.settings.get('locked_muc_domain')) {
+                    const muc_domain = this.model.get('muc_domain') || api.settings.get('muc_domain');
                     placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
                 }
                 return tpl_add_chatroom_modal(Object.assign(this.model.toJSON(), {
                     '_converse': _converse,
-                    'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
+                    'label_room_address': api.settings.get('muc_domain') ? __('Groupchat name') :  __('Groupchat address'),
                     'chatroom_placeholder': placeholder,
                     'muc_roomid_policy_error_msg': this.muc_roomid_policy_error_msg,
-                    'muc_roomid_policy_hint': _converse.muc_roomid_policy_hint
+                    'muc_roomid_policy_hint': api.settings.get('muc_roomid_policy_hint')
                 }));
             },
 
@@ -370,7 +369,7 @@ converse.plugins.add('converse-muc-views', {
                 const data = new FormData(form);
                 const jid = data.get('chatroom');
                 let nick;
-                if (_converse.locked_muc_nickname) {
+                if (api.settings.get('locked_muc_nickname')) {
                     nick = _converse.getDefaultMUCNickname();
                     if (!nick) {
                         throw new Error("Using locked_muc_nickname but no nickname found!");
@@ -392,8 +391,8 @@ converse.plugins.add('converse-muc-views', {
                     data.nick = undefined;
                 }
                 let jid;
-                if (_converse.locked_muc_domain || (_converse.muc_domain && !u.isValidJID(data.jid))) {
-                    jid = `${Strophe.escapeNode(data.jid)}@${_converse.muc_domain}`;
+                if (api.settings.get('locked_muc_domain') || (api.settings.get('muc_domain') && !u.isValidJID(data.jid))) {
+                    jid = `${Strophe.escapeNode(data.jid)}@${api.settings.get('muc_domain')}`;
                 } else {
                     jid = data.jid
                     this.model.setDomain(jid);
@@ -404,15 +403,15 @@ converse.plugins.add('converse-muc-views', {
             },
 
             checkRoomidPolicy () {
-                if (_converse.muc_roomid_policy && _converse.muc_domain) {
+                if (api.settings.get('muc_roomid_policy') && api.settings.get('muc_domain')) {
                     let jid = this.el.querySelector('.roomjid-input').value;
                     if (converse.locked_muc_domain || !u.isValidJID(jid)) {
-                        jid = `${Strophe.escapeNode(jid)}@${_converse.muc_domain}`;
+                        jid = `${Strophe.escapeNode(jid)}@${api.settings.get('muc_domain')}`;
                     }
                     const roomid = Strophe.getNodeFromJid(jid);
                     const roomdomain = Strophe.getDomainFromJid(jid);
-                    if (_converse.muc_domain !== roomdomain ||
-                        _converse.muc_roomid_policy.test(roomid)) {
+                    if (api.settings.get('muc_domain') !== roomdomain ||
+                        api.settings.get('muc_roomid_policy').test(roomid)) {
                         this.muc_roomid_policy_error_msg = null;
                     } else {
                         this.muc_roomid_policy_error_msg = __('Groupchat id is invalid.');
@@ -513,7 +512,7 @@ converse.plugins.add('converse-muc-views', {
             async render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
                 render(tpl_chatroom({
-                    'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
+                    'muc_show_logs_before_join': api.settings.get('muc_show_logs_before_join'),
                     'show_send_button': _converse.show_send_button
                 }), this.el);
 
@@ -523,7 +522,7 @@ converse.plugins.add('converse-muc-views', {
                 this.help_container = this.el.querySelector('.chat-content__help');
 
                 this.renderBottomPanel();
-                if (!_converse.muc_show_logs_before_join &&
+                if (!api.settings.get('muc_show_logs_before_join') &&
                         this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     this.showSpinner();
                 }
@@ -737,7 +736,7 @@ converse.plugins.add('converse-muc-views', {
                 const element = document.createElement("li");
                 element.setAttribute("aria-selected", "false");
 
-                if (_converse.muc_mention_autocomplete_show_avatar) {
+                if (api.settings.get('muc_mention_autocomplete_show_avatar')) {
                     const img = document.createElement("img");
                     let dataUri = "data:" + _converse.DEFAULT_IMAGE_TYPE + ";base64," + _converse.DEFAULT_IMAGE;
 
@@ -772,10 +771,12 @@ converse.plugins.add('converse-muc-views', {
                 this.mention_auto_complete = new _converse.AutoComplete(this.el, {
                     'auto_first': true,
                     'auto_evaluate': false,
-                    'min_chars': _converse.muc_mention_autocomplete_min_chars,
+                    'min_chars': api.settings.get('muc_mention_autocomplete_min_chars'),
                     'match_current_word': true,
                     'list': () => this.getAutoCompleteList(),
-                    'filter': _converse.muc_mention_autocomplete_filter == 'contains' ? _converse.FILTER_CONTAINS : _converse.FILTER_STARTSWITH,
+                    'filter': api.settings.get('muc_mention_autocomplete_filter') == 'contains' ?
+                        _converse.FILTER_CONTAINS :
+                        _converse.FILTER_STARTSWITH,
                     'ac_triggers': ["Tab", "@"],
                     'include_triggers': [],
                     'item': this.getAutoCompleteListItem
@@ -815,14 +816,14 @@ converse.plugins.add('converse-muc-views', {
 
                 if (message.mayBeRetracted()) {
                     const messages = [__('Are you sure you want to retract this message?')];
-                    if (_converse.show_retraction_warning) {
+                    if (api.settings.get('show_retraction_warning')) {
                         messages[1] = retraction_warning;
                     }
                     !!(await api.confirm(__('Confirm'), messages)) && this.model.retractOwnMessage(message);
                 } else if (await message.mayBeModerated()) {
                     if (message.get('sender') === 'me') {
                         let messages = [__('Are you sure you want to retract this message?')];
-                        if (_converse.show_retraction_warning) {
+                        if (api.settings.get('show_retraction_warning')) {
                             messages = [messages[0], retraction_warning, messages[1]]
                         }
                         !!(await api.confirm(__('Confirm'), messages)) && this.retractOtherMessage(message);
@@ -831,7 +832,7 @@ converse.plugins.add('converse-muc-views', {
                             __('You are about to retract this message.'),
                             __('You may optionally include a message, explaining the reason for the retraction.')
                         ];
-                        if (_converse.show_retraction_warning) {
+                        if (api.settings.get('show_retraction_warning')) {
                             messages = [messages[0], retraction_warning, messages[1]]
                         }
                         const reason = await api.prompt(
@@ -1257,7 +1258,7 @@ converse.plugins.add('converse-muc-views', {
                     }
                 }
                 const attrs = { jid, reason };
-                if (occupant && _converse.auto_register_muc_nickname) {
+                if (occupant && api.settings.get('auto_register_muc_nickname')) {
                     attrs['nick'] = occupant.get('nick');
                 }
                 this.model.setAffiliation(affiliation, [attrs])
@@ -1320,8 +1321,8 @@ converse.plugins.add('converse-muc-views', {
                 }
                 allowed_commands.sort();
 
-                if (Array.isArray(_converse.muc_disable_slash_commands)) {
-                    return allowed_commands.filter(c => !_converse.muc_disable_slash_commands.includes(c));
+                if (Array.isArray(api.settings.get('muc_disable_slash_commands'))) {
+                    return allowed_commands.filter(c => !api.settings.get('muc_disable_slash_commands').includes(c));
                 } else {
                     return allowed_commands;
                 }
@@ -1355,7 +1356,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             parseMessageForCommands (text) {
-                if (_converse.muc_disable_slash_commands && !Array.isArray(_converse.muc_disable_slash_commands)) {
+                if (api.settings.get('muc_disable_slash_commands') &&
+                        !Array.isArray(api.settings.get('muc_disable_slash_commands'))) {
                     return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }
                 text = text.replace(/^\s*/, "");
@@ -1499,7 +1501,7 @@ converse.plugins.add('converse-muc-views', {
              * @method _converse.ChatRoomView#renderNicknameForm
              */
             renderNicknameForm () {
-                const heading = _converse.muc_show_logs_before_join ?
+                const heading = api.settings.get('muc_show_logs_before_join') ?
                     __('Choose a nickname to enter') :
                     __('Please choose your nickname');
 
@@ -1509,7 +1511,7 @@ converse.plugins.add('converse-muc-views', {
                     'label_join': __('Enter groupchat'),
                 }, this.model.toJSON()));
 
-                if (_converse.muc_show_logs_before_join) {
+                if (api.settings.get('muc_show_logs_before_join')) {
                     const container = this.el.querySelector('.muc-bottom-panel');
                     container.innerHTML = html;
                     u.addClass('muc-bottom-panel--nickname', container);
@@ -1783,7 +1785,7 @@ converse.plugins.add('converse-muc-views', {
 
             toHTML () {
                 const stanza = u.toStanza(this.model.get('config_stanza'));
-                const whitelist = _converse.roomconfig_whitelist;
+                const whitelist = api.settings.get('roomconfig_whitelist');
                 let fields = sizzle('field', stanza);
                 if (whitelist.length) {
                     fields = fields.filter(f => whitelist.includes(f.getAttribute('var')));
@@ -1978,10 +1980,10 @@ converse.plugins.add('converse-muc-views', {
         function fetchAndSetMUCDomain (controlboxview) {
             if (controlboxview.model.get('connected')) {
                 if (!controlboxview.getRoomsPanel().model.get('muc_domain')) {
-                    if (_converse.muc_domain === undefined) {
+                    if (api.settings.get('muc_domain') === undefined) {
                         setMUCDomainFromDisco(controlboxview);
                     } else {
-                        setMUCDomain(_converse.muc_domain, controlboxview);
+                        setMUCDomain(api.settings.get('muc_domain'), controlboxview);
                     }
                 }
             }
@@ -2020,7 +2022,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
         api.listen.on('controlBoxInitialized', (view) => {
-            if (!_converse.allow_muc) {
+            if (!api.settings.get('allow_muc')) {
                 return;
             }
             fetchAndSetMUCDomain(view);

@@ -215,7 +215,7 @@ converse.plugins.add('converse-omemo', {
          * loaded by Converse.js's plugin machinery.
          */
 
-        api.settings.update({'omemo_default': false});
+        api.settings.extend({'omemo_default': false});
 
         api.promises.add(['OMEMOInitialized']);
 

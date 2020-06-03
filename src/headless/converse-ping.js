@@ -23,7 +23,7 @@ converse.plugins.add('converse-ping', {
          */
         let lastStanzaDate;
 
-        api.settings.update({
+        api.settings.extend({
             ping_interval: 60 //in seconds
         });
 

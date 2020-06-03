@@ -99,7 +99,7 @@ converse.plugins.add('converse-controlbox', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        api.settings.update({
+        api.settings.extend({
             allow_logout: true,
             default_domain: undefined,
             locked_domain: undefined,

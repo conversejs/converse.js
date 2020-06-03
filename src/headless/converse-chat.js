@@ -40,7 +40,7 @@ converse.plugins.add('converse-chat', {
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        api.settings.update({
+        api.settings.extend({
             'allow_message_corrections': 'all',
             'allow_message_retraction': 'all',
             'auto_join_private_chats': [],

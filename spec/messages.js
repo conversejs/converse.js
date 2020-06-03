@@ -15,6 +15,9 @@ describe("A Chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
         await _converse.handleMessageStanza(mock.createChatMessage(_converse, contact_jid, 'This message will be read'));
+        const msg_el = await u.waitUntil(() => view.el.querySelector('converse-chat-message'));
+        expect(msg_el.querySelector('.chat-msg__text').textContent).toBe('This message will be read');
+        expect(view.model.get('num_unread')).toBe(0);
 
         _converse.windowState = 'hidden';
         await _converse.handleMessageStanza(mock.createChatMessage(_converse, contact_jid, 'This message will be new'));

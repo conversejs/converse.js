@@ -69,7 +69,7 @@ converse.plugins.add('converse-register', {
         _converse.CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
         _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
-        api.settings.update({
+        api.settings.extend({
             'allow_registration': true,
             'domain_placeholder': __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             'providers_link': 'https://compliance.conversations.im/', // Link to XMPP providers shown on registration page

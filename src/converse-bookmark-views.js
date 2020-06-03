@@ -40,7 +40,7 @@ converse.plugins.add('converse-bookmark-views', {
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        api.settings.update({
+        api.settings.extend({
             hide_open_bookmarks: true,
         });
 

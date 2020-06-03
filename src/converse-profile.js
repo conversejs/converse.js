@@ -29,7 +29,7 @@ converse.plugins.add('converse-profile', {
          * loaded by converse.js's plugin machinery.
          */
 
-        api.settings.update({
+        api.settings.extend({
             'allow_adhoc_commands': true,
             'show_client_info': true
         });

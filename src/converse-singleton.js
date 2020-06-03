@@ -17,7 +17,7 @@ converse.plugins.add('converse-singleton', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        this._converse.api.settings.update({
+        this._converse.api.settings.extend({
             'allow_logout': false,          // No point in logging out when we have auto_login as true.
             'allow_muc_invitations': false, // Doesn't make sense to allow because only
                                             // roster contacts can be invited

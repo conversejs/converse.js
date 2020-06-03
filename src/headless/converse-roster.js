@@ -24,7 +24,7 @@ converse.plugins.add('converse-roster', {
          */
         const { __ } = _converse;
 
-        api.settings.update({
+        api.settings.extend({
             'allow_contact_requests': true,
             'auto_subscribe': false,
             'synchronize_availability': true,

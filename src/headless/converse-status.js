@@ -14,7 +14,7 @@ converse.plugins.add('converse-status', {
 
     initialize () {
 
-        api.settings.update({
+        api.settings.extend({
             auto_away: 0, // Seconds after which user status is set to 'away'
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.

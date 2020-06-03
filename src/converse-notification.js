@@ -22,7 +22,7 @@ converse.plugins.add('converse-notification', {
          */
         _converse.supports_html5_notification = "Notification" in window;
 
-        api.settings.update({
+        api.settings.extend({
             notify_all_room_messages: false,
             show_desktop_notifications: true,
             show_chat_state_notifications: false,

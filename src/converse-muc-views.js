@@ -92,7 +92,7 @@ converse.plugins.add('converse-muc-views', {
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        api.settings.update({
+        api.settings.extend({
             'auto_list_rooms': false,
             'cache_muc_messages': true,
             'locked_muc_nickname': false,

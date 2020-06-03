@@ -51,7 +51,7 @@ converse.plugins.add('converse-chatview', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        api.settings.update({
+        api.settings.extend({
             'auto_focus': true,
             'message_limit': 0,
             'muc_hats_from_vcard': false,

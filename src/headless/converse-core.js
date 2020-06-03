@@ -637,10 +637,14 @@ export const api = _converse.api = {
          * Allows new configuration settings to be specified, or new default values for
          * existing configuration settings to be specified.
          *
-         * @method _converse.api.settings.update
+         * Note, calling this method *after* converse.initialize has been
+         * called will *not* change the initialization settings provided via
+         * `converse.initialize`.
+         *
+         * @method _converse.api.settings.extend
          * @param {object} settings The configuration settings
          * @example
-         * _converse.api.settings.update({
+         * _converse.api.settings.extend({
          *    'enable_foo': true
          * });
          *
@@ -650,7 +654,7 @@ export const api = _converse.api = {
          *     'enable_foo': false
          * });
          */
-        update (settings) {
+        extend (settings) {
             u.merge(DEFAULT_SETTINGS, settings);
             // When updating the settings, we need to avoid overwriting the
             // initialization_settings (i.e. the settings passed in via converse.initialize).
@@ -659,6 +663,12 @@ export const api = _converse.api = {
             const updated_settings = assignIn(pick(settings, allowed_keys), allowed_site_settings);
             u.merge(_converse.settings, updated_settings);
             u.merge(_converse, updated_settings); // FIXME: remove
+        },
+
+        update (settings) {
+            log.warn("The api.settings.extend method has been deprecated and will be removed. "+
+                     "Please use api.settings.extend instead.");
+            return this.extend(settings);
         },
 
         /**

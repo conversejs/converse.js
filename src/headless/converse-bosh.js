@@ -21,7 +21,7 @@ converse.plugins.add('converse-bosh', {
     },
 
     initialize () {
-        api.settings.update({
+        api.settings.extend({
             bosh_service_url: undefined,
             prebind_url: null
         });

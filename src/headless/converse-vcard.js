@@ -115,13 +115,13 @@ converse.plugins.add('converse-vcard', {
             if (vcard !== null) {
                 result = {
                     'stanza': iq,
-                    'fullname': vcard.querySelector('FN')?.textConte?.t,
-                    'nickname': vcard.querySelector('NICKNAME')?.textConte?.t,
-                    'image': vcard.querySelector('PHOTO BINVAL')?.textConte?.t,
-                    'image_type': vcard.querySelector('PHOTO TYPE')?.textConte?.t,
-                    'url': vcard.querySelector('URL')?.textConte?.t,
-                    'role': vcard.querySelector('ROLE')?.textConte?.t,
-                    'email': vcard.querySelector('EMAIL USERID')?.textConte?.t,
+                    'fullname': vcard.querySelector('FN')?.textContent,
+                    'nickname': vcard.querySelector('NICKNAME')?.textContent,
+                    'image': vcard.querySelector('PHOTO BINVAL')?.textContent,
+                    'image_type': vcard.querySelector('PHOTO TYPE')?.textContent,
+                    'url': vcard.querySelector('URL')?.textContent,
+                    'role': vcard.querySelector('ROLE')?.textContent,
+                    'email': vcard.querySelector('EMAIL USERID')?.textContent,
                     'vcard_updated': (new Date()).toISOString(),
                     'vcard_error': undefined
                 };

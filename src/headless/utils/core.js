@@ -523,15 +523,14 @@ u.placeCaretAtEnd = function (textarea) {
 
 u.getUniqueId = function (suffix) {
     const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0,
-                v = c === 'x' ? r : r & 0x3 | 0x8;
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : r & 0x3 | 0x8;
         return v.toString(16);
     });
-    // We prefix the ID with letters so that it's also a valid ID for DOM elements.
     if (typeof(suffix) === "string" || typeof(suffix) === "number") {
-        return "id" + uuid + ":" + suffix;
+        return uuid + ":" + suffix;
     } else {
-        return "id" + uuid;
+        return uuid;
     }
 }
 

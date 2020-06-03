@@ -5,6 +5,9 @@
  * @todo Other parsing helpers can be made more abstract and placed here.
  */
 const helpers = {
+    // Captures all mentions, but includes a space before the @
+    mentionRegex: /\s([@][\w_-]+)|^([@][\w_-]+)/ig,
+
     filterIsNicknameMentioned (mentions) {
         // testing against lowercase nickname to be able to
         // produce matches that are case insensitive
@@ -40,7 +43,9 @@ const helpers = {
     },
 
     mapMentionsInMatches (match) {
-        return match[1];
+        // One of the two possible matches for `mentionRegex`
+        // One will always be undefined
+        return match[1] || match[0];
     },
 
     mapMentionsToTempReferences (mention) {

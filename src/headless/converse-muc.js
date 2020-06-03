@@ -949,9 +949,7 @@ converse.plugins.add('converse-muc', {
             },
 
             parseTextForReferences (originalMessage) {
-                // Captures all mentions, but includes a space before the @
-                const mentionRegex = /\s([@][\w_-]+)|^([@][\w_-]+)/ig;
-                const dirtyMentions = [...originalMessage.matchAll(mentionRegex)];
+                const dirtyMentions = [...originalMessage.matchAll(p.mentionRegex)];
                 const mentions = dirtyMentions.map(p.mapMentionsInMatches);
                 if (!mentions.length) return [originalMessage, []];
 
@@ -967,6 +965,7 @@ converse.plugins.add('converse-muc', {
                     .reduce(p.reduceReferencesWithNicknames(knownNicknames), [])
                     .map(p.mapAddUriToReferences(makeUriFromReference))
                     .map(p.mapAddCoordsToReferences(indexes))
+                    .map(p.mapCleanReferences);
                 const updatedMessage = references.reduce(p.reduceTextFromReferences, originalMessage);
 
                 return [updatedMessage, references];

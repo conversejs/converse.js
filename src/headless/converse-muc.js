@@ -944,7 +944,7 @@ converse.plugins.add('converse-muc', {
             mapCleanReferences (reference) {
                 /* eslint-disable */
                 const { mentionedAs, ...rest } = reference;
-                return { ...rest }; // @TODO
+                return { ...rest };
             },
 
             mapAddCoordsToReferences (indexes) {
@@ -975,9 +975,8 @@ converse.plugins.add('converse-muc', {
                 return mention.slice(1).toLowerCase();
             },
 
-            filterMentionsInWords (word) {
-                const mentionRegExp = /^\@[\w\-]+$/;
-                return mentionRegExp.test(word);
+            mapMentionsInMatches (match) {
+                return match[1];
             },
 
             getOccupantByNickname (nickname) {
@@ -999,7 +998,7 @@ converse.plugins.add('converse-muc', {
                 const lowercaseNicknames = knownNicknames.map(nick => nick.toLowerCase());
                 return (accum, reference) => {
                     const lowercaseMentionNoAtSign = reference.mentionedAs.slice(1).toLowerCase();
-                    const index = lowercaseNicknames.indexOf(lowercaseMentionNoAtSign)
+                    const index = lowercaseNicknames.indexOf(lowercaseMentionNoAtSign);
                     if (index == -1) {
                         return accum
                     }
@@ -1017,38 +1016,40 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            mapMentionsToBeginIndexes (text) {
-                let acc = 0;
-                return (mention) => {
-                    const result = text.indexOf(mention, acc);
-                    acc = result + 1;
-                    return result;
-                }
+            mapMatchesToBeginIndexes (match) {
+                const whitespaceRegex = /[\s]+/g;
+                const matchIsPrecededByWhiteSpace = whitespaceRegex.test(match[0][0]);
+                return matchIsPrecededByWhiteSpace
+                    ? match.index + 1
+                    : match.index;
+            },
+
+            reduceTextFromReferences (updatedText, reference) {
+                const { begin, end, value } = reference;
+                return `${updatedText.slice(0, begin)}${value}${updatedText.slice(end + 1)}`;
             },
 
             parseTextForReferences (text) {
-                const words = text.split(' ');
-                const mentions = words.filter(this.filterMentionsInWords);
+                // Captures all mentions, but includes a space before the @
+                const mentionRegex = /\s([@][\w_-]+)|^([@][\w_-]+)/ig;
+                const dirtyMentions = [...text.matchAll(mentionRegex)];
+                const mentions = dirtyMentions.map(this.mapMentionsInMatches);
                 if (!mentions.length) return [text, []];
 
                 const knownNicknames = this.getAllKnownNicknames();
-                const indexes = mentions.map(this.mapMentionsToBeginIndexes(text));
+                const indexes = dirtyMentions.map(this.mapMatchesToBeginIndexes);
                 const references = mentions
                     .map(this.mapMentionsToTempReferences)
                     .reduce(this.reduceReferencesWithNicknames(knownNicknames), [])
                     .map(this.mapAddUriToReferences(this.makeUriFromReference.bind(this)))
                     .map(this.mapAddCoordsToReferences(indexes))
-                const updatedText = references.reduce((updatedText, reference) => {
-                    const { mentionedAs, value } = reference;
-                    return updatedText.replace(mentionedAs, value);
-                }, text);
+                const updatedText = references.reduce(this.reduceTextFromReferences, text);
                 return [updatedText, references];
             },
 
-            getOutgoingMessageAttributes (text, spoiler_hint) {
+            getOutgoingMessageAttributes (originalMessage, spoiler_hint) {
                 const is_spoiler = this.get('composing_spoiler');
-                var references;
-                [text, references] = this.parseTextForReferences(text);
+                const [text, references] = this.parseTextForReferences(originalMessage);
                 const origin_id = u.getUniqueId();
                 const body = text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined;
                 return {

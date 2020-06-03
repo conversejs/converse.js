@@ -15,6 +15,7 @@ import log from "./log";
 import muc_utils from "./utils/muc";
 import st from "./utils/stanza";
 import u from "./utils/form";
+import p from "./utils/parse-helpers";
 
 export const ROLES = ['moderator', 'participant', 'visitor'];
 export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
@@ -941,110 +942,34 @@ converse.plugins.add('converse-muc', {
                 ])].filter(n => n);
             },
 
-            mapCleanReferences (reference) {
-                /* eslint-disable */
-                const { mentionedAs, ...rest } = reference;
-                return { ...rest };
-            },
-
-            mapAddCoordsToReferences (indexes) {
-                return (reference, index) => {
-                    const begin = indexes[index] - index;
-                    return {
-                        ...reference,
-                        begin,
-                        end: begin + reference.value.length // add one for the @
-                    }
-                }
-            },
-
-            mapAddUriToReferences (makeUriFromReference) {
-                return (reference) => ({
-                    ...reference,
-                    uri: makeUriFromReference(reference)
-                })
-            },
-
-            filterIsNicknameMentioned (mentions) {
-                // testing against lowercase nickname to be able to
-                // produce matches that are case insensitive
-                return nickname => mentions.includes(nickname.toLowerCase());
-            },
-
-            mapFormatMentions (mention) {
-                return mention.slice(1).toLowerCase();
-            },
-
-            mapMentionsInMatches (match) {
-                return match[1];
-            },
-
             getOccupantByNickname (nickname) {
                 return this.occupants.findOccupant({ nick: nickname })
                     || u.isValidJID(nickname)
-                    && this.occupants.findOccupant({' jid': nickname });
+                    && this.occupants.findOccupant({ jid: nickname });
             },
 
-            makeUriFromReference (reference) {
-                const nickname = reference.value;
-                const occupant = this.getOccupantByNickname(nickname);
-                const uri = occupant
-                    ? occupant.get('jid')
-                    : `${this.get('jid')}/${nickname}`;
-                return encodeURI(`xmpp:${uri}`);
-            },
-
-            reduceReferencesWithNicknames (knownNicknames) {
-                const lowercaseNicknames = knownNicknames.map(nick => nick.toLowerCase());
-                return (accum, reference) => {
-                    const lowercaseMentionNoAtSign = reference.mentionedAs.slice(1).toLowerCase();
-                    const index = lowercaseNicknames.indexOf(lowercaseMentionNoAtSign);
-                    if (index == -1) {
-                        return accum
-                    }
-                    return [...accum, {
-                        ...reference,
-                        value: knownNicknames[index]
-                    }];
-                }
-            },
-
-            mapMentionsToTempReferences (mention) {
-                return {
-                    mentionedAs: mention,
-                    type: 'mention'
-                }
-            },
-
-            mapMatchesToBeginIndexes (match) {
-                const whitespaceRegex = /[\s]+/g;
-                const matchIsPrecededByWhiteSpace = whitespaceRegex.test(match[0][0]);
-                return matchIsPrecededByWhiteSpace
-                    ? match.index + 1
-                    : match.index;
-            },
-
-            reduceTextFromReferences (updatedText, reference) {
-                const { begin, end, value } = reference;
-                return `${updatedText.slice(0, begin)}${value}${updatedText.slice(end + 1)}`;
-            },
-
-            parseTextForReferences (text) {
+            parseTextForReferences (originalMessage) {
                 // Captures all mentions, but includes a space before the @
                 const mentionRegex = /\s([@][\w_-]+)|^([@][\w_-]+)/ig;
-                const dirtyMentions = [...text.matchAll(mentionRegex)];
-                const mentions = dirtyMentions.map(this.mapMentionsInMatches);
-                if (!mentions.length) return [text, []];
+                const dirtyMentions = [...originalMessage.matchAll(mentionRegex)];
+                const mentions = dirtyMentions.map(p.mapMentionsInMatches);
+                if (!mentions.length) return [originalMessage, []];
 
                 const knownNicknames = this.getAllKnownNicknames();
-                const indexes = dirtyMentions.map(this.mapMatchesToBeginIndexes);
+                const indexes = dirtyMentions.map(p.mapMatchesToBeginIndexes);
+                const makeUriFromReference = p.makeUriFromReference(
+                    this.getOccupantByNickname.bind(this),
+                    this.get('jid')
+                )
+
                 const references = mentions
-                    .map(this.mapMentionsToTempReferences)
-                    .reduce(this.reduceReferencesWithNicknames(knownNicknames), [])
-                    .map(this.mapAddUriToReferences(this.makeUriFromReference.bind(this)))
-                    .map(this.mapAddCoordsToReferences(indexes))
-                const updatedText = references.reduce(this.reduceTextFromReferences, text);
-                return [updatedText, references];
+                    .map(p.mapMentionsToTempReferences)
+                    .reduce(p.reduceReferencesWithNicknames(knownNicknames), [])
+                    .map(p.mapAddUriToReferences(makeUriFromReference))
+                    .map(p.mapAddCoordsToReferences(indexes))
+                const updatedMessage = references.reduce(p.reduceTextFromReferences, originalMessage);
+
+                return [updatedMessage, references];
             },
 
             getOutgoingMessageAttributes (originalMessage, spoiler_hint) {

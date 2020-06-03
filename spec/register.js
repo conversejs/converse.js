@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const Strophe = converse.env.Strophe;
 const $iq = converse.env.$iq;
@@ -56,7 +56,6 @@ describe("The Registration Panel", function () {
               allow_registration: true },
             async function (done, _converse) {
 
-        spyOn(Strophe.Connection.prototype, 'connect');
 
         await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
         const toggle = document.querySelector(".toggle-controlbox");
@@ -66,6 +65,7 @@ describe("The Registration Panel", function () {
         await u.waitUntil(() => u.isVisible(cbview.el));
         const registerview = cbview.registerpanel;
         spyOn(registerview, 'onProviderChosen').and.callThrough();
+        spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
         registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
 
         // Open the register panel
@@ -85,7 +85,8 @@ describe("The Registration Panel", function () {
         form.querySelector('input[name=domain]').value = 'conversejs.org';
         submit_button.click();
         expect(registerview.onProviderChosen).toHaveBeenCalled();
-        await u.waitUntil(() => _converse.connection.connect.calls.count());
+        expect(registerview.fetchRegistrationForm).toHaveBeenCalled();
+        delete _converse.connection;
         done();
     }));
 
@@ -97,12 +98,12 @@ describe("The Registration Panel", function () {
               allow_registration: true },
             async function (done, _converse) {
 
-        spyOn(Strophe.Connection.prototype, 'connect');
         await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'));
         const cbview = _converse.api.controlbox.get();
         cbview.el.querySelector('.toggle-register-login').click();
 
         const registerview = _converse.chatboxviews.get('controlbox').registerpanel;
+        spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
         spyOn(registerview, 'onProviderChosen').and.callThrough();
         spyOn(registerview, 'getRegistrationFields').and.callThrough();
         spyOn(registerview, 'onRegistrationFields').and.callThrough();
@@ -115,7 +116,7 @@ describe("The Registration Panel", function () {
         registerview.el.querySelector('input[type=submit]').click();
         expect(registerview.onProviderChosen).toHaveBeenCalled();
         expect(registerview._registering).toBeTruthy();
-        await u.waitUntil(() => _converse.connection.connect.calls.count());
+        await u.waitUntil(() => registerview.fetchRegistrationForm.calls.count());
 
         let stanza = new Strophe.Builder("stream:features", {
                     'xmlns:stream': "http://etherx.jabber.org/streams",
@@ -294,7 +295,6 @@ describe("The Registration Panel", function () {
         mock.initConverse(
             ['chatBoxesInitialized'],
             { auto_login: false,
-              view_mode: 'fullscreen',
               discover_connection_methods: false,
               allow_registration: true },
             async function (done, _converse) {

@@ -127,10 +127,11 @@ class Message extends CustomElement {
         const is_groupchat_message = (this.message_type === 'groupchat');
         return html`
             ${ this.is_first_unread ? html`<div class="message date-separator"><hr class="separator"><span class="separator-text">${ i18n_new_messages }</span></div>` : '' }
-            <div class="message chat-msg ${this.message_type} ${this.getExtraMessageClasses()}
-                    ${ this.is_me_message ? 'chat-msg--action' : '' }
-                    ${this.isFollowup() ? 'chat-msg--followup' : ''}"
-                    data-isodate="${this.time}" data-msgid="${this.msgid}" data-from="${this.from}" data-encrypted="${this.is_encrypted}">
+            <div class="message chat-msg ${ this.getExtraMessageClasses() }"
+                 data-isodate="${this.time}"
+                 data-msgid="${this.msgid}"
+                 data-from="${this.from}"
+                 data-encrypted="${this.is_encrypted}">
 
                 ${ this.shouldShowAvatar() ? renderAvatar(this.getAvatarData()) : '' }
                 <div class="chat-msg__content chat-msg__content--${this.sender} ${this.is_me_message ? 'chat-msg__content--action' : ''}">
@@ -215,12 +216,16 @@ class Message extends CustomElement {
             this.is_encrypted === prev_model.get('is_encrypted');
     }
 
-
     getExtraMessageClasses () {
         const extra_classes = [
-            ...(this.is_delayed ? ['delayed'] : []),
-            ...(this.is_retracted ? ['chat-msg--retracted'] : [])
-        ];
+            this.isFollowup() ? 'chat-msg--followup' : null,
+            this.is_delayed ? 'delayed' : null,
+            this.is_me_message ? 'chat-msg--action' : null,
+            this.is_retracted ? 'chat-msg--retracted' : null,
+            this.message_type,
+            this.shouldShowAvatar() ? 'chat-msg--with-avatar' : null,
+        ].map(c => c);
+
         if (this.message_type === 'groupchat') {
             this.occupant_role && extra_classes.push(this.occupant_role);
             this.occupant_affiliation && extra_classes.push(this.occupant_affiliation);

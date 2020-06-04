@@ -318,7 +318,7 @@
                 .chat-msg__avatar {
                     display: none;
                 }
-                .chat-msg__content {
+                &.chat-msg--with-avatar .chat-msg__content {
                     margin-left: 2.75rem;
                     width: 100%;
                 }

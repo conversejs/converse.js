@@ -197,7 +197,7 @@ eslint: node_modules
 	$(ESLINT) spec/
 
 .PHONY: check
-check: eslint dev
+check: dev eslint
 	$(KARMA) start karma.conf.js $(ARGS)
 
 .PHONY: test

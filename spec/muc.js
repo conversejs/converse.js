@@ -4986,11 +4986,11 @@ describe("Groupchats", function () {
                     });
                 _converse.connection._dataRecv(mock.createRequest(presence));
                 await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
-                    "some1, newguy and nomorenicks have entered the groupchat");
+                    "some1, newguy and nomorenicks have entered the groupchat", 1000);
 
                 // Manually clear so that we can more easily test
                 view.model.notifications.set('entered', []);
-                await u.waitUntil(() => !view.el.querySelector('.chat-content__notifications').textContent);
+                await u.waitUntil(() => !view.el.querySelector('.chat-content__notifications').textContent, 1000);
 
                 // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
 
@@ -5012,10 +5012,9 @@ describe("Groupchats", function () {
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 _converse.connection._dataRecv(mock.createRequest(msg));
 
-                csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
+                csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent, 1000);
                 expect(csntext.trim()).toEqual('newguy is typing');
                 expect(remove_notifications_timeouts.length).toBe(1);
-
                 expect(view.el.querySelector('.chat-content__notifications').textContent.trim()).toEqual('newguy is typing');
 
                 // <composing> state for a different occupant
@@ -5026,7 +5025,7 @@ describe("Groupchats", function () {
                         type: 'groupchat'
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 await view.model.handleMessageStanza(msg);
-                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy and nomorenicks are typing');
+                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy and nomorenicks are typing', 1000);
 
                 // <composing> state for a different occupant
                 msg = $msg({
@@ -5036,7 +5035,7 @@ describe("Groupchats", function () {
                         type: 'groupchat'
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 await view.model.handleMessageStanza(msg);
-                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy, nomorenicks and majortom are typing');
+                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy, nomorenicks and majortom are typing', 1000);
 
                 // <composing> state for a different occupant
                 msg = $msg({
@@ -5046,7 +5045,7 @@ describe("Groupchats", function () {
                         type: 'groupchat'
                     }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 await view.model.handleMessageStanza(msg);
-                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy, nomorenicks and others are typing');
+                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'newguy, nomorenicks and others are typing', 1000);
 
                 msg = $msg({
                     from: `${muc_jid}/some1`,
@@ -5055,15 +5054,15 @@ describe("Groupchats", function () {
                     type: 'groupchat'
                 }).c('body').t('hello world').tree();
                 await view.model.handleMessageStanza(msg);
-                await new Promise(resolve => view.model.messages.once('rendered', resolve), 1000);
 
-                await u.waitUntil(() => view.el.querySelectorAll('.message').length === 2);
-                expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
                 expect(view.el.querySelector('.chat-msg .chat-msg__text').textContent.trim()).toBe('hello world');
 
                 // Test that the composing notifications get removed via timeout.
-                remove_notifications_timeouts[0]();
-                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'nomorenicks, majortom and groundcontrol are typing');
+                if (remove_notifications_timeouts.length) {
+                    remove_notifications_timeouts[0]();
+                }
+                await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() === 'nomorenicks, majortom and groundcontrol are typing', 1000);
                 done();
             }));
         });

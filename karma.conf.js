@@ -63,6 +63,12 @@ module.exports = function(config) {
       "/dist/\@fortawesome/fontawesome-free/sprites/solid.svg": "/base/dist/\@fortawesome/fontawesome-free/sprites/solid.svg"
     },
 
+    client: {
+      jasmine: {
+        random: false
+      }
+    },
+
     exclude: ['**/*.sw?'],
 
     // preprocess matching files before serving them to the browser

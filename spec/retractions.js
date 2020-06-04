@@ -119,8 +119,7 @@ describe("Message Retractions", function () {
             `);
             _converse.connection._dataRecv(mock.createRequest(received_stanza));
             await u.waitUntil(() => view.model.handleRetraction.calls.count() === 2);
-
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(0);
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1, 1000);
             expect(view.model.messages.length).toBe(1);
 
             const message = view.model.messages.at(0)

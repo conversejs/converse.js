@@ -1215,7 +1215,7 @@ describe("A Groupchat Message", function () {
                             `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
 
-            const action = view.el.querySelector('.chat-msg .chat-msg__action');
+            const action = await u.waitUntil(() => view.el.querySelector('.chat-msg .chat-msg__action'));
             action.style.opacity = 1;
             action.click();
 

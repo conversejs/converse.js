@@ -437,7 +437,8 @@ describe("The OMEMO module", function() {
         _converse.connection._dataRecv(mock.createRequest(carbon));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.length).toBe(1);
-        expect(view.el.querySelector('.chat-msg__body').textContent.trim())
+
+        expect(view.el.querySelector('.chat-msg__text').textContent.trim())
             .toBe('This is an encrypted carbon message from another device of mine');
 
         expect(devicelist.devices.length).toBe(2);

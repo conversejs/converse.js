@@ -1,4 +1,6 @@
 import "./message-body.js";
+import './dropdown.js';
+import './message-actions.js';
 import MessageVersionsModal from '../modals/message-versions.js';
 import dayjs from 'dayjs';
 import filesize from "filesize";
@@ -8,12 +10,10 @@ import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from  "@converse/headless/converse-core";
 import { html } from 'lit-element';
 import { renderAvatar } from './../templates/directives/avatar';
-import { renderRetractionLink } from './../templates/directives/retraction';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
 
-const i18n_edit_message = __('Edit this message');
 const i18n_edited = __('This message has been edited');
 const i18n_show = __('Show more');
 const i18n_show_less = __('Show less');
@@ -150,17 +150,13 @@ class Message extends CustomElement {
                         </div>
                         ${ (this.received && !this.is_me_message && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
                         ${ (this.edited) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${this.showMessageVersionsModal}></i>` : '' }
-                        <div class="chat-msg__actions">
-                            ${ this.editable ?
-                                    html`<button
-                                        class="chat-msg__action chat-msg__action-edit"
-                                        title="${i18n_edit_message}"
-                                        @click=${this.onMessageEditButtonClicked}
-                                    >
-                                    <fa-icon class="fas fa-pencil-alt" path-prefix="dist" color="var(--text-color-lighten-15-percent)" size="1em"></fa-icon>
-                                </button>` : '' }
-                            ${ renderRetractionLink(this) }
-                        </div>
+                        <converse-message-actions
+                            .chatview=${this.chatview}
+                            .model=${this.model}
+                            ?correcting="${this.correcting}"
+                            ?editable="${this.editable}"
+                            ?is_retracted="${this.is_retracted}"
+                            message_type="${this.message_type}"></converse-message-actions>
                     </div>
                 </div>
             </div>`;
@@ -187,16 +183,6 @@ class Message extends CustomElement {
         await this.model.error.retry();
         this.model.destroy();
         this.parentElement.removeChild(this);
-    }
-
-    onMessageRetractButtonClicked (ev) {
-        ev.preventDefault();
-        this.chatview.onMessageRetractButtonClicked(this.model);
-    }
-
-    onMessageEditButtonClicked (ev) {
-        ev.preventDefault();
-        this.chatview.onMessageEditButtonClicked(this.model);
     }
 
     isFollowup () {

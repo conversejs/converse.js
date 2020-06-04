@@ -107,7 +107,7 @@ describe("Chatboxes", function () {
             // get the 'chat-msg--followup' class.
             message = 'This a normal message';
             await mock.sendMessage(view, message);
-            const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body';
+            const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__text';
             await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === message);
             let el = view.el.querySelector('converse-chat-message:last-child .chat-msg__body');
             expect(u.hasClass('chat-msg--followup', el)).toBeFalsy();

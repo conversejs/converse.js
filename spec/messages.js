@@ -106,7 +106,7 @@ describe("A Chat Message", function () {
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
         expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
         let action = view.el.querySelector('.chat-msg .chat-msg__action');
-        expect(action.getAttribute('title')).toBe('Edit this message');
+        expect(action.textContent.trim()).toBe('Edit');
 
         action.style.opacity = 1;
         action.click();

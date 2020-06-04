@@ -4,95 +4,75 @@
  * @description Pure functions to help funcitonally parse messages.
  * @todo Other parsing helpers can be made more abstract and placed here.
  */
-const helpers = {
+const helpers = {};
+
     // Captures all mentions, but includes a space before the @
-    mentionRegex: /\s([@][\w_-]+)|^([@][\w_-]+)/ig,
+helpers.mention_regex = /\s([@][\w_-]+)|^([@][\w_-]+)/ig;
 
-    filterIsNicknameMentioned (mentions) {
-        // testing against lowercase nickname to be able to
-        // produce matches that are case insensitive
-        return nickname => mentions.includes(nickname.toLowerCase());
-    },
+helpers.mapCleanReferences = (reference) => {
+    /* eslint-disable */
+    const { mentioned_as, ...rest } = reference;
+    return { ...rest };
+};
 
-    mapCleanReferences (reference) {
-        /* eslint-disable */
-        const { mentionedAs, ...rest } = reference;
-        return { ...rest };
-    },
-
-    mapAddCoordsToReferences (indexes) {
-        return (reference, index) => {
-            const begin = indexes[index] - index;
-            return {
-                ...reference,
-                begin,
-                end: begin + reference.value.length // add one for the @
-            }
-        }
-    },
-
-    mapAddUriToReferences (makeUriFromReference) {
-        return (reference) => ({
-            ...reference,
-            uri: makeUriFromReference(reference)
-        })
-    },
-
-    mapFormatMentions (mention) {
-        return mention.slice(1).toLowerCase();
-    },
-
-    mapMentionsInMatches (match) {
-        // One of the two possible matches for `mentionRegex`
-        // One will always be undefined
-        return match[1] || match[0];
-    },
-
-    mapMentionsToTempReferences (mention) {
-        return {
-            mentionedAs: mention,
-            type: 'mention'
-        }
-    },
-
-    mapMatchesToBeginIndexes (match) {
-        const whitespaceRegex = /[\s]+/g;
-        const matchIsPrecededByWhiteSpace = whitespaceRegex.test(match[0][0]);
-        return matchIsPrecededByWhiteSpace
-            ? match.index + 1
-            : match.index;
-    },
-
-    reduceTextFromReferences (updatedText, reference) {
-        const { begin, end, value } = reference;
-        return `${updatedText.slice(0, begin)}${value}${updatedText.slice(end + 1)}`;
-    },
-
-    reduceReferencesWithNicknames (knownNicknames) {
-        const lowercaseNicknames = knownNicknames.map(nick => nick.toLowerCase());
-        return (accum, reference) => {
-            const lowercaseMentionNoAtSign = reference.mentionedAs.slice(1).toLowerCase();
-            const index = lowercaseNicknames.indexOf(lowercaseMentionNoAtSign);
-            if (index == -1) {
-                return accum
-            }
-            return [...accum, {
-                ...reference,
-                value: knownNicknames[index]
-            }];
-        }
-    },
-
-    makeUriFromReference (getOccupantByNickname, jid) {
-        return (reference) => {
-            const nickname = reference.value;
-            const occupant = getOccupantByNickname(nickname);
-            const uri = occupant
-                ? occupant.get('jid')
-                : `${jid}/${nickname}`;
-            return encodeURI(`xmpp:${uri}`);
-        }
+helpers.mapAddCoordsToReferences = (indexes) => (reference, index) => {
+    const begin = indexes[index] - index;
+    return {
+        ...reference,
+        begin,
+        end: begin + reference.value.length // add one for the @
     }
+};
+
+helpers.mapAddUriToReferences = (makeUriFromReference) => (reference) => ({
+    ...reference,
+    uri: makeUriFromReference(reference)
+})
+
+helpers.mapFormatMentions = mention => mention.slice(1).toLowerCase();
+
+// One of the two possible matches for `mention_regex`
+// One will always be undefined
+helpers.mapMentionsInMatches = match => match[1] || match[0];
+
+helpers.mapMentionsToTempReferences = (mention) => ({
+    mentioned_as: mention,
+    type: 'mention'
+});
+
+helpers.mapMatchesToBeginIndexes = (match) => {
+    const whitespace_regex = /[\s]+/g;
+    const match_is_preceded_by_white_space = whitespace_regex.test(match[0][0]);
+    return match_is_preceded_by_white_space
+        ? match.index + 1
+        : match.index;
+};
+
+helpers.reduceTextFromReferences = (updated_text, reference) => {
+    const { begin, end, value } = reference;
+    return `${updated_text.slice(0, begin)}${value}${updated_text.slice(end + 1)}`;
+};
+
+helpers.reduceReferencesWithNicknames = (known_nicknames) => {
+    const lowercase_nicknames = known_nicknames.map(nick => nick.toLowerCase());
+    return (accum, reference) => {
+        const lowercase_mention_no_at_sign = reference.mentioned_as.slice(1).toLowerCase();
+        const index = lowercase_nicknames.indexOf(lowercase_mention_no_at_sign);
+        if (index == -1) {
+            return accum;
+        }
+        return [...accum, {
+            ...reference,
+            value: known_nicknames[index]
+        }];
+    }
+};
+
+helpers.makeUriFromReference = (getOccupant, jid) => (reference) => {
+    const nickname = reference.value;
+    const occupant = getOccupant(nickname) || getOccupant(jid);
+    const uri = occupant ? occupant.get('jid') : `${jid}/${nickname}`;
+    return encodeURI(`xmpp:${uri}`);
 };
 
 export default helpers;

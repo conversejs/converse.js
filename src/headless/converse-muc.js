@@ -942,38 +942,40 @@ converse.plugins.add('converse-muc', {
                 ])].filter(n => n);
             },
 
-            getOccupantByNickname (nickname) {
-                return this.occupants.findOccupant({ nick: nickname })
-                    || u.isValidJID(nickname)
-                    && this.occupants.findOccupant({ jid: nickname });
+            getOccupantByJID (jid) {
+                return u.isValidJID(jid) && this.occupants.findOccupant({ jid });
             },
 
-            parseTextForReferences (originalMessage) {
-                const dirtyMentions = [...originalMessage.matchAll(p.mentionRegex)];
-                const mentions = dirtyMentions.map(p.mapMentionsInMatches);
-                if (!mentions.length) return [originalMessage, []];
+            getOccupantByNickname (nick) {
+                return this.occupants.findOccupant({ nick });
+            },
 
-                const knownNicknames = this.getAllKnownNicknames();
-                const indexes = dirtyMentions.map(p.mapMatchesToBeginIndexes);
-                const makeUriFromReference = p.makeUriFromReference(
-                    this.getOccupantByNickname.bind(this),
+            parseTextForReferences (original_message) {
+                const dirty_mentions = [...original_message.matchAll(p.mention_regex)];
+                const mentions = dirty_mentions.map(p.mapMentionsInMatches);
+                if (!mentions.length) return [original_message, []];
+
+                const known_nicknames = this.getAllKnownNicknames();
+                const indexes = dirty_mentions.map(p.mapMatchesToBeginIndexes);
+                const make_uri_from_reference = p.makeUriFromReference(
+                    this.getOccupant.bind(this),
                     this.get('jid')
                 )
 
                 const references = mentions
                     .map(p.mapMentionsToTempReferences)
-                    .reduce(p.reduceReferencesWithNicknames(knownNicknames), [])
-                    .map(p.mapAddUriToReferences(makeUriFromReference))
+                    .reduce(p.reduceReferencesWithNicknames(known_nicknames), [])
+                    .map(p.mapAddUriToReferences(make_uri_from_reference))
                     .map(p.mapAddCoordsToReferences(indexes))
                     .map(p.mapCleanReferences);
-                const updatedMessage = references.reduce(p.reduceTextFromReferences, originalMessage);
+                const updated_message = references.reduce(p.reduceTextFromReferences, original_message);
 
-                return [updatedMessage, references];
+                return [updated_message, references];
             },
 
-            getOutgoingMessageAttributes (originalMessage, spoiler_hint) {
+            getOutgoingMessageAttributes (original_message, spoiler_hint) {
                 const is_spoiler = this.get('composing_spoiler');
-                const [text, references] = this.parseTextForReferences(originalMessage);
+                const [text, references] = this.parseTextForReferences(original_message);
                 const origin_id = u.getUniqueId();
                 const body = text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined;
                 return {
@@ -1358,13 +1360,11 @@ converse.plugins.add('converse-muc', {
             /**
              * @private
              * @method _converse.ChatRoom#getOccupant
-             * @param { String } nick_or_jid - The nickname or JID of the occupant to be returned
+             * @param { String } nickname_or_jid - The nickname or JID of the occupant to be returned
              * @returns { _converse.ChatRoomOccupant }
              */
-            getOccupant (nick_or_jid) {
-                return (u.isValidJID(nick_or_jid) &&
-                    this.occupants.findWhere({'jid': nick_or_jid})) ||
-                    this.occupants.findWhere({'nick': nick_or_jid});
+            getOccupant (nickname_or_jid) {
+                return this.getOccupantByNickname(nickname_or_jid) || this.getOccupantByJID(nickname_or_jid);
             },
 
             /**

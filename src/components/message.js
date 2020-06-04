@@ -171,8 +171,8 @@ class Message extends CustomElement {
     }
 
     getAvatarData () {
-        const image_type = this.model.vcard.get('image_type');
-        const image_data = this.model.vcard.get('image');
+        const image_type = this.model.vcard?.get('image_type') || _converse.DEFAULT_IMAGE_TYPE;
+        const image_data = this.model.vcard?.get('image') || _converse.DEFAULT_IMAGE;
         const image = "data:" + image_type + ";base64," + image_data;
         return {
             'classes': 'chat-msg__avatar',

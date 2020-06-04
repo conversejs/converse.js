@@ -56,6 +56,7 @@ converse.plugins.add('converse-chatview', {
             'message_limit': 0,
             'muc_hats_from_vcard': false,
             'show_images_inline': true,
+            'show_message_avatar': true,
             'show_retraction_warning': true,
             'show_send_button': true,
             'show_toolbar': true,

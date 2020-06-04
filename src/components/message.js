@@ -132,7 +132,7 @@ class Message extends CustomElement {
                     ${this.isFollowup() ? 'chat-msg--followup' : ''}"
                     data-isodate="${this.time}" data-msgid="${this.msgid}" data-from="${this.from}" data-encrypted="${this.is_encrypted}">
 
-                ${ (this.is_me_message || this.type === 'headline') ? '' : renderAvatar(this.getAvatarData()) }
+                ${ this.shouldShowAvatar() ? renderAvatar(this.getAvatarData()) : '' }
                 <div class="chat-msg__content chat-msg__content--${this.sender} ${this.is_me_message ? 'chat-msg__content--action' : ''}">
                     <span class="chat-msg__heading">
                         ${ (this.is_me_message) ? html`
@@ -163,6 +163,10 @@ class Message extends CustomElement {
                     </div>
                 </div>
             </div>`;
+    }
+
+    shouldShowAvatar () {
+        return api.settings.get('show_message_avatar') && !this.is_me_message && this.type !== 'headline';
     }
 
     getAvatarData () {

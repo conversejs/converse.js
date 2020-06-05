@@ -30,7 +30,6 @@ class ChatContent extends CustomElement {
         if (!this.chatview.model.get('scrolled')) {
             this.parentElement.scrollTop = this.parentElement.scrollHeight;
         }
-        this.parentElement.scrollTop = this.parentElement.scrollHeight;
     }
 
     updated () {

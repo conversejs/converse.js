@@ -605,4 +605,6 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
     return promise;
 };
 
+u.caseInsensitiveEqual = (x, y) => x.toLowerCase() === y.toLowerCase();
+
 export default u;

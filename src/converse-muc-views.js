@@ -17,7 +17,6 @@ import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
 import tpl_chatroom_head from "templates/chatroom_head.js";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
-import tpl_info from "templates/info.html";
 import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
 import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
@@ -75,9 +74,8 @@ converse.plugins.add('converse-muc-views', {
     overrides: {
         ControlBoxView: {
             renderControlBoxPane () {
-                const { _converse } = this.__super__;
                 this.__super__.renderControlBoxPane.apply(this, arguments);
-                if (_converse.allow_muc) {
+                if (api.settings.get('allow_muc')) {
                     this.renderRoomsPanel();
                 }
             }
@@ -93,7 +91,7 @@ converse.plugins.add('converse-muc-views', {
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        api.settings.update({
+        api.settings.extend({
             'auto_list_rooms': false,
             'cache_muc_messages': true,
             'locked_muc_nickname': false,
@@ -225,17 +223,17 @@ converse.plugins.add('converse-muc-views', {
                 this.loading_items = false;
 
                 BootstrapModal.prototype.initialize.apply(this, arguments);
-                if (_converse.muc_domain && !this.model.get('muc_domain')) {
-                    this.model.save('muc_domain', _converse.muc_domain);
+                if (api.settings.get('muc_domain') && !this.model.get('muc_domain')) {
+                    this.model.save('muc_domain', api.settings.get('muc_domain'));
                 }
                 this.listenTo(this.model, 'change:muc_domain', this.onDomainChange);
             },
 
             toHTML () {
-                const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
+                const muc_domain = this.model.get('muc_domain') || api.settings.get('muc_domain');
                 return tpl_list_chatrooms_modal(
                     Object.assign(this.model.toJSON(), {
-                        'show_form': !_converse.locked_muc_domain,
+                        'show_form': !api.settings.get('locked_muc_domain'),
                         'server_placeholder': muc_domain ? muc_domain : __('conference.example.org'),
                         'items': this.items,
                         'loading_items': this.loading_items,
@@ -247,7 +245,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             afterRender () {
-                if (_converse.locked_muc_domain) {
+                if (api.settings.get('locked_muc_domain')) {
                     this.updateRoomsList();
                 } else {
                     this.el.addEventListener('shown.bs.modal',
@@ -271,7 +269,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onDomainChange () {
-                _converse.auto_list_rooms && this.updateRoomsList();
+                api.settings.get('auto_list_rooms') && this.updateRoomsList();
             },
 
             /**
@@ -348,16 +346,16 @@ converse.plugins.add('converse-muc-views', {
 
             toHTML () {
                 let placeholder = '';
-                if (!_converse.locked_muc_domain) {
-                    const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
+                if (!api.settings.get('locked_muc_domain')) {
+                    const muc_domain = this.model.get('muc_domain') || api.settings.get('muc_domain');
                     placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
                 }
                 return tpl_add_chatroom_modal(Object.assign(this.model.toJSON(), {
                     '_converse': _converse,
-                    'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
+                    'label_room_address': api.settings.get('muc_domain') ? __('Groupchat name') :  __('Groupchat address'),
                     'chatroom_placeholder': placeholder,
                     'muc_roomid_policy_error_msg': this.muc_roomid_policy_error_msg,
-                    'muc_roomid_policy_hint': _converse.muc_roomid_policy_hint
+                    'muc_roomid_policy_hint': api.settings.get('muc_roomid_policy_hint')
                 }));
             },
 
@@ -371,7 +369,7 @@ converse.plugins.add('converse-muc-views', {
                 const data = new FormData(form);
                 const jid = data.get('chatroom');
                 let nick;
-                if (_converse.locked_muc_nickname) {
+                if (api.settings.get('locked_muc_nickname')) {
                     nick = _converse.getDefaultMUCNickname();
                     if (!nick) {
                         throw new Error("Using locked_muc_nickname but no nickname found!");
@@ -393,8 +391,8 @@ converse.plugins.add('converse-muc-views', {
                     data.nick = undefined;
                 }
                 let jid;
-                if (_converse.locked_muc_domain || (_converse.muc_domain && !u.isValidJID(data.jid))) {
-                    jid = `${Strophe.escapeNode(data.jid)}@${_converse.muc_domain}`;
+                if (api.settings.get('locked_muc_domain') || (api.settings.get('muc_domain') && !u.isValidJID(data.jid))) {
+                    jid = `${Strophe.escapeNode(data.jid)}@${api.settings.get('muc_domain')}`;
                 } else {
                     jid = data.jid
                     this.model.setDomain(jid);
@@ -405,15 +403,15 @@ converse.plugins.add('converse-muc-views', {
             },
 
             checkRoomidPolicy () {
-                if (_converse.muc_roomid_policy && _converse.muc_domain) {
+                if (api.settings.get('muc_roomid_policy') && api.settings.get('muc_domain')) {
                     let jid = this.el.querySelector('.roomjid-input').value;
                     if (converse.locked_muc_domain || !u.isValidJID(jid)) {
-                        jid = `${Strophe.escapeNode(jid)}@${_converse.muc_domain}`;
+                        jid = `${Strophe.escapeNode(jid)}@${api.settings.get('muc_domain')}`;
                     }
                     const roomid = Strophe.getNodeFromJid(jid);
                     const roomdomain = Strophe.getDomainFromJid(jid);
-                    if (_converse.muc_domain !== roomdomain ||
-                        _converse.muc_roomid_policy.test(roomid)) {
+                    if (api.settings.get('muc_domain') !== roomdomain ||
+                        api.settings.get('muc_roomid_policy').test(roomid)) {
                         this.muc_roomid_policy_error_msg = null;
                     } else {
                         this.muc_roomid_policy_error_msg = __('Groupchat id is invalid.');
@@ -438,8 +436,6 @@ converse.plugins.add('converse-muc-views', {
             is_chatroom: true,
             events: {
                 'change input.fileupload': 'onFileSelection',
-                'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
-                'click .chat-msg__action-retract': 'onMessageRetractButtonClicked',
                 'click .chatbox-navback': 'showControlBox',
                 'click .hide-occupants': 'hideOccupants',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
@@ -456,30 +452,22 @@ converse.plugins.add('converse-muc-views', {
                 'keyup .chat-textarea': 'onKeyUp',
                 'mousedown .dragresize-occupants-left': 'onStartResizeOccupants',
                 'paste .chat-textarea': 'onPaste',
-                'submit .muc-nickname-form': 'submitNickname'
+                'submit .muc-nickname-form': 'submitNickname',
+                'click .converse-overlayed  .chat-head-chatroom': 'minimize'
             },
 
             async initialize () {
                 this.initDebounced();
-
-                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-                this.listenTo(this.model.messages, 'change:edited', this.onMessageEdited);
-                this.listenTo(this.model.messages, 'rendered', this.scrollDown);
-                this.model.messages.on('reset', () => {
-                    this.msgs_container.innerHTML = '';
-                    this.removeAll();
-                });
-
-                this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
                 this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
                 this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
                 this.listenTo(this.model, 'destroy', this.hide);
                 this.listenTo(this.model, 'show', this.show);
-
                 this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
                 this.listenTo(this.model.features, 'change:open', this.renderHeading);
+                this.listenTo(this.model.messages, 'rendered', this.scrollDown);
+                this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
                 // Bind so that we can pass it to addEventListener and removeEventListener
                 this.onMouseMove =  this.onMouseMove.bind(this);
@@ -488,13 +476,19 @@ converse.plugins.add('converse-muc-views', {
                 await this.render();
 
                 // Need to be registered after render has been called.
+                this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
+                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'change', this.renderChatHistory);
+                this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
+                this.listenTo(this.model.notifications, 'change', this.renderNotifications);
+
                 this.model.occupants.forEach(o => this.onOccupantAdded(o));
                 this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
-                this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
-                this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
-                this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
+                this.listenTo(this.model.occupants, 'change', this.renderChatHistory);
                 this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
-                this.listenTo(this.model.notifications, 'change', this.renderNotifications);
+                this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
+                this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
+                this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
 
                 this.createSidebarView();
                 await this.updateAfterMessagesFetched();
@@ -518,15 +512,17 @@ converse.plugins.add('converse-muc-views', {
             async render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
                 render(tpl_chatroom({
-                    'muc_show_logs_before_join': _converse.muc_show_logs_before_join,
+                    'muc_show_logs_before_join': api.settings.get('muc_show_logs_before_join'),
                     'show_send_button': _converse.show_send_button
                 }), this.el);
+
                 this.notifications = this.el.querySelector('.chat-content__notifications');
                 this.content = this.el.querySelector('.chat-content');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
+                this.help_container = this.el.querySelector('.chat-content__help');
 
                 this.renderBottomPanel();
-                if (!_converse.muc_show_logs_before_join &&
+                if (!api.settings.get('muc_show_logs_before_join') &&
                         this.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     this.showSpinner();
                 }
@@ -537,13 +533,13 @@ converse.plugins.add('converse-muc-views', {
                 !this.model.get('hidden') && this.show();
             },
 
-            renderNotifications () {
+            getNotifications () {
                 const actors_per_state = this.model.notifications.toJSON();
                 const states = api.settings.get('muc_show_join_leave') ?
                     [...converse.CHAT_STATES, ...converse.MUC_TRAFFIC_STATES, ...converse.MUC_ROLE_CHANGES] :
                     converse.CHAT_STATES;
 
-                const message = states.reduce((result, state) => {
+                return states.reduce((result, state) => {
                     const existing_actors = actors_per_state[state];
                     if (!(existing_actors?.length)) {
                         return result;
@@ -600,8 +596,34 @@ converse.plugins.add('converse-muc-views', {
                     }
                     return result;
                 }, '');
-                this.notifications.innerHTML = message;
-                message.includes('\n') && this.scrollDown();
+            },
+
+            getHelpMessages () {
+                const setting = api.settings.get("muc_disable_slash_commands");
+                const disabled_commands = Array.isArray(setting) ? setting : [];
+                return [
+                    `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
+                    `<strong>/ban</strong>: ${__('Ban user by changing their affiliation to outcast')}`,
+                    `<strong>/clear</strong>: ${__('Clear the chat area')}`,
+                    `<strong>/close</strong>: ${__('Close this groupchat')}`,
+                    `<strong>/deop</strong>: ${__('Change user role to participant')}`,
+                    `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
+                    `<strong>/help</strong>: ${__('Show this menu')}`,
+                    `<strong>/kick</strong>: ${__('Kick user from groupchat')}`,
+                    `<strong>/me</strong>: ${__('Write in 3rd person')}`,
+                    `<strong>/member</strong>: ${__('Grant membership to a user')}`,
+                    `<strong>/modtools</strong>: ${__('Opens up the moderator tools GUI')}`,
+                    `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`,
+                    `<strong>/nick</strong>: ${__('Change your nickname')}`,
+                    `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
+                    `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
+                    `<strong>/register</strong>: ${__("Register your nickname")}`,
+                    `<strong>/revoke</strong>: ${__("Revoke the user's current affiliation")}`,
+                    `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
+                    `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
+                    `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
+                    ].filter(line => disabled_commands.every(c => (!line.startsWith(c+'<', 9))))
+                        .filter(line => this.getAllowedCommands().some(c => line.startsWith(c+'<', 9)));
             },
 
             /**
@@ -714,7 +736,7 @@ converse.plugins.add('converse-muc-views', {
                 const element = document.createElement("li");
                 element.setAttribute("aria-selected", "false");
 
-                if (_converse.muc_mention_autocomplete_show_avatar) {
+                if (api.settings.get('muc_mention_autocomplete_show_avatar')) {
                     const img = document.createElement("img");
                     let dataUri = "data:" + _converse.DEFAULT_IMAGE_TYPE + ";base64," + _converse.DEFAULT_IMAGE;
 
@@ -749,10 +771,12 @@ converse.plugins.add('converse-muc-views', {
                 this.mention_auto_complete = new _converse.AutoComplete(this.el, {
                     'auto_first': true,
                     'auto_evaluate': false,
-                    'min_chars': _converse.muc_mention_autocomplete_min_chars,
+                    'min_chars': api.settings.get('muc_mention_autocomplete_min_chars'),
                     'match_current_word': true,
                     'list': () => this.getAutoCompleteList(),
-                    'filter': _converse.muc_mention_autocomplete_filter == 'contains' ? _converse.FILTER_CONTAINS : _converse.FILTER_STARTSWITH,
+                    'filter': api.settings.get('muc_mention_autocomplete_filter') == 'contains' ?
+                        _converse.FILTER_CONTAINS :
+                        _converse.FILTER_STARTSWITH,
                     'ac_triggers': ["Tab", "@"],
                     'include_triggers': [],
                     'item': this.getAutoCompleteListItem
@@ -784,12 +808,7 @@ converse.plugins.add('converse-muc-views', {
                 return _converse.ChatBoxView.prototype.onKeyUp.call(this, ev);
             },
 
-            async onMessageRetractButtonClicked (ev) {
-                ev.preventDefault();
-                const msg_el = u.ancestor(ev.target, '.message');
-                const msgid = msg_el.getAttribute('data-msgid');
-                const time = msg_el.getAttribute('data-isodate');
-                const message = this.model.messages.findWhere({msgid, time});
+            async onMessageRetractButtonClicked (message) {
                 const retraction_warning =
                     __("Be aware that other XMPP/Jabber clients (and servers) may "+
                         "not yet support retractions and that this message may not "+
@@ -797,14 +816,14 @@ converse.plugins.add('converse-muc-views', {
 
                 if (message.mayBeRetracted()) {
                     const messages = [__('Are you sure you want to retract this message?')];
-                    if (_converse.show_retraction_warning) {
+                    if (api.settings.get('show_retraction_warning')) {
                         messages[1] = retraction_warning;
                     }
-                    !!(await api.confirm(__('Confirm'), messages)) && this.retractOwnMessage(message);
+                    !!(await api.confirm(__('Confirm'), messages)) && this.model.retractOwnMessage(message);
                 } else if (await message.mayBeModerated()) {
                     if (message.get('sender') === 'me') {
                         let messages = [__('Are you sure you want to retract this message?')];
-                        if (_converse.show_retraction_warning) {
+                        if (api.settings.get('show_retraction_warning')) {
                             messages = [messages[0], retraction_warning, messages[1]]
                         }
                         !!(await api.confirm(__('Confirm'), messages)) && this.retractOtherMessage(message);
@@ -813,7 +832,7 @@ converse.plugins.add('converse-muc-views', {
                             __('You are about to retract this message.'),
                             __('You may optionally include a message, explaining the reason for the retraction.')
                         ];
-                        if (_converse.show_retraction_warning) {
+                        if (api.settings.get('show_retraction_warning')) {
                             messages = [messages[0], retraction_warning, messages[1]]
                         }
                         const reason = await api.prompt(
@@ -827,22 +846,6 @@ converse.plugins.add('converse-muc-views', {
                     const err_msg = __(`Sorry, you're not allowed to retract this message`);
                     api.alert('error', __('Error'), err_msg);
                 }
-            },
-
-            /**
-             * Retract one of your messages in this groupchat.
-             * @private
-             * @method _converse.ChatRoomView#retractOwnMessage
-             * @param { _converse.Message } message - The message which we're retracting.
-             */
-            retractOwnMessage(message) {
-                this.model.retractOwnMessage(message)
-                    .catch(e => {
-                        const message = __('Sorry, something went wrong while trying to retract your message.');
-                        this.model.createMessage({message, 'type': 'error'});
-                        !u.isErrorStanza(e) && this.model.createMessage({'message': e.message, 'type': 'error'});
-                        log.error(e);
-                    });
             },
 
             /**
@@ -990,6 +993,7 @@ converse.plugins.add('converse-muc-views', {
                         'i18n_text': __('Leave'),
                         'i18n_title': __('Leave and close this groupchat'),
                         'handler': async ev => {
+                            ev.stopPropagation();
                             const messages = [__('Are you sure you want to leave this groupchat?')];
                             const result = await api.confirm(__('Confirm'), messages);
                             result && this.close(ev);
@@ -1254,7 +1258,7 @@ converse.plugins.add('converse-muc-views', {
                     }
                 }
                 const attrs = { jid, reason };
-                if (occupant && _converse.auto_register_muc_nickname) {
+                if (occupant && api.settings.get('auto_register_muc_nickname')) {
                     attrs['nick'] = occupant.get('nick');
                 }
                 this.model.setAffiliation(affiliation, [attrs])
@@ -1317,8 +1321,8 @@ converse.plugins.add('converse-muc-views', {
                 }
                 allowed_commands.sort();
 
-                if (Array.isArray(_converse.muc_disable_slash_commands)) {
-                    return allowed_commands.filter(c => !_converse.muc_disable_slash_commands.includes(c));
+                if (Array.isArray(api.settings.get('muc_disable_slash_commands'))) {
+                    return allowed_commands.filter(c => !api.settings.get('muc_disable_slash_commands').includes(c));
                 } else {
                     return allowed_commands;
                 }
@@ -1352,7 +1356,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             parseMessageForCommands (text) {
-                if (_converse.muc_disable_slash_commands && !Array.isArray(_converse.muc_disable_slash_commands)) {
+                if (api.settings.get('muc_disable_slash_commands') &&
+                        !Array.isArray(api.settings.get('muc_disable_slash_commands'))) {
                     return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }
                 text = text.replace(/^\s*/, "");
@@ -1361,10 +1366,7 @@ converse.plugins.add('converse-muc-views', {
                     return false;
                 }
                 const args = text.slice(('/'+command).length+1).trim();
-                const disabled_commands = Array.isArray(_converse.muc_disable_slash_commands) ?
-                        _converse.muc_disable_slash_commands : [];
-                const allowed_commands = this.getAllowedCommands();
-                if (!allowed_commands.includes(command)) {
+                if (!this.getAllowedCommands().includes(command)) {
                     return false;
                 }
 
@@ -1399,31 +1401,7 @@ converse.plugins.add('converse-muc-views', {
                         break;
                     }
                     case 'help': {
-                        this.showHelpMessages([`<strong>${__("You can run the following commands")}</strong>`]);
-                        this.showHelpMessages([
-                            `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
-                            `<strong>/ban</strong>: ${__('Ban user by changing their affiliation to outcast')}`,
-                            `<strong>/clear</strong>: ${__('Clear the chat area')}`,
-                            `<strong>/close</strong>: ${__('Close this groupchat')}`,
-                            `<strong>/deop</strong>: ${__('Change user role to participant')}`,
-                            `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
-                            `<strong>/help</strong>: ${__('Show this menu')}`,
-                            `<strong>/kick</strong>: ${__('Kick user from groupchat')}`,
-                            `<strong>/me</strong>: ${__('Write in 3rd person')}`,
-                            `<strong>/member</strong>: ${__('Grant membership to a user')}`,
-                            `<strong>/modtools</strong>: ${__('Opens up the moderator tools GUI')}`,
-                            `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`,
-                            `<strong>/nick</strong>: ${__('Change your nickname')}`,
-                            `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
-                            `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
-                            `<strong>/register</strong>: ${__("Register your nickname")}`,
-                            `<strong>/revoke</strong>: ${__("Revoke the user's current affiliation")}`,
-                            `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
-                            `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
-                            `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
-                            ].filter(line => disabled_commands.every(c => (!line.startsWith(c+'<', 9))))
-                             .filter(line => allowed_commands.some(c => line.startsWith(c+'<', 9)))
-                        );
+                        this.model.set({'show_help_messages': true});
                         break;
                     } case 'kick': {
                         this.setRole(command, args, [], ['moderator']);
@@ -1523,7 +1501,7 @@ converse.plugins.add('converse-muc-views', {
              * @method _converse.ChatRoomView#renderNicknameForm
              */
             renderNicknameForm () {
-                const heading = _converse.muc_show_logs_before_join ?
+                const heading = api.settings.get('muc_show_logs_before_join') ?
                     __('Choose a nickname to enter') :
                     __('Please choose your nickname');
 
@@ -1533,7 +1511,7 @@ converse.plugins.add('converse-muc-views', {
                     'label_join': __('Enter groupchat'),
                 }, this.model.toJSON()));
 
-                if (_converse.muc_show_logs_before_join) {
+                if (api.settings.get('muc_show_logs_before_join')) {
                     const container = this.el.querySelector('.muc-bottom-panel');
                     container.innerHTML = html;
                     u.addClass('muc-bottom-panel--nickname', container);
@@ -1669,35 +1647,6 @@ converse.plugins.add('converse-muc-views', {
                 const container = this.el.querySelector('.disconnect-container');
                 container.innerHTML = tpl_chatroom_disconnect({messages})
                 u.showElement(container);
-            },
-
-            removeEmptyHistoryFeedback () {
-                const el = this.msgs_container.firstElementChild;
-                if (_converse.muc_show_logs_before_join && el && el.matches('.empty-history-feedback')) {
-                    this.msgs_container.removeChild(this.msgs_container.firstElementChild);
-                }
-            },
-
-            insertDayIndicator () {
-                this.removeEmptyHistoryFeedback();
-                return _converse.ChatBoxView.prototype.insertDayIndicator.apply(this, arguments);
-            },
-
-            insertMessage (view) {
-                this.removeEmptyHistoryFeedback();
-                return _converse.ChatBoxView.prototype.insertMessage.call(this, view);
-            },
-
-            insertNotification (message) {
-                this.removeEmptyHistoryFeedback();
-                this.msgs_container.insertAdjacentHTML(
-                    'beforeend',
-                    tpl_info({
-                        'isodate': (new Date()).toISOString(),
-                        'extra_classes': 'chat-event',
-                        'message': message
-                    })
-                );
             },
 
             onOccupantAdded (occupant) {
@@ -1836,7 +1785,7 @@ converse.plugins.add('converse-muc-views', {
 
             toHTML () {
                 const stanza = u.toStanza(this.model.get('config_stanza'));
-                const whitelist = _converse.roomconfig_whitelist;
+                const whitelist = api.settings.get('roomconfig_whitelist');
                 let fields = sizzle('field', stanza);
                 if (whitelist.length) {
                     fields = fields.filter(f => whitelist.includes(f.getAttribute('var')));
@@ -2031,10 +1980,10 @@ converse.plugins.add('converse-muc-views', {
         function fetchAndSetMUCDomain (controlboxview) {
             if (controlboxview.model.get('connected')) {
                 if (!controlboxview.getRoomsPanel().model.get('muc_domain')) {
-                    if (_converse.muc_domain === undefined) {
+                    if (api.settings.get('muc_domain') === undefined) {
                         setMUCDomainFromDisco(controlboxview);
                     } else {
-                        setMUCDomain(_converse.muc_domain, controlboxview);
+                        setMUCDomain(api.settings.get('muc_domain'), controlboxview);
                     }
                 }
             }
@@ -2073,7 +2022,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
         api.listen.on('controlBoxInitialized', (view) => {
-            if (!_converse.allow_muc) {
+            if (!api.settings.get('allow_muc')) {
                 return;
             }
             fetchAndSetMUCDomain(view);

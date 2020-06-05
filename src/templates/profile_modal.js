@@ -1,11 +1,12 @@
-import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
-import avatar from "./avatar.js";
+import "../components/image_picker.js";
 import spinner from "./spinner.js";
-import { modal_close_button, modal_header_close_button } from "./buttons"
+import { __ } from '@converse/headless/i18n';
+import { _converse, converse } from  "@converse/headless/converse-core";
+import { html } from "lit-html";
+import { modal_header_close_button } from "./buttons";
 
+const u = converse.env.utils;
 
-const alt_avatar = __('Your avatar image');
 const heading_profile = __('Your Profile');
 const i18n_fingerprint_checkbox_label = __('Checkbox for selecting the following fingerprint');
 const i18n_device_without_fingerprint = __('Device without a fingerprint');
@@ -38,7 +39,7 @@ const navigation =  html`
 
 
 const fingerprint = (o) => html`
-    <span class="fingerprint">${o.utils.formatFingerprint(o.view.current_device.get('bundle').fingerprint)}</span>`;
+    <span class="fingerprint">${u.formatFingerprint(o.view.current_device.get('bundle').fingerprint)}</span>`;
 
 
 const device_with_fingerprint = (o) => html`
@@ -46,7 +47,7 @@ const device_with_fingerprint = (o) => html`
         <label>
         <input type="checkbox" value="${o.device.get('id')}"
             aria-label="${i18n_fingerprint_checkbox_label}"/>
-        <span class="fingerprint">${o.utils.formatFingerprint(o.device.get('bundle').fingerprint)}</span>
+        <span class="fingerprint">${u.formatFingerprint(o.device.get('bundle').fingerprint)}</span>
         </label>
     </li>
 `;
@@ -108,16 +109,13 @@ export default (o) => html`
             </div>
             <div class="modal-body">
                 <span class="modal-alert"></span>
-                ${o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse) && navigation}
+                ${_converse.pluggable.plugins['converse-omemo'].enabled(_converse) && navigation}
                 <div class="tab-content">
                     <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
                         <form class="converse-form converse-form--modal profile-form" action="#">
                             <div class="row">
                                 <div class="col-auto">
-                                    <a class="change-avatar" href="#">
-                                        ${o.image ? avatar(Object.assign({'alt_text': alt_avatar}, o)) : '<canvas class="avatar" height="100px" width="100px"></canvas>'}
-                                    </a>
-                                    <input class="hidden" name="image" type="file"/>
+                                    <converse-image-picker image="${o.image}" width="${o.width}" height="${o.height}"></converse-image-picker>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
@@ -153,10 +151,9 @@ export default (o) => html`
                             </div>
                         </form>
                     </div>
-                    ${ o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse) && omemo_page(o) }
+                    ${ _converse.pluggable.plugins['converse-omemo'].enabled(_converse) && omemo_page(o) }
                 </div>
             </div>
-            <div class="modal-footer">${modal_close_button}</div>
         </div>
     </div>
 `;

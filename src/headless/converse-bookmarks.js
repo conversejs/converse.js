@@ -66,7 +66,7 @@ converse.plugins.add('converse-bookmarks', {
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        api.settings.update({
+        api.settings.extend({
             allow_bookmarks: true,
             allow_public_bookmarks: false,
             muc_respect_autojoin: true

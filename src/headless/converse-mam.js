@@ -131,7 +131,7 @@ converse.plugins.add('converse-mam', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by Converse.js's plugin machinery.
          */
-        api.settings.update({
+        api.settings.extend({
             archived_messages_page_size: '50',
             message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
             message_archiving_timeout: 20000, // Time (in milliseconds) to wait before aborting MAM request

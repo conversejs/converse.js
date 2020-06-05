@@ -24,6 +24,8 @@ Soon we'll deprecate the latter, so prepare now.
 - #1999: Demarcate first unread message
 - #2002: fix rendering of `muc_roomid_policy_hint`
 - #2006: fix rendering of emojis in case `use_system_emojis == false`
+- #2028: Implement XEP-0333 `displayed` chat marker
+- The API method `api.settings.update` has been deprecated in favor of `api.settings.extend`.
 - Filter roster contacts via all available information (JID, nickname and VCard full name).
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
 - Bugfix. Handle stanza that clears the MUC subject
@@ -40,6 +42,7 @@ Soon we'll deprecate the latter, so prepare now.
 - New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
 - New config option [muc_hats_from_vcard](https://conversejs.org/docs/html/configuration.html#muc-hats-from-vcard).
 - New config option [muc_send_probes](https://conversejs.org/docs/html/configuration.html#muc-send-probes).
+- New config option [show_message_avatar](https://conversejs.org/docs/html/configuration.html#show-message-avatar).
 
 ## 6.0.0 (2020-01-09)
 

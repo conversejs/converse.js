@@ -99,7 +99,7 @@ converse.plugins.add('converse-controlbox', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        api.settings.update({
+        api.settings.extend({
             allow_logout: true,
             default_domain: undefined,
             locked_domain: undefined,
@@ -251,7 +251,7 @@ converse.plugins.add('converse-controlbox', {
                     this.insertBrandHeading();
                 }
                 this.loginpanel.initPopovers();
-                if (_converse.auto_focus) {
+                if (api.settings.get('auto_focus')) {
                     this.loginpanel.el.querySelector('#converse-login-jid').focus();
                 }
                 return this;
@@ -384,7 +384,7 @@ converse.plugins.add('converse-controlbox', {
                         'EXTERNAL': _converse.EXTERNAL,
                         'LOGIN': _converse.LOGIN,
                         'PREBIND': _converse.PREBIND,
-                        'auto_login': _converse.auto_login,
+                        'auto_login': api.settings.get('auto_login'),
                         'authentication': api.settings.get("authentication"),
                         'connection_status': connection_status,
                         'conn_feedback_class': feedback_class,

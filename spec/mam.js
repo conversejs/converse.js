@@ -7,10 +7,14 @@ const $msg = converse.env.$msg;
 const dayjs = converse.env.dayjs;
 const u = converse.env.utils;
 const sizzle = converse.env.sizzle;
+const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 // See: https://xmpp.org/rfcs/rfc3921.html
 
 // Implements the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
 describe("Message Archive Management", function () {
+
+    beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
+    afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     describe("The XEP-0313 Archive", function () {
 
@@ -194,8 +198,12 @@ describe("Message Archive Management", function () {
                 </iq>`);
             _converse.connection._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 5);
-            const msg_els = view.content.querySelectorAll('.chat-msg__text');
-            expect(Array.from(msg_els).map(e => e.textContent).join(' ')).toBe("2nd Message 3rd Message 4th Message 5th Message 6th Message");
+            await u.waitUntil(() => view.content.querySelectorAll('.chat-msg__text').length);
+            const msg_els = Array.from(view.content.querySelectorAll('.chat-msg__text'));
+            await u.waitUntil(
+                () => msg_els.map(e => e.textContent).join(' ') === "2nd Message 3rd Message 4th Message 5th Message 6th Message",
+                1000
+            );
             done();
         }));
     });
@@ -253,7 +261,7 @@ describe("Message Archive Management", function () {
                             .c('count').t('16');
                 _converse.connection._dataRecv(mock.createRequest(iq_result));
 
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('message')).toBe("Thrice the brinded cat hath mew'd.");
                 done();
@@ -1038,9 +1046,8 @@ describe("Chatboxes", function () {
             expect(view.model.messages.at(0).get('type')).toBe('error');
             expect(view.model.messages.at(0).get('message')).toBe('Timeout while trying to fetch archived messages.');
 
-            let err_message = view.el.querySelector('.message.chat-error');
+            let err_message = await u.waitUntil(() => view.el.querySelector('.message.chat-error'));
             err_message.querySelector('.retry').click();
-            expect(err_message.querySelector('.spinner')).not.toBe(null);
 
             while (_converse.connection.IQ_stanzas.length) {
                 _converse.connection.IQ_stanzas.pop();
@@ -1057,6 +1064,8 @@ describe("Chatboxes", function () {
                         `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
                     `</query>`+
                 `</iq>`);
+
+            await u.waitUntil(() => view.el.querySelector('converse-chat-message .spinner'), 1000);
 
             const msg1 = $msg({'id':'aeb212', 'to': contact_jid})
                         .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid': queryid, 'id':'28482-98726-73623'})

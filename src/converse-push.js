@@ -21,7 +21,7 @@ converse.plugins.add('converse-push', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        api.settings.update({
+        api.settings.extend({
             'push_app_servers': [],
             'enable_muc_push': false
         });

@@ -54,7 +54,7 @@ converse.plugins.add('converse-chatboxviews', {
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        api.settings.update({
+        api.settings.extend({
             'animate': true,
             'theme': 'default'
         });

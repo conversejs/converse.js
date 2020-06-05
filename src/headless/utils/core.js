@@ -207,22 +207,6 @@ u.merge = function merge (first, second) {
     }
 };
 
-u.applySiteSettings = function applySiteSettings (context, settings, user_settings) {
-    /* Configuration settings might be nested objects. We only want to
-     * add settings which are whitelisted.
-     */
-    for (var k in settings) {
-        if (user_settings[k] === undefined) {
-            continue;
-        }
-        if (isObject(settings[k]) && !Array.isArray(settings[k])) {
-            applySiteSettings(context[k], settings[k], user_settings[k]);
-        } else {
-            context[k] = user_settings[k];
-        }
-    }
-};
-
 /**
  * Converts an HTML string into a DOM Node.
  * Expects that the HTML string has only one top-level element,
@@ -463,16 +447,6 @@ u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true
     el.dispatchEvent(evt);
 };
 
-u.geoUriToHttp = function(text, geouri_replacement) {
-    const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
-    return text.replace(regex, geouri_replacement);
-};
-
-u.httpToGeoUri = function(text, _converse) {
-    const replacement = 'geo:$1,$2';
-    return text.replace(_converse.api.settings.get("geouri_regex"), replacement);
-};
-
 u.getSelectValues = function (select) {
     const result = [];
     const options = select && select.options;
@@ -549,15 +523,14 @@ u.placeCaretAtEnd = function (textarea) {
 
 u.getUniqueId = function (suffix) {
     const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0,
-                v = c === 'x' ? r : r & 0x3 | 0x8;
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : r & 0x3 | 0x8;
         return v.toString(16);
     });
-    // We prefix the ID with letters so that it's also a valid ID for DOM elements.
     if (typeof(suffix) === "string" || typeof(suffix) === "number") {
-        return "id" + uuid + ":" + suffix;
+        return uuid + ":" + suffix;
     } else {
-        return "id" + uuid;
+        return uuid;
     }
 }
 
@@ -602,6 +575,7 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
     }
 
     const promise = u.getResolveablePromise();
+    const timeout_err = new Error();
 
     function checker () {
         try {
@@ -617,12 +591,16 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
     }
 
     const interval = setInterval(checker, check_delay);
-    const max_wait_timeout = setTimeout(() => {
+
+    function handler () {
         clearTimers(max_wait_timeout, interval);
-        const err_msg = 'Wait until promise timed out';
+        const err_msg = `Wait until promise timed out: \n\n${timeout_err.stack}`;
+        console.trace();
         log.error(err_msg);
         promise.reject(new Error(err_msg));
-    }, max_wait);
+    }
+
+    const max_wait_timeout = setTimeout(handler, max_wait);
 
     return promise;
 };

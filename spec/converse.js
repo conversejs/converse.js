@@ -2,17 +2,21 @@
 
 describe("Converse", function() {
 
+    describe("Settings", function () {
+
+    });
+
     describe("Authentication", function () {
 
         it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(async (done, _converse) => {
             const url = _converse.bosh_service_url;
             const connection = _converse.connection;
-            delete _converse.bosh_service_url;
+            _converse.api.settings.set('bosh_service_url', undefined);
             delete _converse.connection;
             try {
                 await _converse.initConnection();
             } catch (e) {
-                _converse.bosh_service_url = url;
+                _converse.api.settings.set('bosh_service_url', url);
                 _converse.connection = connection;
                 expect(e.message).toBe("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
                 done();
@@ -323,7 +327,7 @@ describe("Converse", function() {
         it("has methods 'get' and 'set' to set configuration settings",
                 mock.initConverse(null, {'play_sounds': true}, (done, _converse) => {
 
-            expect(Object.keys(_converse.api.settings)).toEqual(["update", "get", "set"]);
+            expect(Object.keys(_converse.api.settings)).toEqual(["extend", "update", "get", "set"]);
             expect(_converse.api.settings.get("play_sounds")).toBe(true);
             _converse.api.settings.set("play_sounds", false);
             expect(_converse.api.settings.get("play_sounds")).toBe(false);
@@ -335,6 +339,21 @@ describe("Converse", function() {
             expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
             done();
         }));
+
+        it("extended via settings.extend don't override settings passed in via converse.initialize",
+                mock.initConverse([], {'emoji_categories': {"travel": ":rocket:"}}, (done, _converse) => {
+
+            expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
+
+            // Test that the extend command doesn't override user-provided site
+            // settings (i.e. settings passed in via converse.initialize).
+            _converse.api.settings.extend({'emoji_categories': {"travel": ":motorcycle:", "food": ":burger:"}});
+
+            expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
+            expect(_converse.api.settings.get('emoji_categories')?.food).toBe(undefined);
+            done();
+        }));
+
     });
 
     describe("The \"plugins\" API", function() {

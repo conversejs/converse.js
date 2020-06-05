@@ -65,7 +65,7 @@ describe("Notifications", function () {
                             type: 'groupchat'
                         }).c('body').t(message).tree();
                     _converse.connection._dataRecv(mock.createRequest(msg));
-                    await new Promise(resolve => view.once('messageInserted', resolve));
+                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
                     await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
                     expect(_converse.showMessageNotification).toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe("Notifications", function () {
                     _converse.connection._dataRecv(mock.createRequest(stanza));
                     await u.waitUntil(() => _converse.chatboxviews.keys().length);
                     const view = _converse.chatboxviews.get('notify.example.com');
-                    await new Promise(resolve => view.once('messageInserted', resolve));
+                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     expect(_converse.chatboxviews.keys().includes('notify.example.com')).toBeTruthy();
                     expect(_converse.showMessageNotification).toHaveBeenCalled();
                     done();

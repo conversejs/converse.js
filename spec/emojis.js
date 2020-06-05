@@ -170,9 +170,8 @@ describe("Emojis", function () {
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
             const view = _converse.api.chatviews.get(sender_jid);
-            await new Promise(resolve => view.once('messageInserted', resolve));
-            let message = view.content.querySelector('.chat-msg__text');
-            expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.content.querySelector('.chat-msg__text')));
 
             _converse.handleMessageStanza($msg({
                     'from': sender_jid,
@@ -181,9 +180,10 @@ describe("Emojis", function () {
                     'id': _converse.connection.getUniqueId()
                 }).c('body').t('😇 Hello world! 😇 😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise(resolve => view.once('messageInserted', resolve));
-            message = view.content.querySelector('.message:last-child .chat-msg__text');
-            expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+
+            let sel = '.message:last-child .chat-msg__text';
+            await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.content.querySelector(sel)));
 
             // Test that a modified message that no longer contains only
             // emojis now renders normally again.
@@ -194,9 +194,11 @@ describe("Emojis", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
-            expect(view.content.querySelector('.message:last-child .chat-msg__text').textContent).toBe('💩 😇');
+            const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
+            await u.waitUntil(() => view.content.querySelector(last_msg_sel).textContent === '💩 😇');
+
             expect(textarea.value).toBe('');
             view.onKeyDown({
                 target: textarea,
@@ -204,7 +206,8 @@ describe("Emojis", function () {
             });
             expect(textarea.value).toBe('💩 😇');
             expect(view.model.messages.at(2).get('correcting')).toBe(true);
-            await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg:last-child')), 500);
+            sel = 'converse-chat-message:last-child .chat-msg'
+            await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector(sel)), 500);
             textarea.value = textarea.value += 'This is no longer an emoji-only message';
             view.onKeyDown({
                 target: textarea,
@@ -213,7 +216,7 @@ describe("Emojis", function () {
             });
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             expect(view.model.messages.models.length).toBe(3);
-            message = view.content.querySelector('.message:last-child .chat-msg__text');
+            let message = view.content.querySelector(last_msg_sel);
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
 
             textarea.value = ':smile: Hello world!';
@@ -222,7 +225,7 @@ describe("Emojis", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             textarea.value = ':smile: :smiley: :imp:';
             view.onKeyDown({
@@ -230,7 +233,7 @@ describe("Emojis", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
             message = view.content.querySelector('.message:last-child .chat-msg__text');
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);

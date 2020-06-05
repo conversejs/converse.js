@@ -132,7 +132,7 @@ converse.plugins.add('converse-headlines-view', {
                 this.initDebounced();
 
                 this.model.disable_mam = true; // Don't do MAM queries for this box
-                this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+                this.listenTo(this.model.messages, 'add', this.renderChatHistory);
                 this.listenTo(this.model, 'show', this.show);
                 this.listenTo(this.model, 'destroy', this.hide);
                 this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged);
@@ -166,6 +166,12 @@ converse.plugins.add('converse-headlines-view', {
                 this.content = this.el.querySelector('.chat-content');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
                 return this;
+            },
+
+            getNotifications () {
+                // Override method in ChatBox. We don't show notifications for
+                // headlines boxes.
+                return [];
             },
 
             /**

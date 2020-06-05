@@ -11,6 +11,8 @@ import { _converse, api, converse } from "@converse/headless/converse-core";
 const { Strophe, sizzle } = converse.env;
 const u = converse.env.utils;
 
+const supports_html5_notification = "Notification" in window;
+
 
 converse.plugins.add('converse-notification', {
 
@@ -20,9 +22,8 @@ converse.plugins.add('converse-notification', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        _converse.supports_html5_notification = "Notification" in window;
 
-        api.settings.update({
+        api.settings.extend({
             notify_all_room_messages: false,
             show_desktop_notifications: true,
             show_chat_state_notifications: false,
@@ -37,7 +38,7 @@ converse.plugins.add('converse-notification', {
         _converse.shouldNotifyOfGroupMessage = function (message) {
             /* Is this a group message worthy of notification?
              */
-            let notify_all = _converse.notify_all_room_messages;
+            let notify_all = api.settings.get('notify_all_room_messages');
             const jid = message.getAttribute('from'),
                 resource = Strophe.getResourceFromJid(jid),
                 room_jid = Strophe.getBareJidFromJid(jid),
@@ -85,7 +86,7 @@ converse.plugins.add('converse-notification', {
             return !u.isOnlyChatStateNotification(message) &&
                 !u.isOnlyMessageDeliveryReceipt(message) &&
                 !is_me &&
-                (_converse.show_desktop_notifications === 'all' || _converse.isMessageToHiddenChat(message));
+                (api.settings.get('show_desktop_notifications') === 'all' || _converse.isMessageToHiddenChat(message));
         };
 
 
@@ -95,13 +96,13 @@ converse.plugins.add('converse-notification', {
          * @method _converse#playSoundNotification
          */
         _converse.playSoundNotification = function () {
-            if (_converse.play_sounds && window.Audio !== undefined) {
-                const audioOgg = new Audio(_converse.sounds_path+"msg_received.ogg");
+            if (api.settings.get('play_sounds') && window.Audio !== undefined) {
+                const audioOgg = new Audio(api.settings.get('sounds_path')+"msg_received.ogg");
                 const canPlayOgg = audioOgg.canPlayType('audio/ogg');
                 if (canPlayOgg === 'probably') {
                     return audioOgg.play();
                 }
-                const audioMp3 = new Audio(_converse.sounds_path+"msg_received.mp3");
+                const audioMp3 = new Audio(api.settings.get('sounds_path')+"msg_received.mp3");
                 const canPlayMp3 = audioMp3.canPlayType('audio/mp3');
                 if (canPlayMp3 === 'probably') {
                     audioMp3.play();
@@ -114,9 +115,8 @@ converse.plugins.add('converse-notification', {
         };
 
         _converse.areDesktopNotificationsEnabled = function () {
-            return _converse.supports_html5_notification &&
-
-                _converse.show_desktop_notifications &&
+            return supports_html5_notification &&
+                api.settings.get('show_desktop_notifications') &&
                 Notification.permission === "granted";
         };
 
@@ -171,11 +171,11 @@ converse.plugins.add('converse-notification', {
             const n = new Notification(title, {
                 'body': body,
                 'lang': _converse.locale,
-                'icon': _converse.notification_icon,
+                'icon': api.settings.get('notification_icon'),
                 'requireInteraction': !_converse.notification_delay
             });
-            if (_converse.notification_delay) {
-                setTimeout(n.close.bind(n), _converse.notification_delay);
+            if (api.settings.get('notification_delay')) {
+                setTimeout(n.close.bind(n), api.settings.get('notification_delay'));
             }
             n.onclick = function (event) {
                 event.preventDefault();
@@ -241,7 +241,7 @@ converse.plugins.add('converse-notification', {
              * Will show an HTML5 notification to indicate that the chat
              * status has changed.
              */
-            if (_converse.areDesktopNotificationsEnabled() && _converse.show_chat_state_notifications) {
+            if (_converse.areDesktopNotificationsEnabled() && api.settings.get('show_chat_state_notifications')) {
                 _converse.showChatStateNotification(contact);
             }
         };
@@ -279,7 +279,7 @@ converse.plugins.add('converse-notification', {
         };
 
         _converse.requestPermission = function () {
-            if (_converse.supports_html5_notification && !['denied', 'granted'].includes(Notification.permission)) {
+            if (supports_html5_notification && !['denied', 'granted'].includes(Notification.permission)) {
                 // Ask user to enable HTML5 notifications
                 Notification.requestPermission();
             }

@@ -69,7 +69,7 @@ converse.plugins.add('converse-emoji-views', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        api.settings.update({
+        api.settings.extend({
             'use_system_emojis': true,
             'visible_toolbar_buttons': {
                 'emoji': true

@@ -114,7 +114,7 @@ converse.plugins.add('converse-minimize', {
          * loaded by Converse.js's plugin machinery.
          */
 
-        api.settings.update({'no_trimming': false});
+        api.settings.extend({'no_trimming': false});
 
         const minimizableChatBox = {
             maximize () {

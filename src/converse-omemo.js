@@ -194,13 +194,6 @@ converse.plugins.add('converse-omemo', {
                 this.__super__.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change:omemo_active', this.renderOMEMOToolbarButton);
                 this.listenTo(this.model, 'change:omemo_supported', this.onOMEMOSupportedDetermined);
-            },
-
-            showMessage (message) {
-                // We don't show a message if it's only keying material
-                if (!message.get('is_only_key')) {
-                    return this.__super__.showMessage.apply(this, arguments);
-                }
             }
         },
 
@@ -222,7 +215,7 @@ converse.plugins.add('converse-omemo', {
          * loaded by Converse.js's plugin machinery.
          */
 
-        api.settings.update({'omemo_default': false});
+        api.settings.extend({'omemo_default': false});
 
         api.promises.add(['OMEMOInitialized']);
 

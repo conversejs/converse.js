@@ -40,7 +40,7 @@ converse.plugins.add('converse-bookmark-views', {
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these
         // configuration settings.
-        api.settings.update({
+        api.settings.extend({
             hide_open_bookmarks: true,
         });
 
@@ -100,10 +100,7 @@ converse.plugins.add('converse-bookmark-views', {
             },
 
             toggleBookmark (ev) {
-                if (ev) {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                }
+                ev?.preventDefault();
                 const models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                 if (!models.length) {
                     this.renderBookmarkForm();

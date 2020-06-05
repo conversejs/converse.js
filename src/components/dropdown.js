@@ -1,8 +1,8 @@
-import { html } from 'lit-element';
-import { CustomElement } from './element.js';
-import { until } from 'lit-html/directives/until.js';
 import DOMNavigator from "../dom-navigator";
+import { CustomElement } from './element.js';
 import { converse } from "@converse/headless/converse-core";
+import { html } from 'lit-element';
+import { until } from 'lit-html/directives/until.js';
 
 const u = converse.env.utils;
 
@@ -29,7 +29,8 @@ export class BaseDropdown extends CustomElement {
         this.button.setAttribute('aria-expanded', true);
     }
 
-    toggleMenu () {
+    toggleMenu (event) {
+        event.stopPropagation();
         if (u.hasClass('show', this.menu)) {
             this.hideMenu();
         } else {
@@ -51,15 +52,17 @@ export class DropdownList extends BaseDropdown {
 
     static get properties () {
         return {
+            'icon_classes': { type: String },
             'items': { type: Array }
         }
     }
 
     render () {
+        const icon_classes = this.icon_classes || "fa fa-bars";
         return html`
             <div class="dropleft">
                 <button type="button" class="btn btn--transparent btn--standalone" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-bars only-icon"></i>
+                    <i class="${icon_classes} only-icon"></i>
                 </button>
                 <div class="dropdown-menu">
                     ${ this.items.map(b => until(b, '')) }

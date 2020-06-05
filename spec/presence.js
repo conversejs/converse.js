@@ -74,7 +74,8 @@ describe("A sent presence stanza", function () {
         spyOn(_converse.connection, 'send').and.callThrough();
 
         const cbview = _converse.chatboxviews.get('controlbox');
-        cbview.el.querySelector('.change-status').click()
+        const change_status_el = await u.waitUntil(() => cbview.el.querySelector('.change-status'));
+        change_status_el.click()
         const modal = _converse.xmppstatusview.status_modal;
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         const msg = 'My custom status';

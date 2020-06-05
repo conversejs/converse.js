@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
 import log from "../log";
-import { __ } from '@converse/headless/i18n';
 import { api } from "@converse/headless/converse-core";
 
 const Strophe = strophe.default.Strophe;
@@ -243,20 +242,6 @@ function getReferences (stanza) {
     });
 }
 
-/**
- * Returns the human readable error message contained in an message stanza of type 'error'.
- * @private
- * @param { XMLElement } stanza - The message stanza
- */
-function getErrorMessage (stanza) {
-    if (stanza.getAttribute('type') === 'error') {
-        const error = stanza.querySelector('error');
-        return error.querySelector('text')?.textContent ||
-            __('Sorry, an error occurred:') + ' ' + error.innerHTML;
-    }
-}
-
-
 function rejectMessage (stanza, text) {
     // Reject an incoming message by replying with an error message of type "cancel".
     api.send(
@@ -278,20 +263,18 @@ function rejectMessage (stanza, text) {
  * @private
  * @param { XMLElement } stanza - The message stanza
  */
-function getMUCErrorMessage (stanza) {
+function getErrorAttributes (stanza) {
     if (stanza.getAttribute('type') === 'error') {
-        const forbidden = sizzle(`error forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).pop();
-        const text = sizzle(`error text[xmlns="${Strophe.NS.STANZAS}"]`, stanza).pop();
-        if (forbidden) {
-            const msg = __("Your message was not delivered because you weren't allowed to send it.");
-            const server_msg = text ? __('The message from the server is: "%1$s"', text.textContent) : '';
-            return server_msg ? `${msg} ${server_msg}` : msg;
-        } else if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
-            return __("Your message was not delivered because you're not present in the groupchat.");
-        } else {
-            return text?.textContent;
+        const error = stanza.querySelector('error');
+        const text = sizzle(`text[xmlns="${Strophe.NS.STANZAS}"]`, error).pop();
+        return {
+            'is_error': true,
+            'error_text': text?.textContent,
+            'error_type': error.getAttribute('type'),
+            'error_condition': error.firstElementChild.nodeName
         }
     }
+    return {};
 }
 
 
@@ -458,6 +441,7 @@ const st = {
          * @property { Boolean } is_carbon - Is this message a XEP-0280 Carbon?
          * @property { Boolean } is_delayed - Was delivery of this message was delayed as per XEP-0203?
          * @property { Boolean } is_encrypted -  Is this message XEP-0384  encrypted?
+         * @property { Boolean } is_error - Whether an error was received for this message
          * @property { Boolean } is_headline - Is this a "headline" message?
          * @property { Boolean } is_markable - Can this message be marked with a XEP-0333 chat marker?
          * @property { Boolean } is_marker - Is this message a XEP-0333 Chat Marker?
@@ -469,8 +453,10 @@ const st = {
          * @property { String } body - The contents of the <body> tag of the message stanza
          * @property { String } chat_state - The XEP-0085 chat state notification contained in this message
          * @property { String } contact_jid - The JID of the other person or entity
-         * @property { String } edit - An ISO8601 string recording the time that the message was edited per XEP-0308
-         * @property { String } error - The error message, in case it's an error stanza
+         * @property { String } edited - An ISO8601 string recording the time that the message was edited per XEP-0308
+         * @property { String } error_condition - The defined error condition
+         * @property { String } error_text - The error text received from the server
+         * @property { String } error_type - The type of error received from the server
          * @property { String } from - The sender JID
          * @property { String } fullname - The full name of the sender
          * @property { String } marker - The XEP-0333 Chat Marker value
@@ -503,7 +489,6 @@ const st = {
                 is_server_message,
                 'body': stanza.querySelector('body')?.textContent?.trim(),
                 'chat_state': getChatState(stanza),
-                'error': getErrorMessage(stanza),
                 'from': Strophe.getBareJidFromJid(stanza.getAttribute('from')),
                 'is_archived': st.isArchived(original_stanza),
                 'is_carbon': isCarbon(original_stanza),
@@ -523,6 +508,7 @@ const st = {
                 'to': stanza.getAttribute('to'),
                 'type': stanza.getAttribute('type')
             },
+            getErrorAttributes(stanza),
             getOutOfBandAttributes(stanza),
             getSpoilerAttributes(stanza),
             getCorrectionAttributes(stanza, original_stanza),
@@ -589,6 +575,7 @@ const st = {
          * @property { Boolean } is_carbon - Is this message a XEP-0280 Carbon?
          * @property { Boolean } is_delayed - Was delivery of this message was delayed as per XEP-0203?
          * @property { Boolean } is_encrypted -  Is this message XEP-0384  encrypted?
+         * @property { Boolean } is_error - Whether an error was received for this message
          * @property { Boolean } is_headline - Is this a "headline" message?
          * @property { Boolean } is_markable - Can this message be marked with a XEP-0333 chat marker?
          * @property { Boolean } is_marker - Is this message a XEP-0333 Chat Marker?
@@ -599,8 +586,10 @@ const st = {
          * @property { Object } encrypted -  XEP-0384 encryption payload attributes
          * @property { String } body - The contents of the <body> tag of the message stanza
          * @property { String } chat_state - The XEP-0085 chat state notification contained in this message
-         * @property { String } edit - An ISO8601 string recording the time that the message was edited per XEP-0308
-         * @property { String } error - The error message, in case it's an error stanza
+         * @property { String } edited - An ISO8601 string recording the time that the message was edited per XEP-0308
+         * @property { String } error_condition - The defined error condition
+         * @property { String } error_text - The error text received from the server
+         * @property { String } error_type - The type of error received from the server
          * @property { String } from - The sender JID
          * @property { String } from_muc - The JID of the MUC from which this message was sent
          * @property { String } fullname - The full name of the sender
@@ -632,7 +621,6 @@ const st = {
                 from,
                 'body': stanza.querySelector('body')?.textContent?.trim(),
                 'chat_state': getChatState(stanza),
-                'error': getMUCErrorMessage(stanza),
                 'from_muc': Strophe.getBareJidFromJid(from),
                 'is_archived': st.isArchived(original_stanza),
                 'is_carbon': isCarbon(original_stanza),
@@ -652,6 +640,7 @@ const st = {
                 'to': stanza.getAttribute('to'),
                 'type': stanza.getAttribute('type'),
             },
+            getErrorAttributes(stanza),
             getOutOfBandAttributes(stanza),
             getSpoilerAttributes(stanza),
             getCorrectionAttributes(stanza, original_stanza),

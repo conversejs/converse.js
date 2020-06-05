@@ -35,7 +35,7 @@ converse.plugins.add('converse-rosterview', {
          * loaded by converse.js's plugin machinery.
          */
 
-        api.settings.update({
+        api.settings.extend({
             'autocomplete_add_contact': true,
             'allow_chat_pending_contacts': true,
             'allow_contact_removal': true,

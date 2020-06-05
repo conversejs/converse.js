@@ -133,7 +133,7 @@ converse.plugins.add('converse-dragresize', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-        api.settings.update({
+        api.settings.extend({
             'allow_dragresize': true,
         });
 

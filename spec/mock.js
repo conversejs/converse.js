@@ -4,6 +4,8 @@ let _converse, initConverse;
 
 const converseLoaded = new Promise(resolve => window.addEventListener('converse-loaded', resolve));
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000;
+
 mock.initConverse = function (promise_names=[], settings=null, func) {
     if (typeof promise_names === "function") {
         func = promise_names;
@@ -337,12 +339,6 @@ window.addEventListener('converse-loaded', () => {
         await view.model.messages.fetched;
     };
 
-    mock.clearChatBoxMessages = function (converse, jid) {
-        const view = converse.chatboxviews.get(jid);
-        view.msgs_container.innerHTML = '';
-        return view.model.messages.clearStore();
-    };
-
     mock.createContact = async function (_converse, name, ask, requesting, subscription) {
         const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
         if (_converse.roster.get(jid)) {
@@ -445,11 +441,12 @@ window.addEventListener('converse-loaded', () => {
                     id: (new Date()).getTime()
                 })
                 .c('body').t(message).up()
+                .c('markable', {'xmlns': Strophe.NS.MARKERS}).up()
                 .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
     }
 
     mock.sendMessage = function (view, message) {
-        const promise = new Promise(resolve => view.once('messageInserted', resolve));
+        const promise = new Promise(resolve => view.model.messages.once('rendered', resolve));
         view.el.querySelector('.chat-textarea').value = message;
         view.onKeyDown({
             target: view.el.querySelector('textarea.chat-textarea'),

@@ -8,6 +8,7 @@ $mobile_portrait_length: 480px !default;
     --redder-orange: #E77051;
     --orange: #E7A151;
     --light-blue: #578EA9;
+    --lighter-blue: #85B47B;
 
     --chat-status-online: var(--green);
     --chat-status-busy: var(--redder-orange);
@@ -177,6 +178,7 @@ $mobile_portrait_length: 480px !default;
     --list-toggle-color: #818479; // $gray-color
     --list-toggle-hover-color: #585B51; // $dark-gray-color
     --list-toggle-font-weight: normal;
+    --list-item-hover-color: rgba(0, 0, 0, 0.035);
     --list-item-action-color: #e3eef3; // lighten($lightest-blue, 25%)
     --list-item-link-color: inherit;
     --list-item-link-hover-color: var(--dark-link-color);
@@ -206,6 +208,8 @@ $mobile_portrait_length: 480px !default;
 
     --heading-display: inline;
     --heading-color: #9B4D;
+
+    --link-hover-color: var(--lighter-blue);
 
     --chatroom-head-color: #7E7E7E;
     --chatroom-head-bg-color: white;

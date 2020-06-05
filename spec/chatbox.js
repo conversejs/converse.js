@@ -5,8 +5,12 @@ const $msg = converse.env.$msg;
 const Strophe = converse.env.Strophe;
 const u = converse.env.utils;
 const sizzle = converse.env.sizzle;
+const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe("Chatboxes", function () {
+
+    beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
+    afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
     describe("A Chatbox", function () {
 
@@ -20,7 +24,8 @@ describe("Chatboxes", function () {
             const view = _converse.chatboxviews.get(contact_jid);
             mock.sendMessage(view, '/help');
 
-            const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
+            await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view.el).length);
+            const info_messages = await u.waitUntil(() => sizzle('.chat-info:not(.chat-date)', view.el));
             expect(info_messages.length).toBe(4);
             expect(info_messages.pop().textContent).toBe('/help: Show this menu');
             expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
@@ -35,7 +40,34 @@ describe("Chatboxes", function () {
                 }).c('body').t('hello world').tree();
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
-            expect(view.msgs_container.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
+            const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__body';
+            await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === 'hello world');
+            done();
+        }));
+
+
+        it("has a /clear command", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            await mock.openControlBox(_converse);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            spyOn(window, 'confirm').and.returnValue(true);
+
+            for (const i of Array(10).keys()) {
+                mock.sendMessage(view, `Message ${i}`);
+            }
+            await u.waitUntil(() => sizzle('converse-chat-message', view.el).length === 10);
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = '/clear';
+            view.onKeyDown({
+                target: textarea,
+                preventDefault: function preventDefault () {},
+                keyCode: 13 // Enter
+            });
+            expect(window.confirm).toHaveBeenCalled();
+            await u.waitUntil(() => sizzle('converse-chat-message', view.el).length === 0);
             done();
         }));
 
@@ -58,30 +90,36 @@ describe("Chatboxes", function () {
 
             await _converse.handleMessageStanza(msg);
             const view = _converse.chatboxviews.get(sender_jid);
-            await new Promise(resolve => view.once('messageInserted', resolve));
+            await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
             expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
-            expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Mercutio')).toBeTruthy();
+            expect(view.el.querySelector('.chat-msg__author').textContent.includes('**Mercutio')).toBeTruthy();
             expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
+
             message = '/me is as well';
             await mock.sendMessage(view, message);
             expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
             await u.waitUntil(() => sizzle('.chat-msg__author:last', view.el).pop().textContent.trim() === '**Romeo Montague');
             const last_el = sizzle('.chat-msg__text:last', view.el).pop();
-            expect(last_el.textContent).toBe('is as well');
+            await u.waitUntil(() => last_el.textContent === 'is as well');
             expect(u.hasClass('chat-msg--followup', last_el)).toBe(false);
+
             // Check that /me messages after a normal message don't
             // get the 'chat-msg--followup' class.
             message = 'This a normal message';
             await mock.sendMessage(view, message);
-            let message_el = view.el.querySelector('.message:last-child');
-            expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
+            const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__text';
+            await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === message);
+            let el = view.el.querySelector('converse-chat-message:last-child .chat-msg__body');
+            expect(u.hasClass('chat-msg--followup', el)).toBeFalsy();
+
             message = '/me wrote a 3rd person message';
             await mock.sendMessage(view, message);
-            message_el = view.el.querySelector('.message:last-child');
+            await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === message.replace('/me ', ''));
+            el = view.el.querySelector('converse-chat-message:last-child .chat-msg__body');
             expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
+
             expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('wrote a 3rd person message');
             expect(u.isVisible(sizzle('.chat-msg__author:last', view.el).pop())).toBeTruthy();
-            expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
             done();
         }));
 
@@ -451,7 +489,7 @@ describe("Chatboxes", function () {
                     keyCode: 13 // Enter
                 };
                 view.onKeyDown(ev);
-                await new Promise(resolve => view.once('messageInserted', resolve));
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 view.onKeyUp(ev);
                 expect(counter.textContent).toBe('200');
 
@@ -1166,8 +1204,6 @@ describe("Chatboxes", function () {
             expect(document.title).toBe('Converse Tests');
 
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const view = await mock.openChatBoxFor(_converse, sender_jid)
-
             const previous_state = _converse.windowState;
             const message = 'This message will increment the message counter';
             const msg = $msg({
@@ -1184,7 +1220,6 @@ describe("Chatboxes", function () {
             spyOn(_converse, 'clearMsgCounter').and.callThrough();
 
             await _converse.handleMessageStanza(msg);
-            await new Promise(resolve => view.once('messageInserted', resolve));
             expect(_converse.incrementMsgCounter).toHaveBeenCalled();
             expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
             expect(document.title).toBe('Messages (1) Converse Tests');
@@ -1291,13 +1326,19 @@ describe("Chatboxes", function () {
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                   msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
 
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
+
             const view = await mock.openChatBoxFor(_converse, sender_jid)
+            spyOn(view.model, 'sendMarker').and.callThrough();
             view.model.save('scrolled', true);
             await _converse.handleMessageStanza(msg);
             await u.waitUntil(() => view.model.messages.length);
             expect(view.model.get('num_unread')).toBe(1);
             const msgid = view.model.messages.last().get('id');
             expect(view.model.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => view.model.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             done();
         }));
 
@@ -1310,15 +1351,19 @@ describe("Chatboxes", function () {
 
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                   msg = mock.createChatMessage(_converse, sender_jid, 'This message will be read');
-
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             await _converse.handleMessageStanza(msg);
             expect(chatbox.get('num_unread')).toBe(0);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
+            expect(sent_stanzas[1].nodeTree.querySelector('displayed')).toBeDefined();
             done();
         }));
 
-        it("is incremeted when message is received, chatbox is scrolled down and the window is not focused",
+        it("is incremented when message is received, chatbox is scrolled down and the window is not focused",
             mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -1328,8 +1373,12 @@ describe("Chatboxes", function () {
             const msgFactory = function () {
                 return mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
             };
+
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             _converse.windowState = 'hidden';
             const msg = msgFactory();
             _converse.handleMessageStanza(msg);
@@ -1337,10 +1386,12 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             done();
         }));
 
-        it("is incremeted when message is received, chatbox is scrolled up and the window is not focused",
+        it("is incremented when message is received, chatbox is scrolled up and the window is not focused",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
@@ -1348,8 +1399,11 @@ describe("Chatboxes", function () {
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             chatbox.save('scrolled', true);
             _converse.windowState = 'hidden';
             const msg = msgFactory();
@@ -1358,6 +1412,8 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             done();
         }));
 
@@ -1369,8 +1425,11 @@ describe("Chatboxes", function () {
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             _converse.windowState = 'hidden';
             const msg = msgFactory();
             _converse.handleMessageStanza(msg);
@@ -1378,8 +1437,12 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(0);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
+            expect(sent_stanzas[1].nodeTree.querySelector('displayed')).toBeDefined();
             done();
         }));
 
@@ -1391,8 +1454,11 @@ describe("Chatboxes", function () {
             await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const msgFactory = () => mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
+            spyOn(chatbox, 'sendMarker').and.callThrough();
             chatbox.save('scrolled', true);
             _converse.windowState = 'hidden';
             const msg = msgFactory();
@@ -1401,9 +1467,13 @@ describe("Chatboxes", function () {
             expect(chatbox.get('num_unread')).toBe(1);
             const msgid = chatbox.messages.last().get('id');
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             _converse.saveWindowState(null, 'focus');
             expect(chatbox.get('num_unread')).toBe(1);
             expect(chatbox.get('first_unread_id')).toBe(msgid);
+            await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
+            expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             done();
         }));
     });
@@ -1604,9 +1674,8 @@ describe("Chatboxes", function () {
 
             await mock.waitForRoster(_converse, 'current', 1);
 
-            const message = "geo:37.786971,-122.399677",
-                  contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-
+            const message = "geo:37.786971,-122.399677";
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
             spyOn(view.model, 'sendMessage').and.callThrough();
@@ -1614,10 +1683,9 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
-            expect(msg.innerHTML).toEqual(
+            expect(msg.innerHTML.replace(/\<!----\>/g, '')).toEqual(
                 '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
-                'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.7869'+
-                '71&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
+                'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
             done();
         }));
     });

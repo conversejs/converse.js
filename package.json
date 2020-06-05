@@ -87,7 +87,7 @@
     "install": "^0.13.0",
     "jasmine": "^3.5.0",
     "jsdoc": "^3.6.4",
-    "karma": "^5.0.2",
+    "karma": "^5.0.9",
     "karma-chrome-launcher": "^3.1.0",
     "karma-cli": "^2.0.0",
     "karma-jasmine": "^3.1.1",

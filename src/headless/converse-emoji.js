@@ -62,7 +62,7 @@ converse.plugins.add('converse-emoji', {
          */
         const { ___ } = _converse;
 
-        api.settings.update({
+        api.settings.extend({
             'emoji_image_path': twemoji.default.base,
             'emoji_categories': {
                 "smileys": ":grinning:",

@@ -575,6 +575,7 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
     }
 
     const promise = u.getResolveablePromise();
+    const timeout_err = new Error();
 
     function checker () {
         try {
@@ -590,12 +591,16 @@ u.waitUntil = function (func, max_wait=300, check_delay=3) {
     }
 
     const interval = setInterval(checker, check_delay);
-    const max_wait_timeout = setTimeout(() => {
+
+    function handler () {
         clearTimers(max_wait_timeout, interval);
-        const err_msg = 'Wait until promise timed out';
+        const err_msg = `Wait until promise timed out: \n\n${timeout_err.stack}`;
+        console.trace();
         log.error(err_msg);
         promise.reject(new Error(err_msg));
-    }, max_wait);
+    }
+
+    const max_wait_timeout = setTimeout(handler, max_wait);
 
     return promise;
 };

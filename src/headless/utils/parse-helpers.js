@@ -20,7 +20,7 @@ helpers.mapAddCoordsToReferences = (indexes) => (reference, index) => {
     return {
         ...reference,
         begin,
-        end: begin + reference.value.length // add one for the @
+        end: begin + reference.value.length
     }
 };
 
@@ -40,13 +40,8 @@ helpers.mapMentionsToTempReferences = (mention) => ({
     type: 'mention'
 });
 
-helpers.mapMatchesToBeginIndexes = (match) => {
-    const whitespace_regex = /[\s]+/g;
-    const match_is_preceded_by_white_space = whitespace_regex.test(match[0][0]);
-    return match_is_preceded_by_white_space
-        ? match.index + 1
-        : match.index;
-};
+helpers.mapMatchesToBeginIndexes = (regex) => (match) =>
+    regex.test(match[0][0]) ? match.index + 1 : match.index;
 
 helpers.reduceTextFromReferences = (updated_text, reference) => {
     const { begin, end, value } = reference;
@@ -58,13 +53,8 @@ helpers.reduceReferencesWithNicknames = (known_nicknames) => {
     return (accum, reference) => {
         const lowercase_mention_no_at_sign = reference.mentioned_as.slice(1).toLowerCase();
         const index = lowercase_nicknames.indexOf(lowercase_mention_no_at_sign);
-        if (index == -1) {
-            return accum;
-        }
-        return [...accum, {
-            ...reference,
-            value: known_nicknames[index]
-        }];
+        if (index == -1) return accum;
+        return [...accum, { ...reference, value: known_nicknames[index] }];
     }
 };
 

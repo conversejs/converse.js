@@ -956,7 +956,7 @@ converse.plugins.add('converse-muc', {
                 if (!mentions.length) return [original_message, []];
 
                 const known_nicknames = this.getAllKnownNicknames();
-                const indexes = dirty_mentions.map(p.mapMatchesToBeginIndexes);
+                const indexes = dirty_mentions.map(p.mapMatchesToBeginIndexes(/[\s]+/));
                 const make_uri_from_reference = p.makeUriFromReference(
                     this.getOccupant.bind(this),
                     this.get('jid')

@@ -14,7 +14,7 @@ import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
 import tpl_new_day from "templates/new_day.html";
 import tpl_spinner from "templates/spinner.html";
 import tpl_spoiler_button from "templates/spoiler_button.html";
-import tpl_toolbar from "templates/toolbar.html";
+import tpl_toolbar from "templates/toolbar.js";
 import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.js";
 import { BootstrapModal } from "./converse-modal.js";
@@ -339,7 +339,7 @@ converse.plugins.add('converse-chatview', {
                     this.model.toJSON(),
                     this.getToolbarOptions()
                 );
-                this.el.querySelector('.chat-toolbar').innerHTML = tpl_toolbar(options);
+                render(tpl_toolbar(options), this.el.querySelector('.chat-toolbar'));
                 this.addSpoilerButton(options);
                 this.addFileUploadButton();
                 /**

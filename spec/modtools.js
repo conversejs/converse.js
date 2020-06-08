@@ -192,6 +192,11 @@ describe("The groupchat moderator tool", function () {
         filter.value = 'gower';
         u.triggerEvent(filter, "keyup", "KeyboardEvent");
         await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+
+        filter.value = 'RoMeO';
+        u.triggerEvent(filter, "keyup", "KeyboardEvent");
+        await u.waitUntil(() => ( modal.el.querySelectorAll('.list-group--users > li').length === 1));
+
         done();
     }));
 

@@ -81,7 +81,6 @@ export default class EmojiPickerContent extends CustomElement {
       const position = this.model.get('position');
       this.model.set({'autocompleting': null, 'position': null, 'query': ''});
       this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'), replace, false, position);
-      this.chatview.emoji_dropdown.toggle();
   }
 
   shouldBeHidden (shortname) {

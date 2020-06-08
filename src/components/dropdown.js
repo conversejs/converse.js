@@ -29,8 +29,9 @@ export class BaseDropdown extends CustomElement {
         this.button.setAttribute('aria-expanded', true);
     }
 
-    toggleMenu (event) {
-        event.stopPropagation();
+    toggleMenu (ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
         if (u.hasClass('show', this.menu)) {
             this.hideMenu();
         } else {
@@ -41,7 +42,7 @@ export class BaseDropdown extends CustomElement {
     handleKeyUp (ev) {
         if (ev.keyCode === converse.keycodes.ESCAPE) {
             this.hideMenu();
-        } else if (ev.keyCode === converse.keycodes.DOWN_ARROW && !this.navigator.enabled) {
+        } else if (ev.keyCode === converse.keycodes.DOWN_ARROW && this.navigator && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
         }
     }

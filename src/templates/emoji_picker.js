@@ -47,11 +47,10 @@ export const tpl_search_results = (o) => html`
 `;
 
 const emojis_for_category = (o) => {
-    const emojis_by_category = _converse.emojis.json;
     return html`
         <a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}">${ __(api.settings.get('emoji_category_labels')[o.category]) }</a>
         <ul class="emoji-picker" data-category="${o.category}">
-            ${ Object.values(emojis_by_category[o.category]).map(emoji => emoji_item(Object.assign({emoji}, o))) }
+            ${ Object.values(converse.emojis.json[o.category]).map(emoji => emoji_item(Object.assign({emoji}, o))) }
         </ul>`;
 }
 
@@ -82,13 +81,13 @@ export const tpl_emoji_picker = (o) => {
                 @focus=${o.onSearchInputFocus}>
             ${ o.query ? '' : emoji_picker_header(o) }
         </div>
-        <converse-emoji-picker-content
-            .chatview=${o.chatview}
-            .model=${o.model}
-            .search_results="${o.search_results}"
-            current_skintone="${o.current_skintone}"
-            query="${o.query}"
-        ></converse-emoji-picker-content>
+        ${ o.render_emojis ?
+            html`<converse-emoji-picker-content
+                .chatview=${o.chatview}
+                .model=${o.model}
+                .search_results="${o.search_results}"
+                current_skintone="${o.current_skintone}"
+                query="${o.query}"></converse-emoji-picker-content>` : ''}
 
         <div class="emoji-skintone-picker">
             <label>Skin tone</label>

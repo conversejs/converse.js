@@ -15,7 +15,14 @@
             }
         }
 
-        .emoji-picker.toolbar-menu {
+        converse-emoji-dropdown {
+            display: inline-block;
+            .dropdown-menu {
+                padding: 0;
+            }
+        }
+
+        converse-emoji-picker {
             width: 100%;
             padding-top: 0;
             padding-bottom: 0;
@@ -84,6 +91,9 @@
                     list-style: none;
                     position: relative;
                     &.insert-emoji {
+                        padding: 0 0.2em;
+                        height: auto;
+                        width: auto;
                         margin: 0;
                         display: block;
                         text-align: center;
@@ -115,7 +125,7 @@
             .emoji-picker__header {
                 display: flex;
                 flex-direction: column;
-                padding-top: 0.5em;
+                padding: 0.1em 0;
                 background-color: var(--chat-head-color);
                 .emoji-search {
                     width: auto;
@@ -154,7 +164,7 @@
     }
 
     .chatroom {
-        .emoji-picker.toolbar-menu {
+        converse-emoji-picker {
             background-color: var(--chatroom-head-bg-color);
             background: white;
             .emoji-skintone-picker {
@@ -177,6 +187,11 @@
 
 
 #conversejs.converse-overlayed  {
+    converse-emoji-dropdown {
+        .dropdown-menu {
+            min-width: 18em;
+        }
+    }
     .chatbox {
         .emoji-picker__header {
             .emoji-category {
@@ -186,13 +201,7 @@
                 }
             }
         }
-        .emoji-picker.toolbar-menu {
-            li {
-                &.insert-emoji {
-                    height: calc(var(--font-size) * 1.5);
-                    width: calc(var(--font-size) * 1.5);
-                }
-            }
+        converse-emoji-picker {
             .emoji-picker {
                 .insert-emoji {
                     a {
@@ -223,11 +232,24 @@
     }
 }
 
+#conversejs.converse-embedded {
+    converse-emoji-dropdown {
+        .dropdown-menu {
+            min-width: 20em;
+        }
+    }
+}
+
 #conversejs.converse-fullscreen {
+    converse-emoji-dropdown {
+        .dropdown-menu {
+            min-width: 22em;
+        }
+    }
     .chatbox {
         .toggle-smiley {
         }
-        .emoji-picker.toolbar-menu {
+        converse-emoji-picker {
             .emoji-picker__lists {
                 height: 12em;
             }
@@ -238,7 +260,7 @@
 @include media-breakpoint-up(m) {
     #conversejs {
         .chatbox {
-            .emoji-picker.toolbar-menu {
+            converse-emoji-picker {
                 max-width: 40em;
             }
         }

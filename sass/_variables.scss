@@ -143,8 +143,8 @@ $mobile_portrait_length: 480px !default;
     --chat-separator-border-bottom: 2px solid var(--chat-head-color);
     --chatroom-separator-border-bottom: 2px solid var(--chatroom-head-bg-color);
 
-    --message-input-border-top: 4px solid var(--chatroom-head-bg-color);
-    --message-input-color: var(--chatroom-head-bg-color);
+    --chatbox-message-input-border-top: 4px solid var(--chat-head-color);
+    --chatroom-message-input-border-top: 4px solid var(--chatroom-head-bg-color);
 
     --line-height-small: 14px;
     --line-height: 16px;
@@ -238,8 +238,8 @@ $mobile_portrait_length: 480px !default;
     --chat-separator-border-bottom: 1px solid #AAA;
     --chatroom-separator-border-bottom: 1px solid #AAA;
 
-    --message-input-border-top: 1px solid #CCC;
-    --message-input-color: #CCC;
+    --chatroom-message-input-border-top: 1px solid #CCC;
+    --chatbox-message-input-border-top: 1px solid #CCC;
 
     --fullpage-chatbox-button-size: 24px;
 

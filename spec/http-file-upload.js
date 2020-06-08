@@ -159,7 +159,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items');
                 const view = _converse.chatboxviews.get(contact_jid);
-                expect(view.el.querySelector('.chat-toolbar .upload-file')).toBe(null);
+                expect(view.el.querySelector('.chat-toolbar .fileupload')).toBe(null);
                 done();
             }));
 
@@ -173,10 +173,10 @@ describe("XEP-0363: HTTP File Upload", function () {
                     [{'category': 'server', 'type':'IM'}],
                     ['http://jabber.org/protocol/disco#items'], [], 'info');
 
-                await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.lit'], 'items');
-                await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.lit', [], [Strophe.NS.HTTPUPLOAD], []);
+                await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                expect(view.el.querySelector('.chat-toolbar .upload-file')).toBe(null);
+                await u.waitUntil(() => view.el.querySelector('.chat-toolbar .fileupload') === null);
+                expect(1).toBe(1);
                 done();
             }));
 
@@ -199,8 +199,8 @@ describe("XEP-0363: HTTP File Upload", function () {
                 const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
-                u.waitUntil(() => view.el.querySelector('.upload-file'));
-                expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
+                const el = await u.waitUntil(() => view.el.querySelector('.chat-toolbar .fileupload'));
+                expect(el).not.toEqual(null);
                 done();
             }));
 
@@ -216,9 +216,9 @@ describe("XEP-0363: HTTP File Upload", function () {
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.lit'], 'items');
                 await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.lit', [], [Strophe.NS.HTTPUPLOAD], []);
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').el.querySelector('.upload-file'));
+                await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').el.querySelector('.fileupload'));
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
+                expect(view.el.querySelector('.chat-toolbar .fileupload')).not.toBe(null);
                 done();
             }));
 

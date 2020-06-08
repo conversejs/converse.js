@@ -16,10 +16,10 @@ describe("A spoiler message", function () {
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
         /* <message to='romeo@montague.net/orchard' from='juliet@capulet.net/balcony' id='spoiler2'>
-            *      <body>And at the end of the story, both of them die! It is so tragic!</body>
-            *      <spoiler xmlns='urn:xmpp:spoiler:0'>Love story end</spoiler>
-            *  </message>
-            */
+         *      <body>And at the end of the story, both of them die! It is so tragic!</body>
+         *      <spoiler xmlns='urn:xmpp:spoiler:0'>Love story end</spoiler>
+         *  </message>
+         */
         const spoiler_hint = "Love story end"
         const spoiler = "And at the end of the story, both of them die! It is so tragic!";
         const $msg = converse.env.$msg;
@@ -223,9 +223,7 @@ describe("A spoiler message", function () {
             `</message>`
         );
 
-        const spoiler_el = stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]');
-        expect(spoiler_el === null).toBeFalsy();
-        expect(spoiler_el.textContent).toBe('This is the hint');
+        await u.waitUntil(() => stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]')?.textContent === 'This is the hint');
 
         const spoiler = 'This is the spoiler'
         const body_el = stanza.querySelector('body');

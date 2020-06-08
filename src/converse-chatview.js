@@ -5,6 +5,7 @@
  */
 import "./components/chat_content.js";
 import "./components/help_messages.js";
+import "./components/toolbar.js";
 import "converse-chatboxviews";
 import "converse-modal";
 import log from "@converse/headless/log";
@@ -12,9 +13,7 @@ import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.js";
 import tpl_spinner from "templates/spinner.html";
-import tpl_spoiler_button from "templates/spoiler_button.html";
 import tpl_toolbar from "templates/toolbar.js";
-import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.js";
 import { BootstrapModal } from "./converse-modal.js";
 import { View } from '@converse/skeletor/src/view.js';
@@ -52,6 +51,7 @@ converse.plugins.add('converse-chatview', {
          */
         api.settings.extend({
             'auto_focus': true,
+            'debounced_content_rendering': true,
             'message_limit': 0,
             'muc_hats_from_vcard': false,
             'show_images_inline': true,
@@ -60,10 +60,11 @@ converse.plugins.add('converse-chatview', {
             'show_send_button': true,
             'show_toolbar': true,
             'time_format': 'HH:mm',
-            'debounced_content_rendering': true,
+            'use_system_emojis': true,
             'visible_toolbar_buttons': {
                 'call': false,
                 'clear': true,
+                'emoji': true,
                 'spoiler': true
             },
         });
@@ -170,17 +171,11 @@ converse.plugins.add('converse-chatview', {
             is_chatroom: false,  // Leaky abstraction from MUC
 
             events: {
-                'change input.fileupload': 'onFileSelection',
                 'click .chatbox-navback': 'showControlBox',
                 'click .chatbox-title': 'minimize',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 'click .send-button': 'onFormSubmitted',
-                'click .toggle-call': 'toggleCall',
                 'click .toggle-clear': 'clearMessages',
-                'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
-                'click .upload-file': 'toggleFileUpload',
-                'dragover .chat-textarea': 'onDragOver',
-                'drop .chat-textarea': 'onDrop',
                 'input .chat-textarea': 'inputChanged',
                 'keydown .chat-textarea': 'onKeyDown',
                 'keyup .chat-textarea': 'onKeyUp',
@@ -242,7 +237,7 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            async render () {
+            render () {
                 const result = tpl_chatbox(
                     Object.assign(
                         this.model.toJSON(), {
@@ -252,12 +247,9 @@ converse.plugins.add('converse-chatview', {
                 );
                 render(result, this.el);
                 this.content = this.el.querySelector('.chat-content');
-
                 this.notifications = this.el.querySelector('.chat-content__notifications');
                 this.msgs_container = this.el.querySelector('.chat-content__messages');
                 this.help_container = this.el.querySelector('.chat-content__help');
-
-                await api.waitUntil('emojisInitialized');
                 this.renderChatContent();
                 this.renderMessageForm();
                 this.renderHeading();
@@ -337,13 +329,14 @@ converse.plugins.add('converse-chatview', {
                 if (!api.settings.get('show_toolbar')) {
                     return this;
                 }
-                const options = Object.assign(
+                const options = Object.assign({
+                        'model': this.model,
+                        'chatview': this
+                    },
                     this.model.toJSON(),
                     this.getToolbarOptions()
                 );
                 render(tpl_toolbar(options), this.el.querySelector('.chat-toolbar'));
-                this.addSpoilerButton(options);
-                this.addFileUploadButton();
                 /**
                  * Triggered once the _converse.ChatBoxView's toolbar has been rendered
                  * @event _converse#renderToolbar
@@ -388,14 +381,6 @@ converse.plugins.add('converse-chatview', {
                 this.user_details_modal.show(ev);
             },
 
-            toggleFileUpload () {
-                this.el.querySelector('input.fileupload').click();
-            },
-
-            onFileSelection (evt) {
-                this.model.sendFiles(evt.target.files);
-            },
-
             onDragOver (evt) {
                 evt.preventDefault();
             },
@@ -408,43 +393,6 @@ converse.plugins.add('converse-chatview', {
                 }
                 evt.preventDefault();
                 this.model.sendFiles(evt.dataTransfer.files);
-            },
-
-            async addFileUploadButton () {
-                if (await api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain)) {
-                    if (this.el.querySelector('.chat-toolbar .upload-file')) {
-                        return;
-                    }
-                    this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
-                        'beforeend',
-                        tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
-                }
-            },
-
-            /**
-             * Asynchronously adds a button for writing spoiler
-             * messages, based on whether the contact's clients support it.
-             * @private
-             * @method _converse.ChatBoxView#addSpoilerButton
-             */
-            async addSpoilerButton (options) {
-                if (!options.show_spoiler_button || this.model.get('type') === _converse.CHATROOMS_TYPE) {
-                    return;
-                }
-                const contact_jid = this.model.get('jid');
-                if (this.model.presence.resources.length === 0) {
-                    return;
-                }
-                const results = await Promise.all(
-                    this.model.presence.resources.map(
-                        r => api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${r.get('name')}`)
-                    )
-                );
-                const all_resources_support_spolers = results.reduce((acc, val) => (acc && val), true);
-                if (all_resources_support_spolers) {
-                    const html = tpl_spoiler_button(this.model.toJSON());
-                    this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
-                }
             },
 
             async renderHeading () {
@@ -523,21 +471,8 @@ converse.plugins.add('converse-chatview', {
             },
 
             getToolbarOptions () {
-                let label_toggle_spoiler;
-                if (this.model.get('composing_spoiler')) {
-                    label_toggle_spoiler = __("Click to write as a normal (non-spoiler) message");
-                } else {
-                    label_toggle_spoiler = __("Click to write your message as a spoiler");
-                }
-                return {
-                    'label_clear': __('Clear all messages'),
-                    'label_message_limit': __('Message characters remaining'),
-                    'label_toggle_spoiler': label_toggle_spoiler,
-                    'message_limit': api.settings.get('message_limit'),
-                    'show_call_button': api.settings.get('visible_toolbar_buttons').call,
-                    'show_spoiler_button': api.settings.get('visible_toolbar_buttons').spoiler,
-                    'tooltip_start_call': __('Start a call')
-                }
+                //  FIXME: can this be removed?
+                return {};
             },
 
             async updateAfterMessagesFetched () {
@@ -787,6 +722,24 @@ converse.plugins.add('converse-chatview', {
                 this.updateCharCounter(ev.clipboardData.getData('text/plain'));
             },
 
+            autocompleteInPicker (input, value) {
+                const emoji_dropdown = this.el.querySelector('converse-emoji-dropdown');
+                const emoji_picker = this.el.querySelector('converse-emoji-picker');
+                if (emoji_picker && emoji_dropdown) {
+                    this.autocompleting = value;
+                    this.ac_position = input.selectionStart;
+                    emoji_picker.model.set({'query': value});
+                    emoji_dropdown.firstElementChild.click();
+                    return true;
+                }
+            },
+
+            onEmojiReceivedFromPicker (emoji) {
+                this.insertIntoTextArea(emoji, !!this.autocompleting, false, this.ac_position);
+                this.autocompleting = false;
+                this.ac_position = null;
+            },
+
             /**
              * Event handler for when a depressed key goes up
              * @private
@@ -808,7 +761,13 @@ converse.plugins.add('converse-chatview', {
                     return;
                 }
                 if (!ev.shiftKey && !ev.altKey && !ev.metaKey) {
-                    if (ev.keyCode === converse.keycodes.FORWARD_SLASH) {
+                    if (ev.keyCode === converse.keycodes.TAB) {
+                        const value = u.getCurrentWord(ev.target, null, /(:.*?:)/g);
+                        if (value.startsWith(':') && this.autocompleteInPicker(ev.target, value)) {
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                        }
+                    } else if (ev.keyCode === converse.keycodes.FORWARD_SLASH) {
                         // Forward slash is used to run commands. Nothing to do here.
                         return;
                     } else if (ev.keyCode === converse.keycodes.ESCAPE) {
@@ -993,22 +952,6 @@ converse.plugins.add('converse-chatview', {
                 }
                 this.updateCharCounter(textarea.value);
                 u.placeCaretAtEnd(textarea);
-            },
-
-            toggleCall (ev) {
-                ev.stopPropagation();
-                /**
-                 * When a call button (i.e. with class .toggle-call) on a chatbox has been clicked.
-                 * @event _converse#callButtonClicked
-                 * @type { object }
-                 * @property { Strophe.Connection } _converse.connection - The XMPP Connection object
-                 * @property { _converse.ChatBox | _converse.ChatRoom } _converse.connection - The XMPP Connection object
-                 * @example _converse.api.listen.on('callButtonClicked', (connection, model) => { ... });
-                 */
-                api.trigger('callButtonClicked', {
-                    connection: _converse.connection,
-                    model: this.model
-                });
             },
 
             toggleComposeSpoilerMessage () {

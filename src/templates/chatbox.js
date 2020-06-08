@@ -9,7 +9,6 @@ export default (o) => html`
                 <div class="chat-content__help"></div>
             </div>
             <div class="bottom-panel">
-                <div class="emoji-picker__container dropup"></div>
                 <div class="message-form-container">
             </div>
         </div>

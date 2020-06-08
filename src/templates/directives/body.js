@@ -32,7 +32,7 @@ class MessageBodyRenderer extends String {
 
         let list = await Promise.all(u.addHyperlinks(text));
 
-        await api.waitUntil('emojisInitialized');
+        await api.emojis.initialize();
         list = list.reduce((acc, i) => isString(i) ? [...acc, ...u.addEmoji(i)] : [...acc, i], []);
 
         const addMentions = text => addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox)

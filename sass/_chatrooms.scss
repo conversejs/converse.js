@@ -351,7 +351,6 @@
         }
 
         .muc-bottom-panel {
-            border-top: var(--message-input-border-top);
             height: 3em;
             padding: 0.5em;
             text-align: center;
@@ -376,17 +375,6 @@
             .suggestion-box__results--above {
                 bottom: 4.5em;
             }
-            .chat-toolbar {
-                background-color: white;
-                border-top: var(--message-input-border-top);
-                color: var(--message-input-color);
-                .fas, .fas:hover,
-                .far, .far:hover,
-                .fa, .fa:hover {
-                    color: var(--message-input-color);
-                }
-            }
-
             .chat-textarea {
                 &:active, &:focus{
                     outline-color: var(--chatroom-head-bg-color);
@@ -395,9 +383,6 @@
                 &.correcting {
                     background-color: var(--chatroom-correcting-color);
                 }
-            }
-            .send-button {
-                background-color: var(--message-input-color);
             }
         }
 
@@ -465,15 +450,6 @@
                 }
                 .chat-area {
                     min-width: var(--overlayed-chat-width);
-                }
-            }
-            .sendXMPPMessage {
-                .chat-toolbar {
-                    li {
-                        .toolbar-menu {
-                            min-width: 280px;
-                        }
-                    }
                 }
             }
         }

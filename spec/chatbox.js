@@ -441,25 +441,6 @@ describe("Chatboxes", function () {
 
         describe("A chat toolbar", function () {
 
-            it("can be found on each chat box",
-                mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    async function (done, _converse) {
-
-                await mock.waitForRoster(_converse, 'current', 3);
-                await mock.openControlBox(_converse);
-                const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                await mock.openChatBoxFor(_converse, contact_jid);
-                const chatbox = _converse.chatboxes.get(contact_jid);
-                const view = _converse.chatboxviews.get(contact_jid);
-                expect(chatbox).toBeDefined();
-                expect(view).toBeDefined();
-                const toolbar = view.el.querySelector('ul.chat-toolbar');
-                expect(_.isElement(toolbar)).toBe(true);
-                expect(toolbar.querySelectorAll(':scope > li').length).toBe(2);
-                done();
-            }));
-
             it("shows the remaining character count if a message_limit is configured",
                 mock.initConverse(
                     ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 200},
@@ -476,7 +457,7 @@ describe("Chatboxes", function () {
                 view.insertIntoTextArea('hello world');
                 expect(counter.textContent).toBe('188');
 
-                toolbar.querySelector('a.toggle-smiley').click();
+                toolbar.querySelector('.toggle-emojis').click();
                 const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__lists'));
                 const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji a'));
                 item.click()
@@ -532,7 +513,7 @@ describe("Chatboxes", function () {
                 _converse.visible_toolbar_buttons.call = false;
                 await mock.openChatBoxFor(_converse, contact_jid);
                 let view = _converse.chatboxviews.get(contact_jid);
-                toolbar = view.el.querySelector('ul.chat-toolbar');
+                toolbar = view.el.querySelector('.chat-toolbar');
                 call_button = toolbar.querySelector('.toggle-call');
                 expect(call_button === null).toBeTruthy();
                 view.close();
@@ -541,7 +522,7 @@ describe("Chatboxes", function () {
                 _converse.visible_toolbar_buttons.call = true; // enable the button
                 await mock.openChatBoxFor(_converse, contact_jid);
                 view = _converse.chatboxviews.get(contact_jid);
-                toolbar = view.el.querySelector('ul.chat-toolbar');
+                toolbar = view.el.querySelector('.chat-toolbar');
                 call_button = toolbar.querySelector('.toggle-call');
                 call_button.click();
                 expect(_converse.api.trigger).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));

@@ -1,7 +1,4 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
-
-const i18n_send_message = __('Send the message');
 
 
 export default (o) => html`
@@ -10,12 +7,7 @@ export default (o) => html`
         <input type="submit" class="btn btn-primary" name="join" value="Join"/>
     </form>
     <form class="sendXMPPMessage">
-        ${ (o.show_toolbar || o.show_send_button) ? html`
-            <div class="chat-toolbar--container">
-                ${ o.show_toolbar ? html`<ul class="chat-toolbar no-text-select"></ul>` : '' }
-                ${ o.show_send_button ? html`<button type="submit" class="btn send-button fa fa-paper-plane" title="${ i18n_send_message }"></button>` : '' }
-            </div>` : ''
-        }
+        <span class="chat-toolbar no-text-select"></span>
         <input type="text" placeholder="${o.label_spoiler_hint || ''}" value="${o.hint_value || ''}" class="${o.composing_spoiler ? '' : 'hidden'} spoiler-hint"/>
 
         <div class="suggestion-box">

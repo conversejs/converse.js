@@ -6,10 +6,10 @@
 import "./converse-status";
 import log from "@converse/headless/log";
 import tpl_vcard from "./templates/vcard.html";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
+import { Collection } from "@converse/skeletor/src/collection";
+import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
-import { has, isString } from "lodash";
+import { has, isString } from "lodash-es";
 
 const { Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;

@@ -7,9 +7,9 @@
 import "./converse-chat";
 import "./converse-disco";
 import "./converse-emoji";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
-import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash";
+import { Collection } from "@converse/skeletor/src/collection";
+import { Model } from '@converse/skeletor/src/model.js';
+import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash-es";
 import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";

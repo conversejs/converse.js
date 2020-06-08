@@ -6,7 +6,7 @@
  *  https://leaverou.github.io/awesomplete/
  * @license Mozilla Public License (MPLv2)
  */
-import { Events } from 'skeletor.js/src/events.js';
+import { Events } from '@converse/skeletor/src/events.js';
 import { converse } from "@converse/headless/converse-core";
 
 const u = converse.env.utils;

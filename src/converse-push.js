@@ -7,7 +7,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { filter, reject } from 'lodash';
+import { filter, reject } from 'lodash-es';
 import log from "@converse/headless/log";
 
 const { Strophe, $iq } = converse.env;

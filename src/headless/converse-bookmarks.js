@@ -7,8 +7,8 @@
  */
 import "@converse/headless/converse-muc";
 import log from "./log";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
+import { Collection } from "@converse/skeletor/src/collection";
+import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const { Strophe, $iq, sizzle } = converse.env;

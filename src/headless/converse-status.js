@@ -3,8 +3,8 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { isNaN, isObject, isString } from "lodash";
-import { Model } from 'skeletor.js/src/model.js';
+import { isNaN, isObject, isString } from "lodash-es";
+import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const { Strophe, $build, $pres } = converse.env;

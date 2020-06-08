@@ -6,7 +6,7 @@
 import "converse-chatview";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_headline_panel from "templates/headline_panel.js";
-import { View } from 'skeletor.js/src/view.js';
+import { View } from '@converse/skeletor/src/view.js';
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { render } from "lit-html";

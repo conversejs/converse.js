@@ -10,8 +10,8 @@ import tpl_brand_heading from "templates/converse_brand_heading.html";
 import tpl_controlbox from "templates/controlbox.html";
 import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
 import tpl_login_panel from "templates/login_panel.js";
-import { Model } from 'skeletor.js/src/model.js';
-import { View } from "skeletor.js/src/view";
+import { Model } from '@converse/skeletor/src/model.js';
+import { View } from "@converse/skeletor/src/view";
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 

@@ -6,10 +6,10 @@
 import filesize from "filesize";
 import log from "./log";
 import st from "./utils/stanza";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
+import { Collection } from "@converse/skeletor/src/collection";
+import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
-import { find, isMatch, isObject, isString, pick } from "lodash";
+import { find, isMatch, isObject, isString, pick } from "lodash-es";
 
 const { $msg, Strophe, sizzle, utils } = converse.env;
 const u = converse.env.utils;

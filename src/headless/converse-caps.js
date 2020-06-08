@@ -5,7 +5,7 @@
  */
 import SHA1 from 'strophe.js/src/sha1';
 import { converse } from "@converse/headless/converse-core";
-import { get } from "lodash";
+import { get } from "lodash-es";
 
 const { Strophe, $build } = converse.env;
 

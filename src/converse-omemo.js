@@ -8,11 +8,11 @@
 import "converse-profile";
 import log from "@converse/headless/log";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
+import { Collection } from "@converse/skeletor/src/collection";
+import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { concat, debounce, difference, invokeMap, range, omit } from "lodash";
+import { concat, debounce, difference, invokeMap, range, omit } from "lodash-es";
 
 const { Strophe, sizzle, $build, $iq, $msg } = converse.env;
 const u = converse.env.utils;

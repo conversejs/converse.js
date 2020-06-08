@@ -6,7 +6,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { converse } from "@converse/headless/converse-core";
-import { debounce } from 'lodash'
+import { debounce } from 'lodash-es'
 
 
 converse.plugins.add('converse-mam-views', {

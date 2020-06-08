@@ -3,9 +3,9 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { Collection } from "skeletor.js/src/collection";
-import { View } from 'skeletor.js/src/view.js';
-import { Model } from 'skeletor.js/src/model.js';
+import { Collection } from "@converse/skeletor/src/collection";
+import { View } from '@converse/skeletor/src/view.js';
+import { Model } from '@converse/skeletor/src/model.js';
 import { converse } from "@converse/headless/converse-core";
 import hello from "hellojs";
 import tpl_oauth_providers from "templates/oauth_providers.js";

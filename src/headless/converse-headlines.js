@@ -3,7 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @description XEP-0045 Multi-User Chat Views
  */
-import { isString } from "lodash";
+import { isString } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import st from "./utils/stanza";
 

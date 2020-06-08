@@ -26,11 +26,11 @@ import tpl_room_description from "templates/room_description.html";
 import tpl_room_panel from "templates/room_panel.html";
 import tpl_spinner from "templates/spinner.html";
 import { BootstrapModal } from "./converse-modal.js";
-import { Model } from 'skeletor.js/src/model.js';
-import { View } from 'skeletor.js/src/view.js';
+import { Model } from '@converse/skeletor/src/model.js';
+import { View } from '@converse/skeletor/src/view.js';
 import { __ } from '@converse/headless/i18n';
 import { api, converse } from "@converse/headless/converse-core";
-import { debounce, head, isString, isUndefined } from "lodash";
+import { debounce, head, isString, isUndefined } from "lodash-es";
 import { render } from "lit-html";
 
 const { Strophe, sizzle, $iq, $pres } = converse.env;

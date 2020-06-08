@@ -21,7 +21,7 @@ import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
 import { api } from  "@converse/headless/converse-core";
 import { html } from "lit-html";
-import { isFunction } from "lodash";
+import { isFunction } from "lodash-es";
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
 

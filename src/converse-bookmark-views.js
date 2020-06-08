@@ -8,10 +8,10 @@ import "@converse/headless/converse-muc";
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import tpl_bookmarks_list from "templates/bookmarks_list.js"
 import tpl_muc_bookmark_form from "templates/muc_bookmark_form.js";
-import { Model } from 'skeletor.js/src/model.js';
-import { View } from 'skeletor.js/src/view.js';
+import { Model } from '@converse/skeletor/src/model.js';
+import { View } from '@converse/skeletor/src/view.js';
 import { __ } from '@converse/headless/i18n';
-import { invokeMap } from 'lodash';
+import { invokeMap } from 'lodash-es';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;

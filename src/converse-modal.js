@@ -3,9 +3,9 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { View } from 'skeletor.js/src/view.js';
-import { Model } from 'skeletor.js/src/model.js';
-import { isString } from "lodash";
+import { View } from '@converse/skeletor/src/view.js';
+import { Model } from '@converse/skeletor/src/model.js';
+import { isString } from "lodash-es";
 import { render } from 'lit-html';
 import { __ } from '@converse/headless/i18n';
 import bootstrap from "bootstrap.native";

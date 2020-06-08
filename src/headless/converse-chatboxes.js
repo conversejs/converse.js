@@ -4,9 +4,9 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "./converse-emoji";
-import { Collection } from "skeletor.js/src/collection";
+import { Collection } from "@converse/skeletor/src/collection";
 import { _converse, api, converse } from "./converse-core";
-import { isString } from "lodash";
+import { isString } from "lodash-es";
 import log from "./log";
 
 const { Strophe } = converse.env;

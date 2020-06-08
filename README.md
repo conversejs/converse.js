@@ -1,6 +1,6 @@
 <h2 align="center">
   <a href="https://conversejs.org" target="_blank" rel="noopener">
-    <img alt="Converse.js" src="https://raw.githubusercontent.com/conversejs/converse.js/readme-logo/logo/readme.png" width="480">
+    <img alt="Converse.js" src="https://github.com/conversejs/converse.js/blob/master/logo/readme.png" width="480">
   </a>
 </h2>
 
@@ -125,7 +125,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 
 We use behavior-driven tests written with [jasmine.js](https://jasmine.github.io/).
 
-You ran run `make check` to execute all the tests.
+Run `make check` to execute all the tests.
 
 ## Licence
 

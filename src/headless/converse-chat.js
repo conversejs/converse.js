@@ -854,7 +854,7 @@ converse.plugins.add('converse-chat', {
                     return false;
                 }
                 if (attrs.is_markable) {
-                    if (this.contact && !attrs.is_mam && !attrs.is_carbon) {
+                    if (this.contact && !attrs.is_archived && !attrs.is_carbon) {
                         this.sendMarker(attrs.from, attrs.msgid, 'received');
                     }
                     return false;

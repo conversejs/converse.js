@@ -76,7 +76,7 @@ function isReceiptRequest (stanza, attrs) {
     return (
         attrs.sender !== 'me' &&
         !attrs.is_carbon &&
-        !attrs.is_mam &&
+        !attrs.is_archived &&
         sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).length
     );
 }

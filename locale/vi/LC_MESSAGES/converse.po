@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 5.0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2019-10-06 11:04+0200\n"
-"Last-Translator: ltdangkhoa <luuthaidangkhoa@gmail.com>\n"
+"PO-Revision-Date: 2020-06-12 14:41+0000\n"
+"Last-Translator: darkcloudcat <leducthn@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/conversejs/"
 "translations/vi/>\n"
 "Language: vi\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: dist/converse-no-dependencies.js:10577
 msgid "Uploading file:"
-msgstr "Tải file lên:"
+msgstr "Đang tải lên tập tin:"
 
 #: dist/converse-no-dependencies.js:10701
 msgid "This message has been edited"
@@ -32,64 +32,65 @@ msgid "Edit this message"
 msgstr "Sửa tin nhắn"
 
 #: dist/converse-no-dependencies.js:10713
-#, fuzzy
 msgid "Retract this message"
-msgstr "Sửa tin nhắn"
+msgstr "Thu hồi tin nhắn"
 
 #: dist/converse-no-dependencies.js:10739
-#, fuzzy
 msgid "Send the message"
-msgstr "Sửa tin nhắn"
+msgstr "Gửi tin nhắn"
 
 #: dist/converse-no-dependencies.js:11061
 msgid "You're not allowed to send messages in this room"
-msgstr ""
+msgstr "Bạn không được phép gửi tin nhắn trong phòng này"
 
 #: dist/converse-no-dependencies.js:11081
 msgid "This groupchat no longer exists"
-msgstr ""
+msgstr "Nhóm trò chuyện này không còn tồn tại"
 
 #: dist/converse-no-dependencies.js:11087
+#, fuzzy
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "Cuộc trò chuyện đã được di chuyển. Nhấn bên dưới để tham gia."
 
 #: dist/converse-no-dependencies.js:11288
 msgid "Messages are being sent in plaintext"
-msgstr ""
+msgstr "Tin nhắn đang được gửi dưới dạng văn bản thô"
 
 #: dist/converse-no-dependencies.js:11302
 msgid "Create your account"
-msgstr ""
+msgstr "Tạo tài khoản của bạn"
 
 #: dist/converse-no-dependencies.js:11304
+#, fuzzy
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "Xin điền nhà cung cấp XMPP để đăng kí:"
 
 #: dist/converse-no-dependencies.js:11322
 #: dist/converse-no-dependencies.js:11356
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "Bạn đã có tài khoản trò chuyện?"
 
 #: dist/converse-no-dependencies.js:11324
 #: dist/converse-no-dependencies.js:11358
 msgid "Log in here"
-msgstr ""
+msgstr "Đăng nhập ở đây"
 
 #: dist/converse-no-dependencies.js:11340
 msgid "Account Registration:"
-msgstr ""
+msgstr "Đăng kí Tài khoản:"
 
 #: dist/converse-no-dependencies.js:11348
 msgid "Register"
-msgstr ""
+msgstr "Đăng kí"
 
 #: dist/converse-no-dependencies.js:11352
 msgid "Choose a different provider"
-msgstr ""
+msgstr "Chọn nhà cung cấp khác"
 
 #: dist/converse-no-dependencies.js:11372
+#, fuzzy
 msgid "Hold tight, we're fetching the registration form…"
-msgstr ""
+msgstr "Chờ xíu nhé, chúng tôi đang lấy mẫu đăng kí…"
 
 #: dist/converse-no-dependencies.js:11376
 #: dist/converse-no-dependencies.js:49077
@@ -97,58 +98,61 @@ msgstr ""
 #: dist/converse-no-dependencies.js:58916
 #: dist/converse-no-dependencies.js:66263
 msgid "Cancel"
-msgstr ""
+msgstr "Huỷ"
 
 #: dist/converse-no-dependencies.js:27562
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr ""
+msgstr "Không thể gửi tin nhắn vì bạn không được phép gửi."
 
 #: dist/converse-no-dependencies.js:27565
 #, javascript-format
 msgid "The message from the server is: \"%1$s\""
-msgstr ""
+msgstr "Phản hồi từ máy chủ là: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:27568
+#, fuzzy
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr ""
+msgstr "Không thể gửi tin nhắn vì bạn không có trong nhóm trò chuyện."
 
 #: dist/converse-no-dependencies.js:27573
 msgid "Sorry, an error occurred:"
-msgstr ""
+msgstr "Thật tiếc, đã xảy ra lỗi:"
 
 #: dist/converse-no-dependencies.js:29327
+#, fuzzy
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "Kết nối đã bị ngưng, đang cố gắng kết nối lại."
 
 #: dist/converse-no-dependencies.js:29946
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "Đã xảy ra lỗi khi kết nối đến máy chủ trò chuyện."
 
 #: dist/converse-no-dependencies.js:29953
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Địa chỉ XMPP và/hoặc mật khẩu không đúng. Xin thử lại."
 
 #: dist/converse-no-dependencies.js:29967
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
+"Thật tiếc, chúng tôi không thể kết nối tới máy chủ XMPP có tên miền: %1$s"
 
 #: dist/converse-no-dependencies.js:29969
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "Máy chủ XMPP không cung cấp phương thức xác thực được hỗ trợ"
 
 #: dist/converse-no-dependencies.js:30897
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "Tin nhắn OMEMO không thể mã hoá"
 
 #: dist/converse-no-dependencies.js:30958
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Thật tiếc, không thể xác định URL tải lên."
 
 #: dist/converse-no-dependencies.js:30981
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Thật tiếc, không thể xác định URL tải lên tập tin."
 
 #: dist/converse-no-dependencies.js:31024
 #, javascript-format
@@ -156,15 +160,17 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
 msgstr ""
+"Thật tiếc, không thể tải lên thành công tập tin của bạn. Phản hồi từ máy chủ "
+"của bạn: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:31026
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Thật tiếc, không thể tải lên thành công tập tin của bạn."
 
 #: dist/converse-no-dependencies.js:32204
 #: dist/converse-no-dependencies.js:32225
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "Thật tiếc, hình như máy chủ của bạn không hỗ trợ tải lên tập tin."
 
 #: dist/converse-no-dependencies.js:32250
 #, javascript-format
@@ -172,74 +178,79 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Kích cỡ tập tin của bạn, %1$s, vượt quá giới hạn cho phép của máy chủ của "
+"bạn, %2$s."
 
 #: dist/converse-no-dependencies.js:34664
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Mặt cười và biểu tượng cảm xúc"
 
 #: dist/converse-no-dependencies.js:34665
 msgid "People"
-msgstr ""
+msgstr "Con người"
 
 #: dist/converse-no-dependencies.js:34666
 msgid "Activities"
-msgstr ""
+msgstr "Hoạt động"
 
 #: dist/converse-no-dependencies.js:34667
 msgid "Travel"
-msgstr ""
+msgstr "Du lịch"
 
 #: dist/converse-no-dependencies.js:34668
+#, fuzzy
 msgid "Objects"
-msgstr ""
+msgstr "Vật thể"
 
 #: dist/converse-no-dependencies.js:34669
 msgid "Animals and nature"
-msgstr ""
+msgstr "Động vật và thiên nhiên"
 
 #: dist/converse-no-dependencies.js:34670
 msgid "Food and drink"
-msgstr ""
+msgstr "Đồ ăn và thức uống"
 
 #: dist/converse-no-dependencies.js:34671
 msgid "Symbols"
-msgstr ""
+msgstr "Biểu tượng"
 
 #: dist/converse-no-dependencies.js:34672
 msgid "Flags"
-msgstr ""
+msgstr "Cờ"
 
 #: dist/converse-no-dependencies.js:34673
 msgid "Stickers"
-msgstr ""
+msgstr "Nhãn dán"
 
 #: dist/converse-no-dependencies.js:35357
 msgid "This groupchat is not anonymous"
-msgstr ""
+msgstr "Nhóm trò chuyện này không ẩn danh"
 
 #: dist/converse-no-dependencies.js:35358
 msgid "This groupchat now shows unavailable members"
-msgstr ""
+msgstr "Nhóm trò chuyện này từ giờ sẽ hiện thành viên không có mặt"
 
 #: dist/converse-no-dependencies.js:35359
 msgid "This groupchat does not show unavailable members"
-msgstr ""
+msgstr "Nhóm trò chuyện này không hiện thành viên không sẵn có"
 
 #: dist/converse-no-dependencies.js:35360
 msgid "The groupchat configuration has changed"
-msgstr ""
+msgstr "Cài đặt của nhóm trò chuyện đã thay đổi"
 
 #: dist/converse-no-dependencies.js:35361
+#, fuzzy
 msgid "Groupchat logging is now enabled"
-msgstr ""
+msgstr "Đã bật tính năng ghi nhật kí nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:35362
+#, fuzzy
 msgid "Groupchat logging is now disabled"
-msgstr ""
+msgstr "Đã tắt tính năng ghi nhật kí nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:35363
 msgid "This groupchat is now no longer anonymous"
-msgstr ""
+msgstr "Nhóm trò chuyện này không còn ẩn danh nữa"
 
 #: dist/converse-no-dependencies.js:35364
 msgid "This groupchat is now semi-anonymous"
@@ -251,26 +262,26 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:35366
 msgid "A new groupchat has been created"
-msgstr ""
+msgstr "Đã tạo nhóm trò chuyện mới"
 
 #. XXX: Note the triple underscore function and not double underscore.
 #: dist/converse-no-dependencies.js:35370
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr ""
+msgstr "Tên người dùng của bạn đã được tự động đặt thành %1$s"
 
 #: dist/converse-no-dependencies.js:35371
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr ""
+msgstr "Tên người dùng của bạn đã được đổi thành %1$s"
 
 #: dist/converse-no-dependencies.js:35374
 msgid "You have been banned from this groupchat"
-msgstr ""
+msgstr "Bạn đã bị chặn khỏi nhóm trò chuyện này"
 
 #: dist/converse-no-dependencies.js:35375
 msgid "You have been kicked from this groupchat"
-msgstr ""
+msgstr "Bạn đã bị đá khỏi nhóm trò chuyện này"
 
 #: dist/converse-no-dependencies.js:35376
 msgid ""
@@ -282,6 +293,8 @@ msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
 msgstr ""
+"Bạn đã bị xoá khỏi nhóm trò chuyện này vì nhóm đã đổi sang chế độ chỉ dành "
+"cho thành viên và bạn không phải thành viên"
 
 #: dist/converse-no-dependencies.js:35378
 msgid ""
@@ -291,12 +304,14 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37534
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr ""
+msgstr "Bạn không được phép tự đăng kí vào nhóm trò chuyện này."
 
 #: dist/converse-no-dependencies.js:37536
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
+"Bạn không được phép tham gia nhóm trò chuyện này vì nhóm chỉ dành cho thành "
+"viên."
 
 #: dist/converse-no-dependencies.js:37581
 msgid ""
@@ -305,9 +320,12 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:37583
+#, fuzzy
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"Không thể đăng kí tên người dùng của bạn vào nhóm trò chuyện này, dạng dữ "
+"liệu được cung cấp không hợp lệ."
 
 #: dist/converse-no-dependencies.js:37843
 #, javascript-format
@@ -315,9 +333,9 @@ msgid "Topic set by %1$s"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:37843
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr ""
+msgstr "Chủ đề đã được xoá bởi %1$s"
 
 #: dist/converse-no-dependencies.js:38511
 #, javascript-format
@@ -327,7 +345,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38511
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "%1$s đã bị cấm"
 
 #: dist/converse-no-dependencies.js:38513
 #, javascript-format
@@ -337,7 +355,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr ""
+msgstr "%1$s đã bị đá khỏi nhóm bởi %2$s"
 
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format
@@ -352,7 +370,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38519
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "%1$s đã bị xoá vì không phải là thành viên"
 
 #: dist/converse-no-dependencies.js:38529
 #, javascript-format
@@ -362,7 +380,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38534
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr ""
+msgstr "%1$s không còn là chủ nhóm trò chuyện này nữa"
 
 #: dist/converse-no-dependencies.js:38539
 #, javascript-format
@@ -372,7 +390,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38546
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr ""
+msgstr "%1$s không còn là thành viên nhóm trò chuyện này nữa"
 
 #: dist/converse-no-dependencies.js:38553
 #, javascript-format
@@ -382,7 +400,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38559
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr ""
+msgstr "%1$s từ giờ là %2$s của nhóm trò chuyện này"
 
 #: dist/converse-no-dependencies.js:38574
 #, javascript-format
@@ -397,7 +415,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38588
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "%1$s đã bị tắt tiếng"
 
 #: dist/converse-no-dependencies.js:38598
 #, javascript-format
@@ -412,7 +430,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:38715
 msgid "Password incorrect"
-msgstr ""
+msgstr "Sai mật khẩu"
 
 #: dist/converse-no-dependencies.js:38723
 msgid "You are not on the member list of this groupchat."
@@ -424,7 +442,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:38733
 msgid "You are not allowed to create new groupchats."
-msgstr ""
+msgstr "Bạn không được phép tạo nhóm trò chuyện mới."
 
 #: dist/converse-no-dependencies.js:38737
 msgid "Your nickname doesn't conform to this groupchat's policies."
@@ -432,7 +450,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:38754
 msgid "This groupchat does not (yet) exist."
-msgstr ""
+msgstr "Nhóm trò chuyện này không (hoặc chưa) tồn tại."
 
 #: dist/converse-no-dependencies.js:38758
 msgid "This groupchat has reached its maximum number of participants."
@@ -440,7 +458,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:38762
 msgid "Remote server not found"
-msgstr ""
+msgstr "Không tìm thấy máy chủ từ xa"
 
 #: dist/converse-no-dependencies.js:38764
 #, javascript-format
@@ -450,7 +468,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:39145
 #, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
-msgstr ""
+msgstr "%1$s đã mời bạn tham gia nhóm trò chuyện: %2$s"
 
 #: dist/converse-no-dependencies.js:39147
 #, javascript-format
@@ -471,7 +489,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:67339
 #: dist/converse-no-dependencies.js:71117
 msgid "Error"
-msgstr ""
+msgstr "Lỗi"
 
 #: dist/converse-no-dependencies.js:39921
 msgid "Sorry, something went wrong while trying to save your bookmark."
@@ -479,7 +497,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39985
 msgid "Timeout Error"
-msgstr ""
+msgstr "Lỗi Hết thời gian chờ"
 
 #: dist/converse-no-dependencies.js:39985
 msgid ""
@@ -501,7 +519,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:43866
 msgid "Ungrouped"
-msgstr ""
+msgstr "Chưa phân nhóm"
 
 #: dist/converse-no-dependencies.js:43867
 msgid "New messages"
@@ -510,7 +528,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:44522
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr ""
+msgstr "Thật tiếc, đã xảy ra lỗi khi thêm %1$s làm liên lạc."
 
 #: dist/converse-no-dependencies.js:44818
 msgid "This client does not allow presence subscriptions"
@@ -518,7 +536,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:44928
 msgid "Click to hide these contacts"
-msgstr ""
+msgstr "Nhấn để ẩn các liên lạc này"
 
 #: dist/converse-no-dependencies.js:49028
 msgid "Click to toggle the bookmarks list"
@@ -528,7 +546,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:49726
 #: dist/converse-no-dependencies.js:70111
 msgid "Unbookmark this groupchat"
-msgstr ""
+msgstr "Bỏ đánh dấu nhóm trò chuyện này"
 
 #: dist/converse-no-dependencies.js:49032
 msgid "Bookmarks"
@@ -538,13 +556,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:62733
 #: dist/converse-no-dependencies.js:70115
 msgid "Click to open this groupchat"
-msgstr ""
+msgstr "Nhấn để mở nhóm trò chuyện này"
 
 #: dist/converse-no-dependencies.js:49073
 #: dist/converse-no-dependencies.js:49726
 #: dist/converse-no-dependencies.js:70107
 msgid "Bookmark this groupchat"
-msgstr ""
+msgstr "Đánh dấu nhóm trò chuyện này"
 
 #: dist/converse-no-dependencies.js:49075
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -552,7 +570,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:49079
 msgid "The name for this bookmark:"
-msgstr ""
+msgstr "Tên đánh dấu:"
 
 #: dist/converse-no-dependencies.js:49081
 msgid "What should your nickname for this groupchat be?"
@@ -562,35 +580,35 @@ msgstr ""
 #: dist/converse-no-dependencies.js:58914
 #: dist/converse-no-dependencies.js:66268
 msgid "Save"
-msgstr ""
+msgstr "Lưu"
 
 #: dist/converse-no-dependencies.js:49481
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr ""
+msgstr "Bạn có chắc muốn xoá đánh dấu \"%1$s\"?"
 
 #: dist/converse-no-dependencies.js:49727
 msgid "Unbookmark"
-msgstr ""
+msgstr "Bỏ đánh dấu"
 
 #: dist/converse-no-dependencies.js:49727
 msgid "Bookmark"
-msgstr ""
+msgstr "Đánh dấu"
 
 #: dist/converse-no-dependencies.js:50414
 #, javascript-format
 msgid "Download audio file \"%1$s\""
-msgstr ""
+msgstr "Tải tập tin âm thanh \"%1$s\""
 
 #: dist/converse-no-dependencies.js:50426
 #, javascript-format
 msgid "Download image \"%1$s\""
-msgstr ""
+msgstr "Tải hình \"%1$s\""
 
 #: dist/converse-no-dependencies.js:50434
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr ""
+msgstr "Tải tập tin \"%1$s\""
 
 #: dist/converse-no-dependencies.js:51161
 #: dist/converse-no-dependencies.js:53501
@@ -601,7 +619,7 @@ msgstr "Đóng"
 
 #: dist/converse-no-dependencies.js:51253
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: dist/converse-no-dependencies.js:51702
 msgid "Message versions"
@@ -609,30 +627,30 @@ msgstr "Phiên bản tin nhắn"
 
 #: dist/converse-no-dependencies.js:52172
 msgid "Show more"
-msgstr ""
+msgstr "Xem thêm"
 
 #: dist/converse-no-dependencies.js:52253
 #: dist/converse-no-dependencies.js:52255
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "Sửa tin nhắn"
+msgstr "%1$s đã xoá tin nhắn này"
 
 #: dist/converse-no-dependencies.js:52548
 #: dist/converse-no-dependencies.js:52726
 msgid "The User's Profile Image"
-msgstr "Hình đại diện người dùng"
+msgstr "Hình Đại Diện Người Dùng"
 
 #: dist/converse-no-dependencies.js:52716
 #: dist/converse-no-dependencies.js:54955
 #: dist/converse-no-dependencies.js:61468
 #: dist/converse-no-dependencies.js:70468
 msgid "XMPP Address"
-msgstr ""
+msgstr "Địa chỉ XMPP"
 
 #: dist/converse-no-dependencies.js:52718
 #: dist/converse-no-dependencies.js:66025
 msgid "Email"
-msgstr ""
+msgstr "Thư điện tử"
 
 #: dist/converse-no-dependencies.js:52720
 msgid "OMEMO Fingerprints"
@@ -641,7 +659,7 @@ msgstr "Dấu OMEMO"
 #: dist/converse-no-dependencies.js:52722
 #: dist/converse-no-dependencies.js:66029
 msgid "Full Name"
-msgstr ""
+msgstr "Họ và Tên"
 
 #: dist/converse-no-dependencies.js:52724
 #: dist/converse-no-dependencies.js:58571
@@ -649,7 +667,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:66035
 #: dist/converse-no-dependencies.js:70470
 msgid "Nickname"
-msgstr ""
+msgstr "Tên người dùng"
 
 #: dist/converse-no-dependencies.js:52728
 msgid "Refresh"
@@ -659,12 +677,12 @@ msgstr "Làm mới"
 #: dist/converse-no-dependencies.js:61970
 #: dist/converse-no-dependencies.js:66043
 msgid "Role"
-msgstr ""
+msgstr "Vai trò"
 
 #: dist/converse-no-dependencies.js:52732
 #: dist/converse-no-dependencies.js:66051
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: dist/converse-no-dependencies.js:52734
 msgid "Remove as contact"
@@ -849,9 +867,8 @@ msgid "Don't have a chat account?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:54951
-#, fuzzy
 msgid "Password"
-msgstr "Mật khẩu:"
+msgstr "Mật khẩu"
 
 #: dist/converse-no-dependencies.js:54953
 msgid "This is a trusted device"
@@ -955,16 +972,16 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:58806
 msgid "Description"
-msgstr ""
+msgstr "Mô tả"
 
 #: dist/converse-no-dependencies.js:58808
 msgid "Features"
-msgstr ""
+msgstr "Tính năng"
 
 #: dist/converse-no-dependencies.js:58810
 #: dist/converse-no-dependencies.js:62350
 msgid "Hidden"
-msgstr ""
+msgstr "Đã ẩn"
 
 #: dist/converse-no-dependencies.js:58812
 msgid "This groupchat is not publicly searchable"
@@ -976,7 +993,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:58816
 msgid "Members only"
-msgstr ""
+msgstr "Chỉ dành cho thành viên"
 
 #: dist/converse-no-dependencies.js:58818
 #: dist/converse-no-dependencies.js:62352
@@ -990,7 +1007,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:58822
 msgid "Name"
-msgstr ""
+msgstr "Tên"
 
 #: dist/converse-no-dependencies.js:58824
 msgid "This groupchat does not require a password upon entry"
@@ -1002,7 +1019,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:58828
 msgid "Not anonymous"
-msgstr ""
+msgstr "Không ẩn danh"
 
 #: dist/converse-no-dependencies.js:58830
 msgid "All other groupchat participants can see your XMPP address"
@@ -1263,15 +1280,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62345
 msgid "Description:"
-msgstr ""
+msgstr "Mô tả:"
 
 #: dist/converse-no-dependencies.js:62346
 msgid "Groupchat Address (JID):"
-msgstr ""
+msgstr "Địa chỉ Nhóm trò chuyện (JID):"
 
 #: dist/converse-no-dependencies.js:62347
 msgid "Participants:"
-msgstr ""
+msgstr "Người tham gia:"
 
 #: dist/converse-no-dependencies.js:62348
 msgid "Features:"
@@ -1279,19 +1296,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62349
 msgid "Requires authentication"
-msgstr ""
+msgstr "Cần xác thực"
 
 #: dist/converse-no-dependencies.js:62351
 msgid "Requires an invitation"
-msgstr ""
+msgstr "Cần được mời"
 
 #: dist/converse-no-dependencies.js:62353
 msgid "Non-anonymous"
-msgstr ""
+msgstr "Không ẩn danh"
 
 #: dist/converse-no-dependencies.js:62355
 msgid "Permanent"
-msgstr ""
+msgstr "Vĩnh viễn"
 
 #: dist/converse-no-dependencies.js:62359
 msgid "Unmoderated"
@@ -1307,48 +1324,48 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:62647
 msgid "Role changed"
-msgstr ""
+msgstr "Đã đổi vai trò"
 
 #: dist/converse-no-dependencies.js:62660
 msgid "You're not allowed to make that change"
-msgstr ""
+msgstr "Bạn không được phép thực hiện thay đổi này"
 
 #: dist/converse-no-dependencies.js:62662
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr ""
+msgstr "Thật tiếc, đã xảy ra lỗi khi đặt vai trò"
 
 #: dist/converse-no-dependencies.js:62694
 msgid "conference.example.org"
-msgstr ""
+msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:62734
 #: dist/converse-no-dependencies.js:70113
 msgid "Show more information on this groupchat"
-msgstr ""
+msgstr "Hiện thêm thông tin về nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:62744
 msgid "No groupchats found"
-msgstr ""
+msgstr "Không tìm thấy nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:62759
 msgid "Groupchats found:"
-msgstr ""
+msgstr "Đã tìm thấy nhóm trò chuyện:"
 
 #: dist/converse-no-dependencies.js:62827
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "name@conference.example.org"
 
 #: dist/converse-no-dependencies.js:62832
 msgid "Groupchat name"
-msgstr ""
+msgstr "Tên nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:62832
 msgid "Groupchat address"
-msgstr ""
+msgstr "Địa chỉ nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:62909
 msgid "Groupchat id is invalid."
-msgstr ""
+msgstr "ID nhóm trò chuyện không hợp lệ."
 
 #: dist/converse-no-dependencies.js:62928
 #, javascript-format
@@ -1358,81 +1375,80 @@ msgstr ""
 #: dist/converse-no-dependencies.js:63139
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr ""
+msgstr "%1$s đã tham gia nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:63141
 #, javascript-format
 msgid "%1$s has left the groupchat"
-msgstr ""
+msgstr "%1$s đã rời nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:63150
 #, javascript-format
 msgid "%1$s and %2$s"
-msgstr ""
+msgstr "%1$s và %2$s"
 
 #: dist/converse-no-dependencies.js:63154
 #, javascript-format
 msgid "%1$s are typing"
-msgstr ""
+msgstr "%1$s đang soạn"
 
 #: dist/converse-no-dependencies.js:63156
 #, javascript-format
 msgid "%1$s have stopped typing"
-msgstr ""
+msgstr "%1$s đã ngừng soạn"
 
 #: dist/converse-no-dependencies.js:63158
 #, javascript-format
 msgid "%1$s have gone away"
-msgstr ""
+msgstr "%1$s đã đi vắng"
 
 #: dist/converse-no-dependencies.js:63160
 #, javascript-format
 msgid "%1$s have entered the groupchat"
-msgstr ""
+msgstr "%1$s đã tham gia nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:63162
 #, javascript-format
 msgid "%1$s have left the groupchat"
-msgstr ""
+msgstr "%1$s đã rời nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:63469
 msgid "You are about to retract this message."
-msgstr ""
+msgstr "Bạn sắp thu hồi tin nhắn này."
 
 #: dist/converse-no-dependencies.js:63469
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
-msgstr ""
+msgstr "Bạn có thể kèm theo tin nhắn tuỳ chọn để giải thích lí do thu hồi."
 
 #: dist/converse-no-dependencies.js:63476
-#, fuzzy
 msgid "Message Retraction"
-msgstr "Phiên bản tin nhắn"
+msgstr "Thu hồi Tin nhắn"
 
 #: dist/converse-no-dependencies.js:63476
 msgid "Optional reason"
-msgstr ""
+msgstr "Lí do (tuỳ chọn)"
 
 #: dist/converse-no-dependencies.js:63490
 msgid "Sorry, you're not allowed to retract this message"
-msgstr ""
+msgstr "Thật tiếc, bạn không được phép thu hồi tin nhắn này"
 
 #: dist/converse-no-dependencies.js:63512
 msgid "Sorry, something went wrong while trying to retract your message."
-msgstr ""
+msgstr "Thật tiếc, đã xảy ra lỗi khi thu hồi tin nhắn của bạn."
 
 #: dist/converse-no-dependencies.js:63552
 msgid "A timeout occurred while trying to retract the message"
-msgstr ""
+msgstr "Đã hết thời gian chờ khi đang thu hồi tin nhắn"
 
 #: dist/converse-no-dependencies.js:63556
 msgid "Sorry, you're not allowed to retract this message."
-msgstr ""
+msgstr "Thật tiếc, bạn không được phép thu hồi tin nhắn này."
 
 #: dist/converse-no-dependencies.js:63630
 msgid "Show more information about this groupchat"
-msgstr ""
+msgstr "Hiện thêm thông tin về nhóm trò chuyện"
 
 #: dist/converse-no-dependencies.js:63641
 msgid "Configure"
@@ -1953,15 +1969,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:69462
 msgid "Tip: A list of public XMPP providers is available"
-msgstr ""
+msgstr "Gợi ý: Một danh sách các nhà cung cấp XMPP công cộng có sẵn"
 
 #: dist/converse-no-dependencies.js:69463
 msgid "here"
-msgstr ""
+msgstr "tại đây"
 
 #: dist/converse-no-dependencies.js:69514
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr ""
+msgstr "Thật tiếc, chúng tôi không thể kết nối đến nhà cung cấp đã chọn."
 
 #: dist/converse-no-dependencies.js:69530
 msgid ""
@@ -1978,43 +1994,46 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:69741
 msgid "Now logging you in"
-msgstr ""
+msgstr "Đang đăng nhập đây"
 
 #: dist/converse-no-dependencies.js:69745
 msgid "Registered successfully"
-msgstr ""
+msgstr "Đăng kí thành công"
 
 #: dist/converse-no-dependencies.js:69857
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
+"Nhà cung cấp đã từ chối lần đăng kí của bạn. Hãy kiểm tra lại xem các giá "
+"trị bạn nhập đã đúng chưa."
 
 #: dist/converse-no-dependencies.js:70105
 msgid "Click to toggle the list of open groupchats"
-msgstr ""
+msgstr "Nhấn để mở rộng danh sách nhóm trò chuyện mở"
 
 #: dist/converse-no-dependencies.js:70109
 msgid "Leave this groupchat"
-msgstr ""
+msgstr "Rời nhóm trò chuyện"
 
 #. Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
 #: dist/converse-no-dependencies.js:70118
 msgid "Open Groupchats"
-msgstr ""
+msgstr "Nhóm trò chuyện Mở"
 
 #: dist/converse-no-dependencies.js:70344
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
-msgstr ""
+msgstr "Bạn có chắc muốn rời nhóm trò chuyện %1$s?"
 
 #: dist/converse-no-dependencies.js:70460
+#, fuzzy
 msgid "name@example.org"
-msgstr ""
+msgstr "name@example.org"
 
 #: dist/converse-no-dependencies.js:70462
 msgid "Add"
-msgstr ""
+msgstr "Thêm"
 
 #: dist/converse-no-dependencies.js:70466
 msgid "Add a Contact"
@@ -2119,7 +2138,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:71491
 msgid "Contacts"
-msgstr ""
+msgstr "Danh bạ"
 
 #: dist/converse-no-dependencies.js:71492
 msgid "Add a contact"

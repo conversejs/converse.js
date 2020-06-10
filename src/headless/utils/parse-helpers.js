@@ -6,63 +6,46 @@
  */
 const helpers = {};
 
-    // Captures all mentions, but includes a space before the @
+// Captures all mentions, but includes a space before the @
 helpers.mention_regex = /\s([@][\w_-]+)|^([@][\w_-]+)/ig;
 
-helpers.mapCleanReferences = (reference) => {
-    /* eslint-disable */
-    const { mentioned_as, ...rest } = reference;
-    return { ...rest };
+helpers.mapMentionToReference = regex => match => {
+    const first_character = match[0][0];
+    const begin = regex.test(first_character) ? match.index + 1 : match.index;
+    const tempValue = match[1] || match[0];
+    const non_inclusive_end = begin + tempValue.length;
+    return { begin, end: non_inclusive_end, tempValue };
 };
 
-helpers.mapAddCoordsToReferences = (indexes) => (reference, index) => {
-    const begin = indexes[index] - index;
-    return {
-        ...reference,
-        begin,
-        end: begin + reference.value.length
-    }
+helpers.addKnownNickname = (known_nicknames, lowercase_nicknames) => reference => {
+    const { tempValue, ...rest } = reference;
+    const lowercase_mention_no_at_sign = tempValue.slice(1).toLowerCase();
+    const index = lowercase_nicknames.indexOf(lowercase_mention_no_at_sign);
+    return index > -1
+      ? { value: known_nicknames[index], ...rest }
+      : reference;
 };
 
-helpers.mapAddUriToReferences = (makeUriFromReference) => (reference) => ({
-    ...reference,
-    uri: makeUriFromReference(reference)
-})
+helpers.withValue = v => v.value;
 
-helpers.mapFormatMentions = mention => mention.slice(1).toLowerCase();
-
-// One of the two possible matches for `mention_regex`
-// One will always be undefined
-helpers.mapMentionsInMatches = match => match[1] || match[0];
-
-helpers.mapMentionsToTempReferences = (mention) => ({
-    mentioned_as: mention,
-    type: 'mention'
-});
-
-helpers.mapMatchesToBeginIndexes = (regex) => (match) =>
-    regex.test(match[0][0]) ? match.index + 1 : match.index;
-
-helpers.reduceTextFromReferences = (updated_text, reference) => {
-    const { begin, end, value } = reference;
-    return `${updated_text.slice(0, begin)}${value}${updated_text.slice(end + 1)}`;
-};
-
-helpers.reduceReferencesWithNicknames = (known_nicknames) => {
-    const lowercase_nicknames = known_nicknames.map(nick => nick.toLowerCase());
-    return (accum, reference) => {
-        const lowercase_mention_no_at_sign = reference.mentioned_as.slice(1).toLowerCase();
-        const index = lowercase_nicknames.indexOf(lowercase_mention_no_at_sign);
-        if (index == -1) return accum;
-        return [...accum, { ...reference, value: known_nicknames[index] }];
-    }
-};
-
-helpers.makeUriFromReference = (getOccupant, jid) => (reference) => {
+helpers.makeUriFromReference = (getOccupant, jid) => reference => {
     const nickname = reference.value;
-    const occupant = getOccupant(nickname) || getOccupant(jid);
+    const occupant  = getOccupant(nickname) || getOccupant(jid);
     const uri = occupant ? occupant.get('jid') : `${jid}/${nickname}`;
-    return encodeURI(`xmpp:${uri}`);
+    return { ...reference, uri: encodeURI(`xmpp:${uri}`) }
 };
+
+const reduceReferences = ([text, refs], ref, index) => {
+    let updated_text = text;
+    let { begin, end } = ref;
+    const { value } = ref
+    begin = begin - index;
+    end = end - index - 1; // -1 to compensate for the removed @
+    updated_text = `${updated_text.slice(0, begin)}${value}${updated_text.slice(end + 1)}`;
+    return [updated_text, [...refs, { ...ref, begin, end }]]
+}
+
+helpers.reduceTextFromReferences = (text, refs) =>
+    refs.reduce(reduceReferences, [text, []]);
 
 export default helpers;

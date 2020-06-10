@@ -10,6 +10,7 @@ import "./converse-emoji";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash-es";
+import { compose, map, filter, toArray } from "./utils/functional";
 import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
@@ -951,26 +952,33 @@ converse.plugins.add('converse-muc', {
             },
 
             parseTextForReferences (original_message) {
-                const dirty_mentions = [...original_message.matchAll(p.mention_regex)];
-                const mentions = dirty_mentions.map(p.mapMentionsInMatches);
+                const mentions = [...original_message.matchAll(p.mention_regex)];
                 if (!mentions.length) return [original_message, []];
 
                 const known_nicknames = this.getAllKnownNicknames();
-                const indexes = dirty_mentions.map(p.mapMatchesToBeginIndexes(/[\s]+/));
-                const make_uri_from_reference = p.makeUriFromReference(
+                const lowercase_nicknames = known_nicknames.map(nick => nick.toLowerCase());
+
+                const fromMentionToReference = p.mapMentionToReference(/[\s]+/);
+                const addUri = p.makeUriFromReference(
                     this.getOccupant.bind(this),
                     this.get('jid')
                 )
+                const addKnownNickname = p.addKnownNickname(known_nicknames, lowercase_nicknames);
+                const haveValue = p.withValue;
 
-                const references = mentions
-                    .map(p.mapMentionsToTempReferences)
-                    .reduce(p.reduceReferencesWithNicknames(known_nicknames), [])
-                    .map(p.mapAddUriToReferences(make_uri_from_reference))
-                    .map(p.mapAddCoordsToReferences(indexes))
-                    .map(p.mapCleanReferences);
-                const updated_message = references.reduce(p.reduceTextFromReferences, original_message);
+                const transform = compose(
+                    map(fromMentionToReference),
+                    map(addKnownNickname),
+                    filter(haveValue),
+                    map(addUri)
+                );
+                const references = toArray(transform, mentions);
 
-                return [updated_message, references];
+                const [updated_message, updated_references] = p.reduceTextFromReferences(
+                    original_message,
+                    references
+                );
+                return [updated_message, updated_references];
             },
 
             getOutgoingMessageAttributes (original_message, spoiler_hint) {
@@ -1364,7 +1372,7 @@ converse.plugins.add('converse-muc', {
              * @returns { _converse.ChatRoomOccupant }
              */
             getOccupant (nickname_or_jid) {
-                return this.getOccupantByNickname(nickname_or_jid) || this.getOccupantByJID(nickname_or_jid);
+                return this.getOccupantByJID(nickname_or_jid) ||  this.getOccupantByNickname(nickname_or_jid);
             },
 
             /**

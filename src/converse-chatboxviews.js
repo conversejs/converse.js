@@ -154,5 +154,29 @@ converse.plugins.add('converse-chatboxviews', {
         api.listen.on('chatBoxViewsInitialized', () => calculateViewportHeightUnit());
         window.addEventListener('resize', () => calculateViewportHeightUnit());
         /************************ END Event Handlers ************************/
+
+
+        Object.assign(converse, {
+            /**
+             * Public API method which will ensure that the #conversejs element
+             * is inserted into a container element.
+             *
+             * This method is useful when the #conversejs element has been
+             * detached from the DOM somehow.
+             * @async
+             * @memberOf converse
+             * @method insertInto
+             * @example
+             * converse.insertInto(document.querySelector('#converse-container'));
+             */
+            insertInto (container) {
+                const el = _converse.chatboxviews?.el;
+                if (el && !container.contains(el)) {
+                    container.insertAdjacentElement('afterBegin', el);
+                } else if (!el) {
+                    throw new Error("Cannot insert non-existing #conversejs element into the DOM");
+                }
+            }
+        });
     }
 });

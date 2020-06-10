@@ -7,14 +7,19 @@
 const helpers = {};
 
 // Captures all mentions, but includes a space before the @
-helpers.mention_regex = /\s([@][\w_-]+)|^([@][\w_-]+)/ig;
+helpers.mention_regex = /(?:\s|^)([@][\w_-]+(?:\.\w+)*)/ig;
 
 helpers.mapMentionToReference = regex => match => {
     const first_character = match[0][0];
     const begin = regex.test(first_character) ? match.index + 1 : match.index;
     const tempValue = match[1] || match[0];
     const non_inclusive_end = begin + tempValue.length;
-    return { begin, end: non_inclusive_end, tempValue };
+    return {
+        begin,
+        end: non_inclusive_end,
+        tempValue,
+        type: 'mention'
+    };
 };
 
 helpers.addKnownNickname = (known_nicknames, lowercase_nicknames) => reference => {

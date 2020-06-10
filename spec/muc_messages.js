@@ -1024,15 +1024,15 @@ describe("A Groupchat Message", function () {
             [text, references] = view.model.parseTextForReferences('hello @z3r0')
             expect(references.length).toBe(1);
             expect(text).toBe('hello z3r0');
-            expect(JSON.stringify(references))
-                .toBe('[{"begin":6,"end":10,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@montague.lit"}]');
+            expect(references)
+                .toEqual([{"begin":6,"end":10,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@montague.lit"}]);
 
             [text, references] = view.model.parseTextForReferences('hello @some1 @z3r0 @gibson @mr.robot, how are you?')
             expect(text).toBe('hello @some1 z3r0 gibson mr.robot, how are you?');
-            expect(JSON.stringify(references))
-                .toBe('[{"begin":13,"end":17,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@montague.lit"},'+
-                        '{"begin":18,"end":24,"value":"gibson","type":"mention","uri":"xmpp:gibson@montague.lit"},'+
-                        '{"begin":25,"end":33,"value":"mr.robot","type":"mention","uri":"xmpp:mr.robot@montague.lit"}]');
+            expect(references)
+                .toEqual([{"begin":13,"end":17,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@montague.lit"},
+                        {"begin":18,"end":24,"value":"gibson","type":"mention","uri":"xmpp:gibson@montague.lit"},
+                        {"begin":25,"end":33,"value":"mr.robot","type":"mention","uri":"xmpp:mr.robot@montague.lit"}]);
 
             [text, references] = view.model.parseTextForReferences('yo @gib')
             expect(text).toBe('yo @gib');
@@ -1045,40 +1045,40 @@ describe("A Groupchat Message", function () {
             [text, references] = view.model.parseTextForReferences('@gibson')
             expect(text).toBe('gibson');
             expect(references.length).toBe(1);
-            expect(JSON.stringify(references))
-                .toBe('[{"begin":0,"end":6,"value":"gibson","type":"mention","uri":"xmpp:gibson@montague.lit"}]');
+            expect(references)
+                .toEqual([{"begin":0,"end":6,"value":"gibson","type":"mention","uri":"xmpp:gibson@montague.lit"}]);
 
             [text, references] = view.model.parseTextForReferences('hi @Link Mauve how are you?')
             expect(text).toBe('hi Link Mauve how are you?');
             expect(references.length).toBe(1);
-            expect(JSON.stringify(references))
-                .toBe('[{"begin":3,"end":13,"value":"Link Mauve","type":"mention","uri":"xmpp:Link-Mauve@montague.lit"}]');
+            expect(references)
+                .toEqual([{"begin":3,"end":13,"value":"Link Mauve","type":"mention","uri":"xmpp:Link-Mauve@montague.lit"}]);
 
             [text, references] = view.model.parseTextForReferences('https://example.org/@gibson')
             expect(text).toBe('https://example.org/@gibson');
             expect(references.length).toBe(0);
-            expect(JSON.stringify(references))
-                .toBe('[]');
+            expect(references)
+                .toEqual([]);
 
             [text, references] = view.model.parseTextForReferences('mail@gibson.com')
             expect(text).toBe('mail@gibson.com');
             expect(references.length).toBe(0);
-            expect(JSON.stringify(references))
-                .toBe('[]');
+            expect(references)
+                .toEqual([]);
 
             [text, references] = view.model.parseTextForReferences(
                 'https://linkmauve.fr@Link Mauve/ https://linkmauve.fr/@github/is_back gibson@gibson.com gibson@Link Mauve.fr')
             expect(text).toBe(
                 'https://linkmauve.fr@Link Mauve/ https://linkmauve.fr/@github/is_back gibson@gibson.com gibson@Link Mauve.fr');
             expect(references.length).toBe(0);
-            expect(JSON.stringify(references))
-                .toBe('[]');
+            expect(references)
+                .toEqual([]);
 
             [text, references] = view.model.parseTextForReferences('@gh0st where are you?')
             expect(text).toBe('gh0st where are you?');
             expect(references.length).toBe(1);
-            expect(JSON.stringify(references))
-                .toBe('[{"begin":0,"end":5,"value":"gh0st","type":"mention","uri":"xmpp:lounge@montague.lit/gh0st"}]');
+            expect(references)
+                .toEqual([{"begin":0,"end":5,"value":"gh0st","type":"mention","uri":"xmpp:lounge@montague.lit/gh0st"}]);
             done();
         }));
 

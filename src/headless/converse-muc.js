@@ -944,7 +944,7 @@ converse.plugins.add('converse-muc', {
             },
 
             getOccupantByJID (jid) {
-                return u.isValidJID(jid) && this.occupants.findOccupant({ jid });
+                return this.occupants.findOccupant({ jid });
             },
 
             getOccupantByNickname (nick) {
@@ -1372,7 +1372,9 @@ converse.plugins.add('converse-muc', {
              * @returns { _converse.ChatRoomOccupant }
              */
             getOccupant (nickname_or_jid) {
-                return this.getOccupantByJID(nickname_or_jid) ||  this.getOccupantByNickname(nickname_or_jid);
+                return u.isValidJID(nickname_or_jid)
+                    ? this.getOccupantByJID(nickname_or_jid)
+                    : this.getOccupantByNickname(nickname_or_jid);
             },
 
             /**

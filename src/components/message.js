@@ -4,6 +4,7 @@ import './message-actions.js';
 import MessageVersionsModal from '../modals/message-versions.js';
 import dayjs from 'dayjs';
 import filesize from "filesize";
+import tpl_chat_message from '../templates/chat_message.js';
 import tpl_spinner from '../templates/spinner.js';
 import { CustomElement } from './element.js';
 import { __ } from '@converse/headless/i18n';
@@ -14,11 +15,9 @@ import { renderAvatar } from './../templates/directives/avatar';
 const { Strophe } = converse.env;
 const u = converse.env.utils;
 
-const i18n_edited = __('This message has been edited');
 const i18n_show = __('Show more');
 const i18n_show_less = __('Show less');
 const i18n_uploading = __('Uploading file:');
-const i18n_new_messages = __('New messages');
 
 
 class Message extends CustomElement {
@@ -124,42 +123,7 @@ class Message extends CustomElement {
     }
 
     renderChatMessage () {
-        const is_groupchat_message = (this.message_type === 'groupchat');
-        return html`
-            ${ this.is_first_unread ? html`<div class="message date-separator"><hr class="separator"><span class="separator-text">${ i18n_new_messages }</span></div>` : '' }
-            <div class="message chat-msg ${ this.getExtraMessageClasses() }"
-                 data-isodate="${this.time}"
-                 data-msgid="${this.msgid}"
-                 data-from="${this.from}"
-                 data-encrypted="${this.is_encrypted}">
-
-                ${ this.shouldShowAvatar() ? renderAvatar(this.getAvatarData()) : '' }
-                <div class="chat-msg__content chat-msg__content--${this.sender} ${this.is_me_message ? 'chat-msg__content--action' : ''}">
-                    <span class="chat-msg__heading">
-                        ${ (this.is_me_message) ? html`
-                            <time timestamp="${this.time}" class="chat-msg__time">${this.pretty_time}</time>
-                            ${this.hats.map(hat => html`<span class="badge badge-secondary">${hat}</span>`)}
-                        ` : '' }
-                        <span class="chat-msg__author">${ this.is_me_message ? '**' : ''}${this.username}</span>
-                        ${ !this.is_me_message ? this.renderAvatarByline() : '' }
-                        ${ this.is_encrypted ? html`<span class="fa fa-lock"></span>` : '' }
-                    </span>
-                    <div class="chat-msg__body chat-msg__body--${this.message_type} ${this.received ? 'chat-msg__body--received' : '' } ${this.is_delayed ? 'chat-msg__body--delayed' : '' }">
-                        <div class="chat-msg__message">
-                            ${ this.is_retracted ? this.renderRetraction() : this.renderMessageText() }
-                        </div>
-                        ${ (this.received && !this.is_me_message && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
-                        ${ (this.edited) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${this.showMessageVersionsModal}></i>` : '' }
-                        <converse-message-actions
-                            .chatview=${this.chatview}
-                            .model=${this.model}
-                            ?correcting="${this.correcting}"
-                            ?editable="${this.editable}"
-                            ?is_retracted="${this.is_retracted}"
-                            message_type="${this.message_type}"></converse-message-actions>
-                    </div>
-                </div>
-            </div>`;
+        return tpl_chat_message(this);
     }
 
     shouldShowAvatar () {

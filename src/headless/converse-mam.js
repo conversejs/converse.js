@@ -63,7 +63,8 @@ const MAMEnabledChat = {
 
         result.messages.forEach(m => this.queueMessage(m));
         if (result.error) {
-            result.error.retry = () => this.fetchArchivedMessages(options, page_direction);
+            const event_id = result.error.retry_event_id = u.getUniqueId();
+            api.listen.once(event_id, () => this.fetchArchivedMessages(options, page_direction));
             this.createMessageFromError(result.error);
         }
     },

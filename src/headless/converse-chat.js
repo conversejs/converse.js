@@ -543,7 +543,7 @@ converse.plugins.add('converse-chat', {
                     const msg = await this.createMessage({
                         'type': 'error',
                         'message': error.message,
-                        'retry': true
+                        'retry_event_id': error.retry_event_id
                     });
                     msg.error = error;
                 }

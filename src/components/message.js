@@ -24,16 +24,15 @@ class Message extends CustomElement {
 
     static get properties () {
         return {
-            allow_retry: { type: Boolean },
             chatview: { type: Object},
             correcting: { type: Boolean },
             editable: { type: Boolean },
+            edited: { type: String },
             error: { type: String },
             error_text: { type: String },
             from: { type: String },
             has_mentions: { type: Boolean },
             hats: { type: Array },
-            edited: { type: String },
             is_delayed: { type: Boolean },
             is_encrypted: { type: Boolean },
             is_first_unread: { type: Boolean },
@@ -54,6 +53,7 @@ class Message extends CustomElement {
             reason: { type: String },
             received: { type: String },
             retractable: { type: Boolean },
+            retry_event_id: { type: String },
             sender: { type: String },
             show_spinner: { type: Boolean },
             spoiler_hint: { type: String },
@@ -104,7 +104,7 @@ class Message extends CustomElement {
                 </div>
                 ${ this.reason ? html`<q class="reason">${this.reason}</q>` : `` }
                 ${ this.error_text ? html`<q class="reason">${this.error_text}</q>` : `` }
-                ${ this.allow_retry ? html`<a class="retry" @click=${this.onRetryClicked}>${i18n_retry}</a>` : '' }
+                ${ this.retry_event_id ? html`<a class="retry" @click=${this.onRetryClicked}>${i18n_retry}</a>` : '' }
             </div>
         `;
     }
@@ -144,7 +144,7 @@ class Message extends CustomElement {
 
     async onRetryClicked () {
         this.show_spinner = true;
-        await this.model.error.retry();
+        await api.trigger(this.retry_event_id, {'synchronous': true});
         this.model.destroy();
         this.parentElement.removeChild(this);
     }

@@ -14,7 +14,6 @@ const tpl_message = (o) => html`
         .chatview=${o.chatview}
         .hats=${o.hats}
         .model=${o.model}
-        ?allow_retry=${o.retry}
         ?correcting=${o.correcting}
         ?editable=${o.editable}
         ?has_mentions=${o.has_mentions}
@@ -44,6 +43,7 @@ const tpl_message = (o) => html`
         progress=${o.progress || 0 }
         reason=${o.reason || ''}
         received=${o.received || ''}
+        retry_event_id=${o.retry_event_id || ''}
         sender=${o.sender}
         spoiler_hint=${o.spoiler_hint || ''}
         subject=${o.subject || ''}

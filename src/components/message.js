@@ -15,6 +15,7 @@ import { renderAvatar } from './../templates/directives/avatar';
 const { Strophe } = converse.env;
 const u = converse.env.utils;
 
+const i18n_edited = __('This message has been edited');
 const i18n_show = __('Show more');
 const i18n_show_less = __('Show less');
 const i18n_uploading = __('Uploading file:');
@@ -212,6 +213,7 @@ class Message extends CustomElement {
     }
 
     renderMessageText () {
+        const is_groupchat_message = (this.message_type === 'groupchat');
         const tpl_spoiler_hint = html`
             <div class="chat-msg__spoiler-hint">
                 <span class="spoiler-hint">${this.spoiler_hint}</span>
@@ -224,13 +226,17 @@ class Message extends CustomElement {
         return html`
             ${ this.is_spoiler ? tpl_spoiler_hint : '' }
             ${ this.subject ? html`<div class="chat-msg__subject">${this.subject}</div>` : '' }
-            <converse-chat-message-body
-                .model="${this.model}"
-                ?is_me_message="${this.is_me_message}"
-                ?is_only_emojis="${this.is_only_emojis}"
-                ?is_spoiler="${this.is_spoiler}"
-                ?is_spoiler_visible="${this.is_spoiler_visible}"
-                text="${this.model.getMessageText()}"></converse-chat-message-body>
+            <span>
+                <converse-chat-message-body
+                    .model="${this.model}"
+                    ?is_me_message="${this.is_me_message}"
+                    ?is_only_emojis="${this.is_only_emojis}"
+                    ?is_spoiler="${this.is_spoiler}"
+                    ?is_spoiler_visible="${this.is_spoiler_visible}"
+                    text="${this.model.getMessageText()}"></converse-chat-message-body>
+                ${ (this.received && !this.is_me_message && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
+                ${ (this.edited) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${this.showMessageVersionsModal}></i>` : '' }
+            </span>
             ${ this.oob_url ? html`<div class="chat-msg__media">${u.getOOBURLMarkup(_converse, this.oob_url)}</div>` : '' }
             <div class="chat-msg__error">${ this.error_text || this.error }</div>
         `;

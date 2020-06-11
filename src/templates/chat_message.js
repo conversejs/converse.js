@@ -2,12 +2,11 @@ import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import { renderAvatar } from './../templates/directives/avatar';
 
-const i18n_edited = __('This message has been edited');
+
 const i18n_new_messages = __('New messages');
 
 
 export default (o) => {
-    const is_groupchat_message = (o.message_type === 'groupchat');
     return html`
         ${ o.is_first_unread ? html`<div class="message date-separator"><hr class="separator"><span class="separator-text">${ i18n_new_messages }</span></div>` : '' }
         <div class="message chat-msg ${ o.getExtraMessageClasses() }"
@@ -30,8 +29,6 @@ export default (o) => {
                 <div class="chat-msg__body chat-msg__body--${o.message_type} ${o.received ? 'chat-msg__body--received' : '' } ${o.is_delayed ? 'chat-msg__body--delayed' : '' }">
                     <div class="chat-msg__message">
                         ${ o.is_retracted ? o.renderRetraction() : o.renderMessageText() }
-                        ${ (o.received && !o.is_me_message && !is_groupchat_message) ? html`<span class="fa fa-check chat-msg__receipt"></span>` : '' }
-                        ${ (o.edited) ? html`<i title="${ i18n_edited }" class="fa fa-edit chat-msg__edit-modal" @click=${o.showMessageVersionsModal}></i>` : '' }
                     </div>
                     <converse-message-actions
                         .chatview=${o.chatview}

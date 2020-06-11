@@ -453,7 +453,7 @@ converse.plugins.add('converse-muc-views', {
                 'mousedown .dragresize-occupants-left': 'onStartResizeOccupants',
                 'paste .chat-textarea': 'onPaste',
                 'submit .muc-nickname-form': 'submitNickname',
-                'click .converse-overlayed  .chat-head-chatroom': 'minimize'
+                'click .converse-overlayed  .chatbox-title': 'minimize'
             },
 
             async initialize () {

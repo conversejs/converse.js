@@ -173,18 +173,19 @@ converse.plugins.add('converse-chatview', {
             events: {
                 'change input.fileupload': 'onFileSelection',
                 'click .chatbox-navback': 'showControlBox',
+                'click .chatbox-title': 'minimize',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 'click .send-button': 'onFormSubmitted',
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-clear': 'clearMessages',
                 'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
                 'click .upload-file': 'toggleFileUpload',
+                'dragover .chat-textarea': 'onDragOver',
+                'drop .chat-textarea': 'onDrop',
                 'input .chat-textarea': 'inputChanged',
                 'keydown .chat-textarea': 'onKeyDown',
                 'keyup .chat-textarea': 'onKeyUp',
                 'paste .chat-textarea': 'onPaste',
-                'dragover .chat-textarea': 'onDragOver',
-                'drop .chat-textarea': 'onDrop',
             },
 
             async initialize () {

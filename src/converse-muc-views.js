@@ -437,6 +437,7 @@ converse.plugins.add('converse-muc-views', {
             events: {
                 'change input.fileupload': 'onFileSelection',
                 'click .chatbox-navback': 'showControlBox',
+                'click .chatbox-title': 'minimize',
                 'click .hide-occupants': 'hideOccupants',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 // Arrow functions don't work here because you can't bind a different `this` param to them.
@@ -453,7 +454,6 @@ converse.plugins.add('converse-muc-views', {
                 'mousedown .dragresize-occupants-left': 'onStartResizeOccupants',
                 'paste .chat-textarea': 'onPaste',
                 'submit .muc-nickname-form': 'submitNickname',
-                'click .converse-overlayed  .chatbox-title': 'minimize'
             },
 
             async initialize () {

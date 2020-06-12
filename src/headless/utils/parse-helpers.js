@@ -9,36 +9,9 @@ const helpers = {};
 // Captures all mentions, but includes a space before the @
 helpers.mention_regex = /(?:\s|^)([@][\w_-]+(?:\.\w+)*)/ig;
 
-helpers.mapMentionToReference = regex => match => {
-    const first_character = match[0][0];
-    const begin = regex.test(first_character) ? match.index + 1 : match.index;
-    const tempValue = match[1] || match[0];
-    const non_inclusive_end = begin + tempValue.length;
-    return {
-        begin,
-        end: non_inclusive_end,
-        tempValue,
-        type: 'mention'
-    };
-};
+helpers.matchRegexInText = text => regex => text.matchAll(regex);
 
-helpers.addKnownNickname = (known_nicknames, lowercase_nicknames) => reference => {
-    const { tempValue, ...rest } = reference;
-    const lowercase_mention_no_at_sign = tempValue.slice(1).toLowerCase();
-    const index = lowercase_nicknames.indexOf(lowercase_mention_no_at_sign);
-    return index > -1
-      ? { value: known_nicknames[index], ...rest }
-      : reference;
-};
-
-helpers.withValue = v => v.value;
-
-helpers.makeUriFromReference = (getOccupant, jid) => reference => {
-    const nickname = reference.value;
-    const occupant  = getOccupant(nickname) || getOccupant(jid);
-    const uri = occupant ? occupant.get('jid') : `${jid}/${nickname}`;
-    return { ...reference, uri: encodeURI(`xmpp:${uri}`) }
-};
+helpers.isStringPrecededBySpace = text => string_index => text[string_index - 1] == ' ';
 
 const reduceReferences = ([text, refs], ref, index) => {
     let updated_text = text;
@@ -50,7 +23,6 @@ const reduceReferences = ([text, refs], ref, index) => {
     return [updated_text, [...refs, { ...ref, begin, end }]]
 }
 
-helpers.reduceTextFromReferences = (text, refs) =>
-    refs.reduce(reduceReferences, [text, []]);
+helpers.reduceTextFromReferences = (text, refs) => refs.reduce(reduceReferences, [text, []]);
 
 export default helpers;

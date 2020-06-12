@@ -1042,6 +1042,10 @@ describe("A Groupchat Message", function () {
             expect(text).toBe('yo @gibsonian');
             expect(references.length).toBe(0);
 
+            [text, references] = view.model.parseTextForReferences('yo @GiBsOn')
+            expect(text).toBe('yo gibson');
+            expect(references.length).toBe(1);
+
             [text, references] = view.model.parseTextForReferences('@gibson')
             expect(text).toBe('gibson');
             expect(references.length).toBe(1);

@@ -952,28 +952,70 @@ converse.plugins.add('converse-muc', {
             },
 
             parseTextForReferences (original_message) {
-                const mentions = [...original_message.matchAll(p.mention_regex)];
-                if (!mentions.length) return [original_message, []];
+                const findRegexInMessage = p.matchRegexInText(original_message);
+                const mentions = findRegexInMessage(p.mention_regex);
+                if (!mentions) return [original_message, []];
 
                 const known_nicknames = this.getAllKnownNicknames();
-                const lowercase_nicknames = known_nicknames.map(nick => nick.toLowerCase());
 
-                const fromMentionToReference = p.mapMentionToReference(/[\s]+/);
-                const addUri = p.makeUriFromReference(
-                    this.getOccupant.bind(this),
-                    this.get('jid')
-                )
-                const addKnownNickname = p.addKnownNickname(known_nicknames, lowercase_nicknames);
-                const haveValue = p.withValue;
+                const getMatchesForNickRegex = nick_regex => [...findRegexInMessage(nick_regex)];
 
-                const transform = compose(
-                    map(fromMentionToReference),
-                    map(addKnownNickname),
-                    filter(haveValue),
-                    map(addUri)
-                );
-                const references = toArray(transform, mentions);
+                const getMatchesIndexesForNick = nick => {
+                    const regex = RegExp(`(${nick}(?:[,.!?\\s]|$))`, 'ig');
+                    return getMatchesForNickRegex(regex).map(match => match.index);
+                }
 
+                const makeObjectFromNick = nick => ({ nick: `@${nick}` });
+                
+                const addMatchesForNick = obj => ({
+                  ...obj,
+                  matches: getMatchesIndexesForNick(obj.nick),
+                });
+
+                const isStringPrecededBySpace = p.isStringPrecededBySpace(original_message);
+
+                const isValidMentionByIndex = mention_index =>
+                    mention_index == 0 || isStringPrecededBySpace(mention_index);
+
+                const toIndexedNicknames = (matches_by_index, match) => {
+                  const matches = match.matches.reduce((matches, i) => {
+                    const existing_match_in_index = matches_by_index[i];
+                    if ((
+                        (existing_match_in_index && match.nick.length > existing_match_in_index.length)
+                        || !existing_match_in_index) && isValidMentionByIndex(i)
+                    ) {
+                        matches[i] = match.nick;
+                    }
+                    return matches;
+                  }, {});
+                  return { ...matches_by_index, ...matches };
+                };
+                
+                const mentions_by_index = known_nicknames
+                    .map(makeObjectFromNick)
+                    .map(addMatchesForNick)
+                    .reduce(toIndexedNicknames, {}) 
+                
+                const uriFrom = nickname => {
+                    const jid = this.get('jid');
+                    const occupant  = this.getOccupant(nickname) || this.getOccupant(jid);
+                    const uri = (occupant && occupant.get('jid')) || `${jid}/${nickname}`;
+                    return encodeURI(`xmpp:${uri}`);
+                };
+
+                const indexToMention = i => {
+                    const begin = +i;
+                    const value = mentions_by_index[begin].slice(1)
+                    return {
+                        begin,
+                        end: begin + mentions_by_index[begin].length,
+                        value,
+                        type: 'mention',
+                        uri: uriFrom(value)
+                    }
+                }
+
+                const references = Object.keys(mentions_by_index).map(indexToMention)
                 const [updated_message, updated_references] = p.reduceTextFromReferences(
                     original_message,
                     references

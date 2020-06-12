@@ -10,7 +10,6 @@ import "./converse-emoji";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash-es";
-import { compose, map, filter, toArray } from "./utils/functional";
 import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
@@ -957,26 +956,19 @@ converse.plugins.add('converse-muc', {
                 if (!mentions) return [original_message, []];
 
                 const known_nicknames = this.getAllKnownNicknames();
-
                 const getMatchesForNickRegex = nick_regex => [...findRegexInMessage(nick_regex)];
-
                 const getMatchesIndexesForNick = nick => {
                     const regex = RegExp(`(${nick}(?:[,.!?\\s]|$))`, 'ig');
                     return getMatchesForNickRegex(regex).map(match => match.index);
                 }
-
                 const makeObjectFromNick = nick => ({ nick: `@${nick}` });
-                
                 const addMatchesForNick = obj => ({
                   ...obj,
                   matches: getMatchesIndexesForNick(obj.nick),
                 });
-
                 const isStringPrecededBySpace = p.isStringPrecededBySpace(original_message);
-
                 const isValidMentionByIndex = mention_index =>
                     mention_index == 0 || isStringPrecededBySpace(mention_index);
-
                 const toIndexedNicknames = (matches_by_index, match) => {
                   const matches = match.matches.reduce((matches, i) => {
                     const existing_match_in_index = matches_by_index[i];

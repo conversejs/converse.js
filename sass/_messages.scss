@@ -164,7 +164,7 @@
             }
 
             converse-chat-message-body {
-                display: inline-block;
+                display: inline;
             }
 
             .chat-msg__message {
@@ -193,7 +193,6 @@
             .chat-msg__text {
                 color: var(--message-text-color);
                 padding: 0;
-                width: 100%;
                 white-space: pre-wrap;
                 word-wrap: break-word;
                 word-break: break-word;

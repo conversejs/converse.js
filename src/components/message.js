@@ -223,11 +223,13 @@ class Message extends CustomElement {
                 </a>
             </div>
         `;
+        const spoiler_classes = this.is_spoiler ? `spoiler ${this.is_spoiler_visible ? '' : 'collapsed'}` : '';
         return html`
             ${ this.is_spoiler ? tpl_spoiler_hint : '' }
             ${ this.subject ? html`<div class="chat-msg__subject">${this.subject}</div>` : '' }
             <span>
                 <converse-chat-message-body
+                    class="chat-msg__text ${this.is_only_emojis ? 'chat-msg__text--larger' : ''} ${spoiler_classes}"
                     .model="${this.model}"
                     ?is_me_message="${this.is_me_message}"
                     ?is_only_emojis="${this.is_only_emojis}"

@@ -330,6 +330,8 @@ converse.plugins.add('converse-emoji-views', {
                     this.enableArrowNavigation(ev);
                 } else if (ev.keyCode === converse.keycodes.ENTER) {
                     this.onEnterPressed(ev);
+                } else if (ev.keyCode === converse.keycodes.ESCAPE) {
+                    document.querySelector('.chat-textarea').focus();
                 } else if (
                     ev.keyCode !== converse.keycodes.ENTER &&
                     ev.keyCode !== converse.keycodes.DOWN_ARROW

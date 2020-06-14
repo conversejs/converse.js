@@ -50,17 +50,18 @@
 
         .minimized-chats-flyout {
             flex-direction: column-reverse;
-            bottom: 42px;
+            bottom: 45px;
             width: var(--minimized-chats-width);
 
             .chat-head {
+                min-height: 0;
                 padding: 0.3em;
                 border-radius: var(--chatbox-border-radius);
                 height: 35px;
                 margin-bottom: 0.2em;
-                box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
                 width: 100%;
                 max-width: 9em;
+                flex-wrap: nowrap;
             }
             &.minimized {
                 height: auto;

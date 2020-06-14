@@ -1,6 +1,6 @@
 import { _converse, api, converse } from  "@converse/headless/converse-core";
 import { directive, html } from "lit-html";
-import { isString } from "lodash";
+import { isString } from "lodash-es";
 
 const u = converse.env.utils;
 

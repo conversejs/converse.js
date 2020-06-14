@@ -133,6 +133,11 @@
                 align-items: stretch;
                 margin-left: 0.5rem;
                 width: calc(100% - var(--message-avatar-width));
+                &:hover {
+                    .btn--standalone {
+                        opacity: 1;
+                    }
+                }
             }
 
             .chat-msg__content--me {
@@ -156,11 +161,10 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                &:hover {
-                    .btn--standalone {
-                        opacity: 1;
-                    }
-                }
+            }
+
+            converse-chat-message-body {
+                display: inline;
             }
 
             .chat-msg__message {
@@ -189,7 +193,6 @@
             .chat-msg__text {
                 color: var(--message-text-color);
                 padding: 0;
-                width: 100%;
                 white-space: pre-wrap;
                 word-wrap: break-word;
                 word-break: break-word;
@@ -341,6 +344,7 @@
             }
 
             .chat-msg__receipt {
+                margin-left: 0.5em;
                 margin-right: 0.5em;
                 color: var(--message-receipt-color);
             }

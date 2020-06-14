@@ -6,10 +6,10 @@
 import filesize from "filesize";
 import log from "./log";
 import st from "./utils/stanza";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
+import { Collection } from "@converse/skeletor/src/collection";
+import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
-import { find, isMatch, isObject, isString, pick } from "lodash";
+import { find, isMatch, isObject, isString, pick } from "lodash-es";
 
 const { $msg, Strophe, sizzle, utils } = converse.env;
 const u = converse.env.utils;
@@ -543,7 +543,7 @@ converse.plugins.add('converse-chat', {
                     const msg = await this.createMessage({
                         'type': 'error',
                         'message': error.message,
-                        'retry': true
+                        'retry_event_id': error.retry_event_id
                     });
                     msg.error = error;
                 }
@@ -854,7 +854,7 @@ converse.plugins.add('converse-chat', {
                     return false;
                 }
                 if (attrs.is_markable) {
-                    if (this.contact && !attrs.is_mam && !attrs.is_carbon) {
+                    if (this.contact && !attrs.is_archived && !attrs.is_carbon) {
                         this.sendMarker(attrs.from, attrs.msgid, 'received');
                     }
                     return false;

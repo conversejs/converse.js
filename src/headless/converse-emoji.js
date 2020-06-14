@@ -3,8 +3,8 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { Model } from 'skeletor.js/src/model.js';
-import { find, uniq } from "lodash";
+import { Model } from '@converse/skeletor/src/model.js';
+import { find, uniq } from "lodash-es";
 import * as twemoji from "twemoji";
 import { _converse, api, converse } from "./converse-core";
 

@@ -95,6 +95,7 @@ Here's an example of Converse being initialized with these options:
         jid: 'me@example.com',
         authentication: 'prebind',
         prebind_url: 'http://example.com/api/prebind',
+        auto_login: true,
         allow_logout: false
     });
 

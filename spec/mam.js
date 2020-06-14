@@ -1065,8 +1065,6 @@ describe("Chatboxes", function () {
                     `</query>`+
                 `</iq>`);
 
-            await u.waitUntil(() => view.el.querySelector('converse-chat-message .spinner'), 1000);
-
             const msg1 = $msg({'id':'aeb212', 'to': contact_jid})
                         .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid': queryid, 'id':'28482-98726-73623'})
                             .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})

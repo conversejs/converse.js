@@ -6,10 +6,10 @@
  */
 import log from "./log";
 import sizzle from "sizzle";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
+import { Collection } from "@converse/skeletor/src/collection";
+import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
-import { isEmpty, isObject } from "lodash";
+import { isEmpty, isObject } from "lodash-es";
 
 const { Strophe, $iq, utils } = converse.env;
 

@@ -3,17 +3,11 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { Collection } from "skeletor.js/src/collection";
-import { Events } from 'skeletor.js/src/events.js';
-import { Model } from 'skeletor.js/src/model.js';
-import { Router } from 'skeletor.js/src/router.js';
-import { __, i18n } from './i18n';
-import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash';
-import 'strophe.js/src/websocket';
 import './polyfill';
+import 'strophe.js/src/websocket';
 import * as strophe from 'strophe.js/src/core';
+import Storage from '@converse/skeletor/src/storage.js';
 import _ from './lodash.noconflict';
-import Storage from 'skeletor.js/src/storage.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
 import log from '@converse/headless/log';
@@ -21,6 +15,12 @@ import pluggable from 'pluggable.js/src/pluggable';
 import sizzle from 'sizzle';
 import stanza_utils from "@converse/headless/utils/stanza";
 import u from '@converse/headless/utils/core';
+import { Collection } from "@converse/skeletor/src/collection";
+import { Events } from '@converse/skeletor/src/events.js';
+import { Model } from '@converse/skeletor/src/model.js';
+import { Router } from '@converse/skeletor/src/router.js';
+import { __, i18n } from './i18n';
+import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash-es';
 
 const Strophe = strophe.default.Strophe;
 const $build = strophe.default.$build;
@@ -1907,7 +1907,7 @@ Object.assign(converse, {
      * @property {function} converse.env.$pres     - Creates a Strophe.Builder with an <presence/> element as the root.
      * @property {function} converse.env.Promise   - The Promise implementation used by Converse.
      * @property {function} converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
-     * @property {object} converse.env._           - The instance of [lodash](http://lodash.com) used by Converse.
+     * @property {object} converse.env._           - The instance of [lodash-es](http://lodash.com) used by Converse.
      * @property {function} converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
      * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.

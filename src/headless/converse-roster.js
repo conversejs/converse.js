@@ -4,9 +4,9 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/converse-status";
-import { Collection } from "skeletor.js/src/collection";
-import { Model } from 'skeletor.js/src/model.js';
-import { invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash";
+import { Collection } from "@converse/skeletor/src/collection";
+import { Model } from '@converse/skeletor/src/model.js';
+import { invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import log from "./log";
 

@@ -7,7 +7,7 @@
 import "./converse-disco";
 import "./converse-rsm";
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { intersection, pick } from 'lodash'
+import { intersection, pick } from 'lodash-es'
 import log from "./log";
 import sizzle from "sizzle";
 import st from "./utils/stanza";
@@ -63,7 +63,8 @@ const MAMEnabledChat = {
 
         result.messages.forEach(m => this.queueMessage(m));
         if (result.error) {
-            result.error.retry = () => this.fetchArchivedMessages(options, page_direction);
+            const event_id = result.error.retry_event_id = u.getUniqueId();
+            api.listen.once(event_id, () => this.fetchArchivedMessages(options, page_direction));
             this.createMessageFromError(result.error);
         }
     },

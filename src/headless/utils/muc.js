@@ -3,7 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the MUC utilities module.
  */
-import { difference, indexOf } from "lodash";
+import { difference, indexOf } from "lodash-es";
 import { converse } from "@converse/headless/converse-core";
 import u from "./core";
 

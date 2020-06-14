@@ -7,12 +7,12 @@ import "converse-chatview";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.html";
 import tpl_trimmed_chat from "templates/trimmed_chat.html";
-import { Model } from 'skeletor.js/src/model.js';
-import { Overview } from "skeletor.js/src/overview";
-import { View } from "skeletor.js/src/view";
+import { Model } from '@converse/skeletor/src/model.js';
+import { Overview } from "@converse/skeletor/src/overview";
+import { View } from "@converse/skeletor/src/view";
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { debounce, sum } from 'lodash';
+import { debounce, sum } from 'lodash-es';
 
 const { dayjs } = converse.env;
 const u = converse.env.utils;

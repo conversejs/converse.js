@@ -7,10 +7,10 @@ import "@converse/headless/converse-chatboxes";
 import tpl_avatar from "templates/avatar.svg";
 import tpl_background_logo from "templates/background_logo.html";
 import tpl_chatboxes from "templates/chatboxes.html";
-import { Overview } from "skeletor.js/src/overview";
-import { View } from "skeletor.js/src/view";
+import { Overview } from "@converse/skeletor/src/overview";
+import { View } from "@converse/skeletor/src/view";
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { result } from "lodash";
+import { result } from "lodash-es";
 
 const u = converse.env.utils;
 
@@ -154,5 +154,29 @@ converse.plugins.add('converse-chatboxviews', {
         api.listen.on('chatBoxViewsInitialized', () => calculateViewportHeightUnit());
         window.addEventListener('resize', () => calculateViewportHeightUnit());
         /************************ END Event Handlers ************************/
+
+
+        Object.assign(converse, {
+            /**
+             * Public API method which will ensure that the #conversejs element
+             * is inserted into a container element.
+             *
+             * This method is useful when the #conversejs element has been
+             * detached from the DOM somehow.
+             * @async
+             * @memberOf converse
+             * @method insertInto
+             * @example
+             * converse.insertInto(document.querySelector('#converse-container'));
+             */
+            insertInto (container) {
+                const el = _converse.chatboxviews?.el;
+                if (el && !container.contains(el)) {
+                    container.insertAdjacentElement('afterBegin', el);
+                } else if (!el) {
+                    throw new Error("Cannot insert non-existing #conversejs element into the DOM");
+                }
+            }
+        });
     }
 });

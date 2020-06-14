@@ -9,10 +9,10 @@ import bootstrap from "bootstrap.native";
 import emoji_picker from "templates/emoji_picker.js";
 import sizzle from 'sizzle';
 import tpl_emoji_button from "templates/emoji_button.html";
-import { View } from "skeletor.js/src/view";
+import { View } from "@converse/skeletor/src/view";
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from '@converse/headless/converse-core';
-import { debounce, find } from "lodash";
+import { debounce, find } from "lodash-es";
 
 const u = converse.env.utils;
 

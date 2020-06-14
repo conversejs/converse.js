@@ -5,7 +5,7 @@
  */
 import "converse-chatview";
 import "converse-controlbox";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import tpl_dragresize from "templates/dragresize.html";
 

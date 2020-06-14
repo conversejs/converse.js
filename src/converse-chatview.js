@@ -14,14 +14,14 @@ import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
 import tpl_new_day from "templates/new_day.html";
 import tpl_spinner from "templates/spinner.html";
 import tpl_spoiler_button from "templates/spoiler_button.html";
-import tpl_toolbar from "templates/toolbar.html";
+import tpl_toolbar from "templates/toolbar.js";
 import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.js";
 import { BootstrapModal } from "./converse-modal.js";
-import { View } from 'skeletor.js/src/view.js';
+import { View } from '@converse/skeletor/src/view.js';
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { debounce, isString } from "lodash";
+import { debounce, isString } from "lodash-es";
 import { html, render } from "lit-html";
 
 
@@ -173,18 +173,19 @@ converse.plugins.add('converse-chatview', {
             events: {
                 'change input.fileupload': 'onFileSelection',
                 'click .chatbox-navback': 'showControlBox',
+                'click .chatbox-title': 'minimize',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 'click .send-button': 'onFormSubmitted',
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-clear': 'clearMessages',
                 'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
                 'click .upload-file': 'toggleFileUpload',
+                'dragover .chat-textarea': 'onDragOver',
+                'drop .chat-textarea': 'onDrop',
                 'input .chat-textarea': 'inputChanged',
                 'keydown .chat-textarea': 'onKeyDown',
                 'keyup .chat-textarea': 'onKeyUp',
                 'paste .chat-textarea': 'onPaste',
-                'dragover .chat-textarea': 'onDragOver',
-                'drop .chat-textarea': 'onDrop',
             },
 
             async initialize () {
@@ -339,7 +340,7 @@ converse.plugins.add('converse-chatview', {
                     this.model.toJSON(),
                     this.getToolbarOptions()
                 );
-                this.el.querySelector('.chat-toolbar').innerHTML = tpl_toolbar(options);
+                render(tpl_toolbar(options), this.el.querySelector('.chat-toolbar'));
                 this.addSpoilerButton(options);
                 this.addFileUploadButton();
                 /**

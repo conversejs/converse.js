@@ -43,6 +43,7 @@ Soon we'll deprecate the latter, so prepare now.
 - New config option [muc_hats_from_vcard](https://conversejs.org/docs/html/configuration.html#muc-hats-from-vcard).
 - New config option [muc_send_probes](https://conversejs.org/docs/html/configuration.html#muc-send-probes).
 - New config option [show_message_avatar](https://conversejs.org/docs/html/configuration.html#show-message-avatar).
+- New public API [converse.insertInto](https://conversejs.org/docs/html/api/converse.html#.insertInto)
 
 ## 6.0.0 (2020-01-09)
 

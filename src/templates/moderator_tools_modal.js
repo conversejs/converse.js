@@ -214,7 +214,7 @@ export default (o) => {
 
                                 ${ (o.users_with_affiliation instanceof Error) ?
                                         html`<li class="list-group-item">${o.users_with_affiliation.message}</li>` :
-                                        (o.users_with_affiliation || []).map(item => ((item.nick || item.jid).match(o.affiliations_filter) ? affiliation_list_item(Object.assign({item}, o)) : '')) }
+                                        (o.users_with_affiliation || []).map(item => ((item.nick || item.jid).match(new RegExp(o.affiliations_filter, 'i')) ? affiliation_list_item(Object.assign({item}, o)) : '')) }
                             </ul>
                         </div>
                     </div>

@@ -15,12 +15,12 @@ import tpl_roster from "templates/roster.html";
 import tpl_roster_filter from "templates/roster_filter.js";
 import tpl_roster_item from "templates/roster_item.html";
 import { BootstrapModal } from "./converse-modal.js";
-import { Model } from 'skeletor.js/src/model.js';
-import { OrderedListView } from "skeletor.js/src/overview";
-import { View } from 'skeletor.js/src/view.js';
+import { Model } from '@converse/skeletor/src/model.js';
+import { OrderedListView } from "@converse/skeletor/src/overview";
+import { View } from '@converse/skeletor/src/view.js';
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { compact, debounce, has, isString, uniq, without } from "lodash";
+import { compact, debounce, has, isString, uniq, without } from "lodash-es";
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;

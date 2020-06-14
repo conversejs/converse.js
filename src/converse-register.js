@@ -8,8 +8,8 @@
  */
 import "converse-controlbox";
 import { __ } from '@converse/headless/i18n';
-import { View } from "skeletor.js/src/view";
-import { pick } from "lodash";
+import { View } from "@converse/skeletor/src/view";
+import { pick } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_form_input from "templates/form_input.html";

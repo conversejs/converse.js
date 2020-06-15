@@ -1612,16 +1612,14 @@ converse.plugins.add('converse-muc', {
                     return true;
                 }
                 const occupant = this.occupants.findOccupant(data);
-                if (data.type === 'unavailable' && occupant) {
-                    if (!data.states.includes(converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
-                        // We only destroy the occupant if this is not a nickname change operation.
-                        // and if they're not on the member lists.
-                        // Before destroying we set the new data, so
-                        // that we can show the disconnection message.
-                        occupant.set(data);
-                        occupant.destroy();
-                        return;
-                    }
+                // Destroy an unavailable occupant if this isn't a nick change operation and if they're not affiliated
+                if (data.type === 'unavailable' && occupant &&
+                        !data.states.includes(converse.MUC_NICK_CHANGED_CODE) &&
+                        !['admin', 'owner', 'member'].includes(data['affiliation'])) {
+                    // Before destroying we set the new data, so that we can show the disconnection message
+                    occupant.set(data);
+                    occupant.destroy();
+                    return;
                 }
                 const jid = data.jid || '';
                 const attributes = Object.assign(data, {

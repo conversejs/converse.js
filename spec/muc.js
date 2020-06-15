@@ -1633,23 +1633,21 @@ describe("Groupchats", function () {
                 async function (done, _converse) {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            var view = _converse.chatboxviews.get('lounge@montague.lit'),
-                occupants = view.el.querySelector('.occupant-list');
-            var presence;
+            var view = _converse.chatboxviews.get('lounge@montague.lit');
+            const occupants = view.el.querySelector('.occupant-list');
             for (var i=0; i<mock.chatroom_names.length; i++) {
                 const name = mock.chatroom_names[i];
-                const role = mock.chatroom_roles[name].role;
                 // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                presence = $pres({
-                        to:'romeo@montague.lit/pda',
-                        from:'lounge@montague.lit/'+name
+                const presence = $pres({
+                    to:'romeo@montague.lit/pda',
+                    from:'lounge@montague.lit/'+name
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                 .c('item').attrs({
                     affiliation: 'none',
                     jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                    role: role
+                    role: 'participant'
                 }).up()
-                .c('status').attrs({code:'110'}).nodeTree;
+                .c('status');
                 _converse.connection._dataRecv(mock.createRequest(presence));
             }
 
@@ -1667,16 +1665,16 @@ describe("Groupchats", function () {
             for (i=mock.chatroom_names.length-1; i>-1; i--) {
                 const name = mock.chatroom_names[i];
                 // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
-                presence = $pres({
+                const presence = $pres({
                     to:'romeo@montague.lit/pda',
                     from:'lounge@montague.lit/'+name,
                     type: 'unavailable'
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                 .c('item').attrs({
-                    affiliation: mock.chatroom_roles[name].affiliation,
+                    affiliation: "none",
                     jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     role: 'none'
-                }).nodeTree;
+                });
                 _converse.connection._dataRecv(mock.createRequest(presence));
                 expect(occupants.querySelectorAll('li').length).toBe(i+1);
             }
@@ -5308,7 +5306,7 @@ describe("Groupchats", function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
 
-            const stanza = u.toStanza(`
+            let stanza = u.toStanza(`
                 <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="${muc_jid}/ralphm">
                     <body>This message will trigger a presence probe</body>
                 </message>`);
@@ -5316,21 +5314,21 @@ describe("Groupchats", function () {
             const view = _converse.chatboxviews.get(muc_jid);
 
             await u.waitUntil(() => view.model.messages.length);
-            const occupant = view.model.messages.at(0)?.occupant;
+            let occupant = view.model.messages.at(0)?.occupant;
             expect(occupant).toBeDefined();
             expect(occupant.get('nick')).toBe('ralphm');
             expect(occupant.get('affiliation')).toBeUndefined();
             expect(occupant.get('role')).toBeUndefined();
 
             const sent_stanzas = _converse.connection.sent_stanzas;
-            const probe = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('presence[type="probe"]')).pop());
+            let probe = await u.waitUntil(() => sent_stanzas.filter(s => s.matches('presence[type="probe"]')).pop());
             expect(Strophe.serialize(probe)).toBe(
                 `<presence to="${muc_jid}/ralphm" type="probe" xmlns="jabber:client">`+
                     `<priority>0</priority>`+
                     `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
 
-            const presence = u.toStanza(
+            let presence = u.toStanza(
                 `<presence xmlns="jabber:client" to="${converse.jid}" from="${muc_jid}/ralphm">
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item affiliation="member" jid="ralph@example.org/Conversations.ZvLu" role="participant"/>
@@ -5338,6 +5336,39 @@ describe("Groupchats", function () {
                 </presence>`);
             _converse.connection._dataRecv(mock.createRequest(presence));
 
+            expect(occupant.get('affiliation')).toBe('member');
+            expect(occupant.get('role')).toBe('participant');
+
+            // Check that unavailable but affiliated occupants don't get destroyed
+            stanza = u.toStanza(`
+                <message xmlns="jabber:client" to="${_converse.jid}" type="groupchat" from="${muc_jid}/gonePhising">
+                    <body>This message from an unavailable user will trigger a presence probe</body>
+                </message>`);
+            _converse.connection._dataRecv(mock.createRequest(stanza));
+
+            await u.waitUntil(() => view.model.messages.length === 2);
+            occupant = view.model.messages.at(1)?.occupant;
+            expect(occupant).toBeDefined();
+            expect(occupant.get('nick')).toBe('gonePhising');
+            expect(occupant.get('affiliation')).toBeUndefined();
+            expect(occupant.get('role')).toBeUndefined();
+
+            probe = await u.waitUntil(() => sent_stanzas.filter(s => s.matches(`presence[to="${muc_jid}/gonePhising"]`)).pop());
+            expect(Strophe.serialize(probe)).toBe(
+                `<presence to="${muc_jid}/gonePhising" type="probe" xmlns="jabber:client">`+
+                    `<priority>0</priority>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `</presence>`);
+
+            presence = u.toStanza(
+                `<presence xmlns="jabber:client" type="unavailable" to="${converse.jid}" from="${muc_jid}/gonePhising">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="member" jid="gonePhishing@example.org/d34dBEEF" role="participant"/>
+                    </x>
+                </presence>`);
+            _converse.connection._dataRecv(mock.createRequest(presence));
+
+            expect(view.model.occupants.length).toBe(3);
             expect(occupant.get('affiliation')).toBe('member');
             expect(occupant.get('role')).toBe('participant');
             done();

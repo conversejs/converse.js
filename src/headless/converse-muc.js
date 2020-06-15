@@ -951,6 +951,7 @@ converse.plugins.add('converse-muc', {
             },
 
             parseTextForReferences (original_message) {
+                if (!original_message) return ['', []];
                 const findRegexInMessage = p.matchRegexInText(original_message);
                 const mentions = findRegexInMessage(p.mention_regex);
                 if (!mentions) return [original_message, []];

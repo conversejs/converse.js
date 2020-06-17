@@ -11,12 +11,27 @@ helpers.mention_regex = /(?:\s|^)([@][\w_-]+(?:\.\w+)*)/ig;
 
 helpers.matchRegexInText = text => regex => text.matchAll(regex);
 
-helpers.isStringPrecededBySpace = text => string_index => text[string_index - 1] == ' ';
+const escapeRegexChars = (string, char) => string.replace(RegExp('\\' + char, 'ig'), '\\' + char);
+
+helpers.escapeCharacters = characters => string =>
+    characters.split('').reduce(escapeRegexChars, string);
+
+helpers.escapeRegexString = helpers.escapeCharacters('[\\^$.?*+(){}');
+
+// `for` is ~25% faster than using `Array.find()`
+helpers.findFirstMatchInArray = array => regex => {
+    for (let i = 0; i < array.length; i++) {
+        if (regex.test(array[i])) {
+            return array[i];
+        }
+    }
+    return null;
+};
 
 const reduceReferences = ([text, refs], ref, index) => {
     let updated_text = text;
     let { begin, end } = ref;
-    const { value } = ref
+    const { value } = ref;
     begin = begin - index;
     end = end - index - 1; // -1 to compensate for the removed @
     updated_text = `${updated_text.slice(0, begin)}${value}${updated_text.slice(end + 1)}`;

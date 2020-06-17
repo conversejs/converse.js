@@ -942,6 +942,12 @@ converse.plugins.add('converse-muc', {
                 ])].filter(n => n);
             },
 
+            getAllKnownNicknamesRegex () {
+                const longNickString = this.getAllKnownNicknames().join('|');
+                const escapedLongNickString = p.escapeRegexString(longNickString)
+                return RegExp(`(?:\\s|^)@(${escapedLongNickString})(?![\\w@-])`, 'ig');
+            },
+
             getOccupantByJID (jid) {
                 return this.occupants.findOccupant({ jid });
             },
@@ -953,62 +959,34 @@ converse.plugins.add('converse-muc', {
             parseTextForReferences (original_message) {
                 if (!original_message) return ['', []];
                 const findRegexInMessage = p.matchRegexInText(original_message);
-                const mentions = findRegexInMessage(p.mention_regex);
-                if (!mentions) return [original_message, []];
+                const raw_mentions = findRegexInMessage(p.mention_regex);
+                if (!raw_mentions) return [original_message, []];
 
                 const known_nicknames = this.getAllKnownNicknames();
+                const known_nicknames_with_at_regex = this.getAllKnownNicknamesRegex();
                 const getMatchesForNickRegex = nick_regex => [...findRegexInMessage(nick_regex)];
-                const getMatchesIndexesForNick = nick => {
-                    const regex = RegExp(`(${nick}(?:[,.!?\\s]|$))`, 'ig');
-                    return getMatchesForNickRegex(regex).map(match => match.index);
-                }
-                const makeObjectFromNick = nick => ({ nick: `@${nick}` });
-                const addMatchesForNick = obj => ({
-                  ...obj,
-                  matches: getMatchesIndexesForNick(obj.nick),
-                });
-                const isStringPrecededBySpace = p.isStringPrecededBySpace(original_message);
-                const isValidMentionByIndex = mention_index =>
-                    mention_index == 0 || isStringPrecededBySpace(mention_index);
-                const toIndexedNicknames = (matches_by_index, match) => {
-                  const matches = match.matches.reduce((matches, i) => {
-                    const existing_match_in_index = matches_by_index[i];
-                    if ((
-                        (existing_match_in_index && match.nick.length > existing_match_in_index.length)
-                        || !existing_match_in_index) && isValidMentionByIndex(i)
-                    ) {
-                        matches[i] = match.nick;
-                    }
-                    return matches;
-                  }, {});
-                  return { ...matches_by_index, ...matches };
-                };
-                
-                const mentions_by_index = known_nicknames
-                    .map(makeObjectFromNick)
-                    .map(addMatchesForNick)
-                    .reduce(toIndexedNicknames, {}) 
-                
-                const uriFrom = nickname => {
+                const getNicknameFromRegex = p.findFirstMatchInArray(known_nicknames);
+
+                const uriFromNickname = nickname => {
                     const jid = this.get('jid');
                     const occupant  = this.getOccupant(nickname) || this.getOccupant(jid);
                     const uri = (occupant && occupant.get('jid')) || `${jid}/${nickname}`;
                     return encodeURI(`xmpp:${uri}`);
                 };
 
-                const indexToMention = i => {
-                    const begin = +i;
-                    const value = mentions_by_index[begin].slice(1)
-                    return {
-                        begin,
-                        end: begin + mentions_by_index[begin].length,
-                        value,
-                        type: 'mention',
-                        uri: uriFrom(value)
-                    }
+                const matchToReference = match => {
+                    const at_sign_index = match[0].indexOf('@');
+                    const begin = match.index + at_sign_index;
+                    const end = begin + match[0].length - at_sign_index;
+                    const value = getNicknameFromRegex(RegExp(match[1], 'i'));
+                    const type = 'mention';
+                    const uri = uriFromNickname(value);
+                    return { begin, end, value, type, uri }
                 }
 
-                const references = Object.keys(mentions_by_index).map(indexToMention)
+                const mentions = getMatchesForNickRegex(known_nicknames_with_at_regex);
+                const references = mentions.map(matchToReference);
+
                 const [updated_message, updated_references] = p.reduceTextFromReferences(
                     original_message,
                     references

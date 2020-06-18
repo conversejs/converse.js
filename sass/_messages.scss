@@ -281,21 +281,22 @@
                 min-width: var(--message-avatar-width);
             }
 
+            .chat-msg__author {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-family: var(--heading-font);
+                font-size: 115%;
+                font-weight: bold;
+                padding-bottom: 1px; // Hack to avoid cutting of text on the button
+            }
+
             .chat-msg__heading {
                 width: 100%;
                 margin-top: 0.5em;
                 padding-right: 0.25rem;
                 padding-bottom: 0.25rem;
 
-                .chat-msg__author {
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    font-family: var(--heading-font);
-                    font-size: 115%;
-                    font-weight: bold;
-                    padding-bottom: 1px; // Hack to avoid cutting of text on the button
-                }
                 .badge {
                     margin-left: 0.5em;
                     font-family: var(--normal_font);
@@ -307,10 +308,8 @@
                 }
             }
             &.chat-msg--action {
-                .chat-msg__content {
-                    flex-wrap: wrap;
+                .chat-msg__message {
                     flex-direction: row;
-                    justify-content: flex-start;
                 }
                 .chat-msg__text {
                     width: auto;

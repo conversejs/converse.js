@@ -75,7 +75,7 @@
     "copy-webpack-plugin": "^6.0.2",
     "css-loader": "^3.5.3",
     "dayjs": "1.8.15",
-    "eslint": "^6.8.0",
+    "eslint": "^7.2.0",
     "eslint-plugin-lodash": "^7.1.0",
     "exports-loader": "^0.7.0",
     "fa-icons": "^0.2.0",

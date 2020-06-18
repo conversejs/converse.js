@@ -43,6 +43,6 @@
     "lodash-es": "^4.17.15",
     "pluggable.js": "2.0.1",
     "strophe.js": "1.3.6",
-    "twemoji": "^12.1.2"
+    "twemoji": "^13.0.0"
   }
 }

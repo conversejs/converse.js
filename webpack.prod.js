@@ -18,17 +18,19 @@ module.exports = merge(common, {
             cleanStaleWebpackAssets: false // resolves conflict with CopyWebpackPlugin
         }),
         new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
-        new CopyWebpackPlugin([
-            {from: 'sounds', to: 'sounds'},
-            {from: 'node_modules/@fortawesome/fontawesome-free/sprites/solid.svg', to: '@fortawesome/fontawesome-free/sprites/solid.svg'},
-            {from: 'images/favicon.ico', to: 'images/favicon.ico'},
-            {from: 'images/custom_emojis', to: 'images/custom_emojis'},
-            {from: 'logo/conversejs-filled-192.png', to: 'images/logo'},
-            {from: 'logo/conversejs-filled-512.png', to: 'images/logo'},
-            {from: 'logo/conversejs-filled-192.svg', to: 'images/logo'},
-            {from: 'logo/conversejs-filled-512.svg', to: 'images/logo'},
-            {from: 'sass/webfonts', to: 'webfonts'}
-        ]),
+        new CopyWebpackPlugin({
+            patterns: [
+                {from: 'sounds', to: 'sounds'},
+                {from: 'node_modules/@fortawesome/fontawesome-free/sprites/solid.svg', to: '@fortawesome/fontawesome-free/sprites/solid.svg'},
+                {from: 'images/favicon.ico', to: 'images/favicon.ico'},
+                {from: 'images/custom_emojis', to: 'images/custom_emojis'},
+                {from: 'logo/conversejs-filled-192.png', to: 'images/logo'},
+                {from: 'logo/conversejs-filled-512.png', to: 'images/logo'},
+                {from: 'logo/conversejs-filled-192.svg', to: 'images/logo'},
+                {from: 'logo/conversejs-filled-512.svg', to: 'images/logo'},
+                {from: 'sass/webfonts', to: 'webfonts'}
+            ]
+        }),
         new webpack.DefinePlugin({ // This makes it possible for us to safely use env vars on our code
             'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
         })

@@ -117,5 +117,6 @@
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^4.2.1",
     "xss": "^1.0.6"
-  }
+  },
+  "dependencies": {}
 }

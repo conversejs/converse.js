@@ -906,7 +906,7 @@ describe("Chatboxes", function () {
                 }));
             });
 
-            describe("An inactive notifciation", function () {
+            describe("An inactive notification", function () {
 
                 it("is sent if the user has stopped typing since 2 minutes",
                     mock.initConverse(
@@ -1056,7 +1056,7 @@ describe("Chatboxes", function () {
                 }));
             });
 
-            describe("A gone notifciation", function () {
+            describe("A gone notification", function () {
 
                 it("will be shown if received",
                     mock.initConverse(

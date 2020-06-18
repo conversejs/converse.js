@@ -15,7 +15,7 @@ const tpl_message = (o) => html`
         .hats=${o.hats}
         .model=${o.model}
         ?correcting=${o.correcting}
-        ?editable=${o.editable}
+        ?editable=${o.editable && !o.error}
         ?has_mentions=${o.has_mentions}
         ?is_delayed=${o.is_delayed}
         ?is_encrypted=${o.is_encrypted}

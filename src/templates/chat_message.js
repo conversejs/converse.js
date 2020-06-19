@@ -17,17 +17,18 @@ export default (o) => {
 
             ${ o.shouldShowAvatar() ? renderAvatar(o.getAvatarData()) : '' }
             <div class="chat-msg__content chat-msg__content--${o.sender} ${o.is_me_message ? 'chat-msg__content--action' : ''}">
-                <span class="chat-msg__heading">
-                    ${ (o.is_me_message) ? html`
-                        <time timestamp="${o.time}" class="chat-msg__time">${o.pretty_time}</time>
-                        ${o.hats.map(hat => html`<span class="badge badge-secondary">${hat}</span>`)}
-                    ` : '' }
-                    <span class="chat-msg__author">${ o.is_me_message ? '**' : ''}${o.username}</span>
-                    ${ !o.is_me_message ? o.renderAvatarByline() : '' }
-                    ${ o.is_encrypted ? html`<span class="fa fa-lock"></span>` : '' }
-                </span>
+
+                ${ !o.is_me_message ? html`
+                    <span class="chat-msg__heading">
+                        <span class="chat-msg__author">${o.username}</span>
+                        ${ o.renderAvatarByline() }
+                        ${ o.is_encrypted ? html`<span class="fa fa-lock"></span>` : '' }
+                    </span>` : '' }
                 <div class="chat-msg__body chat-msg__body--${o.message_type} ${o.received ? 'chat-msg__body--received' : '' } ${o.is_delayed ? 'chat-msg__body--delayed' : '' }">
                     <div class="chat-msg__message">
+                        ${ (o.is_me_message) ? html`
+                            <time timestamp="${o.time}" class="chat-msg__time">${o.pretty_time}</time>&nbsp;
+                            <span class="chat-msg__author">${ o.is_me_message ? '**' : ''}${o.username}</span>&nbsp;` : '' }
                         ${ o.is_retracted ? o.renderRetraction() : o.renderMessageText() }
                     </div>
                     <converse-message-actions

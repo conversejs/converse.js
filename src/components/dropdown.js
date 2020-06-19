@@ -102,7 +102,7 @@ export class DropdownList extends BaseDropdown {
     }
 
     handleKeyUp (ev) {
-        super.handleKeyUp();
+        super.handleKeyUp(ev);
         if (ev.keyCode === converse.keycodes.DOWN_ARROW && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
         }

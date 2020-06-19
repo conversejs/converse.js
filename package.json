@@ -72,7 +72,7 @@
     "bootstrap.native-loader": "2.0.0",
     "clean-css-cli": "^4.3.0",
     "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "^5.1.1",
+    "copy-webpack-plugin": "^6.0.2",
     "css-loader": "^3.5.3",
     "dayjs": "1.8.15",
     "eslint": "^6.8.0",
@@ -117,5 +117,6 @@
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^4.2.1",
     "xss": "^1.0.6"
-  }
+  },
+  "dependencies": {}
 }

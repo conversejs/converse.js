@@ -15,6 +15,7 @@ import log from "./log";
 import muc_utils from "./utils/muc";
 import st from "./utils/stanza";
 import u from "./utils/form";
+import p from "./utils/parse-helpers";
 
 export const ROLES = ['moderator', 'participant', 'visitor'];
 export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
@@ -941,74 +942,61 @@ converse.plugins.add('converse-muc', {
                 ])].filter(n => n);
             },
 
-            getReferenceForMention (mention, index) {
-                const nicknames = this.getAllKnownNicknames();
-                const longest_match = u.getLongestSubstring(mention, nicknames);
-                if (!longest_match) {
-                    return null;
-                }
-                if ((mention[longest_match.length] || '').match(/[A-Za-zäëïöüâêîôûáéíóúàèìòùÄËÏÖÜÂÊÎÔÛÁÉÍÓÚÀÈÌÒÙ0-9]/i)) {
-                    // avoid false positives, i.e. mentions that have
-                    // further alphabetical characters than our longest
-                    // match.
-                    return null;
-                }
+            getAllKnownNicknamesRegex () {
+                const longNickString = this.getAllKnownNicknames().join('|');
+                const escapedLongNickString = p.escapeRegexString(longNickString)
+                return RegExp(`(?:\\s|^)@(${escapedLongNickString})(?![\\w@-])`, 'ig');
+            },
 
-                let uri;
-                const occupant = this.occupants.findOccupant({'nick': longest_match}) ||
-                        u.isValidJID(longest_match) && this.occupants.findOccupant({'jid': longest_match});
+            getOccupantByJID (jid) {
+                return this.occupants.findOccupant({ jid });
+            },
 
-                if (occupant) {
-                    uri = occupant.get('jid') || `${this.get('jid')}/${occupant.get('nick')}`;
-                } else if (nicknames.includes(longest_match)) {
-                    // TODO: show a warning to the user that the person is not currently in the chat
-                    uri = `${this.get('jid')}/${longest_match}`;
-                } else {
-                    return;
-                }
-                const obj = {
-                    'begin': index,
-                    'end': index + longest_match.length,
-                    'value': longest_match,
-                    'type': 'mention',
-                    'uri': encodeURI(`xmpp:${uri}`)
+            getOccupantByNickname (nick) {
+                return this.occupants.findOccupant({ nick });
+            },
+
+            parseTextForReferences (original_message) {
+                if (!original_message) return ['', []];
+                const findRegexInMessage = p.matchRegexInText(original_message);
+                const raw_mentions = findRegexInMessage(p.mention_regex);
+                if (!raw_mentions) return [original_message, []];
+
+                const known_nicknames = this.getAllKnownNicknames();
+                const known_nicknames_with_at_regex = this.getAllKnownNicknamesRegex();
+                const getMatchesForNickRegex = nick_regex => [...findRegexInMessage(nick_regex)];
+                const getNicknameFromRegex = p.findFirstMatchInArray(known_nicknames);
+
+                const uriFromNickname = nickname => {
+                    const jid = this.get('jid');
+                    const occupant  = this.getOccupant(nickname) || this.getOccupant(jid);
+                    const uri = (occupant && occupant.get('jid')) || `${jid}/${nickname}`;
+                    return encodeURI(`xmpp:${uri}`);
                 };
-                return obj;
-            },
 
-            extractReference (text, index) {
-                for (let i=index; i<text.length; i++) {
-                    if (text[i] === '@' && (i === 0 || text[i - 1] === ' ')) {
-                        const match = text.slice(i+1),
-                              ref = this.getReferenceForMention(match, i);
-                        if (ref) {
-                            return [text.slice(0, i) + match, ref, i]
-                        }
-                    }
+                const matchToReference = match => {
+                    const at_sign_index = match[0].indexOf('@');
+                    const begin = match.index + at_sign_index;
+                    const end = begin + match[0].length - at_sign_index;
+                    const value = getNicknameFromRegex(RegExp(match[1], 'i'));
+                    const type = 'mention';
+                    const uri = uriFromNickname(value);
+                    return { begin, end, value, type, uri }
                 }
-                return;
+
+                const mentions = getMatchesForNickRegex(known_nicknames_with_at_regex);
+                const references = mentions.map(matchToReference);
+
+                const [updated_message, updated_references] = p.reduceTextFromReferences(
+                    original_message,
+                    references
+                );
+                return [updated_message, updated_references];
             },
 
-            parseTextForReferences (text) {
-                const refs = [];
-                let index = 0;
-                while (index < (text || '').length) {
-                    const result = this.extractReference(text, index);
-                    if (result) {
-                        text = result[0]; // @ gets filtered out
-                        refs.push(result[1]);
-                        index = result[2];
-                    } else {
-                        break;
-                    }
-                }
-                return [text, refs];
-            },
-
-            getOutgoingMessageAttributes (text, spoiler_hint) {
+            getOutgoingMessageAttributes (original_message, spoiler_hint) {
                 const is_spoiler = this.get('composing_spoiler');
-                var references;
-                [text, references] = this.parseTextForReferences(text);
+                const [text, references] = this.parseTextForReferences(original_message);
                 const origin_id = u.getUniqueId();
                 const body = text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined;
                 return {
@@ -1393,13 +1381,13 @@ converse.plugins.add('converse-muc', {
             /**
              * @private
              * @method _converse.ChatRoom#getOccupant
-             * @param { String } nick_or_jid - The nickname or JID of the occupant to be returned
+             * @param { String } nickname_or_jid - The nickname or JID of the occupant to be returned
              * @returns { _converse.ChatRoomOccupant }
              */
-            getOccupant (nick_or_jid) {
-                return (u.isValidJID(nick_or_jid) &&
-                    this.occupants.findWhere({'jid': nick_or_jid})) ||
-                    this.occupants.findWhere({'nick': nick_or_jid});
+            getOccupant (nickname_or_jid) {
+                return u.isValidJID(nickname_or_jid)
+                    ? this.getOccupantByJID(nickname_or_jid)
+                    : this.getOccupantByNickname(nickname_or_jid);
             },
 
             /**
@@ -1612,16 +1600,14 @@ converse.plugins.add('converse-muc', {
                     return true;
                 }
                 const occupant = this.occupants.findOccupant(data);
-                if (data.type === 'unavailable' && occupant) {
-                    if (!data.states.includes(converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
-                        // We only destroy the occupant if this is not a nickname change operation.
-                        // and if they're not on the member lists.
-                        // Before destroying we set the new data, so
-                        // that we can show the disconnection message.
-                        occupant.set(data);
-                        occupant.destroy();
-                        return;
-                    }
+                // Destroy an unavailable occupant if this isn't a nick change operation and if they're not affiliated
+                if (data.type === 'unavailable' && occupant &&
+                        !data.states.includes(converse.MUC_NICK_CHANGED_CODE) &&
+                        !['admin', 'owner', 'member'].includes(data['affiliation'])) {
+                    // Before destroying we set the new data, so that we can show the disconnection message
+                    occupant.set(data);
+                    occupant.destroy();
+                    return;
                 }
                 const jid = data.jid || '';
                 const attributes = Object.assign(data, {

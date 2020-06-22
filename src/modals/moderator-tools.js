@@ -147,7 +147,7 @@ export default BootstrapModal.extend({
         this.model.set({'affiliation': affiliation});
     },
 
-    assignAffiliation (ev) {
+    async assignAffiliation (ev) {
         ev.stopPropagation();
         ev.preventDefault();
         const data = new FormData(ev.target);
@@ -157,17 +157,23 @@ export default BootstrapModal.extend({
             'reason': data.get('reason')
         }
         const current_affiliation = this.model.get('affiliation');
-        this.chatroomview.model.setAffiliation(affiliation, [attrs])
-            .then(async () => {
-                this.alert(__('Affiliation changed'), 'primary');
-                await this.chatroomview.model.occupants.fetchMembers()
-                this.model.set({'affiliation': null}, {'silent': true});
-                this.model.set({'affiliation': current_affiliation});
-            })
-            .catch(err => {
+        try {
+            await this.chatroomview.model.setAffiliation(affiliation, [attrs]);
+        } catch (e) {
+            if (e === null) {
+                this.alert(__('Timeout error while trying to set the affiliation'), 'danger');
+            } else if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
+                this.alert(__('Sorry, you\'re not allowed to make that change'), 'danger');
+            } else {
                 this.alert(__('Sorry, something went wrong while trying to set the affiliation'), 'danger');
-                log.error(err);
-            });
+            }
+            log.error(e);
+            return;
+        }
+        this.alert(__('Affiliation changed'), 'primary');
+        await this.chatroomview.model.occupants.fetchMembers()
+        this.model.set({'affiliation': null}, {'silent': true});
+        this.model.set({'affiliation': current_affiliation});
     },
 
     assignRole (ev) {

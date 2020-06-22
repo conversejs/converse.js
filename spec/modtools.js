@@ -7,6 +7,18 @@ const sizzle = converse.env.sizzle;
 const Strophe = converse.env.Strophe;
 const u = converse.env.utils;
 
+
+async function openModtools (view) {
+    const textarea = view.el.querySelector('.chat-textarea');
+    textarea.value = '/modtools';
+    const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+    view.onKeyDown(enter);
+    await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
+    const modal = view.modtools_modal;
+    await u.waitUntil(() => u.isVisible(modal.el), 1000);
+    return modal;
+}
+
 describe("The groupchat moderator tool", function () {
 
     it("allows you to set affiliations and roles",
@@ -28,14 +40,7 @@ describe("The groupchat moderator tool", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 5), 1000);
 
-        const textarea = view.el.querySelector('.chat-textarea');
-        textarea.value = '/modtools';
-        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-        view.onKeyDown(enter);
-        await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
-
-        const modal = view.modtools_modal;
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        const modal = await openModtools(view);
         let tab = modal.el.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
@@ -156,16 +161,9 @@ describe("The groupchat moderator tool", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 6), 1000);
 
-        const textarea = view.el.querySelector('.chat-textarea');
-        textarea.value = '/modtools';
-        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-        view.onKeyDown(enter);
-        await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
-
-        const modal = view.modtools_modal;
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
+        const modal = await openModtools(view);
         const select = modal.el.querySelector('.select-affiliation');
         expect(select.value).toBe('owner');
         select.value = 'member';
@@ -328,15 +326,7 @@ describe("The groupchat moderator tool", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 5));
-
-        const textarea = view.el.querySelector('.chat-textarea');
-        textarea.value = '/modtools';
-        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-        view.onKeyDown(enter);
-        await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
-
-        const modal = view.modtools_modal;
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        const modal = await openModtools(view);
         const tab = modal.el.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
@@ -371,6 +361,73 @@ describe("The groupchat moderator tool", function () {
         done();
     }));
 
+    it("shows an error message if a particular affiliation may not be set",
+        mock.initConverse(
+            ['rosterGroupsFetched'], {},
+            async function (done, _converse) {
+
+        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
+        const muc_jid = 'lounge@montague.lit';
+        const members = [
+            {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
+            {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'},
+        ];
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        const view = _converse.chatboxviews.get(muc_jid);
+        await u.waitUntil(() => (view.model.occupants.length === 2));
+        const modal = await openModtools(view);
+        // Clear so that we don't match older stanzas
+        _converse.connection.IQ_stanzas = [];
+
+        const tab = modal.el.querySelector('#affiliations-tab');
+        tab.click();
+        const select = modal.el.querySelector('.select-affiliation');
+        select.value = 'member';
+        const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
+        button.click();
+        await u.waitUntil(() => !modal.loading_users_with_affiliation);
+        const user_els = modal.el.querySelectorAll('.list-group--users > li');
+        expect(user_els.length).toBe(1);
+
+        const toggle = user_els[0].querySelector('.list-group-item:nth-child(3n) .toggle-form');
+        const form = user_els[0].querySelector('.list-group-item:nth-child(3n) .affiliation-form');
+        expect(u.hasClass('hidden', form)).toBeTruthy();
+        toggle.click();
+        expect(u.hasClass('hidden', form)).toBeFalsy();
+        const change_affiliation_dropdown = form.querySelector('.select-affiliation');
+        expect(change_affiliation_dropdown.value).toBe('member');
+        change_affiliation_dropdown.value = 'admin';
+        const input = form.querySelector('input[name="reason"]');
+        input.value = "You're an admin now";
+        const submit = form.querySelector('.btn-primary');
+        submit.click();
+
+        const sent_IQ = _converse.connection.IQ_stanzas.pop();
+        expect(Strophe.serialize(sent_IQ)).toBe(
+            `<iq id="${sent_IQ.getAttribute('id')}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
+                `<query xmlns="http://jabber.org/protocol/muc#admin">`+
+                    `<item affiliation="admin" jid="gower@shakespeare.lit">`+
+                        `<reason>You&apos;re an admin now</reason>`+
+                    `</item>`+
+                `</query>`+
+            `</iq>`);
+
+        const error = u.toStanza(
+            `<iq from="${muc_jid}"
+                 id="${sent_IQ.getAttribute('id')}"
+                 type="error"
+                 to="${_converse.jid}">
+
+                 <error type="cancel">
+                    <not-allowed xmlns="${Strophe.NS.STANZAS}"/>
+                 </error>
+            </iq>`);
+        _converse.connection._dataRecv(mock.createRequest(error));
+
+        done();
+    }));
+
+
     it("doesn't allow admins to make more admins",
         mock.initConverse(
             ['rosterGroupsFetched'], {},
@@ -386,15 +443,7 @@ describe("The groupchat moderator tool", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 3));
-
-        const textarea = view.el.querySelector('.chat-textarea');
-        textarea.value = '/modtools';
-        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
-        view.onKeyDown(enter);
-        await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
-
-        const modal = view.modtools_modal;
-        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        const modal = await openModtools(view);
         const tab = modal.el.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];

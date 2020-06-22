@@ -1592,8 +1592,6 @@ describe("A Chat Message", function () {
                  */
                 const error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                let fullname = _converse.xmppstatus.get('fullname'); // eslint-disable-line no-unused-vars
-                fullname = _.isEmpty(fullname) ? _converse.bare_jid: fullname;
                 await _converse.api.chats.open(sender_jid)
                 let msg_text = 'This message will not be sent, due to an error';
                 const view = _converse.api.chatviews.get(sender_jid);

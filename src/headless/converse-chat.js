@@ -951,21 +951,23 @@ converse.plugins.add('converse-chat', {
             getOutgoingMessageAttributes (text, spoiler_hint) {
                 const is_spoiler = this.get('composing_spoiler');
                 const origin_id = u.getUniqueId();
+                const body = text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined;
                 return {
-                    'id': origin_id,
-                    'jid': this.get('jid'),
-                    'nickname': this.get('nickname'),
-                    'msgid': origin_id,
-                    'origin_id': origin_id,
-                    'fullname': _converse.xmppstatus.get('fullname'),
                     'from': _converse.bare_jid,
+                    'fullname': _converse.xmppstatus.get('fullname'),
+                    'id': origin_id,
                     'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
+                    'jid': this.get('jid'),
+                    'message': body,
+                    'msgid': origin_id,
+                    'nickname': this.get('nickname'),
                     'sender': 'me',
-                    'time': (new Date()).toISOString(),
-                    'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
-                    'is_spoiler': is_spoiler,
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
-                    'type': this.get('message_type')
+                    'time': (new Date()).toISOString(),
+                    'type': this.get('message_type'),
+                    body,
+                    is_spoiler,
+                    origin_id
                 }
             },
 

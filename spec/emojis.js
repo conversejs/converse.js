@@ -100,7 +100,6 @@ describe("Emojis", function () {
             done();
         }));
 
-
         it("allows you to search for particular emojis",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -238,6 +237,52 @@ describe("Emojis", function () {
             message = view.content.querySelector('.message:last-child .chat-msg__text');
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
             done()
+        }));
+
+
+        it("can show custom emojis",
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'],
+                { emoji_categories: {
+                    "smileys": ":grinning:",
+                    "people": ":thumbsup:",
+                    "activity": ":soccer:",
+                    "travel": ":motorcycle:",
+                    "objects": ":bomb:",
+                    "nature": ":rainbow:",
+                    "food": ":hotdog:",
+                    "symbols": ":musical_note:",
+                    "flags": ":flag_ac:",
+                    "custom": ':xmpp:'
+                } },
+                async function (done, _converse) {
+
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
+
+            const toolbar = await u.waitUntil(() => view.el.querySelector('ul.chat-toolbar'));
+            expect(toolbar.querySelectorAll('li.toggle-smiley__container').length).toBe(1);
+            toolbar.querySelector('a.toggle-smiley').click();
+            await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')), 1000);
+            const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'), 1000);
+            const custom_category = picker.querySelector('.pick-category[data-category="custom"]');
+            expect(custom_category.innerHTML.replace(/<!---->/g, '').trim()).toBe(
+                '<img class="emoji" draggable="false" title=":xmpp:" alt=":xmpp:" src="/dist/images/custom_emojis/xmpp.png">');
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = 'Running tests for :converse:';
+            view.onKeyDown({
+                target: textarea,
+                preventDefault: function preventDefault () {},
+                keyCode: 13 // Enter
+            });
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            const body = view.el.querySelector('converse-chat-message-body');
+            expect(body.innerHTML.replace(/<!---->/g, '').trim()).toBe(
+                'Running tests for <img class="emoji" draggable="false" title=":converse:" alt=":converse:" src="/dist/images/custom_emojis/converse.png">');
+            done();
         }));
     });
 });

@@ -30,12 +30,12 @@ class MessageBodyRenderer extends String {
         text = text.replace(/\n\n+/g, '\n\n');
         text = u.geoUriToHttp(text, _converse.geouri_replacement);
 
-        const process = (text) => {
-            text = u.addEmoji(text);
-            return addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox);
-        }
-        const list = await Promise.all(u.addHyperlinks(text));
-        this.list = list.reduce((acc, i) => isString(i) ? [...acc, ...process(i)] : [...acc, i], []);
+        let list = await Promise.all(u.addHyperlinks(text));
+
+        list = list.reduce((acc, i) => isString(i) ? [...acc, ...u.addEmoji(i)] : [...acc, i], []);
+
+        const addMentions = text => addMentionsMarkup(text, this.model.get('references'), this.model.collection.chatbox)
+        list = list.reduce((acc, i) => isString(i) ? [...acc, ...addMentions(i)] : [...acc, i], []);
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text
          * after the default transformations have been applied.
@@ -45,8 +45,7 @@ class MessageBodyRenderer extends String {
          * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
          */
         await api.trigger('afterMessageBodyTransformed', this.model, text, {'Synchronous': true});
-
-        return this.list;
+        return list;
     }
 
     async render () {

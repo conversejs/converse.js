@@ -12,6 +12,7 @@ module.exports = function(config) {
       { pattern: "dist/emojis.js", served: true },
       "dist/converse.js",
       "dist/converse.css",
+      { pattern: "dist/images/**/*.*", included: false },
       { pattern: "dist/webfonts/**/*.*", included: false },
       { pattern: "dist/\@fortawesome/fontawesome-free/sprites/solid.svg",
         watched: false,
@@ -60,7 +61,8 @@ module.exports = function(config) {
     ],
 
     proxies: {
-      "/dist/\@fortawesome/fontawesome-free/sprites/solid.svg": "/base/dist/\@fortawesome/fontawesome-free/sprites/solid.svg"
+      "/dist/\@fortawesome/fontawesome-free/sprites/solid.svg": "/base/dist/\@fortawesome/fontawesome-free/sprites/solid.svg",
+      "/dist/images/custom_emojis/": "/base/dist/images/custom_emojis/"
     },
 
     client: {

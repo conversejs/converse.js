@@ -964,8 +964,6 @@ converse.plugins.add('converse-muc', {
                 if (!raw_mentions) return [original_message, []];
 
                 const known_nicknames = this.getAllKnownNicknames();
-                const known_nicknames_with_at_regex = this.getAllKnownNicknamesRegex();
-                const getMatchesForNickRegex = nick_regex => [...findRegexInMessage(nick_regex)];
                 const getMatchingNickname = p.findFirstMatchInArray(known_nicknames);
 
                 const uriFromNickname = nickname => {
@@ -985,7 +983,7 @@ converse.plugins.add('converse-muc', {
                     return { begin, end, value, type, uri }
                 }
 
-                const mentions = getMatchesForNickRegex(known_nicknames_with_at_regex);
+                const mentions = [...findRegexInMessage(this.getAllKnownNicknamesRegex())];
                 const references = mentions.map(matchToReference);
 
                 const [updated_message, updated_references] = p.reduceTextFromReferences(

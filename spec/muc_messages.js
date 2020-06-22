@@ -991,7 +991,7 @@ describe("A Groupchat Message", function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
             const view = _converse.api.chatviews.get(muc_jid);
-            ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve'].forEach((nick) => {
+            ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve', 'robot'].forEach((nick) => {
                 _converse.connection._dataRecv(mock.createRequest(
                     $pres({
                         'to': 'tom@montague.lit/resource',
@@ -1017,7 +1017,12 @@ describe("A Groupchat Message", function () {
             await view.model.handleMessageStanza(stanza);
 
             // Run a few unit tests for the parseTextForReferences method
-            let [text, references] = view.model.parseTextForReferences('hello z3r0')
+            let [text, references] = view.model.parseTextForReferences('yo @robot')
+            expect(text).toBe('yo robot');
+            expect(references)
+                .toEqual([{"begin":3,"end":8,"value":"robot","type":"mention","uri":"xmpp:robot@montague.lit"}]);
+
+            [text, references] = view.model.parseTextForReferences('hello z3r0')
             expect(references.length).toBe(0);
             expect(text).toBe('hello z3r0');
 

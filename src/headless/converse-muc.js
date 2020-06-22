@@ -965,7 +965,7 @@ converse.plugins.add('converse-muc', {
                 const known_nicknames = this.getAllKnownNicknames();
                 const known_nicknames_with_at_regex = this.getAllKnownNicknamesRegex();
                 const getMatchesForNickRegex = nick_regex => [...findRegexInMessage(nick_regex)];
-                const getNicknameFromRegex = p.findFirstMatchInArray(known_nicknames);
+                const getMatchingNickname = p.findFirstMatchInArray(known_nicknames);
 
                 const uriFromNickname = nickname => {
                     const jid = this.get('jid');
@@ -978,7 +978,7 @@ converse.plugins.add('converse-muc', {
                     const at_sign_index = match[0].indexOf('@');
                     const begin = match.index + at_sign_index;
                     const end = begin + match[0].length - at_sign_index;
-                    const value = getNicknameFromRegex(RegExp(match[1], 'i'));
+                    const value = getMatchingNickname(match[1]);
                     const type = 'mention';
                     const uri = uriFromNickname(value);
                     return { begin, end, value, type, uri }

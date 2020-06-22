@@ -370,4 +370,86 @@ describe("The groupchat moderator tool", function () {
         expect(user_els[0].textContent.trim()).toBe('Error: not allowed to fetch outcast list for MUC lounge@montague.lit');
         done();
     }));
+
+    it("doesn't allow admins to make more admins",
+        mock.initConverse(
+            ['rosterGroupsFetched'], {},
+            async function (done, _converse) {
+
+        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
+        const muc_jid = 'lounge@montague.lit';
+        const members = [
+            {'jid': 'hag66@shakespeare.lit', 'nick': 'witch', 'affiliation': 'member'},
+            {'jid': 'gower@shakespeare.lit', 'nick': 'gower', 'affiliation': 'member'},
+            {'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'admin'},
+        ];
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        const view = _converse.chatboxviews.get(muc_jid);
+        await u.waitUntil(() => (view.model.occupants.length === 3));
+
+        const textarea = view.el.querySelector('.chat-textarea');
+        textarea.value = '/modtools';
+        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+        view.onKeyDown(enter);
+        await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
+
+        const modal = view.modtools_modal;
+        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        const tab = modal.el.querySelector('#affiliations-tab');
+        // Clear so that we don't match older stanzas
+        _converse.connection.IQ_stanzas = [];
+        tab.click();
+        const show_affiliation_dropdown = modal.el.querySelector('.select-affiliation');
+        show_affiliation_dropdown.value = 'member';
+        const button = modal.el.querySelector('.btn-primary[name="users_with_affiliation"]');
+        button.click();
+
+        await u.waitUntil(() => !modal.loading_users_with_affiliation);
+        const user_els = modal.el.querySelectorAll('.list-group--users > li');
+        expect(user_els.length).toBe(2);
+
+        let change_affiliation_dropdown = user_els[0].querySelector('.select-affiliation');
+        expect(Array.from(change_affiliation_dropdown.options).map(o => o.value)).toEqual(['member', 'outcast', 'none']);
+
+        change_affiliation_dropdown = user_els[1].querySelector('.select-affiliation');
+        expect(Array.from(change_affiliation_dropdown.options).map(o => o.value)).toEqual(['member', 'outcast', 'none']);
+        done();
+    }));
+
+    it("lets the assignable affiliations and roles be configured via modtools_disable_assign",
+        mock.initConverse(
+            ['rosterGroupsFetched'], {},
+            async function (done, _converse) {
+
+        spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
+        const muc_jid = 'lounge@montague.lit';
+        const members = [{'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'}];
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
+        const view = _converse.chatboxviews.get(muc_jid);
+        const textarea = view.el.querySelector('.chat-textarea');
+        textarea.value = '/modtools';
+        const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
+        view.onKeyDown(enter);
+        await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
+
+        const modal = view.modtools_modal;
+        const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
+
+        expect(modal.getAssignableAffiliations(occupant)).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);
+
+        _converse.api.settings.set('modtools_disable_assign', ['owner']);
+        expect(modal.getAssignableAffiliations(occupant)).toEqual(['admin', 'member', 'outcast', 'none']);
+
+        _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin']);
+        expect(modal.getAssignableAffiliations(occupant)).toEqual(['member', 'outcast', 'none']);
+
+        _converse.api.settings.set('modtools_disable_assign', ['owner', 'admin', 'outcast']);
+        expect(modal.getAssignableAffiliations(occupant)).toEqual(['member', 'none']);
+
+        expect(modal.getAssignableRoles(occupant)).toEqual(['moderator', 'participant', 'visitor']);
+
+        _converse.api.settings.set('modtools_disable_assign', ['admin', 'moderator']);
+        expect(modal.getAssignableRoles(occupant)).toEqual(['participant', 'visitor']);
+        done();
+    }));
 });

@@ -4,7 +4,7 @@ import tpl_moderator_tools_modal from "../templates/moderator_tools_modal.js";
 import { AFFILIATIONS, ROLES } from "@converse/headless/converse-muc.js";
 import { BootstrapModal } from "../converse-modal.js";
 import { __ } from '@converse/headless/i18n';
-import { converse } from "@converse/headless/converse-core";
+import { api, converse } from "@converse/headless/converse-core";
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
@@ -66,23 +66,27 @@ export default BootstrapModal.extend({
     },
 
     getAssignableAffiliations (occupant) {
-        const disabled = _converse.modtools_disable_assign;
+        let disabled = api.settings.get('modtools_disable_assign');
         if (!Array.isArray(disabled)) {
-            return disabled ? [] : AFFILIATIONS;
-        } else if (occupant.get('affiliation') === 'owner') {
+            disabled = disabled ? AFFILIATIONS : [];
+        }
+
+        if (occupant.get('affiliation') === 'owner') {
             return AFFILIATIONS.filter(a => !disabled.includes(a));
         } else if (occupant.get('affiliation') === 'admin') {
-            return AFFILIATIONS.filter(a => !['owner', ...disabled].includes(a));
+            return AFFILIATIONS.filter(a => !['owner', 'admin', ...disabled].includes(a));
         } else {
             return [];
         }
     },
 
     getAssignableRoles (occupant) {
-        const disabled = _converse.modtools_disable_assign;
+        let disabled = api.settings.get('modtools_disable_assign');
         if (!Array.isArray(disabled)) {
-            return disabled ? [] : ROLES;
-        } else if (occupant.get('role') === 'moderator') {
+            disabled = disabled ? ROLES : [];
+        }
+
+        if (occupant.get('role') === 'moderator') {
             return ROLES.filter(r => !disabled.includes(r));
         } else {
             return [];

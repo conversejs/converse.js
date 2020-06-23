@@ -64,16 +64,18 @@ describe("Emojis", function () {
             expect(visible_emojis[2].getAttribute('data-emoji')).toBe(':grinning:');
 
             // Test that TAB autocompletes the to first match
-            view.emoji_picker_view.onKeyDown(tab_event);
+            input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
+
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji', picker).length === 1);
             visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
-            expect(visible_emojis.length).toBe(1);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
             expect(input.value).toBe(':grimacing:');
 
             // Check that ENTER now inserts the match
             const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input});
-            view.emoji_picker_view.onKeyDown(enter_event);
-            expect(input.value).toBe('');
+            input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
+
+            await u.waitUntil(() => input.value === '');
             expect(textarea.value).toBe(':grimacing: ');
 
             // Test that username starting with : doesn't cause issues
@@ -124,8 +126,9 @@ describe("Emojis", function () {
                 'preventDefault': function preventDefault () {},
                 'stopPropagation': function stopPropagation () {}
             };
-            view.emoji_picker_view.onKeyDown(event);
-            await u.waitUntil(() => view.emoji_picker_view.model.get('query') === 'smiley');
+            input.dispatchEvent(new KeyboardEvent('keydown', event));
+
+            await u.waitUntil(() => view.emoji_picker_view.model.get('query') === 'smiley', 1000);
             let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
             expect(visible_emojis.length).toBe(2);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':smiley:');
@@ -133,26 +136,28 @@ describe("Emojis", function () {
 
             // Check that pressing enter without an unambiguous match does nothing
             const enter_event = Object.assign({}, event, {'keyCode': 13});
-            view.emoji_picker_view.onKeyDown(enter_event);
+            input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
             expect(input.value).toBe('smiley');
 
             // Test that TAB autocompletes the to first match
             const tab_event = Object.assign({}, event, {'keyCode': 9, 'key': 'Tab'});
-            view.emoji_picker_view.onKeyDown(tab_event);
-            expect(input.value).toBe(':smiley:');
+            input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
+
+            await u.waitUntil(() => input.value === ':smiley:');
             visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
             expect(visible_emojis.length).toBe(1);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':smiley:');
 
             // Check that ENTER now inserts the match
-            view.emoji_picker_view.onKeyDown(enter_event);
-            expect(input.value).toBe('');
+            input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
+            await u.waitUntil(() => input.value === '');
             expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':smiley: ');
             done();
         }));
     });
 
     describe("A Chat Message", function () {
+
         it("will display larger if it's only emojis",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {'use_system_emojis': true},

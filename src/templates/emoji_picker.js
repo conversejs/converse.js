@@ -1,6 +1,8 @@
-import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
+import { _converse, api } from "@converse/headless/converse-core";
+import { html } from "lit-html";
 
+const u = converse.env.utils;
 
 const i18n_search = __('Search');
 const i18n_search_results = __('Search results');
@@ -11,7 +13,7 @@ const emoji_category = (o) => {
     return html`
         <li data-category="${o.category}"
             class="emoji-category ${o.category} ${(o.current_category === o.category) ? 'picked' : ''}"
-            title="${__(o._converse.emoji_category_labels[o.category])}">
+            title="${__(_converse.emoji_category_labels[o.category])}">
 
             <a class="pick-category"
                @click=${o.onCategoryPicked}
@@ -45,7 +47,7 @@ const search_results = (o) => html`
 `;
 
 const emojis_for_category = (o) => html`
-    <a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}">${ __(o._converse.api.settings.get('emoji_category_labels')[o.category]) }</a>
+    <a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}">${ __(api.settings.get('emoji_category_labels')[o.category]) }</a>
     <ul class="emoji-picker" data-category="${o.category}">
         ${ Object.values(o.emojis_by_category[o.category]).map(emoji => emoji_item(Object.assign({emoji}, o))) }
     </ul>
@@ -68,21 +70,27 @@ const all_emojis = (o) => html`
 `;
 
 
-export default (o) => html`
-    <div class="emoji-picker__header">
-        <input class="form-control emoji-search" name="emoji-search" placeholder="${i18n_search}"
-               .value=${o.query || ''}
-               @keydown=${o.onSearchInputKeyDown}
-               @blur=${o.onSearchInputBlurred}
-               @focus=${o.onSearchInputFocus}>
-        ${ o.query ? '' : emoji_picker_header(o) }
-    </div>
-    <div class="emoji-picker__lists">
-        ${search_results(o)}
-        ${all_emojis(o)}
-    </div>
-    <div class="emoji-skintone-picker">
-        <label>Skin tone</label>
-        <ul>${ skintones.map(skintone => skintone_emoji(Object.assign({skintone}, o))) }</ul>
-    </div>
-`;
+export default (o) => {
+    o.emoji_categories = api.settings.get('emoji_categories');
+    o.emojis_by_category = _converse.emojis.json;
+    o.transform = u.getEmojiRenderer();
+    o.toned_emojis = _converse.emojis.toned;
+
+    return html`
+        <div class="emoji-picker__header">
+            <input class="form-control emoji-search" name="emoji-search" placeholder="${i18n_search}"
+                .value=${o.query || ''}
+                @keydown=${o.onSearchInputKeyDown}
+                @blur=${o.onSearchInputBlurred}
+                @focus=${o.onSearchInputFocus}>
+            ${ o.query ? '' : emoji_picker_header(o) }
+        </div>
+        <div class="emoji-picker__lists">
+            ${search_results(o)}
+            ${all_emojis(o)}
+        </div>
+        <div class="emoji-skintone-picker">
+            <label>Skin tone</label>
+            <ul>${ skintones.map(skintone => skintone_emoji(Object.assign({skintone}, o))) }</ul>
+        </div>`;
+}

@@ -331,7 +331,9 @@ converse.plugins.add('converse-emoji-views', {
                 } else if (ev.keyCode === converse.keycodes.ENTER) {
                     this.onEnterPressed(ev);
                 } else if (ev.keyCode === converse.keycodes.ESCAPE) {
-                    document.querySelector('.chat-textarea').focus();
+                    this.chatview.el.querySelector('.chat-textarea').focus();
+                    ev.stopPropagation();
+                    ev.preventDefault();
                 } else if (
                     ev.keyCode !== converse.keycodes.ENTER &&
                     ev.keyCode !== converse.keycodes.DOWN_ARROW

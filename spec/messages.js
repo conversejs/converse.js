@@ -1683,6 +1683,16 @@ describe("A Chat Message", function () {
                 await u.waitUntil(() => view.model.messages.length > 3);
                 await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(view.content.querySelectorAll('.chat-error').length).toEqual(1);
+
+                // Ensure messages with error are not editable
+                document.querySelectorAll('.chat-msg__actions').forEach(elem => {
+                    expect(elem.querySelector('.chat-msg__action-edit')).toBe(null)
+                })
+                view.model.messages.forEach(message => {
+                    const isEditable = message.get('editable');
+                    isEditable && expect(isEditable).toBe(false);
+                })
+
                 done();
             }));
 

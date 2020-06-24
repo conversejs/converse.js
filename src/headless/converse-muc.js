@@ -631,6 +631,7 @@ converse.plugins.add('converse-muc', {
                         'error_condition': attrs.error_condition,
                         'error_text': attrs.error_text,
                         'error_type': attrs.error_type,
+                        'editable': false,
                     };
                     if (attrs.msgid === message.get('retraction_id')) {
                         // The error message refers to a retraction

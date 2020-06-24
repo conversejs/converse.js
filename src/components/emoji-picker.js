@@ -43,7 +43,7 @@ export class EmojiPicker extends CustomElement {
             'query': this.query,
             'search_results': this.search_results,
             'shouldBeHidden': shortname => this.shouldBeHidden(shortname),
-            'transformCategory': shortname => u.getEmojiRenderer()(this.getTonedShortname(shortname))
+            'transformCategory': shortname => u.shortnamesToEmojis(this.getTonedShortname(shortname))
         });
     }
 

@@ -951,7 +951,7 @@ converse.plugins.add('converse-chat', {
             getOutgoingMessageAttributes (text, spoiler_hint) {
                 const is_spoiler = this.get('composing_spoiler');
                 const origin_id = u.getUniqueId();
-                const body = text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined;
+                const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
                 return {
                     'from': _converse.bare_jid,
                     'fullname': _converse.xmppstatus.get('fullname'),

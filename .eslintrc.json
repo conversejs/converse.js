@@ -117,7 +117,7 @@
         "no-console": "off",
         "no-catch-shadow": "off",
         "no-cond-assign": [
-            "error",
+            "off",
             "except-parens"
         ],
         "no-confusing-arrow": "off",

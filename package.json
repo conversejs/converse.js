@@ -56,10 +56,10 @@
     "browser": "*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
+    "@babel/cli": "^7.10.3",
     "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.1",
-    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.10.3",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.10.2",
     "@converse/headless": "file:src/headless",
@@ -91,7 +91,7 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-cli": "^2.0.0",
     "karma-jasmine": "^3.1.1",
-    "karma-jasmine-html-reporter": "^1.5.3",
+    "karma-jasmine-html-reporter": "^1.5.4",
     "karma-webpack": "^4.0.2",
     "lerna": "^3.22.1",
     "lit-element": "^2.3.1",
@@ -100,7 +100,7 @@
     "mini-css-extract-plugin": "^0.9.0",
     "minimist": "^1.2.3",
     "node-sass": "^4.14.0",
-    "npm": "^6.14.4",
+    "npm": "^6.14.5",
     "po-loader": "^0.5.0",
     "po2json": "^1.0.0-beta",
     "postcss-clean": "^1.1.0",
@@ -116,7 +116,7 @@
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^4.2.1",
-    "xss": "^1.0.6"
+    "xss": "^1.0.7"
   },
   "dependencies": {}
 }

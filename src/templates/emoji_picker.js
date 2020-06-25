@@ -18,26 +18,26 @@ const emoji_category = (o) => {
             <a class="pick-category"
                @click=${o.onCategoryPicked}
                href="#emoji-picker-${o.category}"
-               data-category="${o.category}">${o.transformCategory(o.emoji_categories[o.category])} </a>
+               data-category="${o.category}">${o.emoji} </a>
         </li>
     `;
 }
 
-const emoji_picker_header = (o) => html`
-    <ul>
-        ${ Object.keys(o.emoji_categories).map(category => (o.emoji_categories[category] ? emoji_category(Object.assign({category}, o)) : '')) }
-    </ul>
-`;
+const emoji_picker_header = (o) => {
+    const cats = api.settings.get('emoji_categories');
+    const transform = c => cats[c] ? emoji_category(Object.assign({'category': c, 'emoji': o.sn2Emoji(cats[c])}, o)) : '';
+    return html`<ul>${ Object.keys(cats).map(transform) }</ul>`;
+}
 
 const emoji_item = (o) => {
     return html`
         <li class="emoji insert-emoji ${o.shouldBeHidden(o.emoji.sn) ? 'hidden' : ''}" data-emoji="${o.emoji.sn}" title="${o.emoji.sn}">
-            <a href="#" @click=${o.onEmojiPicked} data-emoji="${o.emoji.sn}">${u.shortnamesToEmojis(o.emoji.sn)}</a>
+            <a href="#" @click=${o.insertEmoji} data-emoji="${o.emoji.sn}">${u.shortnamesToEmojis(o.emoji.sn)}</a>
         </li>
     `;
 }
 
-const search_results = (o) => html`
+export const tpl_search_results = (o) => html`
     <span ?hidden=${!o.query} class="emoji-lists__container emojis-lists__container--search">
     <a id="emoji-picker-search-results" class="emoji-category__heading">${i18n_search_results}</a>
     <ul class="emoji-picker">
@@ -46,33 +46,33 @@ const search_results = (o) => html`
     </span>
 `;
 
-const emojis_for_category = (o) => html`
-    <a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}">${ __(api.settings.get('emoji_category_labels')[o.category]) }</a>
-    <ul class="emoji-picker" data-category="${o.category}">
-        ${ Object.values(o.emojis_by_category[o.category]).map(emoji => emoji_item(Object.assign({emoji}, o))) }
-    </ul>
-`;
+const emojis_for_category = (o) => {
+    const emojis_by_category = _converse.emojis.json;
+    return html`
+        <a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}">${ __(api.settings.get('emoji_category_labels')[o.category]) }</a>
+        <ul class="emoji-picker" data-category="${o.category}">
+            ${ Object.values(emojis_by_category[o.category]).map(emoji => emoji_item(Object.assign({emoji}, o))) }
+        </ul>`;
+}
+
+export const tpl_all_emojis = (o) => {
+    const cats = api.settings.get('emoji_categories');
+    return html`
+        <span ?hidden=${o.query} class="emoji-lists__container emoji-lists__container--browse">
+            ${Object.keys(cats).map(c => (cats[c] ? emojis_for_category(Object.assign({'category': c}, o)) : ''))}
+        </span>`;
+}
+
 
 const skintone_emoji = (o) => {
     return html`
         <li data-skintone="${o.skintone}" class="emoji-skintone ${(o.current_skintone === o.skintone) ? 'picked' : ''}">
             <a class="pick-skintone" href="#" data-skintone="${o.skintone}" @click=${o.onSkintonePicked}>${u.shortnamesToEmojis(':'+o.skintone+':')}</a>
-        </li>
-    `;
+        </li>`;
 }
 
-const all_emojis = (o) => html`
-    <span ?hidden=${o.query} class="emoji-lists__container emoji-lists__container--browse">
-        ${Object.keys(o.emoji_categories).map(category => (o.emoji_categories[category] ? emojis_for_category(Object.assign({category}, o)) : ''))}
-    </span>
-`;
 
-
-export default (o) => {
-    o.emoji_categories = api.settings.get('emoji_categories');
-    o.emojis_by_category = _converse.emojis.json;
-    o.toned_emojis = _converse.emojis.toned;
-
+export const tpl_emoji_picker = (o) => {
     return html`
         <div class="emoji-picker__header">
             <input class="form-control emoji-search" name="emoji-search" placeholder="${i18n_search}"
@@ -82,10 +82,14 @@ export default (o) => {
                 @focus=${o.onSearchInputFocus}>
             ${ o.query ? '' : emoji_picker_header(o) }
         </div>
-        <div class="emoji-picker__lists">
-            ${search_results(o)}
-            ${all_emojis(o)}
-        </div>
+        <converse-emoji-picker-content
+            .chatview=${o.chatview}
+            .model=${o.model}
+            .search_results="${o.search_results}"
+            current_skintone="${o.current_skintone}"
+            query="${o.query}"
+        ></converse-emoji-picker-content>
+
         <div class="emoji-skintone-picker">
             <label>Skin tone</label>
             <ul>${ skintones.map(skintone => skintone_emoji(Object.assign({skintone}, o))) }</ul>

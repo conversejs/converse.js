@@ -1,11 +1,112 @@
 import DOMNavigator from "../dom-navigator";
 import sizzle from 'sizzle';
-import tpl_emoji_picker from "../templates/emoji_picker.js";
 import { CustomElement } from './element.js';
 import { _converse, converse } from "@converse/headless/converse-core";
 import { debounce, find } from "lodash-es";
+import { html } from "lit-element";
+import { tpl_all_emojis, tpl_emoji_picker, tpl_search_results } from "../templates/emoji_picker.js";
 
 const u = converse.env.utils;
+
+
+export class EmojiPickerContent extends CustomElement {
+    static get properties () {
+        return {
+            'chatview': { type: Object },
+            'search_results': { type: Array },
+            'current_skintone': { type: String },
+            'model': { type: Object },
+            'query': { type: String },
+        }
+    }
+
+    render () {
+        const props = {
+            'current_skintone': this.current_skintone,
+            'insertEmoji': ev => this.insertEmoji(ev),
+            'query': this.query,
+            'search_results': this.search_results,
+            'shouldBeHidden': shortname => this.shouldBeHidden(shortname),
+        }
+        return html`
+            <div class="emoji-picker__lists">
+                ${tpl_search_results(props)}
+                ${tpl_all_emojis(props)}
+            </div>
+        `;
+    }
+
+    firstUpdated () {
+        this.initIntersectionObserver();
+    }
+
+    initIntersectionObserver () {
+        if (!window.IntersectionObserver) {
+            return;
+        }
+        if (this.observer) {
+            this.observer.disconnect();
+        } else {
+            const options = {
+                root: this.querySelector('.emoji-picker__lists'),
+                threshold: [0.1]
+            }
+            const handler = ev => this.setCategoryOnVisibilityChange(ev);
+            this.observer = new IntersectionObserver(handler, options);
+        }
+        sizzle('.emoji-picker', this).forEach(a => this.observer.observe(a));
+    }
+
+    setCategoryOnVisibilityChange (ev) {
+        const selected = this.parentElement.navigator.selected;
+        const intersection_with_selected = ev.filter(i => i.target.contains(selected)).pop();
+        let current;
+        // Choose the intersection that contains the currently selected
+        // element, or otherwise the one with the largest ratio.
+        if (intersection_with_selected) {
+            current = intersection_with_selected;
+        } else {
+            current = ev.reduce((p, c) => c.intersectionRatio >= (p?.intersectionRatio || 0) ? c : p, null);
+        }
+        if (current && current.isIntersecting) {
+            const category = current.target.getAttribute('data-category');
+            if (category !== this.model.get('current_category')) {
+                this.parentElement.preserve_scroll = true;
+                this.model.save({'current_category': category});
+            }
+        }
+    }
+
+    insertEmoji (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
+        const replace = this.model.get('autocompleting');
+        const position = this.model.get('position');
+        this.model.set({'autocompleting': null, 'position': null, 'query': ''});
+        this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'), replace, false, position);
+        this.chatview.emoji_dropdown.toggle();
+    }
+
+    shouldBeHidden (shortname) {
+        // Helper method for the template which decides whether an
+        // emoji should be hidden, based on which skin tone is
+        // currently being applied.
+        if (shortname.includes('_tone')) {
+            if (!this.current_skintone || !shortname.includes(this.current_skintone)) {
+                return true;
+            }
+        } else {
+            if (this.current_skintone && _converse.emojis.toned.includes(shortname)) {
+                return true;
+            }
+        }
+        if (this.query && !_converse.FILTER_CONTAINS(shortname, this.query)) {
+            return true;
+        }
+        return false;
+    }
+}
 
 
 export class EmojiPicker extends CustomElement {
@@ -22,9 +123,8 @@ export class EmojiPicker extends CustomElement {
 
     constructor () {
         super();
-        this.debouncedFilter = debounce(input => this.model.set({'query': input.value}), 500);
-        this.preserve_scroll = false;
-        this._search_results = [];
+        this.search_results = [];
+        this.debouncedFilter = debounce(input => this.model.set({'query': input.value}), 250);
         this.onGlobalKeyDown = ev => this._onGlobalKeyDown(ev);
         const body = document.querySelector('body');
         body.addEventListener('keydown', this.onGlobalKeyDown);
@@ -32,47 +132,59 @@ export class EmojiPicker extends CustomElement {
 
     render () {
         return tpl_emoji_picker({
+            'chatview': this.chatview,
             'current_category': this.current_category,
             'current_skintone': this.current_skintone,
+            'model': this.model,
             'onCategoryPicked': ev => this.chooseCategory(ev),
-            'onEmojiPicked': ev => this.insertEmoji(ev),
             'onSearchInputBlurred': ev => this.chatview.emitFocused(ev),
             'onSearchInputFocus': ev => this.onSearchInputFocus(ev),
             'onSearchInputKeyDown': ev => this.onKeyDown(ev),
             'onSkintonePicked': ev => this.chooseSkinTone(ev),
             'query': this.query,
             'search_results': this.search_results,
-            'shouldBeHidden': shortname => this.shouldBeHidden(shortname),
-            'transformCategory': shortname => u.shortnamesToEmojis(this.getTonedShortname(shortname))
+            'sn2Emoji': shortname => u.shortnamesToEmojis(this.getTonedShortname(shortname))
         });
     }
 
     firstUpdated () {
         this.initArrowNavigation();
-        this.initIntersectionObserver();
     }
 
     updated (changed) {
-        if (changed.has('current_category') && !this.preserve_scroll) {
-            this.setScrollPosition();
+        changed.has('query') && this.updateSearchResults();
+        changed.has('current_category') && this.setScrollPosition();
+    }
+
+    setScrollPosition () {
+        if (this.preserve_scroll) {
+            this.preserve_scroll = false;
+            return;
+        }
+        const el = this.querySelector('.emoji-lists__container--browse');
+        const heading = this.querySelector(`#emoji-picker-${this.current_category}`);
+        if (heading) {
+            // +4 due to 2px padding on list elements
+            el.scrollTop = heading.offsetTop - heading.offsetHeight*3 + 4;
         }
     }
 
-    get search_results () {
+    updateSearchResults () {
         const contains = _converse.FILTER_CONTAINS;
         if (this.query) {
             if (this.query === this.old_query) {
-                return this._search_results;
+                return this.search_results;
             } else if (this.old_query && this.query.includes(this.old_query)) {
-                this._search_results = this._search_results.filter(e => contains(e.sn, this.query));
+                this.search_results = this.search_results.filter(e => contains(e.sn, this.query));
             } else {
-                this._search_results = _converse.emojis_list.filter(e => contains(e.sn, this.query));
+                this.search_results = _converse.emojis_list.filter(e => contains(e.sn, this.query));
             }
             this.old_query = this.query;
-        } else {
-            this._search_results = [];
+        } else if (this.search_results.length) {
+            // Avoid re-rendering by only setting to new empty array if it wasn't empty before
+            this.search_results = [];
         }
-        return this._search_results;
+        return this.search_results;
     }
 
     disconnectedCallback() {
@@ -96,27 +208,12 @@ export class EmojiPicker extends CustomElement {
         }
     }
 
-    setCategoryForElement (el, preserve_scroll=false) {
+    setCategoryForElement (el) {
         const old_category = this.current_category;
         const category = el.getAttribute('data-category') || old_category;
         if (old_category !== category) {
-            this.preserve_scroll = preserve_scroll;
             this.model.save({'current_category': category});
         }
-    }
-
-    setCategoryOnVisibilityChange (ev) {
-        const selected = this.navigator.selected;
-        const intersection_with_selected = ev.filter(i => i.target.contains(selected)).pop();
-        let current;
-        // Choose the intersection that contains the currently selected
-        // element, or otherwise the one with the largest ratio.
-        if (intersection_with_selected) {
-            current = intersection_with_selected;
-        } else {
-            current = ev.reduce((p, c) => c.intersectionRatio >= (p?.intersectionRatio || 0) ? c : p, null);
-        }
-        current && current.isIntersecting && this.setCategoryForElement(current.target, true);
     }
 
     insertIntoTextArea (value) {
@@ -150,18 +247,6 @@ export class EmojiPicker extends CustomElement {
         this.setCategoryForElement(el);
         this.navigator.select(el);
         !this.navigator.enabled && this.navigator.enable();
-    }
-
-    insertEmoji (ev) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-        const replace = this.model.get('autocompleting');
-        const position = this.model.get('position');
-        this.model.set({'autocompleting': null, 'position': null});
-        this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'), replace, false, position);
-        this.chatview.emoji_dropdown.toggle();
-        this.model.set({'query': ''});
     }
 
     onKeyDown (ev) {
@@ -208,47 +293,11 @@ export class EmojiPicker extends CustomElement {
         this.disableArrowNavigation();
     }
 
-    shouldBeHidden (shortname) {
-        // Helper method for the template which decides whether an
-        // emoji should be hidden, based on which skin tone is
-        // currently being applied.
-        if (shortname.includes('_tone')) {
-            if (!this.current_skintone || !shortname.includes(this.current_skintone)) {
-                return true;
-            }
-        } else {
-            if (this.current_skintone && _converse.emojis.toned.includes(shortname)) {
-                return true;
-            }
-        }
-        if (this.query && !_converse.FILTER_CONTAINS(shortname, this.query)) {
-            return true;
-        }
-        return false;
-    }
-
     getTonedShortname (shortname) {
         if (_converse.emojis.toned.includes(shortname) && this.current_skintone) {
             return `${shortname.slice(0, shortname.length-1)}_${this.current_skintone}:`
         }
         return shortname;
-    }
-
-    initIntersectionObserver () {
-        if (!window.IntersectionObserver) {
-            return;
-        }
-        if (this.observer) {
-            this.observer.disconnect();
-        } else {
-            const options = {
-                root: this.querySelector('.emoji-picker__lists'),
-                threshold: [0.1]
-            }
-            const handler = ev => this.setCategoryOnVisibilityChange(ev);
-            this.observer = new IntersectionObserver(handler, options);
-        }
-        sizzle('.emoji-picker', this).forEach(a => this.observer.observe(a));
     }
 
     initArrowNavigation () {
@@ -291,15 +340,8 @@ export class EmojiPicker extends CustomElement {
         this.navigator.enable();
         this.navigator.handleKeydown(ev);
     }
-
-    setScrollPosition () {
-        const el = this.querySelector('.emoji-lists__container--browse');
-        const heading = this.querySelector(`#emoji-picker-${this.current_category}`);
-        if (heading) {
-            // +4 due to 2px padding on list elements
-            el.scrollTop = heading.offsetTop - heading.offsetHeight*3 + 4;
-        }
-    }
 }
 
+
 window.customElements.define('converse-emoji-picker', EmojiPicker);
+window.customElements.define('converse-emoji-picker-content', EmojiPickerContent);

@@ -54,11 +54,11 @@ describe("Emojis", function () {
             }
             view.onKeyDown(tab_event);
             await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
-            let picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
+            const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
             const input = picker.querySelector('.emoji-search');
             expect(input.value).toBe(':gri');
+            await u.waitUntil(() =>  sizzle('.emojis-lists__container--search .insert-emoji', picker).length === 3, 1000);
             let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
-            expect(visible_emojis.length).toBe(3);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
             expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':grin:');
             expect(visible_emojis[2].getAttribute('data-emoji')).toBe(':grinning:');
@@ -66,8 +66,8 @@ describe("Emojis", function () {
             // Test that TAB autocompletes the to first match
             input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
 
-            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji', picker).length === 1);
-            visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
+            await u.waitUntil(() => sizzle(".emojis-lists__container--search .insert-emoji:not('.hidden')", picker).length === 1, 1000);
+            visible_emojis = sizzle(".emojis-lists__container--search .insert-emoji:not('.hidden')", picker);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
             expect(input.value).toBe(':grimacing:');
 
@@ -95,8 +95,7 @@ describe("Emojis", function () {
             textarea.value = ':use';
             view.onKeyDown(tab_event);
             await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
-            picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
-            expect(input.value).toBe(':use');
+            await u.waitUntil(() => input.value === ':use');
             visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
             expect(visible_emojis.length).toBe(0);
             done();
@@ -129,8 +128,8 @@ describe("Emojis", function () {
             input.dispatchEvent(new KeyboardEvent('keydown', event));
 
             await u.waitUntil(() => view.emoji_picker_view.model.get('query') === 'smiley', 1000);
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji', picker).length === 2, 1000);
             let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
-            expect(visible_emojis.length).toBe(2);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':smiley:');
             expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':smiley_cat:');
 
@@ -144,8 +143,8 @@ describe("Emojis", function () {
             input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
 
             await u.waitUntil(() => input.value === ':smiley:');
-            visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
-            expect(visible_emojis.length).toBe(1);
+            await u.waitUntil(() => sizzle(".emojis-lists__container--search .insert-emoji:not('.hidden')", picker).length === 1);
+            visible_emojis = sizzle(".emojis-lists__container--search .insert-emoji:not('.hidden')", picker);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':smiley:');
 
             // Check that ENTER now inserts the match

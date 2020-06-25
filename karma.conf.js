@@ -24,6 +24,7 @@ module.exports = function(config) {
       { pattern: "spec/mock.js", type: 'module' },
 
       { pattern: "spec/spoilers.js", type: 'module' },
+      { pattern: "spec/emojis.js", type: 'module' },
       { pattern: "spec/roomslist.js", type: 'module' },
       { pattern: "spec/utils.js", type: 'module' },
       { pattern: "spec/converse.js", type: 'module' },
@@ -56,7 +57,6 @@ module.exports = function(config) {
       { pattern: "spec/register.js", type: 'module' },
       { pattern: "spec/hats.js", type: 'module' },
       { pattern: "spec/http-file-upload.js", type: 'module' },
-      { pattern: "spec/emojis.js", type: 'module' },
       { pattern: "spec/xss.js", type: 'module' }
     ],
 

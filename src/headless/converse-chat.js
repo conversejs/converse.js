@@ -407,6 +407,7 @@ converse.plugins.add('converse-chat', {
                         'error_condition': attrs.error_condition,
                         'error_text': attrs.error_text,
                         'error_type': attrs.error_type,
+                        'editable': false,
                     };
                     if (attrs.msgid === message.get('retraction_id')) {
                         // The error message refers to a retraction
@@ -979,10 +980,7 @@ converse.plugins.add('converse-chat', {
              * @param { String } send_time - time when the message was sent
              */
             setEditable (attrs, send_time) {
-                if (attrs.is_headline) {
-                    return;
-                }
-                if (u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
+                if (attrs.is_headline || u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
                     return;
                 }
                 if (api.settings.get('allow_message_corrections') === 'all') {

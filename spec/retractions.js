@@ -702,7 +702,7 @@ describe("Message Retractions", function () {
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('retracted')).toBeFalsy();
             expect(view.model.messages.at(0).get('is_ephemeral')).toBeFalsy();
-            expect(view.model.messages.at(0).get('editable')).toBeTruthy();
+            expect(view.model.messages.at(0).get('editable')).toBe(false);
 
             const errmsg = view.el.querySelector('.chat-msg__error');
             expect(errmsg.textContent.trim()).toBe("You're not allowed to retract your message.");

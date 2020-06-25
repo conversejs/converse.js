@@ -48,6 +48,7 @@ describe("A Groupchat Message", function () {
             expect(message.get('received')).toBeUndefined();
             expect(message.get('body')).toBe('hello world');
             expect(message.get('error_text')).toBe(err_msg_text);
+            expect(message.get('editable')).toBe(false);
             done();
         }));
     });

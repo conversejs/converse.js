@@ -11,7 +11,6 @@ import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.js";
-import tpl_new_day from "templates/new_day.html";
 import tpl_spinner from "templates/spinner.html";
 import tpl_spoiler_button from "templates/spoiler_button.html";
 import tpl_toolbar from "templates/toolbar.js";
@@ -584,35 +583,6 @@ converse.plugins.add('converse-chatview', {
 
             clearSpinner () {
                 this.content.querySelectorAll('.spinner').forEach(u.removeElement);
-            },
-
-            /**
-             * Inserts an indicator into the chat area, showing the
-             * day as given by the passed in date.
-             * The indicator is only inserted if necessary.
-             * @private
-             * @method _converse.ChatBoxView#insertDayIndicator
-             * @param { HTMLElement } next_msg_el - The message element before
-             *      which the day indicator element must be inserted.
-             *      This element must have a "data-isodate" attribute
-             *      which specifies its creation date.
-             */
-            insertDayIndicator (next_msg_el) {
-                const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)");
-                const prev_msg_date = (prev_msg_el === null) ? null : prev_msg_el.getAttribute('data-isodate');
-                const next_msg_date = next_msg_el.getAttribute('data-isodate');
-                if (prev_msg_date === null && next_msg_date === null) {
-                    return;
-                }
-                if ((prev_msg_date === null) || dayjs(next_msg_date).isAfter(prev_msg_date, 'day')) {
-                    const day_date = dayjs(next_msg_date).startOf('day');
-                    next_msg_el.insertAdjacentHTML('beforeBegin',
-                        tpl_new_day({
-                            'isodate': day_date.toISOString(),
-                            'datestring': day_date.format("dddd MMM Do YYYY")
-                        })
-                    );
-                }
             },
 
             setScrollPosition (message_el) {

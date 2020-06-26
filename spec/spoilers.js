@@ -126,17 +126,17 @@ describe("A spoiler message", function () {
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
         /* Test the XML stanza
-            *
-            * <message from="romeo@montague.lit/orchard"
-            *          to="max.frankfurter@montague.lit"
-            *          type="chat"
-            *          id="4547c38b-d98b-45a5-8f44-b4004dbc335e"
-            *          xmlns="jabber:client">
-            *    <body>This is the spoiler</body>
-            *    <active xmlns="http://jabber.org/protocol/chatstates"/>
-            *    <spoiler xmlns="urn:xmpp:spoiler:0"/>
-            * </message>"
-            */
+         *
+         * <message from="romeo@montague.lit/orchard"
+         *          to="max.frankfurter@montague.lit"
+         *          type="chat"
+         *          id="4547c38b-d98b-45a5-8f44-b4004dbc335e"
+         *          xmlns="jabber:client">
+         *    <body>This is the spoiler</body>
+         *    <active xmlns="http://jabber.org/protocol/chatstates"/>
+         *    <spoiler xmlns="urn:xmpp:spoiler:0"/>
+         * </message>"
+         */
         const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
         const spoiler_el = stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]');
         expect(spoiler_el === null).toBeFalsy();

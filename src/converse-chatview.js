@@ -10,7 +10,7 @@ import "converse-modal";
 import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
-import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
+import tpl_chatbox_message_form from "templates/chatbox_message_form.js";
 import tpl_new_day from "templates/new_day.html";
 import tpl_spinner from "templates/spinner.html";
 import tpl_spoiler_button from "templates/spoiler_button.html";
@@ -355,7 +355,7 @@ converse.plugins.add('converse-chatview', {
 
             renderMessageForm () {
                 const form_container = this.el.querySelector('.message-form-container');
-                form_container.innerHTML = tpl_chatbox_message_form(
+                render(tpl_chatbox_message_form(
                     Object.assign(this.model.toJSON(), {
                         '__': __,
                         'message_limit': api.settings.get('message_limit'),
@@ -366,7 +366,7 @@ converse.plugins.add('converse-chatview', {
                         'show_send_button': api.settings.get('show_send_button'),
                         'show_toolbar': api.settings.get('show_toolbar'),
                         'unread_msgs': __('You have unread messages')
-                    }));
+                    })), form_container);
                 this.el.addEventListener('focusin', ev => this.emitFocused(ev));
                 this.el.addEventListener('focusout', ev => this.emitBlurred(ev));
                 this.renderToolbar();

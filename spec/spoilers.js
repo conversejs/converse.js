@@ -208,21 +208,22 @@ describe("A spoiler message", function () {
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
-        /* Test the XML stanza
-            *
-            * <message from="romeo@montague.lit/orchard"
-            *          to="max.frankfurter@montague.lit"
-            *          type="chat"
-            *          id="4547c38b-d98b-45a5-8f44-b4004dbc335e"
-            *          xmlns="jabber:client">
-            *    <body>This is the spoiler</body>
-            *    <active xmlns="http://jabber.org/protocol/chatstates"/>
-            *    <spoiler xmlns="urn:xmpp:spoiler:0">This is the hint</spoiler>
-            * </message>"
-            */
         const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
-        const spoiler_el = stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]');
+        expect(Strophe.serialize(stanza)).toBe(
+            `<message from="romeo@montague.lit/orchard" ` +
+                    `id="${stanza.getAttribute('id')}" `+
+                    `to="mercutio@montague.lit" `+
+                    `type="chat" `+
+                    `xmlns="jabber:client">`+
+                `<body>This is the spoiler</body>`+
+                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                `<request xmlns="urn:xmpp:receipts"/>`+
+                `<spoiler xmlns="urn:xmpp:spoiler:0">This is the hint</spoiler>`+
+                `<origin-id id="${stanza.querySelector('origin-id').getAttribute('id')}" xmlns="urn:xmpp:sid:0"/>`+
+            `</message>`
+        );
 
+        const spoiler_el = stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]');
         expect(spoiler_el === null).toBeFalsy();
         expect(spoiler_el.textContent).toBe('This is the hint');
 
@@ -230,7 +231,6 @@ describe("A spoiler message", function () {
         const body_el = stanza.querySelector('body');
         expect(body_el.textContent).toBe(spoiler);
 
-        /* Test the HTML spoiler message */
         expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
 
         const message_content = view.el.querySelector('.chat-msg__text');

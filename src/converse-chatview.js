@@ -243,7 +243,6 @@ converse.plugins.add('converse-chatview', {
                 const result = tpl_chatbox(
                     Object.assign(
                         this.model.toJSON(), {
-                            'unread_msgs': __('You have unread messages'),
                             'markScrolled': () => this.markScrolled()
                         }
                     )
@@ -1137,8 +1136,8 @@ converse.plugins.add('converse-chatview', {
             _markScrolled: function () {
                 let scrolled = true;
                 const is_at_bottom =
-                    (this.content.scrollTop + this.content.clientHeight) >=
-                        this.content.scrollHeight - 62; // sigh...
+                    (this.msgs_container.scrollTop + this.msgs_container.clientHeight) >=
+                        this.msgs_container.scrollHeight - 62; // sigh...
 
                 if (is_at_bottom) {
                     scrolled = false;

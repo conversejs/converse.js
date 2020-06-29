@@ -512,8 +512,9 @@ converse.plugins.add('converse-muc-views', {
             async render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
                 render(tpl_chatroom({
+                    'markScrolled': () => this.markScrolled(),
                     'muc_show_logs_before_join': api.settings.get('muc_show_logs_before_join'),
-                    'show_send_button': _converse.show_send_button
+                    'show_send_button': _converse.show_send_button,
                 }), this.el);
 
                 this.notifications = this.el.querySelector('.chat-content__notifications');

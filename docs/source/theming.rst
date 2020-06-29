@@ -34,17 +34,6 @@ However, when developing or changing the theme, you'll want to load all the
 unminified JS and CSS resources as separate files. To do this, open http://localhost:8000/dev.html
 instead.
 
-Mockups
-=======
-
-Converse contains some mockups in the ``./mockup`` directory against which you
-can preview and tweak your changes.
-
-The ``./mockup/index.html`` file contains the most comprehensive mockup, while
-the other files focus on particular UI aspects.
-
-To see it in your browser, simply open: http://localhost:8000/mockup
-
 
 Modifying the HTML templates of Converse
 ========================================
@@ -62,6 +51,15 @@ The CSS files are generated from `Sass <http://sass-lang.com>`_ files in the ``.
 To generate the CSS you can run::
 
     make css
+
+Testing your changes
+=======
+
+The recommended way to test your changes is to run the tests that are part of the Converse source code.
+By executing ``make test`` you'll run all tests (which live in the ``spec`` folder) which will open a browser window in which tests are processed.
+
+You can run a single test by changing ``it(`` to ``fit(`` so that only that one test runs. Then you click the "debug" button in the browser when the tests run. After the test has run, the opened chats will still be visible.
+
 
 Creating dist files
 ===================

@@ -1322,7 +1322,7 @@ describe("Chatboxes", function () {
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            await mock.waitForRoster(_converse, 'current');
+            await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                   msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
 
@@ -1347,10 +1347,9 @@ describe("Chatboxes", function () {
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            await mock.waitForRoster(_converse, 'current');
-
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                  msg = mock.createChatMessage(_converse, sender_jid, 'This message will be read');
+            await mock.waitForRoster(_converse, 'current', 1);
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const msg = mock.createChatMessage(_converse, sender_jid, 'This message will be read');
             const sent_stanzas = [];
             spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
@@ -1470,7 +1469,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
             expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             _converse.saveWindowState(null, 'focus');
-            expect(chatbox.get('num_unread')).toBe(1);
+            await u.waitUntil(() => chatbox.get('num_unread') === 1);
             expect(chatbox.get('first_unread_id')).toBe(msgid);
             await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
             expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();

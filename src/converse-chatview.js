@@ -211,6 +211,7 @@ converse.plugins.add('converse-chatview', {
                 // Need to be registered after render has been called.
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'change', this.renderChatHistory);
+                this.listenTo(this.model.messages, 'rendered', this.maybeScrollDownOnMessage);
                 this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
                 this.listenTo(this.model.notifications, 'change', this.renderNotifications);
                 this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
@@ -228,6 +229,8 @@ converse.plugins.add('converse-chatview', {
 
             initDebounced () {
                 this.markScrolled = debounce(this._markScrolled, 100);
+                this.debouncedScrollDown = debounce(this.scrollDown, 100);
+
                 // For tests that use Jasmine.Clock we want to turn of
                 // debouncing, since setTimeout breaks.
                 if (api.settings.get('debounced_content_rendering')) {
@@ -552,9 +555,28 @@ converse.plugins.add('converse-chatview', {
                 api.trigger('afterMessagesFetched', this.model);
             },
 
-            scrollDown () {
-                const el = this.msgs_container.firstElementChild;
-                el && el.scrollDown();
+            maybeScrollDownOnMessage (message) {
+                if (message.get('sender') !== 'me' && !this.model.get('scrolled')) {
+                    this.debouncedScrollDown();
+                }
+            },
+
+            scrollDown (ev) {
+                ev?.preventDefault?.();
+                ev?.stopPropagation?.();
+                if (this.model.get('scrolled')) {
+                    u.safeSave(this.model, {
+                        'scrolled': false,
+                        'top_visible_message': null,
+                    });
+                }
+                if (this.msgs_container.scrollTo) {
+                    const behavior = this.msgs_container.scrollTop ? 'smooth' : 'auto';
+                    this.msgs_container.scrollTo({'top': this.msgs_container.scrollHeight, behavior});
+                } else {
+                    this.msgs_container.scrollTop = this.msgs_container.scrollHeight;
+                }
+                this.onScrolledDown();
             },
 
             insertIntoDOM () {
@@ -597,7 +619,6 @@ converse.plugins.add('converse-chatview', {
                         // should maintain our current scroll position.
                         if (this.content.scrollTop === 0 || this.model.get('top_visible_message')) {
                             const top_visible_message = this.model.get('top_visible_message') || next_msg_el;
-
                             this.model.set('top_visible_message', top_visible_message);
                             this.content.scrollTop = top_visible_message.offsetTop - 30;
                         }

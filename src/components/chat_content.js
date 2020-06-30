@@ -25,16 +25,6 @@ class ChatContent extends CustomElement {
             <div class="chat-content__notifications">${unsafeHTML(notifications)}</div>
         `;
     }
-
-    scrollDown () {
-        if (!this.chatview.model.get('scrolled')) {
-            this.parentElement.scrollTop = this.parentElement.scrollHeight;
-        }
-    }
-
-    updated () {
-        this.scrollDown();
-    }
 }
 
 customElements.define('converse-chat-content', ChatContent);

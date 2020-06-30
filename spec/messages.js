@@ -1743,6 +1743,9 @@ describe("A Chat Message", function () {
             const view = _converse.api.chatviews.get(sender_jid);
             // Create enough messages so that there's a scrollbar.
             const promises = [];
+            view.content.scrollTop = 0;
+            view.model.set('scrolled', true);
+
             for (let i=0; i<20; i++) {
                 _converse.handleMessageStanza($msg({
                         from: sender_jid,
@@ -1754,35 +1757,15 @@ describe("A Chat Message", function () {
                 promises.push(new Promise(resolve => view.model.messages.once('rendered', resolve)));
             }
             await Promise.all(promises);
-            // XXX Fails on Travis
-            // await u.waitUntil(() => view.content.scrollTop, 1000)
-            await u.waitUntil(() => !view.model.get('auto_scrolled'), 500);
-            view.content.scrollTop = 0;
-            // XXX Fails on Travis
-            // await u.waitUntil(() => view.model.get('scrolled'), 900);
-            view.model.set('scrolled', true);
 
-            const message = 'This message is received while the chat area is scrolled up';
-            _converse.handleMessageStanza($msg({
-                    from: sender_jid,
-                    to: _converse.connection.jid,
-                    type: 'chat',
-                    id: u.getUniqueId()
-                }).c('body').t(message).up()
-                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            await u.waitUntil(() => view.model.messages.length > 20, 1000);
-            // Now check that the message appears inside the chatbox in the DOM
-            const  msg_txt = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop().textContent;
-            expect(msg_txt).toEqual(message);
-            await u.waitUntil(() => u.isVisible(view.el.querySelector('.new-msgs-indicator')), 900);
+            const indicator_el = view.el.querySelector('.new-msgs-indicator');
+            expect(u.isVisible(indicator_el)).toBeTruthy();
+
             expect(view.model.get('scrolled')).toBe(true);
             expect(view.content.scrollTop).toBe(0);
-            expect(u.isVisible(view.el.querySelector('.new-msgs-indicator'))).toBeTruthy();
-            // Scroll down again
-            view.content.scrollTop = view.content.scrollHeight;
-            // XXX Fails on Travis
-            // await u.waitUntil(() => !u.isVisible(view.el.querySelector('.new-msgs-indicator')), 900);
+            indicator_el.click();
+            expect(u.isVisible(indicator_el)).toBeFalsy();
+            expect(view.model.get('scrolled')).toBe(false);
             done();
         }));
 

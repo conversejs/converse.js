@@ -122,7 +122,7 @@ async function fetchCommandForm (command) {
 }
 
 
-export class AdHocCommands extends CustomElement {
+export default class AdHocCommands extends CustomElement {
 
     static get properties () {
         return {
@@ -239,4 +239,4 @@ export class AdHocCommands extends CustomElement {
     }
 }
 
-window.customElements.define('converse-adhoc-commands', AdHocCommands);
+api.elements.define('converse-adhoc-commands', AdHocCommands);

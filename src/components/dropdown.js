@@ -1,6 +1,6 @@
 import DOMNavigator from "../dom-navigator";
 import { CustomElement } from './element.js';
-import { converse } from "@converse/headless/converse-core";
+import { converse, api } from "@converse/headless/converse-core";
 import { html } from 'lit-element';
 import { until } from 'lit-html/directives/until.js';
 
@@ -48,7 +48,7 @@ export class BaseDropdown extends CustomElement {
 }
 
 
-export class DropdownList extends BaseDropdown {
+export default class DropdownList extends BaseDropdown {
 
     static get properties () {
         return {
@@ -109,4 +109,4 @@ export class DropdownList extends BaseDropdown {
     }
 }
 
-window.customElements.define('converse-dropdown', DropdownList);
+api.elements.define('converse-dropdown', DropdownList);

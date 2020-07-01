@@ -1,8 +1,8 @@
 import { CustomElement } from './element.js';
 import { renderBodyText } from './../templates/directives/body';
+import { api } from "@converse/headless/converse-core";
 
-
-class MessageBody extends CustomElement {
+export default class MessageBody extends CustomElement {
 
     static get properties () {
         return {
@@ -17,4 +17,4 @@ class MessageBody extends CustomElement {
     }
 }
 
-customElements.define('converse-chat-message-body', MessageBody);
+api.elements.define('converse-chat-message-body', MessageBody);

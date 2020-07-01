@@ -75,4 +75,4 @@ class MessageActions extends CustomElement {
     }
 }
 
-customElements.define('converse-message-actions', MessageActions);
+api.elements.define('converse-message-actions', MessageActions);

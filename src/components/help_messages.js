@@ -6,7 +6,7 @@ import { html } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 
-class ChatHelp extends CustomElement {
+export default class ChatHelp extends CustomElement {
 
     static get properties () {
         return {
@@ -42,4 +42,4 @@ class ChatHelp extends CustomElement {
     }
 }
 
-customElements.define('converse-chat-help', ChatHelp);
+api.elements.define('converse-chat-help', ChatHelp);

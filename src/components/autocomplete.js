@@ -1,9 +1,9 @@
 import { AutoComplete, FILTER_CONTAINS, FILTER_STARTSWITH } from "../converse-autocomplete.js";
 import { CustomElement } from './element.js';
 import { html } from 'lit-element';
+import { api } from "@converse/headless/converse-core";
 
-
-export class AutoCompleteComponent extends CustomElement {
+export default class AutoCompleteComponent extends CustomElement {
 
     static get properties () {
         return {
@@ -70,4 +70,4 @@ export class AutoCompleteComponent extends CustomElement {
     }
 }
 
-window.customElements.define('converse-autocomplete', AutoCompleteComponent);
+api.elements.define('converse-autocomplete', AutoCompleteComponent);

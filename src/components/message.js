@@ -21,7 +21,7 @@ const i18n_show_less = __('Show less');
 const i18n_uploading = __('Uploading file:');
 
 
-class Message extends CustomElement {
+export default class Message extends CustomElement {
 
     static get properties () {
         return {
@@ -265,4 +265,4 @@ class Message extends CustomElement {
     }
 }
 
-customElements.define('converse-chat-message', Message);
+api.elements.define('converse-chat-message', Message);

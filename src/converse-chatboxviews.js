@@ -48,6 +48,8 @@ converse.plugins.add('converse-chatboxviews', {
          * loaded by converse.js's plugin machinery.
          */
 
+        api.elements.register();
+
         api.promises.add(['chatBoxViewsInitialized']);
 
         // Configuration values for this plugin

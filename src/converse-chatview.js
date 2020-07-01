@@ -205,6 +205,7 @@ converse.plugins.add('converse-chatview', {
                 this.render();
 
                 // Need to be registered after render has been called.
+                // @TODO: Add hook for muted messages here
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'change', this.renderChatHistory);
                 this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
@@ -853,6 +854,12 @@ converse.plugins.add('converse-chatview', {
                     message.save('correcting', false);
                     this.insertIntoTextArea('', true, false);
                 }
+            },
+
+            async onUserMuteButtonClicked (message) {
+                const muted_users = await api.user.settings.get('muted_users') || [];
+                api.user.settings.set('muted_users', [...muted_users, message.get('nick')]);
+                // hide all messages from user
             },
 
             editLaterMessage () {

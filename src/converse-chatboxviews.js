@@ -6,10 +6,11 @@
 import "@converse/headless/converse-chatboxes";
 import tpl_avatar from "templates/avatar.svg";
 import tpl_background_logo from "templates/background_logo.html";
-import tpl_chatboxes from "templates/chatboxes.html";
+import tpl_converse from "templates/converse.js";
 import { Overview } from "@converse/skeletor/src/overview";
 import { View } from "@converse/skeletor/src/view";
 import { _converse, api, converse } from "@converse/headless/converse-core";
+import { render } from "lit-html";
 import { result } from "lodash-es";
 
 const u = converse.env.utils;
@@ -106,10 +107,10 @@ converse.plugins.add('converse-chatboxviews', {
 
             render () {
                 try {
-                    this.el.innerHTML = tpl_chatboxes();
+                    render(tpl_converse(), this.el);
                 } catch (e) {
                     this._ensureElement();
-                    this.el.innerHTML = tpl_chatboxes();
+                    render(tpl_converse(), this.el);
                 }
                 this.row_el = this.el.querySelector('.row');
             },

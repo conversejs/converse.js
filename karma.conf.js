@@ -61,7 +61,6 @@ module.exports = function(config) {
     ],
 
     proxies: {
-      "/dist/\@fortawesome/fontawesome-free/sprites/solid.svg": "/base/dist/\@fortawesome/fontawesome-free/sprites/solid.svg",
       "/dist/images/custom_emojis/": "/base/dist/images/custom_emojis/"
     },
 

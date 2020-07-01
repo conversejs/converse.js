@@ -78,7 +78,6 @@
     "eslint": "^7.3.0",
     "eslint-plugin-lodash": "^7.1.0",
     "exports-loader": "^0.7.0",
-    "fa-icons": "^0.2.0",
     "fast-text-encoding": "^1.0.2",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.2.0",

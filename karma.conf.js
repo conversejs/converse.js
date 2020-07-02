@@ -9,6 +9,7 @@ module.exports = function(config) {
     files: [
       { pattern: 'dist/*.js.map', included: false },
       { pattern: 'dist/*.css.map', included: false },
+      { pattern: "dist/icons.js", served: true },
       { pattern: "dist/emojis.js", served: true },
       "dist/converse.js",
       "dist/converse.css",

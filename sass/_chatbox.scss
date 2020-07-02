@@ -484,6 +484,7 @@
         padding: 0.5em;
     }
     .chat-head {
+        font-size: var(--font-size-huge);
         border-top-left-radius: var(--chatbox-border-radius);
         border-top-right-radius: var(--chatbox-border-radius);
         @media screen and (max-height: $mobile-landscape-height) {

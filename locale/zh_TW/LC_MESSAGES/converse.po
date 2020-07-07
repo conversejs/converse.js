@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-07-07 06:41+0000\n"
+"PO-Revision-Date: 2020-07-08 01:20+0000\n"
 "Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
@@ -476,7 +476,7 @@ msgstr "錯誤"
 
 #: dist/converse-no-dependencies.js:39921
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr "對不起，在嘗試儲存書籤時出錯。"
+msgstr "抱歉，在嘗試儲存書籤時出錯。"
 
 #: dist/converse-no-dependencies.js:39985
 msgid "Timeout Error"
@@ -494,7 +494,7 @@ msgstr "聯絡人"
 
 #: dist/converse-no-dependencies.js:43864
 msgid "Pending contacts"
-msgstr "正在新增的聯絡人"
+msgstr "已送出的聯絡人請求"
 
 #: dist/converse-no-dependencies.js:43865
 msgid "Contact requests"
@@ -502,7 +502,7 @@ msgstr "新增聯絡人請求"
 
 #: dist/converse-no-dependencies.js:43866
 msgid "Ungrouped"
-msgstr ""
+msgstr "未分組"
 
 #: dist/converse-no-dependencies.js:43867
 msgid "New messages"
@@ -511,7 +511,7 @@ msgstr "新訊息"
 #: dist/converse-no-dependencies.js:44522
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr "對不起，嘗試新增 %1$s 爲聯絡人時遇到錯誤。"
+msgstr "抱歉，嘗試新增 %1$s 爲聯絡人時遇到錯誤。"
 
 #: dist/converse-no-dependencies.js:44818
 msgid "This client does not allow presence subscriptions"
@@ -685,7 +685,7 @@ msgstr "没有找到啟用了 OMEMO 的裝置"
 
 #: dist/converse-no-dependencies.js:52990
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "對不起，在重新整理時出錯了"
+msgstr "抱歉，在重新整理時出錯了"
 
 #: dist/converse-no-dependencies.js:53014
 #: dist/converse-no-dependencies.js:71089
@@ -696,7 +696,7 @@ msgstr "確實要移除此連絡人嗎？"
 #: dist/converse-no-dependencies.js:71117
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "對不起，將 %1$s 移出連絡人時出錯了。"
+msgstr "抱歉，將 %1$s 移出連絡人時出錯了。"
 
 #: dist/converse-no-dependencies.js:53143
 #: dist/converse-no-dependencies.js:53204
@@ -793,7 +793,7 @@ msgstr "顯示此選單"
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
-msgstr "注意並非所有 XMPP/Jabber 用戶端皆支持訊息回收功能，這則訊息有可能未被收回。"
+msgstr "注意並非所有 XMPP/Jabber 用戶端軟體皆支持訊息回收功能，這則訊息有可能未被收回。"
 
 #: dist/converse-no-dependencies.js:54224
 #: dist/converse-no-dependencies.js:63413
@@ -839,7 +839,7 @@ msgstr "點撀此處匿名登入"
 
 #: dist/converse-no-dependencies.js:54945
 msgid "Disconnected"
-msgstr "線線已斷開"
+msgstr "連線已斷開"
 
 #: dist/converse-no-dependencies.js:54947
 msgid "Log in"
@@ -1315,11 +1315,11 @@ msgstr "角色已變更"
 
 #: dist/converse-no-dependencies.js:62660
 msgid "You're not allowed to make that change"
-msgstr "您不被允許作此變更"
+msgstr "您不被允許作出此變更"
 
 #: dist/converse-no-dependencies.js:62662
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr "對不起，在嘗試設定角色時出錯了"
+msgstr "抱歉，在嘗試設定角色時出錯了"
 
 #: dist/converse-no-dependencies.js:62694
 msgid "conference.example.org"
@@ -1426,7 +1426,7 @@ msgstr "您可此创建新房间了"
 
 #: dist/converse-no-dependencies.js:63512
 msgid "Sorry, something went wrong while trying to retract your message."
-msgstr "對不起，在收回訊息時出錯了。"
+msgstr "抱歉，在收回訊息時出錯了。"
 
 #: dist/converse-no-dependencies.js:63552
 msgid "A timeout occurred while trying to retract the message"
@@ -1434,7 +1434,7 @@ msgstr "收回訊息逾時"
 
 #: dist/converse-no-dependencies.js:63556
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "對不起，您不被允許收回這則訊息。"
+msgstr "抱歉，您不被允許收回這則訊息。"
 
 #: dist/converse-no-dependencies.js:63630
 #, fuzzy
@@ -1544,7 +1544,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:64132
 msgid "Sorry, an error happened while running the command."
-msgstr "對不起，運行指令時發生錯誤。"
+msgstr "抱歉，運行指令時發生錯誤。"
 
 #: dist/converse-no-dependencies.js:64132
 #: dist/converse-no-dependencies.js:64805
@@ -1606,7 +1606,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Change your nickname"
-msgstr ""
+msgstr "變更您的暱稱"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Grant moderator role to user"
@@ -1694,7 +1694,7 @@ msgstr "保存表单是出错。"
 
 #: dist/converse-no-dependencies.js:65343
 msgid "Announcements"
-msgstr ""
+msgstr "公告"
 
 #: dist/converse-no-dependencies.js:65347
 #, fuzzy
@@ -1711,20 +1711,20 @@ msgstr "離開此群組"
 #: dist/converse-no-dependencies.js:65616
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "來自 %1$s 的通知"
 
 #: dist/converse-no-dependencies.js:65618
 #: dist/converse-no-dependencies.js:65628
 #: dist/converse-no-dependencies.js:65631
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s 說"
 
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:65640
 msgid "OMEMO Message received"
-msgstr ""
+msgstr "收到 OMEMO 加密訊息"
 
 #: dist/converse-no-dependencies.js:65682
 #, fuzzy
@@ -1748,11 +1748,11 @@ msgstr "对方已下线"
 
 #: dist/converse-no-dependencies.js:65705
 msgid "wants to be your contact"
-msgstr ""
+msgstr "想成爲您的聯絡人"
 
 #: dist/converse-no-dependencies.js:65846
 msgid "About"
-msgstr ""
+msgstr "關於"
 
 #: dist/converse-no-dependencies.js:65848
 #, javascript-format
@@ -1763,7 +1763,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:65850
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr ""
+msgstr "%1$s 翻譯 %2$s 到您的語言"
 
 #: dist/converse-no-dependencies.js:65909
 #, fuzzy
@@ -1782,7 +1782,7 @@ msgstr "显示次聊天室的更多信息"
 
 #: dist/converse-no-dependencies.js:66017
 msgid "Your avatar image"
-msgstr ""
+msgstr "您的頭像影像"
 
 #: dist/converse-no-dependencies.js:66019
 msgid "Your Profile"
@@ -1807,11 +1807,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:66033
 msgid "XMPP Address (JID)"
-msgstr ""
+msgstr "XMPP 位址（JID）"
 
 #: dist/converse-no-dependencies.js:66037
 msgid "Other OMEMO-enabled devices"
-msgstr ""
+msgstr "其它啟用了 OMEMO 加密的裝置"
 
 #: dist/converse-no-dependencies.js:66039
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
@@ -1837,7 +1837,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:66053
 msgid "OMEMO"
-msgstr ""
+msgstr "OMEMO"
 
 #: dist/converse-no-dependencies.js:66055
 msgid "Profile"
@@ -1845,7 +1845,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:66214
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr "對不起，儲存您的個人資訊時發生錯誤。"
+msgstr "抱歉，儲存您的個人資訊時發生錯誤。"
 
 #: dist/converse-no-dependencies.js:66214
 msgid "You can check your browser's developer console for any error output."
@@ -1853,88 +1853,73 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:66261
 #: dist/converse-no-dependencies.js:70797
-#, fuzzy
 msgid "Away"
-msgstr "离开"
+msgstr "離開"
 
 #: dist/converse-no-dependencies.js:66262
 #: dist/converse-no-dependencies.js:70796
-#, fuzzy
 msgid "Busy"
-msgstr "忙碌中"
+msgstr "忙碌"
 
 #: dist/converse-no-dependencies.js:66265
-#, fuzzy
 msgid "Custom status"
-msgstr "DIY状态"
+msgstr "自定義狀態"
 
 #: dist/converse-no-dependencies.js:66266
 #: dist/converse-no-dependencies.js:70799
-#, fuzzy
 msgid "Offline"
-msgstr "离线"
+msgstr "離線"
 
 #: dist/converse-no-dependencies.js:66267
 #: dist/converse-no-dependencies.js:70794
-#, fuzzy
 msgid "Online"
-msgstr "在线"
+msgstr "在線"
 
 #: dist/converse-no-dependencies.js:66269
-#, fuzzy
 msgid "Away for long"
-msgstr "长时间离开"
+msgstr "長時間離開"
 
 #: dist/converse-no-dependencies.js:66270
-#, fuzzy
 msgid "Change chat status"
-msgstr "点击这里改变聊天状态"
+msgstr "變更線上狀態"
 
 #: dist/converse-no-dependencies.js:66271
-#, fuzzy
 msgid "Personal status message"
-msgstr "私訊"
+msgstr "個人狀態訊息"
 
 #: dist/converse-no-dependencies.js:66326
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "I am %1$s"
-msgstr "我现在%1$s"
+msgstr "我是 %1$s"
 
 #: dist/converse-no-dependencies.js:66361
-#, fuzzy
 msgid "Are you sure you want to log out?"
-msgstr "确定移除联系人吗？"
+msgstr "您确定要登出嗎？"
 
 #: dist/converse-no-dependencies.js:66369
 #: dist/converse-no-dependencies.js:66379
-#, fuzzy
 msgid "online"
-msgstr "在线"
+msgstr "在線"
 
 #: dist/converse-no-dependencies.js:66371
-#, fuzzy
 msgid "busy"
 msgstr "忙碌"
 
 #: dist/converse-no-dependencies.js:66373
-#, fuzzy
 msgid "away for long"
-msgstr "长时间离开"
+msgstr "長時間離開"
 
 #: dist/converse-no-dependencies.js:66375
-#, fuzzy
 msgid "away"
-msgstr "离开"
+msgstr "離開"
 
 #: dist/converse-no-dependencies.js:66377
-#, fuzzy
 msgid "offline"
-msgstr "离线"
+msgstr "離線"
 
 #: dist/converse-no-dependencies.js:66789
-#, fuzzy
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "保存表单是出错。"
+msgstr "抱歉，移除裝置時遇到了錯誤。"
 
 #: dist/converse-no-dependencies.js:66798
 msgid ""
@@ -2184,9 +2169,8 @@ msgid "Are you sure you want to decline this contact request?"
 msgstr "确定移除联系人吗？"
 
 #: dist/converse-no-dependencies.js:71491
-#, fuzzy
 msgid "Contacts"
-msgstr "联系人"
+msgstr "聯絡人"
 
 #: dist/converse-no-dependencies.js:71492
 #, fuzzy

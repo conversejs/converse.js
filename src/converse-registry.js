@@ -1,18 +1,20 @@
-import { _converse } from "@converse/headless/converse-core";
+import { api } from "@converse/headless/converse-core";
 
 const registry = {};
 
-function define (componentName, componentClass) {
-    this.registry[componentName] = componentClass;
+function define (name, constructor) {
+    this.registry[name] = constructor;
 }
 
 function register () {
-    Object.keys(registry).map(componentName =>
-        window.customElements.define(componentName, registry[componentName])
-    );
+    Object.keys(registry).forEach(name => {
+        if (!customElements.get(name)) {
+            customElements.define(name, registry[name])
+        }
+    });
 }
 
-_converse.api.elements = {
+api.elements = {
     registry,
     define,
     register

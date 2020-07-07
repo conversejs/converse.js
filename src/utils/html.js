@@ -311,7 +311,7 @@ u.escapeHTML = function (string) {
         .replace(/"/g, "&quot;");
 };
 
-u.convertToImageTag = async function (url) {
+u.convertToImageTag = function (url) {
     const uri = getURI(url);
     const img_url_without_ext = ['imgur.com', 'pbs.twimg.com'].includes(uri.hostname());
     let src;
@@ -321,12 +321,6 @@ u.convertToImageTag = async function (url) {
             src = uri.removeSearch(/.*/).toString() + `.${format}`;
         } else {
             src = url;
-        }
-        try {
-            await loadImage(src);
-        } catch (e) {
-            log.error(e);
-            return u.convertUrlToHyperlink(url);
         }
         return tpl_image({url, src});
     }
@@ -409,7 +403,7 @@ u.addHyperlinks = function (text) {
     return list;
 }
 
-u.geoUriToHttp = function(text, geouri_replacement) {
+u.geoUriToHttp = function(geouri_replacement, text) {
     const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
     return text.replace(regex, geouri_replacement);
 };
@@ -585,6 +579,25 @@ u.fadeIn = function (el, callback) {
         afterAnimationEnds(el, callback);
     }
 };
+
+u.stringToChunks = function (cut_indexes, text) {
+    const points = [...cut_indexes];
+    function sliceText (acc, begin, end) {
+        if (!points.length) {
+            return [...acc, text.slice(begin)];
+        }
+        return sliceText(
+            [...acc, text.slice(begin, end)],
+            points.shift(),
+            points[0]
+        );
+    }
+    return sliceText([], points.shift(), points[0]);
+}
+
+u.ifIsMappingText = func => (...args) => typeof args[0] == 'string' ? func(...args) : args[0];
+
+u.ifIsReducingText = func => (...args) => typeof args[1] == 'string' ? func(...args) : [...args[0], args[1]];
 
 
 /**

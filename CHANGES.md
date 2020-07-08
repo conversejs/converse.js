@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.2
+- #2128: Allow users to send invitation by fixing method name
+
 ## 6.0.1 (2020-02-13)
 
 - #1313: Stylistic improvements to the send button

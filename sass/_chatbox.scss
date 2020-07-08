@@ -321,6 +321,15 @@
                 width: 100%;
             }
 
+            .chat-textarea, input {
+                &:active, &:focus{
+                    outline-color: var(--chat-head-color);
+                }
+                &.correcting {
+                    background-color: var(--chat-correcting-color);
+                }
+            }
+
             .chat-textarea {
                 color: var(--chat-textarea-color);
                 background-color: var(--chat-textarea-background-color);
@@ -336,14 +345,8 @@
                 min-height: var(--chat-textarea-height);
                 margin-bottom: -4px; // Not clear why this is necessar :(
                 resize: none;
-                &:active, &:focus{
-                    outline-color: var(--chat-head-color);
-                }
                 &.spoiler {
                     height: 42px;
-                }
-                &.correcting {
-                    background-color: var(--chat-correcting-color);
                 }
             }
         }

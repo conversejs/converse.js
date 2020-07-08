@@ -456,6 +456,7 @@ converse.plugins.add('converse-muc-views', {
                 this.initDebounced();
 
                 this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
+                this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
                 this.listenTo(this.model, 'change:hidden_occupants', this.renderToolbar);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
                 this.listenTo(this.model, 'destroy', this.hide);

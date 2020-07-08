@@ -375,14 +375,16 @@
             .suggestion-box__results--above {
                 bottom: 4.5em;
             }
-            .chat-textarea {
+            .chat-textarea, input {
                 &:active, &:focus{
                     outline-color: var(--chatroom-head-bg-color);
                 }
-                border-bottom-right-radius: 0;
                 &.correcting {
                     background-color: var(--chatroom-correcting-color);
                 }
+            }
+            .chat-textarea {
+                border-bottom-right-radius: 0;
             }
         }
 

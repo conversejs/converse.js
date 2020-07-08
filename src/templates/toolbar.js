@@ -12,6 +12,7 @@ export default (o) => {
         <converse-chat-toolbar
             .chatview=${o.chatview}
             .model=${o.model}
+            ?composing_spoiler="${o.composing_spoiler}"
             ?hidden_occupants="${o.hidden_occupants}"
             ?is_groupchat="${o.is_groupchat}"
             ?show_call_button="${show_call_button}"

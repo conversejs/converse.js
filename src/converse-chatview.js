@@ -189,6 +189,7 @@ converse.plugins.add('converse-chatview', {
                 this.listenTo(this.model, 'destroy', this.remove);
                 this.listenTo(this.model, 'show', this.show);
                 this.listenTo(this.model, 'vcard:change', this.renderHeading);
+                this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
 
                 if (this.model.contact) {
                     this.listenTo(this.model.contact, 'destroy', this.renderHeading);
@@ -351,8 +352,6 @@ converse.plugins.add('converse-chatview', {
                 const form_container = this.el.querySelector('.message-form-container');
                 render(tpl_chatbox_message_form(
                     Object.assign(this.model.toJSON(), {
-                        '__': __,
-                        'message_limit': api.settings.get('message_limit'),
                         'hint_value': this.el.querySelector('.spoiler-hint')?.value,
                         'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
                         'label_spoiler_hint': __('Optional hint'),
@@ -952,12 +951,6 @@ converse.plugins.add('converse-chatview', {
                 }
                 this.updateCharCounter(textarea.value);
                 u.placeCaretAtEnd(textarea);
-            },
-
-            toggleComposeSpoilerMessage () {
-                this.model.set('composing_spoiler', !this.model.get('composing_spoiler'));
-                this.renderMessageForm();
-                this.focus();
             },
 
             onPresenceChanged (item) {

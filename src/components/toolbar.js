@@ -20,6 +20,7 @@ export class ChatToolbar extends CustomElement {
     static get properties () {
         return {
             chatview: { type: Object }, // Used by getToolbarButtons hooks
+            composing_spoiler: { type: Boolean },
             hidden_occupants: { type: Boolean },
             is_groupchat: { type: Boolean },
             message_limit: { type: Number },
@@ -100,12 +101,13 @@ export class ChatToolbar extends CustomElement {
     }
 
     getSpoilerButton () {
-        if (!this.is_groupchat && this.model.presence.resources.length === 0) {
+        const model = this.model;
+        if (!this.is_groupchat && model.presence.resources.length === 0) {
             return;
         }
 
         let i18n_toggle_spoiler;
-        if (this.model.get('composing_spoiler')) {
+        if (this.composing_spoiler) {
             i18n_toggle_spoiler = __("Click to write as a normal (non-spoiler) message");
         } else {
             i18n_toggle_spoiler = __("Click to write your message as a spoiler");
@@ -122,9 +124,9 @@ export class ChatToolbar extends CustomElement {
         if (this.is_groupchat) {
             return markup;
         } else {
-            const contact_jid = this.model.get('jid');
+            const contact_jid = model.get('jid');
             const spoilers_promise = Promise.all(
-                this.model.presence.resources.map(
+                model.presence.resources.map(
                     r => api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${r.get('name')}`)
                 )).then(results => results.reduce((acc, val) => (acc && val), true));
             return html`${until(spoilers_promise.then(() => markup), '')}`;

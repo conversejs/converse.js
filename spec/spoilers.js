@@ -153,15 +153,15 @@ describe("A spoiler message", function () {
         await u.waitUntil(() => message_content.textContent === spoiler);
 
         const spoiler_msg_el = view.el.querySelector('.chat-msg__text.spoiler');
-        expect(Array.from(spoiler_msg_el.classList).includes('collapsed')).toBeTruthy();
+        expect(Array.from(spoiler_msg_el.classList).includes('hidden')).toBeTruthy();
 
         spoiler_toggle = view.el.querySelector('.spoiler-toggle');
         expect(spoiler_toggle.textContent.trim()).toBe('Show more');
         spoiler_toggle.click();
-        await u.waitUntil(() => !Array.from(spoiler_msg_el.classList).includes('collapsed'));
+        await u.waitUntil(() => !Array.from(spoiler_msg_el.classList).includes('hidden'));
         expect(spoiler_toggle.textContent.trim()).toBe('Show less');
         spoiler_toggle.click();
-        await u.waitUntil(() => Array.from(spoiler_msg_el.classList).includes('collapsed'));
+        await u.waitUntil(() => Array.from(spoiler_msg_el.classList).includes('hidden'));
         done();
     }));
 
@@ -235,15 +235,15 @@ describe("A spoiler message", function () {
         await u.waitUntil(() => message_content.textContent === spoiler);
 
         const spoiler_msg_el = view.el.querySelector('.chat-msg__text.spoiler');
-        expect(Array.from(spoiler_msg_el.classList).includes('collapsed')).toBeTruthy();
+        expect(Array.from(spoiler_msg_el.classList).includes('hidden')).toBeTruthy();
 
         spoiler_toggle = view.el.querySelector('.spoiler-toggle');
         expect(spoiler_toggle.textContent.trim()).toBe('Show more');
         spoiler_toggle.click();
-        await u.waitUntil(() => !Array.from(spoiler_msg_el.classList).includes('collapsed'));
+        await u.waitUntil(() => !Array.from(spoiler_msg_el.classList).includes('hidden'));
         expect(spoiler_toggle.textContent.trim()).toBe('Show less');
         spoiler_toggle.click();
-        await u.waitUntil(() => Array.from(spoiler_msg_el.classList).includes('collapsed'));
+        await u.waitUntil(() => Array.from(spoiler_msg_el.classList).includes('hidden'));
         done();
     }));
 });

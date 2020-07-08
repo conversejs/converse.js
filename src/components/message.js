@@ -223,7 +223,7 @@ export default class Message extends CustomElement {
                 </a>
             </div>
         `;
-        const spoiler_classes = this.is_spoiler ? `spoiler ${this.is_spoiler_visible ? '' : 'collapsed'}` : '';
+        const spoiler_classes = this.is_spoiler ? `spoiler ${this.is_spoiler_visible ? '' : 'hidden'}` : '';
         return html`
             ${ this.is_spoiler ? tpl_spoiler_hint : '' }
             ${ this.subject ? html`<div class="chat-msg__subject">${this.subject}</div>` : '' }

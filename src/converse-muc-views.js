@@ -2276,7 +2276,7 @@ converse.plugins.add('converse-muc-views', {
                 evt.preventDefault();
                 const el = evt.target.querySelector('input.invited-contact');
                 const jid = el.value;
-                if (u.isValid(jid)) {
+                if (u.isValidJID(jid)) {
                     this.promptForInvite({
                         'target': el,
                         'text': {'label': jid, 'value': jid}}

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-15 16:11+0000\n"
-"Last-Translator: Michael Lu <yeskky@gmail.com>\n"
+"PO-Revision-Date: 2020-07-08 12:49+0000\n"
+"Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: dist/converse-no-dependencies.js:10577
 msgid "Uploading file:"
@@ -1875,7 +1875,7 @@ msgstr "XMPP地址（JID）"
 
 #: dist/converse-no-dependencies.js:66037
 msgid "Other OMEMO-enabled devices"
-msgstr "其他支持OMEMO的设备"
+msgstr "其他启用了 OMEMO 加密的设备"
 
 #: dist/converse-no-dependencies.js:66039
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
@@ -2043,7 +2043,7 @@ msgstr "抱歉，没有找到我们可以向其发送OMEMO加密消息的设备�
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
-msgstr "这是您的客户端似乎不支持的OMEMO加密消息。在https://conversations.im/omemo上找到更多信息"
+msgstr "您的客户端似乎不支持这一条 OMEMO 加密消息。更多信息可以在 https://conversations.im/omemo 上找到"
 
 #: dist/converse-no-dependencies.js:68734
 #, javascript-format
@@ -2062,7 +2062,7 @@ msgstr "获取注册表单"
 
 #: dist/converse-no-dependencies.js:69462
 msgid "Tip: A list of public XMPP providers is available"
-msgstr "提示：提供了公共XMPP提供程序的列表"
+msgstr "提示：提供了公共 XMPP 供应商列表"
 
 #: dist/converse-no-dependencies.js:69463
 msgid "here"
@@ -2098,7 +2098,7 @@ msgstr "注册成功"
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
-msgstr "提供者拒绝了您的注册尝试。请检查您输入的值是否正确。"
+msgstr "提供者拒绝了您的注册尝试。请检查您输入的內容是否正确。"
 
 #: dist/converse-no-dependencies.js:70105
 msgid "Click to toggle the list of open groupchats"

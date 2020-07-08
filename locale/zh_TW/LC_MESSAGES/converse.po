@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-07-08 08:22+0000\n"
+"PO-Revision-Date: 2020-07-08 09:07+0000\n"
 "Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
@@ -28,15 +28,15 @@ msgstr "正在上傳檔案："
 
 #: dist/converse-no-dependencies.js:10701
 msgid "This message has been edited"
-msgstr "這則訊息已經被編輯過"
+msgstr "這條訊息已經被編輯"
 
 #: dist/converse-no-dependencies.js:10707
 msgid "Edit this message"
-msgstr "編輯這則訊息"
+msgstr "編輯這條訊息"
 
 #: dist/converse-no-dependencies.js:10713
 msgid "Retract this message"
-msgstr "收回這則訊息"
+msgstr "收回這條訊息"
 
 #: dist/converse-no-dependencies.js:10739
 msgid "Send the message"
@@ -44,11 +44,11 @@ msgstr "送出訊息"
 
 #: dist/converse-no-dependencies.js:11061
 msgid "You're not allowed to send messages in this room"
-msgstr "您不被允許在此聊天室傳送訊息"
+msgstr "您不被允許在這間聊天室傳送訊息"
 
 #: dist/converse-no-dependencies.js:11081
 msgid "This groupchat no longer exists"
-msgstr "此聊天室不存在"
+msgstr "這間聊天室已經關閉"
 
 #: dist/converse-no-dependencies.js:11087
 msgid "The conversation has moved. Click below to enter."
@@ -292,12 +292,12 @@ msgstr "您已經被移除出這個聊天室，因爲託管它的服務正在關
 
 #: dist/converse-no-dependencies.js:37534
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "您未被允許加入這個聊天室。"
+msgstr "您未被允許加入這間聊天室。"
 
 #: dist/converse-no-dependencies.js:37536
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "您未被允許加入這個聊天室，因爲它僅限會員。"
+msgstr "您未被允許加入這間聊天室，因爲它僅限會員。"
 
 #: dist/converse-no-dependencies.js:37581
 msgid ""
@@ -616,7 +616,7 @@ msgstr "顯示更多"
 #: dist/converse-no-dependencies.js:52255
 #, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s 移除了這則訊息"
+msgstr "%1$s 移除了這條訊息"
 
 #: dist/converse-no-dependencies.js:52548
 #: dist/converse-no-dependencies.js:52726
@@ -793,13 +793,13 @@ msgstr "顯示此選單"
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
-msgstr "注意並非所有 XMPP/Jabber 用戶端軟件皆支持訊息回收功能，這則訊息有可能會未被收回。"
+msgstr "注意並非所有 XMPP/Jabber 用戶端軟件皆支持訊息回收功能，這條訊息有可能會未被收回。"
 
 #: dist/converse-no-dependencies.js:54224
 #: dist/converse-no-dependencies.js:63413
 #: dist/converse-no-dependencies.js:63447
 msgid "Are you sure you want to retract this message?"
-msgstr "您確定要收回這則訊息嗎？"
+msgstr "您確定要收回這條訊息嗎？"
 
 #: dist/converse-no-dependencies.js:54231
 #: dist/converse-no-dependencies.js:63420
@@ -812,7 +812,7 @@ msgstr "確定"
 #: dist/converse-no-dependencies.js:54259
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
-msgstr "您將會丢失一則未送出的訊息。確定要繼續嗎？"
+msgstr "您將會丢失一條未送出的訊息。確定要繼續嗎？"
 
 #: dist/converse-no-dependencies.js:54351
 msgid "Are you sure you want to clear the messages from this conversation?"
@@ -1020,12 +1020,12 @@ msgstr "新加入成員能夠直接發言"
 
 #: dist/converse-no-dependencies.js:58836
 msgid "Online users"
-msgstr "線上成員"
+msgstr "線上人數"
 
 #: dist/converse-no-dependencies.js:58838
 #: dist/converse-no-dependencies.js:62354
 msgid "Open"
-msgstr "打開"
+msgstr "對外開放"
 
 #: dist/converse-no-dependencies.js:58840
 msgid "Anyone can join this groupchat"
@@ -1328,7 +1328,7 @@ msgstr "conference.example.org"
 #: dist/converse-no-dependencies.js:62734
 #: dist/converse-no-dependencies.js:70113
 msgid "Show more information on this groupchat"
-msgstr "顯示有關此聊天室的更多資訊"
+msgstr "顯示更多此聊天室的資訊"
 
 #: dist/converse-no-dependencies.js:62744
 msgid "No groupchats found"
@@ -1401,7 +1401,7 @@ msgstr "%1$s 已經離開聊天室"
 
 #: dist/converse-no-dependencies.js:63469
 msgid "You are about to retract this message."
-msgstr "您在收回這則訊息。"
+msgstr "您在收回這條訊息。"
 
 #: dist/converse-no-dependencies.js:63469
 msgid ""
@@ -1419,7 +1419,7 @@ msgstr "可選原因"
 
 #: dist/converse-no-dependencies.js:63490
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "抱歉，您不被允許收回這則訊息"
+msgstr "抱歉，您不能收回這條訊息"
 
 #: dist/converse-no-dependencies.js:63512
 msgid "Sorry, something went wrong while trying to retract your message."
@@ -1431,7 +1431,7 @@ msgstr "收回訊息逾時"
 
 #: dist/converse-no-dependencies.js:63556
 msgid "Sorry, you're not allowed to retract this message."
-msgstr "抱歉，您不被允許收回這則訊息。"
+msgstr "抱歉，您不能收回這條訊息。"
 
 #: dist/converse-no-dependencies.js:63630
 msgid "Show more information about this groupchat"
@@ -1854,7 +1854,7 @@ msgstr "個人狀態訊息"
 #: dist/converse-no-dependencies.js:66326
 #, javascript-format
 msgid "I am %1$s"
-msgstr "我是 %1$s"
+msgstr "我現在 %1$s"
 
 #: dist/converse-no-dependencies.js:66361
 msgid "Are you sure you want to log out?"
@@ -1894,7 +1894,7 @@ msgstr "您確定要產生新的 OMEMO 加密金鑰嗎？這會移除您的舊�
 
 #: dist/converse-no-dependencies.js:67069
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
-msgstr "抱歉，解密一則 OMEMO 加密訊息時遇到了錯誤。"
+msgstr "抱歉，解密一條 OMEMO 加密訊息時遇到了錯誤。"
 
 #: dist/converse-no-dependencies.js:67282
 #, javascript-format
@@ -1936,7 +1936,7 @@ msgstr "抱歉，找不到可以傳送 OMEMO 加密訊息的裝置。"
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
-msgstr "您的用戶端軟件似乎不支援這一則 OMEMO 加密訊息。更多有關資訊可以在 https://conversations.im/omemo 上查閱"
+msgstr "您的用戶端軟件似乎不支援這一條 OMEMO 加密訊息。更多有關資訊可以在 https://conversations.im/omemo 上查閱"
 
 #: dist/converse-no-dependencies.js:68734
 #, javascript-format
@@ -2113,7 +2113,7 @@ msgstr "按一下拒絕 %1$s 的新增聯絡人請求"
 #: dist/converse-no-dependencies.js:71027
 #, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
-msgstr "按一下與 %1$s （XMPP 位址：%2$s）開始對話"
+msgstr "按一下與 %1$s （XMPP 位址：%2$s）展開對話"
 
 #: dist/converse-no-dependencies.js:71160
 msgid "Are you sure you want to decline this contact request?"

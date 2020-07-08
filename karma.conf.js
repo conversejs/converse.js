@@ -47,6 +47,7 @@ module.exports = function(config) {
       { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "spec/messages.js", type: 'module' },
       { pattern: "spec/muc_messages.js", type: 'module' },
+      { pattern: "spec/mentions.js", type: 'module' },
       { pattern: "spec/retractions.js", type: 'module' },
       { pattern: "spec/muc.js", type: 'module' },
       { pattern: "spec/modtools.js", type: 'module' },

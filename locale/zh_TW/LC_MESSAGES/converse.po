@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-07-08 01:20+0000\n"
+"PO-Revision-Date: 2020-07-08 02:42+0000\n"
 "Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
@@ -28,7 +28,7 @@ msgstr "正在上傳檔案："
 
 #: dist/converse-no-dependencies.js:10701
 msgid "This message has been edited"
-msgstr "這則訊息已被編輯過"
+msgstr "這則訊息已經被編輯過"
 
 #: dist/converse-no-dependencies.js:10707
 msgid "Edit this message"
@@ -52,7 +52,7 @@ msgstr "此聊天室不存在"
 
 #: dist/converse-no-dependencies.js:11087
 msgid "The conversation has moved. Click below to enter."
-msgstr "這則對話已被搬移。點擊下方進入。"
+msgstr "這則對話已經被搬移。點擊下方進入。"
 
 #: dist/converse-no-dependencies.js:11288
 msgid "Messages are being sent in plaintext"
@@ -78,7 +78,7 @@ msgstr "在此登入"
 
 #: dist/converse-no-dependencies.js:11340
 msgid "Account Registration:"
-msgstr "帳戶註冊："
+msgstr "帳號註冊："
 
 #: dist/converse-no-dependencies.js:11348
 msgid "Register"
@@ -102,7 +102,7 @@ msgstr "取消"
 
 #: dist/converse-no-dependencies.js:27562
 msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr "您的訊息未被傳送，因爲您未被允許。"
+msgstr "您的訊息未被傳送，因爲您未被允許送出訊息。"
 
 #: dist/converse-no-dependencies.js:27565
 #, javascript-format
@@ -112,7 +112,7 @@ msgstr "來自伺服器的訊息是：「%1$s」"
 #: dist/converse-no-dependencies.js:27568
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "您的訊息未被傳送，因爲您不在聊天室裏。"
+msgstr "您的訊息未被傳送，因爲您不在聊天室內。"
 
 #: dist/converse-no-dependencies.js:27573
 msgid "Sorry, an error occurred:"
@@ -220,11 +220,11 @@ msgstr "此聊天室不是匿名的"
 
 #: dist/converse-no-dependencies.js:35358
 msgid "This groupchat now shows unavailable members"
-msgstr "此聊天室現在顯示不可用的成員"
+msgstr "此聊天室現在會顯示不可用的成員"
 
 #: dist/converse-no-dependencies.js:35359
 msgid "This groupchat does not show unavailable members"
-msgstr "此聊天室不顯示不可用的成員"
+msgstr "此聊天室不會顯示不可用的成員"
 
 #: dist/converse-no-dependencies.js:35360
 msgid "The groupchat configuration has changed"
@@ -240,15 +240,15 @@ msgstr "現已禁用聊天室聊天紀錄"
 
 #: dist/converse-no-dependencies.js:35363
 msgid "This groupchat is now no longer anonymous"
-msgstr "這個聊天室不再是匿名的"
+msgstr "這個聊天室現在不再匿名"
 
 #: dist/converse-no-dependencies.js:35364
 msgid "This groupchat is now semi-anonymous"
-msgstr "這個聊天室現在是半匿名的"
+msgstr "這個聊天室現在是半匿名"
 
 #: dist/converse-no-dependencies.js:35365
 msgid "This groupchat is now fully-anonymous"
-msgstr "這個聊天室現在是完全是匿名的"
+msgstr "這個聊天室現在完全匿名"
 
 #: dist/converse-no-dependencies.js:35366
 msgid "A new groupchat has been created"
@@ -276,13 +276,13 @@ msgstr "您被踢出了這個聊天室"
 #: dist/converse-no-dependencies.js:35376
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
-msgstr "由於聊天室權限的變更，您已經被移除出這個聊天室"
+msgstr "由於身份的變動，您已經被移除出這個聊天室"
 
 #: dist/converse-no-dependencies.js:35377
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
-msgstr "您已經被移除出這個聊天室，因爲聊天室已改為僅限會員，而您不是會員"
+msgstr "您已經被移除出這個聊天室，因爲聊天室已變為僅限會員，而您不是會員"
 
 #: dist/converse-no-dependencies.js:35378
 msgid ""
@@ -303,7 +303,7 @@ msgstr "您未被允許加入這個聊天室，因爲它僅限會員。"
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
-msgstr "您的暱稱無法在此聊天室註冊，因爲這個聊天室不支援。"
+msgstr "您的暱稱無法在此聊天室註冊，因爲這個聊天室不支援註冊暱稱。"
 
 #: dist/converse-no-dependencies.js:37583
 msgid ""
@@ -338,22 +338,22 @@ msgstr "%1$s 的暱稱已變更"
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s 已被 %2$s 踢出聊天室"
+msgstr "%1$s 已經被 %2$s 踢出聊天室"
 
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr "%1$s 已被踢出聊天室"
+msgstr "%1$s 已經被踢出聊天室"
 
 #: dist/converse-no-dependencies.js:38517
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "由於聊天室權限變更，%1$s 已被移除"
+msgstr "由於身份的變動，%1$s 已經被移除"
 
 #: dist/converse-no-dependencies.js:38519
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr "由於不是會員，%1$s 已被移除"
+msgstr "由於不是會員，%1$s 已經被移除"
 
 #: dist/converse-no-dependencies.js:38529
 #, javascript-format
@@ -393,12 +393,12 @@ msgstr "%1$s 不再是主持人"
 #: dist/converse-no-dependencies.js:38581
 #, javascript-format
 msgid "%1$s has been given a voice"
-msgstr "%1$s 已被賦予發言權"
+msgstr "%1$s 已經被賦予發言權"
 
 #: dist/converse-no-dependencies.js:38588
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr "%1$s 已被禁止發言"
+msgstr "%1$s 已經被禁止發言"
 
 #: dist/converse-no-dependencies.js:38598
 #, javascript-format
@@ -409,7 +409,7 @@ msgstr "%1$s 現在成爲主持人"
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
-msgstr "您所揀選的暱稱已被保留或是已經有人使用，請換一個暱稱。"
+msgstr "您所揀選的暱稱已經被保留或是已經有人使用，請換一個暱稱。"
 
 #: dist/converse-no-dependencies.js:38715
 msgid "Password incorrect"
@@ -557,7 +557,7 @@ msgstr "書籤名稱:"
 
 #: dist/converse-no-dependencies.js:49081
 msgid "What should your nickname for this groupchat be?"
-msgstr "您在此聊天室的暱稱？"
+msgstr "您希望在此聊天室的用什麼暱稱？"
 
 #: dist/converse-no-dependencies.js:49083
 #: dist/converse-no-dependencies.js:58914
@@ -793,7 +793,7 @@ msgstr "顯示此選單"
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
-msgstr "注意並非所有 XMPP/Jabber 用戶端軟體皆支持訊息回收功能，這則訊息有可能未被收回。"
+msgstr "注意並非所有 XMPP/Jabber 用戶端軟體皆支持訊息回收功能，這則訊息有可能會未被收回。"
 
 #: dist/converse-no-dependencies.js:54224
 #: dist/converse-no-dependencies.js:63413
@@ -983,7 +983,7 @@ msgstr "僅限會員"
 #: dist/converse-no-dependencies.js:58818
 #: dist/converse-no-dependencies.js:62352
 msgid "Moderated"
-msgstr "發言限制"
+msgstr "發言權限制"
 
 #: dist/converse-no-dependencies.js:58820
 msgid ""
@@ -1012,7 +1012,7 @@ msgstr "聊天室內所有成員都能夠檢視您的 XMPP 位址"
 
 #: dist/converse-no-dependencies.js:58832
 msgid "Not moderated"
-msgstr "無發言限制"
+msgstr "無發言權限制"
 
 #: dist/converse-no-dependencies.js:58834
 msgid "Participants entering this groupchat can write right away"
@@ -1089,7 +1089,7 @@ msgstr "隱藏聊天室話題"
 
 #: dist/converse-no-dependencies.js:61408
 msgid "This groupchat is bookmarked"
-msgstr "此聊天室已被加爲書籤"
+msgstr "此聊天室已經被加爲書籤"
 
 #: dist/converse-no-dependencies.js:61460
 #: dist/converse-no-dependencies.js:63686
@@ -1175,24 +1175,23 @@ msgstr "顯示聊天室"
 
 #: dist/converse-no-dependencies.js:61950
 msgid "Affiliation"
-msgstr ""
+msgstr "身份"
 
 #: dist/converse-no-dependencies.js:61952
 msgid "Change affiliation"
-msgstr ""
+msgstr "變更身份"
 
 #: dist/converse-no-dependencies.js:61954
 msgid "Change role"
 msgstr "變更角色"
 
 #: dist/converse-no-dependencies.js:61956
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "发言受限"
+msgstr "主持人工具"
 
 #: dist/converse-no-dependencies.js:61958
 msgid "New affiliation"
-msgstr ""
+msgstr "新身份"
 
 #: dist/converse-no-dependencies.js:61960
 msgid "New Role"
@@ -1200,11 +1199,11 @@ msgstr "新角色"
 
 #: dist/converse-no-dependencies.js:61962
 msgid "No users with that affiliation found."
-msgstr ""
+msgstr "未找到該身份的成員。"
 
 #: dist/converse-no-dependencies.js:61964
 msgid "No users with that role found."
-msgstr "未找到該角色成員。"
+msgstr "未找到該角色的成員。"
 
 #: dist/converse-no-dependencies.js:61966
 msgid "Reason"
@@ -1225,44 +1224,46 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
+"角色的存在是爲了規定聊天室內哪些成員能夠做出何種行爲。角色是作爲權限的一部分被明確或者自動地賦予成員的。如果某個角色不是由其身份自動獲得的，這個角色會在其"
+"成員離開後自動失效。"
 
 #: dist/converse-no-dependencies.js:61976
 msgid ""
 "An affiliation is a long-lived entitlement which typically implies a certain "
 "role and which grants privileges and responsibilities. For example admins "
 "and owners automatically have the moderator role."
-msgstr ""
+msgstr "身份是一種自帶特定角色的長期權利，隨之而來的還有權力和責任。例如管理員和主人這兩種身份會自動獲得主持人這一角色。"
 
 #: dist/converse-no-dependencies.js:61980
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
-msgstr ""
+msgstr "主持人是可以變更其他成員角色（管理員和主人除外）的特殊成員。"
 
 #: dist/converse-no-dependencies.js:61982
 msgid "The default role, implies that you can read and write messages."
-msgstr ""
+msgstr "預設角色，表示您可以收受和傳送訊息。"
 
 #: dist/converse-no-dependencies.js:61984
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
-msgstr ""
+msgstr "遊客在有發言權限制的聊天室內不可以傳送訊息。"
 
 #: dist/converse-no-dependencies.js:61990
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
-msgstr ""
+msgstr "主人是最高級別的身份。主人可以變更其他所有成員的角色和身份。"
 
 #: dist/converse-no-dependencies.js:61992
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
-msgstr ""
+msgstr "管理員是第二級別的身份。管理員可以變更除主人外所有成員的角色和身份。"
 
 #: dist/converse-no-dependencies.js:61994
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
-msgstr ""
+msgstr "若要封鎖某個成員，您可以變更其身份爲「驅逐」。"
 
 #: dist/converse-no-dependencies.js:62345
 msgid "Description:"
@@ -1278,7 +1279,7 @@ msgstr "成員："
 
 #: dist/converse-no-dependencies.js:62348
 msgid "Features:"
-msgstr "特性:"
+msgstr "特性："
 
 #: dist/converse-no-dependencies.js:62349
 msgid "Requires authentication"
@@ -1302,12 +1303,11 @@ msgstr "不需發言權"
 
 #: dist/converse-no-dependencies.js:62608
 msgid "Affiliation changed"
-msgstr ""
+msgstr "身份已變更"
 
 #: dist/converse-no-dependencies.js:62631
-#, fuzzy
 msgid "Sorry, something went wrong while trying to set the affiliation"
-msgstr "對不起，在嘗試重新整理時出錯了"
+msgstr "抱歉，在嘗試變更身份時出錯了"
 
 #: dist/converse-no-dependencies.js:62647
 msgid "Role changed"
@@ -1410,19 +1410,16 @@ msgid ""
 msgstr "您可以選擇寫下收回訊息的原因。"
 
 #: dist/converse-no-dependencies.js:63476
-#, fuzzy
 msgid "Message Retraction"
-msgstr "信息"
+msgstr "收回信息"
 
 #: dist/converse-no-dependencies.js:63476
-#, fuzzy
 msgid "Optional reason"
-msgstr "可選提示"
+msgstr "可選原因"
 
 #: dist/converse-no-dependencies.js:63490
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "您可此创建新房间了"
+msgstr "抱歉，您不被允許收回這則訊息"
 
 #: dist/converse-no-dependencies.js:63512
 msgid "Sorry, something went wrong while trying to retract your message."
@@ -1437,110 +1434,100 @@ msgid "Sorry, you're not allowed to retract this message."
 msgstr "抱歉，您不被允許收回這則訊息。"
 
 #: dist/converse-no-dependencies.js:63630
-#, fuzzy
 msgid "Show more information about this groupchat"
 msgstr "顯示有關此群組的更多資訊"
 
 #: dist/converse-no-dependencies.js:63641
 msgid "Configure"
-msgstr ""
+msgstr "設定"
 
 #: dist/converse-no-dependencies.js:63642
-#, fuzzy
 msgid "Configure this groupchat"
-msgstr "打开聊天室"
+msgstr "設定聊天室"
 
 #: dist/converse-no-dependencies.js:63659
-#, fuzzy
 msgid "Moderate"
-msgstr "須審核"
+msgstr "發言權"
 
 #: dist/converse-no-dependencies.js:63660
-#, fuzzy
 msgid "Moderate this groupchat"
-msgstr "離開此群組"
+msgstr "加入發言權限制"
 
 #: dist/converse-no-dependencies.js:63672
-#, fuzzy
 msgid "Destroy"
-msgstr "临时聊天室"
+msgstr "關閉聊天室"
 
 #: dist/converse-no-dependencies.js:63673
 #: dist/converse-no-dependencies.js:64268
-#, fuzzy
 msgid "Remove this groupchat"
-msgstr "離開此群組"
+msgstr "移除這間聊天室"
 
 #: dist/converse-no-dependencies.js:63687
-#, fuzzy
 msgid "Invite someone to join this groupchat"
-msgstr "打开聊天室"
+msgstr "邀請朋友加入聊天室"
 
 #: dist/converse-no-dependencies.js:63701
-#, fuzzy
 msgid "Show topic"
-msgstr "顯示群組"
+msgstr "顯示話題"
 
 #: dist/converse-no-dependencies.js:63701
 msgid "Hide topic"
-msgstr ""
+msgstr "隱藏話題"
 
 #: dist/converse-no-dependencies.js:63702
 msgid "Show the topic message in the heading"
-msgstr ""
+msgstr "在頂部展示話題訊息"
 
 #: dist/converse-no-dependencies.js:63702
 msgid "Hide the topic in the heading"
-msgstr ""
+msgstr "在頂部隱藏話題"
 
 #: dist/converse-no-dependencies.js:63714
 msgid "Leave"
-msgstr ""
+msgstr "離開"
 
 #: dist/converse-no-dependencies.js:63715
-#, fuzzy
 msgid "Leave and close this groupchat"
-msgstr "離開此群組"
+msgstr "離開並關閉聊天室"
 
 #: dist/converse-no-dependencies.js:63725
-#, fuzzy
 msgid "Are you sure you want to leave this groupchat?"
-msgstr "确定移除联系人吗？"
+msgstr "您確定要離開這間聊天室嗎？"
 
 #: dist/converse-no-dependencies.js:63862
 msgid "Hide the list of participants"
-msgstr ""
+msgstr "隱藏成員清單"
 
 #: dist/converse-no-dependencies.js:63975
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "被禁止：您的角色没有足夠權限。"
 
 #: dist/converse-no-dependencies.js:64004
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "被禁止：您的身份没有足夠權限。"
 
 #: dist/converse-no-dependencies.js:64011
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
-msgstr ""
+msgstr "錯誤：「%1$s」指令讀入兩個參數，包括成員的暱稱和一個可選原因。"
 
 #: dist/converse-no-dependencies.js:64029
 #: dist/converse-no-dependencies.js:64042
 msgid "Error: couldn't find a groupchat participant based on your arguments"
-msgstr ""
+msgstr "錯誤：找不到符合條件的聊天室成員"
 
 #: dist/converse-no-dependencies.js:64034
 msgid "Error: found multiple groupchat participant based on your arguments"
-msgstr ""
+msgstr "錯誤：找到不止一個聊天室成員"
 
 #: dist/converse-no-dependencies.js:64075
 msgid ""
 "Couldn't find a participant with that nickname or XMPP address. They might "
 "have left the groupchat."
-msgstr ""
+msgstr "未找到符合該暱稱或 XMPP 位址的聊天室成員。他們可能已經離開了聊天室。"
 
 #: dist/converse-no-dependencies.js:64132
 msgid "Sorry, an error happened while running the command."
@@ -1549,43 +1536,39 @@ msgstr "抱歉，運行指令時發生錯誤。"
 #: dist/converse-no-dependencies.js:64132
 #: dist/converse-no-dependencies.js:64805
 msgid "Check your browser's developer console for details."
-msgstr ""
+msgstr "詳細情形請檢查您的瀏覽器開發者工具。"
 
 #: dist/converse-no-dependencies.js:64178
-#, fuzzy
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr "确定移除联系人吗？"
+msgstr "您確定要關閉這間聊天室嗎？"
 
 #: dist/converse-no-dependencies.js:64267
 msgid "You can run the following commands"
-msgstr ""
+msgstr "您可以運行以下指令"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Change user's affiliation to admin"
-msgstr ""
+msgstr "變更成員身份爲管理員"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Ban user by changing their affiliation to outcast"
-msgstr ""
+msgstr "變更成員身份爲「驅逐」以封鎖成員"
 
 #: dist/converse-no-dependencies.js:64268
-#, fuzzy
 msgid "Clear the chat area"
-msgstr "關閉這個聊天視窗"
+msgstr "清除對話區域"
 
 #: dist/converse-no-dependencies.js:64268
-#, fuzzy
 msgid "Close this groupchat"
-msgstr "離開此群組"
+msgstr "關閉聊天室"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Change user role to participant"
-msgstr ""
+msgstr "變更成員角色爲普通成員"
 
 #: dist/converse-no-dependencies.js:64268
-#, fuzzy
 msgid "Kick user from groupchat"
-msgstr "把用户踢出房间"
+msgstr "將成員踢出聊天室"
 
 #: dist/converse-no-dependencies.js:64268
 #, fuzzy

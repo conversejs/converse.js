@@ -5,14 +5,15 @@
  */
 import "converse-chatview";
 import tpl_chats_panel from "templates/chats_panel.html";
-import tpl_toggle_chats from "templates/toggle_chats.html";
-import tpl_trimmed_chat from "templates/trimmed_chat.html";
+import tpl_toggle_chats from "templates/toggle_chats.js";
+import tpl_trimmed_chat from "templates/trimmed_chat.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { Overview } from "@converse/skeletor/src/overview";
 import { View } from "@converse/skeletor/src/view";
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { debounce, sum } from 'lodash-es';
+import { render } from 'lit-html';
 
 const { dayjs } = converse.env;
 const u = converse.env.utils;
@@ -342,12 +343,8 @@ converse.plugins.add('converse-minimize', {
             },
 
             render () {
-                const data = Object.assign(
-                    this.model.toJSON(), {
-                        'tooltip': __('Click to restore this chat'),
-                        'title': this.model.getDisplayName()
-                    });
-                this.el.innerHTML = tpl_trimmed_chat(data);
+                const data = Object.assign(this.model.toJSON(), {'title': this.model.getDisplayName()});
+                render(tpl_trimmed_chat(data), this.el);
                 return this.el;
             },
 
@@ -383,9 +380,9 @@ converse.plugins.add('converse-minimize', {
                 "click #toggle-minimized-chats": "toggle"
             },
 
-            initialize () {
+            async initialize () {
                 this.render();
-                this.initToggle();
+                await this.initToggle();
                 this.addMultipleChats(this.model.where({'minimized': true}));
                 this.listenTo(this.model, "add", this.onChanged)
                 this.listenTo(this.model, "destroy", this.removeChat)
@@ -406,13 +403,12 @@ converse.plugins.add('converse-minimize', {
                 return this.el;
             },
 
-            initToggle () {
+            async initToggle () {
                 const id = `converse.minchatstoggle-${_converse.bare_jid}`;
-                this.toggleview = new _converse.MinimizedChatsToggleView({
-                    'model': new _converse.MinimizedChatsToggle({'id': id})
-                });
-                this.toggleview.model.browserStorage = _converse.createStore(id);
-                this.toggleview.model.fetch();
+                const model = new _converse.MinimizedChatsToggle({id});
+                model.browserStorage = _converse.createStore(id);
+                await new Promise(resolve => model.fetch({'success': resolve, 'error': resolve}));
+                this.toggleview = new _converse.MinimizedChatsToggleView({model});
             },
 
             toggle (ev) {
@@ -489,11 +485,8 @@ converse.plugins.add('converse-minimize', {
             },
 
             render () {
-                this.el.innerHTML = tpl_toggle_chats(
-                    Object.assign(this.model.toJSON(), {
-                        'Minimized': __('Minimized')
-                    })
-                );
+                render(tpl_toggle_chats(Object.assign(this.model.toJSON())), this.el);
+
                 if (this.model.get('collapsed')) {
                     u.hideElement(this.flyout);
                 } else {

@@ -1618,7 +1618,7 @@ describe("Chatboxes", function () {
 
             const unread_count = selectUnreadMsgCount();
             expect(u.isVisible(unread_count)).toBeTruthy();
-            expect(unread_count.innerHTML).toBe('1');
+            expect(unread_count.innerHTML.replace(/<!---->/g, '')).toBe('1');
             done();
         }));
 
@@ -1643,7 +1643,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => view.model.messages.length);
             const unread_count = selectUnreadMsgCount();
             expect(u.isVisible(unread_count)).toBeTruthy();
-            expect(unread_count.innerHTML).toBe('1');
+            expect(unread_count.innerHTML.replace(/<!---->/g, '')).toBe('1');
             done();
         }));
 

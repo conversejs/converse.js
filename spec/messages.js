@@ -952,7 +952,7 @@ describe("A Chat Message", function () {
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!---->/g, '').trim()).toEqual(
             `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
+                `<img class="chat-image img-thumbnail" src="https://conversejs.org/logo/conversejs-filled.svg">`+
             `</a>`);
 
         message += "?param1=val1&param2=val2";
@@ -979,6 +979,27 @@ describe("A Chat Message", function () {
         expect(view.content.querySelectorAll('img').length).toBe(4);
         mock.sendMessage(view, message);
         expect(view.content.querySelectorAll('img').length).toBe(4);
+        done();
+    }));
+
+    it("will fall back to rendering images as URLs",
+        mock.initConverse(
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            async function (done, _converse) {
+
+        await mock.waitForRoster(_converse, 'current');
+        const base_url = 'https://conversejs.org';
+        const message = base_url+"/logo/non-existing.svg";
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.api.chatviews.get(contact_jid);
+        spyOn(view.model, 'sendMessage').and.callThrough();
+        mock.sendMessage(view, message);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
+        expect(view.model.sendMessage).toHaveBeenCalled();
+        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '').trim() ==
+            `<a target="_blank" rel="noopener" href="https://conversejs.org/logo/non-existing.svg">https://conversejs.org/logo/non-existing.svg</a>`);
         done();
     }));
 
@@ -1971,9 +1992,9 @@ describe("A Chat Message", function () {
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you seen this funny image?');
             const media = view.el.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                `<!----><a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a><!---->`);
+            expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
             done();
         }));
     });

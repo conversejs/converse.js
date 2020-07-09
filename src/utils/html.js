@@ -99,11 +99,7 @@ function renderImageURL (_converse, uri) {
     if (!_converse.api.settings.get('show_images_inline')) {
         return u.convertURIoHyperlink(uri);
     }
-    const { __ } = _converse;
-    return tpl_image({
-        'url': uri.toString(),
-        'label_download': __('Download image "%1$s"', getFileName(uri))
-    })
+    return tpl_image({'url': uri.toString()});
 }
 
 function renderFileURL (_converse, uri) {
@@ -160,24 +156,6 @@ u.applyDragResistance = function (value, default_value) {
     }
     return value;
 };
-
-
-function loadImage (url) {
-    return new Promise((resolve, reject) => {
-        const err_msg = `Could not determine whether it's an image: ${url}`;
-        const img = new Image();
-        const timer = window.setTimeout(() => reject(new Error(err_msg)), 20000);
-        img.onerror = img.onabort = function () {
-            clearTimeout(timer);
-            reject(new Error(err_msg));
-        };
-        img.onload = function () {
-            clearTimeout(timer);
-            resolve(img);
-        };
-        img.src = url;
-    });
-}
 
 
 u.calculateElementHeight = function (el) {
@@ -311,24 +289,17 @@ u.escapeHTML = function (string) {
         .replace(/"/g, "&quot;");
 };
 
-u.convertToImageTag = async function (url) {
+
+u.convertToImageTag = function (url) {
     const uri = getURI(url);
     const img_url_without_ext = ['imgur.com', 'pbs.twimg.com'].includes(uri.hostname());
-    let src;
     if (u.isImageURL(url) || img_url_without_ext) {
         if (img_url_without_ext) {
             const format = (uri.hostname() === 'pbs.twimg.com') ? uri.search(true).format : 'png';
-            src = uri.removeSearch(/.*/).toString() + `.${format}`;
+            return tpl_image({'url': uri.removeSearch(/.*/).toString() + `.${format}`});
         } else {
-            src = url;
+            return tpl_image({url});
         }
-        try {
-            await loadImage(src);
-        } catch (e) {
-            log.error(e);
-            return u.convertUrlToHyperlink(url);
-        }
-        return tpl_image({url, src});
     }
 }
 

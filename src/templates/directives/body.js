@@ -206,9 +206,8 @@ class MessageBodyRenderer {
 
 
 export const renderBodyText = directive(component => part => {
-    const model = component.model;
     const renderer = new MessageBodyRenderer(component);
     part.setValue(renderer.render());
-    part.commit();
+    const model = component.model;
     model.collection?.trigger('rendered', model);
 });

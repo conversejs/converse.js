@@ -538,7 +538,7 @@ converse.plugins.add('converse-minimize', {
 
         /************************ BEGIN Event Handlers ************************/
         api.listen.on('chatBoxInsertedIntoDOM', view => _converse.chatboxviews.trimChats(view));
-        api.listen.on('statusInitialized', () => initMinimizedChats());
+        api.listen.on('connected', () => initMinimizedChats());
         api.listen.on('controlBoxOpened', view => _converse.chatboxviews.trimChats(view));
         api.listen.on('chatBoxViewInitialized', v => v.listenTo(v.model, 'change:minimized', v.onMinimizedChanged));
 

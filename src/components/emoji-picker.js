@@ -283,9 +283,10 @@ export class EmojiDropdown extends BaseDropdown {
                         data-toggle="dropdown"
                         aria-haspopup="true"
                         aria-expanded="false">
-                    <converse-icon class="fa fa-smile "
-                             path-prefix="${api.settings.get('assets_path')}"
-                             size="1em"></converse-icon>
+                    <converse-icon
+                        class="fa fa-smile "
+                        path-prefix="${api.settings.get('assets_path')}"
+                        size="1em"></converse-icon>
                 </button>
                 <div class="dropdown-menu">
                     ${until(this.initModel().then(() => html`
@@ -314,14 +315,14 @@ export class EmojiDropdown extends BaseDropdown {
     }
 
     async showMenu () {
-        await this.init_promise;
+        await this.initModel();
         if (!this.render_emojis) {
             // Trigger an update so that emojis are rendered
             this.render_emojis = true;
-            this.requestUpdate();
+            await this.requestUpdate();
         }
         super.showMenu();
-        this.querySelector('.emoji-search')?.focus();
+        setTimeout(() => this.querySelector('.emoji-search')?.focus());
     }
 }
 

@@ -4,7 +4,7 @@ const { Promise, Strophe, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 
 
-fdescribe("A groupchat message", function () {
+describe("A groupchat message", function () {
 
     it("is specially marked when you are mentioned in it",
         mock.initConverse(

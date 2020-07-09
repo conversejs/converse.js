@@ -169,6 +169,7 @@ export default class EmojiPicker extends CustomElement {
         } else if (ev.keyCode === converse.keycodes.ENTER) {
             this.onEnterPressed(ev);
         } else if (ev.keyCode === converse.keycodes.ESCAPE) {
+            u.ancestor(this, 'converse-emoji-dropdown').hideMenu();
             this.chatview.el.querySelector('.chat-textarea').focus();
             ev.stopPropagation();
             ev.preventDefault();
@@ -238,10 +239,8 @@ export default class EmojiPicker extends CustomElement {
     }
 
     enableArrowNavigation (ev) {
-        if (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-        }
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
         this.disableArrowNavigation();
         this.navigator.enable();
         this.navigator.handleKeydown(ev);

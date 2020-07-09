@@ -72,7 +72,7 @@ function getTonedEmojis () {
 }
 
 
-function convertASCII2Emoji (str) {
+export function convertASCII2Emoji (str) {
     // Replace ASCII smileys
     return str.replace(ASCII_REPLACE_REGEX, (entire, m1, m2, m3) => {
         if( (typeof m3 === 'undefined') || (m3 === '') || (!(u.unescapeHTML(m3) in ASCII_LIST)) ) {
@@ -86,7 +86,7 @@ function convertASCII2Emoji (str) {
 }
 
 
-function getEmojiMarkup (data, options={unicode_only: false, add_title_wrapper: false}) {
+export function getEmojiMarkup (data, options={unicode_only: false, add_title_wrapper: false}) {
     const emoji = data.emoji;
     const shortname = data.shortname;
     if (emoji) {
@@ -111,7 +111,7 @@ function getEmojiMarkup (data, options={unicode_only: false, add_title_wrapper: 
 }
 
 
-function getShortnameReferences (text) {
+export function getShortnameReferences (text) {
     const references = [...text.matchAll(shortnames_regex)];
     return references.map(ref => {
         const cp = converse.emojis.by_sn[ref[0]].cp;
@@ -126,7 +126,7 @@ function getShortnameReferences (text) {
 }
 
 
-function getCodePointReferences (text) {
+export function getCodePointReferences (text) {
     const references = [];
     const how = {
         callback: (icon_id) => {
@@ -228,18 +228,6 @@ converse.plugins.add('converse-emoji', {
         const emojis_by_attribute = {};
 
         Object.assign(u, {
-            /**
-             * Replaces emoji shortnames in the passed-in string with unicode or image-based emojis
-             * (based on the value of `use_system_emojis`).
-             * @method u.addEmoji
-             * @param { String } text = The text
-             * @returns { String } The text with shortnames replaced with emoji unicodes or images.
-             */
-            addEmoji (text) {
-                const options = {add_title_wrapper: true, unicode_only: false};
-                return u.shortnamesToEmojis(text, options);
-            },
-
             /**
              * Returns an emoji represented by the passed in shortname.
              * Scans the passed in text for shortnames and replaces them with

@@ -4,7 +4,7 @@ const { Promise, Strophe, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 
 
-describe("A groupchat message", function () {
+describe("An incoming groupchat message", function () {
 
     it("is specially marked when you are mentioned in it",
         mock.initConverse(
@@ -102,6 +102,7 @@ describe("A groupchat message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'7', 'end':'11', 'type':'mention', 'uri':'xmpp:z3r0@montague.lit'}).up()
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'12', 'end':'15', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'16', 'end':'24', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
+
         await view.model.handleMessageStanza(msg);
         const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
         expect(message.classList.length).toEqual(1);
@@ -111,6 +112,10 @@ describe("A groupchat message", function () {
             '<span class="mention">mr.robot</span>, how are you?');
         done();
     }));
+});
+
+
+describe("A sent groupchat message", function () {
 
     describe("in which someone is mentioned", function () {
 
@@ -205,6 +210,12 @@ describe("A groupchat message", function () {
             expect(references.length).toBe(0);
             expect(references)
                 .toEqual([]);
+
+            [text, references] = view.model.parseTextForReferences(
+                "Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/html/index.html");
+            expect(text).toBe("Welcome gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/html/index.html");
+            expect(references.length).toBe(1);
+            expect(references).toEqual([{"begin":8,"end":14,"value":"gibson","type":"mention","uri":"xmpp:gibson@montague.lit"}]);
 
             [text, references] = view.model.parseTextForReferences(
                 'https://linkmauve.fr@Link Mauve/ https://linkmauve.fr/@github/is_back gibson@gibson.com gibson@Link Mauve.fr')
@@ -436,4 +447,30 @@ describe("A groupchat message", function () {
             done();
         }));
     });
+
+    it("highlights all users mentioned via XEP-0372 references in a quoted message",
+        mock.initConverse(
+            ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+        const members = [{'jid': 'gibson@gibson.net', 'nick': 'gibson', 'affiliation': 'member'}];
+        const muc_jid = 'lounge@montague.lit';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', [], members);
+        const view = _converse.api.chatviews.get(muc_jid);
+        const textarea = view.el.querySelector('textarea.chat-textarea');
+        textarea.value = "Welcome @gibson 💩 We have a guide on how to do that here: https://conversejs.org/docs/html/index.html";
+        const enter_event = {
+            'target': textarea,
+            'preventDefault': function preventDefault () {},
+            'stopPropagation': function stopPropagation () {},
+            'keyCode': 13 // Enter
+        }
+        view.onKeyDown(enter_event);
+        const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
+        expect(message.innerHTML.replace(/<!---->/g, '')).toEqual(
+            `Welcome <span class="mention">gibson</span> <span title=":poop:">💩</span> `+
+            `We have a guide on how to do that here: `+
+            `<a target="_blank" rel="noopener" href="https://conversejs.org/docs/html/index.html">https://conversejs.org/docs/html/index.html</a>`);
+        done();
+    }));
 });

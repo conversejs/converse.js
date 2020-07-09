@@ -92,7 +92,7 @@ export default class EmojiPickerContent extends CustomElement {
               return true;
           }
       } else {
-          if (this.current_skintone && _converse.emojis.toned.includes(shortname)) {
+          if (this.current_skintone && converse.emojis.toned.includes(shortname)) {
               return true;
           }
       }

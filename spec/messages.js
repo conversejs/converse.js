@@ -104,7 +104,7 @@ describe("A Chat Message", function () {
         expect(textarea.value).toBe('');
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
-        expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg .chat-msg__action').length === 2);
         let action = view.el.querySelector('.chat-msg .chat-msg__action');
         expect(action.textContent.trim()).toBe('Edit');
 
@@ -891,8 +891,8 @@ describe("A Chat Message", function () {
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
         expect(msg.textContent).toEqual(message);
-        expect(msg.innerHTML.replace(/<!---->/g, ''))
-            .toEqual('This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
+        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
+            'This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
         done();
     }));
 
@@ -921,7 +921,7 @@ describe("A Chat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '')).toBe('Hey\n\nHave you heard the news?');
+        await u.waitUntil(() => view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '') === 'Hey\n\nHave you heard the news?');
         stanza = u.toStanza(`
             <message from="${contact_jid}"
                      type="chat"

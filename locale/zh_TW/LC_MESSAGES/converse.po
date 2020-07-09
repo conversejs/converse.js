@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-07-08 12:49+0000\n"
+"PO-Revision-Date: 2020-07-09 10:54+0000\n"
 "Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
@@ -855,7 +855,7 @@ msgstr "密碼"
 
 #: dist/converse-no-dependencies.js:54953
 msgid "This is a trusted device"
-msgstr "這是一部可信任的裝置"
+msgstr "這是一部可以信任的裝置"
 
 #: dist/converse-no-dependencies.js:54957
 msgid "Create an account"
@@ -869,8 +869,8 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
-"爲了提升效能，我們會在瀏覽器內存取您的資料。如果這是一臺公共電腦或者您希望在您登出帳號後清除您的資料，請取消勾選。如果您在關閉瀏覽器前没有手動登出帳號，可"
-"能會留下部分資料没被刪除。注意，OMEMO 加密通訊無法在不信任的裝置上啟用。"
+"爲了提升效能，我們會在瀏覽器內部諸存您的資料。如果這是一臺公共電腦或者您希望您的資料在您登出帳號後被清除，請取消勾選。如果您在關閉瀏覽器前没有手動登出帳號"
+"，可能會留下部分資料没被刪除。注意，OMEMO 加密通訊無法在不信任的裝置上啟用。"
 
 #: dist/converse-no-dependencies.js:55456
 msgid "Username"
@@ -1643,7 +1643,7 @@ msgstr "進入聊天室"
 #: dist/converse-no-dependencies.js:64562
 #, javascript-format
 msgid "This action was done by %1$s."
-msgstr "這個行爲由 %1$s 做出。"
+msgstr "這個動作由 %1$s 做出。"
 
 #: dist/converse-no-dependencies.js:64568
 #, javascript-format

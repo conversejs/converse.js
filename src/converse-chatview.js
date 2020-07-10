@@ -654,6 +654,7 @@ converse.plugins.add('converse-chatview', {
                 }
                 u.addClass('disabled', textarea);
                 textarea.setAttribute('disabled', 'disabled');
+                this.el.querySelector('converse-emoji-dropdown')?.hideMenu();
 
                 const is_command = this.parseMessageForCommands(message_text);
                 const message = is_command ? null : await this.model.sendMessage(message_text, spoiler_hint);

@@ -3,7 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import * as twemoji from "twemoji";
+import { ASCII_REPLACE_REGEX, CODEPOINTS_REGEX } from './emoji_regexes.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
 import { find, isString, uniq } from "lodash-es";
@@ -32,10 +32,39 @@ const ASCII_LIST = {
     '=#':'1f636', ':)':'1f642', '=]':'1f642', '=)':'1f642', ':]':'1f642'
 };
 
-
 let shortnames_regex;
-const ASCII_REGEX = '(\\*\\\\0\\/\\*|\\*\\\\O\\/\\*|\\-___\\-|\\:\'\\-\\)|\'\\:\\-\\)|\'\\:\\-D|\\>\\:\\-\\)|>\\:\\-\\)|\'\\:\\-\\(|\\>\\:\\-\\(|>\\:\\-\\(|\\:\'\\-\\(|O\\:\\-\\)|0\\:\\-3|0\\:\\-\\)|0;\\^\\)|O;\\-\\)|0;\\-\\)|O\\:\\-3|\\-__\\-|\\:\\-Þ|\\:\\-Þ|\\<\\/3|<\\/3|\\:\'\\)|\\:\\-D|\'\\:\\)|\'\\=\\)|\'\\:D|\'\\=D|\\>\\:\\)|>\\:\\)|\\>;\\)|>;\\)|\\>\\=\\)|>\\=\\)|;\\-\\)|\\*\\-\\)|;\\-\\]|;\\^\\)|\'\\:\\(|\'\\=\\(|\\:\\-\\*|\\:\\^\\*|\\>\\:P|>\\:P|X\\-P|\\>\\:\\[|>\\:\\[|\\:\\-\\(|\\:\\-\\[|\\>\\:\\(|>\\:\\(|\\:\'\\(|;\\-\\(|\\>\\.\\<|>\\.<|#\\-\\)|%\\-\\)|X\\-\\)|\\\\0\\/|\\\\O\\/|0\\:3|0\\:\\)|O\\:\\)|O\\=\\)|O\\:3|B\\-\\)|8\\-\\)|B\\-D|8\\-D|\\-_\\-|\\>\\:\\\\|>\\:\\\\|\\>\\:\\/|>\\:\\/|\\:\\-\\/|\\:\\-\\.|\\:\\-P|\\:Þ|\\:Þ|\\:\\-b|\\:\\-O|O_O|\\>\\:O|>\\:O|\\:\\-X|\\:\\-#|\\:\\-\\)|\\(y\\)|\\<3|<3|\\:D|\\=D|;\\)|\\*\\)|;\\]|;D|\\:\\*|\\=\\*|\\:\\(|\\:\\[|\\=\\(|\\:@|;\\(|D\\:|\\:\\$|\\=\\$|#\\)|%\\)|X\\)|B\\)|8\\)|\\:\\/|\\:\\\\|\\=\\/|\\=\\\\|\\:L|\\=L|\\:P|\\=P|\\:b|\\:O|\\:X|\\:#|\\=X|\\=#|\\:\\)|\\=\\]|\\=\\)|\\:\\])';
-const ASCII_REPLACE_REGEX = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|((\\s|^)"+ASCII_REGEX+"(?=\\s|$|[!,.?]))", "gi");
+
+
+function toCodePoint(unicode_surrogates) {
+    const r = [];
+    let  p = 0;
+    let  i = 0;
+    while (i < unicode_surrogates.length) {
+        const c = unicode_surrogates.charCodeAt(i++);
+        if (p) {
+            r.push((0x10000 + ((p - 0xD800) << 10) + (c - 0xDC00)).toString(16));
+            p = 0;
+        } else if (0xD800 <= c && c <= 0xDBFF) {
+            p = c;
+        } else {
+            r.push(c.toString(16));
+        }
+    }
+    return r.join('-');
+}
+
+
+function fromCodePoint (codepoint) {
+    let code = typeof codepoint === 'string' ? parseInt(codepoint, 16) : codepoint;
+    if (code < 0x10000) {
+        return String.fromCharCode(code);
+    }
+    code -= 0x10000;
+    return String.fromCharCode(
+        0xD800 + (code >> 10),
+        0xDC00 + (code & 0x3FF)
+    );
+}
 
 
 function convert (unicode) {
@@ -56,7 +85,7 @@ function convert (unicode) {
         }
         return parts.join('');
     }
-    return twemoji.default.convert.fromCodePoint(unicode);
+    return fromCodePoint(unicode);
 }
 
 
@@ -72,7 +101,7 @@ function getTonedEmojis () {
 }
 
 
-function convertASCII2Emoji (str) {
+export function convertASCII2Emoji (str) {
     // Replace ASCII smileys
     return str.replace(ASCII_REPLACE_REGEX, (entire, m1, m2, m3) => {
         if( (typeof m3 === 'undefined') || (m3 === '') || (!(u.unescapeHTML(m3) in ASCII_LIST)) ) {
@@ -86,7 +115,7 @@ function convertASCII2Emoji (str) {
 }
 
 
-function getEmojiMarkup (data, options={unicode_only: false, add_title_wrapper: false}) {
+export function getEmojiMarkup (data, options={unicode_only: false, add_title_wrapper: false}) {
     const emoji = data.emoji;
     const shortname = data.shortname;
     if (emoji) {
@@ -111,7 +140,7 @@ function getEmojiMarkup (data, options={unicode_only: false, add_title_wrapper: 
 }
 
 
-function getShortnameReferences (text) {
+export function getShortnameReferences (text) {
     const references = [...text.matchAll(shortnames_regex)];
     return references.map(ref => {
         const cp = converse.emojis.by_sn[ref[0]].cp;
@@ -126,23 +155,27 @@ function getShortnameReferences (text) {
 }
 
 
-function getCodePointReferences (text) {
+function parseStringForEmojis(str, callback) {
+    const UFE0Fg = /\uFE0F/g;
+    const U200D = String.fromCharCode(0x200D);
+    return String(str).replace(CODEPOINTS_REGEX, (emoji, _, offset) => {
+        const icon_id = toCodePoint(emoji.indexOf(U200D) < 0 ? emoji.replace(UFE0Fg, '') : emoji);
+        if (icon_id) callback(icon_id, emoji, offset);
+    });
+}
+
+
+export function getCodePointReferences (text) {
     const references = [];
-    const how = {
-        callback: (icon_id) => {
-            const emoji = convert(icon_id);
-            const begin = text.indexOf(emoji);
-            references.push({
-                'emoji': emoji,
-                'end': begin + emoji.length,
-                'shortname': u.getEmojisByAtrribute('cp')[icon_id]['sn'],
-                begin,
-                cp: icon_id
-            });
-            return false;
-        }
-    };
-    twemoji.default.parse(text, how);
+    parseStringForEmojis(text, (icon_id, emoji, offset) => {
+        references.push({
+            'begin': offset,
+            'cp': icon_id,
+            'emoji': emoji,
+            'end': offset + emoji.length,
+            'shortname': u.getEmojisByAtrribute('cp')[icon_id]['sn'],
+        });
+    });
     return references;
 }
 
@@ -173,7 +206,7 @@ converse.plugins.add('converse-emoji', {
         const { ___ } = _converse;
 
         api.settings.extend({
-            'emoji_image_path': twemoji.default.base,
+            'emoji_image_path': 'https://twemoji.maxcdn.com/v/12.1.6/',
             'emoji_categories': {
                 "smileys": ":grinning:",
                 "people": ":thumbsup:",
@@ -206,8 +239,6 @@ converse.plugins.add('converse-emoji', {
             }
         });
 
-        twemoji.default.base = api.settings.get('emoji_image_path');
-
 
         /**
          * Model for storing data related to the Emoji picker widget
@@ -228,18 +259,6 @@ converse.plugins.add('converse-emoji', {
         const emojis_by_attribute = {};
 
         Object.assign(u, {
-            /**
-             * Replaces emoji shortnames in the passed-in string with unicode or image-based emojis
-             * (based on the value of `use_system_emojis`).
-             * @method u.addEmoji
-             * @param { String } text = The text
-             * @returns { String } The text with shortnames replaced with emoji unicodes or images.
-             */
-            addEmoji (text) {
-                const options = {add_title_wrapper: true, unicode_only: false};
-                return u.shortnamesToEmojis(text, options);
-            },
-
             /**
              * Returns an emoji represented by the passed in shortname.
              * Scans the passed in text for shortnames and replaces them with
@@ -293,12 +312,11 @@ converse.plugins.add('converse-emoji', {
                 if (words.length === 0 || words.length > 3) {
                     return false;
                 }
-                const rejects = words.filter(text => {
-                    const result = twemoji.default.parse(u.shortnamesToUnicode(text));
-                    const match = result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
-                    return !match || match.length !== 1;
+                const emojis = words.filter(text => {
+                    const refs = getCodePointReferences(u.shortnamesToUnicode(text));
+                    return refs.length === 1 && (text === refs[0]['shortname'] || text === refs[0]['emoji']);
                 });
-                return rejects.length === 0;
+                return emojis.length === words.length;
             },
 
             /**

@@ -194,7 +194,7 @@ eslint: node_modules
 	$(ESLINT) src/utils/*.js
 	$(ESLINT) src/headless/*.js
 	$(ESLINT) src/headless/utils/*.js
-	$(ESLINT) spec/
+	$(ESLINT) spec/ --global converse
 
 .PHONY: check
 check: dev eslint
@@ -231,4 +231,4 @@ doc: node_modules docsdev apidoc
 
 PHONY: apidoc
 apidoc:
-	$(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/*.js src/utils/*.js src/headless/*.js src/headless/utils/*.js
+	$(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/templates/directives/*.js src/components/*.js src/*.js src/utils/*.js src/headless/*.js src/headless/utils/*.js

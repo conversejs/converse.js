@@ -318,9 +318,9 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `</message>`);
                     await u.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                     // Check that the image renders
-                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
-                        `<!----><a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                        `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a><!---->`);
+                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                        `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                        `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
                     XMLHttpRequest.prototype.send = send_backup;
                     done();
                 }));
@@ -422,9 +422,9 @@ describe("XEP-0363: HTTP File Upload", function () {
                         `</message>`);
                     await u.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                     // Check that the image renders
-                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
-                        `<!----><a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                        `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a><!---->`);
+                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                        `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                        `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
 
                     XMLHttpRequest.prototype.send = send_backup;
                     done();

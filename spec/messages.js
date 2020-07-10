@@ -104,7 +104,7 @@ describe("A Chat Message", function () {
         expect(textarea.value).toBe('');
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
-        expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg .chat-msg__action').length === 2);
         let action = view.el.querySelector('.chat-msg .chat-msg__action');
         expect(action.textContent.trim()).toBe('Edit');
 
@@ -891,8 +891,8 @@ describe("A Chat Message", function () {
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
         expect(msg.textContent).toEqual(message);
-        expect(msg.innerHTML.replace(/<!---->/g, ''))
-            .toEqual('This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
+        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
+            'This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
         done();
     }));
 
@@ -921,7 +921,7 @@ describe("A Chat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '')).toBe('Hey\n\nHave you heard the news?');
+        await u.waitUntil(() => view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '') === 'Hey\n\nHave you heard the news?');
         stanza = u.toStanza(`
             <message from="${contact_jid}"
                      type="chat"
@@ -952,7 +952,7 @@ describe("A Chat Message", function () {
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!---->/g, '').trim()).toEqual(
             `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
+                `<img class="chat-image img-thumbnail" src="https://conversejs.org/logo/conversejs-filled.svg">`+
             `</a>`);
 
         message += "?param1=val1&param2=val2";
@@ -979,6 +979,27 @@ describe("A Chat Message", function () {
         expect(view.content.querySelectorAll('img').length).toBe(4);
         mock.sendMessage(view, message);
         expect(view.content.querySelectorAll('img').length).toBe(4);
+        done();
+    }));
+
+    it("will fall back to rendering images as URLs",
+        mock.initConverse(
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            async function (done, _converse) {
+
+        await mock.waitForRoster(_converse, 'current');
+        const base_url = 'https://conversejs.org';
+        const message = base_url+"/logo/non-existing.svg";
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.api.chatviews.get(contact_jid);
+        spyOn(view.model, 'sendMessage').and.callThrough();
+        mock.sendMessage(view, message);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
+        expect(view.model.sendMessage).toHaveBeenCalled();
+        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '').trim() ==
+            `<a target="_blank" rel="noopener" href="https://conversejs.org/logo/non-existing.svg">https://conversejs.org/logo/non-existing.svg</a>`);
         done();
     }));
 
@@ -1971,9 +1992,9 @@ describe("A Chat Message", function () {
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you seen this funny image?');
             const media = view.el.querySelector('.chat-msg .chat-msg__media');
-            expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                `<!----><a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a><!---->`);
+            expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
             done();
         }));
     });

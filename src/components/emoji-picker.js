@@ -169,6 +169,7 @@ export default class EmojiPicker extends CustomElement {
         } else if (ev.keyCode === converse.keycodes.ENTER) {
             this.onEnterPressed(ev);
         } else if (ev.keyCode === converse.keycodes.ESCAPE) {
+            u.ancestor(this, 'converse-emoji-dropdown').hideMenu();
             this.chatview.el.querySelector('.chat-textarea').focus();
             ev.stopPropagation();
             ev.preventDefault();
@@ -238,10 +239,8 @@ export default class EmojiPicker extends CustomElement {
     }
 
     enableArrowNavigation (ev) {
-        if (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-        }
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
         this.disableArrowNavigation();
         this.navigator.enable();
         this.navigator.handleKeydown(ev);
@@ -284,9 +283,10 @@ export class EmojiDropdown extends BaseDropdown {
                         data-toggle="dropdown"
                         aria-haspopup="true"
                         aria-expanded="false">
-                    <converse-icon class="fa fa-smile "
-                             path-prefix="${api.settings.get('assets_path')}"
-                             size="1em"></converse-icon>
+                    <converse-icon
+                        class="fa fa-smile "
+                        path-prefix="${api.settings.get('assets_path')}"
+                        size="1em"></converse-icon>
                 </button>
                 <div class="dropdown-menu">
                     ${until(this.initModel().then(() => html`
@@ -315,14 +315,14 @@ export class EmojiDropdown extends BaseDropdown {
     }
 
     async showMenu () {
-        await this.init_promise;
+        await this.initModel();
         if (!this.render_emojis) {
             // Trigger an update so that emojis are rendered
             this.render_emojis = true;
-            this.requestUpdate();
+            await this.requestUpdate();
         }
         super.showMenu();
-        this.querySelector('.emoji-search')?.focus();
+        setTimeout(() => this.querySelector('.emoji-search')?.focus());
     }
 }
 

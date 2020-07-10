@@ -276,7 +276,7 @@ describe("Emojis", function () {
             });
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
             const body = view.el.querySelector('converse-chat-message-body');
-            expect(body.innerHTML.replace(/<!---->/g, '').trim()).toBe(
+            await u.waitUntil(() => body.innerHTML.replace(/<!---->/g, '').trim() ===
                 'Running tests for <img class="emoji" draggable="false" title=":converse:" alt=":converse:" src="/dist/images/custom_emojis/converse.png">');
             done();
         }));

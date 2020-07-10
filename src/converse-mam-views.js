@@ -5,60 +5,29 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { converse } from "@converse/headless/converse-core";
-import { debounce } from 'lodash-es'
+import { api, converse } from "@converse/headless/converse-core";
 
 
 converse.plugins.add('converse-mam-views', {
 
     dependencies: ['converse-mam', 'converse-chatview', 'converse-muc-views'],
 
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        //
-        // New functions which don't exist yet can also be added.
-
-        ChatBoxView: {
-            render () {
-                const result = this.__super__.render.apply(this, arguments);
-                if (!this.disable_mam) {
-                    this.content.addEventListener('scroll', debounce(this.onScroll.bind(this), 100));
-                }
-                return result;
-            },
-
-            async onScroll () {
-                if (this.content.scrollTop === 0 && this.model.messages.length) {
-                    const oldest_message = this.model.getOldestMessage();
-                    if (oldest_message) {
-                        const by_jid = this.model.get('jid');
-                        const stanza_id = oldest_message && oldest_message.get(`stanza_id ${by_jid}`);
-                        this.addSpinner();
-                        if (stanza_id) {
-                            await this.model.fetchArchivedMessages({
-                                'before': stanza_id
-                            });
-                        } else {
-                            await this.model.fetchArchivedMessages({
-                                'end': oldest_message.get('time')
-                            });
-                        }
-                        this.clearSpinner();
+    initialize () {
+        api.listen.on('chatBoxScrolledUp', async view => {
+            if (view.model.messages.length) {
+                const oldest_message = view.model.getOldestMessage();
+                if (oldest_message) {
+                    const by_jid = view.model.get('jid');
+                    const stanza_id = oldest_message && oldest_message.get(`stanza_id ${by_jid}`);
+                    view.addSpinner();
+                    if (stanza_id) {
+                        await view.model.fetchArchivedMessages({'before': stanza_id});
+                    } else {
+                        await view.model.fetchArchivedMessages({'end': oldest_message.get('time')});
                     }
+                    view.clearSpinner();
                 }
             }
-        },
-
-        ChatRoomView: {
-            renderChatArea () {
-                const result = this.__super__.renderChatArea.apply(this, arguments);
-                if (!this.disable_mam) {
-                    this.content.addEventListener('scroll', debounce(this.onScroll.bind(this), 100));
-                }
-                return result;
-            }
-        }
+        });
     }
 });

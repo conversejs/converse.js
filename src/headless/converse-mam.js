@@ -48,6 +48,7 @@ const MAMEnabledChat = {
     },
 
     async handleMAMResult (result, query, options, page_direction) {
+        await api.emojis.initialize();
         const is_muc = this.get('type') === _converse.CHATROOMS_TYPE;
         result.messages = result.messages.map(
             s => (is_muc ? st.parseMUCMessage(s, this, _converse) : st.parseMessage(s, _converse))

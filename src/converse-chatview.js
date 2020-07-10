@@ -240,11 +240,7 @@ converse.plugins.add('converse-chatview', {
 
             render () {
                 const result = tpl_chatbox(
-                    Object.assign(
-                        this.model.toJSON(), {
-                            'markScrolled': () => this.markScrolled()
-                        }
-                    )
+                    Object.assign(this.model.toJSON(), {'markScrolled': () => this.markScrolled()})
                 );
                 render(result, this.el);
                 this.content = this.el.querySelector('.chat-content');
@@ -658,6 +654,7 @@ converse.plugins.add('converse-chatview', {
                 }
                 u.addClass('disabled', textarea);
                 textarea.setAttribute('disabled', 'disabled');
+                this.el.querySelector('converse-emoji-dropdown')?.hideMenu();
 
                 const is_command = this.parseMessageForCommands(message_text);
                 const message = is_command ? null : await this.model.sendMessage(message_text, spoiler_hint);
@@ -1099,6 +1096,14 @@ converse.plugins.add('converse-chatview', {
                 if (is_at_bottom) {
                     scrolled = false;
                     this.onScrolledDown();
+                } else if (this.msgs_container.scrollTop === 0) {
+                    /**
+                     * Triggered once the chat's message area has been scrolled to the top
+                     * @event _converse#chatBoxScrolledUp
+                     * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
+                     * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
+                     */
+                    api.trigger('chatBoxScrolledUp', this);
                 }
                 u.safeSave(this.model, {
                     'scrolled': scrolled,

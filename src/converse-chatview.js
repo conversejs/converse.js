@@ -1095,7 +1095,7 @@ converse.plugins.add('converse-chatview', {
                 if (is_at_bottom) {
                     scrolled = false;
                     this.onScrolledDown();
-                } else if (this.content.scrollTop === 0) {
+                } else if (this.msgs_container.scrollTop === 0) {
                     /**
                      * Triggered once the chat's message area has been scrolled to the top
                      * @event _converse#chatBoxScrolledUp

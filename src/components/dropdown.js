@@ -20,8 +20,8 @@ export class BaseDropdown extends CustomElement {
 
     hideMenu () {
         u.removeClass('show', this.menu);
-        this.button.setAttribute('aria-expanded', false);
-        this.button.blur();
+        this.button?.setAttribute('aria-expanded', false);
+        this.button?.blur();
     }
 
     showMenu () {

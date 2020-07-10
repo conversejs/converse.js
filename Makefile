@@ -194,7 +194,7 @@ eslint: node_modules
 	$(ESLINT) src/utils/*.js
 	$(ESLINT) src/headless/*.js
 	$(ESLINT) src/headless/utils/*.js
-	$(ESLINT) spec/
+	$(ESLINT) spec/ --global converse
 
 .PHONY: check
 check: dev eslint

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-07-09 10:54+0000\n"
+"PO-Revision-Date: 2020-07-10 07:36+0000\n"
 "Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
@@ -621,7 +621,7 @@ msgstr "%1$s 移除了這條訊息"
 #: dist/converse-no-dependencies.js:52548
 #: dist/converse-no-dependencies.js:52726
 msgid "The User's Profile Image"
-msgstr "用戶頭像"
+msgstr "使用者頭像"
 
 #: dist/converse-no-dependencies.js:52716
 #: dist/converse-no-dependencies.js:54955
@@ -874,7 +874,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:55456
 msgid "Username"
-msgstr "用戶名稱"
+msgstr "使用者名稱"
 
 #: dist/converse-no-dependencies.js:55456
 msgid "user@domain"

@@ -20,15 +20,13 @@ describe("Emojis", function () {
             await mock.openControlBox(_converse);
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const toolbar = await u.waitUntil(() => view.el.querySelector('ul.chat-toolbar'));
-            expect(toolbar.querySelectorAll('li.toggle-smiley__container').length).toBe(1);
-            toolbar.querySelector('a.toggle-smiley').click();
+            const toolbar = await u.waitUntil(() => view.el.querySelector('converse-chat-toolbar'));
+            toolbar.querySelector('.toggle-emojis').click();
             await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')), 1000);
-            const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'), 1000);
-            const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji a'), 1000);
+            const item = view.el.querySelector('.emoji-picker li.insert-emoji a');
             item.click()
             expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':smiley: ');
-            toolbar.querySelector('a.toggle-smiley').click(); // Close the panel again
+            toolbar.querySelector('.toggle-emojis').click(); // Close the panel again
             done();
         }));
 
@@ -53,28 +51,29 @@ describe("Emojis", function () {
                 'key': 'Tab'
             }
             view.onKeyDown(tab_event);
-            await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
-            let picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
-            const input = picker.querySelector('.emoji-search');
-            expect(input.value).toBe(':gri');
-            let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
-            expect(visible_emojis.length).toBe(3);
+            await u.waitUntil(() => view.el.querySelector('converse-emoji-picker .emoji-search').value === ':gri');
+            await u.waitUntil(() =>  sizzle('.emojis-lists__container--search .insert-emoji', view.el).length === 3, 1000);
+            let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', view.el);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
             expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':grin:');
             expect(visible_emojis[2].getAttribute('data-emoji')).toBe(':grinning:');
 
+            const picker = view.el.querySelector('converse-emoji-picker');
+            const input = picker.querySelector('.emoji-search');
             // Test that TAB autocompletes the to first match
-            view.emoji_picker_view.onKeyDown(tab_event);
-            visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
-            expect(visible_emojis.length).toBe(1);
+            input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
+
+            await u.waitUntil(() => sizzle(".emojis-lists__container--search .insert-emoji:not('.hidden')", picker).length === 1, 1000);
+            visible_emojis = sizzle(".emojis-lists__container--search .insert-emoji:not('.hidden')", picker);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':grimacing:');
             expect(input.value).toBe(':grimacing:');
 
             // Check that ENTER now inserts the match
             const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input});
-            view.emoji_picker_view.onKeyDown(enter_event);
-            expect(input.value).toBe('');
-            expect(textarea.value).toBe(':grimacing: ');
+            input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
+
+            await u.waitUntil(() => input.value === '');
+            await u.waitUntil(() => textarea.value === ':grimacing:');
 
             // Test that username starting with : doesn't cause issues
             const presence = $pres({
@@ -93,13 +92,11 @@ describe("Emojis", function () {
             textarea.value = ':use';
             view.onKeyDown(tab_event);
             await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
-            picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
-            expect(input.value).toBe(':use');
+            await u.waitUntil(() => input.value === ':use');
             visible_emojis = sizzle('.insert-emoji:not(.hidden)', picker);
             expect(visible_emojis.length).toBe(0);
             done();
         }));
-
 
         it("allows you to search for particular emojis",
             mock.initConverse(
@@ -110,50 +107,49 @@ describe("Emojis", function () {
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
 
             const view = _converse.chatboxviews.get(muc_jid);
-            const toolbar = view.el.querySelector('ul.chat-toolbar');
-            expect(toolbar.querySelectorAll('.toggle-smiley__container').length).toBe(1);
-            toolbar.querySelector('.toggle-smiley').click();
+            const toolbar = view.el.querySelector('converse-chat-toolbar');
+            toolbar.querySelector('.toggle-emojis').click();
             await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
-            const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__container'));
-            const input = picker.querySelector('.emoji-search');
-            expect(sizzle('.insert-emoji:not(.hidden)', picker).length).toBe(1589);
+            await u.waitUntil(() => sizzle('converse-chat-toolbar .insert-emoji:not(.hidden)', view.el).length === 1589);
 
-            expect(view.emoji_picker_view.model.get('query')).toBeUndefined();
+            const input = view.el.querySelector('.emoji-search');
             input.value = 'smiley';
             const event = {
                 'target': input,
                 'preventDefault': function preventDefault () {},
                 'stopPropagation': function stopPropagation () {}
             };
-            view.emoji_picker_view.onKeyDown(event);
-            await u.waitUntil(() => view.emoji_picker_view.model.get('query') === 'smiley');
-            let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
-            expect(visible_emojis.length).toBe(2);
+            input.dispatchEvent(new KeyboardEvent('keydown', event));
+
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view.el).length === 2, 1000);
+            let visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view.el);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':smiley:');
             expect(visible_emojis[1].getAttribute('data-emoji')).toBe(':smiley_cat:');
 
             // Check that pressing enter without an unambiguous match does nothing
             const enter_event = Object.assign({}, event, {'keyCode': 13});
-            view.emoji_picker_view.onKeyDown(enter_event);
+            input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
             expect(input.value).toBe('smiley');
 
             // Test that TAB autocompletes the to first match
             const tab_event = Object.assign({}, event, {'keyCode': 9, 'key': 'Tab'});
-            view.emoji_picker_view.onKeyDown(tab_event);
-            expect(input.value).toBe(':smiley:');
-            visible_emojis = sizzle('.emojis-lists__container--search .insert-emoji', picker);
-            expect(visible_emojis.length).toBe(1);
+            input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
+
+            await u.waitUntil(() => input.value === ':smiley:');
+            await u.waitUntil(() => sizzle(".emojis-lists__container--search .insert-emoji:not('.hidden')", view.el).length === 1, 1000);
+            visible_emojis = sizzle(".emojis-lists__container--search .insert-emoji:not('.hidden')", view.el);
             expect(visible_emojis[0].getAttribute('data-emoji')).toBe(':smiley:');
 
             // Check that ENTER now inserts the match
-            view.emoji_picker_view.onKeyDown(enter_event);
-            expect(input.value).toBe('');
+            input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
+            await u.waitUntil(() => input.value === '');
             expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':smiley: ');
             done();
         }));
     });
 
     describe("A Chat Message", function () {
+
         it("will display larger if it's only emojis",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {'use_system_emojis': true},
@@ -238,6 +234,51 @@ describe("Emojis", function () {
             message = view.content.querySelector('.message:last-child .chat-msg__text');
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
             done()
+        }));
+
+
+        it("can show custom emojis",
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'],
+                { emoji_categories: {
+                    "smileys": ":grinning:",
+                    "people": ":thumbsup:",
+                    "activity": ":soccer:",
+                    "travel": ":motorcycle:",
+                    "objects": ":bomb:",
+                    "nature": ":rainbow:",
+                    "food": ":hotdog:",
+                    "symbols": ":musical_note:",
+                    "flags": ":flag_ac:",
+                    "custom": ':xmpp:'
+                } },
+                async function (done, _converse) {
+
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
+
+            const toolbar = await u.waitUntil(() => view.el.querySelector('.chat-toolbar'));
+            toolbar.querySelector('.toggle-emojis').click();
+            await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')), 1000);
+            const picker = await u.waitUntil(() => view.el.querySelector('converse-emoji-picker'), 1000);
+            const custom_category = picker.querySelector('.pick-category[data-category="custom"]');
+            expect(custom_category.innerHTML.replace(/<!---->/g, '').trim()).toBe(
+                '<img class="emoji" draggable="false" title=":xmpp:" alt=":xmpp:" src="/dist/images/custom_emojis/xmpp.png">');
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = 'Running tests for :converse:';
+            view.onKeyDown({
+                target: textarea,
+                preventDefault: function preventDefault () {},
+                keyCode: 13 // Enter
+            });
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            const body = view.el.querySelector('converse-chat-message-body');
+            await u.waitUntil(() => body.innerHTML.replace(/<!---->/g, '').trim() ===
+                'Running tests for <img class="emoji" draggable="false" title=":converse:" alt=":converse:" src="/dist/images/custom_emojis/converse.png">');
+            done();
         }));
     });
 });

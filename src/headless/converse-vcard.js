@@ -108,9 +108,7 @@ converse.plugins.add('converse-vcard', {
             model: _converse.VCard,
 
             initialize () {
-                this.on('add', vcard => {
-                    api.vcard.update(vcard);
-                });
+                this.on('add', vcard => (vcard.get('jid') && api.vcard.update(vcard)));
             }
         });
 
@@ -336,7 +334,7 @@ converse.plugins.add('converse-vcard', {
 
                         const jid = model.get('jid');
                         if (!jid) {
-                            throw new Error("No JID to get vcard for!");
+                            log.error("No JID to get vcard for");
                         }
                         return getVCard(_converse, jid);
                     } else {

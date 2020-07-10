@@ -68,6 +68,8 @@
     #controlbox {
         order: -1;
 
+        color: var(--controlbox-text-color);
+
         .open-rooms-toggle, .open-rooms-toggle .fa {
             color: var(--groupchats-header-color) !important;
             &:hover {
@@ -152,7 +154,7 @@
                 color: gray;
                 font-size: 85%;
                 &:hover {
-                    color: var(--text-color);
+                    color: var(--controlbox-text-color);
                 }
             }
         }
@@ -420,7 +422,7 @@
             min-height: 0;
 
             .brand-heading {
-                color: var(--text-color);
+                color: var(--controlbox-text-color);
                 font-size: 2em;
             }
             .chatbox-btn {

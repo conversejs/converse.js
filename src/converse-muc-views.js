@@ -435,7 +435,6 @@ converse.plugins.add('converse-muc-views', {
             className: 'chatbox chatroom hidden',
             is_chatroom: true,
             events: {
-                'change input.fileupload': 'onFileSelection',
                 'click .chatbox-navback': 'showControlBox',
                 'click .chatbox-title': 'minimize',
                 'click .hide-occupants': 'hideOccupants',
@@ -443,9 +442,6 @@ converse.plugins.add('converse-muc-views', {
                 // Arrow functions don't work here because you can't bind a different `this` param to them.
                 'click .occupant-nick': function (ev) {this.insertIntoTextArea(ev.target.textContent) },
                 'click .send-button': 'onFormSubmitted',
-                'click .toggle-call': 'toggleCall',
-                'click .toggle-occupants': 'toggleOccupants',
-                'click .upload-file': 'toggleFileUpload',
                 'dragover .chat-textarea': 'onDragOver',
                 'drop .chat-textarea': 'onDrop',
                 'input .chat-textarea': 'inputChanged',
@@ -460,13 +456,14 @@ converse.plugins.add('converse-muc-views', {
                 this.initDebounced();
 
                 this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
-                this.listenTo(this.model, 'change:hidden_occupants', this.updateOccupantsToggle);
+                this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
+                this.listenTo(this.model, 'change:hidden_occupants', this.renderToolbar);
                 this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
                 this.listenTo(this.model, 'destroy', this.hide);
                 this.listenTo(this.model, 'show', this.show);
                 this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
                 this.listenTo(this.model.features, 'change:open', this.renderHeading);
-                this.listenTo(this.model.messages, 'rendered', this.scrollDown);
+                this.listenTo(this.model.messages, 'rendered', this.maybeScrollDownOnMessage);
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
                 // Bind so that we can pass it to addEventListener and removeEventListener
@@ -512,8 +509,9 @@ converse.plugins.add('converse-muc-views', {
             async render () {
                 this.el.setAttribute('id', this.model.get('box_id'));
                 render(tpl_chatroom({
+                    'markScrolled': () => this.markScrolled(),
                     'muc_show_logs_before_join': api.settings.get('muc_show_logs_before_join'),
-                    'show_send_button': _converse.show_send_button
+                    'show_send_button': _converse.show_send_button,
                 }), this.el);
 
                 this.notifications = this.el.querySelector('.chat-content__notifications');
@@ -1078,10 +1076,10 @@ converse.plugins.add('converse-muc-views', {
 
             getToolbarOptions () {
                 return Object.assign(
-                    _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
-                    {
-                      'label_hide_occupants': __('Hide the list of participants'),
-                      'show_occupants_toggle': _converse.visible_toolbar_buttons.toggle_occupants
+                    _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments), {
+                        'is_groupchat': true,
+                        'label_hide_occupants': __('Hide the list of participants'),
+                        'show_occupants_toggle': _converse.visible_toolbar_buttons.toggle_occupants
                     }
                 );
             },
@@ -1100,20 +1098,6 @@ converse.plugins.add('converse-muc-views', {
                 return _converse.ChatBoxView.prototype.close.apply(this, arguments);
             },
 
-            updateOccupantsToggle () {
-                const icon_el = this.el.querySelector('.toggle-occupants');
-                const chat_area = this.el.querySelector('.chat-area');
-                if (this.model.get('hidden_occupants')) {
-                    u.removeClass('fa-angle-double-right', icon_el);
-                    u.addClass('fa-angle-double-left', icon_el);
-                    u.addClass('full', chat_area);
-                } else {
-                    u.addClass('fa-angle-double-right', icon_el);
-                    u.removeClass('fa-angle-double-left', icon_el);
-                    u.removeClass('full', chat_area);
-                }
-            },
-
             /**
              * Hide the right sidebar containing the chat occupants.
              * @private
@@ -1125,20 +1109,6 @@ converse.plugins.add('converse-muc-views', {
                     ev.stopPropagation();
                 }
                 this.model.save({'hidden_occupants': true});
-                this.scrollDown();
-            },
-
-            /**
-             * Show or hide the right sidebar containing the chat occupants.
-             * @private
-             * @method _converse.ChatRoomView#toggleOccupants
-             */
-            toggleOccupants (ev) {
-                if (ev) {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                }
-                this.model.save({'hidden_occupants': !this.model.get('hidden_occupants')});
                 this.scrollDown();
             },
 

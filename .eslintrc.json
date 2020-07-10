@@ -15,7 +15,6 @@
     "globals": {
         "Uint8Array": true,
         "Promise": true,
-        "converse": true,
         "define": true,
         "require": true,
         "sinon": true,
@@ -117,7 +116,7 @@
         "no-console": "off",
         "no-catch-shadow": "off",
         "no-cond-assign": [
-            "error",
+            "off",
             "except-parens"
         ],
         "no-confusing-arrow": "off",

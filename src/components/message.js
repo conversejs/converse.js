@@ -21,7 +21,7 @@ const i18n_show_less = __('Show less');
 const i18n_uploading = __('Uploading file:');
 
 
-class Message extends CustomElement {
+export default class Message extends CustomElement {
 
     static get properties () {
         return {
@@ -223,7 +223,7 @@ class Message extends CustomElement {
                 </a>
             </div>
         `;
-        const spoiler_classes = this.is_spoiler ? `spoiler ${this.is_spoiler_visible ? '' : 'collapsed'}` : '';
+        const spoiler_classes = this.is_spoiler ? `spoiler ${this.is_spoiler_visible ? '' : 'hidden'}` : '';
         return html`
             ${ this.is_spoiler ? tpl_spoiler_hint : '' }
             ${ this.subject ? html`<div class="chat-msg__subject">${this.subject}</div>` : '' }
@@ -265,4 +265,4 @@ class Message extends CustomElement {
     }
 }
 
-customElements.define('converse-chat-message', Message);
+api.elements.define('converse-chat-message', Message);

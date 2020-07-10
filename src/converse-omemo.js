@@ -7,12 +7,12 @@
 
 import "converse-profile";
 import log from "@converse/headless/log";
-import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { concat, debounce, difference, invokeMap, range, omit } from "lodash-es";
+import { html } from 'lit-html';
 
 const { Strophe, sizzle, $build, $iq, $msg } = converse.env;
 const u = converse.env.utils;
@@ -41,6 +41,27 @@ class IQError extends Error {
 }
 
 
+function addKeysToMessageStanza (stanza, dicts, iv) {
+    for (const i in dicts) {
+        if (Object.prototype.hasOwnProperty.call(dicts, i)) {
+            const payload = dicts[i].payload,
+                    device = dicts[i].device,
+                    prekey = 3 == parseInt(payload.type, 10);
+
+            stanza.c('key', {'rid': device.get('id') }).t(btoa(payload.body));
+            if (prekey) {
+                stanza.attrs({'prekey': prekey});
+            }
+            stanza.up();
+            if (i == dicts.length-1) {
+                stanza.c('iv').t(iv).up().up()
+            }
+        }
+    }
+    return Promise.resolve(stanza);
+}
+
+
 function parseBundle (bundle_el) {
     /* Given an XML element representing a user's OMEMO bundle, parse it
      * and return a map.
@@ -61,6 +82,270 @@ function parseBundle (bundle_el) {
         },
         'prekeys': prekeys
     }
+}
+
+
+async function generateFingerprint (device) {
+    if (device.get('bundle')?.fingerprint) {
+        return;
+    }
+    const bundle = await device.getBundle();
+    bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
+    device.save('bundle', bundle);
+    device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
+}
+
+
+async function getDevicesForContact (jid) {
+    await api.waitUntil('OMEMOInitialized');
+    const devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
+    await devicelist.fetchDevices();
+    return devicelist.devices;
+}
+
+function generateDeviceID () {
+    /* Generates a device ID, making sure that it's unique */
+    const existing_ids = _converse.devicelists.get(_converse.bare_jid).devices.pluck('id');
+    let device_id = libsignal.KeyHelper.generateRegistrationId();
+    let i = 0;
+    while (existing_ids.includes(device_id)) {
+        device_id = libsignal.KeyHelper.generateRegistrationId();
+        i++;
+        if (i == 10) {
+            throw new Error("Unable to generate a unique device ID");
+        }
+    }
+    return device_id.toString();
+}
+
+async function buildSession (device) {
+    const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
+            sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
+            prekey = device.getRandomPreKey(),
+            bundle = await device.getBundle();
+
+    return sessionBuilder.processPreKey({
+        'registrationId': parseInt(device.get('id'), 10),
+        'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
+        'signedPreKey': {
+            'keyId': bundle.signed_prekey.id, // <Number>
+            'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+            'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+        },
+        'preKey': {
+            'keyId': prekey.id, // <Number>
+            'publicKey': u.base64ToArrayBuffer(prekey.key),
+        }
+    });
+}
+
+async function getSession (device) {
+    const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
+    const session = await _converse.omemo_store.loadSession(address.toString());
+    if (session) {
+        return Promise.resolve(session);
+    } else {
+        try {
+            const session = await buildSession(device);
+            return session;
+        } catch (e) {
+            log.error(`Could not build an OMEMO session for device ${device.get('id')}`);
+            log.error(e);
+            return null;
+        }
+    }
+}
+
+function updateBundleFromStanza (stanza) {
+    const items_el = sizzle(`items`, stanza).pop();
+    if (!items_el || !items_el.getAttribute('node').startsWith(Strophe.NS.OMEMO_BUNDLES)) {
+        return;
+    }
+    const device_id = items_el.getAttribute('node').split(':')[1],
+            jid = stanza.getAttribute('from'),
+            bundle_el = sizzle(`item > bundle`, items_el).pop(),
+            devicelist = _converse.devicelists.getDeviceList(jid),
+            device = devicelist.devices.get(device_id) || devicelist.devices.create({'id': device_id, 'jid': jid});
+    device.save({'bundle': parseBundle(bundle_el)});
+}
+
+function updateDevicesFromStanza (stanza) {
+    const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"]`, stanza).pop();
+    if (!items_el) {
+        return;
+    }
+    const device_selector = `item list[xmlns="${Strophe.NS.OMEMO}"] device`;
+    const device_ids = sizzle(device_selector, items_el).map(d => d.getAttribute('id'));
+    const jid = stanza.getAttribute('from');
+    const devicelist = _converse.devicelists.getDeviceList(jid);
+    const devices = devicelist.devices;
+    const removed_ids = difference(devices.pluck('id'), device_ids);
+
+    removed_ids.forEach(id => {
+        if (jid === _converse.bare_jid && id === _converse.omemo_store.get('device_id')) {
+            return // We don't set the current device as inactive
+        }
+        devices.get(id).save('active', false);
+    });
+    device_ids.forEach(device_id => {
+        const device = devices.get(device_id);
+        if (device) {
+            device.save('active', true);
+        } else {
+            devices.create({'id': device_id, 'jid': jid})
+        }
+    });
+    if (u.isSameBareJID(jid, _converse.bare_jid)) {
+        // Make sure our own device is on the list
+        // (i.e. if it was removed, add it again).
+        devicelist.publishCurrentDevice(device_ids);
+    }
+}
+
+function registerPEPPushHandler () {
+    // Add a handler for devices pushed from other connected clients
+    _converse.connection.addHandler((message) => {
+        try {
+            if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
+                updateDevicesFromStanza(message);
+                updateBundleFromStanza(message);
+            }
+        } catch (e) {
+            log.error(e.message);
+        }
+        return true;
+    }, null, 'message', 'headline');
+}
+
+function restoreOMEMOSession () {
+    if (_converse.omemo_store === undefined)  {
+        const id = `converse.omemosession-${_converse.bare_jid}`;
+        _converse.omemo_store = new _converse.OMEMOStore({'id': id});
+        _converse.omemo_store.browserStorage = _converse.createStore(id);
+    }
+    return _converse.omemo_store.fetchSession();
+}
+
+
+function fetchDeviceLists () {
+    return new Promise((success, error) => _converse.devicelists.fetch({success, 'error': (m, e) => error(e)}));
+}
+
+async function fetchOwnDevices () {
+    await fetchDeviceLists();
+    let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
+    if (own_devicelist) {
+        own_devicelist.fetchDevices();
+    } else {
+        own_devicelist = await _converse.devicelists.create({'jid': _converse.bare_jid}, {'promise': true});
+    }
+    return own_devicelist._devices_promise;
+}
+
+async function initOMEMO () {
+    if (!_converse.config.get('trusted')) {
+        return;
+    }
+    _converse.devicelists = new _converse.DeviceLists();
+    const id = `converse.devicelists-${_converse.bare_jid}`;
+    _converse.devicelists.browserStorage = _converse.createStore(id);
+
+    try {
+        await fetchOwnDevices();
+        await restoreOMEMOSession();
+        await _converse.omemo_store.publishBundle();
+    } catch (e) {
+        log.error("Could not initialize OMEMO support");
+        log.error(e);
+        return;
+    }
+    /**
+        * Triggered once OMEMO support has been initialized
+        * @event _converse#OMEMOInitialized
+        * @example _converse.api.listen.on('OMEMOInitialized', () => { ... });
+        */
+    api.trigger('OMEMOInitialized');
+}
+
+async function onOccupantAdded (chatroom, occupant) {
+    if (occupant.isSelf() || !chatroom.features.get('nonanonymous') || !chatroom.features.get('membersonly')) {
+        return;
+    }
+    if (chatroom.get('omemo_active')) {
+        const supported = await _converse.contactHasOMEMOSupport(occupant.get('jid'));
+        if (!supported) {
+            chatroom.createMessage({
+                'message': __("%1$s doesn't appear to have a client that supports OMEMO. " +
+                                "Encrypted chat will no longer be possible in this grouchat.", occupant.get('nick')),
+                'type': 'error'
+            });
+            chatroom.save({'omemo_active': false, 'omemo_supported': false});
+        }
+    }
+}
+
+async function checkOMEMOSupported (chatbox) {
+    let supported;
+    if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+        await api.waitUntil('OMEMOInitialized');
+        supported = chatbox.features.get('nonanonymous') && chatbox.features.get('membersonly');
+    } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+        supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
+    }
+    chatbox.set('omemo_supported', supported);
+    if (supported && api.settings.get('omemo_default')) {
+        chatbox.set('omemo_active', true);
+    }
+}
+
+
+function toggleOMEMO (ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const toolbar_el = u.ancestor(ev.target, 'converse-chat-toolbar');
+    if (!toolbar_el.model.get('omemo_supported')) {
+        let messages;
+        if (toolbar_el.model.get('type') === _converse.CHATROOMS_TYPE) {
+            messages = [__(
+                'Cannot use end-to-end encryption in toolbar_el groupchat, '+
+                'either the groupchat has some anonymity or not all participants support OMEMO.'
+            )];
+        } else {
+            messages = [__(
+                "Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.",
+                toolbar_el.model.contact.getDisplayName()
+            )];
+        }
+        return api.alert('error', __('Error'), messages);
+    }
+    toolbar_el.model.save({'omemo_active': !toolbar_el.model.get('omemo_active')});
+}
+
+
+function getOMEMOToolbarButton (toolbar_el, buttons) {
+    const model = toolbar_el.model;
+    const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
+    let title;
+    if (is_muc && model.get('omemo_supported')) {
+        const i18n_plaintext = __('Messages are being sent in plaintext');
+        const i18n_encrypted = __('Messages are sent encrypted');
+        title = model.get('omemo_active') ? i18n_encrypted : i18n_plaintext;
+    } else {
+        title = __('This groupchat needs to be members-only and non-anonymous in '+
+                    'order to support OMEMO encrypted messages');
+    }
+
+    buttons.push(html`
+        <button class="toggle-omemo"
+                title="${title}"
+                ?disabled=${!model.get('omemo_supported')}
+                @click=${toggleOMEMO}>
+        <converse-icon class="fa ${model.get('omemo_active') ? `fa-lock` : `fa-unlock`}"
+                    path-prefix="${api.settings.get('assets_path')}" size="1em"
+        ></converse-icon>
+        </button>`
+    );
+    return buttons;
 }
 
 
@@ -182,30 +467,6 @@ converse.plugins.add('converse-omemo', {
                 } else {
                     return this.__super__.sendMessage.apply(this, arguments);
                 }
-            }
-        },
-
-        ChatBoxView:  {
-            events: {
-                'click .toggle-omemo': 'toggleOMEMO'
-            },
-
-            initialize () {
-                this.__super__.initialize.apply(this, arguments);
-                this.listenTo(this.model, 'change:omemo_active', this.renderOMEMOToolbarButton);
-                this.listenTo(this.model, 'change:omemo_supported', this.onOMEMOSupportedDetermined);
-            }
-        },
-
-        ChatRoomView: {
-            events: {
-                'click .toggle-omemo': 'toggleOMEMO'
-            },
-
-            initialize () {
-                this.__super__.initialize.apply(this, arguments);
-                this.listenTo(this.model, 'change:omemo_active', this.renderOMEMOToolbarButton);
-                this.listenTo(this.model, 'change:omemo_supported', this.onOMEMOSupportedDetermined);
             }
         }
     },
@@ -377,69 +638,6 @@ converse.plugins.add('converse-omemo', {
         Object.assign(_converse.ChatBox.prototype, OMEMOEnabledChatBox);
 
 
-        const OMEMOEnabledChatView = {
-
-            onOMEMOSupportedDetermined () {
-                if (!this.model.get('omemo_supported') && this.model.get('omemo_active')) {
-                    this.model.set('omemo_active', false); // Will cause render
-                } else {
-                    this.renderOMEMOToolbarButton();
-                }
-            },
-
-            renderOMEMOToolbarButton () {
-                if (this.model.get('type') !== _converse.CHATROOMS_TYPE ||
-                        this.model.features.get('membersonly') &&
-                        this.model.features.get('nonanonymous')) {
-
-                    const icon = this.el.querySelector('.toggle-omemo');
-                    const html = tpl_toolbar_omemo(Object.assign(this.model.toJSON(), {'__': __}));
-                    if (icon) {
-                        icon.outerHTML = html;
-                    } else {
-                        this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
-                    }
-                } else {
-                    const icon = this.el.querySelector('.toggle-omemo');
-                    if (icon) {
-                        icon.parentElement.removeChild(icon);
-                    }
-                }
-            },
-
-            toggleOMEMO (ev) {
-                if (!this.model.get('omemo_supported')) {
-                    let messages;
-                    if (this.model.get('type') === _converse.CHATROOMS_TYPE) {
-                        messages = [__(
-                            'Cannot use end-to-end encryption in this groupchat, '+
-                            'either the groupchat has some anonymity or not all participants support OMEMO.'
-                        )];
-                    } else {
-                        messages = [__(
-                            "Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.",
-                            this.model.contact.getDisplayName()
-                        )];
-                    }
-                    return api.alert('error', __('Error'), messages);
-                }
-                ev.preventDefault();
-                this.model.save({'omemo_active': !this.model.get('omemo_active')});
-            }
-        }
-        Object.assign(_converse.ChatBoxView.prototype, OMEMOEnabledChatView);
-
-
-        async function generateFingerprint (device) {
-            if (device.get('bundle')?.fingerprint) {
-                return;
-            }
-            const bundle = await device.getBundle();
-            bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
-            device.save('bundle', bundle);
-            device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
-        }
-
         _converse.generateFingerprints = async function (jid) {
             const devices = await getDevicesForContact(jid)
             return Promise.all(devices.map(d => generateFingerprint(d)));
@@ -449,70 +647,10 @@ converse.plugins.add('converse-omemo', {
             return getDevicesForContact(jid).then(devices => devices.get(device_id));
         }
 
-        async function getDevicesForContact (jid) {
-            await api.waitUntil('OMEMOInitialized');
-            const devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
-            await devicelist.fetchDevices();
-            return devicelist.devices;
-        }
-
         _converse.contactHasOMEMOSupport = async function (jid) {
             /* Checks whether the contact advertises any OMEMO-compatible devices. */
             const devices = await getDevicesForContact(jid);
             return devices.length > 0;
-        }
-
-        function generateDeviceID () {
-            /* Generates a device ID, making sure that it's unique */
-            const existing_ids = _converse.devicelists.get(_converse.bare_jid).devices.pluck('id');
-            let device_id = libsignal.KeyHelper.generateRegistrationId();
-            let i = 0;
-            while (existing_ids.includes(device_id)) {
-                device_id = libsignal.KeyHelper.generateRegistrationId();
-                i++;
-                if (i == 10) {
-                    throw new Error("Unable to generate a unique device ID");
-                }
-            }
-            return device_id.toString();
-        }
-
-        async function buildSession (device) {
-            const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
-                  sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
-                  prekey = device.getRandomPreKey(),
-                  bundle = await device.getBundle();
-
-            return sessionBuilder.processPreKey({
-                'registrationId': parseInt(device.get('id'), 10),
-                'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
-                'signedPreKey': {
-                    'keyId': bundle.signed_prekey.id, // <Number>
-                    'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-                    'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-                },
-                'preKey': {
-                    'keyId': prekey.id, // <Number>
-                    'publicKey': u.base64ToArrayBuffer(prekey.key),
-                }
-            });
-        }
-
-        async function getSession (device) {
-            const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
-            const session = await _converse.omemo_store.loadSession(address.toString());
-            if (session) {
-                return Promise.resolve(session);
-            } else {
-                try {
-                    const session = await buildSession(device);
-                    return session;
-                } catch (e) {
-                    log.error(`Could not build an OMEMO session for device ${device.get('id')}`);
-                    log.error(e);
-                    return null;
-                }
-            }
         }
 
         _converse.getBundlesAndBuildSessions = async function (chatbox) {
@@ -547,26 +685,6 @@ converse.plugins.add('converse-omemo', {
                 }
             }
             return devices;
-        }
-
-        function addKeysToMessageStanza (stanza, dicts, iv) {
-            for (var i in dicts) {
-                if (Object.prototype.hasOwnProperty.call(dicts, i)) {
-                    const payload = dicts[i].payload,
-                            device = dicts[i].device,
-                            prekey = 3 == parseInt(payload.type, 10);
-
-                    stanza.c('key', {'rid': device.get('id') }).t(btoa(payload.body));
-                    if (prekey) {
-                        stanza.attrs({'prekey': prekey});
-                    }
-                    stanza.up();
-                    if (i == dicts.length-1) {
-                        stanza.c('iv').t(iv).up().up()
-                    }
-                }
-            }
-            return Promise.resolve(stanza);
         }
 
         _converse.createOMEMOMessageStanza = function (chatbox, message, devices) {
@@ -1035,147 +1153,6 @@ converse.plugins.add('converse-omemo', {
         });
 
 
-        function fetchDeviceLists () {
-            return new Promise((success, error) => _converse.devicelists.fetch({success, 'error': (m, e) => error(e)}));
-        }
-
-        async function fetchOwnDevices () {
-            await fetchDeviceLists();
-            let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
-            if (own_devicelist) {
-                own_devicelist.fetchDevices();
-            } else {
-                own_devicelist = await _converse.devicelists.create({'jid': _converse.bare_jid}, {'promise': true});
-            }
-            return own_devicelist._devices_promise;
-        }
-
-        function updateBundleFromStanza (stanza) {
-            const items_el = sizzle(`items`, stanza).pop();
-            if (!items_el || !items_el.getAttribute('node').startsWith(Strophe.NS.OMEMO_BUNDLES)) {
-                return;
-            }
-            const device_id = items_el.getAttribute('node').split(':')[1],
-                  jid = stanza.getAttribute('from'),
-                  bundle_el = sizzle(`item > bundle`, items_el).pop(),
-                  devicelist = _converse.devicelists.getDeviceList(jid),
-                  device = devicelist.devices.get(device_id) || devicelist.devices.create({'id': device_id, 'jid': jid});
-            device.save({'bundle': parseBundle(bundle_el)});
-        }
-
-        function updateDevicesFromStanza (stanza) {
-            const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"]`, stanza).pop();
-            if (!items_el) {
-                return;
-            }
-            const device_selector = `item list[xmlns="${Strophe.NS.OMEMO}"] device`;
-            const device_ids = sizzle(device_selector, items_el).map(d => d.getAttribute('id'));
-            const jid = stanza.getAttribute('from');
-            const devicelist = _converse.devicelists.getDeviceList(jid);
-            const devices = devicelist.devices;
-            const removed_ids = difference(devices.pluck('id'), device_ids);
-
-            removed_ids.forEach(id => {
-                if (jid === _converse.bare_jid && id === _converse.omemo_store.get('device_id')) {
-                    return // We don't set the current device as inactive
-                }
-                devices.get(id).save('active', false);
-            });
-            device_ids.forEach(device_id => {
-                const device = devices.get(device_id);
-                if (device) {
-                    device.save('active', true);
-                } else {
-                    devices.create({'id': device_id, 'jid': jid})
-                }
-            });
-            if (u.isSameBareJID(jid, _converse.bare_jid)) {
-                // Make sure our own device is on the list
-                // (i.e. if it was removed, add it again).
-                devicelist.publishCurrentDevice(device_ids);
-            }
-        }
-
-        function registerPEPPushHandler () {
-            // Add a handler for devices pushed from other connected clients
-            _converse.connection.addHandler((message) => {
-                try {
-                    if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
-                        updateDevicesFromStanza(message);
-                        updateBundleFromStanza(message);
-                    }
-                } catch (e) {
-                    log.error(e.message);
-                }
-                return true;
-            }, null, 'message', 'headline');
-        }
-
-        function restoreOMEMOSession () {
-            if (_converse.omemo_store === undefined)  {
-                const id = `converse.omemosession-${_converse.bare_jid}`;
-                _converse.omemo_store = new _converse.OMEMOStore({'id': id});
-                _converse.omemo_store.browserStorage = _converse.createStore(id);
-            }
-            return _converse.omemo_store.fetchSession();
-        }
-
-        async function initOMEMO () {
-            if (!_converse.config.get('trusted')) {
-                return;
-            }
-            _converse.devicelists = new _converse.DeviceLists();
-            const id = `converse.devicelists-${_converse.bare_jid}`;
-            _converse.devicelists.browserStorage = _converse.createStore(id);
-
-            try {
-                await fetchOwnDevices();
-                await restoreOMEMOSession();
-                await _converse.omemo_store.publishBundle();
-            } catch (e) {
-                log.error("Could not initialize OMEMO support");
-                log.error(e);
-                return;
-            }
-            /**
-             * Triggered once OMEMO support has been initialized
-             * @event _converse#OMEMOInitialized
-             * @example _converse.api.listen.on('OMEMOInitialized', () => { ... });
-             */
-            api.trigger('OMEMOInitialized');
-        }
-
-        async function onOccupantAdded (chatroom, occupant) {
-            if (occupant.isSelf() || !chatroom.features.get('nonanonymous') || !chatroom.features.get('membersonly')) {
-                return;
-            }
-            if (chatroom.get('omemo_active')) {
-                const supported = await _converse.contactHasOMEMOSupport(occupant.get('jid'));
-                if (!supported) {
-                    chatroom.createMessage({
-                        'message': __("%1$s doesn't appear to have a client that supports OMEMO. " +
-                                      "Encrypted chat will no longer be possible in this grouchat.", occupant.get('nick')),
-                        'type': 'error'
-                    });
-                    chatroom.save({'omemo_active': false, 'omemo_supported': false});
-                }
-            }
-        }
-
-        async function checkOMEMOSupported (chatbox) {
-            let supported;
-            if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
-                await api.waitUntil('OMEMOInitialized');
-                supported = chatbox.features.get('nonanonymous') && chatbox.features.get('membersonly');
-            } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
-                supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
-            }
-            chatbox.set('omemo_supported', supported);
-            if (supported && api.settings.get('omemo_default')) {
-                chatbox.set('omemo_active', true);
-            }
-        }
-
         /******************** Event Handlers ********************/
 
         api.waitUntil('chatBoxesInitialized').then(() =>
@@ -1188,8 +1165,27 @@ converse.plugins.add('converse-omemo', {
             })
         );
 
+        const onChatInitialized = view => {
+            view.listenTo(view.model, 'change:omemo_supported', () => {
+                if (!view.model.get('omemo_supported') && view.model.get('omemo_active')) {
+                    view.model.set('omemo_active', false);
+                } else {
+                    // Manually trigger an update, setting omemo_active to
+                    // false above will automatically trigger one.
+                    view.el.querySelector('converse-chat-toolbar')?.requestUpdate();
+                }
+            });
+            view.listenTo(view.model, 'change:omemo_active', () => {
+                view.el.querySelector('converse-chat-toolbar').requestUpdate();
+            });
+        }
+
+        api.listen.on('chatBoxViewInitialized', onChatInitialized);
+        api.listen.on('chatRoomViewInitialized', onChatInitialized);
+
         api.listen.on('connected', registerPEPPushHandler);
-        api.listen.on('renderToolbar', view => view.renderOMEMOToolbarButton());
+        api.listen.on('getToolbarButtons', getOMEMOToolbarButton);
+
         api.listen.on('statusInitialized', initOMEMO);
         api.listen.on('addClientFeatures',
             () => api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));

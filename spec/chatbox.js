@@ -441,25 +441,6 @@ describe("Chatboxes", function () {
 
         describe("A chat toolbar", function () {
 
-            it("can be found on each chat box",
-                mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    async function (done, _converse) {
-
-                await mock.waitForRoster(_converse, 'current', 3);
-                await mock.openControlBox(_converse);
-                const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                await mock.openChatBoxFor(_converse, contact_jid);
-                const chatbox = _converse.chatboxes.get(contact_jid);
-                const view = _converse.chatboxviews.get(contact_jid);
-                expect(chatbox).toBeDefined();
-                expect(view).toBeDefined();
-                const toolbar = view.el.querySelector('ul.chat-toolbar');
-                expect(_.isElement(toolbar)).toBe(true);
-                expect(toolbar.querySelectorAll(':scope > li').length).toBe(2);
-                done();
-            }));
-
             it("shows the remaining character count if a message_limit is configured",
                 mock.initConverse(
                     ['rosterGroupsFetched', 'chatBoxesFetched'], {'message_limit': 200},
@@ -476,7 +457,7 @@ describe("Chatboxes", function () {
                 view.insertIntoTextArea('hello world');
                 expect(counter.textContent).toBe('188');
 
-                toolbar.querySelector('a.toggle-smiley').click();
+                toolbar.querySelector('.toggle-emojis').click();
                 const picker = await u.waitUntil(() => view.el.querySelector('.emoji-picker__lists'));
                 const item = await u.waitUntil(() => picker.querySelector('.emoji-picker li.insert-emoji a'));
                 item.click()
@@ -532,7 +513,7 @@ describe("Chatboxes", function () {
                 _converse.visible_toolbar_buttons.call = false;
                 await mock.openChatBoxFor(_converse, contact_jid);
                 let view = _converse.chatboxviews.get(contact_jid);
-                toolbar = view.el.querySelector('ul.chat-toolbar');
+                toolbar = view.el.querySelector('.chat-toolbar');
                 call_button = toolbar.querySelector('.toggle-call');
                 expect(call_button === null).toBeTruthy();
                 view.close();
@@ -541,7 +522,7 @@ describe("Chatboxes", function () {
                 _converse.visible_toolbar_buttons.call = true; // enable the button
                 await mock.openChatBoxFor(_converse, contact_jid);
                 view = _converse.chatboxviews.get(contact_jid);
-                toolbar = view.el.querySelector('ul.chat-toolbar');
+                toolbar = view.el.querySelector('.chat-toolbar');
                 call_button = toolbar.querySelector('.toggle-call');
                 call_button.click();
                 expect(_converse.api.trigger).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
@@ -1322,7 +1303,7 @@ describe("Chatboxes", function () {
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            await mock.waitForRoster(_converse, 'current');
+            await mock.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                   msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
 
@@ -1347,10 +1328,9 @@ describe("Chatboxes", function () {
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            await mock.waitForRoster(_converse, 'current');
-
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                  msg = mock.createChatMessage(_converse, sender_jid, 'This message will be read');
+            await mock.waitForRoster(_converse, 'current', 1);
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const msg = mock.createChatMessage(_converse, sender_jid, 'This message will be read');
             const sent_stanzas = [];
             spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
             await mock.openChatBoxFor(_converse, sender_jid);
@@ -1470,7 +1450,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
             expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
             _converse.saveWindowState(null, 'focus');
-            expect(chatbox.get('num_unread')).toBe(1);
+            await u.waitUntil(() => chatbox.get('num_unread') === 1);
             expect(chatbox.get('first_unread_id')).toBe(msgid);
             await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
             expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
@@ -1638,7 +1618,7 @@ describe("Chatboxes", function () {
 
             const unread_count = selectUnreadMsgCount();
             expect(u.isVisible(unread_count)).toBeTruthy();
-            expect(unread_count.innerHTML).toBe('1');
+            expect(unread_count.innerHTML.replace(/<!---->/g, '')).toBe('1');
             done();
         }));
 
@@ -1663,7 +1643,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => view.model.messages.length);
             const unread_count = selectUnreadMsgCount();
             expect(u.isVisible(unread_count)).toBeTruthy();
-            expect(unread_count.innerHTML).toBe('1');
+            expect(unread_count.innerHTML.replace(/<!---->/g, '')).toBe('1');
             done();
         }));
 
@@ -1683,7 +1663,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
-            expect(msg.innerHTML.replace(/\<!----\>/g, '')).toEqual(
+            await u.waitUntil(() => msg.innerHTML.replace(/\<!----\>/g, '') ===
                 '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
                 'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
             done();

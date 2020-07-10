@@ -1,6 +1,6 @@
 import DOMNavigator from "../dom-navigator";
 import { CustomElement } from './element.js';
-import { converse } from "@converse/headless/converse-core";
+import { converse, api } from "@converse/headless/converse-core";
 import { html } from 'lit-element';
 import { until } from 'lit-html/directives/until.js';
 
@@ -20,8 +20,8 @@ export class BaseDropdown extends CustomElement {
 
     hideMenu () {
         u.removeClass('show', this.menu);
-        this.button.setAttribute('aria-expanded', false);
-        this.button.blur();
+        this.button?.setAttribute('aria-expanded', false);
+        this.button?.blur();
     }
 
     showMenu () {
@@ -29,8 +29,9 @@ export class BaseDropdown extends CustomElement {
         this.button.setAttribute('aria-expanded', true);
     }
 
-    toggleMenu (event) {
-        event.stopPropagation();
+    toggleMenu (ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
         if (u.hasClass('show', this.menu)) {
             this.hideMenu();
         } else {
@@ -41,14 +42,14 @@ export class BaseDropdown extends CustomElement {
     handleKeyUp (ev) {
         if (ev.keyCode === converse.keycodes.ESCAPE) {
             this.hideMenu();
-        } else if (ev.keyCode === converse.keycodes.DOWN_ARROW && !this.navigator.enabled) {
+        } else if (ev.keyCode === converse.keycodes.DOWN_ARROW && this.navigator && !this.navigator.enabled) {
             this.enableArrowNavigation(ev);
         }
     }
 }
 
 
-export class DropdownList extends BaseDropdown {
+export default class DropdownList extends BaseDropdown {
 
     static get properties () {
         return {
@@ -109,4 +110,4 @@ export class DropdownList extends BaseDropdown {
     }
 }
 
-window.customElements.define('converse-dropdown', DropdownList);
+api.elements.define('converse-dropdown', DropdownList);

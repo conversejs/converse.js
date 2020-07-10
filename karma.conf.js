@@ -9,9 +9,11 @@ module.exports = function(config) {
     files: [
       { pattern: 'dist/*.js.map', included: false },
       { pattern: 'dist/*.css.map', included: false },
+      { pattern: "dist/icons.js", served: true },
       { pattern: "dist/emojis.js", served: true },
       "dist/converse.js",
       "dist/converse.css",
+      { pattern: "dist/images/**/*.*", included: false },
       { pattern: "dist/webfonts/**/*.*", included: false },
       { pattern: "dist/\@fortawesome/fontawesome-free/sprites/solid.svg",
         watched: false,
@@ -23,6 +25,7 @@ module.exports = function(config) {
       { pattern: "spec/mock.js", type: 'module' },
 
       { pattern: "spec/spoilers.js", type: 'module' },
+      { pattern: "spec/emojis.js", type: 'module' },
       { pattern: "spec/roomslist.js", type: 'module' },
       { pattern: "spec/utils.js", type: 'module' },
       { pattern: "spec/converse.js", type: 'module' },
@@ -44,6 +47,7 @@ module.exports = function(config) {
       { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "spec/messages.js", type: 'module' },
       { pattern: "spec/muc_messages.js", type: 'module' },
+      { pattern: "spec/mentions.js", type: 'module' },
       { pattern: "spec/retractions.js", type: 'module' },
       { pattern: "spec/muc.js", type: 'module' },
       { pattern: "spec/modtools.js", type: 'module' },
@@ -55,12 +59,11 @@ module.exports = function(config) {
       { pattern: "spec/register.js", type: 'module' },
       { pattern: "spec/hats.js", type: 'module' },
       { pattern: "spec/http-file-upload.js", type: 'module' },
-      { pattern: "spec/emojis.js", type: 'module' },
       { pattern: "spec/xss.js", type: 'module' }
     ],
 
     proxies: {
-      "/dist/\@fortawesome/fontawesome-free/sprites/solid.svg": "/base/dist/\@fortawesome/fontawesome-free/sprites/solid.svg"
+      "/dist/images/custom_emojis/": "/base/dist/images/custom_emojis/"
     },
 
     client: {

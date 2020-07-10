@@ -206,6 +206,10 @@ export class AutoComplete {
         }
     }
 
+    get list () {
+        return this._list;
+    }
+
     get selected () {
         return this.index > -1;
     }

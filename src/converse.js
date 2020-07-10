@@ -9,12 +9,12 @@
  * Any of the following components may be removed if they're not needed.
  */
 import "@converse/headless/headless";
+import "converse-registry";
 import "converse-autocomplete";
 import "converse-bookmark-views";  // Views for XEP-0048 Bookmarks
 import "converse-chatview";        // Renders standalone chat boxes for single user chat
 import "converse-controlbox";      // The control box
 import "converse-dragresize";      // Allows chat boxes to be resized by dragging them
-import "converse-emoji-views";
 import "converse-fullscreen";
 import "converse-mam-views";
 import "converse-minimize";        // Allows chat boxes to be minimized
@@ -42,7 +42,6 @@ const WHITELISTED_PLUGINS = [
     'converse-chatview',
     'converse-controlbox',
     'converse-dragresize',
-    'converse-emoji-views',
     'converse-fullscreen',
     'converse-mam-views',
     'converse-minimize',

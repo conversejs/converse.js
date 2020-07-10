@@ -19,9 +19,9 @@ helpers.escapeCharacters = characters => string =>
 helpers.escapeRegexString = helpers.escapeCharacters('[\\^$.?*+(){}');
 
 // `for` is ~25% faster than using `Array.find()`
-helpers.findFirstMatchInArray = array => regex => {
+helpers.findFirstMatchInArray = array => text => {
     for (let i = 0; i < array.length; i++) {
-        if (regex.test(array[i])) {
+        if (text.localeCompare(array[i], undefined, {sensitivity: 'base'}) === 0) {
             return array[i];
         }
     }

@@ -321,6 +321,15 @@
                 width: 100%;
             }
 
+            .chat-textarea, input {
+                &:active, &:focus{
+                    outline-color: var(--chat-head-color);
+                }
+                &.correcting {
+                    background-color: var(--chat-correcting-color);
+                }
+            }
+
             .chat-textarea {
                 color: var(--chat-textarea-color);
                 background-color: var(--chat-textarea-background-color);
@@ -336,113 +345,8 @@
                 min-height: var(--chat-textarea-height);
                 margin-bottom: -4px; // Not clear why this is necessar :(
                 resize: none;
-                &:active, &:focus{
-                    outline-color: var(--chat-head-color);
-                }
                 &.spoiler {
                     height: 42px;
-                }
-                &.correcting {
-                    background-color: var(--chat-correcting-color);
-                }
-            }
-
-            .send-button {
-                border-radius: 0;
-                bottom: var(--send-button-bottom);
-                background-color: var(--chat-head-color);
-                color: var(--inverse-link-color);
-            }
-
-            .chat-toolbar--container {
-                display: flex;
-                flex-wrap: nowrap;
-            }
-
-            .chat-toolbar {
-                box-sizing: border-box;
-                margin: 0;
-                width: 100%;
-                padding: 0.25em;
-                display: block;
-                border-top: 4px solid var(--chat-head-color);
-                background-color: white;
-                color: var(--chat-head-color);
-                .fa, .fa:hover,
-                .far, .far:hover,
-                .fas, .fas:hover {
-                    color: var(--chat-head-color);
-                    font-size: var(--font-size-large);
-                }
-                .disabled {
-                    color: var(--text-color-lighten-15-percent) !important;
-                }
-                .unencrypted a,
-                .unencrypted {
-                    color: var(--text-color);
-                    .toolbar-menu {
-                        a {
-                            color: var(--link-color);
-                        }
-                    }
-                }
-                .unverified a,
-                .unverified {
-                    color: #cf5300;
-                }
-                .private a,
-                .private {
-                    color: #4b7003;
-                }
-                li {
-                    cursor: pointer;
-                    display: inline-block;
-                    list-style: none;
-                    padding: 0 0.5em;
-                    &:hover {
-                        cursor: pointer;
-                    }
-                    .toolbar-menu {
-                        background-color: #fff;
-                        bottom: 1.7rem;
-                        box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
-                        height: auto;
-                        margin-bottom: 0;
-                        min-width: 21rem;
-                        position: absolute;
-                        right: 0;
-                        top: auto;
-                        z-index: $zindex-dropdown;
-
-                        &.otr-menu {
-                            left: -6em;
-                            min-width: 15rem;
-
-                            &.show {
-                                display: flex;
-                                flex-direction: column;
-                            }
-                        }
-
-                        a {
-                            color: var(--link-color);
-                        }
-                    }
-                    &.toggle-otr {
-                        ul {
-                            z-index: 99;
-                            li {
-                                &:hover {
-                                    background-color: var(--highlight-color);
-                                }
-                                display: block;
-                                padding: 7px;
-                                a {
-                                    display: block;
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -484,16 +388,8 @@
         padding: 0.5em;
     }
     .chat-head {
-        border-top-left-radius: var(--chatbox-border-radius);
-        border-top-right-radius: var(--chatbox-border-radius);
-        @media screen and (max-height: $mobile-landscape-height) {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-        @media screen and (max-width: $mobile-portrait-length) {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
     }
     .chatbox {
         min-width: var(--overlayed-chat-width) !important;
@@ -507,6 +403,20 @@
 }
 
 #conversejs.converse-overlayed  {
+
+    .chat-head, .box-flyout {
+        border-top-left-radius: var(--chatbox-border-radius);
+        border-top-right-radius: var(--chatbox-border-radius);
+        @media screen and (max-height: $mobile-landscape-height) {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    }
+
     .flyout {
         bottom: var(--overlayed-chatbox-hover-height);
     }
@@ -524,19 +434,9 @@
         max-height: var(--overlayed-max-chat-textarea-height);
     }
     .chatbox {
-        .sendXMPPMessage {
-            .chat-toolbar {
-                li {
-                    .toolbar-menu {
-                        min-width: 235px;
-                    }
-                }
-            }
-        }
         .chat-body {
             height: calc(100% - var(--overlayed-chat-head-height));
         }
-
         .chatbox-title {
             cursor: pointer;
             padding: 0.5rem 0.75rem 0 0.75rem;
@@ -544,7 +444,6 @@
         .chatbox-title--no-desc {
             padding: 0.5rem 0.75rem;
         }
-
         converse-dropdown {
             .btn--standalone {
                 padding: 0 0 0 0.5em;
@@ -612,10 +511,13 @@
             }
         }
     }
-
 }
 
 #conversejs.converse-embedded {
+    .chat-head {
+        font-size: var(--font-size-huge);
+    }
+
     .converse-chatboxes {
         z-index: 1031; // One more than bootstrap navbar
         position: inherit;
@@ -632,11 +534,6 @@
             height: 100%;
             min-width: auto;
             width: 100%;
-        }
-
-        .chat-title--text {
-            padding: 0.3em;
-            font-size: 120%;
         }
     }
 

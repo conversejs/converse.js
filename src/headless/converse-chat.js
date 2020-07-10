@@ -407,6 +407,7 @@ converse.plugins.add('converse-chat', {
                         'error_condition': attrs.error_condition,
                         'error_text': attrs.error_text,
                         'error_type': attrs.error_type,
+                        'editable': false,
                     };
                     if (attrs.msgid === message.get('retraction_id')) {
                         // The error message refers to a retraction
@@ -950,21 +951,23 @@ converse.plugins.add('converse-chat', {
             getOutgoingMessageAttributes (text, spoiler_hint) {
                 const is_spoiler = this.get('composing_spoiler');
                 const origin_id = u.getUniqueId();
+                const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
                 return {
-                    'id': origin_id,
-                    'jid': this.get('jid'),
-                    'nickname': this.get('nickname'),
-                    'msgid': origin_id,
-                    'origin_id': origin_id,
-                    'fullname': _converse.xmppstatus.get('fullname'),
                     'from': _converse.bare_jid,
+                    'fullname': _converse.xmppstatus.get('fullname'),
+                    'id': origin_id,
                     'is_only_emojis': text ? u.isOnlyEmojis(text) : false,
+                    'jid': this.get('jid'),
+                    'message': body,
+                    'msgid': origin_id,
+                    'nickname': this.get('nickname'),
                     'sender': 'me',
-                    'time': (new Date()).toISOString(),
-                    'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
-                    'is_spoiler': is_spoiler,
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
-                    'type': this.get('message_type')
+                    'time': (new Date()).toISOString(),
+                    'type': this.get('message_type'),
+                    body,
+                    is_spoiler,
+                    origin_id
                 }
             },
 
@@ -979,10 +982,7 @@ converse.plugins.add('converse-chat', {
              * @param { String } send_time - time when the message was sent
              */
             setEditable (attrs, send_time) {
-                if (attrs.is_headline) {
-                    return;
-                }
-                if (u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
+                if (attrs.is_headline || u.isEmptyMessage(attrs) || attrs.sender !== 'me') {
                     return;
                 }
                 if (api.settings.get('allow_message_corrections') === 'all') {

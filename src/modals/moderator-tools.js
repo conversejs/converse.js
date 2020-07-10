@@ -4,7 +4,7 @@ import tpl_moderator_tools_modal from "../templates/moderator_tools_modal.js";
 import { AFFILIATIONS, ROLES } from "@converse/headless/converse-muc.js";
 import { BootstrapModal } from "../converse-modal.js";
 import { __ } from '@converse/headless/i18n';
-import { converse } from "@converse/headless/converse-core";
+import { api, converse } from "@converse/headless/converse-core";
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
@@ -66,23 +66,27 @@ export default BootstrapModal.extend({
     },
 
     getAssignableAffiliations (occupant) {
-        const disabled = _converse.modtools_disable_assign;
+        let disabled = api.settings.get('modtools_disable_assign');
         if (!Array.isArray(disabled)) {
-            return disabled ? [] : AFFILIATIONS;
-        } else if (occupant.get('affiliation') === 'owner') {
+            disabled = disabled ? AFFILIATIONS : [];
+        }
+
+        if (occupant.get('affiliation') === 'owner') {
             return AFFILIATIONS.filter(a => !disabled.includes(a));
         } else if (occupant.get('affiliation') === 'admin') {
-            return AFFILIATIONS.filter(a => !['owner', ...disabled].includes(a));
+            return AFFILIATIONS.filter(a => !['owner', 'admin', ...disabled].includes(a));
         } else {
             return [];
         }
     },
 
     getAssignableRoles (occupant) {
-        const disabled = _converse.modtools_disable_assign;
+        let disabled = api.settings.get('modtools_disable_assign');
         if (!Array.isArray(disabled)) {
-            return disabled ? [] : ROLES;
-        } else if (occupant.get('role') === 'moderator') {
+            disabled = disabled ? ROLES : [];
+        }
+
+        if (occupant.get('role') === 'moderator') {
             return ROLES.filter(r => !disabled.includes(r));
         } else {
             return [];
@@ -143,7 +147,7 @@ export default BootstrapModal.extend({
         this.model.set({'affiliation': affiliation});
     },
 
-    assignAffiliation (ev) {
+    async assignAffiliation (ev) {
         ev.stopPropagation();
         ev.preventDefault();
         const data = new FormData(ev.target);
@@ -153,17 +157,23 @@ export default BootstrapModal.extend({
             'reason': data.get('reason')
         }
         const current_affiliation = this.model.get('affiliation');
-        this.chatroomview.model.setAffiliation(affiliation, [attrs])
-            .then(async () => {
-                this.alert(__('Affiliation changed'), 'primary');
-                await this.chatroomview.model.occupants.fetchMembers()
-                this.model.set({'affiliation': null}, {'silent': true});
-                this.model.set({'affiliation': current_affiliation});
-            })
-            .catch(err => {
+        try {
+            await this.chatroomview.model.setAffiliation(affiliation, [attrs]);
+        } catch (e) {
+            if (e === null) {
+                this.alert(__('Timeout error while trying to set the affiliation'), 'danger');
+            } else if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
+                this.alert(__('Sorry, you\'re not allowed to make that change'), 'danger');
+            } else {
                 this.alert(__('Sorry, something went wrong while trying to set the affiliation'), 'danger');
-                log.error(err);
-            });
+            }
+            log.error(e);
+            return;
+        }
+        this.alert(__('Affiliation changed'), 'primary');
+        await this.chatroomview.model.occupants.fetchMembers()
+        this.model.set({'affiliation': null}, {'silent': true});
+        this.model.set({'affiliation': current_affiliation});
     },
 
     assignRole (ev) {

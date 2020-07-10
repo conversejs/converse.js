@@ -199,11 +199,8 @@ describe("Message Archive Management", function () {
             _converse.connection._dataRecv(mock.createRequest(result));
             await u.waitUntil(() => view.model.messages.length === 5);
             await u.waitUntil(() => view.content.querySelectorAll('.chat-msg__text').length);
-            const msg_els = Array.from(view.content.querySelectorAll('.chat-msg__text'));
-            await u.waitUntil(
-                () => msg_els.map(e => e.textContent).join(' ') === "2nd Message 3rd Message 4th Message 5th Message 6th Message",
-                1000
-            );
+            await u.waitUntil(() => Array.from(view.content.querySelectorAll('.chat-msg__text'))
+                .map(e => e.textContent).join(' ') === "2nd Message 3rd Message 4th Message 5th Message 6th Message", 1000);
             done();
         }));
     });

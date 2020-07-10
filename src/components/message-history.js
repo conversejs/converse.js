@@ -81,7 +81,7 @@ function getHats (model) {
 }
 
 
-class MessageHistory extends CustomElement {
+export default class MessageHistory extends CustomElement {
 
     static get properties () {
         return {
@@ -122,4 +122,4 @@ class MessageHistory extends CustomElement {
     }
 }
 
-customElements.define('converse-message-history', MessageHistory);
+api.elements.define('converse-message-history', MessageHistory);

@@ -3,9 +3,9 @@ import xss from "xss/dist/xss";
 import { CustomElement } from './element.js';
 import { html } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { api } from "@converse/headless/converse-core";
 
-
-class ChatContent extends CustomElement {
+export default class ChatContent extends CustomElement {
 
     static get properties () {
         return {
@@ -25,16 +25,6 @@ class ChatContent extends CustomElement {
             <div class="chat-content__notifications">${unsafeHTML(notifications)}</div>
         `;
     }
-
-    scrollDown () {
-        if (!this.chatview.model.get('scrolled')) {
-            this.parentElement.scrollTop = this.parentElement.scrollHeight;
-        }
-    }
-
-    updated () {
-        this.scrollDown();
-    }
 }
 
-customElements.define('converse-chat-content', ChatContent);
+api.elements.define('converse-chat-content', ChatContent);

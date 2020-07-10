@@ -2,11 +2,12 @@ import { CustomElement } from './element.js';
 import { __ } from '@converse/headless/i18n';
 import { html } from 'lit-element';
 import { renderAvatar } from "../templates/directives/avatar.js";
+import { api } from "@converse/headless/converse-core";
 
 const i18n_alt_avatar = __('Your avatar image');
 
 
-export class ImagePicker extends CustomElement {
+export default class ImagePicker extends CustomElement {
 
     static get properties () {
         return {
@@ -43,4 +44,4 @@ export class ImagePicker extends CustomElement {
     }
 }
 
-window.customElements.define('converse-image-picker', ImagePicker);
+api.elements.define('converse-image-picker', ImagePicker);

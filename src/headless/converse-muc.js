@@ -631,6 +631,7 @@ converse.plugins.add('converse-muc', {
                         'error_condition': attrs.error_condition,
                         'error_text': attrs.error_text,
                         'error_type': attrs.error_type,
+                        'editable': false,
                     };
                     if (attrs.msgid === message.get('retraction_id')) {
                         // The error message refers to a retraction
@@ -963,9 +964,7 @@ converse.plugins.add('converse-muc', {
                 if (!raw_mentions) return [original_message, []];
 
                 const known_nicknames = this.getAllKnownNicknames();
-                const known_nicknames_with_at_regex = this.getAllKnownNicknamesRegex();
-                const getMatchesForNickRegex = nick_regex => [...findRegexInMessage(nick_regex)];
-                const getNicknameFromRegex = p.findFirstMatchInArray(known_nicknames);
+                const getMatchingNickname = p.findFirstMatchInArray(known_nicknames);
 
                 const uriFromNickname = nickname => {
                     const jid = this.get('jid');
@@ -978,13 +977,13 @@ converse.plugins.add('converse-muc', {
                     const at_sign_index = match[0].indexOf('@');
                     const begin = match.index + at_sign_index;
                     const end = begin + match[0].length - at_sign_index;
-                    const value = getNicknameFromRegex(RegExp(match[1], 'i'));
+                    const value = getMatchingNickname(match[1]);
                     const type = 'mention';
                     const uri = uriFromNickname(value);
                     return { begin, end, value, type, uri }
                 }
 
-                const mentions = getMatchesForNickRegex(known_nicknames_with_at_regex);
+                const mentions = [...findRegexInMessage(this.getAllKnownNicknamesRegex())];
                 const references = mentions.map(matchToReference);
 
                 const [updated_message, updated_references] = p.reduceTextFromReferences(
@@ -998,7 +997,7 @@ converse.plugins.add('converse-muc', {
                 const is_spoiler = this.get('composing_spoiler');
                 const [text, references] = this.parseTextForReferences(original_message);
                 const origin_id = u.getUniqueId();
-                const body = text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined;
+                const body = text ? u.httpToGeoUri(u.shortnamesToUnicode(text), _converse) : undefined;
                 return {
                     body,
                     is_spoiler,

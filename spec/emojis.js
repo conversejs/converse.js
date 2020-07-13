@@ -1,8 +1,9 @@
-/*global mock */
+/*global mock, converse */
 
 const { Promise, $msg, $pres, sizzle } = converse.env;
 const u = converse.env.utils;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+
 
 describe("Emojis", function () {
     describe("The emoji picker", function () {
@@ -98,7 +99,7 @@ describe("Emojis", function () {
             done();
         }));
 
-        it("allows you to search for particular emojis",
+        fit("allows you to search for particular emojis",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
@@ -130,6 +131,15 @@ describe("Emojis", function () {
             const enter_event = Object.assign({}, event, {'keyCode': 13});
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
             expect(input.value).toBe('smiley');
+
+            // Check that search results update when chars are deleted
+            input.value = 'sm';
+            input.dispatchEvent(new KeyboardEvent('keydown', event));
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view.el).length === 25, 1000);
+
+            input.value = 'smiley';
+            input.dispatchEvent(new KeyboardEvent('keydown', event));
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view.el).length === 2, 1000);
 
             // Test that TAB autocompletes the to first match
             const tab_event = Object.assign({}, event, {'keyCode': 9, 'key': 'Tab'});

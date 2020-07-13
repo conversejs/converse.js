@@ -33,11 +33,20 @@ export default class EmojiPicker extends CustomElement {
 
     constructor () {
         super();
-        this.search_results = [];
+        this._search_results = [];
         this.debouncedFilter = debounce(input => this.model.set({'query': input.value}), 250);
         this.onGlobalKeyDown = ev => this._onGlobalKeyDown(ev);
         const body = document.querySelector('body');
         body.addEventListener('keydown', this.onGlobalKeyDown);
+    }
+
+    get search_results () {
+        return this._search_results;
+    }
+
+    set search_results (value) {
+        this._search_results = value;
+        this.requestUpdate();
     }
 
     render () {
@@ -59,7 +68,7 @@ export default class EmojiPicker extends CustomElement {
     }
 
     updated (changed) {
-        changed.has('query') && this.updateSearchResults();
+        changed.has('query') && this.updateSearchResults(changed);
         changed.has('current_category') && this.setScrollPosition();
     }
 
@@ -82,22 +91,22 @@ export default class EmojiPicker extends CustomElement {
         }
     }
 
-    updateSearchResults () {
+    updateSearchResults (changed) {
+        const old_query = changed.get('query');
         const contains = _converse.FILTER_CONTAINS;
         if (this.query) {
-            if (this.query === this.old_query) {
+            if (this.query === old_query) {
                 return this.search_results;
-            } else if (this.old_query && this.query.includes(this.old_query)) {
+            } else if (old_query && this.query.includes(old_query)) {
                 this.search_results = this.search_results.filter(e => contains(e.sn, this.query));
             } else {
                 this.search_results = converse.emojis.list.filter(e => contains(e.sn, this.query));
             }
-            this.old_query = this.query;
         } else if (this.search_results.length) {
             // Avoid re-rendering by only setting to new empty array if it wasn't empty before
             this.search_results = [];
         }
-        return this.search_results;
+        this.requestUpdate();
     }
 
     disconnectedCallback() {

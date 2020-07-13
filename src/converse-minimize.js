@@ -498,6 +498,9 @@ converse.plugins.add('converse-minimize', {
         });
 
         function initMinimizedChats () {
+            if (_converse.minimized_chats) {
+                _converse.minimized_chats.remove();
+            }
             _converse.minimized_chats = new _converse.MinimizedChats({model: _converse.chatboxes});
             /**
              * Triggered once the _converse.MinimizedChats instance has been initialized

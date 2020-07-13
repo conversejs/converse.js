@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const Model = converse.env.Model;
 const Strophe = converse.env.Strophe;

@@ -523,6 +523,7 @@ const st = {
                 return new StanzaParseError(`Invalid Stanza: Forged MAM message from ${from}`, stanza);
             }
         }
+        await api.emojis.initialize();
         attrs = Object.assign({
             'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
             'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
@@ -543,9 +544,9 @@ const st = {
      *  message stanza, if it was contained, otherwise it's the message stanza itself.
      * @param { _converse.ChatRoom } chatbox
      * @param { _converse } _converse
-     * @returns { (MUCMessageAttributes|Error) }
+     * @returns { Promise<MUCMessageAttributes|Error> }
      */
-    parseMUCMessage (stanza, chatbox, _converse) {
+    async parseMUCMessage (stanza, chatbox, _converse) {
         const err = rejectUnencapsulatedForward(stanza);
         if (err) {
             return err;
@@ -650,6 +651,7 @@ const st = {
             getEncryptionAttributes(stanza, _converse)
         );
 
+        await api.emojis.initialize();
         attrs = Object.assign({
             'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
             'is_receipt_request': isReceiptRequest(stanza, attrs),

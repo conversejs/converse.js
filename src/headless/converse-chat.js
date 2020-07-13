@@ -437,7 +437,7 @@ converse.plugins.add('converse-chat', {
              * @async
              * @private
              * @method _converse.ChatRoom#queueMessage
-             * @param { XMLElement } stanza - The message stanza.
+             * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
              */
             queueMessage (attrs) {
                 this.msg_chain = (this.msg_chain || this.messages.fetched);
@@ -445,6 +445,12 @@ converse.plugins.add('converse-chat', {
                 return this.msg_chain;
             },
 
+            /**
+             * @async
+             * @private
+             * @method _converse.ChatRoom#onMessage
+             * @param { MessageAttributes } attrs_promse - A promise which resolves to the message attributes.
+             */
             async onMessage (attrs) {
                 attrs = await attrs;
                 if (u.isErrorObject(attrs)) {

@@ -1911,15 +1911,15 @@ converse.plugins.add('converse-muc', {
              * @async
              * @private
              * @method _converse.ChatRoom#queueMessage
-             * @param { XMLElement } stanza - The message stanza.
+             * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
              */
-            queueMessage (stanza) {
+            queueMessage (attrs) {
                 if (this.messages?.fetched) {
                     this.msg_chain = (this.msg_chain || this.messages.fetched);
-                    this.msg_chain = this.msg_chain.then(() => this.onMessage(stanza));
+                    this.msg_chain = this.msg_chain.then(() => this.onMessage(attrs));
                     return this.msg_chain;
                 } else {
-                    this.message_queue.push(stanza);
+                    this.message_queue.push(attrs);
                     return Promise.resolve();
                 }
             },
@@ -1983,9 +1983,10 @@ converse.plugins.add('converse-muc', {
              * should be called.
              * @private
              * @method _converse.ChatRoom#onMessage
-             * @param { MessageAttributes } attrs - The message attributes
+             * @param { MessageAttributes } attrs - A promise which resolves to the message attributes.
              */
             async onMessage (attrs) {
+                attrs = await attrs;
                 if (u.isErrorObject(attrs)) {
                     attrs.stanza && log.error(attrs.stanza);
                     return log.error(attrs.message);

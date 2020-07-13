@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-07-10 07:36+0000\n"
+"PO-Revision-Date: 2020-07-14 15:41+0000\n"
 "Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
@@ -64,7 +64,7 @@ msgstr "建立您的帳號"
 
 #: dist/converse-no-dependencies.js:11304
 msgid "Please enter the XMPP provider to register with:"
-msgstr "請輸入 XMPP 供應商來註冊："
+msgstr "請輸入要註冊的 XMPP 供應商："
 
 #: dist/converse-no-dependencies.js:11322
 #: dist/converse-no-dependencies.js:11356
@@ -292,23 +292,23 @@ msgstr "您已經被移除出這間聊天室，因爲託管它的服務正在關
 
 #: dist/converse-no-dependencies.js:37534
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "您未被允許加入這間聊天室。"
+msgstr "您未被允許在這間聊天室登記。"
 
 #: dist/converse-no-dependencies.js:37536
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "您未被允許加入這間聊天室，因爲它僅限會員。"
+msgstr "您未被允許在這間聊天室登記，因爲它僅限會員。"
 
 #: dist/converse-no-dependencies.js:37581
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
-msgstr "您的暱稱無法在這間聊天室註冊，因爲這間聊天室不支援註冊暱稱。"
+msgstr "您的暱稱無法在這間聊天室登記，因爲這間聊天室不支援登記暱稱。"
 
 #: dist/converse-no-dependencies.js:37583
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
-msgstr "您的暱稱無法在這間聊天室註冊，因爲它包含無效格式。"
+msgstr "您的暱稱無法在這間聊天室登記，因爲它包含無效格式。"
 
 #: dist/converse-no-dependencies.js:37843
 #, javascript-format
@@ -1600,7 +1600,7 @@ msgstr "授予成員這間聊天室的主人身份"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Register your nickname"
-msgstr "註冊您的暱稱"
+msgstr "登記您的暱稱"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Revoke the user's current affiliation"
@@ -1984,7 +1984,7 @@ msgstr "正在爲您登入"
 
 #: dist/converse-no-dependencies.js:69745
 msgid "Registered successfully"
-msgstr "註冊成功"
+msgstr "登記成功"
 
 #: dist/converse-no-dependencies.js:69857
 msgid ""

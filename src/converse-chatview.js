@@ -23,7 +23,7 @@ import { debounce, isString } from "lodash-es";
 import { html, render } from "lit-html";
 
 
-const { Strophe, dayjs } = converse.env;
+const { Strophe, dayjs, $iq } = converse.env;
 const u = converse.env.utils;
 
 
@@ -856,10 +856,30 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            onMuteUserError (error) {
+                //
+            },
+
+            onMuteUserSuccess (iq) {
+                //
+            },
+
             async onUserMuteButtonClicked (message) {
-                const muted_users = await api.user.settings.get('muted_users') || [];
-                api.user.settings.set('muted_users', [...muted_users, message.get('nick')]);
-                // hide all messages from user
+                const jid = message.get('from');
+                const stanza = $iq({
+                    to: this.model.get('muc_domain'),
+                    from: _converse.connection.jid,
+                    type: 'set'
+                })
+                .c('block', {xmlns: 'urn:xmpp:blocking'})
+                .c('item', {jid});
+                
+                try {
+                    const iq = await api.sendIQ(stanza);
+                    this.onMuteUserSuccess(iq);
+                } catch (error) {
+                    this.onMuteUserError(error);
+                }
             },
 
             editLaterMessage () {

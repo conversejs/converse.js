@@ -874,4 +874,52 @@ describe("A Groupchat Message", function () {
         expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
         done();
     }));
+
+    it("can mute sender",
+        mock.initConverse(
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            async function (done, _converse) {
+
+        const muc_jid = 'lounge@montague.lit';
+        const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', features);
+
+        const view = _converse.api.chatviews.get(muc_jid);
+
+        const received_stanza = u.toStanza(`
+            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                <body>Visit this site to get free Bitcoin!</body>
+                <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
+            </message>
+        `);
+        await view.model.handleMessageStanza(received_stanza);
+        await u.waitUntil(() => view.model.messages.length === 1);
+        
+        // Mute option is present
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__actions .chat-msg__action-mute').length === 1);
+        const mute_buttons = view.el.querySelectorAll('.chat-msg__actions .chat-msg__action-mute');
+        expect(mute_buttons.length).toBe(1);
+
+        // Stanza is sent
+        mute_buttons[0].click();
+
+        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        await u.waitUntil(() => IQ_stanzas.length);
+
+        const [block_stanza] = IQ_stanzas.filter(s => sizzle('block', s).length);
+        expect(block_stanza).not.toBe(undefined);
+        expect(block_stanza.attributes.from?.value).toBe('romeo@montague.lit/orchard');
+        expect(block_stanza.attributes.type?.value).toBe('set');
+        expect(block_stanza.attributes.xmlns?.value).toBe('jabber:client');
+        
+        const block = block_stanza.childNodes[0];
+        expect(block).not.toBe(undefined);
+        expect(block.attributes.xmlns?.value).toBe('urn:xmpp:blocking');
+
+        const item = block.childNodes[0];
+        expect(item).not.toBe(undefined);
+        expect(item.attributes.jid?.value).toBe(`${muc_jid}/mallory`);
+        
+        done();
+    }));
 });

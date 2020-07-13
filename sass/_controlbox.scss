@@ -303,7 +303,7 @@
 
         .controlbox-panes {
             background-color: var(--controlbox-pane-background-color);
-            border-right: 3px solid var(--chatroom-head-bg-color);
+            border-right: 3px solid var(--controlbox-pane-border-color);
             height: 100%;
             overflow-y: auto;
         }

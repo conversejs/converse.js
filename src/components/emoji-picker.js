@@ -140,7 +140,7 @@ export default class EmojiPicker extends CustomElement {
 
     insertIntoTextArea (value) {
         this.chatview.onEmojiReceivedFromPicker(value);
-        this.model.set({'query': ''});
+        this.model.set({'autocompleting': null, 'query': '', 'ac_position': null});
     }
 
     chooseSkinTone (ev) {
@@ -279,6 +279,8 @@ export class EmojiDropdown extends BaseDropdown {
                 this.model = new _converse.EmojiPicker({'id': id});
                 this.model.browserStorage = _converse.createStore(id);
                 await new Promise(resolve => this.model.fetch({'success': resolve, 'error': resolve}));
+                // We never want still be in the autocompleting state upon page load
+                this.model.set({'autocompleting': null, 'ac_position': null});
             })();
         }
         return this.init_promise;

@@ -99,7 +99,51 @@ describe("Emojis", function () {
             done();
         }));
 
-        fit("allows you to search for particular emojis",
+        it("properly inserts emojis into the chat textarea",
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            const muc_jid = 'lounge@montague.lit';
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.chatboxviews.get(muc_jid);
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = ':gri';
+
+            // Press tab
+            const tab_event = {
+                'target': textarea,
+                'preventDefault': function preventDefault () {},
+                'stopPropagation': function stopPropagation () {},
+                'keyCode': 9,
+                'key': 'Tab'
+            }
+            textarea.value = ':';
+            view.onKeyDown(tab_event);
+            await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+            const picker = view.el.querySelector('converse-emoji-picker');
+            const input = picker.querySelector('.emoji-search');
+            input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
+            await u.waitUntil(() => input.value === ':100:');
+            const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input});
+            input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
+            expect(textarea.value).toBe(':100:');
+
+            textarea.value = ':';
+            view.onKeyDown(tab_event);
+            await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+            input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
+            await u.waitUntil(() => input.value === ':100:');
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view.el).length === 1, 1000);
+            const emoji = sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden) a', view.el).pop();
+            emoji.click();
+            expect(textarea.value).toBe(':100:');
+            done();
+        }));
+
+
+        it("allows you to search for particular emojis",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {

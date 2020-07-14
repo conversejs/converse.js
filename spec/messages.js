@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const { Promise, Strophe, $msg, dayjs, sizzle, _ } = converse.env;
 const u = converse.env.utils;
@@ -999,7 +999,7 @@ describe("A Chat Message", function () {
         expect(view.model.sendMessage).toHaveBeenCalled();
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '').trim() ==
-            `<a target="_blank" rel="noopener" href="https://conversejs.org/logo/non-existing.svg">https://conversejs.org/logo/non-existing.svg</a>`);
+            `<a target="_blank" rel="noopener" href="https://conversejs.org/logo/non-existing.svg">https://conversejs.org/logo/non-existing.svg</a>`, 1000);
         done();
     }));
 

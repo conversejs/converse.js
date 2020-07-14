@@ -35,7 +35,10 @@ const MAMEnabledChat = {
             return;
         }
         const most_recent_msg = this.getMostRecentMessage();
-        if (most_recent_msg) {
+        // if clear_messages_on_reconnection is true, than any recent messages
+        // must have been received *after* connection and we instead must query
+        // for earlier messages
+        if (most_recent_msg && !api.settings.get('clear_messages_on_reconnection')) {
             const stanza_id = most_recent_msg.get(`stanza_id ${this.get('jid')}`);
             if (stanza_id) {
                 this.fetchArchivedMessages({'after': stanza_id}, 'forwards');

@@ -487,6 +487,7 @@ converse.plugins.add('converse-chat', {
                     this.messages.trigger('reset');
                     log.error(e);
                 } finally {
+                    delete this.msg_chain;
                     delete this.messages.fetched;
                 }
             },

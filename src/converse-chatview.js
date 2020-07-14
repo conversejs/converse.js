@@ -724,10 +724,10 @@ converse.plugins.add('converse-chatview', {
                 if (emoji_picker && emoji_dropdown) {
                     emoji_picker.model.set({
                         'ac_position': input.selectionStart,
-                        'autocompleting': true,
+                        'autocompleting': value,
                         'query': value
                     });
-                    emoji_dropdown.firstElementChild.click();
+                    emoji_dropdown.showMenu();
                     return true;
                 }
             },
@@ -736,7 +736,7 @@ converse.plugins.add('converse-chatview', {
                 const model = this.el.querySelector('converse-emoji-picker').model;
                 const autocompleting = model.get('autocompleting');
                 const ac_position = model.get('ac_position');
-                this.insertIntoTextArea(emoji, !!autocompleting, false, ac_position);
+                this.insertIntoTextArea(emoji, autocompleting, false, ac_position);
             },
 
             /**

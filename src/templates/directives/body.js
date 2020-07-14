@@ -102,7 +102,7 @@ function addMapURLs (text) {
 }
 
 
-function addHyperlinks (text, onImgLoad) {
+function addHyperlinks (text, onImgLoad, onImgClick) {
     const objs = [];
     try {
         const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
@@ -120,7 +120,9 @@ function addHyperlinks (text, onImgLoad) {
         text.addTemplateResult(
             url_obj.start,
             url_obj.end,
-            show_images && u.isImageURL(url_text) ? u.convertToImageTag(url_text, onImgLoad) : u.convertUrlToHyperlink(url_text),
+            show_images && u.isImageURL(url_text) ?
+                u.convertToImageTag(url_text, onImgLoad, onImgClick) :
+                u.convertUrlToHyperlink(url_text),
         );
     });
 }
@@ -191,7 +193,11 @@ class MessageBodyRenderer {
          */
         await api.trigger('beforeMessageBodyTransformed', this.model, text, {'Synchronous': true});
 
-        addHyperlinks(text, () => this.scrollDownOnImageLoad());
+        addHyperlinks(
+            text,
+            () => this.scrollDownOnImageLoad(),
+            ev => this.component.showImageModal(ev)
+        );
         addMapURLs(text);
         await addEmojis(text);
         addReferences(text, this.model);

@@ -290,18 +290,19 @@ u.escapeHTML = function (string) {
 };
 
 
-u.convertToImageTag = function (url, onLoad) {
+u.convertToImageTag = function (url, onLoad, onClick) {
     const uri = getURI(url);
     const img_url_without_ext = ['imgur.com', 'pbs.twimg.com'].includes(uri.hostname());
     if (u.isImageURL(url) || img_url_without_ext) {
         if (img_url_without_ext) {
             const format = (uri.hostname() === 'pbs.twimg.com') ? uri.search(true).format : 'png';
             return tpl_image({
+                onClick,
                 onLoad,
                 'url': uri.removeSearch(/.*/).toString() + `.${format}`
             });
         } else {
-            return tpl_image({url, onLoad});
+            return tpl_image({url, onClick, onLoad});
         }
     }
 }

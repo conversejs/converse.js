@@ -476,6 +476,7 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'change', this.renderChatHistory);
+                this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
                 this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
                 this.listenTo(this.model.notifications, 'change', this.renderNotifications);
 

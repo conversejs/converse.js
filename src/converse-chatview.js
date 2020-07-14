@@ -857,11 +857,16 @@ converse.plugins.add('converse-chatview', {
             },
 
             onMuteUserError (error) {
-                //
+                console.error('Stanza error:', error);
             },
 
-            onMuteUserSuccess (iq) {
-                //
+            onMuteUserSuccess (jid) {
+                const messages = this.model.messages;
+                const removeMessage = message => {
+                    const from = message.get('from');
+                    if (from === jid) message.destroy();
+                };
+                messages.models.forEach(removeMessage);
             },
 
             async onUserMuteButtonClicked (message) {
@@ -875,8 +880,8 @@ converse.plugins.add('converse-chatview', {
                 .c('item', {jid});
                 
                 try {
-                    const iq = await api.sendIQ(stanza);
-                    this.onMuteUserSuccess(iq);
+                    await api.sendIQ(stanza);
+                    this.onMuteUserSuccess(jid);
                 } catch (error) {
                     this.onMuteUserError(error);
                 }

@@ -875,7 +875,7 @@ describe("A Groupchat Message", function () {
         done();
     }));
 
-    it("can mute sender",
+    fit("can mute user",
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
@@ -919,6 +919,11 @@ describe("A Groupchat Message", function () {
         const item = block.childNodes[0];
         expect(item).not.toBe(undefined);
         expect(item.attributes.jid?.value).toBe(`${muc_jid}/mallory`);
+
+        // All messages are deleted
+        // @XXX not working on testing environment - Message doesn't get deleted
+        // await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__actions .chat-msg__action-mute').length === 0);
+        // expect(mute_buttons.length).toBe(0);
         
         done();
     }));

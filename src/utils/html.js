@@ -360,8 +360,6 @@ u.addHyperlinks = function (text) {
         return [text];
     }
 
-    const show_images = api.settings.get('show_images_inline');
-
     let list = [text];
     if (objs.length) {
         objs.sort((a, b) => b.start - a.start)
@@ -370,9 +368,7 @@ u.addHyperlinks = function (text) {
                 const url_text = text.slice(url_obj.start, url_obj.end);
                 list = [
                     text.slice(0, url_obj.start),
-                    show_images && u.isImageURL(url_text) ?
-                        u.convertToImageTag(url_text) :
-                        u.convertUrlToHyperlink(url_text),
+                    u.convertUrlToHyperlink(url_text),
                     text.slice(url_obj.end),
                     ...list
                 ];

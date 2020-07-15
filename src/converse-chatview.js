@@ -856,34 +856,17 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            onMuteUserError (error) {
-                console.error('Stanza error:', error);
-            },
-
-            onMuteUserSuccess (jid) {
-                const messages = this.model.messages;
-                const removeMessage = message => {
-                    const from = message.get('from');
-                    if (from === jid) message.destroy();
-                };
-                messages.models.forEach(removeMessage);
-            },
-
-            async onUserMuteButtonClicked (message) {
-                const jid = message.get('from');
-                const stanza = $iq({
-                    to: this.model.get('muc_domain'),
-                    from: _converse.connection.jid,
-                    type: 'set'
-                })
-                .c('block', {xmlns: 'urn:xmpp:blocking'})
-                .c('item', {jid});
-                
+            async onMuteUser (message) {
                 try {
-                    await api.sendIQ(stanza);
-                    this.onMuteUserSuccess(jid);
+                    await this.model.onMuteUser(message);
+                    const jid = message.get('from');
+                    const { messages } = this.model;
+                    messages.each(msg => {
+                        const from = msg.get('from');
+                        if (from === jid) msg.destroy();
+                    });
                 } catch (error) {
-                    this.onMuteUserError(error);
+                    log.error(error);
                 }
             },
 

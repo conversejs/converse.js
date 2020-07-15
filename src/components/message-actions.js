@@ -43,10 +43,10 @@ class MessageActions extends CustomElement {
         ev.preventDefault();
         this.chatview.onMessageRetractButtonClicked(this.model);
     }
-    
-    onUserMuteButtonClicked (ev) {
+
+    onMuteUserButtonClicked (ev) {
         ev.preventDefault();
-        this.chatview.onUserMuteButtonClicked(this.model);
+        this.chatview.onMuteUser(this.model);
     }
 
     async renderActions () {
@@ -54,7 +54,7 @@ class MessageActions extends CustomElement {
         if (this.model.get('sender') !== 'me') {
             buttons.push({
                 'i18n_text': __('Mute User'),
-                'handler': ev => this.onUserMuteButtonClicked(ev),
+                'handler': ev => this.onMuteUserButtonClicked(ev),
                 'button_class': 'chat-msg__action-mute',
                 'icon_class': 'fa fa-comment-slash',
                 'name': 'mute'

@@ -875,7 +875,7 @@ describe("A Groupchat Message", function () {
         done();
     }));
 
-    fit("can mute user",
+    it("can mute user",
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {

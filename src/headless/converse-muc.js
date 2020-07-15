@@ -2420,6 +2420,19 @@ converse.plugins.add('converse-muc', {
                     'num_unread': 0,
                     'num_unread_general': 0
                 });
+            },
+
+            onMuteUser (message) {
+                const jid = message.get('from');
+                const stanza = $iq({
+                    to: message.get('muc_domain'),
+                    from: _converse.connection.jid,
+                    type: 'set'
+                })
+                .c('block', {xmlns: Strophe.NS.BLOCKING})
+                .c('item', {jid});
+
+                return api.sendIQ(stanza);
             }
         });
 

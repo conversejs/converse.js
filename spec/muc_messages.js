@@ -907,18 +907,11 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => IQ_stanzas.length);
 
         const [block_stanza] = IQ_stanzas.filter(s => sizzle('block', s).length);
-        expect(block_stanza).not.toBe(undefined);
-        expect(block_stanza.attributes.from?.value).toBe('romeo@montague.lit/orchard');
-        expect(block_stanza.attributes.type?.value).toBe('set');
-        expect(block_stanza.attributes.xmlns?.value).toBe('jabber:client');
-        
-        const block = block_stanza.childNodes[0];
-        expect(block).not.toBe(undefined);
-        expect(block.attributes.xmlns?.value).toBe('urn:xmpp:blocking');
 
-        const item = block.childNodes[0];
-        expect(item).not.toBe(undefined);
-        expect(item.attributes.jid?.value).toBe(`${muc_jid}/mallory`);
+        expect(block_stanza).not.toBe(undefined);
+        expect(Strophe.serialize(block_stanza)).toBe(`<iq from="romeo@montague.lit/orchard" id="${block_stanza.attributes.id?.value}" type="set" xmlns="jabber:client"><block xmlns="urn:xmpp:blocking"><item jid="lounge@montague.lit/mallory"/></block></iq>`);
+
+        _converse.connection._dataRecv(mock.createRequest(block_stanza));
 
         // All messages are deleted
         // @XXX not working on testing environment - Message doesn't get deleted

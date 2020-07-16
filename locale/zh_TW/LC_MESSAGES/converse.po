@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-07-14 15:41+0000\n"
+"PO-Revision-Date: 2020-07-17 12:41+0000\n"
 "Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
@@ -116,7 +116,7 @@ msgstr "您的訊息未被傳送，因爲您不在聊天室內。"
 
 #: dist/converse-no-dependencies.js:27573
 msgid "Sorry, an error occurred:"
-msgstr "抱歉，發生錯誤："
+msgstr "抱歉，遭遇錯誤："
 
 #: dist/converse-no-dependencies.js:29327
 msgid "The connection has dropped, attempting to reconnect."
@@ -124,7 +124,7 @@ msgstr "連線已中斷，嘗試重新連線。"
 
 #: dist/converse-no-dependencies.js:29946
 msgid "An error occurred while connecting to the chat server."
-msgstr "連線到聊天伺服器時發生錯誤。"
+msgstr "連線到聊天伺服器時遭遇錯誤。"
 
 #: dist/converse-no-dependencies.js:29953
 msgid "Your XMPP address and/or password is incorrect. Please try again."
@@ -1664,7 +1664,7 @@ msgstr "搜尋聊天室"
 
 #: dist/converse-no-dependencies.js:64805
 msgid "Sorry, an error occurred while trying to submit the config form."
-msgstr "抱歉，嘗試送出配置時發生錯誤。"
+msgstr "抱歉，嘗試送出配置時遭遇錯誤。"
 
 #: dist/converse-no-dependencies.js:65343
 msgid "Announcements"
@@ -1883,7 +1883,7 @@ msgstr "離線"
 
 #: dist/converse-no-dependencies.js:66789
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "抱歉，移除裝置時發生錯誤。"
+msgstr "抱歉，移除裝置時遭遇錯誤。"
 
 #: dist/converse-no-dependencies.js:66798
 msgid ""

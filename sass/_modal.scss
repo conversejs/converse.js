@@ -19,6 +19,10 @@
                         }
                     }
                 }
+
+                &.fit-content {
+                    box-sizing: content-box;
+                }
             }
             .modal-footer {
                 justify-content: flex-start;

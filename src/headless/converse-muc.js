@@ -2422,7 +2422,7 @@ converse.plugins.add('converse-muc', {
                 });
             },
 
-            onMuteUser (message) {
+            async onMuteUser (message) {
                 const jid = message.get('from');
                 const stanza = $iq({
                     to: message.get('muc_domain'),
@@ -2432,7 +2432,14 @@ converse.plugins.add('converse-muc', {
                 .c('block', {xmlns: Strophe.NS.BLOCKING})
                 .c('item', {jid});
 
-                return api.sendIQ(stanza);
+                await api.sendIQ(stanza);
+
+                const mapMessages = msg => new Promise((resolve, reject) => {
+                    if (msg.get('from') === jid) {
+                        msg.destroy({ success: resolve, error: resolve })
+                    }
+                });
+                await Promise.all(Array.from(this.messages).map(mapMessages));
             }
         });
 

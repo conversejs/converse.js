@@ -886,37 +886,44 @@ describe("A Groupchat Message", function () {
 
         const view = _converse.api.chatviews.get(muc_jid);
 
-        const received_stanza = u.toStanza(`
-            <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
-                <body>Visit this site to get free Bitcoin!</body>
-                <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-1' by='${muc_jid}'/>
-            </message>
-        `);
-        await view.model.handleMessageStanza(received_stanza);
-        await u.waitUntil(() => view.model.messages.length === 1);
+        for (let i = 0; i < 5; i++) {
+            const message_stanza = u.toStanza(`
+                <message to='${_converse.jid}' from='${muc_jid}/mallory' type='groupchat' id='${_converse.connection.getUniqueId()}'>
+                    <body>Message ${i}</body>
+                    <stanza-id xmlns='urn:xmpp:sid:0' id='stanza-id-0${i}' by='${muc_jid}'/>
+                </message>
+            `);
+            await view.model.handleMessageStanza(message_stanza);
+        }
+        await u.waitUntil(() => view.model.messages.length === 5);
         
         // Mute option is present
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__actions .chat-msg__action-mute').length === 1);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content__messages .message.chat-msg').length === 5);
         const mute_buttons = view.el.querySelectorAll('.chat-msg__actions .chat-msg__action-mute');
-        expect(mute_buttons.length).toBe(1);
-
+        expect(mute_buttons.length).toBe(5);
+        
         // Stanza is sent
         mute_buttons[0].click();
-
+        
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         await u.waitUntil(() => IQ_stanzas.length);
-
+        
         const [block_stanza] = IQ_stanzas.filter(s => sizzle('block', s).length);
-
+        
         expect(block_stanza).not.toBe(undefined);
         expect(Strophe.serialize(block_stanza)).toBe(`<iq from="romeo@montague.lit/orchard" id="${block_stanza.attributes.id?.value}" type="set" xmlns="jabber:client"><block xmlns="urn:xmpp:blocking"><item jid="lounge@montague.lit/mallory"/></block></iq>`);
+        
+        const iq_response_stanza = u.toStanza(`
+            <iq id="${block_stanza.attributes.id?.value}" type="result" to="romeo@montague.lit/orchard"/>
+        `);
+        
+        _converse.connection._dataRecv(mock.createRequest(iq_response_stanza));
+        
+        // Model is destroyed
+        await u.waitUntil(() => view.model.messages.length === 0);
 
-        _converse.connection._dataRecv(mock.createRequest(block_stanza));
-
-        // All messages are deleted
-        // @XXX not working on testing environment - Message doesn't get deleted
-        // await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__actions .chat-msg__action-mute').length === 0);
-        // expect(mute_buttons.length).toBe(0);
+        // UI is removed
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content__messages .message.chat-msg').length === 0);
         
         done();
     }));

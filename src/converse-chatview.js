@@ -859,14 +859,9 @@ converse.plugins.add('converse-chatview', {
             async onMuteUser (message) {
                 try {
                     await this.model.onMuteUser(message);
-                    const jid = message.get('from');
-                    const { messages } = this.model;
-                    messages.each(msg => {
-                        const from = msg.get('from');
-                        if (from === jid) msg.destroy();
-                    });
                 } catch (error) {
                     log.error(error);
+                    api.alert('error', __('Error'), __('An error ocurred while trying to mute the user'));
                 }
             },
 

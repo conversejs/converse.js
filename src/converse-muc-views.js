@@ -908,6 +908,10 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            listMutedUsers (ev) {
+                this.model.listMutedUsers();
+            },
+
             /**
              * Returns a list of objects which represent buttons for the groupchat header.
              * @emits _converse#getHeadingButtons
@@ -935,6 +939,15 @@ converse.plugins.add('converse-muc-views', {
                         'name': 'configure'
                     });
                 }
+
+                buttons.push({
+                    'i18n_text': __('Muted users list'),
+                    'i18n_title': __('See muted users'),
+                    'handler': ev => this.listMutedUsers(ev),
+                    'a_class': 'configure-chatroom-button',
+                    'icon_class': 'fa-wrench',
+                    'name': 'configure'
+                });                
 
                 if (this.model.invitesAllowed()) {
                     buttons.push({

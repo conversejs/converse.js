@@ -23,7 +23,7 @@ import { debounce, isString } from "lodash-es";
 import { html, render } from "lit-html";
 
 
-const { Strophe, dayjs, $iq } = converse.env;
+const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
 
 
@@ -859,6 +859,7 @@ converse.plugins.add('converse-chatview', {
             async onMuteUser (message) {
                 try {
                     await this.model.onMuteUser(message);
+                    api.trigger('muteUser', message);
                 } catch (error) {
                     log.error(error);
                     api.alert('error', __('Error'), __('An error ocurred while trying to mute the user'));

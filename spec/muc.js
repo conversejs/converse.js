@@ -2778,6 +2778,57 @@ describe("Groupchats", function () {
             done();
         }));
 
+        it("informs users if they have exited the groupchat due to a technical reason",
+            mock.initConverse(
+                ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            /*  <presence
+             *      from='harfleur@chat.shakespeare.lit/pistol'
+             *      to='pistol@shakespeare.lit/harfleur'
+             *      type='unavailable'>
+             *  <x xmlns='http://jabber.org/protocol/muc#user'>
+             *      <item affiliation='none' role='none'>
+             *          <actor nick='Fluellen'/>
+             *          <reason>Avaunt, you cullion!</reason>
+             *      </item>
+             *      <status code='110'/>
+             *      <status code='307'/>
+             *  </x>
+             *  </presence>
+             */
+            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+            var presence = $pres().attrs({
+                    from:'lounge@montague.lit/romeo',
+                    to:'romeo@montague.lit/pda',
+                    type:'unavailable'
+                })
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    affiliation: 'none',
+                    jid: 'romeo@montague.lit/pda',
+                    role: 'none'
+                })
+                .c('reason').t('Flux capacitor overload!').up()
+                .up()
+                .c('status').attrs({code:'110'}).up()
+                .c('status').attrs({code:'333'}).up()
+                .c('status').attrs({code:'307'}).nodeTree;
+
+            _converse.connection._dataRecv(mock.createRequest(presence));
+
+            const view = _converse.chatboxviews.get('lounge@montague.lit');
+            expect(u.isVisible(view.el.querySelector('.chat-area'))).toBeFalsy();
+            expect(u.isVisible(view.el.querySelector('.occupants'))).toBeFalsy();
+            const chat_body = view.el.querySelector('.chatroom-body');
+            expect(chat_body.querySelectorAll('.disconnect-msg').length).toBe(2);
+            expect(chat_body.querySelector('.disconnect-msg:first-child').textContent.trim()).toBe(
+                'You have exited this groupchat due to a technical problem');
+            expect(chat_body.querySelector('.disconnect-msg:nth-child(2)').textContent.trim()).toBe(
+                'The reason given is: "Flux capacitor overload!".');
+            done();
+        }));
+
 
         it("can be saved to, and retrieved from, browserStorage",
             mock.initConverse(

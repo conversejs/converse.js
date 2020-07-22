@@ -96,6 +96,7 @@ $mobile_portrait_length: 480px !default;
     --controlbox-heading-top-margin: 0.75em;
     --controlbox-pane-background-color: white;
     --controlbox-pane-bg-hover-color: #eff4f7;
+    --panel-divider-color: #e7e7e7;
 
     --chat-gutter: 0.5em;
     --minimized-chats-width: 130px;
@@ -153,7 +154,7 @@ $mobile_portrait_length: 480px !default;
 
     --occupants-padding: 1em;
     --occupants-background-color: white;
-    --occupants-border-left: 1px solid var(--text-color);
+    --occupants-border-left: 0.2143rem solid var(--panel-divider-color);
     --occupants-border-bottom: 1px solid lightgrey;
     --occupants-features-display: block;
 
@@ -194,6 +195,7 @@ $mobile_portrait_length: 480px !default;
     --avatar-background-color: none;
 
     --controlbox-pane-background-color: #333;
+    --panel-divider-color: #333;
     --controlbox-pane-bg-hover-color: #464646;
     --controlbox-heading-color: #777;
     --controlbox-heading-font-weight: bold;

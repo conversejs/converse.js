@@ -19,6 +19,14 @@
                         }
                     }
                 }
+
+                &.fit-content {
+                    box-sizing: content-box;
+
+                    img {
+                        max-width: 90vw;
+                    }
+                }
             }
             .modal-footer {
                 justify-content: flex-start;

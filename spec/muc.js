@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const _ = converse.env._;
 const $pres = converse.env.$pres;
@@ -11,6 +11,7 @@ const sizzle = converse.env.sizzle;
 const u = converse.env.utils;
 
 describe("Groupchats", function () {
+
 
     describe("The \"rooms\" API", function () {
 
@@ -355,6 +356,113 @@ describe("Groupchats", function () {
     });
 
     describe("A Groupchat", function () {
+
+        it("maintains its state across reloads",
+            mock.initConverse(
+                ['rosterGroupsFetched'], {
+                    'clear_messages_on_reconnection': true,
+                    'loglevel': 'debug',
+                    'enable_smacks': false
+                }, async function (done, _converse) {
+
+            const nick = 'romeo';
+            const sent_IQs = _converse.connection.IQ_stanzas;
+            const muc_jid = 'lounge@montague.lit'
+            await mock.openAndEnterChatRoom(_converse, muc_jid, nick, [], []);
+            const view = _converse.chatboxviews.get(muc_jid);
+            let iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            const first_msg_id = _converse.connection.getUniqueId();
+            const last_msg_id = _converse.connection.getUniqueId();
+            let message = u.toStanza(
+                `<message xmlns="jabber:client"
+                        to="romeo@montague.lit/orchard"
+                        from="${muc_jid}">
+                    <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${first_msg_id}">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:15:23Z"/>
+                            <message from="${muc_jid}/some1" type="groupchat">
+                                <body>1st Message</body>
+                            </message>
+                        </forwarded>
+                    </result>
+                </message>`);
+            _converse.connection._dataRecv(mock.createRequest(message));
+
+            message = u.toStanza(
+                `<message xmlns="jabber:client"
+                        to="romeo@montague.lit/orchard"
+                        from="${muc_jid}">
+                    <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${last_msg_id}">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:16:23Z"/>
+                            <message from="${muc_jid}/some1" type="groupchat">
+                                <body>2nd Message</body>
+                            </message>
+                        </forwarded>
+                    </result>
+                </message>`);
+            _converse.connection._dataRecv(mock.createRequest(message));
+
+            const result = u.toStanza(
+                `<iq type='result' id='${iq_get.getAttribute('id')}'>
+                    <fin xmlns='urn:xmpp:mam:2'>
+                        <set xmlns='http://jabber.org/protocol/rsm'>
+                            <first index='0'>${first_msg_id}</first>
+                            <last>${last_msg_id}</last>
+                            <count>2</count>
+                        </set>
+                    </fin>
+                </iq>`);
+            _converse.connection._dataRecv(mock.createRequest(result));
+            await u.waitUntil(()  => view.el.querySelectorAll('.chat-msg__text').length === 2);
+
+            while (sent_IQs.length) { sent_IQs.pop(); } // Clear so that we don't match the older query
+            await _converse.api.connection.reconnect();
+            await mock.getRoomFeatures(_converse, muc_jid, []);
+            await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+
+            // The user has just entered the room (because join was called)
+            // and receives their own presence from the server.
+            // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
+            await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
+
+            message = u.toStanza(`
+                <message xmlns="jabber:client" type="groupchat" id="918172de-d5c5-4da4-b388-446ef4a05bec" to="${_converse.jid}" xml:lang="en" from="${muc_jid}/juliet">
+                    <body>Wherefore art though?</body>
+                    <active xmlns="http://jabber.org/protocol/chatstates"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="918172de-d5c5-4da4-b388-446ef4a05bec"/>
+                    <stanza-id xmlns="urn:xmpp:sid:0" id="88cc9c93-a8f4-4dd5-b02a-d19855eb6303" by="${muc_jid}"/>
+                    <delay xmlns="urn:xmpp:delay" stamp="2020-07-14T17:46:47Z" from="juliet@shakespeare.lit"/>
+                </message>`);
+            _converse.connection._dataRecv(mock.createRequest(message));
+
+            message = u.toStanza(`
+                <message xmlns="jabber:client" type="groupchat" id="awQo6a-mi-Wa6NYh" to="${_converse.jid}" from="${muc_jid}/ews000" xml:lang="en">
+                    <composing xmlns="http://jabber.org/protocol/chatstates"/>
+                    <no-store xmlns="urn:xmpp:hints"/>
+                    <no-permanent-store xmlns="urn:xmpp:hints"/>
+                    <delay xmlns="urn:xmpp:delay" stamp="2020-07-14T17:46:54Z" from="juliet@shakespeare.lit"/>
+                </message>`);
+            _converse.connection._dataRecv(mock.createRequest(message));
+
+            const affs = _converse.muc_fetch_members;
+            const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
+            await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
+
+            iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            expect(Strophe.serialize(iq_get)).toBe(
+                `<iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
+                    `<query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="${Strophe.NS.MAM}">`+
+                        `<x type="submit" xmlns="jabber:x:data">`+
+                            `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
+                        `</x>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                    `</query>`+
+                `</iq>`);
+
+            done();
+        }));
+
 
         describe("upon being entered", function () {
 
@@ -2667,6 +2775,57 @@ describe("Groupchats", function () {
                 'This action was done by Fluellen.');
             expect(chat_body.querySelector('.disconnect-msg:nth-child(3)').textContent.trim()).toBe(
                 'The reason given is: "Avaunt, you cullion!".');
+            done();
+        }));
+
+        it("informs users if they have exited the groupchat due to a technical reason",
+            mock.initConverse(
+                ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            /*  <presence
+             *      from='harfleur@chat.shakespeare.lit/pistol'
+             *      to='pistol@shakespeare.lit/harfleur'
+             *      type='unavailable'>
+             *  <x xmlns='http://jabber.org/protocol/muc#user'>
+             *      <item affiliation='none' role='none'>
+             *          <actor nick='Fluellen'/>
+             *          <reason>Avaunt, you cullion!</reason>
+             *      </item>
+             *      <status code='110'/>
+             *      <status code='307'/>
+             *  </x>
+             *  </presence>
+             */
+            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+            var presence = $pres().attrs({
+                    from:'lounge@montague.lit/romeo',
+                    to:'romeo@montague.lit/pda',
+                    type:'unavailable'
+                })
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    affiliation: 'none',
+                    jid: 'romeo@montague.lit/pda',
+                    role: 'none'
+                })
+                .c('reason').t('Flux capacitor overload!').up()
+                .up()
+                .c('status').attrs({code:'110'}).up()
+                .c('status').attrs({code:'333'}).up()
+                .c('status').attrs({code:'307'}).nodeTree;
+
+            _converse.connection._dataRecv(mock.createRequest(presence));
+
+            const view = _converse.chatboxviews.get('lounge@montague.lit');
+            expect(u.isVisible(view.el.querySelector('.chat-area'))).toBeFalsy();
+            expect(u.isVisible(view.el.querySelector('.occupants'))).toBeFalsy();
+            const chat_body = view.el.querySelector('.chatroom-body');
+            expect(chat_body.querySelectorAll('.disconnect-msg').length).toBe(2);
+            expect(chat_body.querySelector('.disconnect-msg:first-child').textContent.trim()).toBe(
+                'You have exited this groupchat due to a technical problem');
+            expect(chat_body.querySelector('.disconnect-msg:nth-child(2)').textContent.trim()).toBe(
+                'The reason given is: "Flux capacitor overload!".');
             done();
         }));
 

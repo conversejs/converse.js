@@ -240,8 +240,17 @@
             }
 
             .chat-content__help {
+                border-top: 1px solid var(--chat-head-color);
+                max-height: 100%;
+                .close-chat-help {
+                    svg {
+                        fill: var(--chat-head-color);
+                    }
+                }
+
                 converse-chat-help {
-                    border-top: 1px solid var(--chat-head-color);
+                    height: 100%;
+                    overflow-y: auto;
                     display: block;
                     padding: 0.5em 0;
                 }

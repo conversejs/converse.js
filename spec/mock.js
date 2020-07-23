@@ -1,3 +1,5 @@
+/*global converse */
+
 const mock = {};
 window.mock = mock;
 let _converse, initConverse;

@@ -177,12 +177,10 @@
                         height: 100%;
                     }
                     .chat-content__help {
-                        converse-chat-help {
-                            border-top: 1px solid var(--chatroom-head-bg-color);
-                        }
+                        border-top: 1px solid var(--chatroom-head-bg-color);
                         .close-chat-help {
                             svg {
-                                fill: 1px solid var(--chatroom-head-bg-color) !important;
+                                fill: var(--chatroom-head-bg-color);
                             }
                         }
                     }

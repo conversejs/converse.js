@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const { Promise, Strophe, $msg, $pres, sizzle, stanza_utils } = converse.env;
 const u = converse.env.utils;
@@ -334,7 +334,7 @@ describe("A Groupchat Message", function () {
             })
             .c('x', {xmlns: Strophe.NS.MUC_USER})
             .c('item', {
-                'affiliation': 'none',
+                'affiliation': 'owner',
                 'jid': 'newguy@montague.lit/_converse.js-290929789',
                 'role': 'participant'
             }).tree();
@@ -367,6 +367,7 @@ describe("A Groupchat Message", function () {
         const view = _converse.api.chatviews.get(muc_jid);
         spyOn(converse.env.log, 'error');
         await view.model.handleMAMResult({ 'messages': [msg] });
+        await u.waitUntil(() => converse.env.log.error.calls.count());
         expect(converse.env.log.error).toHaveBeenCalledWith(
             'Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied'
         );

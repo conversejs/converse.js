@@ -1,8 +1,9 @@
-/*global mock */
+/*global mock, converse */
 
 const { Promise, $msg, $pres, sizzle } = converse.env;
 const u = converse.env.utils;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+
 
 describe("Emojis", function () {
     describe("The emoji picker", function () {
@@ -73,7 +74,7 @@ describe("Emojis", function () {
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
 
             await u.waitUntil(() => input.value === '');
-            await u.waitUntil(() => textarea.value === ':grimacing:');
+            await u.waitUntil(() => textarea.value === ':grimacing: ');
 
             // Test that username starting with : doesn't cause issues
             const presence = $pres({
@@ -97,6 +98,100 @@ describe("Emojis", function () {
             expect(visible_emojis.length).toBe(0);
             done();
         }));
+
+        it("is focused to autocomplete emojis in the textarea",
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            const muc_jid = 'lounge@montague.lit';
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.chatboxviews.get(muc_jid);
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = ':';
+            // Press tab
+            const tab_event = {
+                'target': textarea,
+                'preventDefault': function preventDefault () {},
+                'stopPropagation': function stopPropagation () {},
+                'keyCode': 9,
+                'key': 'Tab'
+            }
+            view.onKeyDown(tab_event);
+            await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+
+            const picker = view.el.querySelector('converse-emoji-picker');
+            const input = picker.querySelector('.emoji-search');
+            expect(input.value).toBe(':');
+            input.value = ':gri';
+            const event = {
+                'target': input,
+                'preventDefault': function preventDefault () {},
+                'stopPropagation': function stopPropagation () {}
+            };
+            input.dispatchEvent(new KeyboardEvent('keydown', event));
+            await u.waitUntil(() =>  sizzle('.emojis-lists__container--search .insert-emoji', view.el).length === 3, 1000);
+            let emoji = sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden) a', view.el).pop();
+            emoji.click();
+            await u.waitUntil(() => textarea.value === ':grinning: ');
+            textarea.value = ':grinning: :';
+            view.onKeyDown(tab_event);
+
+            await u.waitUntil(() => input.value === ':');
+            input.value = ':grimacing';
+            input.dispatchEvent(new KeyboardEvent('keydown', event));
+            await u.waitUntil(() =>  sizzle('.emojis-lists__container--search .insert-emoji', view.el).length === 1, 1000);
+            emoji = sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden) a', view.el).pop();
+            emoji.click();
+            await u.waitUntil(() => textarea.value === ':grinning: :grimacing: ');
+            done();
+        }));
+
+
+        it("properly inserts emojis into the chat textarea",
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            const muc_jid = 'lounge@montague.lit';
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+            const view = _converse.chatboxviews.get(muc_jid);
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = ':gri';
+
+            // Press tab
+            const tab_event = {
+                'target': textarea,
+                'preventDefault': function preventDefault () {},
+                'stopPropagation': function stopPropagation () {},
+                'keyCode': 9,
+                'key': 'Tab'
+            }
+            textarea.value = ':';
+            view.onKeyDown(tab_event);
+            await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+            const picker = view.el.querySelector('converse-emoji-picker');
+            const input = picker.querySelector('.emoji-search');
+            input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
+            await u.waitUntil(() => input.value === ':100:');
+            const enter_event = Object.assign({}, tab_event, {'keyCode': 13, 'key': 'Enter', 'target': input});
+            input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
+            expect(textarea.value).toBe(':100: ');
+
+            textarea.value = ':';
+            view.onKeyDown(tab_event);
+            await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+            input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
+            await u.waitUntil(() => input.value === ':100:');
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view.el).length === 1, 1000);
+            const emoji = sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden) a', view.el).pop();
+            emoji.click();
+            expect(textarea.value).toBe(':100: ');
+            done();
+        }));
+
 
         it("allows you to search for particular emojis",
             mock.initConverse(
@@ -130,6 +225,15 @@ describe("Emojis", function () {
             const enter_event = Object.assign({}, event, {'keyCode': 13});
             input.dispatchEvent(new KeyboardEvent('keydown', enter_event));
             expect(input.value).toBe('smiley');
+
+            // Check that search results update when chars are deleted
+            input.value = 'sm';
+            input.dispatchEvent(new KeyboardEvent('keydown', event));
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view.el).length === 25, 1000);
+
+            input.value = 'smiley';
+            input.dispatchEvent(new KeyboardEvent('keydown', event));
+            await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view.el).length === 2, 1000);
 
             // Test that TAB autocompletes the to first match
             const tab_event = Object.assign({}, event, {'keyCode': 9, 'key': 'Tab'});

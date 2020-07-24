@@ -175,17 +175,14 @@ converse.plugins.add('converse-status', {
             }
             _converse.idle_seconds = 0;
             _converse.auto_changed_status = false; // Was the user's status changed by Converse?
+
+            const { unloadevent } = _converse;
             window.addEventListener('click', _converse.onUserActivity);
             window.addEventListener('focus', _converse.onUserActivity);
             window.addEventListener('keypress', _converse.onUserActivity);
             window.addEventListener('mousemove', _converse.onUserActivity);
-            const options = {'once': true, 'passive': true};
-            window.addEventListener(_converse.unloadevent, _converse.onUserActivity, options);
-            window.addEventListener(_converse.unloadevent, () => {
-                if (_converse.session) {
-                    _converse.session.save('active', false);
-                }
-            });
+            window.addEventListener(unloadevent, _converse.onUserActivity, {'once': true, 'passive': true});
+            window.addEventListener(unloadevent, () => _converse.session?.save('active', false));
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 

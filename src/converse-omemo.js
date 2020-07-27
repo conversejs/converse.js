@@ -1083,6 +1083,14 @@ converse.plugins.add('converse-omemo', {
                     return // We only publish for ourselves.
                 }
                 await restoreOMEMOSession();
+
+                if (!_converse.omemo_store) {
+                    // Happens during tests. The connection gets torn down
+                    // before publishCurrentDevice has time to finish.
+                    log.warn('publishCurrentDevice: omemo_store is not defined, likely a timing issue');
+                    return;
+                }
+
                 let device_id = _converse.omemo_store.get('device_id');
                 if (!this.devices.findWhere({'id': device_id})) {
                     // Generate a new bundle if we cannot find our device

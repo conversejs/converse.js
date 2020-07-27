@@ -1,3 +1,3 @@
 import { html } from "lit-html";
 
-export default () => html`<span class="spinner fa fa-spinner centered"/>`
+export default (o={}) => html`<span class="spinner fa fa-spinner centered ${o.classes || ''}"/>`

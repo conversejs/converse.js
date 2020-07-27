@@ -303,6 +303,7 @@
 
         .controlbox-panes {
             background-color: var(--controlbox-pane-background-color);
+            border-right: 0.2143rem solid var(--panel-divider-color);
             height: 100%;
             overflow-y: auto;
         }

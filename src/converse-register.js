@@ -310,7 +310,9 @@ converse.plugins.add('converse-register', {
                     '_registering': true
                 });
                 await _converse.initConnection(this.domain);
-                _converse.connection.connect(this.domain, "", status => this.onConnectStatusChanged(status));
+                // When testing, the test tears down before the async function
+                // above finishes. So we use optional chaining here
+                _converse.connection?.connect(this.domain, "", status => this.onConnectStatusChanged(status));
                 return false;
             },
 

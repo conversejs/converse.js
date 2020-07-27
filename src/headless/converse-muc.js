@@ -23,6 +23,8 @@ export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 converse.MUC_TRAFFIC_STATES = ['entered', 'exited'];
 converse.MUC_ROLE_CHANGES = ['op', 'deop', 'voice', 'mute'];
 
+const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
+
 const MUC_ROLE_WEIGHTS = {
     'moderator':    1,
     'participant':  2,
@@ -183,13 +185,13 @@ converse.plugins.add('converse-muc', {
 
             disconnect_messages: {
                 301: __('You have been banned from this groupchat'),
+                333: __('You have exited this groupchat due to a technical problem'),
                 307: __('You have been kicked from this groupchat'),
                 321: __("You have been removed from this groupchat because of an affiliation change"),
                 322: __("You have been removed from this groupchat because the groupchat has changed to members-only and you're not a member"),
                 332: __("You have been removed from this groupchat because the service hosting it is being shut down")
             },
 
-            action_info_codes: ['301', '303', '307', '321', '322']
         }
 
 
@@ -1911,15 +1913,15 @@ converse.plugins.add('converse-muc', {
              * @async
              * @private
              * @method _converse.ChatRoom#queueMessage
-             * @param { XMLElement } stanza - The message stanza.
+             * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
              */
-            queueMessage (stanza) {
+            queueMessage (attrs) {
                 if (this.messages?.fetched) {
                     this.msg_chain = (this.msg_chain || this.messages.fetched);
-                    this.msg_chain = this.msg_chain.then(() => this.onMessage(stanza));
+                    this.msg_chain = this.msg_chain.then(() => this.onMessage(attrs));
                     return this.msg_chain;
                 } else {
-                    this.message_queue.push(stanza);
+                    this.message_queue.push(attrs);
                     return Promise.resolve();
                 }
             },
@@ -1983,9 +1985,10 @@ converse.plugins.add('converse-muc', {
              * should be called.
              * @private
              * @method _converse.ChatRoom#onMessage
-             * @param { MessageAttributes } attrs - The message attributes
+             * @param { MessageAttributes } attrs - A promise which resolves to the message attributes.
              */
             async onMessage (attrs) {
+                attrs = await attrs;
                 if (u.isErrorObject(attrs)) {
                     attrs.stanza && log.error(attrs.stanza);
                     return log.error(attrs.message);
@@ -2060,6 +2063,8 @@ converse.plugins.add('converse-muc', {
                     return actor ? __("%1$s has been banned by %2$s", nick, actor) : __("%1$s has been banned", nick);
                 } else if (code === '303') {
                     return ___("%1$s\'s nickname has changed", nick);
+                } else if (code === '333') {
+                    return ___("%1$s has exited the room due to a technical issue");
                 } else  if (code === '307') {
                     return actor ? __("%1$s has been kicked out by %2$s", nick, actor) : __("%1$s has been kicked out", nick);
                 } else if (code === '321') {
@@ -2146,6 +2151,52 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+
+            /**
+             * Create an info message based on a received MUC status code
+             * @private
+             * @method _converse.ChatRoom#createInfoMessage
+             * @param { string } code - The MUC status code
+             * @param { XMLElement } stanza - The original stanza that contains the code
+             * @param { Boolean } is_self - Whether this stanza refers to our own presence
+             */
+            createInfoMessage (code, stanza, is_self) {
+                const data = { 'type': 'info', };
+
+                if (code === '110' || (code === '100' && !is_self)) {
+                    return;
+                } else if (code in _converse.muc.info_messages) {
+                    data.message = _converse.muc.info_messages[code];
+                } else if (!is_self && ACTION_INFO_CODES.includes(code)) {
+                    const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                    const item = stanza.querySelector(`x[xmlns="${Strophe.NS.MUC_USER}"] item`);
+                    data.actor = item ? item.querySelector('actor')?.getAttribute('nick') : undefined;
+                    data.reason = item ? item.querySelector('reason')?.textContent : undefined;
+                    data.message = this.getActionInfoMessage(code, nick, data.actor);
+                } else if (is_self && (code in _converse.muc.new_nickname_messages)) {
+                    let nick;
+                    if (is_self && code === "210") {
+                        nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                    } else if (is_self && code === "303") {
+                        nick = stanza.querySelector(`x[xmlns="${Strophe.NS.MUC_USER}"] item`).getAttribute('nick');
+                    }
+                    this.save('nick', nick);
+                    data.message = __(_converse.muc.new_nickname_messages[code], nick);
+                }
+                if (data.message) {
+                    if (code === "201" && this.messages.findWhere(data)) {
+                        return;
+                    } else if (code in _converse.muc.info_messages &&
+                            this.messages.length &&
+                            this.messages.pop().get('message') === data.message) {
+                        // XXX: very naive duplication checking
+                        return;
+                    }
+                    this.createMessage(data);
+                }
+            },
+
+
             /**
              * Create info messages based on a received presence or message stanza
              * @private
@@ -2153,47 +2204,13 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } stanza
              */
             createInfoMessages (stanza) {
-                const is_self = stanza.querySelector("status[code='110']") !== null;
-                const x = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza).pop();
-                if (!x) {
-                    return;
+                const codes = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] status`, stanza).map(s => s.getAttribute('code'));
+                if (codes.includes('333') && codes.includes('307')) {
+                    // See: https://github.com/xsf/xeps/pull/969/files#diff-ac5113766e59219806793c1f7d967f1bR4966
+                    codes.splice(codes.indexOf('307'), 1);
                 }
-                sizzle('status', x).map(s => s.getAttribute('code')).forEach(code => {
-                    const data = {
-                        'type': 'info',
-                    };
-                    if (code === '110' || (code === '100' && !is_self)) {
-                        return;
-                    } else if (code in _converse.muc.info_messages) {
-                        data.message = _converse.muc.info_messages[code];
-                    } else if (!is_self && _converse.muc.action_info_codes.includes(code)) {
-                        const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-                        const item = x.querySelector('item');
-                        data.actor = item ? invoke(item.querySelector('actor'), 'getAttribute', 'nick') : undefined;
-                        data.reason = item ? item.querySelector('reason')?.textContent : undefined;
-                        data.message = this.getActionInfoMessage(code, nick, data.actor);
-                    } else if (is_self && (code in _converse.muc.new_nickname_messages)) {
-                        let nick;
-                        if (is_self && code === "210") {
-                            nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-                        } else if (is_self && code === "303") {
-                            nick = stanza.querySelector('x item').getAttribute('nick');
-                        }
-                        this.save('nick', nick);
-                        data.message = __(_converse.muc.new_nickname_messages[code], nick);
-                    }
-                    if (data.message) {
-                        if (code === "201" && this.messages.findWhere(data)) {
-                            return;
-                        } else if (code in _converse.muc.info_messages &&
-                                this.messages.length &&
-                                this.messages.pop().get('message') === data.message) {
-                            // XXX: very naive duplication checking
-                            return;
-                        }
-                        this.createMessage(data);
-                    }
-                });
+                const is_self = codes.includes('110');
+                codes.forEach(code => this.createInfoMessage(code, stanza, is_self));
             },
 
 

@@ -120,7 +120,7 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
     const shortname = data.shortname;
     if (emoji) {
         if (api.settings.get('use_system_emojis')) {
-            return options.add_title_wrapper ? html`<span title="${shortname}">${emoji}</span>` : emoji;
+            return (options.add_title_wrapper && shortname) ? html`<span title="${shortname}">${emoji}</span>` : emoji;
         } else {
             const path = api.settings.get('emoji_image_path');
             return html`<img class="emoji"
@@ -173,7 +173,7 @@ export function getCodePointReferences (text) {
             'cp': icon_id,
             'emoji': emoji,
             'end': offset + emoji.length,
-            'shortname': u.getEmojisByAtrribute('cp')[icon_id]['sn'],
+            'shortname': u.getEmojisByAtrribute('cp')[icon_id]?.sn || ''
         });
     });
     return references;

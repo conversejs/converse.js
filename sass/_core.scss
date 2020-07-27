@@ -100,6 +100,11 @@ body.converse-fullscreen {
         background-color: #EEE !important;
     }
 
+    .fit-content {
+        width: fit-content !important;
+        max-width: fit-content !important;
+    }
+
     .nopadding {
         padding: 0 !important;
     }
@@ -493,6 +498,7 @@ body.converse-fullscreen {
         margin: auto;
     }
     .hor_centered {
+        width: 100%;
         text-align: center;
         display: block;
         margin: 0 auto;

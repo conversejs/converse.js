@@ -102,7 +102,7 @@ function addMapURLs (text) {
 }
 
 
-function addHyperlinks (text) {
+function addHyperlinks (text, onImgLoad, onImgClick) {
     const objs = [];
     try {
         const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
@@ -120,7 +120,9 @@ function addHyperlinks (text) {
         text.addTemplateResult(
             url_obj.start,
             url_obj.end,
-            show_images && u.isImageURL(url_text) ? u.convertToImageTag(url_text) : u.convertUrlToHyperlink(url_text),
+            show_images && u.isImageURL(url_text) ?
+                u.convertToImageTag(url_text, onImgLoad, onImgClick) :
+                u.convertUrlToHyperlink(url_text),
         );
     });
 }
@@ -161,7 +163,19 @@ class MessageBodyRenderer {
     constructor (component) {
         this.model = component.model;
         this.component = component;
+        this.chatview = u.ancestor(this.component, 'converse-chat-message')?.chatview;
+        // We jot down whether we were scrolled down before rendering, because when an
+        // image loads, it triggers 'scroll' and the chat will be marked as scrolled,
+        // which is technically true, but not what we want because the user
+        // didn't initiate the scrolling.
+        this.scrolled = this.chatview.model.get('scrolled');
         this.text = this.component.model.getMessageText();
+    }
+
+    scrollDownOnImageLoad () {
+        if (!this.scrolled) {
+            this.chatview.scrollDown();
+        }
     }
 
     async transform () {
@@ -179,7 +193,11 @@ class MessageBodyRenderer {
          */
         await api.trigger('beforeMessageBodyTransformed', this.model, text, {'Synchronous': true});
 
-        addHyperlinks(text);
+        addHyperlinks(
+            text,
+            () => this.scrollDownOnImageLoad(),
+            ev => this.component.showImageModal(ev)
+        );
         addMapURLs(text);
         await addEmojis(text);
         addReferences(text, this.model);

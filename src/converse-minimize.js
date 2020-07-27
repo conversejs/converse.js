@@ -383,7 +383,8 @@ converse.plugins.add('converse-minimize', {
             async initialize () {
                 this.render();
                 await this.initToggle();
-                this.addMultipleChats(this.model.where({'minimized': true}));
+                const chats = this.model.where({'minimized': true});
+                chats.length && this.addMultipleChats();
                 this.listenTo(this.model, "add", this.onChanged)
                 this.listenTo(this.model, "destroy", this.removeChat)
                 this.listenTo(this.model, "change:minimized", this.onChanged)
@@ -497,6 +498,7 @@ converse.plugins.add('converse-minimize', {
         });
 
         function initMinimizedChats () {
+            _converse.minimized_chats?.remove();
             _converse.minimized_chats = new _converse.MinimizedChats({model: _converse.chatboxes});
             /**
              * Triggered once the _converse.MinimizedChats instance has been initialized

@@ -1,7 +1,7 @@
 import './icons.js';
 import xss from 'xss/dist/xss';
 import { CustomElement } from './element.js';
-import { _converse, api } from '@converse/headless/converse-core';
+import { api } from '@converse/headless/converse-core';
 import { html } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
@@ -18,13 +18,11 @@ export default class ChatHelp extends CustomElement {
     }
 
     render () {
-        const icon_color = this.chat_type === _converse.CHATROOMS_TYPE ? 'var(--chatroom-head-bg-color)' : 'var(--chat-head-color)';
         const isodate = (new Date()).toISOString();
         return [
             html`<converse-icon class="fas fa-times close-chat-help"
                     @click=${this.close}
                     path-prefix="${api.settings.get("assets_path")}"
-                    color="${icon_color}"
                     size="1em"></converse-icon>`,
             ...this.messages.map(m => this.renderHelpMessage({
                 isodate,

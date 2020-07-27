@@ -960,7 +960,7 @@ converse.plugins.add('converse-roster', {
                 // When reconnecting and not resuming a previous session,
                 // we clear all cached presence data, since it might be stale
                 // and we'll receive new presence updates
-                !_converse.haveResumed() && await clearPresences();
+                !_converse.connection.hasResumed() && await clearPresences();
             } else {
                 _converse.presences = new _converse.Presences();
                 const id = `converse.presences-${_converse.bare_jid}`;

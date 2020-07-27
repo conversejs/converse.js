@@ -77,10 +77,7 @@ export default class EmojiPickerContent extends CustomElement {
       ev.preventDefault();
       ev.stopPropagation();
       const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-      const replace = this.model.get('autocompleting');
-      const position = this.model.get('position');
-      this.model.set({'autocompleting': null, 'position': null, 'query': ''});
-      this.chatview.insertIntoTextArea(target.getAttribute('data-emoji'), replace, false, position);
+      this.parentElement.insertIntoTextArea(target.getAttribute('data-emoji'));
   }
 
   shouldBeHidden (shortname) {

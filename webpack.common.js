@@ -89,7 +89,7 @@ module.exports = {
             ]
         }, {
             test: /\.js$/,
-            exclude: /(node_modules|spec|mockup)/,
+            include: /src/,
             use: {
                 loader: 'babel-loader',
                 options: {

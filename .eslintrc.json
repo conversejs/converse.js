@@ -74,6 +74,7 @@
         "eqeqeq": "off",
         "func-call-spacing": "off",
         "no-spaced-func": "off",
+        "no-redeclare": "off",
         "func-name-matching": "error",
         "func-names": "off",
         "func-style": "off",

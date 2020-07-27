@@ -1,7 +1,7 @@
 /* global module */
-const merge = require("webpack-merge");
-const prod = require("./webpack.prod.js");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const prod = require("./webpack.prod.js");
+const { merge } = require("webpack-merge");
 
 module.exports = merge(prod, {
     output: {

@@ -207,6 +207,7 @@ converse.plugins.add('converse-chatview', {
                 // Need to be registered after render has been called.
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'change', this.renderChatHistory);
+                this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
                 this.listenTo(this.model.messages, 'rendered', this.maybeScrollDownOnMessage);
                 this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
                 this.listenTo(this.model.notifications, 'change', this.renderNotifications);
@@ -722,18 +723,21 @@ converse.plugins.add('converse-chatview', {
                 const emoji_dropdown = this.el.querySelector('converse-emoji-dropdown');
                 const emoji_picker = this.el.querySelector('converse-emoji-picker');
                 if (emoji_picker && emoji_dropdown) {
-                    this.autocompleting = value;
-                    this.ac_position = input.selectionStart;
-                    emoji_picker.model.set({'query': value});
-                    emoji_dropdown.firstElementChild.click();
+                    emoji_picker.model.set({
+                        'ac_position': input.selectionStart,
+                        'autocompleting': value,
+                        'query': value
+                    });
+                    emoji_dropdown.showMenu();
                     return true;
                 }
             },
 
             onEmojiReceivedFromPicker (emoji) {
-                this.insertIntoTextArea(emoji, !!this.autocompleting, false, this.ac_position);
-                this.autocompleting = false;
-                this.ac_position = null;
+                const model = this.el.querySelector('converse-emoji-picker').model;
+                const autocompleting = model.get('autocompleting');
+                const ac_position = model.get('ac_position');
+                this.insertIntoTextArea(emoji, autocompleting, false, ac_position);
             },
 
             /**

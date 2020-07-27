@@ -1,10 +1,10 @@
-/*global mock */
+/*global mock, converse */
 
-const _ = converse.env._,
-      $msg = converse.env.$msg,
-      u = converse.env.utils,
-      Strophe = converse.env.Strophe,
-      sizzle = converse.env.sizzle;
+const _ = converse.env._;
+const $msg = converse.env.$msg;
+const u = converse.env.utils;
+const Strophe = converse.env.Strophe;
+const sizzle = converse.env.sizzle;
 
 
 describe("The Controlbox", function () {
@@ -90,7 +90,7 @@ describe("The Controlbox", function () {
             _converse.handleMessageStanza(msg);
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator").length);
             spyOn(chatview.model, 'incrementUnreadMsgCounter').and.callThrough();
-            expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('1');
+            await u.waitUntil(() => _converse.chatboxviews.el.querySelector('.restore-chat .message-count')?.textContent === '1');
             expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('1');
 
             msg = $msg({
@@ -102,7 +102,7 @@ describe("The Controlbox", function () {
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
             _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatview.model.incrementUnreadMsgCounter.calls.count());
-            expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('2');
+            await u.waitUntil(() => _converse.chatboxviews.el.querySelector('.restore-chat .message-count')?.textContent === '2');
             expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');
             chatview.model.set({'minimized': false});
             expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count')).toBe(null);

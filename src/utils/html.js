@@ -290,15 +290,19 @@ u.escapeHTML = function (string) {
 };
 
 
-u.convertToImageTag = function (url) {
+u.convertToImageTag = function (url, onLoad, onClick) {
     const uri = getURI(url);
     const img_url_without_ext = ['imgur.com', 'pbs.twimg.com'].includes(uri.hostname());
     if (u.isImageURL(url) || img_url_without_ext) {
         if (img_url_without_ext) {
             const format = (uri.hostname() === 'pbs.twimg.com') ? uri.search(true).format : 'png';
-            return tpl_image({'url': uri.removeSearch(/.*/).toString() + `.${format}`});
+            return tpl_image({
+                onClick,
+                onLoad,
+                'url': uri.removeSearch(/.*/).toString() + `.${format}`
+            });
         } else {
-            return tpl_image({url});
+            return tpl_image({url, onClick, onLoad});
         }
     }
 }
@@ -357,8 +361,6 @@ u.addHyperlinks = function (text) {
         return [text];
     }
 
-    const show_images = api.settings.get('show_images_inline');
-
     let list = [text];
     if (objs.length) {
         objs.sort((a, b) => b.start - a.start)
@@ -367,9 +369,7 @@ u.addHyperlinks = function (text) {
                 const url_text = text.slice(url_obj.start, url_obj.end);
                 list = [
                     text.slice(0, url_obj.start),
-                    show_images && u.isImageURL(url_text) ?
-                        u.convertToImageTag(url_text) :
-                        u.convertUrlToHyperlink(url_text),
+                    u.convertUrlToHyperlink(url_text),
                     text.slice(url_obj.end),
                     ...list
                 ];

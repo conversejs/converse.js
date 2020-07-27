@@ -1,7 +1,7 @@
 /* global __dirname, module */
 const common = require("./webpack.common.js");
-const merge = require("webpack-merge");
 const path = require('path');
+const { merge } = require("webpack-merge");
 
 module.exports = merge(common, {
     entry: "@converse/headless/headless.js",

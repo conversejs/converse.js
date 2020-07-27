@@ -1,12 +1,12 @@
 /* global __dirname, module, process */
+const ASSET_PATH = process.env.ASSET_PATH || '/dist/'; // eslint-disable-line no-process-env
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const common = require("./webpack.common.js");
-const merge = require("webpack-merge");
 const path = require('path');
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ASSET_PATH = process.env.ASSET_PATH || '/dist/'; // eslint-disable-line no-process-env
+const { merge}  = require("webpack-merge");
 
 module.exports = merge(common, {
     output: {
@@ -20,6 +20,7 @@ module.exports = merge(common, {
         new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
         new CopyWebpackPlugin({
             patterns: [
+                {from: 'src/headless/node_modules/strophe.js/src/shared-connection-worker.js', to: 'shared-connection-worker.js'},
                 {from: 'sounds', to: 'sounds'},
                 {from: 'images/favicon.ico', to: 'images/favicon.ico'},
                 {from: 'images/custom_emojis', to: 'images/custom_emojis'},

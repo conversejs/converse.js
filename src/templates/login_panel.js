@@ -76,6 +76,6 @@ export default (o) => html`
             <p class="feedback-subject">${ o.conn_feedback_subject }</p>
             <p class="feedback-message ${ !o.conn_feedback_message ? 'hidden' : '' }">${o.conn_feedback_message}</p>
         </div>
-        ${ (o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') ? tpl_spinner() : form_fields(o) }
+        ${ (o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') ? tpl_spinner({'classes': 'hor_centered'}) : form_fields(o) }
     </form>
 `;

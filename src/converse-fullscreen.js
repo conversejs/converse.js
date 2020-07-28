@@ -4,7 +4,6 @@
  * @copyright 2020, the Converse.js contributors
  */
 import "@converse/headless/converse-muc";
-import "converse-chatview";
 import "converse-controlbox";
 import "converse-singleton";
 import { _converse, api, converse } from "@converse/headless/converse-core";

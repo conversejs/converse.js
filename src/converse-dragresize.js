@@ -3,7 +3,6 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "converse-chatview";
 import "converse-controlbox";
 import { debounce } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/converse-core";

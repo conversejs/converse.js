@@ -149,7 +149,7 @@ Security and access to the inner workings
 
 The globally available ``converse`` object, which exposes the API methods, such
 as ``initialize`` and ``plugins.add``, is a wrapper that encloses and protects
-a sensitive inner object, named ``_converse`` (not the underscore prefix).
+a sensitive inner object, named ``_converse`` (note the underscore prefix).
 
 This inner ``_converse`` object contains all the models and views,
 as well as various other attributes and functions.
@@ -217,7 +217,7 @@ The following code snippet provides an example of two different overrides:
         },
 
         /* On the XMPPStatus model is a method sendPresence.
-         * We can override is as follows:
+         * We can override it as follows:
          */
         XMPPStatus: {
             sendPresence: function (type, status_message, jid) {

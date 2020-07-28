@@ -3,8 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "converse-chatview";
-import tpl_chatbox from "templates/chatbox.js";
+import tpl_chatbox from "plugins/chatview/templates/chatbox.js";
 import tpl_headline_panel from "templates/headline_panel.js";
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from '@converse/headless/i18n';

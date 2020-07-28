@@ -10,7 +10,6 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "converse-chatview";
 import { converse } from "@converse/headless/converse-core";
 
 const u = converse.env.utils;

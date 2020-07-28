@@ -3,7 +3,6 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "converse-chatview";
 import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
 import tpl_brand_heading from "templates/converse_brand_heading.html";

@@ -1,5 +1,5 @@
 import "./emoji-picker.js";
-import { CustomElement } from './element.js';
+import { CustomElement } from '../../../components/element.js';
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { html } from 'lit-element';

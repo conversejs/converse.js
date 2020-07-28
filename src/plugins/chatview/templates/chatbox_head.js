@@ -1,7 +1,7 @@
 import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import { until } from 'lit-html/directives/until.js';
-import avatar from "./avatar.js";
+import avatar from "../../../templates/avatar.js";
 
 const i18n_profile = __('The User\'s Profile Image');
 

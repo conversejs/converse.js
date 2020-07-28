@@ -8,7 +8,7 @@
  */
 
 import { html, css } from 'lit-element';
-import { CustomElement } from './element.js';
+import { CustomElement } from '../../../components/element.js';
 
 
 class ConverseIcon extends CustomElement {

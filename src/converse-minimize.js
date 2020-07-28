@@ -3,7 +3,6 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "converse-chatview";
 import tpl_chats_panel from "templates/chats_panel.html";
 import tpl_toggle_chats from "templates/toggle_chats.js";
 import tpl_trimmed_chat from "templates/trimmed_chat.js";

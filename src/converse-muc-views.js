@@ -190,7 +190,7 @@ converse.plugins.add('converse-muc-views', {
                 this.listenTo(this.model, 'show', this.show);
                 this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
                 this.listenTo(this.model.features, 'change:open', this.renderHeading);
-                this.listenTo(this.model.messages, 'rendered', this.maybeScrollDownOnMessage);
+                this.listenTo(this.model.messages, 'rendered', this.maybeScrollDown);
                 this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
                 // Bind so that we can pass it to addEventListener and removeEventListener

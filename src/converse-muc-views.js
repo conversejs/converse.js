@@ -6,10 +6,11 @@
  */
 import "@converse/headless/utils/muc";
 import "converse-modal";
+import AddMUCModal from 'modals/add-muc.js';
+import MUCInviteModal from 'modals/muc-invite.js';
 import MUCListModal from 'modals/muc-list.js';
 import ModeratorToolsModal from "./modals/moderator-tools.js";
 import RoomDetailsModal from 'modals/muc-details.js';
-import AddMUCModal from 'modals/add-muc.js';
 import log from "@converse/headless/log";
 import tpl_chatroom from "templates/chatroom.js";
 import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
@@ -18,12 +19,10 @@ import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
 import tpl_chatroom_head from "templates/chatroom_head.js";
 import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
 import tpl_muc_config_form from "templates/muc_config_form.js";
-import tpl_muc_invite_modal from "templates/muc_invite_modal.js";
 import tpl_muc_password_form from "templates/muc_password_form.js";
 import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_room_panel from "templates/room_panel.html";
 import tpl_spinner from "templates/spinner.html";
-import { BootstrapModal } from "./converse-modal.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from '@converse/headless/i18n';
@@ -761,7 +760,7 @@ converse.plugins.add('converse-muc-views', {
             showInviteModal (ev) {
                 ev.preventDefault();
                 if (this.muc_invite_modal === undefined) {
-                    this.muc_invite_modal = new _converse.MUCInviteModal({'model': new Model()});
+                    this.muc_invite_modal = new MUCInviteModal({'model': new Model()});
                     // TODO: remove once we have API for sending direct invite
                     this.muc_invite_modal.chatroomview = this;
                 }
@@ -1549,52 +1548,6 @@ converse.plugins.add('converse-muc-views', {
                 const password = this.el.querySelector('input[type=password]').value;
                 this.chatroomview.model.join(this.chatroomview.model.get('nick'), password);
                 this.model.set('validation_message', null);
-            }
-        });
-
-
-        _converse.MUCInviteModal = BootstrapModal.extend({
-            id: "muc-invite-modal",
-
-            initialize () {
-                BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.listenTo(this.model, 'change', this.render);
-                this.initInviteWidget();
-            },
-
-            toHTML () {
-                return tpl_muc_invite_modal(Object.assign(
-                    this.model.toJSON(), {
-                        'submitInviteForm': ev => this.submitInviteForm(ev)
-                    })
-                );
-            },
-
-            initInviteWidget () {
-                if (this.invite_auto_complete) {
-                    this.invite_auto_complete.destroy();
-                }
-                const list = _converse.roster.map(i => ({'label': i.getDisplayName(), 'value': i.get('jid')}));
-                const el = this.el.querySelector('.suggestion-box').parentElement;
-                this.invite_auto_complete = new _converse.AutoComplete(el, {
-                    'min_chars': 1,
-                    'list': list
-                });
-            },
-
-            submitInviteForm (ev) {
-                ev.preventDefault();
-                // TODO: Add support for sending an invite to multiple JIDs
-                const data = new FormData(ev.target);
-                const jid = data.get('invitee_jids');
-                const reason = data.get('reason');
-                if (u.isValidJID(jid)) {
-                    // TODO: Create and use API here
-                    this.chatroomview.model.directInvite(jid, reason);
-                    this.modal.hide();
-                } else {
-                    this.model.set({'invalid_invite_jid': true});
-                }
             }
         });
 

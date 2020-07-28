@@ -26,7 +26,7 @@ module.exports = function(config) {
 
       { pattern: "spec/spoilers.js", type: 'module' },
       { pattern: "spec/emojis.js", type: 'module' },
-      { pattern: "spec/roomslist.js", type: 'module' },
+      { pattern: "spec/muclist.js", type: 'module' },
       { pattern: "spec/utils.js", type: 'module' },
       { pattern: "spec/converse.js", type: 'module' },
       { pattern: "spec/bookmarks.js", type: 'module' },

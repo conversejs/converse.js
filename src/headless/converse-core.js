@@ -432,6 +432,9 @@ export const api = _converse.api = {
      *  event handlers' promises have been resolved.
      */
     async trigger (name) {
+        if (!_converse._events) {
+            return;
+        }
         const args = Array.from(arguments);
         const options = args.pop();
         if (options && options.synchronous) {
@@ -1392,7 +1395,7 @@ async function getLoginCredentialsFromBrowser () {
 // Make sure everything is reset in case this is a subsequent call to
 // converse.initialize (happens during tests).
 async function cleanup () {
-    await _converse.api.trigger('cleanup', {'synchronous': true});
+    await api.trigger('cleanup', {'synchronous': true});
     _converse.router.history.stop();
     unregisterGlobalEventHandlers();
     _converse.connection?.reset();

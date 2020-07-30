@@ -1389,18 +1389,13 @@ async function getLoginCredentialsFromBrowser () {
 }
 
 
-function cleanup () {
-    // Make sure everything is reset in case this is a subsequent call to
-    // converse.initialize (happens during tests).
+// Make sure everything is reset in case this is a subsequent call to
+// converse.initialize (happens during tests).
+async function cleanup () {
+    await _converse.api.trigger('cleanup', {'synchronous': true});
     _converse.router.history.stop();
     unregisterGlobalEventHandlers();
-    delete _converse.controlboxtoggle;
-    if (_converse.chatboxviews) {
-        delete _converse.chatboxviews;
-    }
-    if (_converse.connection) {
-        _converse.connection.reset();
-    }
+    _converse.connection?.reset();
     _converse.stopListening();
     _converse.off();
 }
@@ -1806,7 +1801,7 @@ Object.assign(converse, {
      * });
      */
     async initialize (settings) {
-        cleanup();
+        await cleanup();
         PROMISES.forEach(name => api.promises.add(name));
         setUnloadEvent();
         initSettings(settings);

@@ -554,6 +554,7 @@ converse.plugins.add('converse-controlbox', {
 
 
         /******************** Event Handlers ********************/
+        api.listen.on('cleanup', () => (delete _converse.controlboxtoggle));
 
         api.listen.on('chatBoxViewsInitialized', () => {
             _converse.chatboxes.on('add', item => {

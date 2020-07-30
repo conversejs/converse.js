@@ -135,6 +135,11 @@ converse.plugins.add('converse-chatboxviews', {
 
 
         /************************ BEGIN Event Handlers ************************/
+        api.listen.on('cleanup', () => {
+            _converse?.chatboxviews.remove();
+            delete _converse.chatboxviews;
+        });
+
         api.listen.on('chatBoxesInitialized', () => {
             _converse.chatboxviews = new _converse.ChatBoxViews({
                 'model': _converse.chatboxes

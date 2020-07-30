@@ -71,7 +71,9 @@ converse.plugins.add('converse-chatboxviews', {
                 /* Override method from backbone.js
                  * If the #conversejs element doesn't exist, create it.
                  */
-                if (!this.el) {
+                if (this.el) {
+                    this.setElement(result(this, 'el'), false);
+                } else {
                     let el = _converse.root.querySelector('#conversejs');
                     if (el === null) {
                         el = document.createElement('div');
@@ -85,10 +87,7 @@ converse.plugins.add('converse-chatboxviews', {
                             _converse.root.appendChild(el);
                         }
                     }
-                    el.innerHTML = '';
                     this.setElement(el, false);
-                } else {
-                    this.setElement(result(this, 'el'), false);
                 }
             },
 
@@ -108,19 +107,17 @@ converse.plugins.add('converse-chatboxviews', {
             },
 
             render () {
-                try {
-                    render(tpl_converse(), this.el);
-                } catch (e) {
-                    this._ensureElement();
-                    render(tpl_converse(), this.el);
-                }
+                this._ensureElement();
+                render(tpl_converse(), this.el);
                 this.row_el = this.el.querySelector('.row');
             },
 
+            /*(
+             * Add a new DOM element (likely a chat box) into the
+             * the row managed by this overview.
+             * @param { HTMLElement } el
+             */
             insertRowColumn (el) {
-                /* Add a new DOM element (likely a chat box) into the
-                 * the row managed by this overview.
-                 */
                 this.row_el.insertAdjacentElement('afterBegin', el);
             },
 
@@ -135,10 +132,7 @@ converse.plugins.add('converse-chatboxviews', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        api.listen.on('cleanup', () => {
-            _converse?.chatboxviews.remove();
-            delete _converse.chatboxviews;
-        });
+        api.listen.on('cleanup', () => (delete _converse.chatboxviews));
 
         api.listen.on('chatBoxesInitialized', () => {
             _converse.chatboxviews = new _converse.ChatBoxViews({

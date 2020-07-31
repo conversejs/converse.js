@@ -1,4 +1,4 @@
-import "../../../components/message-history";
+import "./message-history";
 import xss from "xss/dist/xss";
 import { CustomElement } from '../../../components/element.js';
 import { html } from 'lit-element';

@@ -3,12 +3,20 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import { debounce, isString } from "lodash-es";
+import { html, render } from "lit-html";
+import log from "@converse/headless/log";
+import { View } from '@converse/skeletor/src/view.js';
+import { __ } from '@converse/headless/i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
+
+import "converse-chatboxviews";
+import "converse-modal";
+
 import "./components/chat_content.js";
 import "./components/help_messages.js";
 import "./components/toolbar.js";
-import "converse-chatboxviews";
-import "converse-modal";
-import log from "@converse/headless/log";
+
 import tpl_chatbox from "./templates/chatbox.js";
 import tpl_chatbox_head from "./templates/chatbox_head.js";
 import tpl_chatbox_message_form from "./templates/chatbox_message_form.js";
@@ -16,16 +24,9 @@ import tpl_spinner from "../../templates/spinner.html";
 import tpl_toolbar from "./templates/toolbar.js";
 import tpl_user_details_modal from "./templates/user_details_modal.js";
 import { BootstrapModal } from "../../converse-modal.js";
-import { View } from '@converse/skeletor/src/view.js';
-import { __ } from '@converse/headless/i18n';
-import { _converse, api, converse } from "@converse/headless/converse-core";
-import { debounce, isString } from "lodash-es";
-import { html, render } from "lit-html";
-
 
 const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
-
 
 converse.plugins.add('converse-chatview', {
     /* Plugin dependencies are other plugins which might be

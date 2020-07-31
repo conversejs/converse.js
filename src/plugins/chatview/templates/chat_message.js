@@ -1,6 +1,6 @@
 import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
-import { renderAvatar } from './../templates/directives/avatar';
+import { renderAvatar } from '../../../templates/directives/avatar';
 
 
 const i18n_new_messages = __('New messages');

@@ -1,11 +1,14 @@
-import "../components/message";
-import dayjs from 'dayjs';
-import tpl_new_day from "../templates//new_day.js";
-import { CustomElement } from './element.js';
-import { __ } from '@converse/headless/i18n';
-import { api } from "@converse/headless/converse-core";
 import { html } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
+import dayjs from 'dayjs';
+import { __ } from '@converse/headless/i18n';
+import { api } from "@converse/headless/converse-core";
+
+import "./message";
+
+import tpl_new_day from "../templates/new_day.js";
+import { CustomElement } from '../../../components/element.js';
+
 
 const i18n_no_history = __('No message history available.');
 

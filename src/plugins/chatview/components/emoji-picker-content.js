@@ -1,8 +1,9 @@
 import sizzle from 'sizzle';
-import { CustomElement } from '../../../components/element.js';
-import { _converse, converse, api } from "@converse/headless/converse-core";
 import { html } from "lit-element";
-import { tpl_all_emojis, tpl_search_results } from "../../../templates/emoji_picker.js";
+import { _converse, converse, api } from "@converse/headless/converse-core";
+
+import { CustomElement } from '../../../components/element.js';
+import { tpl_all_emojis, tpl_search_results } from "../templates/emoji_picker.js";
 
 
 export default class EmojiPickerContent extends CustomElement {

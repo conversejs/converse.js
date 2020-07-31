@@ -1,16 +1,18 @@
-import "./message-body.js";
-import './dropdown.js';
-import './message-actions.js';
-import MessageVersionsModal from '../modals/message-versions.js';
 import dayjs from 'dayjs';
 import filesize from "filesize";
-import tpl_chat_message from '../templates/chat_message.js';
-import tpl_spinner from '../templates/spinner.js';
-import { CustomElement } from './element.js';
+import { html } from 'lit-element';
 import { __ } from '@converse/headless/i18n';
 import { _converse, api, converse } from  "@converse/headless/converse-core";
-import { html } from 'lit-element';
-import { renderAvatar } from './../templates/directives/avatar';
+
+import "./message-body.js";
+import '../../../components/dropdown.js';
+import '../../../components/message-actions.js';
+
+import MessageVersionsModal from '../../../modals/message-versions.js';
+import tpl_chat_message from '../templates/chat_message.js';
+import tpl_spinner from '../../../templates/spinner.js';
+import { CustomElement } from '../../../components/element.js';
+import { renderAvatar } from '../../../templates/directives/avatar';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;

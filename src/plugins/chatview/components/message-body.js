@@ -1,7 +1,8 @@
-import { CustomElement } from './element.js';
-import { renderBodyText } from './../templates/directives/body';
 import { api } from "@converse/headless/converse-core";
-import ImageModal from '../modals/image.js';
+
+import { CustomElement } from '../../../components/element.js';
+import { renderBodyText } from '../../../templates/directives/body';
+import ImageModal from '../../../modals/image.js';
 
 
 export default class MessageBody extends CustomElement {

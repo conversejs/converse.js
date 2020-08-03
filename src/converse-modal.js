@@ -39,7 +39,7 @@ export const BootstrapModal = View.extend({
         this.insertIntoDOM();
         const Modal = bootstrap.Modal;
         this.modal = new Modal(this.el, {
-            backdrop: 'static',
+            backdrop: true,
             keyboard: true
         });
         this.el.addEventListener('hide.bs.modal', () => u.removeClass('selected', this.trigger_el), false);

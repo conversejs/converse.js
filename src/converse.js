@@ -29,6 +29,8 @@ import "converse-roomslist";       // Show currently open chat rooms
 import "converse-rosterview";
 import "converse-singleton";
 import "converse-uniview";
+import "./plugins/message-parser";
+import "./plugins/urlparser";
 /* END: Removable components */
 
 import "../sass/converse.scss";
@@ -56,7 +58,9 @@ const WHITELISTED_PLUGINS = [
     'converse-roomslist',
     'converse-rosterview',
     'converse-singleton',
-    'converse-uniview'
+    'converse-message-parser',
+    'converse-uniview',
+    'converse-urlparser'
 ];
 
 const initialize = converse.initialize;

@@ -1,92 +1,12 @@
 import URI from "urijs";
 import log from '@converse/headless/log';
 import { _converse, api, converse } from  "@converse/headless/converse-core";
-import { convertASCII2Emoji, getEmojiMarkup, getCodePointReferences, getShortnameReferences } from "@converse/headless/converse-emoji.js";
+import { getEmojiMarkup, getCodePointReferences, getShortnameReferences } from "@converse/headless/converse-emoji.js";
+import { pipe } from '@converse/headless/utils/functional';
 import { directive, html } from "lit-html";
-import { isString } from "lodash-es";
 import { until } from 'lit-html/directives/until.js';
 
 const u = converse.env.utils;
-
-
-/**
- * @class MessageText
- * A String subclass that is used to represent the rich text
- * of a chat message.
- *
- * The "rich" parts of the text is represented by lit-html TemplateResult
- * objects which are added via the {@link MessageText.addTemplateResult}
- * method and saved as metadata.
- *
- * By default Converse adds TemplateResults to support emojis, hyperlinks,
- * images, map URIs and mentions.
- *
- * 3rd party plugins can listen for the `beforeMessageBodyTransformed`
- * and/or `afterMessageBodyTransformed` events and then call
- * `addTemplateResult` on the MessageText instance in order to add their own
- * rich features.
- */
-class MessageText extends String {
-
-    /**
-     * Create a new {@link MessageText} instance.
-     * @param { String } text - The plain text that was received from the `<message>` stanza.
-     */
-    constructor (text) {
-        super(text);
-        this.references = [];
-    }
-
-    /**
-     * The "rich" markup parts of a chat message are represented by lit-html
-     * TemplateResult objects.
-     *
-     * This method can be used to add new template results to this message's
-     * text.
-     *
-     * @method MessageText.addTemplateResult
-     * @param { Number } begin - The starting index of the plain message text
-     * which is being replaced with markup.
-     * @param { Number } end - The ending index of the plain message text
-     * which is being replaced with markup.
-     * @param { Object } template - The lit-html TemplateResult instance
-     */
-    addTemplateResult (begin, end, template) {
-        this.references.push({begin, end, template});
-    }
-
-    isMeCommand () {
-        const text = this.toString();
-        if (!text) {
-            return false;
-        }
-        return text.startsWith('/me ');
-    }
-
-    static replaceText (text) {
-        return convertASCII2Emoji(text.replace(/\n\n+/g, '\n\n'));
-    }
-
-    marshall () {
-        let list = [this.toString()];
-        this.references
-            .sort((a, b) => b.begin - a.begin)
-            .forEach(ref => {
-                const text = list.shift();
-                list = [
-                    text.slice(0, ref.begin),
-                    ref.template,
-                    text.slice(ref.end),
-                    ...list
-                ];
-            });
-
-        // Subtract `/me ` from 3rd person messages
-        if (this.isMeCommand()) list[0] = list[0].substring(4);
-
-        return list.reduce((acc, i) => isString(i) ? [...acc, MessageText.replaceText(i)] : [...acc, i], []);
-    }
-}
 
 
 function addMapURLs (text) {
@@ -179,42 +99,22 @@ class MessageBodyRenderer {
     }
 
     async transform () {
-        const text = new MessageText(this.text);
-        /**
-         * Synchronous event which provides a hook for transforming a chat message's body text
-         * before the default transformations have been applied.
-         * @event _converse#beforeMessageBodyTransformed
-         * @param { _converse.Message } model - The model representing the message
-         * @param { MessageText } text - A {@link MessageText } instance. You
-         * can call {@link MessageText#addTemplateResult } on it in order to
-         * add TemplateResult objects meant to render rich parts of the
-         * message.
-         * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
-         */
-        await api.trigger('beforeMessageBodyTransformed', this.model, text, {'Synchronous': true});
+        const { parser } = api.message;
+        let filtered_text = parser.runFilters(this.text);
+        const rich_message = parser.richMessageFromText(filtered_text);
 
+        // @TODO The following should be middleware set by default
         addHyperlinks(
-            text,
+            rich_message,
             () => this.scrollDownOnImageLoad(),
             ev => this.component.showImageModal(ev)
         );
-        addMapURLs(text);
-        await addEmojis(text);
-        addReferences(text, this.model);
+        addMapURLs(rich_message);
+        await addEmojis(rich_message);
+        addReferences(rich_message, this.model);
 
-        /**
-         * Synchronous event which provides a hook for transforming a chat message's body text
-         * after the default transformations have been applied.
-         * @event _converse#afterMessageBodyTransformed
-         * @param { _converse.Message } model - The model representing the message
-         * @param { MessageText } text - A {@link MessageText } instance. You
-         * can call {@link MessageText#addTemplateResult} on it in order to
-         * add TemplateResult objects meant to render rich parts of the
-         * message.
-         * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
-         */
-        await api.trigger('afterMessageBodyTransformed', this.model, text, {'Synchronous': true});
-        return text.marshall();
+        parser.runMiddleware(rich_message);
+        return parser.toTransform(rich_message);
     }
 
     render () {

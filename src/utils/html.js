@@ -23,7 +23,8 @@ import { api } from  "@converse/headless/converse-core";
 import { html } from "lit-html";
 import { isFunction } from "lodash-es";
 
-const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
+export const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
+export const URL_START_REGEX = /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi;
 
 function getAutoCompleteProperty (name, options) {
     return {

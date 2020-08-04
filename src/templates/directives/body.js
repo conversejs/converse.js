@@ -2,9 +2,12 @@ import URI from "urijs";
 import log from '@converse/headless/log';
 import { _converse, api, converse } from  "@converse/headless/converse-core";
 import { convertASCII2Emoji, getEmojiMarkup, getCodePointReferences, getShortnameReferences } from "@converse/headless/converse-emoji.js";
+import { pipe } from '@converse/headless/utils/functional';
 import { directive, html } from "lit-html";
 import { isString } from "lodash-es";
 import { until } from 'lit-html/directives/until.js';
+
+import { URL_START_REGEX } from '../../utils/html';
 
 const u = converse.env.utils;
 
@@ -105,7 +108,7 @@ function addMapURLs (text) {
 function addHyperlinks (text, onImgLoad, onImgClick) {
     const objs = [];
     try {
-        const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
+        const parse_options = { 'start': URL_START_REGEX };
         URI.withinString(text, (url, start, end) => {
             objs.push({url, start, end})
             return url;
@@ -178,8 +181,17 @@ class MessageBodyRenderer {
         }
     }
 
+    runTextThroughFilters (text) {
+        if (api.message?.getFilters().length) {
+            return pipe(...api.message.getFilters())(text);
+        }
+        return text;
+    }
+
     async transform () {
-        const text = new MessageText(this.text);
+        let message = this.runTextThroughFilters(this.text);
+        const text = new MessageText(message);
+
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text
          * before the default transformations have been applied.

@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-23 21:27+0000\n"
-"Last-Translator: Artem <KovalevArtem.ru@gmail.com>\n"
+"PO-Revision-Date: 2020-08-05 09:32+0000\n"
+"Last-Translator: Andrey <andrey@mailbox.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.0.2-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: dist/converse-no-dependencies.js:10577
 msgid "Uploading file:"
@@ -761,9 +761,8 @@ msgid "Details"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:53489
-#, fuzzy
 msgid "See more information about this person"
-msgstr "Просмотреть больше информации об этом человеке."
+msgstr "Просмотреть больше информации об этом человеке"
 
 #: dist/converse-no-dependencies.js:53502
 #, fuzzy
@@ -870,9 +869,8 @@ msgid "Don't have a chat account?"
 msgstr "Не имеете учётную запись для чата?"
 
 #: dist/converse-no-dependencies.js:54951
-#, fuzzy
 msgid "Password"
-msgstr "Пароль:"
+msgstr "Пароль"
 
 #: dist/converse-no-dependencies.js:54953
 msgid "This is a trusted device"
@@ -1370,9 +1368,8 @@ msgid "Role changed"
 msgstr "Включить чат"
 
 #: dist/converse-no-dependencies.js:62660
-#, fuzzy
 msgid "You're not allowed to make that change"
-msgstr "Вам не разрешено создавать новые комнаты."
+msgstr "Вам не разрешено вносить это изменение"
 
 #: dist/converse-no-dependencies.js:62662
 #, fuzzy
@@ -1409,9 +1406,8 @@ msgid "Groupchat address"
 msgstr "Адрес комнаты (идентификатор)"
 
 #: dist/converse-no-dependencies.js:62909
-#, fuzzy
 msgid "Groupchat id is invalid."
-msgstr "Протокол чата включен"
+msgstr "ID группового чата недействителен."
 
 #: dist/converse-no-dependencies.js:62928
 #, javascript-format
@@ -1459,9 +1455,8 @@ msgid "%1$s have left the groupchat"
 msgstr "%1$s покинул комнату"
 
 #: dist/converse-no-dependencies.js:63469
-#, fuzzy
 msgid "You are about to retract this message."
-msgstr "У тебя есть непрочитанные сообщения"
+msgstr "Вы собираетесь отозвать это сообщение."
 
 #: dist/converse-no-dependencies.js:63469
 #, fuzzy
@@ -1483,19 +1478,16 @@ msgid "Optional reason"
 msgstr "Опционная подсказка"
 
 #: dist/converse-no-dependencies.js:63490
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Вам не разрешено создавать новые комнаты."
+msgstr "Извините, вы не можете отозвать это сообщение"
 
 #: dist/converse-no-dependencies.js:63512
-#, fuzzy
 msgid "Sorry, something went wrong while trying to retract your message."
-msgstr "Извините, что-то пошло не так при попытке обновления"
+msgstr "Извините, что-то пошло не так при попытке отозвать ваше сообщение."
 
 #: dist/converse-no-dependencies.js:63552
-#, fuzzy
 msgid "A timeout occurred while trying to retract the message"
-msgstr "Извините, произошла ошибка при попытке удаления устройств."
+msgstr "При попытке отозвать сообщение произошел таймаут"
 
 #: dist/converse-no-dependencies.js:63556
 #, fuzzy

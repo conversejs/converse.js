@@ -109,7 +109,7 @@ class MessageBodyRenderer {
             () => this.scrollDownOnImageLoad(),
             ev => this.component.showImageModal(ev)
         );
-        addMapURLs(rich_message);
+        // addMapURLs(rich_message);
         await addEmojis(rich_message);
         addReferences(rich_message, this.model);
 

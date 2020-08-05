@@ -1654,7 +1654,7 @@ describe("Chatboxes", function () {
 
             await mock.waitForRoster(_converse, 'current', 1);
 
-            const message = "geo:37.786971,-122.399677";
+            const message = "Parsing a geo url geo:37.786971,-122.399677";
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
@@ -1664,7 +1664,7 @@ describe("Chatboxes", function () {
             expect(view.model.sendMessage).toHaveBeenCalled();
             const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             await u.waitUntil(() => msg.innerHTML.replace(/\<!----\>/g, '') ===
-                '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
+                'Parsing a geo url <a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
                 'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
             done();
         }));

@@ -35,7 +35,7 @@ class MessageParser {
     }
 
     static addSingleReferenceToMessage (reference, rich_message) {
-        if (!MessageParser.isReferenceCollition(reference, rich_message)) {
+        if (!MessageParser.checkReferenceCollision(reference, rich_message)) {
             const { begin, end, template } = reference;
             const template_result = MessageParser.makeTemplateResultFromString(template);
             rich_message.addTemplateResult(begin, end, template_result);
@@ -72,7 +72,7 @@ class MessageParser {
                 const references = middleware(rich_message.text);
                 MessageParser.addReferencesToMessage(references, rich_message);
             } catch (error) {
-                // log.error(`Reference collision caused by middleware "${middleware.name}"`)
+                log.error(`Reference collision caused by middleware "${middleware.name}"`)
             }
         });
     }

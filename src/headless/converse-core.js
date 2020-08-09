@@ -659,7 +659,7 @@ export const api = _converse.api = {
             u.merge(DEFAULT_SETTINGS, settings);
             // When updating the settings, we need to avoid overwriting the
             // initialization_settings (i.e. the settings passed in via converse.initialize).
-            const allowed_keys = Object.keys(DEFAULT_SETTINGS);
+            const allowed_keys = Object.keys(pick(settings,Object.keys(DEFAULT_SETTINGS)));
             const allowed_site_settings = pick(initialization_settings, allowed_keys);
             const updated_settings = assignIn(pick(settings, allowed_keys), allowed_site_settings);
             u.merge(_converse.settings, updated_settings);

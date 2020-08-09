@@ -26,6 +26,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #2006: fix rendering of emojis in case `use_system_emojis == false`
 - #2028: Implement XEP-0333 `displayed` chat marker
 - #2101: Improve contrast of text in control box
+- #2187: Avoid merging initial settings with themselves every time settings are extended.
 - Removed the mockups from the project. Recommended to use tests instead.
 - The API method `api.settings.update` has been deprecated in favor of `api.settings.extend`.
 - Filter roster contacts via all available information (JID, nickname and VCard full name).

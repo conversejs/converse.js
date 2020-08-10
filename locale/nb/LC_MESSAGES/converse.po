@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-07-10 07:36+0000\n"
+"PO-Revision-Date: 2020-08-11 11:32+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -382,7 +382,7 @@ msgstr "%1$s eier ikke lenger dette rommet"
 #: dist/converse-no-dependencies.js:38539
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "%1$ er ikke lenger bannlyst fra denne gruppesludringen"
+msgstr "%1$s er ikke lenger bannlyst fra denne gruppesludringen"
 
 #: dist/converse-no-dependencies.js:38546
 #, javascript-format

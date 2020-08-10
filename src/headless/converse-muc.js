@@ -2475,6 +2475,13 @@ converse.plugins.add('converse-muc', {
                     'num_unread': 0,
                     'num_unread_general': 0
                 });
+            },
+
+            async onBanUser (message, reason) {
+                const jid = message.get('from');
+                const roomjid = message.get('from_muc');
+                const room = await api.rooms.get(roomjid);
+                room.sendAffiliationIQ('outcast', { jid, reason });
             }
         });
 

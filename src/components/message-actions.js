@@ -44,8 +44,25 @@ class MessageActions extends CustomElement {
         this.chatview.onMessageRetractButtonClicked(this.model);
     }
 
+    async onBanUserButtonClicked (ev) {
+        ev.preventDefault();
+        const reason = await api.prompt(__('Reason'), __('Type a reason for the ban'));
+        this.chatview.model.onBanUser(this.model, reason);
+    }
+
     async renderActions () {
         const buttons = [];
+        const is_moderator = true; // @TODO get moderator
+        if (this.model.get('sender') !== 'me') {
+            is_moderator && buttons.push({
+                'i18n_text': __('Ban User'),
+                'handler': ev => this.onBanUserButtonClicked(ev),
+                'button_class': 'chat-msg__action-ban',
+                'icon_class': 'fa fa-ban',
+                'name': 'ban'
+            });
+        }
+
         if (this.editable) {
             buttons.push({
                 'i18n_text': this.correcting ? __('Cancel Editing') : __('Edit'),

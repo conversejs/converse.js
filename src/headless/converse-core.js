@@ -667,7 +667,7 @@ export const api = _converse.api = {
         },
 
         update (settings) {
-            log.warn("The api.settings.extend method has been deprecated and will be removed. "+
+            log.warn("The api.settings.update method has been deprecated and will be removed. "+
                      "Please use api.settings.extend instead.");
             return this.extend(settings);
         },

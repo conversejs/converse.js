@@ -354,7 +354,7 @@ describe("Converse", function() {
             done();
         }));
         
-        it("extended via settings.extend works and don't override settings passed in via converse.initialize when using a shadowRoot as root specified via converse.initialize",
+        it("only overrides the passed in properties",
                 mock.initConverse([],
                 {
                     'root': document.createElement('div').attachShadow({ 'mode': 'open' }),
@@ -369,7 +369,7 @@ describe("Converse", function() {
                         'emoji_categories': { 'travel': ':motorcycle:', 'food': ':burger:' },
                     });
 
-                    expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
+                    expect(_converse.api.settings.get('emoji_categories').travel).toBe(':rocket:');
                     expect(_converse.api.settings.get('emoji_categories')?.food).toBe(undefined);
                     done();
                 }

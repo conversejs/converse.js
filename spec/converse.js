@@ -370,7 +370,7 @@ describe("Converse", function() {
                     });
 
                     expect(_converse.api.settings.get('emoji_categories').travel).toBe(':rocket:');
-                    expect(_converse.api.settings.get('emoji_categories')?.food).toBe(undefined);
+                    expect(_converse.api.settings.get('emoji_categories').food).toBe(undefined);
                     done();
                 }
             )

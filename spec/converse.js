@@ -353,6 +353,28 @@ describe("Converse", function() {
             expect(_converse.api.settings.get('emoji_categories')?.food).toBe(undefined);
             done();
         }));
+        
+        it("only overrides the passed in properties",
+                mock.initConverse([],
+                {
+                    'root': document.createElement('div').attachShadow({ 'mode': 'open' }),
+                    'emoji_categories': { 'travel': ':rocket:' },
+                },
+                (done, _converse) => {
+                    expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
+
+                    // Test that the extend command doesn't override user-provided site
+                    // settings (i.e. settings passed in via converse.initialize).
+                    _converse.api.settings.extend({
+                        'emoji_categories': { 'travel': ':motorcycle:', 'food': ':burger:' },
+                    });
+
+                    expect(_converse.api.settings.get('emoji_categories').travel).toBe(':rocket:');
+                    expect(_converse.api.settings.get('emoji_categories').food).toBe(undefined);
+                    done();
+                }
+            )
+        );
 
     });
 

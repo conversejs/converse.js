@@ -4,7 +4,7 @@ import u from '@converse/headless/utils/core';
 import { Strophe } from 'strophe.js/src/core';
 import { __ } from './i18n';
 import { _converse, api, clearSession, tearDown } from "./converse-core";
-import { isElement, noop } from 'lodash';
+import { debounce, isElement, noop } from 'lodash';
 
 
 const BOSH_WAIT = 59;
@@ -16,6 +16,11 @@ const BOSH_WAIT = 59;
  * via BOSH or websocket inside a shared worker).
  */
 export class Connection extends Strophe.Connection {
+
+    constructor (service, options) {
+        super(service, options);
+        this.debouncedReconnect = debounce(this.reconnect, 2000);
+    }
 
     static generateResource () {
         return `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;

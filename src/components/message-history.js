@@ -1,4 +1,4 @@
-import "../components/message";
+import "./message";
 import dayjs from 'dayjs';
 import tpl_new_day from "../templates//new_day.js";
 import { CustomElement } from './element.js';

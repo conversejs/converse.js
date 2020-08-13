@@ -2062,15 +2062,15 @@ converse.plugins.add('converse-muc', {
                 if (code === '301') {
                     return actor ? __("%1$s has been banned by %2$s", nick, actor) : __("%1$s has been banned", nick);
                 } else if (code === '303') {
-                    return ___("%1$s\'s nickname has changed", nick);
+                    return __("%1$s\'s nickname has changed", nick);
                 } else if (code === '333') {
-                    return ___("%1$s has exited the room due to a technical issue", nick);
+                    return __("%1$s has exited the room due to a technical issue", nick);
                 } else  if (code === '307') {
                     return actor ? __("%1$s has been kicked out by %2$s", nick, actor) : __("%1$s has been kicked out", nick);
                 } else if (code === '321') {
                     return __("%1$s has been removed because of an affiliation change", nick);
                 } else if (code === '322') {
-                    return ___("%1$s has been removed for not being a member", nick);
+                    return __("%1$s has been removed for not being a member", nick);
                 }
             },
 

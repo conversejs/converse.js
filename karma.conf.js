@@ -46,6 +46,7 @@ module.exports = function(config) {
       { pattern: "spec/chatbox.js", type: 'module' },
       { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "spec/messages.js", type: 'module' },
+      { pattern: "spec/receipts.js", type: 'module' },
       { pattern: "spec/muc_messages.js", type: 'module' },
       { pattern: "spec/mentions.js", type: 'module' },
       { pattern: "spec/retractions.js", type: 'module' },

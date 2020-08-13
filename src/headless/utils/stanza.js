@@ -72,7 +72,7 @@ function getEncryptionAttributes (stanza, _converse) {
 }
 
 
-function isReceiptRequest (stanza, attrs) {
+function isValidReceiptRequest (stanza, attrs) {
     return (
         attrs.sender !== 'me' &&
         !attrs.is_carbon &&
@@ -382,6 +382,7 @@ const st = {
             return new StanzaParseError(`Ignoring incoming message intended for a different resource: ${to_jid}`, stanza);
         }
 
+        const original_stanza = stanza;
         let from_jid = stanza.getAttribute('from') || _converse.bare_jid;
         if (isCarbon(stanza)) {
             if (from_jid === _converse.bare_jid) {
@@ -396,7 +397,8 @@ const st = {
             }
         }
 
-        if (st.isArchived(stanza)) {
+        const is_archived = st.isArchived(stanza);
+        if (is_archived) {
             if (from_jid === _converse.bare_jid) {
                 const selector = `[xmlns="${Strophe.NS.MAM}"] > forwarded[xmlns="${Strophe.NS.FORWARD}"] > message`;
                 stanza = sizzle(selector, stanza).pop();
@@ -446,7 +448,7 @@ const st = {
          * @property { Boolean } is_markable - Can this message be marked with a XEP-0333 chat marker?
          * @property { Boolean } is_marker - Is this message a XEP-0333 Chat Marker?
          * @property { Boolean } is_only_emojis - Does the message body contain only emojis?
-         * @property { Boolean } is_receipt_request - Does this message request a XEP-0184 receipt?
+         * @property { Boolean } is_valid_receipt_request - Does this message request a XEP-0184 receipt (and is not from us or a carbon or archived message)
          * @property { Boolean } is_spoiler - Is this a XEP-0382 spoiler message?
          * @property { Boolean } is_tombstone - Is this a XEP-0424 tombstone?
          * @property { Object } encrypted -  XEP-0384 encryption payload attributes
@@ -479,18 +481,17 @@ const st = {
          * @property { String } to - The recipient JID
          * @property { String } type - The type of message
          */
-        const original_stanza = stanza;
         const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
         const marker = st.getChatMarker(stanza);
         const now =  (new Date()).toISOString();
         let attrs = Object.assign({
                 contact_jid,
+                is_archived,
                 is_headline,
                 is_server_message,
                 'body': stanza.querySelector('body')?.textContent?.trim(),
                 'chat_state': getChatState(stanza),
                 'from': Strophe.getBareJidFromJid(stanza.getAttribute('from')),
-                'is_archived': st.isArchived(original_stanza),
                 'is_carbon': isCarbon(original_stanza),
                 'is_delayed': !!delay,
                 'is_markable': !!sizzle(`markable[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length,
@@ -527,7 +528,7 @@ const st = {
         attrs = Object.assign({
             'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
             'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
-            'is_receipt_request': isReceiptRequest(stanza, attrs)
+            'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs)
         }, attrs);
 
         // We prefer to use one of the XEP-0359 unique and stable stanza IDs
@@ -581,7 +582,7 @@ const st = {
          * @property { Boolean } is_markable - Can this message be marked with a XEP-0333 chat marker?
          * @property { Boolean } is_marker - Is this message a XEP-0333 Chat Marker?
          * @property { Boolean } is_only_emojis - Does the message body contain only emojis?
-         * @property { Boolean } is_receipt_request - Does this message request a XEP-0184 receipt?
+         * @property { Boolean } is_valid_receipt_request - Does this message request a XEP-0184 receipt (and is not from us or a carbon or archived message)
          * @property { Boolean } is_spoiler - Is this a XEP-0382 spoiler message?
          * @property { Boolean } is_tombstone - Is this a XEP-0424 tombstone?
          * @property { Object } encrypted -  XEP-0384 encryption payload attributes
@@ -654,7 +655,7 @@ const st = {
         await api.emojis.initialize();
         attrs = Object.assign({
             'is_only_emojis': attrs.body ? u.isOnlyEmojis(attrs.body) : false,
-            'is_receipt_request': isReceiptRequest(stanza, attrs),
+            'is_valid_receipt_request': isValidReceiptRequest(stanza, attrs),
             'message': attrs.body || attrs.error, // TODO: Remove and use body and error attributes instead
             'sender': attrs.nick === chatbox.get('nick') ? 'me': 'them',
         }, attrs);

@@ -1998,7 +1998,7 @@ converse.plugins.add('converse-muc', {
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     return this.updateMessage(message, attrs);
-                } else if (attrs.is_receipt_request || attrs.is_marker || this.ignorableCSN(attrs)) {
+                } else if (attrs.is_valid_receipt_request || attrs.is_marker || this.ignorableCSN(attrs)) {
                     return;
                 }
                 if (await this.handleRetraction(attrs) ||

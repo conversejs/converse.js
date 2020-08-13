@@ -384,7 +384,7 @@ converse.plugins.add('converse-muc', {
             async initialize () {
                 this.initialized = u.getResolveablePromise();
                 this.debouncedRejoin = debounce(this.rejoin, 250);
-                this.set('box_id', `box-${btoa(this.get('jid'))}`);
+                this.set('box_id', `box-${this.get('jid')}`);
                 this.initNotifications();
                 this.initMessages();
                 this.initOccupants();

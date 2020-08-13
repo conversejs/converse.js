@@ -330,7 +330,7 @@ converse.plugins.add('converse-chat', {
                     // but we're in embedded mode.
                     return;
                 }
-                this.set({'box_id': `box-${btoa(jid)}`});
+                this.set({'box_id': `box-${jid}`});
                 this.initNotifications();
                 this.initMessages();
 

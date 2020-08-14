@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-06-03 20:41+0000\n"
-"Last-Translator: Quentí <githubou@quentino.fr>\n"
+"PO-Revision-Date: 2020-08-16 02:32+0000\n"
+"Last-Translator: Vincent L <vincent.laporte+weblate@mailbox.org>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
 "Language: oc\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: dist/converse-no-dependencies.js:10577
 msgid "Uploading file:"
@@ -337,9 +337,9 @@ msgid "Topic cleared by %1$s"
 msgstr "Subjècte tirat per %1$s"
 
 #: dist/converse-no-dependencies.js:38511
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%1$s es estat forabandit"
+msgstr "%1$s es estat forabandit per %2$s"
 
 #: dist/converse-no-dependencies.js:38511
 #, javascript-format
@@ -352,9 +352,9 @@ msgid "%1$s's nickname has changed"
 msgstr "L’escais-nom de %1$s a cambiat"
 
 #: dist/converse-no-dependencies.js:38515
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s es estat expulsat"
+msgstr "%1$s es estat expulsat per %2$s"
 
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format
@@ -770,9 +770,8 @@ msgid "Details"
 msgstr "Detalhs"
 
 #: dist/converse-no-dependencies.js:53489
-#, fuzzy
 msgid "See more information about this person"
-msgstr "Mostrar mai d’informacions tocant aquesta sala"
+msgstr "Mostrar mai d’informacions tocant aqueste degun"
 
 #: dist/converse-no-dependencies.js:53502
 #, fuzzy

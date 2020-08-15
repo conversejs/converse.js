@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-03-19 08:36+0000\n"
+"PO-Revision-Date: 2020-08-16 02:32+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: dist/converse-no-dependencies.js:10577
 msgid "Uploading file:"
@@ -323,12 +323,12 @@ msgstr "%1$s が題を設定しました"
 #: dist/converse-no-dependencies.js:37843
 #, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "%1$s が題を設定しました"
+msgstr "%1$s が題を消去しました"
 
 #: dist/converse-no-dependencies.js:38511
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%1$s を締め出しました"
+msgstr "%1$s は %2$s によって締め出されました"
 
 #: dist/converse-no-dependencies.js:38511
 #, javascript-format
@@ -341,9 +341,9 @@ msgid "%1$s's nickname has changed"
 msgstr "%1$s のニックネームは変更されました"
 
 #: dist/converse-no-dependencies.js:38515
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s を蹴り出しました"
+msgstr "%1$s は %2$s によって蹴り出されました"
 
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format
@@ -580,12 +580,10 @@ msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "ほんとうにこのブックマーク \"%1$s\" を削除してもいいですか ?"
 
 #: dist/converse-no-dependencies.js:49727
-#, fuzzy
 msgid "Unbookmark"
-msgstr "ブックマーク"
+msgstr "ブックマーク解除"
 
 #: dist/converse-no-dependencies.js:49727
-#, fuzzy
 msgid "Bookmark"
 msgstr "ブックマーク"
 
@@ -752,17 +750,15 @@ msgstr "送信するファイルを選択"
 #: dist/converse-no-dependencies.js:53488
 #: dist/converse-no-dependencies.js:63629
 msgid "Details"
-msgstr ""
+msgstr "詳細"
 
 #: dist/converse-no-dependencies.js:53489
-#, fuzzy
 msgid "See more information about this person"
-msgstr "この談話室についての詳細を見る"
+msgstr "この人についての詳細を見る"
 
 #: dist/converse-no-dependencies.js:53502
-#, fuzzy
 msgid "Close and end this conversation"
-msgstr "暗号化された会話を終了"
+msgstr "閉じてこの会話を終了"
 
 #: dist/converse-no-dependencies.js:53520
 msgid "Click to write as a normal (non-spoiler) message"
@@ -933,12 +929,10 @@ msgstr "面の最小化窓"
 
 #: dist/converse-no-dependencies.js:58441
 #: dist/converse-no-dependencies.js:58460
-#, fuzzy
 msgid "Minimize"
-msgstr "面の最小化窓"
+msgstr "最小化"
 
 #: dist/converse-no-dependencies.js:58442
-#, fuzzy
 msgid "Minimize this chat"
 msgstr "このチャットを最小化"
 
@@ -1103,14 +1097,12 @@ msgid "This groupchat is publicly searchable"
 msgstr "この談話室は公に検索されます"
 
 #: dist/converse-no-dependencies.js:61406
-#, fuzzy
 msgid "Hide the groupchat topic"
-msgstr "エラー: 談話室 "
+msgstr "談話室の題を非表示"
 
 #: dist/converse-no-dependencies.js:61408
-#, fuzzy
 msgid "This groupchat is bookmarked"
-msgstr "この談話室は権限のある者のみが発言できます"
+msgstr "この談話室はブックマークされています"
 
 #: dist/converse-no-dependencies.js:61460
 #: dist/converse-no-dependencies.js:63686
@@ -1232,7 +1224,7 @@ msgstr "理由"
 
 #: dist/converse-no-dependencies.js:61968
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "検索結果を絞り込むにはここに入力してください"
 
 #: dist/converse-no-dependencies.js:61972
 msgid "Show users"
@@ -1400,32 +1392,32 @@ msgid "%1$s has left the groupchat"
 msgstr "%1$s はこの談話室を退出しました"
 
 #: dist/converse-no-dependencies.js:63150
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$s"
-msgstr "%1$s 曰く"
+msgstr "%1$s と %2$s"
 
 #: dist/converse-no-dependencies.js:63154
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are typing"
 msgstr "%1$s は入力中"
 
 #: dist/converse-no-dependencies.js:63156
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have stopped typing"
 msgstr "%1$s は入力を中断しました"
 
 #: dist/converse-no-dependencies.js:63158
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have gone away"
 msgstr "%1$s は離席中"
 
 #: dist/converse-no-dependencies.js:63160
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have entered the groupchat"
 msgstr "%1$s は入室しました"
 
 #: dist/converse-no-dependencies.js:63162
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have left the groupchat"
 msgstr "%1$s はこの談話室を退出しました"
 
@@ -1448,9 +1440,8 @@ msgid "Optional reason"
 msgstr "理由(任意)"
 
 #: dist/converse-no-dependencies.js:63490
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "メッセージを撤回する権限がありません。"
+msgstr "メッセージを撤回する権限がありません"
 
 #: dist/converse-no-dependencies.js:63512
 msgid "Sorry, something went wrong while trying to retract your message."
@@ -1465,33 +1456,28 @@ msgid "Sorry, you're not allowed to retract this message."
 msgstr "メッセージを撤回する権限がありません。"
 
 #: dist/converse-no-dependencies.js:63630
-#, fuzzy
 msgid "Show more information about this groupchat"
 msgstr "この談話室についての詳細を見る"
 
 #: dist/converse-no-dependencies.js:63641
-#, fuzzy
 msgid "Configure"
-msgstr "確定"
+msgstr "設定"
 
 #: dist/converse-no-dependencies.js:63642
 msgid "Configure this groupchat"
 msgstr "この談話室を調整する"
 
 #: dist/converse-no-dependencies.js:63659
-#, fuzzy
 msgid "Moderate"
-msgstr "司会あり"
+msgstr "調節"
 
 #: dist/converse-no-dependencies.js:63660
-#, fuzzy
 msgid "Moderate this groupchat"
-msgstr "談話室から退出"
+msgstr "この談話室を調節します"
 
 #: dist/converse-no-dependencies.js:63672
-#, fuzzy
 msgid "Destroy"
-msgstr "臨時談話室"
+msgstr "閉鎖"
 
 #: dist/converse-no-dependencies.js:63673
 #: dist/converse-no-dependencies.js:64268
@@ -1503,35 +1489,32 @@ msgid "Invite someone to join this groupchat"
 msgstr "誰かをこの談話室に招待します"
 
 #: dist/converse-no-dependencies.js:63701
-#, fuzzy
 msgid "Show topic"
-msgstr "談話室を表示"
+msgstr "題を表示"
 
 #: dist/converse-no-dependencies.js:63701
 msgid "Hide topic"
-msgstr ""
+msgstr "題を非表示"
 
 #: dist/converse-no-dependencies.js:63702
 msgid "Show the topic message in the heading"
-msgstr ""
+msgstr "題をヘッダーに表示します"
 
 #: dist/converse-no-dependencies.js:63702
 msgid "Hide the topic in the heading"
-msgstr ""
+msgstr "題をヘッダーに表示しません"
 
 #: dist/converse-no-dependencies.js:63714
 msgid "Leave"
-msgstr ""
+msgstr "退出"
 
 #: dist/converse-no-dependencies.js:63715
-#, fuzzy
 msgid "Leave and close this groupchat"
-msgstr "談話室から退出"
+msgstr "談話室から退出して閉じる"
 
 #: dist/converse-no-dependencies.js:63725
-#, fuzzy
 msgid "Are you sure you want to leave this groupchat?"
-msgstr "ほんとうにこの談話室 \"%1$s\" から退出しますか ?"
+msgstr "ほんとうにこの談話室から退出しますか ?"
 
 #: dist/converse-no-dependencies.js:63862
 msgid "Hide the list of participants"
@@ -1568,7 +1551,7 @@ msgstr "エラー: 談話室の参加者が複数見つかりました"
 msgid ""
 "Couldn't find a participant with that nickname or XMPP address. They might "
 "have left the groupchat."
-msgstr ""
+msgstr "そのようなニックネームまたは XMPP アドレスの参加者は見つかりませんでした。既に退出したのかもしれません。"
 
 #: dist/converse-no-dependencies.js:64132
 msgid "Sorry, an error happened while running the command."
@@ -1580,9 +1563,8 @@ msgid "Check your browser's developer console for details."
 msgstr "詳細はブラウザーの開発者コンソールを確認してください。"
 
 #: dist/converse-no-dependencies.js:64178
-#, fuzzy
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr "ほんとうにこの談話室 \"%1$s\" から退出しますか ?"
+msgstr "ほんとうにこの談話室を閉鎖しますか ?"
 
 #: dist/converse-no-dependencies.js:64267
 msgid "You can run the following commands"
@@ -1717,9 +1699,8 @@ msgid "Click to open this server message"
 msgstr "クリックしてこのサーバーメッセージを開く"
 
 #: dist/converse-no-dependencies.js:65432
-#, fuzzy
 msgid "Close these announcements"
-msgstr "お知らせ"
+msgstr "これらのお知らせを閉じる"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:65610
@@ -2175,9 +2156,9 @@ msgid "Click to decline the contact request from %1$s"
 msgstr "クリックして %1$s からの申込を拒否"
 
 #: dist/converse-no-dependencies.js:71027
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
-msgstr "クリックして %1$s (JID: %2$s) とチャット"
+msgstr "クリックして %1$s (XMPP アドレス: %2$s) とチャット"
 
 #: dist/converse-no-dependencies.js:71160
 msgid "Are you sure you want to decline this contact request?"

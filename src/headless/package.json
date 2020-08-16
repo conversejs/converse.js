@@ -42,6 +42,6 @@
     "localforage": "^1.7.3",
     "lodash-es": "^4.17.15",
     "pluggable.js": "2.0.1",
-    "strophe.js": "strophe/strophejs#c4a94e59877c06dc2395f4ccbd26f3fee67a4c9f"
+    "strophe.js": "strophe/strophejs#ceb5640786dc60de4a13b18c9a263f2ef112874c"
   }
 }

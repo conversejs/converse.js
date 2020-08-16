@@ -12,7 +12,6 @@ const u = converse.env.utils;
 
 describe("Groupchats", function () {
 
-
     describe("The \"rooms\" API", function () {
 
         it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
@@ -4862,7 +4861,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.list_rooms_modal;
+            const modal = roomspanel.muc_list_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
             roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -4939,7 +4938,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.list_rooms_modal;
+            const modal = roomspanel.muc_list_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const server_input = modal.el.querySelector('input[name="server"]');
             expect(server_input.value).toBe('muc.example.org');
@@ -4956,7 +4955,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.list_rooms_modal;
+            const modal = roomspanel.muc_list_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
             roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called

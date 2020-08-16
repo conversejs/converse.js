@@ -168,12 +168,12 @@ class MessageBodyRenderer {
         // image loads, it triggers 'scroll' and the chat will be marked as scrolled,
         // which is technically true, but not what we want because the user
         // didn't initiate the scrolling.
-        this.scrolled = this.chatview.model.get('scrolled');
+        this.was_scrolled_up = this.chatview.model.get('scrolled');
         this.text = this.component.model.getMessageText();
     }
 
     scrollDownOnImageLoad () {
-        if (!this.scrolled) {
+        if (!this.was_scrolled_up) {
             this.chatview.scrollDown();
         }
     }

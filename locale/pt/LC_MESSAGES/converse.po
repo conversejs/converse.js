@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-07 15:42+0000\n"
-"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
+"PO-Revision-Date: 2020-07-19 19:26+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/conversejs/"
 "translations/pt/>\n"
 "Language: pt\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: dist/converse-no-dependencies.js:10577
 msgid "Uploading file:"
@@ -902,20 +902,20 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
-"Para melhorar o desempenho, armazenamos seus dados em cache neste navegador. "
-"Desmarque esta caixa se este for um computador público ou se pretender que "
-"os seus dados sejam eliminados quando terminar a sessão. É importante que "
-"você se desconecte explicitamente, caso contrário não todos os dados "
-"armazenados em cache podem ser excluídos. Observe que, ao usar um "
-"dispositivo não confiável, a criptografia OMEMO NÃO está disponível."
+"Para melhorar o desempenho, armazenamos os seus dados em cache neste "
+"navegador. Desmarque esta caixa se este for um computador público ou se "
+"pretender que os seus dados sejam eliminados quando terminar a sessão. É "
+"importante que você se desconecte explicitamente, caso contrário não todos "
+"os dados armazenados em cache podem ser excluídos. Observe que, ao usar um "
+"aparelho não confiável, a criptografia OMEMO NÃO está disponível."
 
 #: dist/converse-no-dependencies.js:55456
 msgid "Username"
-msgstr "Usuário"
+msgstr "Utilizador"
 
 #: dist/converse-no-dependencies.js:55456
 msgid "user@domain"
-msgstr "usuário@domínio"
+msgstr "utilizador@domínio"
 
 #: dist/converse-no-dependencies.js:55476
 #: dist/converse-no-dependencies.js:61466
@@ -1169,15 +1169,15 @@ msgstr "Enviar"
 
 #: dist/converse-no-dependencies.js:61590
 msgid "This user is a moderator."
-msgstr "Esse usuário é o moderador."
+msgstr "Esse utilizador é o moderador."
 
 #: dist/converse-no-dependencies.js:61592
 msgid "This user can send messages in this groupchat."
-msgstr "Este usuário pode enviar mensagens nessa sala."
+msgstr "Este utilizador pode enviar mensagens nessa sala."
 
 #: dist/converse-no-dependencies.js:61594
 msgid "This user can NOT send messages in this groupchat."
-msgstr "Este usuário NÃO pode enviar mensagens nessa sala."
+msgstr "Este utilizador NÃO pode enviar mensagens nessa sala."
 
 #: dist/converse-no-dependencies.js:61596
 msgid "Owner"
@@ -1611,7 +1611,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Change user's affiliation to admin"
-msgstr "Mudar o usuário para administrador"
+msgstr "Mudar o utilizador para administrador"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Ban user by changing their affiliation to outcast"
@@ -1629,11 +1629,11 @@ msgstr "Remover este groupchat"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Change user role to participant"
-msgstr "Alterar a função do usuário para o participante"
+msgstr "Alterar a função do utilizador para o participante"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Kick user from groupchat"
-msgstr "Expulsar usuário da sala"
+msgstr "Expulsar utilizador da sala"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Write in 3rd person"
@@ -1641,7 +1641,7 @@ msgstr "Escrever em terceira pessoa"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Grant membership to a user"
-msgstr "Subscrever como usuário membro"
+msgstr "Subscrever como utilizador membro"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Opens up the moderator tools GUI"
@@ -1649,7 +1649,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Remove user's ability to post messages"
-msgstr "Remover a habilidade do usuário de postar mensagens"
+msgstr "Remover a habilidade do utilizador de postar mensagens"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Change your nickname"
@@ -1657,7 +1657,7 @@ msgstr "Escolha seu apelido"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Grant moderator role to user"
-msgstr "Transformar usuário em moderador"
+msgstr "Transformar utilizador em moderador"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Grant ownership of this groupchat"
@@ -1682,7 +1682,7 @@ msgstr "Definir o assunto do bate-papo (nome para/ assunto)"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Allow muted user to post messages"
-msgstr "Permitir que o usuário mudo publique mensagens"
+msgstr "Permitir que o utilizador mudo publique mensagens"
 
 #. e.g. Your nickname is "coolguy69"
 #: dist/converse-no-dependencies.js:64304
@@ -1829,7 +1829,7 @@ msgstr "Caixa de verificação para seleccionar a impressão digital seguinte"
 
 #: dist/converse-no-dependencies.js:66023
 msgid "Device without a fingerprint"
-msgstr "Dispositivo sem uma assinatura digital"
+msgstr "Aparelho sem uma assinatura digital"
 
 #: dist/converse-no-dependencies.js:66027
 msgid "This device's OMEMO fingerprint"

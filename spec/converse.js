@@ -1,4 +1,4 @@
-/* global mock */
+/* global mock, converse */
 
 describe("Converse", function() {
 
@@ -277,7 +277,7 @@ describe("Converse", function() {
             // Test for one JID
             chat = await _converse.api.chats.open(jid);
             expect(chat instanceof Object).toBeTruthy();
-            expect(chat.get('box_id')).toBe(`box-${btoa(jid)}`);
+            expect(chat.get('box_id')).toBe(`box-${jid}`);
 
             const view = _converse.chatboxviews.get(jid);
             await u.waitUntil(() => u.isVisible(view.el));
@@ -286,8 +286,8 @@ describe("Converse", function() {
             await u.waitUntil(() => _converse.chatboxes.length == 3);
             const list = await _converse.api.chats.get([jid, jid2]);
             expect(Array.isArray(list)).toBeTruthy();
-            expect(list[0].get('box_id')).toBe(`box-${btoa(jid)}`);
-            expect(list[1].get('box_id')).toBe(`box-${btoa(jid2)}`);
+            expect(list[0].get('box_id')).toBe(`box-${jid}`);
+            expect(list[1].get('box_id')).toBe(`box-${jid2}`);
             done();
         }));
 
@@ -307,7 +307,7 @@ describe("Converse", function() {
 
             chat = await _converse.api.chats.open(jid);
             expect(chat instanceof Object).toBeTruthy();
-            expect(chat.get('box_id')).toBe(`box-${btoa(jid)}`);
+            expect(chat.get('box_id')).toBe(`box-${jid}`);
             expect(
                 Object.keys(chat),
                 ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
@@ -317,8 +317,8 @@ describe("Converse", function() {
             // Test for multiple JIDs
             const list = await _converse.api.chats.open([jid, jid2]);
             expect(Array.isArray(list)).toBeTruthy();
-            expect(list[0].get('box_id')).toBe(`box-${btoa(jid)}`);
-            expect(list[1].get('box_id')).toBe(`box-${btoa(jid2)}`);
+            expect(list[0].get('box_id')).toBe(`box-${jid}`);
+            expect(list[1].get('box_id')).toBe(`box-${jid2}`);
             done();
         }));
     });
@@ -353,6 +353,28 @@ describe("Converse", function() {
             expect(_converse.api.settings.get('emoji_categories')?.food).toBe(undefined);
             done();
         }));
+
+        it("only overrides the passed in properties",
+                mock.initConverse([],
+                {
+                    'root': document.createElement('div').attachShadow({ 'mode': 'open' }),
+                    'emoji_categories': { 'travel': ':rocket:' },
+                },
+                (done, _converse) => {
+                    expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
+
+                    // Test that the extend command doesn't override user-provided site
+                    // settings (i.e. settings passed in via converse.initialize).
+                    _converse.api.settings.extend({
+                        'emoji_categories': { 'travel': ':motorcycle:', 'food': ':burger:' },
+                    });
+
+                    expect(_converse.api.settings.get('emoji_categories').travel).toBe(':rocket:');
+                    expect(_converse.api.settings.get('emoji_categories').food).toBe(undefined);
+                    done();
+                }
+            )
+        );
 
     });
 

@@ -424,6 +424,9 @@ export const api = _converse.api = {
      *  event handlers' promises have been resolved.
      */
     async trigger (name) {
+        if (!_converse._events) {
+            return;
+        }
         const args = Array.from(arguments);
         const options = args.pop();
         if (options && options.synchronous) {
@@ -656,7 +659,7 @@ export const api = _converse.api = {
             u.merge(DEFAULT_SETTINGS, settings);
             // When updating the settings, we need to avoid overwriting the
             // initialization_settings (i.e. the settings passed in via converse.initialize).
-            const allowed_keys = Object.keys(DEFAULT_SETTINGS);
+            const allowed_keys = Object.keys(pick(settings,Object.keys(DEFAULT_SETTINGS)));
             const allowed_site_settings = pick(initialization_settings, allowed_keys);
             const updated_settings = assignIn(pick(settings, allowed_keys), allowed_site_settings);
             u.merge(_converse.settings, updated_settings);
@@ -664,7 +667,7 @@ export const api = _converse.api = {
         },
 
         update (settings) {
-            log.warn("The api.settings.extend method has been deprecated and will be removed. "+
+            log.warn("The api.settings.update method has been deprecated and will be removed. "+
                      "Please use api.settings.extend instead.");
             return this.extend(settings);
         },
@@ -1307,18 +1310,13 @@ async function getLoginCredentialsFromBrowser () {
 }
 
 
-function cleanup () {
-    // Make sure everything is reset in case this is a subsequent call to
-    // converse.initialize (happens during tests).
+// Make sure everything is reset in case this is a subsequent call to
+// converse.initialize (happens during tests).
+async function cleanup () {
+    await api.trigger('cleanup', {'synchronous': true});
     _converse.router.history.stop();
     unregisterGlobalEventHandlers();
-    delete _converse.controlboxtoggle;
-    if (_converse.chatboxviews) {
-        delete _converse.chatboxviews;
-    }
-    if (_converse.connection) {
-        _converse.connection.reset();
-    }
+    _converse.connection?.reset();
     _converse.stopListening();
     _converse.off();
 }
@@ -1528,7 +1526,7 @@ Object.assign(converse, {
      * });
      */
     async initialize (settings) {
-        cleanup();
+        await cleanup();
         PROMISES.forEach(name => api.promises.add(name));
         setUnloadEvent();
         initSettings(settings);

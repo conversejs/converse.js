@@ -1,4 +1,4 @@
-/* global mock */
+/* global mock, converse */
 
 describe("A list of open groupchats", function () {
 

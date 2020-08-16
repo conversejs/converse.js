@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-10 10:09+0000\n"
+"PO-Revision-Date: 2020-05-08 03:15+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: dist/converse-no-dependencies.js:10577
 msgid "Uploading file:"
@@ -33,19 +33,16 @@ msgid "Edit this message"
 msgstr "تعديل هذه الرسالة"
 
 #: dist/converse-no-dependencies.js:10713
-#, fuzzy
 msgid "Retract this message"
-msgstr "تعديل هذه الرسالة"
+msgstr "اسحب هذه الرسالة"
 
 #: dist/converse-no-dependencies.js:10739
-#, fuzzy
 msgid "Send the message"
-msgstr "تعديل هذه الرسالة"
+msgstr "ارسل الرسالة"
 
 #: dist/converse-no-dependencies.js:11061
-#, fuzzy
 msgid "You're not allowed to send messages in this room"
-msgstr "لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا."
+msgstr "لا يُسمح لك بإرسال رسائل إلى هذه الغرفة"
 
 #: dist/converse-no-dependencies.js:11081
 msgid "This groupchat no longer exists"
@@ -331,9 +328,9 @@ msgid "Topic cleared by %1$s"
 msgstr "قام %1$s بمحو الموضوع"
 
 #: dist/converse-no-dependencies.js:38511
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "لقد تم طرد %1$s"
+msgstr "لقد تم طرد %1$s من طرف %2$s"
 
 #: dist/converse-no-dependencies.js:38511
 #, javascript-format
@@ -346,9 +343,9 @@ msgid "%1$s's nickname has changed"
 msgstr "لقد قام %1$s بتغيير إسمه المُستعار"
 
 #: dist/converse-no-dependencies.js:38515
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "لقد تم طرد %1$s مِن فريق المحادثة مؤقتًا"
+msgstr "لقد تم طرد %1$s مؤقتًا مِن طرف %2$s"
 
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format
@@ -424,9 +421,8 @@ msgstr ""
 "يُرجى اختيار إسمٍ آخَر."
 
 #: dist/converse-no-dependencies.js:38715
-#, fuzzy
 msgid "Password incorrect"
-msgstr "مؤمَّنة بكلمة سرية"
+msgstr "الكلمة السرية خاطئة"
 
 #: dist/converse-no-dependencies.js:38723
 msgid "You are not on the member list of this groupchat."
@@ -518,9 +514,8 @@ msgid "Ungrouped"
 msgstr "بدون فريق"
 
 #: dist/converse-no-dependencies.js:43867
-#, fuzzy
 msgid "New messages"
-msgstr "حذف الرسائل"
+msgstr "الرسائل الجديدة"
 
 #: dist/converse-no-dependencies.js:44522
 #, javascript-format
@@ -585,14 +580,12 @@ msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "هل أنت متأكد أنك تريد إزالة الفاصلة المرجعية \"%1$s\" ؟"
 
 #: dist/converse-no-dependencies.js:49727
-#, fuzzy
 msgid "Unbookmark"
-msgstr "الفواصل المرجعية"
+msgstr "إزاحة من الفواصل المرجعية"
 
 #: dist/converse-no-dependencies.js:49727
-#, fuzzy
 msgid "Bookmark"
-msgstr "الفواصل المرجعية"
+msgstr "إضافة إلى الفواصل المرجعية"
 
 #: dist/converse-no-dependencies.js:50414
 #, javascript-format
@@ -758,12 +751,11 @@ msgstr "اختر الملف الذي تريد إرساله"
 #: dist/converse-no-dependencies.js:53488
 #: dist/converse-no-dependencies.js:63629
 msgid "Details"
-msgstr ""
+msgstr "التفاصيل"
 
 #: dist/converse-no-dependencies.js:53489
-#, fuzzy
 msgid "See more information about this person"
-msgstr "عرض المزيد مِن التفاصيل عن فريق المحادثة هذا"
+msgstr "عرض المزيد مِن التفاصيل عن هذا الشخص"
 
 #: dist/converse-no-dependencies.js:53502
 #, fuzzy
@@ -798,9 +790,8 @@ msgid "Remove messages"
 msgstr "حذف الرسائل"
 
 #: dist/converse-no-dependencies.js:53980
-#, fuzzy
 msgid "Close this chat"
-msgstr "غلق نافذة المحادثة هذه"
+msgstr "اغلق هذه المحادثة"
 
 #: dist/converse-no-dependencies.js:53980
 msgid "Write in the third person"
@@ -821,9 +812,8 @@ msgstr ""
 #: dist/converse-no-dependencies.js:54224
 #: dist/converse-no-dependencies.js:63413
 #: dist/converse-no-dependencies.js:63447
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "هل أنت متأكد أنك تريد حذف هذا المراسل ؟"
+msgstr "هل أنت متأكد أنك تريد سحب هذه الرسالة؟"
 
 #: dist/converse-no-dependencies.js:54231
 #: dist/converse-no-dependencies.js:63420
@@ -874,9 +864,8 @@ msgid "Don't have a chat account?"
 msgstr "لا تمتلكون حسابًا للمحادثة بعدُ؟"
 
 #: dist/converse-no-dependencies.js:54951
-#, fuzzy
 msgid "Password"
-msgstr "كلمة السر :"
+msgstr "كلمة السر"
 
 #: dist/converse-no-dependencies.js:54953
 msgid "This is a trusted device"
@@ -922,9 +911,8 @@ msgid "Search"
 msgstr "بحث"
 
 #: dist/converse-no-dependencies.js:56858
-#, fuzzy
 msgid "Search results"
-msgstr "بحث"
+msgstr "نتائج البحث"
 
 #: dist/converse-no-dependencies.js:57532
 msgid "Insert emojis"
@@ -940,7 +928,6 @@ msgstr "تصغير"
 
 #: dist/converse-no-dependencies.js:58441
 #: dist/converse-no-dependencies.js:58460
-#, fuzzy
 msgid "Minimize"
 msgstr "تصغير"
 
@@ -1112,9 +1099,8 @@ msgid "This groupchat is publicly searchable"
 msgstr "يمكن البحث العمومي عن فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:61406
-#, fuzzy
 msgid "Hide the groupchat topic"
-msgstr "خطأ: فريق المحادثة "
+msgstr "إخفاء موضوع فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:61408
 #, fuzzy
@@ -1132,14 +1118,12 @@ msgid "Invite someone to this groupchat"
 msgstr "إزالة فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:61464
-#, fuzzy
 msgid "user@example.org"
-msgstr "name@example.org"
+msgstr "user@example.org"
 
 #: dist/converse-no-dependencies.js:61470
-#, fuzzy
 msgid "Optional reason for the invitation"
-msgstr "دليل اختياري"
+msgstr "سبب اختياري للدعوة"
 
 #: dist/converse-no-dependencies.js:61505
 msgid "This groupchat requires a password"
@@ -1221,18 +1205,16 @@ msgid "Change role"
 msgstr "تغيير الإعدادات"
 
 #: dist/converse-no-dependencies.js:61956
-#, fuzzy
 msgid "Moderator Tools"
-msgstr "المشرف"
+msgstr "أدوات الإشراف"
 
 #: dist/converse-no-dependencies.js:61958
 msgid "New affiliation"
 msgstr "انتماء جديد"
 
 #: dist/converse-no-dependencies.js:61960
-#, fuzzy
 msgid "New Role"
-msgstr "الدور"
+msgstr "الدورالجديد"
 
 #: dist/converse-no-dependencies.js:61962
 msgid "No users with that affiliation found."
@@ -1245,16 +1227,15 @@ msgstr "لم يتم العثور على أي مستخدِم"
 
 #: dist/converse-no-dependencies.js:61966
 msgid "Reason"
-msgstr ""
+msgstr "السبب"
 
 #: dist/converse-no-dependencies.js:61968
 msgid "Type here to filter the search results"
-msgstr ""
+msgstr "اكتب هنا لتصفية نتائج البحث"
 
 #: dist/converse-no-dependencies.js:61972
-#, fuzzy
 msgid "Show users"
-msgstr "عرض المزيد"
+msgstr "اظهر المستخدمين"
 
 #: dist/converse-no-dependencies.js:61974
 msgid ""
@@ -1412,19 +1393,19 @@ msgid "%1$s has left the groupchat"
 msgstr "غادر %1$s فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:63150
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$s"
-msgstr "%1$s قال"
+msgstr "%1$s و %2$s"
 
 #: dist/converse-no-dependencies.js:63154
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s are typing"
-msgstr "إنّ %1$s يكتب حاليا"
+msgstr "إنّ %1$s يكتبون حاليا"
 
 #: dist/converse-no-dependencies.js:63156
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s have stopped typing"
-msgstr "%1$s توقّفَ عن الكتابة"
+msgstr "%1$s توقّفوا عن الكتابة"
 
 #: dist/converse-no-dependencies.js:63158
 #, fuzzy, javascript-format
@@ -1463,9 +1444,8 @@ msgid "Optional reason"
 msgstr "دليل اختياري"
 
 #: dist/converse-no-dependencies.js:63490
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+msgstr "عذراً، لا يُسمح لك بسحب هذه الرسالة"
 
 #: dist/converse-no-dependencies.js:63512
 #, fuzzy
@@ -1528,7 +1508,7 @@ msgstr "عرض فِرَق المحادثة"
 
 #: dist/converse-no-dependencies.js:63701
 msgid "Hide topic"
-msgstr ""
+msgstr "إخفاء الموضوع"
 
 #: dist/converse-no-dependencies.js:63702
 msgid "Show the topic message in the heading"
@@ -1540,7 +1520,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:63714
 msgid "Leave"
-msgstr ""
+msgstr "مغادرة"
 
 #: dist/converse-no-dependencies.js:63715
 #, fuzzy
@@ -1606,7 +1586,7 @@ msgstr "هل أنت متأكد أنك تريد الإنسحاب مِن فريق 
 
 #: dist/converse-no-dependencies.js:64267
 msgid "You can run the following commands"
-msgstr ""
+msgstr "يمكنك تنفيد الأوامر التالية"
 
 #: dist/converse-no-dependencies.js:64268
 msgid "Change user's affiliation to admin"
@@ -1735,7 +1715,7 @@ msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة �
 
 #: dist/converse-no-dependencies.js:65343
 msgid "Announcements"
-msgstr ""
+msgstr "الإعلانات"
 
 #: dist/converse-no-dependencies.js:65347
 #, fuzzy
@@ -1789,7 +1769,7 @@ msgstr "يُريد أن يُصبح مُراسلك"
 
 #: dist/converse-no-dependencies.js:65846
 msgid "About"
-msgstr ""
+msgstr "عن"
 
 #: dist/converse-no-dependencies.js:65848
 #, javascript-format
@@ -1871,7 +1851,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:66053
 msgid "OMEMO"
-msgstr ""
+msgstr "OMEMO"
 
 #: dist/converse-no-dependencies.js:66055
 #, fuzzy
@@ -2127,7 +2107,7 @@ msgstr "إسم مستعار اختياري"
 
 #: dist/converse-no-dependencies.js:70712
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "المعذرة ، لم نعثر على مستخدم بهذا الإسم"
 
 #: dist/converse-no-dependencies.js:70737
 #, fuzzy

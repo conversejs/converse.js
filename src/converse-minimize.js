@@ -384,7 +384,7 @@ converse.plugins.add('converse-minimize', {
                 this.render();
                 await this.initToggle();
                 const chats = this.model.where({'minimized': true});
-                chats.length && this.addMultipleChats();
+                chats.length && this.addMultipleChats(chats);
                 this.listenTo(this.model, "add", this.onChanged)
                 this.listenTo(this.model, "destroy", this.removeChat)
                 this.listenTo(this.model, "change:minimized", this.onChanged)

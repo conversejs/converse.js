@@ -330,7 +330,7 @@ converse.plugins.add('converse-chat', {
                     // but we're in embedded mode.
                     return;
                 }
-                this.set({'box_id': `box-${btoa(jid)}`});
+                this.set({'box_id': `box-${jid}`});
                 this.initNotifications();
                 this.initMessages();
 
@@ -889,7 +889,7 @@ converse.plugins.add('converse-chat', {
 
             handleReceipt (attrs) {
                 if (attrs.sender === 'them') {
-                    if (attrs.is_receipt_request) {
+                    if (attrs.is_valid_receipt_request) {
                         this.sendReceiptStanza(attrs.from, attrs.msgid);
                     } else if (attrs.receipt_id) {
                         const message = this.messages.findWhere({'msgid': attrs.receipt_id});

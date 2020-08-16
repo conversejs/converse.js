@@ -208,7 +208,7 @@ converse.plugins.add('converse-chatview', {
                 this.listenTo(this.model.messages, 'add', this.onMessageAdded);
                 this.listenTo(this.model.messages, 'change', this.renderChatHistory);
                 this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
-                this.listenTo(this.model.messages, 'rendered', this.maybeScrollDownOnMessage);
+                this.listenTo(this.model.messages, 'rendered', this.maybeScrollDown);
                 this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
                 this.listenTo(this.model.notifications, 'change', this.renderNotifications);
                 this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
@@ -241,7 +241,7 @@ converse.plugins.add('converse-chatview', {
 
             render () {
                 const result = tpl_chatbox(
-                    Object.assign(this.model.toJSON(), {'markScrolled': () => this.markScrolled()})
+                    Object.assign(this.model.toJSON(), {'markScrolled': ev => this.markScrolled(ev)})
                 );
                 render(result, this.el);
                 this.content = this.el.querySelector('.chat-content');
@@ -486,19 +486,35 @@ converse.plugins.add('converse-chatview', {
                 api.trigger('afterMessagesFetched', this.model);
             },
 
-            maybeScrollDownOnMessage (message) {
-                if (message.get('sender') === 'me' || !this.model.get('scrolled')) {
+            /**
+             * Scrolls the chat down, *if* appropriate.
+             *
+             * Will only scroll down if we have received a message from
+             * ourselves, or if the chat was scrolled down before (i.e. the
+             * `scrolled` flag is `false`);
+             * @param { _converse.Message|_converse.ChatRoomMessage } [message]
+             *  - An optional message that serves as the cause for needing to scroll down.
+             */
+            maybeScrollDown (message) {
+                if (message?.get('sender') === 'me' || !this.model.get('scrolled')) {
                     this.debouncedScrollDown();
                 }
             },
 
+            /**
+             * Scrolls the chat down.
+             *
+             * This method will always scroll the chat down, regardless of
+             * whether the user scrolled up manually or not.
+             * @param { Event } [ev] - An optional event that is the cause for needing to scroll down.
+             */
             scrollDown (ev) {
                 ev?.preventDefault?.();
                 ev?.stopPropagation?.();
                 if (this.model.get('scrolled')) {
                     u.safeSave(this.model, {
                         'scrolled': false,
-                        'top_visible_message': null,
+                        'scrollTop': null,
                     });
                 }
                 if (this.msgs_container.scrollTo) {
@@ -508,6 +524,19 @@ converse.plugins.add('converse-chatview', {
                     this.msgs_container.scrollTop = this.msgs_container.scrollHeight;
                 }
                 this.onScrolledDown();
+            },
+
+            /**
+             * Scroll to the previously saved scrollTop position, or scroll
+             * down if it wasn't set.
+             */
+            maintainScrollTop () {
+                const pos = this.model.get('scrollTop');
+                if (pos) {
+                    this.msgs_container.scrollTop = pos;
+                } else {
+                    this.scrollDown();
+                }
             },
 
             insertIntoDOM () {
@@ -535,28 +564,6 @@ converse.plugins.add('converse-chatview', {
 
             clearSpinner () {
                 this.content.querySelectorAll('.spinner').forEach(u.removeElement);
-            },
-
-            setScrollPosition (message_el) {
-                /* Given a newly inserted message, determine whether we
-                 * should keep the scrollbar in place (so as to not scroll
-                 * up when using infinite scroll).
-                 */
-                if (this.model.get('scrolled')) {
-                    const next_msg_el = u.getNextElement(message_el, ".chat-msg");
-                    if (next_msg_el) {
-                        // The currently received message is not new, there
-                        // are newer messages after it. So let's see if we
-                        // should maintain our current scroll position.
-                        if (this.content.scrollTop === 0 || this.model.get('top_visible_message')) {
-                            const top_visible_message = this.model.get('top_visible_message') || next_msg_el;
-                            this.model.set('top_visible_message', top_visible_message);
-                            this.content.scrollTop = top_visible_message.offsetTop - 30;
-                        }
-                    }
-                } else {
-                    this.scrollDown();
-                }
             },
 
             onStatusMessageChanged (item) {
@@ -1091,8 +1098,9 @@ converse.plugins.add('converse-chatview', {
              * which debounces this method by 100ms.
              * @private
              */
-            _markScrolled: function () {
+            _markScrolled: function (ev) {
                 let scrolled = true;
+                let scrollTop = null;
                 const is_at_bottom =
                     (this.msgs_container.scrollTop + this.msgs_container.clientHeight) >=
                         this.msgs_container.scrollHeight - 62; // sigh...
@@ -1108,15 +1116,14 @@ converse.plugins.add('converse-chatview', {
                      * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
                      */
                     api.trigger('chatBoxScrolledUp', this);
+                } else {
+                    scrollTop = ev.target.scrollTop;
                 }
-                u.safeSave(this.model, {
-                    'scrolled': scrolled,
-                    'top_visible_message': null
-                });
+                u.safeSave(this.model, { scrolled, scrollTop });
             },
 
             viewUnreadMessages () {
-                this.model.save({'scrolled': false, 'top_visible_message': null});
+                this.model.save({'scrolled': false, 'scrollTop': null});
                 this.scrollDown();
             },
 

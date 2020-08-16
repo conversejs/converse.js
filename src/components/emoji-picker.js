@@ -35,9 +35,7 @@ export default class EmojiPicker extends CustomElement {
         super();
         this._search_results = [];
         this.debouncedFilter = debounce(input => this.model.set({'query': input.value}), 250);
-        this.onGlobalKeyDown = ev => this._onGlobalKeyDown(ev);
-        const body = document.querySelector('body');
-        body.addEventListener('keydown', this.onGlobalKeyDown);
+        this.registerEvents();
     }
 
     get search_results () {
@@ -109,10 +107,21 @@ export default class EmojiPicker extends CustomElement {
         this.requestUpdate();
     }
 
+    registerEvents () {
+        this.onGlobalKeyDown = ev => this._onGlobalKeyDown(ev);
+        const body = document.querySelector('body');
+        body.addEventListener('keydown', this.onGlobalKeyDown);
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        this.registerEvents();
+    }
+
     disconnectedCallback() {
-        super.disconnectedCallback()
         const body = document.querySelector('body');
         body.removeEventListener('keydown', this.onGlobalKeyDown);
+        super.disconnectedCallback()
     }
 
     _onGlobalKeyDown (ev) {
@@ -311,6 +320,11 @@ export class EmojiDropdown extends BaseDropdown {
                         ></converse-emoji-picker>`), '')}
                 </div>
             </div>`;
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        this.render_emojis = false;
     }
 
     toggleMenu (ev) {

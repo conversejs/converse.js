@@ -68,18 +68,18 @@ serve_bg: node_modules
 dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js @converse/headless node_modules
 	npm run nodeps
 
-GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=6.0.0 dist/converse-no-dependencies.js -c
+GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ --keyword=___ --keyword=i18n_ --force-po --output=src/i18n/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=6.0.0 dist/converse-no-dependencies.js -c
 
-locale/converse.pot: dist/converse-no-dependencies.js
+src/i18n/converse.pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 	rm dist/converse-no-dependencies.js
 
 .PHONY: pot
-pot: locale/converse.pot
+pot: src/i18n/converse.pot
 
 .PHONY: po
 po:
-	find ./locale -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./locale/converse.pot -U \;
+	find ./src/i18n -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./src/i18n/converse.pot -U \;
 
 ########################################################################
 ## Release management
@@ -88,7 +88,7 @@ po:
 release:
 	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/converse-core.js
 	$(SED) -i '/Version:/s/:.*/: $(VERSION)/' COPYRIGHT
-	$(SED) -i '/Project-Id-Version:/s/:.*/: Converse.js $(VERSION)\n"/' locale/converse.pot
+	$(SED) -i '/Project-Id-Version:/s/:.*/: Converse.js $(VERSION)\n"/' src/i18n/converse.pot
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' manifest.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' package.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' src/headless/package.json

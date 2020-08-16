@@ -1,0 +1,2937 @@
+# Spanish translations for Converse.js package.
+# Copyright (C) 2013 Jan-Carel Brand
+# This file is distributed under the same license as the Converse.js package.
+# Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>, 2017.
+msgid ""
+msgstr ""
+"Project-Id-Version: Converse.js 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-16 22:54+0200\n"
+"PO-Revision-Date: 2020-07-09 21:32+0000\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
+"translations/fr/>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
+"plural_forms: nplurals=2; plural=(n != 1);\n"
+"lang: fr\n"
+"Language-Code: fr\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: converse\n"
+"domain: converse\n"
+
+#: dist/converse-no-dependencies.js:25173
+msgid "You're not allowed to send messages in this room"
+msgstr "Vous n'êtes pas autorisé à envoyer des messages dans ce salon"
+
+#: dist/converse-no-dependencies.js:25193
+msgid "This groupchat no longer exists"
+msgstr "Ce salon n’existe plus"
+
+#: dist/converse-no-dependencies.js:25199
+msgid "The conversation has moved. Click below to enter."
+msgstr ""
+"Ce salon a déménagé. Cliquez ci-dessous pour rejoindre sa nouvelle adresse."
+
+#: dist/converse-no-dependencies.js:25275
+msgid "Create your account"
+msgstr "Créer votre compte"
+
+#: dist/converse-no-dependencies.js:25277
+msgid "Please enter the XMPP provider to register with:"
+msgstr "Veuillez saisir le fournisseur XMPP auprès duquel s’inscrire :"
+
+#: dist/converse-no-dependencies.js:25295
+#: dist/converse-no-dependencies.js:25329
+msgid "Already have a chat account?"
+msgstr "Vous avez déjà un compte ?"
+
+#: dist/converse-no-dependencies.js:25297
+#: dist/converse-no-dependencies.js:25331
+msgid "Log in here"
+msgstr "Connectez-vous ici"
+
+#: dist/converse-no-dependencies.js:25313
+msgid "Account Registration:"
+msgstr "Création de compte :"
+
+#: dist/converse-no-dependencies.js:25321
+msgid "Register"
+msgstr "S’inscrire"
+
+#: dist/converse-no-dependencies.js:25325
+msgid "Choose a different provider"
+msgstr "Choisir un autre fournisseur"
+
+#: dist/converse-no-dependencies.js:25345
+msgid "Hold tight, we're fetching the registration form…"
+msgstr "Ne bougez pas, on va chercher le formulaire d’inscription…"
+
+#: dist/converse-no-dependencies.js:25349
+#: dist/converse-no-dependencies.js:70255
+#: dist/converse-no-dependencies.js:71140
+#: dist/converse-no-dependencies.js:89919
+#: dist/converse-no-dependencies.js:94894
+msgid "Cancel"
+msgstr "Annuler"
+
+#. Strophe
+#: dist/converse-no-dependencies.js:43311
+msgid "The connection has dropped, attempting to reconnect."
+msgstr "La connexion a été perdue, tentative de reconnexion en cours."
+
+#. Strophe
+#: dist/converse-no-dependencies.js:43567
+msgid "An error occurred while connecting to the chat server."
+msgstr "Une erreur est survenue lors de la connexion au serveur de discussion."
+
+#: dist/converse-no-dependencies.js:43574
+msgid "Your XMPP address and/or password is incorrect. Please try again."
+msgstr ""
+"Votre addresse XMPP et/ou votre mot de passe sont/est incorrect(s). Veuillez "
+"réessayer."
+
+#: dist/converse-no-dependencies.js:43586
+#, javascript-format
+msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+msgstr ""
+"Désolé, nous n’avons pas pu nous connecter à l’hôte XMPP avec le domaine : "
+"%1$s"
+
+#. Strophe
+#. Strophe
+#. Strophe
+#: dist/converse-no-dependencies.js:43588
+msgid "The XMPP server did not offer a supported authentication mechanism"
+msgstr ""
+"Le serveur XMPP n’a pas proposé un mécanisme d’authentification pris en "
+"charge"
+
+#: dist/converse-no-dependencies.js:51946
+msgid "Unencryptable OMEMO message"
+msgstr "Message OMEMO non chiffrable"
+
+#: dist/converse-no-dependencies.js:52005
+msgid "Sorry, could not determine upload URL."
+msgstr "Désolé, impossible de déterminer l’URL d’envoi de fichier."
+
+#: dist/converse-no-dependencies.js:52028
+msgid "Sorry, could not determine file upload URL."
+msgstr "Désolé, impossible de déterminer l’URL pour envoyer le fichier."
+
+#: dist/converse-no-dependencies.js:52071
+#, javascript-format
+msgid ""
+"Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
+"\""
+msgstr ""
+"Désolé, le téléversement du fichier a échoué. Votre serveur a répondu : "
+"« %1$s »"
+
+#: dist/converse-no-dependencies.js:52073
+msgid "Sorry, could not succesfully upload your file."
+msgstr "Désolé, le téléversement du fichier a échoué."
+
+#: dist/converse-no-dependencies.js:52279
+#: dist/converse-no-dependencies.js:59897
+#, fuzzy
+msgid "You're not allowed to retract your message."
+msgstr "Désolé, vous n'êtes pas autorisé a retirer ce message."
+
+#: dist/converse-no-dependencies.js:52281
+#: dist/converse-no-dependencies.js:59901
+#, fuzzy
+msgid "Sorry, an error occurred while trying to retract your message."
+msgstr "Désolé, une erreur s'est produite lors du retrait de votre message."
+
+#: dist/converse-no-dependencies.js:52286
+#, fuzzy
+msgid "You're not allowed to send a message."
+msgstr "Vous n'êtes pas autorisé à envoyer des messages dans ce salon"
+
+#: dist/converse-no-dependencies.js:52288
+#: dist/converse-no-dependencies.js:59910
+#, fuzzy
+msgid "Sorry, an error occurred while trying to send your message."
+msgstr ""
+"Désolé, une erreur est survenue lors de la validation du formulaire de "
+"configuration."
+
+#: dist/converse-no-dependencies.js:53332
+#: dist/converse-no-dependencies.js:53355
+msgid "Sorry, looks like file upload is not supported by your server."
+msgstr ""
+"Désolé, votre serveur semble ne pas prendre en charge le téléversement de "
+"fichiers."
+
+#: dist/converse-no-dependencies.js:53376
+#, javascript-format
+msgid ""
+"The size of your file, %1$s, exceeds the maximum allowed by your server, "
+"which is %2$s."
+msgstr ""
+"La taille de votre fichier, %1$s, dépasse le maximum autorisé par votre "
+"serveur, qui est %2$s."
+
+#: dist/converse-no-dependencies.js:58095
+msgid "Smileys and emotions"
+msgstr "Émoticônes"
+
+#: dist/converse-no-dependencies.js:58096
+msgid "People"
+msgstr "Personnes"
+
+#: dist/converse-no-dependencies.js:58097
+msgid "Activities"
+msgstr "Activités"
+
+#: dist/converse-no-dependencies.js:58098
+msgid "Travel"
+msgstr "Voyage"
+
+#: dist/converse-no-dependencies.js:58099
+msgid "Objects"
+msgstr "Objets"
+
+#: dist/converse-no-dependencies.js:58100
+msgid "Animals and nature"
+msgstr "Animaux et nature"
+
+#: dist/converse-no-dependencies.js:58101
+msgid "Food and drink"
+msgstr "Cuisine et boissons"
+
+#: dist/converse-no-dependencies.js:58102
+msgid "Symbols"
+msgstr "Symboles"
+
+#: dist/converse-no-dependencies.js:58103
+msgid "Flags"
+msgstr "Drapeaux"
+
+#: dist/converse-no-dependencies.js:58104
+msgid "Stickers"
+msgstr "Autocollants"
+
+#: dist/converse-no-dependencies.js:59087
+msgid "This groupchat is not anonymous"
+msgstr "Ce salon n’est pas anonyme"
+
+#: dist/converse-no-dependencies.js:59088
+msgid "This groupchat now shows unavailable members"
+msgstr "Ce salon affiche maintenant les membres indisponibles"
+
+#: dist/converse-no-dependencies.js:59089
+msgid "This groupchat does not show unavailable members"
+msgstr "Ce salon n’affiche pas les membres indisponibles"
+
+#: dist/converse-no-dependencies.js:59090
+msgid "The groupchat configuration has changed"
+msgstr "Les paramètres de ce salon ont été modifiés"
+
+#: dist/converse-no-dependencies.js:59091
+msgid "Groupchat logging is now enabled"
+msgstr "L’inscription est maintenant activé sur ce salon"
+
+#: dist/converse-no-dependencies.js:59092
+msgid "Groupchat logging is now disabled"
+msgstr "L’inscription est maintenant désactivé sur ce salon"
+
+#: dist/converse-no-dependencies.js:59093
+msgid "This groupchat is now no longer anonymous"
+msgstr "Ce salon n’est plus anonyme"
+
+#: dist/converse-no-dependencies.js:59094
+msgid "This groupchat is now semi-anonymous"
+msgstr "Ce salon est maintenant semi-anonyme"
+
+#: dist/converse-no-dependencies.js:59095
+msgid "This groupchat is now fully-anonymous"
+msgstr "Ce salon est maintenant entièrement anonyme"
+
+#: dist/converse-no-dependencies.js:59096
+msgid "A new groupchat has been created"
+msgstr "Un nouveau salon a été créé"
+
+#. XXX: Note the triple underscore function and not double underscore.
+#: dist/converse-no-dependencies.js:59100
+#, javascript-format
+msgid "Your nickname has been automatically set to %1$s"
+msgstr "Votre pseudo a été automatiquement défini à : %1$s"
+
+#: dist/converse-no-dependencies.js:59101
+#, javascript-format
+msgid "Your nickname has been changed to %1$s"
+msgstr "Votre pseudo a été modifié en : %1$s"
+
+#: dist/converse-no-dependencies.js:59104
+msgid "You have been banned from this groupchat"
+msgstr "Vous avez été banni de ce salon"
+
+#: dist/converse-no-dependencies.js:59105
+#, fuzzy
+msgid "You have exited this groupchat due to a technical problem"
+msgstr "Vous avez été retiré de ce salon du fait d’un changement d’affiliation"
+
+#: dist/converse-no-dependencies.js:59106
+msgid "You have been kicked from this groupchat"
+msgstr "Vous avez été expulsé de ce salon"
+
+#: dist/converse-no-dependencies.js:59107
+msgid ""
+"You have been removed from this groupchat because of an affiliation change"
+msgstr "Vous avez été retiré de ce salon du fait d’un changement d’affiliation"
+
+#: dist/converse-no-dependencies.js:59108
+msgid ""
+"You have been removed from this groupchat because the groupchat has changed "
+"to members-only and you're not a member"
+msgstr ""
+"Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux "
+"membres et vous n’êtes pas membre"
+
+#: dist/converse-no-dependencies.js:59109
+msgid ""
+"You have been removed from this groupchat because the service hosting it is "
+"being shut down"
+msgstr ""
+"Vous avez été retiré de ce salon parce que le service sur lequel il est "
+"hébergé est en train d’être arrêté"
+
+#: dist/converse-no-dependencies.js:59899
+#, fuzzy
+msgid ""
+"Your retraction was not delivered because you're not present in the "
+"groupchat."
+msgstr ""
+"Votre message n'a pas été délivré parce que vous n'êtes pas présent dans le "
+"salon."
+
+#: dist/converse-no-dependencies.js:59906
+msgid "Your message was not delivered because you weren't allowed to send it."
+msgstr ""
+"Votre message n’a pas été délivré car vous n’avez pas été autorisé à "
+"l’envoyer."
+
+#: dist/converse-no-dependencies.js:59908
+msgid ""
+"Your message was not delivered because you're not present in the groupchat."
+msgstr ""
+"Votre message n'a pas été délivré parce que vous n'êtes pas présent dans le "
+"salon."
+
+#: dist/converse-no-dependencies.js:60128
+#, fuzzy
+msgid "A timeout happened while while trying to retract your message."
+msgstr ""
+"Une erreur s'est produite lors du retrait du message, le délai d'attente est "
+"dépassé"
+
+#: dist/converse-no-dependencies.js:61298
+msgid "You're not allowed to register yourself in this groupchat."
+msgstr "Vous n’êtes pas autorisé à vous enregistrer vous-mêmes dans ce salon."
+
+#: dist/converse-no-dependencies.js:61300
+msgid ""
+"You're not allowed to register in this groupchat because it's members-only."
+msgstr ""
+"Vous n’êtes pas autorisé à vous inscrire dans ce salon parce qu’il est "
+"réservé aux membres."
+
+#: dist/converse-no-dependencies.js:61345
+msgid ""
+"Can't register your nickname in this groupchat, it doesn't support "
+"registration."
+msgstr ""
+"Impossible d’enregistrer votre pseudo dans ce salon, il ne gère pas "
+"l’enregistrement."
+
+#: dist/converse-no-dependencies.js:61347
+msgid ""
+"Can't register your nickname in this groupchat, invalid data form supplied."
+msgstr ""
+"Impossible d’enregistrer votre pseudo dans ce salon, un formulaire invalide "
+"a été envoyé."
+
+#: dist/converse-no-dependencies.js:61548
+#, javascript-format
+msgid "Topic set by %1$s"
+msgstr "Le sujet a été défini par %1$s"
+
+#: dist/converse-no-dependencies.js:61548
+#, javascript-format
+msgid "Topic cleared by %1$s"
+msgstr "Le sujet de ce salon a été retiré par %1$s"
+
+#: dist/converse-no-dependencies.js:62186
+#, javascript-format
+msgid "%1$s has been banned by %2$s"
+msgstr "%1$s a été banni par %2$s"
+
+#: dist/converse-no-dependencies.js:62186
+#, javascript-format
+msgid "%1$s has been banned"
+msgstr "%1$s a été banni"
+
+#: dist/converse-no-dependencies.js:62188
+#, javascript-format
+msgid "%1$s's nickname has changed"
+msgstr "Le pseudo de %1$s a changé"
+
+#: dist/converse-no-dependencies.js:62190
+#, fuzzy, javascript-format
+msgid "%1$s has exited the room due to a technical issue"
+msgstr "%1$s a rejoint le salon"
+
+#: dist/converse-no-dependencies.js:62192
+#, javascript-format
+msgid "%1$s has been kicked out by %2$s"
+msgstr "%1$s a été expulsé par %2$s"
+
+#: dist/converse-no-dependencies.js:62192
+#, javascript-format
+msgid "%1$s has been kicked out"
+msgstr "%1$s a été expulsé"
+
+#: dist/converse-no-dependencies.js:62194
+#, javascript-format
+msgid "%1$s has been removed because of an affiliation change"
+msgstr "%1$s a été supprimé à cause d’un changement d’affiliation"
+
+#: dist/converse-no-dependencies.js:62196
+#, javascript-format
+msgid "%1$s has been removed for not being a member"
+msgstr "%1$s a été supprimé car il n’est pas membre"
+
+#: dist/converse-no-dependencies.js:62216
+#, javascript-format
+msgid "%1$s is no longer an admin of this groupchat"
+msgstr "%1$s n’est plus un administrateur de ce salon"
+
+#: dist/converse-no-dependencies.js:62221
+#, javascript-format
+msgid "%1$s is no longer an owner of this groupchat"
+msgstr "%1$s n’est plus un propriétaire de ce salon"
+
+#: dist/converse-no-dependencies.js:62226
+#, javascript-format
+msgid "%1$s is no longer banned from this groupchat"
+msgstr "%1$s n’est plus banni de ce salon"
+
+#: dist/converse-no-dependencies.js:62233
+#, javascript-format
+msgid "%1$s is no longer a member of this groupchat"
+msgstr "%1$s n'est plus membre de ce salon"
+
+#: dist/converse-no-dependencies.js:62240
+#, javascript-format
+msgid "%1$s is now a member of this groupchat"
+msgstr "%1$s est désormais membre de ce salon"
+
+#: dist/converse-no-dependencies.js:62246
+#, javascript-format
+msgid "%1$s is now an %2$s of this groupchat"
+msgstr "%1$s est maintenant %2$s de ce salon"
+
+#: dist/converse-no-dependencies.js:62371
+msgid ""
+"The nickname you chose is reserved or currently in use, please choose a "
+"different one."
+msgstr ""
+"Le pseudo choisi est réservé ou actuellement utilisé, veuillez en choisir un "
+"différent."
+
+#: dist/converse-no-dependencies.js:62398
+msgid "Password incorrect"
+msgstr "Mot de passe incorrect"
+
+#: dist/converse-no-dependencies.js:62406
+msgid "You are not on the member list of this groupchat."
+msgstr "Vous n’êtes pas dans la liste des membres de ce salon."
+
+#: dist/converse-no-dependencies.js:62410
+msgid "You have been banned from this groupchat."
+msgstr "Vous avez été banni de ce salon."
+
+#: dist/converse-no-dependencies.js:62416
+msgid "You are not allowed to create new groupchats."
+msgstr "Vous n’êtes pas autorisé à créer des salons."
+
+#: dist/converse-no-dependencies.js:62420
+msgid "Your nickname doesn't conform to this groupchat's policies."
+msgstr "Votre pseudo n’est pas conforme à la politique de ce salon."
+
+#: dist/converse-no-dependencies.js:62437
+msgid "This groupchat does not (yet) exist."
+msgstr "Ce salon n’existe pas (pour l’instant)."
+
+#: dist/converse-no-dependencies.js:62441
+msgid "This groupchat has reached its maximum number of participants."
+msgstr "Ce salon a atteint sa limite maximale d’occupants."
+
+#: dist/converse-no-dependencies.js:62445
+msgid "Remote server not found"
+msgstr "Serveur distant introuvable"
+
+#: dist/converse-no-dependencies.js:62447
+#, javascript-format
+msgid "The explanation given is: \"%1$s\"."
+msgstr "La raison indiquée est : « %1$s »."
+
+#: dist/converse-no-dependencies.js:62836
+#, javascript-format
+msgid "%1$s has invited you to join a groupchat: %2$s"
+msgstr "%1$s vous invite à rejoindre le salon : %2$s"
+
+#: dist/converse-no-dependencies.js:62838
+#, javascript-format
+msgid ""
+"%1$s has invited you to join a groupchat: %2$s, and left the following "
+"reason: \"%3$s\""
+msgstr ""
+"%1$s vous invite à rejoindre le salon : %2$s, avec le message suivant : "
+"« %3$s »"
+
+#: dist/converse-no-dependencies.js:63596
+#: dist/converse-no-dependencies.js:84378
+#: dist/converse-no-dependencies.js:85041
+#: dist/converse-no-dependencies.js:90980
+#: dist/converse-no-dependencies.js:91016
+#: dist/converse-no-dependencies.js:91020
+#: dist/converse-no-dependencies.js:96086
+#: dist/converse-no-dependencies.js:96170
+#: dist/converse-no-dependencies.js:96563
+#: dist/converse-no-dependencies.js:96566
+#: dist/converse-no-dependencies.js:99762
+msgid "Error"
+msgstr "Erreur"
+
+#: dist/converse-no-dependencies.js:63596
+msgid "Sorry, something went wrong while trying to save your bookmark."
+msgstr ""
+"Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-"
+"page."
+
+#: dist/converse-no-dependencies.js:63660
+msgid "Timeout Error"
+msgstr "Erreur de délai d'attente dépassé"
+
+#: dist/converse-no-dependencies.js:63660
+msgid ""
+"The server did not return your bookmarks within the allowed time. You can "
+"reload the page to request them again."
+msgstr ""
+"Ce serveur n'a pas renvoyé vos marque-pages dans le temps imparti. Vous "
+"pouvez recharger la page pour les demander à nouveau."
+
+#: dist/converse-no-dependencies.js:66722
+msgid "My contacts"
+msgstr "Mes contacts"
+
+#: dist/converse-no-dependencies.js:66723
+msgid "Pending contacts"
+msgstr "Contacts en attente"
+
+#: dist/converse-no-dependencies.js:66724
+msgid "Contact requests"
+msgstr "Demandes de contacts"
+
+#: dist/converse-no-dependencies.js:66725
+msgid "Ungrouped"
+msgstr "Sans groupe"
+
+#: dist/converse-no-dependencies.js:66726
+#: dist/converse-no-dependencies.js:77762
+msgid "New messages"
+msgstr "Nouveaux messages"
+
+#: dist/converse-no-dependencies.js:67390
+#, javascript-format
+msgid "Sorry, there was an error while trying to add %1$s as a contact."
+msgstr ""
+"Désolé, il y a eu une erreur lors de la tentative d’ajout de %1$s comme "
+"contact."
+
+#: dist/converse-no-dependencies.js:67682
+msgid "This client does not allow presence subscriptions"
+msgstr "Ce client ne permet pas les mises à jour de disponibilité"
+
+#: dist/converse-no-dependencies.js:67792
+msgid "Click to hide these contacts"
+msgstr "Cliquez pour cacher ces contacts"
+
+#: dist/converse-no-dependencies.js:70206
+msgid "Click to toggle the bookmarks list"
+msgstr "Cliquer pour ouvrir la liste des salons"
+
+#: dist/converse-no-dependencies.js:70208
+#: dist/converse-no-dependencies.js:70953
+#: dist/converse-no-dependencies.js:98772
+msgid "Unbookmark this groupchat"
+msgstr "Retirer ce salon des marque-pages"
+
+#: dist/converse-no-dependencies.js:70210
+msgid "Bookmarks"
+msgstr "Marques-page"
+
+#: dist/converse-no-dependencies.js:70212
+#: dist/converse-no-dependencies.js:88533
+#: dist/converse-no-dependencies.js:98776
+msgid "Click to open this groupchat"
+msgstr "Cliquer pour ouvrir ce salon"
+
+#: dist/converse-no-dependencies.js:70251
+#: dist/converse-no-dependencies.js:70953
+#: dist/converse-no-dependencies.js:98768
+msgid "Bookmark this groupchat"
+msgstr "Mettre ce salon en marque-page"
+
+#: dist/converse-no-dependencies.js:70253
+msgid "Would you like this groupchat to be automatically joined upon startup?"
+msgstr "Voulez-vous que ce salon soit automatiquement rejoint au démarrage ?"
+
+#: dist/converse-no-dependencies.js:70257
+msgid "The name for this bookmark:"
+msgstr "Nom de ce marque-page :"
+
+#: dist/converse-no-dependencies.js:70259
+msgid "What should your nickname for this groupchat be?"
+msgstr "Que devrait être votre pseudo sur ce salon ?"
+
+#: dist/converse-no-dependencies.js:70261
+#: dist/converse-no-dependencies.js:89917
+#: dist/converse-no-dependencies.js:94899
+msgid "Save"
+msgstr "Sauvegarder"
+
+#: dist/converse-no-dependencies.js:70715
+#, javascript-format
+msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
+msgstr "Voulez-vous vraiment supprimer le marque-page « %1$s » ?"
+
+#: dist/converse-no-dependencies.js:70954
+msgid "Unbookmark"
+msgstr "Retirer le marque-page"
+
+#: dist/converse-no-dependencies.js:70954
+msgid "Bookmark"
+msgstr "Marque-page"
+
+#: dist/converse-no-dependencies.js:71050
+#: dist/converse-no-dependencies.js:84795
+#: dist/converse-no-dependencies.js:92865
+#: dist/converse-no-dependencies.js:94895
+msgid "Close"
+msgstr "Fermer"
+
+#: dist/converse-no-dependencies.js:71142
+msgid "OK"
+msgstr "OK"
+
+#: dist/converse-no-dependencies.js:71601
+msgid "Image: "
+msgstr ""
+
+#: dist/converse-no-dependencies.js:75691
+#, javascript-format
+msgid "Download audio file \"%1$s\""
+msgstr "Télécharger le fichier audio « %1$s »"
+
+#: dist/converse-no-dependencies.js:75709
+#, javascript-format
+msgid "Download file \"%1$s\""
+msgstr "Télécharger le fichier « %1$s »"
+
+#: dist/converse-no-dependencies.js:77425
+#, fuzzy
+msgid "Cancel Editing"
+msgstr "Changer les préférences"
+
+#: dist/converse-no-dependencies.js:77425
+msgid "Edit"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:77454
+#, fuzzy
+msgid "Retract"
+msgstr "Réessayer"
+
+#: dist/converse-no-dependencies.js:77565
+msgid "Message versions"
+msgstr "Versions du message"
+
+#: dist/converse-no-dependencies.js:78128
+msgid "This message has been edited"
+msgstr "Ce message a été modifié"
+
+#: dist/converse-no-dependencies.js:78130
+msgid "Show more"
+msgstr "Afficher plus"
+
+#: dist/converse-no-dependencies.js:78132
+#, fuzzy
+msgid "Show less"
+msgstr "Afficher les utilisateurs"
+
+#: dist/converse-no-dependencies.js:78134
+msgid "Uploading file:"
+msgstr "Téléversement du fichier :"
+
+#: dist/converse-no-dependencies.js:78180
+msgid "Retry"
+msgstr "Réessayer"
+
+#: dist/converse-no-dependencies.js:78299
+#: dist/converse-no-dependencies.js:78301
+#, javascript-format
+msgid "%1$s has removed this message"
+msgstr "%1$s a supprimé ce message"
+
+#: dist/converse-no-dependencies.js:79171
+msgid "No message history available."
+msgstr "Aucun historique des messages n'est disponible."
+
+#: dist/converse-no-dependencies.js:80102
+msgid "Search"
+msgstr "Rechercher"
+
+#: dist/converse-no-dependencies.js:80104
+msgid "Search results"
+msgstr "Résultats de recherche"
+
+#: dist/converse-no-dependencies.js:81132
+msgid "Insert emojis"
+msgstr "Insérer un emoji"
+
+#: dist/converse-no-dependencies.js:81458
+msgid "Message characters remaining"
+msgstr "Caractères de message restants"
+
+#: dist/converse-no-dependencies.js:81460
+msgid "Choose a file to send"
+msgstr "Choisir un fichier à envoyer"
+
+#: dist/converse-no-dependencies.js:81462
+#, fuzzy
+msgid "Hide occupants"
+msgstr "Participants :"
+
+#: dist/converse-no-dependencies.js:81464
+msgid "Send the message"
+msgstr "Envoyer le message"
+
+#: dist/converse-no-dependencies.js:81466
+#, fuzzy
+msgid "Show occupants"
+msgstr "Afficher les salons"
+
+#: dist/converse-no-dependencies.js:81468
+msgid "Start a call"
+msgstr "Démarrer un appel"
+
+#: dist/converse-no-dependencies.js:81548
+msgid "Click to write as a normal (non-spoiler) message"
+msgstr "Cliquez pour écrire un message sans spoiler"
+
+#: dist/converse-no-dependencies.js:81550
+msgid "Click to write your message as a spoiler"
+msgstr "Cliquez pour écrire votre message en tant que spoiler"
+
+#: dist/converse-no-dependencies.js:83850
+#: dist/converse-no-dependencies.js:84061
+msgid "The User's Profile Image"
+msgstr "Image de profil de l’utilisateur"
+
+#: dist/converse-no-dependencies.js:84051
+#: dist/converse-no-dependencies.js:85904
+#: dist/converse-no-dependencies.js:88396
+#: dist/converse-no-dependencies.js:93758
+#: dist/converse-no-dependencies.js:99122
+msgid "XMPP Address"
+msgstr "Adresse XMPP"
+
+#: dist/converse-no-dependencies.js:84053
+#: dist/converse-no-dependencies.js:94644
+msgid "Email"
+msgstr "Courriel"
+
+#: dist/converse-no-dependencies.js:84055
+msgid "OMEMO Fingerprints"
+msgstr "Empreintes de clé OMEMO"
+
+#: dist/converse-no-dependencies.js:84057
+#: dist/converse-no-dependencies.js:94648
+msgid "Full Name"
+msgstr "Nom complet"
+
+#: dist/converse-no-dependencies.js:84059
+#: dist/converse-no-dependencies.js:88224
+#: dist/converse-no-dependencies.js:91904
+#: dist/converse-no-dependencies.js:94654
+#: dist/converse-no-dependencies.js:99124
+msgid "Nickname"
+msgstr "Pseudo"
+
+#: dist/converse-no-dependencies.js:84063
+msgid "Refresh"
+msgstr "Rafraîchir"
+
+#: dist/converse-no-dependencies.js:84065
+#: dist/converse-no-dependencies.js:89021
+#: dist/converse-no-dependencies.js:94662
+msgid "Role"
+msgstr "Rôle"
+
+#: dist/converse-no-dependencies.js:84067
+#: dist/converse-no-dependencies.js:94670
+msgid "URL"
+msgstr "URL"
+
+#: dist/converse-no-dependencies.js:84069
+msgid "Remove as contact"
+msgstr "Supprimer ce contact"
+
+#: dist/converse-no-dependencies.js:84071
+msgid "Trusted"
+msgstr "De confiance"
+
+#: dist/converse-no-dependencies.js:84073
+msgid "Untrusted"
+msgstr "Pas de confiance"
+
+#: dist/converse-no-dependencies.js:84075
+msgid "No OMEMO-enabled devices found"
+msgstr "Aucun client compatible avec le chiffrement OMEMO n'a été trouvé"
+
+#: dist/converse-no-dependencies.js:84341
+msgid "Sorry, something went wrong while trying to refresh"
+msgstr ""
+"Désolé, quelque chose s’est mal passé mal lors de la tentative de "
+"réactualisation"
+
+#: dist/converse-no-dependencies.js:84365
+#: dist/converse-no-dependencies.js:99734
+msgid "Are you sure you want to remove this contact?"
+msgstr "Voulez-vous vraiment retirer ce contact ?"
+
+#: dist/converse-no-dependencies.js:84378
+#: dist/converse-no-dependencies.js:99762
+#, javascript-format
+msgid "Sorry, there was an error while trying to remove %1$s as a contact."
+msgstr ""
+"Désolé, il y a eu une erreur lors de la tentative de retrait de %1$s comme "
+"contact."
+
+#: dist/converse-no-dependencies.js:84542
+#: dist/converse-no-dependencies.js:90602
+#, javascript-format
+msgid "%1$s is typing"
+msgstr "%1$s est en train d’écrire"
+
+#: dist/converse-no-dependencies.js:84544
+#: dist/converse-no-dependencies.js:90604
+#, javascript-format
+msgid "%1$s has stopped typing"
+msgstr "%1$s a arrêté d’écrire"
+
+#: dist/converse-no-dependencies.js:84546
+#: dist/converse-no-dependencies.js:85461
+#: dist/converse-no-dependencies.js:90606
+#, javascript-format
+msgid "%1$s has gone away"
+msgstr "%1$s n’est plus disponible"
+
+#: dist/converse-no-dependencies.js:84552
+msgid "Remove messages"
+msgstr "Effacer les messages"
+
+#: dist/converse-no-dependencies.js:84552
+msgid "Close this chat"
+msgstr "Fermer cette fenêtre de discussion"
+
+#: dist/converse-no-dependencies.js:84552
+msgid "Write in the third person"
+msgstr "Écrire à la troisième personne"
+
+#: dist/converse-no-dependencies.js:84552
+#: dist/converse-no-dependencies.js:90659
+msgid "Show this menu"
+msgstr "Afficher ce menu"
+
+#: dist/converse-no-dependencies.js:84607
+msgid "Hidden message"
+msgstr "Message caché"
+
+#: dist/converse-no-dependencies.js:84607
+msgid "Message"
+msgstr "Message"
+
+#: dist/converse-no-dependencies.js:84608
+msgid "Optional hint"
+msgstr "Indice optionnel"
+
+#: dist/converse-no-dependencies.js:84612
+msgid "You have unread messages"
+msgstr "Vous avez de nouveaux messages"
+
+#: dist/converse-no-dependencies.js:84782
+#: dist/converse-no-dependencies.js:91093
+msgid "Details"
+msgstr "Détails"
+
+#: dist/converse-no-dependencies.js:84783
+msgid "See more information about this person"
+msgstr "Afficher plus d'informations sur cette personne"
+
+#: dist/converse-no-dependencies.js:84796
+msgid "Close and end this conversation"
+msgstr "Fermer et terminer cette conversation"
+
+#: dist/converse-no-dependencies.js:85040
+msgid "Sorry, the connection has been lost, and your message could not be sent"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:85266
+#: dist/converse-no-dependencies.js:90892
+msgid ""
+"Be aware that other XMPP/Jabber clients (and servers) may not yet support "
+"retractions and that this message may not be removed everywhere."
+msgstr ""
+"Sachez que d'autres clients (et serveurs) XMPP/Jabber peuvent ne pas encore "
+"prendre en charge les rétractations et que ce message peut ne pas être "
+"supprimé partout."
+
+#: dist/converse-no-dependencies.js:85267
+#: dist/converse-no-dependencies.js:90899
+#: dist/converse-no-dependencies.js:90937
+msgid "Are you sure you want to retract this message?"
+msgstr "Voulez-vous vraiment retirer ce message ?"
+
+#: dist/converse-no-dependencies.js:85274
+#: dist/converse-no-dependencies.js:90906
+#: dist/converse-no-dependencies.js:90944
+#: dist/converse-no-dependencies.js:91190
+#: dist/converse-no-dependencies.js:91676
+msgid "Confirm"
+msgstr "Confirmer"
+
+#: dist/converse-no-dependencies.js:85298
+msgid ""
+"You have an unsent message which will be lost if you continue. Are you sure?"
+msgstr ""
+"Vous avez un message non envoyé qui sera perdu si vous continuez. Êtes-vous "
+"sûr ?"
+
+#: dist/converse-no-dependencies.js:85385
+msgid "Are you sure you want to clear the messages from this conversation?"
+msgstr "Voulez-vous vraiment effacer les messages de cette conversation ?"
+
+#: dist/converse-no-dependencies.js:85459
+#, javascript-format
+msgid "%1$s has gone offline"
+msgstr "%1$s s’est déconnecté"
+
+#: dist/converse-no-dependencies.js:85463
+#, javascript-format
+msgid "%1$s is busy"
+msgstr "%1$s est occupé"
+
+#: dist/converse-no-dependencies.js:85465
+#, javascript-format
+msgid "%1$s is online"
+msgstr "%1$s est en ligne"
+
+#: dist/converse-no-dependencies.js:85892
+msgid "Click here to log in anonymously"
+msgstr "Cliquez ici pour se connecter anonymement"
+
+#: dist/converse-no-dependencies.js:85894
+msgid "Disconnected"
+msgstr "Déconnecté"
+
+#: dist/converse-no-dependencies.js:85896
+msgid "Log in"
+msgstr "Se connecter"
+
+#: dist/converse-no-dependencies.js:85898
+msgid "Don't have a chat account?"
+msgstr "Vous n’avez pas de compte ?"
+
+#: dist/converse-no-dependencies.js:85900
+msgid "Password"
+msgstr "Mot de passe"
+
+#: dist/converse-no-dependencies.js:85902
+msgid "This is a trusted device"
+msgstr "Ceci est un appareil de confiance"
+
+#: dist/converse-no-dependencies.js:85906
+msgid "Create an account"
+msgstr "Créer un compte"
+
+#: dist/converse-no-dependencies.js:85908
+msgid ""
+"To improve performance, we cache your data in this browser. Uncheck this box "
+"if this is a public computer or if you want your data to be deleted when you "
+"log out. It's important that you explicitly log out, otherwise not all "
+"cached data might be deleted. Please note, when using an untrusted device, "
+"OMEMO encryption is NOT available."
+msgstr ""
+"Pour améliorer les performances, nous stockons vos données dans ce "
+"navigateur. Décochez cette case si vous êtes sur un ordinateur public, ou si "
+"vous voulez que vos données soient supprimées lorsque vous vous "
+"déconnecterez. Il est important que vous vous déconnectiez explicitement, "
+"sinon les données stockées ne seront pas forcément toutes supprimées. Notez "
+"que lorsque l’ordinateur utilisé n’est pas considéré de confiance, le "
+"chiffrement OMEMO n’est PAS disponible."
+
+#: dist/converse-no-dependencies.js:86403
+msgid "Username"
+msgstr "Nom"
+
+#: dist/converse-no-dependencies.js:86403
+msgid "user@domain"
+msgstr "utilisateur@domaine"
+
+#: dist/converse-no-dependencies.js:86423
+#: dist/converse-no-dependencies.js:88394
+#: dist/converse-no-dependencies.js:99118
+msgid "Please enter a valid XMPP address"
+msgstr "Veuillez saisir une adresse XMPP valide"
+
+#: dist/converse-no-dependencies.js:86522
+msgid "Chat Contacts"
+msgstr "Contacts de chat"
+
+#: dist/converse-no-dependencies.js:86522
+msgid "Toggle chat"
+msgstr "Ouvrir la discussion"
+
+#: dist/converse-no-dependencies.js:87330
+msgid "Minimized"
+msgstr "Réduit(s)"
+
+#: dist/converse-no-dependencies.js:87371
+msgid "Click to restore this chat"
+msgstr "Cliquez pour afficher cette discussion"
+
+#: dist/converse-no-dependencies.js:88092
+#: dist/converse-no-dependencies.js:88111
+msgid "Minimize"
+msgstr "Réduire"
+
+#: dist/converse-no-dependencies.js:88093
+msgid "Minimize this chat"
+msgstr "Réduire cette discussion"
+
+#: dist/converse-no-dependencies.js:88112
+msgid "Minimize this groupchat"
+msgstr "Réduire ce groupe de discussion"
+
+#: dist/converse-no-dependencies.js:88220
+msgid "Join"
+msgstr "Rejoindre"
+
+#: dist/converse-no-dependencies.js:88222
+msgid "Enter a new Groupchat"
+msgstr "Entrer dans un nouveau salon"
+
+#: dist/converse-no-dependencies.js:88226
+msgid "This field is required"
+msgstr "Ce champ est requis"
+
+#: dist/converse-no-dependencies.js:88268
+msgid "name@conference.example.org"
+msgstr "nom@chat.example.org"
+
+#: dist/converse-no-dependencies.js:88273
+msgid "Groupchat name"
+msgstr "Nom du salon"
+
+#: dist/converse-no-dependencies.js:88273
+msgid "Groupchat address"
+msgstr "Adresse du salon"
+
+#: dist/converse-no-dependencies.js:88344
+msgid "Groupchat id is invalid."
+msgstr "L’identifiant du groupe de discussion est invalide."
+
+#: dist/converse-no-dependencies.js:88388
+#: dist/converse-no-dependencies.js:91118
+msgid "Invite"
+msgstr "Inviter"
+
+#: dist/converse-no-dependencies.js:88390
+msgid "Invite someone to this groupchat"
+msgstr "Inviter quelqu’un à ce groupe de discussion"
+
+#: dist/converse-no-dependencies.js:88392
+msgid "user@example.org"
+msgstr "utilisateur@exemple.org"
+
+#: dist/converse-no-dependencies.js:88398
+msgid "Optional reason for the invitation"
+msgstr "Raison facultative pour l’invitation"
+
+#: dist/converse-no-dependencies.js:88529
+#: dist/converse-no-dependencies.js:98774
+msgid "Show more information on this groupchat"
+msgstr "Afficher plus d’informations sur ce salon"
+
+#: dist/converse-no-dependencies.js:88531
+msgid "Query for Groupchats"
+msgstr "Chercher un salon"
+
+#: dist/converse-no-dependencies.js:88535
+msgid "Show groupchats"
+msgstr "Afficher les salons"
+
+#: dist/converse-no-dependencies.js:88537
+msgid "Server address"
+msgstr "Adresse du serveur"
+
+#: dist/converse-no-dependencies.js:88598
+msgid "Description:"
+msgstr "Description :"
+
+#: dist/converse-no-dependencies.js:88599
+msgid "Groupchat Address (JID):"
+msgstr "Adresse du salon (JID) :"
+
+#: dist/converse-no-dependencies.js:88600
+msgid "Participants:"
+msgstr "Participants :"
+
+#: dist/converse-no-dependencies.js:88601
+msgid "Features:"
+msgstr "Caractéristiques :"
+
+#: dist/converse-no-dependencies.js:88602
+msgid "Requires authentication"
+msgstr "Nécessite une authentification"
+
+#: dist/converse-no-dependencies.js:88603
+#: dist/converse-no-dependencies.js:89667
+msgid "Hidden"
+msgstr "Caché"
+
+#: dist/converse-no-dependencies.js:88604
+msgid "Requires an invitation"
+msgstr "Nécessite une invitation"
+
+#: dist/converse-no-dependencies.js:88605
+#: dist/converse-no-dependencies.js:89675
+msgid "Moderated"
+msgstr "Modéré"
+
+#: dist/converse-no-dependencies.js:88606
+msgid "Non-anonymous"
+msgstr "Non-anonyme"
+
+#: dist/converse-no-dependencies.js:88607
+#: dist/converse-no-dependencies.js:89695
+msgid "Open"
+msgstr "Ouvert"
+
+#: dist/converse-no-dependencies.js:88608
+msgid "Permanent"
+msgstr "Permanent"
+
+#: dist/converse-no-dependencies.js:88609
+#: dist/converse-no-dependencies.js:89707
+msgid "Public"
+msgstr "Public"
+
+#: dist/converse-no-dependencies.js:88610
+#: dist/converse-no-dependencies.js:89709
+msgid "Semi-anonymous"
+msgstr "Semi-anonyme"
+
+#: dist/converse-no-dependencies.js:88611
+#: dist/converse-no-dependencies.js:89713
+msgid "Temporary"
+msgstr "Temporaire"
+
+#: dist/converse-no-dependencies.js:88612
+msgid "Unmoderated"
+msgstr "Non modéré"
+
+#: dist/converse-no-dependencies.js:88658
+msgid "conference.example.org"
+msgstr "chat.exemple.org"
+
+#: dist/converse-no-dependencies.js:88717
+#, fuzzy
+msgid "Groupchats found"
+msgstr "Salons trouvés :"
+
+#: dist/converse-no-dependencies.js:88725
+msgid "No groupchats found"
+msgstr "Aucun salon trouvé"
+
+#: dist/converse-no-dependencies.js:89001
+msgid "Affiliation"
+msgstr "Affiliation"
+
+#: dist/converse-no-dependencies.js:89003
+msgid "Change affiliation"
+msgstr "Changer d'affiliation"
+
+#: dist/converse-no-dependencies.js:89005
+msgid "Change role"
+msgstr "Changer de rôle"
+
+#: dist/converse-no-dependencies.js:89007
+msgid "Moderator Tools"
+msgstr "Outils de modération"
+
+#: dist/converse-no-dependencies.js:89009
+msgid "New affiliation"
+msgstr "Nouvelle affiliation"
+
+#: dist/converse-no-dependencies.js:89011
+msgid "New Role"
+msgstr "Nouveau rôle"
+
+#: dist/converse-no-dependencies.js:89013
+msgid "No users with that affiliation found."
+msgstr "Aucun utilisateur trouvé avec cette affiliation."
+
+#: dist/converse-no-dependencies.js:89015
+msgid "No users with that role found."
+msgstr "Aucun utilisateur trouvé avec ce rôle."
+
+#: dist/converse-no-dependencies.js:89017
+#: dist/converse-no-dependencies.js:91668
+msgid "Reason"
+msgstr "Motif"
+
+#: dist/converse-no-dependencies.js:89019
+msgid "Type here to filter the search results"
+msgstr "Écrivez ici pour filtrer les résultats de recherche"
+
+#: dist/converse-no-dependencies.js:89023
+msgid "Show users"
+msgstr "Afficher les utilisateurs"
+
+#: dist/converse-no-dependencies.js:89025
+msgid ""
+"Roles are assigned to users to grant or deny them certain abilities in a "
+"multi-user chat. They're assigned either explicitly or implicitly as part of "
+"an affiliation. A role that's not due to an affiliation, is only valid for "
+"the duration of the user's session."
+msgstr ""
+"Des rôles sont désignés pour autoriser ou non certaines actions dans une "
+"conversation à plusieurs. Les désignations peuvent être explicites, ou "
+"hérités implicitement d'une affiliation. Un rôle qui n'est pas hérité d'une "
+"affiliation est valable que pendant la session de l'utilisateur."
+
+#: dist/converse-no-dependencies.js:89027
+msgid ""
+"An affiliation is a long-lived entitlement which typically implies a certain "
+"role and which grants privileges and responsibilities. For example admins "
+"and owners automatically have the moderator role."
+msgstr ""
+"Typiquement, une affiliation est un titre à vie qui donne un rôle "
+"particulier avec ses privilèges et ses responsabilités. Par exemple, les "
+"administrateurs et les propriétaires ont d'office le rôle de modérateur."
+
+#: dist/converse-no-dependencies.js:89031
+msgid ""
+"Moderators are privileged users who can change the roles of other users "
+"(except those with admin or owner affiliations."
+msgstr ""
+"Les modérateurs sont des utilisateurs privilégiés qui peuvent changer les "
+"rôles d'autres utilisateurs (exceptés les administrateurs ou les "
+"propriétaires d'affiliation)."
+
+#: dist/converse-no-dependencies.js:89033
+msgid "The default role, implies that you can read and write messages."
+msgstr "Le rôle par défaut donne le droit de lire et écrire des messages."
+
+#: dist/converse-no-dependencies.js:89035
+msgid ""
+"Visitors aren't allowed to write messages in a moderated multi-user chat."
+msgstr ""
+"Les visiteurs ne sont pas autorisés à écrire dans une conversation à "
+"plusieurs sous modération."
+
+#: dist/converse-no-dependencies.js:89041
+msgid ""
+"Owner is the highest affiliation. Owners can modify roles and affiliations "
+"of all other users."
+msgstr ""
+"L'affiliation la plus distinctive est celle de propriétaire. Un propriétaire "
+"peut changer les rôles et les affiliations de tout les utilisateurs."
+
+#: dist/converse-no-dependencies.js:89043
+msgid ""
+"Admin is the 2nd highest affiliation. Admins can modify roles and "
+"affiliations of all other users except owners."
+msgstr ""
+"L'affiliation d'administrateur est la 2e plus haute. Un administrateur peut "
+"changer les rôles de tout les utilisateurs sauf le propriétaire."
+
+#: dist/converse-no-dependencies.js:89045
+msgid "To ban a user, you give them the affiliation of \"outcast\"."
+msgstr "Donner l'affiliation de « banni » exclue un utilisateur."
+
+#: dist/converse-no-dependencies.js:89418
+#, fuzzy
+msgid "Timeout error while trying to set the affiliation"
+msgstr ""
+"Désolé, un problème est survenu lors de la modification de l'affiliation"
+
+#: dist/converse-no-dependencies.js:89420
+#, fuzzy
+msgid "Sorry, you're not allowed to make that change"
+msgstr "Vous n’êtes pas autorisé·e à faire cette modification"
+
+#: dist/converse-no-dependencies.js:89422
+msgid "Sorry, something went wrong while trying to set the affiliation"
+msgstr ""
+"Désolé, un problème est survenu lors de la modification de l'affiliation"
+
+#: dist/converse-no-dependencies.js:89429
+msgid "Affiliation changed"
+msgstr "Affiliation modifiée"
+
+#: dist/converse-no-dependencies.js:89464
+msgid "Role changed"
+msgstr "Rôle modifié"
+
+#: dist/converse-no-dependencies.js:89477
+msgid "You're not allowed to make that change"
+msgstr "Vous n’êtes pas autorisé·e à faire cette modification"
+
+#: dist/converse-no-dependencies.js:89479
+msgid "Sorry, something went wrong while trying to set the role"
+msgstr "Désolé, un problème est survenu lors de la modification de rôle"
+
+#: dist/converse-no-dependencies.js:89657
+msgid "Groupchat address (JID)"
+msgstr "Adresse du salon (JID)"
+
+#: dist/converse-no-dependencies.js:89659
+msgid "Message archiving"
+msgstr "Archivage des messages"
+
+#: dist/converse-no-dependencies.js:89661
+msgid "Messages are archived on the server"
+msgstr "Les messages sont archivés sur le serveur"
+
+#: dist/converse-no-dependencies.js:89663
+msgid "Description"
+msgstr "Description"
+
+#: dist/converse-no-dependencies.js:89665
+msgid "Features"
+msgstr "Caractéristiques"
+
+#: dist/converse-no-dependencies.js:89669
+msgid "This groupchat is not publicly searchable"
+msgstr "Ce salon ne peut pas être recherché publiquement"
+
+#: dist/converse-no-dependencies.js:89671
+msgid "This groupchat is restricted to members only"
+msgstr "Ce salon est restreint aux membres uniquement"
+
+#: dist/converse-no-dependencies.js:89673
+msgid "Members only"
+msgstr "Membres uniquement"
+
+#: dist/converse-no-dependencies.js:89677
+msgid ""
+"Participants entering this groupchat need to request permission to write"
+msgstr ""
+"Les participants qui entrent dans ce salon doivent demander la permission "
+"pour écrire"
+
+#: dist/converse-no-dependencies.js:89679
+msgid "Name"
+msgstr "Nom"
+
+#: dist/converse-no-dependencies.js:89681
+msgid "This groupchat does not require a password upon entry"
+msgstr "Ce salon ne nécessite pas de mot de passe pour y accéder"
+
+#: dist/converse-no-dependencies.js:89683
+msgid "No password required"
+msgstr "Pas de mot de passe nécessaire"
+
+#: dist/converse-no-dependencies.js:89685
+msgid "Not anonymous"
+msgstr "Non-anonyme"
+
+#: dist/converse-no-dependencies.js:89687
+msgid "All other groupchat participants can see your XMPP address"
+msgstr "Tous les autres occupants de ce salon peuvent voir votre adresse XMPP"
+
+#: dist/converse-no-dependencies.js:89689
+msgid "Not moderated"
+msgstr "Non modéré"
+
+#: dist/converse-no-dependencies.js:89691
+msgid "Participants entering this groupchat can write right away"
+msgstr "Les participants qui entrent dans ce salon peuvent écrire directement"
+
+#: dist/converse-no-dependencies.js:89693
+msgid "Online users"
+msgstr "Utilisateurs en ligne"
+
+#: dist/converse-no-dependencies.js:89697
+msgid "Anyone can join this groupchat"
+msgstr "N’importe qui peut rejoindre ce salon"
+
+#: dist/converse-no-dependencies.js:89699
+msgid "This groupchat requires a password before entry"
+msgstr "Ce salon nécessite un mot de passe pour y accéder"
+
+#: dist/converse-no-dependencies.js:89701
+msgid "Password protected"
+msgstr "Protégé par mot de passe"
+
+#: dist/converse-no-dependencies.js:89703
+msgid "Persistent"
+msgstr "Persistant"
+
+#: dist/converse-no-dependencies.js:89705
+msgid "This groupchat persists even if it's unoccupied"
+msgstr "Ce salon persiste même s’il est inoccupé"
+
+#: dist/converse-no-dependencies.js:89711
+msgid "Only moderators can see your XMPP address"
+msgstr "Seuls les modérateurs peuvent voir votre adresse XMPP"
+
+#: dist/converse-no-dependencies.js:89715
+msgid "This groupchat will disappear once the last person leaves"
+msgstr "Ce salon disparaîtra au départ de la dernière personne"
+
+#: dist/converse-no-dependencies.js:89717
+msgid "Topic"
+msgstr "Sujet"
+
+#: dist/converse-no-dependencies.js:89719
+msgid "Topic author"
+msgstr "Auteur du sujet"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:89728
+msgid "This groupchat is publicly searchable"
+msgstr "Ce salon peut être recherché publiquement"
+
+#: dist/converse-no-dependencies.js:89746
+#, javascript-format
+msgid "Groupchat info for %1$s"
+msgstr "Informations sur le salon %1$s"
+
+#: dist/converse-no-dependencies.js:89861
+msgid "Hide the groupchat topic"
+msgstr "Masquer le sujet de la discussion de groupe"
+
+#: dist/converse-no-dependencies.js:89863
+msgid "This groupchat is bookmarked"
+msgstr "Cette salon est mis en marque-page"
+
+#: dist/converse-no-dependencies.js:89952
+msgid "This groupchat requires a password"
+msgstr "Ce salon nécessite un mot de passe"
+
+#: dist/converse-no-dependencies.js:89954
+msgid "Password: "
+msgstr "Mot de passe : "
+
+#: dist/converse-no-dependencies.js:89956
+msgid "Submit"
+msgstr "Soumettre"
+
+#: dist/converse-no-dependencies.js:90037
+msgid "This user is a moderator."
+msgstr "Cet utilisateur est un modérateur."
+
+#: dist/converse-no-dependencies.js:90039
+msgid "This user can send messages in this groupchat."
+msgstr "Cet utilisateur peut envoyer des messages dans ce salon."
+
+#: dist/converse-no-dependencies.js:90041
+msgid "This user can NOT send messages in this groupchat."
+msgstr "Cet utilisateur ne peut PAS envoyer de messages dans ce salon."
+
+#: dist/converse-no-dependencies.js:90043
+msgid "Owner"
+msgstr "Propriétaire"
+
+#: dist/converse-no-dependencies.js:90045
+msgid "Admin"
+msgstr "Administrateur"
+
+#: dist/converse-no-dependencies.js:90047
+msgid "Member"
+msgstr "Membre"
+
+#: dist/converse-no-dependencies.js:90049
+msgid "Moderator"
+msgstr "Modérateur"
+
+#: dist/converse-no-dependencies.js:90051
+msgid "Visitor"
+msgstr "Visiteur"
+
+#: dist/converse-no-dependencies.js:90105
+#, javascript-format
+msgid "Click to mention %1$s in your message."
+msgstr "Cliquer pour citer %1$s dans votre message."
+
+#: dist/converse-no-dependencies.js:90108
+msgid "Participants"
+msgstr "Participants"
+
+#: dist/converse-no-dependencies.js:90608
+#, javascript-format
+msgid "%1$s has entered the groupchat"
+msgstr "%1$s a rejoint le salon"
+
+#: dist/converse-no-dependencies.js:90610
+#, javascript-format
+msgid "%1$s has left the groupchat"
+msgstr "%1$s a quitté le salon"
+
+#: dist/converse-no-dependencies.js:90612
+#, javascript-format
+msgid "%1$s is now a moderator"
+msgstr "%1$s est désormais un modérateur"
+
+#: dist/converse-no-dependencies.js:90614
+#, javascript-format
+msgid "%1$s is no longer a moderator"
+msgstr "%1$s n’est plus un modérateur"
+
+#: dist/converse-no-dependencies.js:90616
+#, javascript-format
+msgid "%1$s has been given a voice"
+msgstr "%1$s s'est vu accorder la parole"
+
+#: dist/converse-no-dependencies.js:90618
+#, javascript-format
+msgid "%1$s has been muted"
+msgstr "%1$s a été mis en sourdine"
+
+#: dist/converse-no-dependencies.js:90627
+#, javascript-format
+msgid "%1$s and %2$s"
+msgstr "%1$s et %2$s"
+
+#: dist/converse-no-dependencies.js:90631
+#, javascript-format
+msgid "%1$s are typing"
+msgstr "%1$s est en train d’écrire"
+
+#: dist/converse-no-dependencies.js:90633
+#, javascript-format
+msgid "%1$s have stopped typing"
+msgstr "%1$s a arrêté d’écrire"
+
+#: dist/converse-no-dependencies.js:90635
+#, javascript-format
+msgid "%1$s have gone away"
+msgstr "%1$s n’est plus disponible"
+
+#: dist/converse-no-dependencies.js:90637
+#, javascript-format
+msgid "%1$s have entered the groupchat"
+msgstr "%1$s a rejoint le salon"
+
+#: dist/converse-no-dependencies.js:90639
+#, javascript-format
+msgid "%1$s have left the groupchat"
+msgstr "%1$s a quitté le salon"
+
+#: dist/converse-no-dependencies.js:90641
+#, fuzzy, javascript-format
+msgid "%1$s are now moderators"
+msgstr "%1$s est désormais un modérateur"
+
+#: dist/converse-no-dependencies.js:90643
+#, fuzzy, javascript-format
+msgid "%1$s are no longer moderator"
+msgstr "%1$s n’est plus un modérateur"
+
+#: dist/converse-no-dependencies.js:90645
+#, fuzzy, javascript-format
+msgid "%1$s have been given voices"
+msgstr "%1$s s'est vu accorder la parole"
+
+#: dist/converse-no-dependencies.js:90647
+#, fuzzy, javascript-format
+msgid "%1$s have been muted"
+msgstr "%1$s a été mis en sourdine"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Change user's affiliation to admin"
+msgstr "Changer le rôle de l’utilisateur en administrateur"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Ban user by changing their affiliation to outcast"
+msgstr "Bannir un utilisateur en changeant son affiliation"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Clear the chat area"
+msgstr "Fermer cette fenêtre de discussion"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Close this groupchat"
+msgstr "Fermer ce groupe de discussion"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Change user role to participant"
+msgstr "Changer le rôle de l’utilisateur en participant"
+
+#: dist/converse-no-dependencies.js:90659
+#: dist/converse-no-dependencies.js:91165
+msgid "Remove this groupchat"
+msgstr "Supprimer ce salon"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Kick user from groupchat"
+msgstr "Expulser l’utilisateur du salon"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Write in 3rd person"
+msgstr "Écrire à la troisième personne"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Grant membership to a user"
+msgstr "Autoriser l’utilisateur à être membre"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Opens up the moderator tools GUI"
+msgstr "Ouvre l'interface graphique des outils de modération"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Remove user's ability to post messages"
+msgstr "Retirer le droit d’envoyer des messages"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Change your nickname"
+msgstr "Changer votre pseudo"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Grant moderator role to user"
+msgstr "Changer le rôle de l’utilisateur en modérateur"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Grant ownership of this groupchat"
+msgstr "Accorder la propriété de ce salon"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Register your nickname"
+msgstr "Enregistrer votre pseudo"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Revoke the user's current affiliation"
+msgstr "Révoquer l'affiliation actuelle de l'utilisateur"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Set groupchat subject"
+msgstr "Définir le sujet du salon"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Set groupchat subject (alias for /subject)"
+msgstr "Définir le sujet du salon (alias pour /subject)"
+
+#: dist/converse-no-dependencies.js:90659
+msgid "Allow muted user to post messages"
+msgstr "Autoriser les utilisateurs muets à poster des messages"
+
+#: dist/converse-no-dependencies.js:90961
+msgid "You are about to retract this message."
+msgstr "Vous êtes sur le point de retirer ce message."
+
+#: dist/converse-no-dependencies.js:90961
+msgid ""
+"You may optionally include a message, explaining the reason for the "
+"retraction."
+msgstr ""
+"Vous pouvez, de façon optionnelle, inclure un message expliquant la raison "
+"du retrait."
+
+#: dist/converse-no-dependencies.js:90968
+msgid "Message Retraction"
+msgstr "Retrait du message"
+
+#: dist/converse-no-dependencies.js:90968
+msgid "Optional reason"
+msgstr "Raison facultative"
+
+#: dist/converse-no-dependencies.js:90979
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "Désolé, vous n'êtes pas autorisé à retirer ce message"
+
+#: dist/converse-no-dependencies.js:91015
+msgid "A timeout occurred while trying to retract the message"
+msgstr ""
+"Une erreur s'est produite lors du retrait du message, le délai d'attente est "
+"dépassé"
+
+#: dist/converse-no-dependencies.js:91019
+msgid "Sorry, you're not allowed to retract this message."
+msgstr "Désolé, vous n'êtes pas autorisé a retirer ce message."
+
+#: dist/converse-no-dependencies.js:91094
+msgid "Show more information about this groupchat"
+msgstr "Afficher plus d’informations sur ce salon"
+
+#: dist/converse-no-dependencies.js:91105
+msgid "Configure"
+msgstr "Configurer"
+
+#: dist/converse-no-dependencies.js:91106
+msgid "Configure this groupchat"
+msgstr "Configurer ce salon"
+
+#: dist/converse-no-dependencies.js:91119
+msgid "Invite someone to join this groupchat"
+msgstr "Inviter quelqu’un à rejoindre ce salon"
+
+#: dist/converse-no-dependencies.js:91133
+msgid "Show topic"
+msgstr "Afficher le sujet"
+
+#: dist/converse-no-dependencies.js:91133
+msgid "Hide topic"
+msgstr "Masquer le sujet"
+
+#: dist/converse-no-dependencies.js:91134
+msgid "Show the topic message in the heading"
+msgstr "Afficher le message de sujet dans l'en-tête"
+
+#: dist/converse-no-dependencies.js:91134
+msgid "Hide the topic in the heading"
+msgstr "Masquer le sujet dans l'en-tête"
+
+#: dist/converse-no-dependencies.js:91151
+msgid "Moderate"
+msgstr "Modérer"
+
+#: dist/converse-no-dependencies.js:91152
+msgid "Moderate this groupchat"
+msgstr "Modérer ce salon"
+
+#: dist/converse-no-dependencies.js:91164
+msgid "Destroy"
+msgstr "Détruire"
+
+#: dist/converse-no-dependencies.js:91178
+msgid "Leave"
+msgstr "Quitter"
+
+#: dist/converse-no-dependencies.js:91179
+msgid "Leave and close this groupchat"
+msgstr "Quitter et fermer ce salon"
+
+#: dist/converse-no-dependencies.js:91188
+msgid "Are you sure you want to leave this groupchat?"
+msgstr "Voulez-vous vraiment quitter ce salon ?"
+
+#: dist/converse-no-dependencies.js:91324
+msgid "Hide the list of participants"
+msgstr "Cacher la liste des participants"
+
+#: dist/converse-no-dependencies.js:91404
+msgid "Forbidden: you do not have the necessary role in order to do that."
+msgstr "Interdit : vous n’avez pas le rôle nécessaire pour faire ça."
+
+#: dist/converse-no-dependencies.js:91438
+msgid ""
+"Forbidden: you do not have the necessary affiliation in order to do that."
+msgstr "Interdit : vous n’avez pas l’affiliation nécessaire pour faire ça."
+
+#: dist/converse-no-dependencies.js:91450
+#, javascript-format
+msgid ""
+"Error: the \"%1$s\" command takes two arguments, the user's nickname and "
+"optionally a reason."
+msgstr ""
+"Erreur : la commande « %1$s » prend deux paramètres, le pseudo de "
+"l’utilisateur et une raison optionnelle."
+
+#: dist/converse-no-dependencies.js:91477
+#: dist/converse-no-dependencies.js:91500
+msgid "Error: couldn't find a groupchat participant based on your arguments"
+msgstr ""
+"Erreur : ne trouve pas de participant au salon sur la base de vos arguments"
+
+#: dist/converse-no-dependencies.js:91487
+msgid "Error: found multiple groupchat participant based on your arguments"
+msgstr ""
+"Erreur : plusieurs participants au salon trouvés sur la base de vos arguments"
+
+#: dist/converse-no-dependencies.js:91544
+#, fuzzy
+msgid ""
+"Couldn't find a participant with that nickname. They might have left the "
+"groupchat."
+msgstr ""
+"Impossible de trouver de participant avec ce pseudo ou cette adresse XMPP. "
+"Il se peut qu’il ait quitté le salon."
+
+#: dist/converse-no-dependencies.js:91608
+msgid "Sorry, an error happened while running the command."
+msgstr "Désolé, une erreur est survenue lors de l'exécution de la commande."
+
+#: dist/converse-no-dependencies.js:91608
+#: dist/converse-no-dependencies.js:92287
+msgid "Check your browser's developer console for details."
+msgstr ""
+"Vérifiez les erreurs dans la console de développement de votre navigateur."
+
+#: dist/converse-no-dependencies.js:91658
+msgid "Are you sure you want to destroy this groupchat?"
+msgstr "Voulez-vous vraiment détruire ce salon ?"
+
+#: dist/converse-no-dependencies.js:91661
+#, fuzzy
+msgid "Please enter the XMPP address of this groupchat to confirm"
+msgstr "Veuillez saisir le fournisseur XMPP auprès duquel s’inscrire :"
+
+#: dist/converse-no-dependencies.js:91663
+#: dist/converse-no-dependencies.js:99114
+msgid "name@example.org"
+msgstr "nom@exemple.org"
+
+#: dist/converse-no-dependencies.js:91667
+#, fuzzy
+msgid "Optional reason for destroying this groupchat"
+msgstr "Voulez-vous vraiment détruire ce salon ?"
+
+#: dist/converse-no-dependencies.js:91671
+msgid "Optional XMPP address for a new groupchat that replaces this one"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91672
+#, fuzzy
+msgid "replacement@example.org"
+msgstr "nom@exemple.org"
+
+#. e.g. Your nickname is "coolguy69"
+#: dist/converse-no-dependencies.js:91798
+#, javascript-format
+msgid "Your nickname is \"%1$s\""
+msgstr "Votre pseudo est \"%1$s\""
+
+#: dist/converse-no-dependencies.js:91830
+msgid "Error: invalid number of arguments"
+msgstr "Erreur : nombre d’arguments invalide"
+
+#: dist/converse-no-dependencies.js:91901
+msgid "Choose a nickname to enter"
+msgstr "Choisir un surnom"
+
+#: dist/converse-no-dependencies.js:91901
+msgid "Please choose your nickname"
+msgstr "Veuillez choisir votre pseudo"
+
+#: dist/converse-no-dependencies.js:91905
+msgid "Enter groupchat"
+msgstr "Entrer dans le salon"
+
+#: dist/converse-no-dependencies.js:92070
+#, javascript-format
+msgid "This action was done by %1$s."
+msgstr "Cette action a été réalisée par %1$s."
+
+#: dist/converse-no-dependencies.js:92076
+#, javascript-format
+msgid "The reason given is: \"%1$s\"."
+msgstr "La raison indiquée est : « %1$s »."
+
+#: dist/converse-no-dependencies.js:92196
+msgid "Groupchats"
+msgstr "Salons"
+
+#: dist/converse-no-dependencies.js:92197
+msgid "Add a new groupchat"
+msgstr "Ajouter un nouveau salon"
+
+#: dist/converse-no-dependencies.js:92198
+msgid "Query for groupchats"
+msgstr "Chercher un salon"
+
+#: dist/converse-no-dependencies.js:92287
+msgid "Sorry, an error occurred while trying to submit the config form."
+msgstr ""
+"Désolé, une erreur est survenue lors de la validation du formulaire de "
+"configuration."
+
+#: dist/converse-no-dependencies.js:92772
+msgid "Announcements"
+msgstr "Annonces"
+
+#: dist/converse-no-dependencies.js:92776
+msgid "Click to open this server message"
+msgstr "Cliquez pour ouvrir le message de ce serveur"
+
+#: dist/converse-no-dependencies.js:92866
+msgid "Close these announcements"
+msgstr "Fermer ces annonces"
+
+#. workaround for Prosody which doesn't give type "headline"
+#: dist/converse-no-dependencies.js:93043
+#: dist/converse-no-dependencies.js:93049
+#, javascript-format
+msgid "Notification from %1$s"
+msgstr "Notification depuis %1$s"
+
+#: dist/converse-no-dependencies.js:93051
+#: dist/converse-no-dependencies.js:93061
+#: dist/converse-no-dependencies.js:93064
+#, javascript-format
+msgid "%1$s says"
+msgstr "%1$s dit"
+
+#. TODO: we should suppress notifications if we cannot decrypt
+#. the message...
+#: dist/converse-no-dependencies.js:93073
+msgid "OMEMO Message received"
+msgstr "Message OMEMO reçu"
+
+#: dist/converse-no-dependencies.js:93115
+msgid "has gone offline"
+msgstr "s’est déconnecté"
+
+#: dist/converse-no-dependencies.js:93117
+msgid "has gone away"
+msgstr "est absent"
+
+#: dist/converse-no-dependencies.js:93119
+msgid "is busy"
+msgstr "est occupé"
+
+#: dist/converse-no-dependencies.js:93121
+msgid "has come online"
+msgstr "s’est déconnecté"
+
+#: dist/converse-no-dependencies.js:93138
+msgid "wants to be your contact"
+msgstr "veut être votre contact"
+
+#: dist/converse-no-dependencies.js:93748
+msgid "Hide"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93750
+msgid "On which entity do you want to run commands?"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93752
+msgid ""
+"Certain XMPP services and entities allow privileged users to execute ad-hoc "
+"commands on them."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93754
+msgid "Commands found"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93756
+msgid "List available commands"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93760
+#, fuzzy
+msgid "No commands found"
+msgstr "Aucun salon trouvé"
+
+#: dist/converse-no-dependencies.js:93762
+msgid "Execute"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93997
+#, fuzzy
+msgid "Sorry, an error occurred while looking for commands on that entity."
+msgstr ""
+"Désolé, une erreur est survenue en tentant de supprimer les clients OMEMO."
+
+#: dist/converse-no-dependencies.js:94008
+msgid "The specified entity doesn't support ad-hoc commands"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:94119
+#, fuzzy
+msgid ""
+"Sorry, an error occurred while trying to execute the command. See the "
+"developer console for details"
+msgstr ""
+"Désolé, une erreur s’est produite lors de l’exécution de la commande. "
+"Vérifiez la console de développement de votre navigateur pour plus de "
+"détails."
+
+#: dist/converse-no-dependencies.js:94195
+#, fuzzy
+msgid "Settings"
+msgstr "Changer les préférences"
+
+#: dist/converse-no-dependencies.js:94197
+msgid "About"
+msgstr "À propos"
+
+#: dist/converse-no-dependencies.js:94199
+#, fuzzy
+msgid "Commands"
+msgstr "${command}"
+
+#: dist/converse-no-dependencies.js:94201
+#, javascript-format
+msgid ""
+"%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
+msgstr "Client XMPP %1$s libre %2$s qui vous est fourni par %3$s Opkode %2$s"
+
+#: dist/converse-no-dependencies.js:94203
+#, javascript-format
+msgid "%1$s Translate %2$s it into your own language"
+msgstr "%1$s Traduisez-le %2$s dans votre langue"
+
+#: dist/converse-no-dependencies.js:94316
+msgid "Log out"
+msgstr "Se déconnecter"
+
+#: dist/converse-no-dependencies.js:94318
+msgid "Click to change your chat status"
+msgstr "Cliquez pour changer votre statut"
+
+#: dist/converse-no-dependencies.js:94320
+msgid "Show details about this chat client"
+msgstr "Afficher plus d’informations sur ce client"
+
+#: dist/converse-no-dependencies.js:94472
+msgid "Your avatar image"
+msgstr "Votre image d’avatar"
+
+#: dist/converse-no-dependencies.js:94638
+msgid "Your Profile"
+msgstr "Votre profil"
+
+#: dist/converse-no-dependencies.js:94640
+msgid "Checkbox for selecting the following fingerprint"
+msgstr "Case à cocher pour sélectionner l’empreinte OMEMO suivante"
+
+#: dist/converse-no-dependencies.js:94642
+msgid "Device without a fingerprint"
+msgstr "Client sans empreinte de clé OMEMO"
+
+#: dist/converse-no-dependencies.js:94646
+msgid "This device's OMEMO fingerprint"
+msgstr "Empreinte de clé OMEMO de ce client"
+
+#: dist/converse-no-dependencies.js:94650
+msgid "Generate new keys and fingerprint"
+msgstr "Générer de nouvelles clés et empreintes de clés"
+
+#: dist/converse-no-dependencies.js:94652
+msgid "XMPP Address (JID)"
+msgstr "Adresse XMPP (JID)"
+
+#: dist/converse-no-dependencies.js:94656
+msgid "Other OMEMO-enabled devices"
+msgstr "Autres clients ayant activé le chiffrement OMEMO"
+
+#: dist/converse-no-dependencies.js:94658
+msgid "Checkbox to select fingerprints of all other OMEMO devices"
+msgstr ""
+"Case à cocher pour sélectionner les empreintes de tous les autres clients "
+"OMEMO"
+
+#: dist/converse-no-dependencies.js:94660
+msgid "Remove checked devices and close"
+msgstr "Supprimer les clients OMEMO sélectionnés, et fermer"
+
+#: dist/converse-no-dependencies.js:94664
+msgid "Save and close"
+msgstr "Enregistrer et fermer"
+
+#: dist/converse-no-dependencies.js:94666
+msgid "Select all"
+msgstr "Tout sélectionner"
+
+#: dist/converse-no-dependencies.js:94668
+msgid ""
+"Use commas to separate multiple roles. Your roles are shown next to your "
+"name on your chat messages."
+msgstr ""
+"Utilisez une virgule pour séparer plusieurs rôles. Vos rôles sont affichés à "
+"côté de votre nom dans vos messages."
+
+#: dist/converse-no-dependencies.js:94672
+msgid "OMEMO"
+msgstr "OMEMO"
+
+#: dist/converse-no-dependencies.js:94674
+msgid "Profile"
+msgstr "Profil"
+
+#: dist/converse-no-dependencies.js:94834
+msgid "Sorry, an error happened while trying to save your profile data."
+msgstr ""
+"Désolé, quelque chose s’est mal passé pendant la sauvegarde de votre profil."
+
+#: dist/converse-no-dependencies.js:94834
+msgid "You can check your browser's developer console for any error output."
+msgstr ""
+"Vous pouvez surveiller toute erreur qui apparaîtrait dans la console de "
+"développement de votre navigateur."
+
+#: dist/converse-no-dependencies.js:94892
+#: dist/converse-no-dependencies.js:99449
+msgid "Away"
+msgstr "Absent"
+
+#: dist/converse-no-dependencies.js:94893
+#: dist/converse-no-dependencies.js:99448
+msgid "Busy"
+msgstr "Occupé"
+
+#: dist/converse-no-dependencies.js:94896
+msgid "Custom status"
+msgstr "Statut personnel"
+
+#: dist/converse-no-dependencies.js:94897
+#: dist/converse-no-dependencies.js:99451
+msgid "Offline"
+msgstr "Déconnecté"
+
+#: dist/converse-no-dependencies.js:94898
+#: dist/converse-no-dependencies.js:99446
+msgid "Online"
+msgstr "En ligne"
+
+#: dist/converse-no-dependencies.js:94900
+msgid "Away for long"
+msgstr "Absent pour une longue durée"
+
+#: dist/converse-no-dependencies.js:94901
+msgid "Change chat status"
+msgstr "changer votre statut de chat"
+
+#: dist/converse-no-dependencies.js:94902
+msgid "Personal status message"
+msgstr "Message de statut personnel"
+
+#: dist/converse-no-dependencies.js:94952
+#, javascript-format
+msgid "I am %1$s"
+msgstr "Je suis %1$s"
+
+#: dist/converse-no-dependencies.js:94994
+msgid "Are you sure you want to log out?"
+msgstr "Voulez-vous vraiment vous déconnecter ?"
+
+#: dist/converse-no-dependencies.js:95002
+#: dist/converse-no-dependencies.js:95012
+msgid "online"
+msgstr "en ligne"
+
+#: dist/converse-no-dependencies.js:95004
+msgid "busy"
+msgstr "occupé"
+
+#: dist/converse-no-dependencies.js:95006
+msgid "away for long"
+msgstr "absent pour une longue durée"
+
+#: dist/converse-no-dependencies.js:95008
+msgid "away"
+msgstr "absent"
+
+#: dist/converse-no-dependencies.js:95010
+msgid "offline"
+msgstr "Déconnecté"
+
+#: dist/converse-no-dependencies.js:96000
+#, javascript-format
+msgid ""
+"%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
+"will no longer be possible in this grouchat."
+msgstr ""
+"%1$s ne semble pas avoir un client qui supporte OMEMO. Le chiffrement ne "
+"sera plus possible dans ce groupe de discussion."
+
+#: dist/converse-no-dependencies.js:96081
+#, fuzzy
+msgid ""
+"Cannot use end-to-end encryption in toolbar_el groupchat, either the "
+"groupchat has some anonymity or not all participants support OMEMO."
+msgstr ""
+"Impossible d’utiliser le chiffrement bout à bout dans ce groupe de "
+"discussion, soit parce qu'il permet l'anonymat, ou parce que tous les "
+"participants ne gèrent pas OMEMO."
+
+#: dist/converse-no-dependencies.js:96083
+#, javascript-format
+msgid ""
+"Cannot use end-to-end encryption because %1$s uses a client that doesn't "
+"support OMEMO."
+msgstr ""
+"Impossible d’utiliser le chiffrement bout à bout parce que %1$s utilise un "
+"client qui ne gère pas OMEMO."
+
+#: dist/converse-no-dependencies.js:96102
+msgid "Messages are being sent in plaintext"
+msgstr "Les messages sont envoyés en clair"
+
+#: dist/converse-no-dependencies.js:96104
+#, fuzzy
+msgid "Messages are sent encrypted"
+msgstr "Vos messages ne sont plus chiffrés"
+
+#: dist/converse-no-dependencies.js:96108
+msgid ""
+"This groupchat needs to be members-only and non-anonymous in order to "
+"support OMEMO encrypted messages"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96170
+msgid "Sorry, an error occurred while trying to remove the devices."
+msgstr ""
+"Désolé, une erreur est survenue en tentant de supprimer les clients OMEMO."
+
+#: dist/converse-no-dependencies.js:96176
+msgid ""
+"Are you sure you want to generate new OMEMO keys? This will remove your old "
+"keys and all previously encrypted messages will no longer be decryptable on "
+"this device."
+msgstr ""
+"Voulez-vous vraiment générer de nouvelles clefs OMEMO ? Ceci retirera vos "
+"anciennes clefs et tous les messages déjà chiffrés ne seront plus "
+"déchiffrables sur ce client."
+
+#: dist/converse-no-dependencies.js:96367
+msgid "Sorry, could not decrypt a received OMEMO message due to an error."
+msgstr ""
+"Désolé, impossible de déchiffrer un message chiffré avec OMEMO à cause d’une "
+"erreur."
+
+#: dist/converse-no-dependencies.js:96555
+#, javascript-format
+msgid ""
+"Sorry, we're unable to send an encrypted message because %1$s requires you "
+"to be subscribed to their presence in order to see their OMEMO information"
+msgstr ""
+"Désolé, impossible d'envoyer un message chiffré parce que %1$s nécessitent "
+"que vous soyez abonné à leur présence afin de voir leurs informations OMEMO"
+
+#: dist/converse-no-dependencies.js:96557
+#, javascript-format
+msgid ""
+"Sorry, we're unable to send an encrypted message because the remote server "
+"for %1$s could not be found"
+msgstr ""
+"Désolé, impossible d'envoyer un message chiffré parce que le serveur distant "
+"de %1$s n'est pas joignable"
+
+#: dist/converse-no-dependencies.js:96559
+msgid "Unable to send an encrypted message due to an unexpected error."
+msgstr "Impossible d’envoyer un message chiffré à cause d’une erreur."
+
+#: dist/converse-no-dependencies.js:96645
+msgid ""
+"Sorry, no devices found to which we can send an OMEMO encrypted message."
+msgstr ""
+"Désolé, impossible de trouver un appareil auquel envoyer un message chiffré "
+"avec OMEMO."
+
+#: dist/converse-no-dependencies.js:96746
+msgid ""
+"This is an OMEMO encrypted message which your client doesn’t seem to "
+"support. Find more information on https://conversations.im/omemo"
+msgstr ""
+"Ceci est un message chiffré avec OMEMO, que votre client ne semble pas "
+"prendre en charge. Pour plus d’informations, allez voir https://"
+"conversations.im/omemo"
+
+#: dist/converse-no-dependencies.js:98034
+msgid " e.g. conversejs.org"
+msgstr " par exemple conversejs.org"
+
+#: dist/converse-no-dependencies.js:98121
+msgid "Fetch registration form"
+msgstr "Récupération du formulaire d’enregistrement"
+
+#: dist/converse-no-dependencies.js:98122
+msgid "Tip: A list of public XMPP providers is available"
+msgstr "Astuce : une liste publique de fournisseurs XMPP est disponible"
+
+#: dist/converse-no-dependencies.js:98123
+msgid "here"
+msgstr "ici"
+
+#: dist/converse-no-dependencies.js:98174
+msgid "Sorry, we're unable to connect to your chosen provider."
+msgstr "Désolé, nous n’avons pas pu nous connecter à votre fournisseur."
+
+#: dist/converse-no-dependencies.js:98190
+msgid ""
+"Sorry, the given provider does not support in band account registration. "
+"Please try with a different provider."
+msgstr ""
+"Désolé, le fournisseur indiqué ne supporte pas l’enregistrement de compte en "
+"ligne. Merci d’essayer avec un autre fournisseur."
+
+#: dist/converse-no-dependencies.js:98216
+#, javascript-format
+msgid ""
+"Something went wrong while establishing a connection with \"%1$s\". Are you "
+"sure it exists?"
+msgstr ""
+"Quelque chose a échoué lors de l’établissement de la connexion avec "
+"« %1$s ». Existe-t-il vraiment ?"
+
+#: dist/converse-no-dependencies.js:98402
+msgid "Now logging you in"
+msgstr "En cours de connexion"
+
+#: dist/converse-no-dependencies.js:98406
+msgid "Registered successfully"
+msgstr "Enregistré avec succès"
+
+#: dist/converse-no-dependencies.js:98518
+msgid ""
+"The provider rejected your registration attempt. Please check the values you "
+"entered for correctness."
+msgstr ""
+"Le fournisseur a rejeté votre demande d’inscription. Merci de vérifier que "
+"les données que vous avez fournies sont correctes."
+
+#: dist/converse-no-dependencies.js:98766
+msgid "Click to toggle the list of open groupchats"
+msgstr "Cliquer pour ouvrir la liste des salons ouverts"
+
+#: dist/converse-no-dependencies.js:98770
+msgid "Leave this groupchat"
+msgstr "Quitter ce salon"
+
+#. Note to translators, "Open Groupchats" refers to groupchats that are open, NOT a command.
+#: dist/converse-no-dependencies.js:98779
+msgid "Open Groupchats"
+msgstr "Salons ouverts"
+
+#: dist/converse-no-dependencies.js:99002
+#, javascript-format
+msgid "Are you sure you want to leave the groupchat %1$s?"
+msgstr "Voulez-vous vraiment quitter le salon « %1$s » ?"
+
+#: dist/converse-no-dependencies.js:99116
+msgid "Add"
+msgstr "Ajouter"
+
+#: dist/converse-no-dependencies.js:99120
+msgid "Add a Contact"
+msgstr "Ajouter un contact"
+
+#: dist/converse-no-dependencies.js:99255
+msgid "This contact is busy"
+msgstr "Ce contact est occupé"
+
+#: dist/converse-no-dependencies.js:99256
+msgid "This contact is online"
+msgstr "Ce contact est connecté"
+
+#: dist/converse-no-dependencies.js:99257
+msgid "This contact is offline"
+msgstr "Ce contact est déconnecté"
+
+#: dist/converse-no-dependencies.js:99258
+msgid "This contact is unavailable"
+msgstr "Ce contact est indisponible"
+
+#: dist/converse-no-dependencies.js:99259
+msgid "This contact is away for an extended period"
+msgstr "Ce contact est absent"
+
+#: dist/converse-no-dependencies.js:99260
+msgid "This contact is away"
+msgstr "Ce contact est absent"
+
+#: dist/converse-no-dependencies.js:99272
+msgid "Contact name"
+msgstr "Nom du contact"
+
+#: dist/converse-no-dependencies.js:99272
+msgid "Optional nickname"
+msgstr "Pseudonyme optionnel"
+
+#: dist/converse-no-dependencies.js:99364
+msgid "Sorry, could not find a contact with that name"
+msgstr "Désolé, impossible de trouver un contact avec ce nom"
+
+#: dist/converse-no-dependencies.js:99389
+msgid "This contact has already been added"
+msgstr "Ce contact est déjà enregistré"
+
+#: dist/converse-no-dependencies.js:99440
+msgid "Filter"
+msgstr "Filtrer"
+
+#: dist/converse-no-dependencies.js:99441
+msgid "Filter by contact name"
+msgstr "Filtrer par nom de contact"
+
+#: dist/converse-no-dependencies.js:99442
+msgid "Filter by group name"
+msgstr "Filtrer par nom de groupe"
+
+#: dist/converse-no-dependencies.js:99443
+msgid "Filter by status"
+msgstr "Filtrer par statut"
+
+#: dist/converse-no-dependencies.js:99444
+msgid "Any"
+msgstr "Aucun"
+
+#: dist/converse-no-dependencies.js:99445
+msgid "Unread"
+msgstr "Non lu"
+
+#: dist/converse-no-dependencies.js:99447
+msgid "Chatty"
+msgstr "Bavard"
+
+#: dist/converse-no-dependencies.js:99450
+msgid "Extended Away"
+msgstr "Absence longue durée"
+
+#: dist/converse-no-dependencies.js:99614
+#: dist/converse-no-dependencies.js:99676
+#, javascript-format
+msgid "Click to remove %1$s as a contact"
+msgstr "Cliquez pour retirer le contact %1$s"
+
+#: dist/converse-no-dependencies.js:99623
+#, javascript-format
+msgid "Click to accept the contact request from %1$s"
+msgstr "Cliquez pour accepter la demande d’ajout de contact de %1$s"
+
+#: dist/converse-no-dependencies.js:99624
+#, javascript-format
+msgid "Click to decline the contact request from %1$s"
+msgstr "Cliquez pour décliner la demande d’ajout de contact de %1$s"
+
+#: dist/converse-no-dependencies.js:99675
+#, javascript-format
+msgid "Click to chat with %1$s (XMPP address: %2$s)"
+msgstr "Cliquez pour discuter avec %1$s (adresse XMPP : %2$s)"
+
+#: dist/converse-no-dependencies.js:99803
+msgid "Are you sure you want to decline this contact request?"
+msgstr "Voulez-vous vraiment rejeter cette demande d’ajout de contact ?"
+
+#: dist/converse-no-dependencies.js:100130
+msgid "Contacts"
+msgstr "Contacts"
+
+#: dist/converse-no-dependencies.js:100131
+msgid "Add a contact"
+msgstr "Ajouter un contact"
+
+#: dist/converse-no-dependencies.js:100132
+msgid "Re-sync your contacts"
+msgstr "Resynchroniser vos contacts"
+
+#~ msgid "Edit this message"
+#~ msgstr "Modifier ce message"
+
+#~ msgid "Retract this message"
+#~ msgstr "Retirer ce message"
+
+#, javascript-format
+#~ msgid "The message from the server is: \"%1$s\""
+#~ msgstr "Le message du serveur est : « %1$s »"
+
+#~ msgid "Sorry, an error occurred:"
+#~ msgstr "Désolé, une erreur s’est produite :"
+
+#, javascript-format
+#~ msgid "Download image \"%1$s\""
+#~ msgstr "Télécharger l’image « %1$s »"
+
+#~ msgid "Clear all messages"
+#~ msgstr "Supprimer tous les messages"
+
+#~ msgid "You can run the following commands"
+#~ msgstr "Vous pouvez exécuter les commandes suivantes"
+
+#~ msgid "Typing from another device"
+#~ msgstr "En train d’écrire depuis un autre client"
+
+#~ msgid "Stopped typing on the other device"
+#~ msgstr "A arrêté d’écrire sur l’autre client"
+
+#~ msgid "Close this chat box"
+#~ msgstr "Fermer cette fenêtre de discussion"
+
+#~ msgid "Show more details about this groupchat"
+#~ msgstr "Afficher davantage d’informations sur ce salon"
+
+#~ msgid "Invite someone"
+#~ msgstr "Inviter quelqu'un"
+
+#, javascript-format
+#~ msgid "%1$s has been banned from this groupchat"
+#~ msgstr "%1$s a été banni de ce salon"
+
+#~ msgid "Close and leave this groupchat"
+#~ msgstr "Fermer et quitter ce salon"
+
+#, javascript-format
+#~ msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
+#~ msgstr "%1$s a quitté puis rejoint le salon. « %2$s »"
+
+#, javascript-format
+#~ msgid "%1$s has left and re-entered the groupchat"
+#~ msgstr "%1$s a quitté puis rejoint le salon"
+
+#, javascript-format
+#~ msgid "%1$s has entered the groupchat. \"%2$s\""
+#~ msgstr "%1$s a rejoint le salon. « %2$s »"
+
+#, javascript-format
+#~ msgid "%1$s has entered and left the groupchat. \"%2$s\""
+#~ msgstr "%1$s a rejoint puis quitté le salon. « %2$s »"
+
+#, javascript-format
+#~ msgid "%1$s has entered and left the groupchat"
+#~ msgstr "%1$s a rejoint puis quitté le salon"
+
+#, javascript-format
+#~ msgid "%1$s has left the groupchat. \"%2$s\""
+#~ msgstr "%1$s a quitté le salon. « %2$s »"
+
+#~ msgid "Full Name:"
+#~ msgstr "Nom complet :"
+
+#~ msgid "XMPP Address:"
+#~ msgstr "Adresse XMPP :"
+
+#~ msgid "Nickname:"
+#~ msgstr "Pseudonyme :"
+
+#~ msgid "URL:"
+#~ msgstr "Site web :"
+
+#~ msgid "Email:"
+#~ msgstr "Courriel :"
+
+#~ msgid "Role:"
+#~ msgstr "Rôle :"
+
+#~ msgid "password"
+#~ msgstr "Mot de passe"
+
+#~ msgid "No password"
+#~ msgstr "Pas de mot de passe"
+
+#~ msgid "this groupchat is restricted to members only"
+#~ msgstr "ce salon est restreint aux membres uniquement"
+
+#~ msgid "Download"
+#~ msgstr "Télécharger"
+
+#~ msgid "Send"
+#~ msgstr "Envoyer"
+
+#~ msgid "Remove this bookmark"
+#~ msgstr "Supprimer ce marque-page"
+
+#, javascript-format
+#~ msgid ""
+#~ "You are about to invite %1$s to the groupchat \"%2$s\". You may "
+#~ "optionally include a message, explaining the reason for the invitation."
+#~ msgstr ""
+#~ "Vous allez inviter %1$s dans le salon %2$s. Vous pouvez facultativement "
+#~ "ajouter un message expliquant la raison de cette invitation."
+
+#~ msgid "Your profile"
+#~ msgstr "Votre profil"
+
+#, javascript-format
+#~ msgid "Download video file \"%1$s\""
+#~ msgstr "Télécharger la vidéo « %1$s »"
+
+#~ msgid "You need to provide a nickname"
+#~ msgstr "Vous devez fournir un pseudo"
+
+#~ msgid "Groups"
+#~ msgstr "Groupes"
+
+#~ msgid "1111"
+#~ msgstr "1111"
+
+#~ msgid "2222"
+#~ msgstr "2222"
+
+#~ msgid "3333"
+#~ msgstr "3333"
+
+#~ msgid "4444"
+#~ msgstr "4444"
+
+#~ msgid "hello world"
+#~ msgstr "Bonjour je suis un programme qui marche"
+
+#~ msgid "%1$s is no longer a permanent member of this groupchat"
+#~ msgstr "%1$s n’est plus un membre permanent de ce salon"
+
+#~ msgid "Ban user from groupchat"
+#~ msgstr "Bannir l’utilisateur du salon"
+
+#~ msgid "Register a nickname for this groupchat"
+#~ msgstr "Enregistrer un pseudo pour ce salon"
+
+#~ msgid "Revoke user's membership"
+#~ msgstr "Révoquer l’utilisateur des membres"
+
+#~ msgid "No nickname was specified."
+#~ msgstr "Aucun pseudo n’a été indiqué."
+
+#~ msgid "You cannot add yourself as a contact"
+#~ msgstr "Vous ne pouvez vous ajouter en contact"
+
+#~ msgid "Error: the groupchat %1$s does not exist."
+#~ msgstr "Erreur : le salon %1$s n’existe pas."
+
+#~ msgid "Destroy groupchat"
+#~ msgstr "Supprimer le salon"
+
+#~ msgid "Please enter a valid XMPP username"
+#~ msgstr "Veuillez saisir un identifiant utilisateur XMPP valide"
+
+#~ msgid "XMPP Username:"
+#~ msgstr "Nom d’utilisateur XMPP :"
+
+#, fuzzy
+#~ msgid "%1$s is now an "
+#~ msgstr "%1$s est désormais un modérateur"
+
+#~ msgid "This groupchat is not being moderated"
+#~ msgstr "Ce salon n’est pas modéré"
+
+#~ msgid "Jabber ID"
+#~ msgstr "Identifiant Jabber"
+
+#~ msgid "Personal message"
+#~ msgstr "Message personnel"
+
+#~ msgid "Log in with %1$s"
+#~ msgstr "Se connecter avec %1$s"
+
+#~ msgid "Your server's response: \"%1$s\""
+#~ msgstr "La réponse de votre serveur : « %1$s »"
+
+#~ msgid "Open room"
+#~ msgstr "Salon ouvert"
+
+#~ msgid "Query for Chatrooms"
+#~ msgstr "Chercher un salon de discussion"
+
+#~ msgid "Chatrooms"
+#~ msgstr "Salons"
+
+#~ msgid "Re-establishing encrypted session"
+#~ msgstr "Rétablissement d’une session chiffrée"
+
+#~ msgid "Generating private key."
+#~ msgstr "Génération de la clé privée."
+
+#~ msgid "Your browser might become unresponsive."
+#~ msgstr "Votre navigateur pourrait ne plus répondre."
+
+#~ msgid ""
+#~ "Authentication request from %1$s\n"
+#~ "\n"
+#~ "Your chat contact is attempting to verify your identity, by asking you "
+#~ "the question below.\n"
+#~ "\n"
+#~ "%2$s"
+#~ msgstr ""
+#~ "Demande d’authentification de %1$s\n"
+#~ "\n"
+#~ "Votre contact tente de vérifier votre identité, en vous posant la "
+#~ "question ci-dessous.\n"
+#~ "\n"
+#~ "%2$s"
+
+#~ msgid "Could not verify this user's identify."
+#~ msgstr "L’identité de cet utilisateur ne peut pas être vérifiée."
+
+#~ msgid "Exchanging private key with contact."
+#~ msgstr "Échange de la clef privée avec le contact."
+
+#~ msgid ""
+#~ "Your messages are now encrypted but your contact's identity has not been "
+#~ "verified."
+#~ msgstr ""
+#~ "Vos messages sont maintenant chiffrés mais l’identité de votre contact "
+#~ "n’a pas encore été vérifiée."
+
+#~ msgid "Your contact's identify has been verified."
+#~ msgstr "L’identité de votre contact a été vérifiée."
+
+#~ msgid ""
+#~ "Your contact has ended encryption on their end, you should do the same."
+#~ msgstr ""
+#~ "Votre contact a arrêté le chiffrement de son côté, vous devriez le faire "
+#~ "aussi."
+
+#~ msgid "Your message could not be sent"
+#~ msgstr "Votre message ne peut pas être envoyé"
+
+#~ msgid "We received an unencrypted message"
+#~ msgstr "Un message non chiffré a été reçu"
+
+#~ msgid "We received an unreadable encrypted message"
+#~ msgstr "Un message chiffré illisible a été reçu"
+
+#~ msgid ""
+#~ "Here are the fingerprints, please confirm them with %1$s, outside of this "
+#~ "chat.\n"
+#~ "\n"
+#~ "Fingerprint for you, %2$s: %3$s\n"
+#~ "\n"
+#~ "Fingerprint for %1$s: %4$s\n"
+#~ "\n"
+#~ "If you have confirmed that the fingerprints match, click OK, otherwise "
+#~ "click Cancel."
+#~ msgstr ""
+#~ "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en "
+#~ "dehors de ce chat.\n"
+#~ "\n"
+#~ "Empreinte pour vous, %2$s : %3$s\n"
+#~ "\n"
+#~ "Empreinte pour %1$s : %4$s\n"
+#~ "\n"
+#~ "Si vous avez confirmé que les empreintes correspondent, cliquez OK, sinon "
+#~ "cliquez Annuler."
+
+#~ msgid ""
+#~ "You will be prompted to provide a security question and then an answer to "
+#~ "that question.\n"
+#~ "\n"
+#~ "Your contact will then be prompted the same question and if they type the "
+#~ "exact same answer (case sensitive), their identity will be verified."
+#~ msgstr ""
+#~ "Vous allez être invité à fournir une question de sécurité et une réponse "
+#~ "à cette question.\n"
+#~ "\n"
+#~ "Votre contact devra répondre à la même question et s’il fournit la même "
+#~ "réponse (sensible à la casse), son identité sera vérifiée."
+
+#~ msgid "What is your security question?"
+#~ msgstr "Quelle est votre question de sécurité ?"
+
+#~ msgid "What is the answer to the security question?"
+#~ msgstr "Quelle est la réponse à la question de sécurité ?"
+
+#~ msgid "Invalid authentication scheme provided"
+#~ msgstr "Schéma d’authentification fourni non valide"
+
+#~ msgid ""
+#~ "Your messages are not encrypted. Click here to enable OTR encryption."
+#~ msgstr ""
+#~ "Vos messages ne sont pas chiffrés. Cliquez ici pour activer le "
+#~ "chiffrement OTR."
+
+#~ msgid "Your messages are encrypted, but your contact has not been verified."
+#~ msgstr "Vos messages sont chiffrés, mais votre contact n’a pas été vérifié."
+
+#~ msgid "Your messages are encrypted and your contact verified."
+#~ msgstr "Vos messages sont chiffrés et votre contact est vérifié."
+
+#~ msgid ""
+#~ "Your contact has closed their end of the private session, you should do "
+#~ "the same"
+#~ msgstr ""
+#~ "Votre contact a fermé la session privée de son côté, vous devriez le "
+#~ "faire aussi"
+
+#~ msgid "Refresh encrypted conversation"
+#~ msgstr "Actualiser la conversation chiffrée"
+
+#~ msgid "Start encrypted conversation"
+#~ msgstr "Démarrer une conversation chiffrée"
+
+#~ msgid "Verify with SMP"
+#~ msgstr "Vérifier par Question/Réponse"
+
+#~ msgid "What's this?"
+#~ msgstr "Qu’est-ce que c’est ?"
+
+#~ msgid "unencrypted"
+#~ msgstr "chiffré"
+
+#~ msgid "unverified"
+#~ msgstr "non vérifié"
+
+#~ msgid "verified"
+#~ msgstr "vérifié"
+
+#~ msgid "finished"
+#~ msgstr "terminé"
+
+#~ msgid "Open Rooms"
+#~ msgstr "Ouvrir les salons"
+
+#~ msgid "Error: could not execute the command"
+#~ msgstr "Erreur : la commande ne peut pas être exécutée"
+
+#~ msgid "Show hidden message"
+#~ msgstr "Afficher le message caché"
+
+#~ msgid "me"
+#~ msgstr "moi"
+
+#~ msgid "Are you sure you want to clear the messages from this room?"
+#~ msgstr "Voulez-vous vraiment supprimer les messages de ce salon ?"
+
+#~ msgid "Login"
+#~ msgstr "Connexion"
+
+#~ msgid "State"
+#~ msgstr "Status"
+
+#~ msgid "Click here to write a custom status message"
+#~ msgstr "Cliquez ici pour indiquer votre statut personnel"
+
+#~ msgid "Click to add new chat contacts"
+#~ msgstr "Cliquez pour ajouter de nouveaux contacts"
+
+#~ msgid "Room name"
+#~ msgstr "Nom du salon"
+
+#~ msgid "Rooms"
+#~ msgstr "Salons"
+
+#~ msgid ""
+#~ "A very large message has been received. This might be due to an attack "
+#~ "meant to degrade the chat performance. Output has been shortened."
+#~ msgstr ""
+#~ "Un message très long a été reçu. Cela pourrait être lié à une attaque "
+#~ "visant à dégrader les performances de la conversation. L’affichage a été "
+#~ "tronqué."
+
+#~ msgid "You are about to invite %1$s to the chat room \"%2$s\". "
+#~ msgstr "Vous vous apprêtez à inviter %1$s dans le salon « %2$s ». "
+
+#~ msgid "No rooms on %1$s"
+#~ msgstr "Aucun salon dans %1$s"
+
+#~ msgid " has left the room. \""
+#~ msgstr " a quitté le salon. \""
+
+#~ msgid " has joined the room. \""
+#~ msgstr " a rejoint le salon. \""
+
+#~ msgid "Unsecured"
+#~ msgstr "Non sécurisé"
+
+#~ msgid "Please enter your password"
+#~ msgstr "Veuillez saisir votre mot de passe"
+
+#~ msgid "The reason given is: \"%1$s \""
+#~ msgstr "La raison indiquée est : « %1$s »"
+
+#~ msgid "Close this box"
+#~ msgstr "Fermer cette fenêtre"
+
+#, fuzzy
+#~ msgid "Account Registration"
+#~ msgstr "Récupération du formulaire d’enregistrement"
+
+#~ msgid "user@server"
+#~ msgstr "utilisateur@serveur"
+
+#~ msgid "Sign in"
+#~ msgstr "S’inscrire"
+
+#~ msgid "Requesting a registration form from the XMPP server"
+#~ msgstr "Demande du formulaire enregistrement au serveur XMPP"
+
+#~ msgid "Reconnecting"
+#~ msgstr "Reconnexion"
+
+#~ msgid "Connection error"
+#~ msgstr "Erreur de connexion"
+
+#~ msgid "Connecting"
+#~ msgstr "Connexion"
+
+#~ msgid "Authenticating"
+#~ msgstr "Authentification"
+
+#~ msgid "Authentication Failed"
+#~ msgstr "L’authentification a échoué"
+
+#~ msgid "Connection failed"
+#~ msgstr "La connexion a échoué"
+
+#~ msgid "An error occurred while connecting to the chat server: "
+#~ msgstr ""
+#~ "Une erreur est survenue lors de la connexion au serveur de discussion : "
+
+#~ msgid "Error: the \""
+#~ msgstr "Erreur : \""
+
+#~ msgid "The reason given is: \""
+#~ msgstr "La raison indiquée est : \""
+
+#~ msgid "Click to mention "
+#~ msgstr "Cliquer pour citer "
+
+#, fuzzy
+#~ msgid "Server:"
+#~ msgstr "Serveur"
+
+#~ msgid "Return"
+#~ msgstr "Retourner"
+
+#, fuzzy
+#~ msgid "The reason given is: <em>\"%1$s\"</em>."
+#~ msgstr "La raison indiquée est : \"%1$s\"."
+
+#, fuzzy
+#~ msgid "Authentication failed."
+#~ msgstr "L'authentification a échoué"
+
+#, fuzzy
+#~ msgid "Minimize this box"
+#~ msgstr "Réduit(s)"
+
+#~ msgid "Your nickname is already taken"
+#~ msgstr "Votre alias est déjà utilisé"
+
+#~ msgid "Type to filter"
+#~ msgstr "Filtrer"
+
+#~ msgid "Contact username"
+#~ msgstr "Nom du contact"
+
+#~ msgid "Online Contacts"
+#~ msgstr "Contacts en ligne"
+
+#~ msgid "Disconnecting"
+#~ msgstr "Déconnection"
+
+#, fuzzy
+#~ msgid "Decline"
+#~ msgstr "Refuser"
+
+#~ msgid "BOSH Service URL:"
+#~ msgstr "URL du service BOSH:"
+
+#~ msgid "Connected"
+#~ msgstr "Connecté"
+
+#~ msgid "Attached"
+#~ msgstr "Attaché"

@@ -1,8 +1,8 @@
 /* global module, __dirname */
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const common = require("./webpack.common.js");
-const merge = require("webpack-merge");
 const path = require('path');
+const { merge}  = require("webpack-merge");
 
 module.exports = merge(common, {
     mode: "production",

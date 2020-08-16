@@ -7,36 +7,36 @@ import { modal_header_close_button } from "./buttons"
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 
-const i18n_modal_title = __('Settings');
-const i18n_about = __('About');
-const i18n_commands = __('Commands');
-
-const first_subtitle = __(
-    '%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s',
-    '<a target="_blank" rel="nofollow" href="https://conversejs.org">',
-    '</a>',
-    '<a target="_blank" rel="nofollow" href="https://opkode.com">'
-);
-
-const second_subtitle = __(
-    '%1$s Translate %2$s it into your own language',
-    '<a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">',
-    '</a>'
-);
-
-const tpl_navigation = (o) => html`
-    <ul class="nav nav-pills justify-content-center">
-        <li role="presentation" class="nav-item">
-            <a class="nav-link active" id="about-tab" href="#about-tabpanel" aria-controls="about-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>${i18n_about}</a>
-        </li>
-        <li role="presentation" class="nav-item">
-            <a class="nav-link" id="commands-tab" href="#commands-tabpanel" aria-controls="commands-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>${i18n_commands}</a>
-        </li>
-    </ul>
-`;
+const tpl_navigation = (o) => {
+    const i18n_about = __('About');
+    const i18n_commands = __('Commands');
+    return html`
+        <ul class="nav nav-pills justify-content-center">
+            <li role="presentation" class="nav-item">
+                <a class="nav-link active" id="about-tab" href="#about-tabpanel" aria-controls="about-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>${i18n_about}</a>
+            </li>
+            <li role="presentation" class="nav-item">
+                <a class="nav-link" id="commands-tab" href="#commands-tabpanel" aria-controls="commands-tabpanel" role="tab" data-toggle="tab" @click=${o.switchTab}>${i18n_commands}</a>
+            </li>
+        </ul>
+    `;
+}
 
 
 export default (o) => {
+    const i18n_modal_title = __('Settings');
+    const first_subtitle = __(
+        '%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s',
+        '<a target="_blank" rel="nofollow" href="https://conversejs.org">',
+        '</a>',
+        '<a target="_blank" rel="nofollow" href="https://opkode.com">'
+    );
+
+    const second_subtitle = __(
+        '%1$s Translate %2$s it into your own language',
+        '<a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">',
+        '</a>'
+    );
     const show_client_info = api.settings.get('show_client_info');
     const allow_adhoc_commands = api.settings.get('allow_adhoc_commands');
     const show_both_tabs = show_client_info && allow_adhoc_commands;

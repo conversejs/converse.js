@@ -1544,7 +1544,7 @@ Object.assign(converse, {
             /^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel',
             l => log.setLogLevel(l)
         );
-        initLocale();
+        await initLocale();
         _converse.connfeedback = new _converse.ConnectionFeedback();
 
         /* When reloading the page:

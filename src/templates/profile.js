@@ -2,12 +2,11 @@ import { __ } from '@converse/headless/i18n';
 import { api } from "@converse/headless/converse-core";
 import { html } from "lit-html";
 
-const i18n_logout = __('Log out');
-const i18n_change_status = __('Click to change your chat status');
-const i18n_details = __('Show details about this chat client');
-
 
 export default (o) => {
+    const i18n_logout = __('Log out');
+    const i18n_change_status = __('Click to change your chat status');
+    const i18n_details = __('Show details about this chat client');
     const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');
     return html`
     <div class="userinfo controlbox-padded">

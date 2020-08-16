@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-01-09 14:46+0000\n"
-"Last-Translator: Antonio Morais <antoniomorais360@gmail.com>\n"
+"PO-Revision-Date: 2020-04-21 20:11+0000\n"
+"Last-Translator: Lucas Araujo <lucassants2808@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10.1-dev\n"
+"X-Generator: Weblate 4.0.2-dev\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -35,14 +35,12 @@ msgid "Edit this message"
 msgstr "Edite esta mensagem"
 
 #: dist/converse-no-dependencies.js:10713
-#, fuzzy
 msgid "Retract this message"
-msgstr "Edite esta mensagem"
+msgstr "Recolher esta mensagem"
 
 #: dist/converse-no-dependencies.js:10739
-#, fuzzy
 msgid "Send the message"
-msgstr "Edite esta mensagem"
+msgstr "Envie esta mensagem"
 
 #: dist/converse-no-dependencies.js:11061
 msgid "You're not allowed to send messages in this room"
@@ -103,11 +101,9 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: dist/converse-no-dependencies.js:27562
-#, fuzzy
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
-"Sua mensagem não foi entregue porque você não tem permissão para enviar "
-"mensagens nesta sala."
+"Sua mensagem não foi entregue porque você não tem permissão para enviá-la."
 
 #: dist/converse-no-dependencies.js:27565
 #, fuzzy, javascript-format
@@ -132,9 +128,10 @@ msgid "An error occurred while connecting to the chat server."
 msgstr "Ocorreu um erro ao se conectar ao servidor de bate-papo."
 
 #: dist/converse-no-dependencies.js:29953
-#, fuzzy
 msgid "Your XMPP address and/or password is incorrect. Please try again."
-msgstr "Seu ID XMPP e/ou senha estão incorretas. Por favor, tente novamente."
+msgstr ""
+"Seu endereço ID XMPP e/ou sua senha estão incorretas. Por favor, tente "
+"novamente."
 
 #: dist/converse-no-dependencies.js:29967
 #, javascript-format

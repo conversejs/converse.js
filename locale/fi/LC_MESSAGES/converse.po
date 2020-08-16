@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-13 14:46+0200\n"
-"PO-Revision-Date: 2020-04-08 21:54+0000\n"
-"Last-Translator: anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-05-02 10:11+0000\n"
+"Last-Translator: Janne E <pyskoovits@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
 "translations/fi/>\n"
 "Language: fi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: dist/converse-no-dependencies.js:10577
 msgid "Uploading file:"
@@ -334,9 +334,9 @@ msgid "Topic cleared by %1$s"
 msgstr "Aihe poistettu %1$s"
 
 #: dist/converse-no-dependencies.js:38511
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%1$s on kielletty"
+msgstr "%2$s antoi porttikiellon käyttäjälle %1$s"
 
 #: dist/converse-no-dependencies.js:38511
 #, javascript-format
@@ -349,9 +349,9 @@ msgid "%1$s's nickname has changed"
 msgstr "%1$s nimimerkki on muuttunut"
 
 #: dist/converse-no-dependencies.js:38515
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s on poistettu"
+msgstr "%2$s potki ulos käyttäjän %1$s"
 
 #: dist/converse-no-dependencies.js:38515
 #, javascript-format
@@ -764,7 +764,7 @@ msgstr "Valitse lähetettävä tiedosto"
 #: dist/converse-no-dependencies.js:53488
 #: dist/converse-no-dependencies.js:63629
 msgid "Details"
-msgstr ""
+msgstr "Tiedot"
 
 #: dist/converse-no-dependencies.js:53489
 #, fuzzy
@@ -1421,9 +1421,9 @@ msgid "%1$s has left the groupchat"
 msgstr "%1$s on poistunut ryhmäkeskustelusta"
 
 #: dist/converse-no-dependencies.js:63150
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$s"
-msgstr "%1$s sanoo"
+msgstr "%1$s ja %2$s"
 
 #: dist/converse-no-dependencies.js:63154
 #, fuzzy, javascript-format
@@ -1470,9 +1470,8 @@ msgid "Optional reason"
 msgstr "Valinnainen syy"
 
 #: dist/converse-no-dependencies.js:63490
-#, fuzzy
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Valitettavasti et saa peruuttaa tätä viestiä."
+msgstr "Valitettavasti et voi peruuttaa tätä viestiä."
 
 #: dist/converse-no-dependencies.js:63512
 msgid "Sorry, something went wrong while trying to retract your message."
@@ -1512,7 +1511,7 @@ msgstr "Jätä tämä ryhmäkeskustelu"
 
 #: dist/converse-no-dependencies.js:63672
 msgid "Destroy"
-msgstr ""
+msgstr "Tuhoa"
 
 #: dist/converse-no-dependencies.js:63673
 #: dist/converse-no-dependencies.js:64268
@@ -1542,7 +1541,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:63714
 msgid "Leave"
-msgstr ""
+msgstr "Lähde"
 
 #: dist/converse-no-dependencies.js:63715
 #, fuzzy

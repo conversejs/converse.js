@@ -7,13 +7,6 @@ import { until } from 'lit-html/directives/until.js';
 
 const Strophe = converse.env.Strophe
 
-const i18n_chars_remaining = __('Message characters remaining');
-const i18n_choose_file =  __('Choose a file to send')
-const i18n_hide_occupants = __('Hide occupants');
-const i18n_send_message = __('Send the message');
-const i18n_show_occupants = __('Show occupants');
-const i18n_start_call = __('Start a call');
-
 
 export class ChatToolbar extends CustomElement {
 
@@ -35,6 +28,7 @@ export class ChatToolbar extends CustomElement {
     }
 
     render () {
+        const i18n_send_message = __('Send the message');
         return html`
             ${ this.show_toolbar ? html`<span class="toolbar-buttons">${until(this.getButtons(), '')}</span>` : '' }
             ${ this.show_send_button ? html`<button type="submit" class="btn send-button fa fa-paper-plane" title="${ i18n_send_message }"></button>` : '' }
@@ -49,12 +43,14 @@ export class ChatToolbar extends CustomElement {
         }
 
         if (this.show_call_button) {
+            const i18n_start_call = __('Start a call');
             buttons.push(html`
                 <button class="toggle-call" @click=${this.toggleCall} title="${i18n_start_call}">
                     <converse-icon class="fa fa-phone" path-prefix="/dist" size="1em"></converse-icon>
                 </button>`
             );
         }
+        const i18n_chars_remaining = __('Message characters remaining');
         const message_limit = api.settings.get('message_limit');
         if (message_limit) {
             buttons.push(html`<span class="right message-limit" title="${i18n_chars_remaining}">${this.message_limit}</span>`);
@@ -68,6 +64,8 @@ export class ChatToolbar extends CustomElement {
         buttons.push(html`${until(http_upload_promise.then(is_supported => this.getHTTPUploadButton(is_supported)),'')}`);
 
         if (this.show_occupants_toggle) {
+            const i18n_hide_occupants = __('Hide participants');
+            const i18n_show_occupants = __('Show participants');
             buttons.push(html`
                 <button class="toggle_occupants right"
                         title="${this.hidden_occupants ? i18n_show_occupants : i18n_hide_occupants}"
@@ -85,9 +83,9 @@ export class ChatToolbar extends CustomElement {
         return _converse.api.hook('getToolbarButtons', this, buttons);
     }
 
-
     getHTTPUploadButton (is_supported) {
         if (is_supported) {
+            const i18n_choose_file =  __('Choose a file to send')
             return html`
                 <button title="${i18n_choose_file}" @click=${this.toggleFileUpload}>
                     <converse-icon class="fa fa-paperclip"

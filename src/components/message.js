@@ -16,11 +16,6 @@ import { renderAvatar } from './../templates/directives/avatar';
 const { Strophe } = converse.env;
 const u = converse.env.utils;
 
-const i18n_edited = __('This message has been edited');
-const i18n_show = __('Show more');
-const i18n_show_less = __('Show less');
-const i18n_uploading = __('Uploading file:');
-
 
 export default class Message extends CustomElement {
 
@@ -112,6 +107,7 @@ export default class Message extends CustomElement {
     }
 
     renderFileProgress () {
+        const i18n_uploading = __('Uploading file:');
         const filename = this.model.file.name;
         const size = filesize(this.model.file.size);
         return html`
@@ -214,7 +210,11 @@ export default class Message extends CustomElement {
     }
 
     renderMessageText () {
+        const i18n_edited = __('This message has been edited');
+        const i18n_show = __('Show more');
         const is_groupchat_message = (this.message_type === 'groupchat');
+        const i18n_show_less = __('Show less');
+
         const tpl_spoiler_hint = html`
             <div class="chat-msg__spoiler-hint">
                 <span class="spoiler-hint">${this.spoiler_hint}</span>

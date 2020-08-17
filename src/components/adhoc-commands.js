@@ -10,34 +10,28 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 const { Strophe, $iq } = converse.env;
 const u = converse.env.utils;
 
-const i18n_hide = __('Hide');
-const i18n_choose_service = __('On which entity do you want to run commands?');
-const i18n_choose_service_instructions = __(
-    'Certain XMPP services and entities allow privileged users to execute ad-hoc commands on them.');
-const i18n_commands_found = __('Commands found');
-const i18n_fetch_commands = __('List available commands');
-const i18n_jid_placeholder = __('XMPP Address');
-const i18n_no_commands_found = __('No commands found');
-const i18n_run = __('Execute');
 
+const tpl_command_form = (o, command) => {
+    const i18n_hide = __('Hide');
+    const i18n_run = __('Execute');
+    return html`
+        <form @submit=${o.runCommand}>
+            ${ command.alert ? html`<div class="alert alert-${command.alert_type}" role="alert">${command.alert}</div>` : '' }
+            <fieldset class="form-group">
+                <input type="hidden" name="command_node" value="${command.node}"/>
+                <input type="hidden" name="command_jid" value="${command.jid}"/>
 
-const tpl_command_form = (o, command) => html`
-    <form @submit=${o.runCommand}>
-        ${ command.alert ? html`<div class="alert alert-${command.alert_type}" role="alert">${command.alert}</div>` : '' }
-        <fieldset class="form-group">
-            <input type="hidden" name="command_node" value="${command.node}"/>
-            <input type="hidden" name="command_jid" value="${command.jid}"/>
-
-            <p class="form-help">${command.instructions}</p>
-            <!-- Fields are generated internally, with xForm2webForm -->
-            ${ command.fields.map(field =>  unsafeHTML(field)) }
-        </fieldset>
-        <fieldset>
-            <input type="submit" class="btn btn-primary" value="${i18n_run}">
-            <input type="button" class="btn btn-secondary button-cancel" value="${i18n_hide}" @click=${o.hideCommandForm}>
-        </fieldset>
-    </form>
-`;
+                <p class="form-help">${command.instructions}</p>
+                <!-- Fields are generated internally, with xForm2webForm -->
+                ${ command.fields.map(field =>  unsafeHTML(field)) }
+            </fieldset>
+            <fieldset>
+                <input type="submit" class="btn btn-primary" value="${i18n_run}">
+                <input type="button" class="btn btn-secondary button-cancel" value="${i18n_hide}" @click=${o.hideCommandForm}>
+            </fieldset>
+        </form>
+    `;
+}
 
 
 const tpl_command = (o, command) => html`
@@ -62,33 +56,42 @@ async function getAutoCompleteList () {
     return jids;
 }
 
-const tpl_adhoc = (o) => html`
-    ${ o.alert ? html`<div class="alert alert-${o.alert_type}" role="alert">${o.alert}</div>` : '' }
-    <form class="converse-form" @submit=${o.fetchCommands}>
-        <fieldset class="form-group">
-            <label>
-                ${i18n_choose_service}
-                <p class="form-help">${i18n_choose_service_instructions}</p>
-                <converse-autocomplete
-                    .getAutoCompleteList="${getAutoCompleteList}"
-                    placeholder="${i18n_jid_placeholder}"
-                    name="jid"/>
-            </label>
-        </fieldset>
-        <fieldset class="form-group">
-            <input type="submit" class="btn btn-primary" value="${i18n_fetch_commands}">
-        </fieldset>
-        ${ o.view === 'list-commands' ? html`
-        <fieldset class="form-group">
-            <ul class="list-group">
-                <li class="list-group-item active">${ o.commands.length ? i18n_commands_found : i18n_no_commands_found }:</li>
-                ${ o.commands.map(cmd => tpl_command(o, cmd)) }
-            </ul>
-        </fieldset>`
-        : '' }
+const tpl_adhoc = (o) => {
+    const i18n_choose_service = __('On which entity do you want to run commands?');
+    const i18n_choose_service_instructions = __(
+        'Certain XMPP services and entities allow privileged users to execute ad-hoc commands on them.');
+    const i18n_commands_found = __('Commands found');
+    const i18n_fetch_commands = __('List available commands');
+    const i18n_jid_placeholder = __('XMPP Address');
+    const i18n_no_commands_found = __('No commands found');
+    return html`
+        ${ o.alert ? html`<div class="alert alert-${o.alert_type}" role="alert">${o.alert}</div>` : '' }
+        <form class="converse-form" @submit=${o.fetchCommands}>
+            <fieldset class="form-group">
+                <label>
+                    ${i18n_choose_service}
+                    <p class="form-help">${i18n_choose_service_instructions}</p>
+                    <converse-autocomplete
+                        .getAutoCompleteList="${getAutoCompleteList}"
+                        placeholder="${i18n_jid_placeholder}"
+                        name="jid"/>
+                </label>
+            </fieldset>
+            <fieldset class="form-group">
+                <input type="submit" class="btn btn-primary" value="${i18n_fetch_commands}">
+            </fieldset>
+            ${ o.view === 'list-commands' ? html`
+            <fieldset class="form-group">
+                <ul class="list-group">
+                    <li class="list-group-item active">${ o.commands.length ? i18n_commands_found : i18n_no_commands_found }:</li>
+                    ${ o.commands.map(cmd => tpl_command(o, cmd)) }
+                </ul>
+            </fieldset>`
+            : '' }
 
-    </form>
-`;
+        </form>
+    `;
+}
 
 
 async function fetchCommandForm (command) {

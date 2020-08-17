@@ -313,7 +313,7 @@ converse.plugins.add('converse-muc-views', {
                         } else if (state === 'op') {
                             return `${result}${__("%1$s are now moderators", actors[0])}\n`;
                         } else if (state === 'deop') {
-                            return `${result}${__("%1$s are no longer moderator", actors[0])}\n`;
+                            return `${result}${__("%1$s are no longer moderators", actors[0])}\n`;
                         } else if (state === 'voice') {
                             return `${result}${__("%1$s have been given voices", actors[0])}\n`;
                         } else if (state === 'mute') {

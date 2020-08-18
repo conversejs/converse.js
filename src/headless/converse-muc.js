@@ -2014,7 +2014,7 @@ converse.plugins.add('converse-muc', {
                 if (u.shouldCreateGroupchatMessage(attrs)) {
                     const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
                     this.removeNotification(attrs.nick, ['composing', 'paused']);
-                    this.incrementUnreadMsgCounter(msg);
+                    this.handleUnreadMessage(msg);
                 }
             },
 
@@ -2402,10 +2402,10 @@ converse.plugins.add('converse-muc', {
 
             /* Given a newly received message, update the unread counter if necessary.
              * @private
-             * @method _converse.ChatRoom#incrementUnreadMsgCounter
+             * @method _converse.ChatRoom#handleUnreadMessage
              * @param { XMLElement } - The <messsage> stanza
              */
-            incrementUnreadMsgCounter (message) {
+            handleUnreadMessage (message) {
                 if (!message?.get('body')) {
                     return
                 }

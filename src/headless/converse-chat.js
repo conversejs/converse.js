@@ -475,7 +475,7 @@ converse.plugins.add('converse-chat', {
                     if (u.shouldCreateMessage(attrs)) {
                         const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
                         this.notifications.set({'chat_state': null});
-                        this.incrementUnreadMsgCounter(msg);
+                        this.handleUnreadMessage(msg);
                     }
                 }
             },
@@ -1154,7 +1154,7 @@ converse.plugins.add('converse-chat', {
              * @private
              * @param {_converse.Message} message
              */
-            incrementUnreadMsgCounter (message) {
+            handleUnreadMessage (message) {
                 if (!message?.get('body')) {
                     return
                 }

@@ -30,7 +30,6 @@ export class BaseDropdown extends CustomElement {
     }
 
     toggleMenu (ev) {
-        ev.stopPropagation();
         ev.preventDefault();
         if (u.hasClass('show', this.menu)) {
             this.hideMenu();

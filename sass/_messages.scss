@@ -201,6 +201,7 @@
                     word-break: break-all;
                     display: inline;
                     &.chat-image__link {
+                        width: fit-content;
                         display: block;
                     }
                 }

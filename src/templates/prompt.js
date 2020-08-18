@@ -2,10 +2,6 @@ import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 
 
-const i18n_cancel = __('Cancel');
-const i18n_ok = __('OK');
-
-
 const tpl_field = (f) => html`
     <div class="form-group">
         <label>
@@ -37,8 +33,8 @@ export default (o) => html`
               </div>
               ${ o.fields.map(f => tpl_field(f)) }
               <div class="form-group">
-                  <button type="submit" class="btn btn-primary">${i18n_ok}</button>
-                  <input type="button" class="btn btn-secondary" data-dismiss="modal" value="${i18n_cancel}"/>
+                  <button type="submit" class="btn btn-primary">${__('OK')}</button>
+                  <input type="button" class="btn btn-secondary" data-dismiss="modal" value="${__('Cancel')}"/>
               </div>
           </form>
         </div>

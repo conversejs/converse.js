@@ -4,10 +4,6 @@ import { html } from "lit-html";
 
 const u = converse.env.utils;
 
-const i18n_search = __('Search');
-const i18n_search_results = __('Search results');
-const skintones = ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'];
-
 
 const emoji_category = (o) => {
     return html`
@@ -37,14 +33,17 @@ const emoji_item = (o) => {
     `;
 }
 
-export const tpl_search_results = (o) => html`
-    <span ?hidden=${!o.query} class="emoji-lists__container emojis-lists__container--search">
-    <a id="emoji-picker-search-results" class="emoji-category__heading">${i18n_search_results}</a>
-    <ul class="emoji-picker">
-        ${ o.search_results.map(emoji => emoji_item(Object.assign({emoji}, o))) }
-    </ul>
-    </span>
-`;
+export const tpl_search_results = (o) => {
+    const i18n_search_results = __('Search results');
+    return html`
+        <span ?hidden=${!o.query} class="emoji-lists__container emojis-lists__container--search">
+        <a id="emoji-picker-search-results" class="emoji-category__heading">${i18n_search_results}</a>
+        <ul class="emoji-picker">
+            ${ o.search_results.map(emoji => emoji_item(Object.assign({emoji}, o))) }
+        </ul>
+        </span>
+    `;
+}
 
 const emojis_for_category = (o) => {
     return html`
@@ -72,6 +71,8 @@ const skintone_emoji = (o) => {
 
 
 export const tpl_emoji_picker = (o) => {
+    const i18n_search = __('Search');
+    const skintones = ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'];
     return html`
         <div class="emoji-picker__header">
             <input class="form-control emoji-search" name="emoji-search" placeholder="${i18n_search}"

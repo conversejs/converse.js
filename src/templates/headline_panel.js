@@ -1,5 +1,4 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
 import tpl_headline_list from "templates/headline_list.js";
 
 

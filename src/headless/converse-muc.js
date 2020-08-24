@@ -2652,25 +2652,24 @@ converse.plugins.add('converse-muc', {
             return api.rooms.get(jid, attrs, true);
         };
 
-        /**
-         * Automatically join groupchats, based on the
+        /* Automatically join groupchats, based on the
          * "auto_join_rooms" configuration setting, which is an array
-         * of strings (groupchat JIDs) or objects (with groupchat JID and other
-         * settings).
+         * of strings (groupchat JIDs) or objects (with groupchat JID and other settings).
          */
-        function autoJoinRooms () {
-            api.settings.get('auto_join_rooms').forEach(groupchat => {
-                if (isString(groupchat)) {
-                    if (_converse.chatboxes.where({'jid': groupchat}).length) {
-                        return;
+        async function autoJoinRooms () {
+            await Promise.all(api.settings.get('auto_join_rooms').map(muc => {
+                if (isString(muc)) {
+                    if (_converse.chatboxes.where({'jid': muc}).length) {
+                        return Promise.resolve();
                     }
-                    api.rooms.open(groupchat);
-                } else if (isObject(groupchat)) {
-                    api.rooms.open(groupchat.jid, clone(groupchat));
+                    return api.rooms.open(muc);
+                } else if (isObject(muc)) {
+                    return api.rooms.open(muc.jid, clone(muc));
                 } else {
-                    log.error('Invalid groupchat criteria specified for "auto_join_rooms"');
+                    log.error('Invalid muc criteria specified for "auto_join_rooms"');
+                    return Promise.resolve();
                 }
-            });
+            }));
             /**
              * Triggered once any rooms that have been configured to be automatically joined,
              * specified via the _`auto_join_rooms` setting, have been entered.

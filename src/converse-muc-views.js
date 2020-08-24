@@ -163,7 +163,6 @@ converse.plugins.add('converse-muc-views', {
             is_chatroom: true,
             events: {
                 'click .chatbox-navback': 'showControlBox',
-                'click .chatbox-title': 'minimize',
                 'click .hide-occupants': 'hideOccupants',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 // Arrow functions don't work here because you can't bind a different `this` param to them.

@@ -1223,7 +1223,7 @@ converse.plugins.add('converse-chat', {
              * @property { XMLElement } stanza
              * @example _converse.api.listen.on('message', obj => { ... });
              */
-            api.trigger('message', {'stanza': stanza});
+            api.trigger('message', {stanza, attrs});
         }
 
 

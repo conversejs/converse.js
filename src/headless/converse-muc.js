@@ -669,10 +669,10 @@ converse.plugins.add('converse-muc', {
                     // they shouldn't have a `type` attribute.
                     return log.warn(`Received a MAM message with type "groupchat"`);
                 }
-                api.trigger('message', {'stanza': stanza});
                 this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
                 const attrs = await st.parseMUCMessage(stanza, this, _converse);
+                api.trigger('message', {stanza, attrs});
                 return attrs && this.queueMessage(attrs);
             },
 

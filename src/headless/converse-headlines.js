@@ -98,7 +98,7 @@ converse.plugins.add('converse-headlines', {
                 });
                 const attrs = await st.parseMessage(stanza, _converse);
                 await chatbox.createMessage(attrs);
-                api.trigger('message', {'chatbox': chatbox, 'stanza': stanza});
+                api.trigger('message', {chatbox, stanza, attrs});
             }
         }
 

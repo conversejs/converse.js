@@ -32,32 +32,34 @@ converse.plugins.add('converse-notification', {
             play_sounds: true,
             sounds_path: api.settings.get("assets_path")+'/sounds/',
             notification_icon: 'logo/conversejs-filled.svg',
-            notification_delay: 5000
+            notification_delay: 5000,
+            notify_nicknames_without_references: false
         });
 
-        _converse.shouldNotifyOfGroupMessage = function (message) {
+        _converse.shouldNotifyOfGroupMessage = function (message, data) {
             /* Is this a group message worthy of notification?
              */
-            let notify_all = api.settings.get('notify_all_room_messages');
-            const jid = message.getAttribute('from'),
-                resource = Strophe.getResourceFromJid(jid),
-                room_jid = Strophe.getBareJidFromJid(jid),
-                sender = resource && Strophe.unescapeNode(resource) || '';
-            if (sender === '' || message.querySelectorAll('delay').length > 0) {
-                return false;
-            }
+            const jid = message.getAttribute('from');
+            const room_jid = Strophe.getBareJidFromJid(jid);
+            const notify_all = api.settings.get('notify_all_room_messages');
             const room = _converse.chatboxes.get(room_jid);
-            const body = message.querySelector('body');
-            if (body === null) {
-                return false;
+            const resource = Strophe.getResourceFromJid(jid);
+            const sender = resource && Strophe.unescapeNode(resource) || '';
+            let is_mentioned = false;
+            const nick = room.get('nick');
+
+            if (api.settings.get('notify_nicknames_without_references')) {
+                const body = message.querySelector('body');
+                is_mentioned = (new RegExp(`\\b${nick}\\b`)).test(body.textContent);
             }
-            const mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
-            notify_all = notify_all === true ||
-                (Array.isArray(notify_all) && notify_all.includes(room_jid));
-            if (sender === room.get('nick') || (!notify_all && !mentioned)) {
-                return false;
-            }
-            return true;
+
+            const is_referenced = data.attrs.references.map(r => r.value).includes(nick);
+            const is_not_mine = sender !== nick;
+            const should_notify_user = notify_all === true
+                || (Array.isArray(notify_all) && notify_all.includes(room_jid))
+                || is_referenced
+                || is_mentioned;
+            return is_not_mine && !!should_notify_user;
         };
 
         _converse.isMessageToHiddenChat = function (message) {
@@ -72,12 +74,12 @@ converse.plugins.add('converse-notification', {
             return _converse.windowState === 'hidden';
         }
 
-        _converse.shouldNotifyOfMessage = function (message) {
+        _converse.shouldNotifyOfMessage = function (message, data) {
             const forwarded = message.querySelector('forwarded');
             if (forwarded !== null) {
                 return false;
             } else if (message.getAttribute('type') === 'groupchat') {
-                return _converse.shouldNotifyOfGroupMessage(message);
+                return _converse.shouldNotifyOfGroupMessage(message, data);
             } else if (st.isHeadline(message)) {
                 // We want to show notifications for headline messages.
                 return _converse.isMessageToHiddenChat(message);
@@ -251,7 +253,7 @@ converse.plugins.add('converse-notification', {
              * to play sounds and show HTML5 notifications.
              */
             const message = data.stanza;
-            if (!_converse.shouldNotifyOfMessage(message)) {
+            if (!_converse.shouldNotifyOfMessage(message, data)) {
                 return false;
             }
             /**

@@ -50,6 +50,7 @@ Soon we'll deprecate the latter, so prepare now.
 - New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
 - New config option [muc_hats_from_vcard](https://conversejs.org/docs/html/configuration.html#muc-hats-from-vcard).
 - New config option [muc_send_probes](https://conversejs.org/docs/html/configuration.html#muc-send-probes).
+- New config option [notify_nicknames_without_references](https://conversejs.org/docs/html/configuration.html#notify-nicknames-without-references).
 - New config option [show_message_avatar](https://conversejs.org/docs/html/configuration.html#show-message-avatar).
 - New public API [converse.insertInto](https://conversejs.org/docs/html/api/converse.html#.insertInto)
 

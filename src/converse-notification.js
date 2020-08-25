@@ -38,26 +38,12 @@ converse.plugins.add('converse-notification', {
         _converse.shouldNotifyOfGroupMessage = function (message) {
             /* Is this a group message worthy of notification?
              */
-            let notify_all = api.settings.get('notify_all_room_messages');
-            const jid = message.getAttribute('from'),
-                resource = Strophe.getResourceFromJid(jid),
-                room_jid = Strophe.getBareJidFromJid(jid),
-                sender = resource && Strophe.unescapeNode(resource) || '';
-            if (sender === '' || message.querySelectorAll('delay').length > 0) {
-                return false;
-            }
-            const room = _converse.chatboxes.get(room_jid);
-            const body = message.querySelector('body');
-            if (body === null) {
-                return false;
-            }
-            const mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
-            notify_all = notify_all === true ||
-                (Array.isArray(notify_all) && notify_all.includes(room_jid));
-            if (sender === room.get('nick') || (!notify_all && !mentioned)) {
-                return false;
-            }
-            return true;
+            const jid = message.getAttribute('from');
+            const room_jid = Strophe.getBareJidFromJid(jid);
+            const notify_all = api.settings.get('notify_all_room_messages');
+            const result = notify_all === true
+                || (Array.isArray(notify_all) && notify_all.includes(room_jid));
+            return !!result;
         };
 
         _converse.isMessageToHiddenChat = function (message) {

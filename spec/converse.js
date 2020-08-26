@@ -1,10 +1,17 @@
 /* global mock, converse */
 
+const u = converse.env.utils;
+
 describe("Converse", function() {
 
-    describe("Settings", function () {
+    it("Can be inserted into a custom element after having been initialized",
+            mock.initConverse([], {'root': new DocumentFragment()}, async (done) => {
 
-    });
+        expect(document.body.querySelector('div#conversejs')).toBe(null);
+        document.body.appendChild(document.createElement('converse-root'));
+        await u.waitUntil(() => document.body.querySelector('div#conversejs') !== null);
+        done();
+    }));
 
     describe("Authentication", function () {
 

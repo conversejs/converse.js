@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const $pres = converse.env.$pres;
 const $msg = converse.env.$msg;

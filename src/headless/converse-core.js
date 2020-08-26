@@ -1574,6 +1574,12 @@ Object.assign(converse, {
             await api.user.login(null, null, true);
         }
 
+        /**
+         * Triggered once converse.initialize has finished.
+         * @event _converse#initialized
+         */
+        api.trigger('initialized');
+
         if (_converse.isTestEnv()) {
             return _converse;
         }

@@ -32,7 +32,8 @@ converse.plugins.add('converse-notification', {
             play_sounds: true,
             sounds_path: api.settings.get("assets_path")+'/sounds/',
             notification_icon: 'logo/conversejs-filled.svg',
-            notification_delay: 5000
+            notification_delay: 5000,
+            notify_nicknames_without_references: false
         });
 
         _converse.shouldNotifyOfGroupMessage = function (message) {
@@ -41,8 +42,17 @@ converse.plugins.add('converse-notification', {
             const jid = message.getAttribute('from');
             const room_jid = Strophe.getBareJidFromJid(jid);
             const notify_all = api.settings.get('notify_all_room_messages');
+            let is_mentioned = false;
+            
+            if (api.settings.get('notify_nicknames_without_references')) {
+                const room = _converse.chatboxes.get(room_jid);
+                const body = message.querySelector('body');
+                is_mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
+            }
+            
             const result = notify_all === true
-                || (Array.isArray(notify_all) && notify_all.includes(room_jid));
+                || (Array.isArray(notify_all) && notify_all.includes(room_jid))
+                || is_mentioned;
             return !!result;
         };
 

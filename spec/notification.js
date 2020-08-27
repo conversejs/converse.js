@@ -56,17 +56,21 @@ describe("Notifications", function () {
                     spyOn(_converse, 'showMessageNotification').and.callThrough();
                     spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
 
-                    const message = 'romeo: This message will show a desktop notification';
                     const nick = mock.chatroom_names[0],
-                        msg = $msg({
+                        makeMsg = text => $msg({
                             from: 'lounge@montague.lit/'+nick,
                             id: u.getUniqueId(),
                             to: 'romeo@montague.lit',
                             type: 'groupchat'
-                        }).c('body').t(message).tree();
-                    _converse.connection._dataRecv(mock.createRequest(msg));
+                        }).c('body').t(text).tree();
+                    _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will NOT show a notification')));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
+                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 0);
+                    expect(_converse.showMessageNotification).not.toHaveBeenCalled();
 
+                    _converse.api.settings.set('notify_all_room_messages', true);
+                    _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will show a notification')));
+                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
                     expect(_converse.showMessageNotification).toHaveBeenCalled();
                     if (no_notification) {

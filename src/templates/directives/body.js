@@ -120,7 +120,7 @@ function addHyperlinks (text, onImgLoad, onImgClick) {
         text.addTemplateResult(
             url_obj.start,
             url_obj.end,
-            show_images && u.isImageURL(url_text) ?
+            show_images && (u.isImageURL(url_text) || u.isWhitelistedImageURL(url_text)) ?
                 u.convertToImageTag(url_text, onImgLoad, onImgClick) :
                 u.convertUrlToHyperlink(url_text),
         );

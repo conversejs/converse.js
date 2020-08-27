@@ -67,6 +67,7 @@ converse.plugins.add('converse-chatview', {
                 'emoji': true,
                 'spoiler': true
             },
+            'image_urls_regex': null
         });
 
 

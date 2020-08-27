@@ -172,7 +172,6 @@ converse.plugins.add('converse-chatview', {
 
             events: {
                 'click .chatbox-navback': 'showControlBox',
-                'click .chatbox-title': 'minimize',
                 'click .new-msgs-indicator': 'viewUnreadMessages',
                 'click .send-button': 'onFormSubmitted',
                 'click .toggle-clear': 'clearMessages',

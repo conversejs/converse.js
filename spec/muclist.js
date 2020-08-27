@@ -315,7 +315,7 @@ describe("A groupchat shown in the groupchats list", function () {
         let indicator_el = await u.waitUntil(() => lview.el.querySelector(".msgs-indicator"));
         expect(indicator_el.textContent).toBe('1');
 
-        spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
+        spyOn(view.model, 'handleUnreadMessage').and.callThrough();
         await view.model.handleMessageStanza(
             $msg({
                 from: room_jid+'/'+nick,
@@ -324,7 +324,7 @@ describe("A groupchat shown in the groupchats list", function () {
                 type: 'groupchat'
             }).c('body').t('romeo: and another thing...').tree()
         );
-        await u.waitUntil(() => view.model.incrementUnreadMsgCounter.calls.count());
+        await u.waitUntil(() => view.model.handleUnreadMessage.calls.count());
         await u.waitUntil(() => lview.el.querySelector(".msgs-indicator").textContent === '2', 1000);
 
         // When the chat gets maximized again, the unread indicators are removed

@@ -63,7 +63,7 @@ converse.plugins.add('converse-bosh', {
                         jid,
                         data.sid,
                         data.rid,
-                        _converse.onConnectStatusChanged
+                        _converse.connection.onConnectStatusChanged
                     );
                 } else {
                     xhr.onerror();
@@ -87,7 +87,7 @@ converse.plugins.add('converse-bosh', {
             const jid = (await initBOSHSession()).get('jid');
             if (jid && (_converse.connection._proto instanceof Strophe.Bosh)) {
                 try {
-                    _converse.connection.restore(jid, _converse.onConnectStatusChanged);
+                    _converse.connection.restore(jid, _converse.connection.onConnectStatusChanged);
                     return true;
                 } catch (e) {
                     !_converse.isTestEnv() && log.warn("Could not restore session for jid: "+jid+" Error message: "+e.message);

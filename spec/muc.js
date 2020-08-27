@@ -681,8 +681,7 @@ describe("Groupchats", function () {
                 const toggle = view.el.querySelector('.hide-topic');
                 expect(toggle.textContent).toBe('Hide topic');
                 toggle.click();
-                await u.waitUntil(() => !u.isVisible(topic_el));
-                expect(view.el.querySelector('.hide-topic').textContent).toBe('Show topic');
+                await u.waitUntil(() => view.el.querySelector('.hide-topic').textContent === 'Show topic');
                 done();
             }));
 

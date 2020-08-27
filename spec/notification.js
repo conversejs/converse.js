@@ -35,6 +35,46 @@ describe("Notifications", function () {
                     done();
                 }));
 
+                it("is shown when you are mentioned in a groupchat",
+                        mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
+
+                    await mock.waitForRoster(_converse, 'current');
+                    await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+                    const view = _converse.api.chatviews.get('lounge@montague.lit');
+                    if (!view.el.querySelectorAll('.chat-area').length) {
+                        view.renderChatArea();
+                    }
+                    let no_notification = false;
+                    if (typeof window.Notification === 'undefined') {
+                        no_notification = true;
+                        window.Notification = function () {
+                            return {
+                                'close': function () {}
+                            };
+                        };
+                    }
+                    spyOn(_converse, 'showMessageNotification').and.callThrough();
+                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+
+                    const message = 'romeo: This message will show a desktop notification';
+                    const nick = mock.chatroom_names[0],
+                        msg = $msg({
+                            from: 'lounge@montague.lit/'+nick,
+                            id: u.getUniqueId(),
+                            to: 'romeo@montague.lit',
+                            type: 'groupchat'
+                        }).c('body').t(message).tree();
+                    _converse.connection._dataRecv(mock.createRequest(msg));
+                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
+
+                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
+                    expect(_converse.showMessageNotification).toHaveBeenCalled();
+                    if (no_notification) {
+                        delete window.Notification;
+                    }
+                    done();
+                }));
+
                 it("is shown for headline messages",
                         mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
@@ -106,6 +146,57 @@ describe("Notifications", function () {
                 _converse.api.trigger('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
                 expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                 expect(_converse.showContactRequestNotification).toHaveBeenCalled();
+                done();
+            }));
+        });
+    });
+
+    describe("When play_sounds is set to true", function () {
+        describe("A notification sound", function () {
+
+            it("is played when the current user is mentioned in a groupchat",
+                    mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
+
+                mock.createContacts(_converse, 'current');
+                await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
+                _converse.play_sounds = true;
+                spyOn(_converse, 'playSoundNotification');
+                const view = _converse.chatboxviews.get('lounge@montague.lit');
+                if (!view.el.querySelectorAll('.chat-area').length) {
+                    view.renderChatArea();
+                }
+                let text = 'This message will play a sound because it mentions romeo';
+                let message = $msg({
+                    from: 'lounge@montague.lit/otheruser',
+                    id: '1',
+                    to: 'romeo@montague.lit',
+                    type: 'groupchat'
+                }).c('body').t(text);
+                await view.model.handleMessageStanza(message.nodeTree);
+                await u.waitUntil(() => _converse.playSoundNotification.calls.count());
+                expect(_converse.playSoundNotification).toHaveBeenCalled();
+
+                text = "This message won't play a sound";
+                message = $msg({
+                    from: 'lounge@montague.lit/otheruser',
+                    id: '2',
+                    to: 'romeo@montague.lit',
+                    type: 'groupchat'
+                }).c('body').t(text);
+                await view.model.handleMessageStanza(message.nodeTree);
+                expect(_converse.playSoundNotification, 1);
+                _converse.play_sounds = false;
+
+                text = "This message won't play a sound because it is sent by romeo";
+                message = $msg({
+                    from: 'lounge@montague.lit/romeo',
+                    id: '3',
+                    to: 'romeo@montague.lit',
+                    type: 'groupchat'
+                }).c('body').t(text);
+                await view.model.handleMessageStanza(message.nodeTree);
+                expect(_converse.playSoundNotification, 1);
+                _converse.play_sounds = false;
                 done();
             }));
         });

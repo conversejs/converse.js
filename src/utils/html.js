@@ -82,6 +82,18 @@ u.isImageURL = url => {
         ? regex.test(url)
         : checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
 }
+u.isImageDomainAllowed = url => {
+    try {
+        const image_domains_whitelist = _converse.api.settings.get('image_domains_whitelist');
+        const has_setting = Array.isArray(image_domains_whitelist);
+        if (!has_setting) return true;
+        const image_domain = getURI(url).domain();
+        return image_domains_whitelist.includes(image_domain);
+    } catch (error) {
+        log.debug(error);
+        return false;
+    }
+}
 
 function getFileName (uri) {
     try {

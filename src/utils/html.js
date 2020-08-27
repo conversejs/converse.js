@@ -75,8 +75,12 @@ function checkFileTypes (types, url) {
 }
 
 u.isAudioURL = url => checkFileTypes(['.ogg', '.mp3', '.m4a'], url);
-u.isImageURL = url => checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
 u.isVideoURL = url => checkFileTypes(['.mp4', '.webm'], url);
+u.isImageURL = url => checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
+u.isWhitelistedImageURL = url => {
+    const regex = _converse.api.settings.get('image_urls_regex');
+    return regex ? regex.test(url) : false;
+}
 
 function getFileName (uri) {
     try {

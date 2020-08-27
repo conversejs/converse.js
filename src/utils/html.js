@@ -352,6 +352,13 @@ u.convertUrlToHyperlink = function (url) {
     return url;
 };
 
+u.filterQueryParamsFromURL = function (url) {
+    const paramsArray = api.settings.get("filter_url_query_params");
+    if (!paramsArray) return url;
+    const parsed_uri = getURI(url);
+    return parsed_uri.removeQuery(paramsArray).toString();
+};
+
 u.addHyperlinks = function (text) {
     const objs = [];
     const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };

@@ -836,6 +836,13 @@ Before version 1.0.3 Converse would ignore received messages if they were
 intended for a different resource then the current user had. It was decided to
 drop this restriction but leave it configurable.
 
+filter_url_query_params
+-----------------------
+
+* Default: ``null``
+
+Accepts a string or array of strings. Any query strings from URLs that match this setting will be removed.
+
 fullname
 --------
 

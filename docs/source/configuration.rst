@@ -1692,6 +1692,9 @@ show_images_inline
 
 If set to ``false``, images won't be rendered in chats, instead only their links will be shown.
 
+It also accepts an array strings of whitelisted domain names to only render images that belong to those domains.
+
+E.g. ``['imgur.com', 'imgbb.com']``
 
 show_retraction_warning
 -----------------------

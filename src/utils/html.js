@@ -350,6 +350,7 @@ u.convertUrlToHyperlink = function (url) {
 
 u.filterQueryParamsFromURL = function (url) {
     const paramsArray = api.settings.get("filter_url_query_params");
+    if (!paramsArray) return url;
     const parsed_uri = getURI(url);
     return parsed_uri.removeQuery(paramsArray).toString();
 };

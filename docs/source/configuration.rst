@@ -907,6 +907,13 @@ and an idle presence according to XEP-0319 is sent.
 
 If the given value is negative or ``0``, this feature is disabled.
 
+image_urls_regex
+----------------
+
+Any URLs in a message that matches the regex in this setting will be considered an image and displayed inline.
+
+E.g. ``/^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i``
+
 jid
 ---
 

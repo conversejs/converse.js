@@ -979,6 +979,13 @@ describe("A Chat Message", function () {
         expect(view.content.querySelectorAll('img').length).toBe(4);
         mock.sendMessage(view, message);
         expect(view.content.querySelectorAll('img').length).toBe(4);
+
+        // Configured image URLs are rendered
+        _converse.api.settings.set('image_urls_regex', /^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i);
+        message = 'http://imgur.com/xxxxxxx';
+        mock.sendMessage(view, message);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 5, 1000);
+        expect(view.content.querySelectorAll('img').length).toBe(5);
         done();
     }));
 

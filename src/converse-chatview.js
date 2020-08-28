@@ -52,6 +52,7 @@ converse.plugins.add('converse-chatview', {
         api.settings.extend({
             'auto_focus': true,
             'debounced_content_rendering': true,
+            'image_urls_regex': null,
             'message_limit': 0,
             'muc_hats_from_vcard': false,
             'show_images_inline': true,
@@ -67,7 +68,6 @@ converse.plugins.add('converse-chatview', {
                 'emoji': true,
                 'spoiler': true
             },
-            'image_urls_regex': null
         });
 
 

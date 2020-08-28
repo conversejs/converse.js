@@ -1142,10 +1142,8 @@ converse.plugins.add('converse-chat', {
              * @returns {boolean}
              */
             isHidden () {
-                return this.get('hidden') ||
-                    this.get('minimized') ||
-                    this.isScrolledUp() ||
-                    _converse.windowState === 'hidden';
+                // Note: This methods gets overridden by converse-minimize
+                return this.get('hidden') || this.isScrolledUp() || _converse.windowState === 'hidden';
             },
 
             /**

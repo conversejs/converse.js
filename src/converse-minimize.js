@@ -71,6 +71,10 @@ converse.plugins.add('converse-minimize', {
                     return this;
                 }
                 return this.__super__.maybeShow.apply(this, arguments);
+            },
+
+            isHidden () {
+                return this.__super__.isHidden.call(this) || this.get('minimized');
             }
         },
 

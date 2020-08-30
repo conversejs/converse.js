@@ -20,6 +20,7 @@ import { Collection } from "@converse/skeletor/src/collection";
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Router } from '@converse/skeletor/src/router.js';
+import { CustomElement } from '../components/element';
 import { __, i18n } from './i18n';
 import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash-es';
 import { html } from 'lit-element';
@@ -1634,7 +1635,7 @@ Object.assign(converse, {
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
      */
-    'env': { $build, $iq, $msg, $pres, Model, Collection, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u, html }
+    'env': { $build, $iq, $msg, $pres, Model, Collection, CustomElement, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u, html }
 });
 
 /**

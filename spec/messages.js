@@ -972,22 +972,17 @@ describe("A Chat Message", function () {
         expect(view.model.sendMessage).toHaveBeenCalled();
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.textContent.trim()).toEqual('hello world');
-        expect(msg.querySelectorAll('img').length).toEqual(2);
-
-        // @XXX This test isn't really testing anything - needs revisiting
-        // Non-https images aren't rendered
-        message = base_url+"/logo/conversejs-filled.svg";
-        expect(view.content.querySelectorAll('img').length).toBe(4);
-        mock.sendMessage(view, message);
-        expect(view.content.querySelectorAll('img').length).toBe(4);
+        expect(msg.querySelectorAll('img.chat-image').length).toEqual(2);
 
         // Configured image URLs are rendered
         _converse.api.settings.set('image_urls_regex', /^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i);
-        message = 'http://imgur.com/xxxxxxx';
+        message = 'https://imgur.com/oxymPax';
         mock.sendMessage(view, message);
         await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 5, 1000);
         expect(view.content.querySelectorAll('.chat-content .chat-image').length).toBe(5);
 
+        // Check that the Imgur URL gets a .png attached to make it render
+        await u.waitUntil(() => Array.from(view.el.querySelectorAll('.chat-content .chat-image')).pop().src.endsWith('png'), 1000);
         done();
     }));
 

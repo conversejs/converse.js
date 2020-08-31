@@ -910,9 +910,13 @@ If the given value is negative or ``0``, this feature is disabled.
 image_urls_regex
 ----------------
 
-Any URLs in a message that matches the regex in this setting will be considered an image and displayed inline.
+* Default: ``null``
 
-E.g. ``/^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i``
+Any URL in a message that matches the regex in this setting will be considered an image and rendered, if `show_images_inline`_ is set to ``true``.
+If the image cannot be rendered, a hyperlink will be rendered instead.
+
+
+For example, to render Imgur images inline, you can use the following regex: ``/^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i``
 
 jid
 ---

@@ -84,10 +84,11 @@ u.isImageURL = url => {
     return regex ? regex.test(url) : u.isURLWithImageExtension(url);
 }
 u.isImageDomainAllowed = url => {
+    const show_images_inline = api.settings.get('show_images_inline');
+    if (!Array.isArray(show_images_inline)) {
+        return true;
+    }
     try {
-        const show_images_inline = api.settings.get('show_images_inline');
-        const is_domains_array = Array.isArray(show_images_inline);
-        if (!is_domains_array) return true;
         const image_domain = getURI(url).domain();
         return show_images_inline.includes(image_domain);
     } catch (error) {

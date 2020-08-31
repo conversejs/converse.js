@@ -988,18 +988,19 @@ describe("A Chat Message", function () {
 
     it("will render images from approved URLs only",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {'show_images_inline': ['conversejs.org']},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const base_url = 'https://conversejs.org';
-        let message = 'http://wrongdomain.com/xxxxxxx.png';
+        let message = 'https://imgur.com/oxymPax.png';
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
-        _converse.api.settings.set('show_images_inline', ['conversejs.org']);
         const view = _converse.api.chatviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         mock.sendMessage(view, message);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length === 1);
+
         message = base_url+"/logo/conversejs-filled.svg";
         mock.sendMessage(view, message);
         await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length === 2, 1000);

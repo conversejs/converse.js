@@ -850,7 +850,7 @@ If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user's vCard will be fetched.
 
 geouri_regex
-----------------
+------------
 
 * Default:  ``/https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g``
 

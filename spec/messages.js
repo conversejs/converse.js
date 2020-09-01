@@ -898,7 +898,8 @@ describe("A Chat Message", function () {
 
     it("will remove url query parameters from hyperlinks as set",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterGroupsFetched', 'chatBoxesFetched'],
+            {'filter_url_query_params': ['utm_medium', 'utm_content', 's']},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -906,16 +907,25 @@ describe("A Chat Message", function () {
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
-        _converse.api.settings.set('filter_url_query_params', ['utm_medium', 'utm_content', 's']);
-        const message = 'This message contains a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
-        spyOn(view.model, 'sendMessage').and.callThrough();
+        let message = 'This message contains a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
         mock.sendMessage(view, message);
-        expect(view.model.sendMessage).toHaveBeenCalled();
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+        let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
         expect(msg.textContent).toEqual(message);
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
             'This message contains a hyperlink with forbidden query params: <a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0">https://www.opkode.com/?id=0</a>');
+
+
+        // Test assigning a string to filter_url_query_params
+        _converse.api.settings.set('filter_url_query_params', 'utm_medium');
+        message = 'Another message with a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
+        mock.sendMessage(view, message);
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+        expect(msg.textContent).toEqual(message);
+        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
+            'Another message with a hyperlink with forbidden query params: '+
+            '<a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1">https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1</a>');
         done();
     }));
 

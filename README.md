@@ -79,7 +79,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0085](https://xmpp.org/extensions/xep-0085.html) Chat State Notifications
 - [XEP-0124](https://xmpp.org/extensions/xep-0124.html) Bidirectional-streams Over Synchronous HTTP (BOSH)
 - [XEP-0144](https://xmpp.org/extensions/xep-0144.html) Roster item exchange
-- [XEP-0156](https://xmpp.org/extensions/xep-0156.html) Disovering Alternative XMPP Connection Methods
+- [XEP-0156](https://xmpp.org/extensions/xep-0156.html) Discovering Alternative XMPP Connection Methods
 - [XEP-0163](https://xmpp.org/extensions/xep-0163.html) Personal Eventing Protocol (limited support)
 - [XEP-0184](https://xmpp.org/extensions/xep-0184.html) Message Receipt
 - [XEP-0198](https://xmpp.org/extensions/xep-0198.html) Stream Management

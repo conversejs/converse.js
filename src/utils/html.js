@@ -81,7 +81,7 @@ u.isURLWithImageExtension = url => checkFileTypes(['.jpg', '.jpeg', '.png', '.gi
 
 u.isImageURL = url => {
     const regex = api.settings.get('image_urls_regex');
-    return regex ? regex.test(url) : u.isURLWithImageExtension(url);
+    return regex?.test(url) || u.isURLWithImageExtension(url);
 }
 u.isImageDomainAllowed = url => {
     const show_images_inline = api.settings.get('show_images_inline');

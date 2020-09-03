@@ -42,18 +42,21 @@ converse.plugins.add('converse-notification', {
             const jid = message.getAttribute('from');
             const room_jid = Strophe.getBareJidFromJid(jid);
             const notify_all = api.settings.get('notify_all_room_messages');
+            const room = _converse.chatboxes.get(room_jid);
+            const resource = Strophe.getResourceFromJid(jid);
+            const sender = resource && Strophe.unescapeNode(resource) || '';
             let is_mentioned = false;
             
             if (api.settings.get('notify_nicknames_without_references')) {
-                const room = _converse.chatboxes.get(room_jid);
                 const body = message.querySelector('body');
                 is_mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
             }
             
-            const result = notify_all === true
+            const is_not_mine = sender !== room.get('nick');
+            const should_notify_user = notify_all === true
                 || (Array.isArray(notify_all) && notify_all.includes(room_jid))
                 || is_mentioned;
-            return !!result;
+            return is_not_mine && !!should_notify_user;
         };
 
         _converse.isMessageToHiddenChat = function (message) {

@@ -68,10 +68,7 @@ converse.plugins.add('converse-rosterview', {
 
             toHTML () {
                 const label_nickname = api.settings.get('xhr_user_search_url') ? __('Contact name') : __('Optional nickname');
-                return tpl_add_contact_modal(Object.assign(this.model.toJSON(), {
-                    '_converse': _converse,
-                    'label_nickname': label_nickname,
-                }));
+                return tpl_add_contact_modal(Object.assign(this.model.toJSON(), { _converse, label_nickname }));
             },
 
             afterRender () {

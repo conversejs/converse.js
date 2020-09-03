@@ -74,19 +74,6 @@ _.templateSettings = {
 class TimeoutError extends Error {}
 
 
-class IllegalMessage extends Error {}
-
-
-// Setting wait to 59 instead of 60 to avoid timing conflicts with the
-// webserver, which is often also set to 60 and might therefore sometimes
-// return a 504 error page instead of passing through to the BOSH proxy.
-const PROMISES = [
-    'afterResourceBinding',
-    'connectionInitialized',
-    'initialized',
-    'pluginsInitialized',
-];
-
 // Core plugins are whitelisted automatically
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/converse.js
@@ -174,8 +161,10 @@ CONNECTION_STATUS[Strophe.Status.REDIRECT] = 'REDIRECT';
 export const _converse = {
     log,
     CONNECTION_STATUS,
-    'templates': {},
-    'promises': {},
+    templates: {},
+    promises: {
+        'initialized': u.getResolveablePromise()
+    },
 
     STATUS_WEIGHTS: {
         'offline':      6,
@@ -227,7 +216,6 @@ export const _converse = {
     router: new Router(),
 
     TimeoutError: TimeoutError,
-    IllegalMessage: IllegalMessage,
 
     isTestEnv: () => {
         return initialization_settings.bosh_service_url === 'montague.lit/http-bind';
@@ -1023,7 +1011,6 @@ function initPlugins () {
      * @event _converse#pluginsInitialized
      * @memberOf _converse
      * @example _converse.api.listen.on('pluginsInitialized', () => { ... });
-     * @example _converse.api.waitUntil('pluginsInitialized').then(() => { ... });
      */
     _converse.api.trigger('pluginsInitialized');
 }
@@ -1321,6 +1308,9 @@ async function cleanup () {
     _converse.connection?.reset();
     _converse.stopListening();
     _converse.off();
+    if (_converse.promises['initialized'].isResolved) {
+        api.promises.add('initialized')
+    }
 }
 
 
@@ -1529,7 +1519,7 @@ Object.assign(converse, {
      */
     async initialize (settings) {
         await cleanup();
-        PROMISES.forEach(name => api.promises.add(name));
+
         setUnloadEvent();
         initSettings(settings);
         _converse.strict_plugin_dependencies = settings.strict_plugin_dependencies; // Needed by pluggable.js

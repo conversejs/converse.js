@@ -1,4 +1,4 @@
-import { converse } from "@converse/headless/converse-core";
+import { api, converse } from "@converse/headless/converse-core";
 
 
 /**
@@ -10,7 +10,8 @@ import { converse } from "@converse/headless/converse-core";
  */
 class ConverseRoot extends HTMLElement {
 
-    connectedCallback () {
+    async connectedCallback () {
+        await api.waitUntil('initialized');
         converse.insertInto(this);
     }
 }

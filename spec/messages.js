@@ -700,68 +700,6 @@ describe("A Chat Message", function () {
         done();
     }));
 
-    it("received for a minimized chat box will increment a counter on its header",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
-
-        if (_converse.view_mode === 'fullscreen') {
-            return done();
-        }
-        await mock.waitForRoster(_converse, 'current');
-        const contact_name = mock.cur_names[0];
-        const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await mock.openControlBox(_converse);
-        spyOn(_converse.api, "trigger").and.callThrough();
-
-        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
-        await mock.openChatBoxFor(_converse, contact_jid);
-        const chatview = _converse.api.chatviews.get(contact_jid);
-        expect(u.isVisible(chatview.el)).toBeTruthy();
-        expect(chatview.model.get('minimized')).toBeFalsy();
-        chatview.el.querySelector('.toggle-chatbox-button').click();
-        expect(chatview.model.get('minimized')).toBeTruthy();
-        var message = 'This message is sent to a minimized chatbox';
-        var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        var msg = $msg({
-            from: sender_jid,
-            to: _converse.connection.jid,
-            type: 'chat',
-            id: u.getUniqueId()
-        }).c('body').t(message).up()
-        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-        await _converse.handleMessageStanza(msg);
-
-        await u.waitUntil(() => chatview.model.messages.length);
-        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-        const trimmed_chatboxes = _converse.minimized_chats;
-        const trimmedview = trimmed_chatboxes.get(contact_jid);
-        let count = trimmedview.el.querySelector('.message-count');
-        expect(u.isVisible(chatview.el)).toBeFalsy();
-        expect(trimmedview.model.get('minimized')).toBeTruthy();
-        expect(u.isVisible(count)).toBeTruthy();
-        expect(count.textContent).toBe('1');
-        _converse.handleMessageStanza(
-            $msg({
-                from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                to: _converse.connection.jid,
-                type: 'chat',
-                id: u.getUniqueId()
-            }).c('body').t('This message is also sent to a minimized chatbox').up()
-            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
-        );
-
-        await u.waitUntil(() => (chatview.model.messages.length > 1));
-        expect(u.isVisible(chatview.el)).toBeFalsy();
-        expect(trimmedview.model.get('minimized')).toBeTruthy();
-        count = trimmedview.el.querySelector('.message-count');
-        expect(u.isVisible(count)).toBeTruthy();
-        expect(count.textContent).toBe('2');
-        trimmedview.el.querySelector('.restore-chat').click();
-        expect(trimmed_chatboxes.keys().length).toBe(0);
-        done();
-    }));
-
     it("will indicate when it has a time difference of more than a day between it and its predecessor",
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {},

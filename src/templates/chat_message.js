@@ -6,7 +6,7 @@ import { renderAvatar } from './../templates/directives/avatar';
 export default (o) => {
     const i18n_new_messages = __('New messages');
     return html`
-        ${ o.is_first_unread ? html`<div class="message date-separator"><hr class="separator"><span class="separator-text">${ i18n_new_messages }</span></div>` : '' }
+        ${ o.is_first_unread ? html`<div class="message separator"><hr class="separator"><span class="separator-text">${ i18n_new_messages }</span></div>` : '' }
         <div class="message chat-msg ${ o.getExtraMessageClasses() }"
                 data-isodate="${o.time}"
                 data-msgid="${o.msgid}"

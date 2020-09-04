@@ -2340,10 +2340,10 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } pres - The stanza
              */
             onOwnPresence (stanza) {
+                this.updateOccupantsOnPresence(stanza);
                 if (stanza.getAttribute('type') !== 'unavailable') {
                     this.session.save('connection_status', converse.ROOMSTATUS.ENTERED);
                 }
-                this.updateOccupantsOnPresence(stanza);
 
                 if (stanza.getAttribute('type') === 'unavailable') {
                     this.handleDisconnection(stanza);

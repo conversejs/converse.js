@@ -1348,6 +1348,13 @@ notification_icon
 This option specifies which icon is shown in HTML5 notifications, as provided
 by the ``src/converse-notification.js`` plugin.
 
+notify_nicknames_without_references
+-----------------------------------
+
+* Default: ``false``
+
+Enables desktop notification when user nickname is mentioned without the ``@`` sign.
+
 oauth_providers
 ---------------
 

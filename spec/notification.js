@@ -176,6 +176,7 @@ describe("Notifications", function () {
                     to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t(text);
+                _converse.api.settings.set('notify_all_room_messages', true);
                 await view.model.handleMessageStanza(message.nodeTree);
                 await u.waitUntil(() => _converse.playSoundNotification.calls.count());
                 expect(_converse.playSoundNotification).toHaveBeenCalled();

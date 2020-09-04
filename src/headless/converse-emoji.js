@@ -119,14 +119,18 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
     const emoji = data.emoji;
     const shortname = data.shortname;
     if (emoji) {
-        if (api.settings.get('use_system_emojis')) {
-            return (options.add_title_wrapper && shortname) ? html`<span title="${shortname}">${emoji}</span>` : emoji;
+        if (options.add_title_wrapper) {
+            if (api.settings.get('use_system_emojis')) {
+                return shortname ? html`<span title="${shortname}">${emoji}</span>` : emoji;
+            } else {
+                const path = api.settings.get('emoji_image_path');
+                return html`<img class="emoji"
+                    draggable="false"
+                    alt="${emoji}"
+                    src="${path}/72x72/${data.cp}.png"/>`;
+            }
         } else {
-            const path = api.settings.get('emoji_image_path');
-            return html`<img class="emoji"
-                draggable="false"
-                alt="${emoji}"
-                src="${path}/72x72/${data.cp}.png"/>`;
+            return emoji;
         }
     } else if (options.unicode_only) {
         return shortname;

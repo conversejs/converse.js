@@ -32,6 +32,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #2213: added CustomElement to converse.env
 - Removed the mockups from the project. Recommended to use tests instead.
 - The API method `api.settings.update` has been deprecated in favor of `api.settings.extend`.
+- The API methods under the `api.user.status` namespace are now asynchronous and need to be `await`ed.
 - Filter roster contacts via all available information (JID, nickname and VCard full name).
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
 - Bugfix. Handle stanza that clears the MUC subject

@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const u = converse.env.utils;
 
@@ -6,7 +6,7 @@ describe("The XMPPStatus model", function () {
 
     it("won't send <show>online</show> when setting a custom status message",
             mock.initConverse(async (done, _converse) => {
-        _converse.xmppstatus.save({'status': 'online'});
+        await _converse.api.user.status.set('online');
         spyOn(_converse.connection, 'send');
         _converse.api.user.status.message.set("I'm also happy!");
         await u.waitUntil(() => _converse.connection.send.calls.count());

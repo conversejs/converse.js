@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const Strophe = converse.env.Strophe;
 const u = converse.env.utils;
@@ -8,7 +8,8 @@ describe("XMPP Ping", function () {
 
     describe("An IQ stanza", function () {
 
-        it("is returned when converse.js gets pinged", mock.initConverse((done, _converse) => {
+        it("is returned when converse.js gets pinged",
+                mock.initConverse(['statusInitialized'], {}, (done, _converse) => {
             const ping = u.toStanza(`
                 <iq from="${_converse.domain}"
                     to="${_converse.jid}" id="s2c1" type="get">

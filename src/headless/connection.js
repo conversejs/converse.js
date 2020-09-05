@@ -152,12 +152,6 @@ export class Connection extends Strophe.Connection {
             api.trigger('reconnected');
         } else {
             /**
-             * Triggered once converse.js has been initialized.
-             * See also {@link _converse#event:pluginsInitialized}.
-             * @event _converse#initialized
-             */
-            api.trigger('initialized');
-            /**
              * Triggered after the connection has been established and Converse
              * has got all its ducks in a row.
              * @event _converse#initialized

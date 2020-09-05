@@ -2862,38 +2862,6 @@ describe("Groupchats", function () {
             done();
         }));
 
-        it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
-            await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit'),
-                  trimmed_chatboxes = _converse.minimized_chats;
-
-            spyOn(view, 'onMinimized').and.callThrough();
-            spyOn(view, 'onMaximized').and.callThrough();
-            spyOn(_converse.api, "trigger").and.callThrough();
-            view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-            const button = await u.waitUntil(() => view.el.querySelector('.toggle-chatbox-button'));
-            button.click();
-
-            expect(view.onMinimized).toHaveBeenCalled();
-            expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
-            expect(u.isVisible(view.el)).toBeFalsy();
-            expect(view.model.get('minimized')).toBeTruthy();
-            expect(view.onMinimized).toHaveBeenCalled();
-            await u.waitUntil(() => trimmed_chatboxes.get(view.model.get('id')));
-            const trimmedview = trimmed_chatboxes.get(view.model.get('id'));
-            trimmedview.el.querySelector("a.restore-chat").click();
-            expect(view.onMaximized).toHaveBeenCalled();
-            expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
-            expect(view.model.get('minimized')).toBeFalsy();
-            expect(_converse.api.trigger.calls.count(), 3);
-            done();
-
-        }));
-
         it("can be closed again by clicking a DOM element with class 'close-chatbox-button'",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},

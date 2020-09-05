@@ -11,7 +11,8 @@
         .mention--self {
             font-weight: normal;
         }
-        &.date-separator {
+        &.date-separator,
+        &.separator {
             height: 2em;
             margin: 0;
             position: relative;

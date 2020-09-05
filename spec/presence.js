@@ -31,7 +31,7 @@ describe("A sent presence stanza", function () {
         done();
     }));
 
-    it("has a given priority", mock.initConverse((done, _converse) => {
+    it("has a given priority", mock.initConverse(['statusInitialized'], {}, (done, _converse) => {
         let pres = _converse.xmppstatus.constructPresence('online', null, 'Hello world');
         expect(pres.toLocaleString()).toBe(
             `<presence xmlns="jabber:client">`+

@@ -836,6 +836,13 @@ Before version 1.0.3 Converse would ignore received messages if they were
 intended for a different resource then the current user had. It was decided to
 drop this restriction but leave it configurable.
 
+filter_url_query_params
+-----------------------
+
+* Default: ``null``
+
+Accepts a string or array of strings. Any query strings from URLs that match this setting will be removed.
+
 fullname
 --------
 
@@ -843,7 +850,7 @@ If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user's vCard will be fetched.
 
 geouri_regex
-----------------
+------------
 
 * Default:  ``/https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g``
 
@@ -906,6 +913,17 @@ The amount of seconds after which the user is considered to be idle
 and an idle presence according to XEP-0319 is sent.
 
 If the given value is negative or ``0``, this feature is disabled.
+
+image_urls_regex
+----------------
+
+* Default: ``null``
+
+Any URL in a message that matches the regex in this setting will be considered an image and rendered, if `show_images_inline`_ is set to ``true``.
+If the image cannot be rendered, a hyperlink will be rendered instead.
+
+
+For example, to render Imgur images inline, you can use the following regex: ``/^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i``
 
 jid
 ---
@@ -1685,6 +1703,9 @@ show_images_inline
 
 If set to ``false``, images won't be rendered in chats, instead only their links will be shown.
 
+It also accepts an array strings of whitelisted domain names to only render images that belong to those domains.
+
+E.g. ``['imgur.com', 'imgbb.com']``
 
 show_retraction_warning
 -----------------------

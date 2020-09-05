@@ -29,6 +29,7 @@ import "converse-roomslist";       // Show currently open chat rooms
 import "converse-rosterview";
 import "converse-singleton";
 import "converse-uniview";
+import "./components/converse.js";
 /* END: Removable components */
 
 import "../sass/converse.scss";

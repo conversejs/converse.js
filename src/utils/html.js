@@ -75,8 +75,27 @@ function checkFileTypes (types, url) {
 }
 
 u.isAudioURL = url => checkFileTypes(['.ogg', '.mp3', '.m4a'], url);
-u.isImageURL = url => checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
 u.isVideoURL = url => checkFileTypes(['.mp4', '.webm'], url);
+
+u.isURLWithImageExtension = url => checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg'], url);
+
+u.isImageURL = url => {
+    const regex = api.settings.get('image_urls_regex');
+    return regex?.test(url) || u.isURLWithImageExtension(url);
+}
+u.isImageDomainAllowed = url => {
+    const show_images_inline = api.settings.get('show_images_inline');
+    if (!Array.isArray(show_images_inline)) {
+        return true;
+    }
+    try {
+        const image_domain = getURI(url).domain();
+        return show_images_inline.includes(image_domain);
+    } catch (error) {
+        log.debug(error);
+        return true;
+    }
+}
 
 function getFileName (uri) {
     try {
@@ -289,24 +308,9 @@ u.escapeHTML = function (string) {
         .replace(/"/g, "&quot;");
 };
 
-
 u.convertToImageTag = function (url, onLoad, onClick) {
-    const uri = getURI(url);
-    const img_url_without_ext = ['imgur.com', 'pbs.twimg.com'].includes(uri.hostname());
-    if (u.isImageURL(url) || img_url_without_ext) {
-        if (img_url_without_ext) {
-            const format = (uri.hostname() === 'pbs.twimg.com') ? uri.search(true).format : 'png';
-            return tpl_image({
-                onClick,
-                onLoad,
-                'url': uri.removeSearch(/.*/).toString() + `.${format}`
-            });
-        } else {
-            return tpl_image({url, onClick, onLoad});
-        }
-    }
-}
-
+    return tpl_image({url, onClick, onLoad});
+};
 
 u.convertURIoHyperlink = function (uri, urlAsTyped) {
     let normalized_url = uri.normalize()._string;
@@ -346,6 +350,13 @@ u.convertUrlToHyperlink = function (url) {
         return this.convertURIoHyperlink(uri, url);
     }
     return url;
+};
+
+u.filterQueryParamsFromURL = function (url) {
+    const paramsArray = api.settings.get("filter_url_query_params");
+    if (!paramsArray) return url;
+    const parsed_uri = getURI(url);
+    return parsed_uri.removeQuery(paramsArray).toString();
 };
 
 u.addHyperlinks = function (text) {

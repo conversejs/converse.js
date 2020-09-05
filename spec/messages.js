@@ -700,68 +700,6 @@ describe("A Chat Message", function () {
         done();
     }));
 
-    it("received for a minimized chat box will increment a counter on its header",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
-
-        if (_converse.view_mode === 'fullscreen') {
-            return done();
-        }
-        await mock.waitForRoster(_converse, 'current');
-        const contact_name = mock.cur_names[0];
-        const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await mock.openControlBox(_converse);
-        spyOn(_converse.api, "trigger").and.callThrough();
-
-        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
-        await mock.openChatBoxFor(_converse, contact_jid);
-        const chatview = _converse.api.chatviews.get(contact_jid);
-        expect(u.isVisible(chatview.el)).toBeTruthy();
-        expect(chatview.model.get('minimized')).toBeFalsy();
-        chatview.el.querySelector('.toggle-chatbox-button').click();
-        expect(chatview.model.get('minimized')).toBeTruthy();
-        var message = 'This message is sent to a minimized chatbox';
-        var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        var msg = $msg({
-            from: sender_jid,
-            to: _converse.connection.jid,
-            type: 'chat',
-            id: u.getUniqueId()
-        }).c('body').t(message).up()
-        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-        await _converse.handleMessageStanza(msg);
-
-        await u.waitUntil(() => chatview.model.messages.length);
-        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-        const trimmed_chatboxes = _converse.minimized_chats;
-        const trimmedview = trimmed_chatboxes.get(contact_jid);
-        let count = trimmedview.el.querySelector('.message-count');
-        expect(u.isVisible(chatview.el)).toBeFalsy();
-        expect(trimmedview.model.get('minimized')).toBeTruthy();
-        expect(u.isVisible(count)).toBeTruthy();
-        expect(count.textContent).toBe('1');
-        _converse.handleMessageStanza(
-            $msg({
-                from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                to: _converse.connection.jid,
-                type: 'chat',
-                id: u.getUniqueId()
-            }).c('body').t('This message is also sent to a minimized chatbox').up()
-            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
-        );
-
-        await u.waitUntil(() => (chatview.model.messages.length > 1));
-        expect(u.isVisible(chatview.el)).toBeFalsy();
-        expect(trimmedview.model.get('minimized')).toBeTruthy();
-        count = trimmedview.el.querySelector('.message-count');
-        expect(u.isVisible(count)).toBeTruthy();
-        expect(count.textContent).toBe('2');
-        trimmedview.el.querySelector('.restore-chat').click();
-        expect(trimmed_chatboxes.keys().length).toBe(0);
-        done();
-    }));
-
     it("will indicate when it has a time difference of more than a day between it and its predecessor",
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -896,6 +834,39 @@ describe("A Chat Message", function () {
         done();
     }));
 
+    it("will remove url query parameters from hyperlinks as set",
+        mock.initConverse(
+            ['rosterGroupsFetched', 'chatBoxesFetched'],
+            {'filter_url_query_params': ['utm_medium', 'utm_content', 's']},
+            async function (done, _converse) {
+
+        await mock.waitForRoster(_converse, 'current');
+        await mock.openControlBox(_converse);
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.api.chatviews.get(contact_jid);
+        let message = 'This message contains a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
+        mock.sendMessage(view, message);
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+        expect(msg.textContent).toEqual(message);
+        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
+            'This message contains a hyperlink with forbidden query params: <a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0">https://www.opkode.com/?id=0</a>');
+
+
+        // Test assigning a string to filter_url_query_params
+        _converse.api.settings.set('filter_url_query_params', 'utm_medium');
+        message = 'Another message with a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';
+        mock.sendMessage(view, message);
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+        expect(msg.textContent).toEqual(message);
+        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
+            'Another message with a hyperlink with forbidden query params: '+
+            '<a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1">https://www.opkode.com/?id=0&amp;utm_content=1&amp;s=1</a>');
+        done();
+    }));
+
     it("will render newlines",
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -972,13 +943,41 @@ describe("A Chat Message", function () {
         expect(view.model.sendMessage).toHaveBeenCalled();
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.textContent.trim()).toEqual('hello world');
-        expect(msg.querySelectorAll('img').length).toEqual(2);
+        expect(msg.querySelectorAll('img.chat-image').length).toEqual(2);
 
-        // Non-https images aren't rendered
-        message = base_url+"/logo/conversejs-filled.svg";
-        expect(view.content.querySelectorAll('img').length).toBe(4);
+        // Configured image URLs are rendered
+        _converse.api.settings.set('image_urls_regex', /^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i);
+        message = 'https://imgur.com/oxymPax';
         mock.sendMessage(view, message);
-        expect(view.content.querySelectorAll('img').length).toBe(4);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 5, 1000);
+        expect(view.content.querySelectorAll('.chat-content .chat-image').length).toBe(5);
+
+        // Check that the Imgur URL gets a .png attached to make it render
+        await u.waitUntil(() => Array.from(view.el.querySelectorAll('.chat-content .chat-image')).pop().src.endsWith('png'), 1000);
+        done();
+    }));
+
+    it("will render images from approved URLs only",
+        mock.initConverse(
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {'show_images_inline': ['conversejs.org']},
+            async function (done, _converse) {
+
+        await mock.waitForRoster(_converse, 'current');
+        const base_url = 'https://conversejs.org';
+        let message = 'https://imgur.com/oxymPax.png';
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.api.chatviews.get(contact_jid);
+        spyOn(view.model, 'sendMessage').and.callThrough();
+        mock.sendMessage(view, message);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length === 1);
+
+        message = base_url+"/logo/conversejs-filled.svg";
+        mock.sendMessage(view, message);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length === 2, 1000);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 1, 1000)
+        expect(view.content.querySelectorAll('.chat-content .chat-image').length).toBe(1);
+
         done();
     }));
 

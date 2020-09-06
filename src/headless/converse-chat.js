@@ -457,8 +457,6 @@ converse.plugins.add('converse-chat', {
                     attrs.stanza && log.error(attrs.stanza);
                     return log.error(attrs.message);
                 }
-                // TODO: move to OMEMO
-                attrs = attrs.encrypted ? await this.decrypt(attrs) : attrs;
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, attrs);
@@ -1215,7 +1213,7 @@ converse.plugins.add('converse-chat', {
             }
             const has_body = !!sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length;
             const chatbox = await api.chats.get(attrs.contact_jid, {'nickname': attrs.nick }, has_body);
-            chatbox && await chatbox.queueMessage(attrs);
+            await chatbox?.queueMessage(attrs);
             /**
              * Triggered when a message stanza is been received and processed.
              * @event _converse#message

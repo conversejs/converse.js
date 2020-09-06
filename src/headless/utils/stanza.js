@@ -362,7 +362,6 @@ const st = {
         }, {});
     },
 
-
     /**
      * Parses a passed in message stanza and returns an object of attributes.
      * @method st#parseMessage
@@ -417,7 +416,6 @@ const st = {
                 stanza
             );
         }
-
 
         const is_headline = st.isHeadline(stanza);
         const is_server_message = st.isServerMessage(stanza);
@@ -534,7 +532,12 @@ const st = {
         // We prefer to use one of the XEP-0359 unique and stable stanza IDs
         // as the Model id, to avoid duplicates.
         attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${(attrs.from)}`] || u.getUniqueId();
-        return attrs;
+
+        /**
+         * *Hook* which allows plugins to add additional parsing
+         * @event _converse#parseMessage
+         */
+        return api.hook('parseMessage', attrs);
     },
 
     /**
@@ -678,7 +681,11 @@ const st = {
         }
         // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
         attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${(attrs.from_muc || attrs.from)}`] || u.getUniqueId();
-        return attrs;
+        /**
+         * *Hook* which allows plugins to add additional parsing
+         * @event _converse#parseMUCMessage
+         */
+        return api.hook('parseMUCMessage', attrs);
     },
 
     /**

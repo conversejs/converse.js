@@ -1993,8 +1993,6 @@ converse.plugins.add('converse-muc', {
                     attrs.stanza && log.error(attrs.stanza);
                     return log.error(attrs.message);
                 }
-                // TODO: move to OMEMO
-                attrs = attrs.encrypted ? await this.decrypt(attrs) : attrs;
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     return this.updateMessage(message, attrs);

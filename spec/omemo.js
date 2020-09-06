@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { $iq, $pres, $msg, _, Strophe } = converse.env;
+const { $iq, $pres, $msg, _, omemo, Strophe } = converse.env;
 const u = converse.env.utils;
 
 async function deviceListFetched (_converse, jid) {
@@ -78,14 +78,11 @@ describe("The OMEMO module", function() {
 
         const message = 'This message will be encrypted'
         await mock.waitForRoster(_converse, 'current', 1);
-        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        const view = await mock.openChatBoxFor(_converse, contact_jid);
-        const payload = await view.model.encryptMessage(message);
-        const result = await view.model.decryptMessage(payload);
+        const payload = await omemo.encryptMessage(message);
+        const result = await omemo.decryptMessage(payload);
         expect(result).toBe(message);
         done();
     }));
-
 
     it("enables encrypted messages to be sent and received",
         mock.initConverse(
@@ -182,10 +179,9 @@ describe("The OMEMO module", function() {
             `</message>`);
 
         // Test reception of an encrypted message
-        let obj = await view.model.encryptMessage('This is an encrypted message from the contact')
+        let obj = await omemo.encryptMessage('This is an encrypted message from the contact')
         // XXX: Normally the key will be encrypted via libsignal.
-        // However, we're mocking libsignal in the tests, so we include
-        // it as plaintext in the message.
+        // However, we're mocking libsignal in the tests, so we include it as plaintext in the message.
         stanza = $msg({
                 'from': contact_jid,
                 'to': _converse.connection.jid,
@@ -205,7 +201,7 @@ describe("The OMEMO module", function() {
             .toBe('This is an encrypted message from the contact');
 
         // #1193 Check for a received message without <body> tag
-        obj = await view.model.encryptMessage('Another received encrypted message without fallback')
+        obj = await omemo.encryptMessage('Another received encrypted message without fallback')
         stanza = $msg({
                 'from': contact_jid,
                 'to': _converse.connection.jid,
@@ -383,6 +379,9 @@ describe("The OMEMO module", function() {
         await u.waitUntil(() => initializedOMEMO(_converse));
         await mock.openChatBoxFor(_converse, contact_jid);
         let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
+        const my_devicelist = _converse.devicelists.get({'jid': _converse.bare_jid});
+        expect(my_devicelist.devices.length).toBe(2);
+
         const stanza = $iq({
                 'from': contact_jid,
                 'id': iq_stanza.getAttribute('id'),
@@ -395,14 +394,15 @@ describe("The OMEMO module", function() {
                             .c('device', {'id': '555'});
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.omemo_store);
-        const devicelist = _converse.devicelists.get({'jid': contact_jid});
-        await u.waitUntil(() => devicelist.devices.length === 1);
+
+        const contact_devicelist = _converse.devicelists.get({'jid': contact_jid});
+        await u.waitUntil(() => contact_devicelist.devices.length === 1);
 
         const view = _converse.chatboxviews.get(contact_jid);
         view.model.set('omemo_active', true);
 
         // Test reception of an encrypted carbon message
-        const obj = await view.model.encryptMessage('This is an encrypted carbon message from another device of mine')
+        const obj = await omemo.encryptMessage('This is an encrypted carbon message from another device of mine')
         const carbon = u.toStanza(`
             <message xmlns="jabber:client" to="romeo@montague.lit/orchard" from="romeo@montague.lit" type="chat">
                 <sent xmlns="urn:xmpp:carbons:2">
@@ -440,10 +440,14 @@ describe("The OMEMO module", function() {
         expect(view.el.querySelector('.chat-msg__text').textContent.trim())
             .toBe('This is an encrypted carbon message from another device of mine');
 
-        expect(devicelist.devices.length).toBe(2);
-        expect(devicelist.devices.at(0).get('id')).toBe('555');
-        expect(devicelist.devices.at(1).get('id')).toBe('988349631');
-        expect(devicelist.devices.get('988349631').get('active')).toBe(true);
+        expect(contact_devicelist.devices.length).toBe(1);
+
+        // Check that the new device id has been added to my devices
+        expect(my_devicelist.devices.length).toBe(3);
+        expect(my_devicelist.devices.at(0).get('id')).toBe('482886413b977930064a5888b92134fe');
+        expect(my_devicelist.devices.at(1).get('id')).toBe('123456789');
+        expect(my_devicelist.devices.at(2).get('id')).toBe('988349631');
+        expect(my_devicelist.devices.get('988349631').get('active')).toBe(true);
 
         const textarea = view.el.querySelector('.chat-textarea');
         textarea.value = 'This is an encrypted message from this device';
@@ -601,7 +605,7 @@ describe("The OMEMO module", function() {
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
         await u.waitUntil(() => initializedOMEMO(_converse));
-        const obj = await _converse.ChatBox.prototype.encryptMessage('This is an encrypted message from the contact');
+        const obj = await omemo.encryptMessage('This is an encrypted message from the contact');
         // XXX: Normally the key will be encrypted via libsignal.
         // However, we're mocking libsignal in the tests, so we include
         // it as plaintext in the message.
@@ -631,8 +635,8 @@ describe("The OMEMO module", function() {
             return generateMissingPreKeys.apply(_converse.omemo_store, arguments);
         });
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        let iq_stanza = await u.waitUntil(() => _converse.chatboxviews.get(contact_jid));
-        iq_stanza = await deviceListFetched(_converse, contact_jid);
+
+        let iq_stanza = await deviceListFetched(_converse, contact_jid);
         stanza = $iq({
             'from': contact_jid,
             'id': iq_stanza.getAttribute('id'),
@@ -687,7 +691,6 @@ describe("The OMEMO module", function() {
         expect(_converse.omemo_store.generateMissingPreKeys).toHaveBeenCalled();
         done();
     }));
-
 
     it("updates device lists based on PEP messages",
         mock.initConverse(

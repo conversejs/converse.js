@@ -1353,7 +1353,10 @@ notify_nicknames_without_references
 
 * Default: ``false``
 
-Enables desktop notification when user nickname is mentioned without the ``@`` sign.
+Enables notifications for nicknames in messages that don't have associated
+XEP-0372 references linking them to the JID of the person being mentioned.
+
+In Converse, these would be nicknames that weren't mentioned via the ``@`` sign.
 
 oauth_providers
 ---------------

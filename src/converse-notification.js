@@ -36,7 +36,7 @@ converse.plugins.add('converse-notification', {
             notify_nicknames_without_references: false
         });
 
-        _converse.shouldNotifyOfGroupMessage = function (message) {
+        _converse.shouldNotifyOfGroupMessage = function (message, data) {
             /* Is this a group message worthy of notification?
              */
             const jid = message.getAttribute('from');
@@ -46,15 +46,18 @@ converse.plugins.add('converse-notification', {
             const resource = Strophe.getResourceFromJid(jid);
             const sender = resource && Strophe.unescapeNode(resource) || '';
             let is_mentioned = false;
-            
+            const nick = room.get('nick');
+
             if (api.settings.get('notify_nicknames_without_references')) {
                 const body = message.querySelector('body');
-                is_mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
+                is_mentioned = (new RegExp(`\\b${nick}\\b`)).test(body.textContent);
             }
-            
-            const is_not_mine = sender !== room.get('nick');
+
+            const is_referenced = data.attrs.references.map(r => r.value).includes(nick);
+            const is_not_mine = sender !== nick;
             const should_notify_user = notify_all === true
                 || (Array.isArray(notify_all) && notify_all.includes(room_jid))
+                || is_referenced
                 || is_mentioned;
             return is_not_mine && !!should_notify_user;
         };
@@ -71,12 +74,12 @@ converse.plugins.add('converse-notification', {
             return _converse.windowState === 'hidden';
         }
 
-        _converse.shouldNotifyOfMessage = function (message) {
+        _converse.shouldNotifyOfMessage = function (message, data) {
             const forwarded = message.querySelector('forwarded');
             if (forwarded !== null) {
                 return false;
             } else if (message.getAttribute('type') === 'groupchat') {
-                return _converse.shouldNotifyOfGroupMessage(message);
+                return _converse.shouldNotifyOfGroupMessage(message, data);
             } else if (st.isHeadline(message)) {
                 // We want to show notifications for headline messages.
                 return _converse.isMessageToHiddenChat(message);
@@ -250,7 +253,7 @@ converse.plugins.add('converse-notification', {
              * to play sounds and show HTML5 notifications.
              */
             const message = data.stanza;
-            if (!_converse.shouldNotifyOfMessage(message)) {
+            if (!_converse.shouldNotifyOfMessage(message, data)) {
                 return false;
             }
             /**

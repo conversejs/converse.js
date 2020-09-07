@@ -56,22 +56,37 @@ describe("Notifications", function () {
                     spyOn(_converse, 'showMessageNotification').and.callThrough();
                     spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
 
-                    const nick = mock.chatroom_names[0],
-                        makeMsg = text => $msg({
-                            from: 'lounge@montague.lit/'+nick,
-                            id: u.getUniqueId(),
-                            to: 'romeo@montague.lit',
-                            type: 'groupchat'
-                        }).c('body').t(text).tree();
+                    // Test mention with setting false
+                    const nick = mock.chatroom_names[0];
+                    const makeMsg = text => $msg({
+                        from: 'lounge@montague.lit/'+nick,
+                        id: u.getUniqueId(),
+                        to: 'romeo@montague.lit',
+                        type: 'groupchat'
+                    }).c('body').t(text).tree();
                     _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will NOT show a notification')));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 0);
                     expect(_converse.showMessageNotification).not.toHaveBeenCalled();
 
+                    // Test reference
+                    const message_with_ref = $msg({
+                        from: 'lounge@montague.lit/'+nick,
+                        id: u.getUniqueId(),
+                        to: 'romeo@montague.lit',
+                        type: 'groupchat'
+                    }).c('body').t('romeo: this will show a notification').up()
+                    .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'0', 'end':'5', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).tree();
+                    _converse.connection._dataRecv(mock.createRequest(message_with_ref));
+                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
+                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
+                    expect(_converse.showMessageNotification).toHaveBeenCalled();
+
+                    // Test mention with setting true
                     _converse.api.settings.set('notify_all_room_messages', true);
                     _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will show a notification')));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
+                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 2);
                     expect(_converse.showMessageNotification).toHaveBeenCalled();
                     if (no_notification) {
                         delete window.Notification;

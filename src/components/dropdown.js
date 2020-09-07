@@ -15,7 +15,7 @@ export class BaseDropdown extends CustomElement {
         this.button = this.dropdown.querySelector('button');
         this.dropdown.addEventListener('click', ev => this.toggleMenu(ev));
         this.dropdown.addEventListener('keyup', ev => this.handleKeyUp(ev));
-        document.addEventListener('click', ev => !this.contains(ev.originalTarget || ev.path[0]) && this.hideMenu(ev));
+        document.addEventListener('click', ev => !this.contains(ev.composedPath()[0]) && this.hideMenu(ev));
     }
 
     hideMenu () {

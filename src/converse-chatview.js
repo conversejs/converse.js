@@ -363,7 +363,7 @@ export const ChatBoxView = View.extend({
      *  - An optional message that serves as the cause for needing to scroll down.
      */
     maybeScrollDown (message) {
-        if (message?.get('sender') === 'me' || !this.model.get('scrolled')) {
+        if (message?.get('sender') === 'me' || !this.model.isHidden()) {
             this.debouncedScrollDown();
         }
     },
@@ -996,9 +996,7 @@ export const ChatBoxView = View.extend({
 
     onScrolledDown () {
         this.hideNewMessagesIndicator();
-        if (_converse.windowState !== 'hidden') {
-            this.model.clearUnreadMsgCounter();
-        }
+        (!this.model.isHidden()) && this.model.clearUnreadMsgCounter();
         /**
          * Triggered once the chat's message area has been scrolled down to the bottom.
          * @event _converse#chatBoxScrolledDown

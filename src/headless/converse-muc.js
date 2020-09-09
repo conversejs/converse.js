@@ -2338,53 +2338,51 @@ converse.plugins.add('converse-muc', {
              * @param { XMLElement } pres - The stanza
              */
             onOwnPresence (stanza) {
-                if (stanza.getAttribute('type') !== 'unavailable') {
-                    // Set connection_status before creating the occupant, but
-                    // only trigger afterwards, so that plugins can access the
-                    // occupant in their event handlers.
-                    this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, {'silent': true});
+                if (stanza.getAttribute('type') === 'unavailable') {
                     this.updateOccupantsOnPresence(stanza);
-                    this.session.trigger('change:connection_status');
-                } else {
-                    this.updateOccupantsOnPresence(stanza);
+                    this.handleDisconnection(stanza);
+                    this.session.save({'connection_status': converse.ROOMSTATUS.ENTERED});
+                    return
                 }
 
-                if (stanza.getAttribute('type') === 'unavailable') {
-                    this.handleDisconnection(stanza);
-                } else {
-                    const locked_room = stanza.querySelector("status[code='201']");
-                    if (locked_room) {
-                        if (this.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-                        } else if (api.settings.get('muc_instant_rooms')) {
-                            // Accept default configuration
-                            this.sendConfiguration().then(() => this.refreshDiscoInfo());
-                        } else {
-                            /**
-                             * Triggered when a new room has been created which first needs to be configured
-                             * and when `auto_configure` is set to `false`.
-                             * Used by `_converse.ChatRoomView` in order to know when to render the
-                             * configuration form for a new room.
-                             * @event _converse.ChatRoom#configurationNeeded
-                             * @example _converse.api.listen.on('configurationNeeded', () => { ... });
-                             */
-                            this.trigger('configurationNeeded');
-                            return; // We haven't yet entered the groupchat, so bail here.
-                        }
-                    } else if (!this.features.get('fetched')) {
-                        // The features for this groupchat weren't fetched.
-                        // That must mean it's a new groupchat without locking
-                        // (in which case Prosody doesn't send a 201 status),
-                        // otherwise the features would have been fetched in
-                        // the "initialize" method already.
-                        if (this.getOwnAffiliation() === 'owner' && this.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-                        } else {
-                            this.getDiscoInfo();
-                        }
+                // Set connection_status before creating the occupant, but
+                // only trigger afterwards, so that plugins can access the
+                // occupant in their event handlers.
+                this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, {'silent': true});
+                this.updateOccupantsOnPresence(stanza);
+
+                const locked_room = stanza.querySelector("status[code='201']");
+                if (locked_room) {
+                    if (this.get('auto_configure')) {
+                        this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
+                    } else if (api.settings.get('muc_instant_rooms')) {
+                        // Accept default configuration
+                        this.sendConfiguration().then(() => this.refreshDiscoInfo());
+                    } else {
+                        /**
+                         * Triggered when a new room has been created which first needs to be configured
+                         * and when `auto_configure` is set to `false`.
+                         * Used by `_converse.ChatRoomView` in order to know when to render the
+                         * configuration form for a new room.
+                         * @event _converse.ChatRoom#configurationNeeded
+                         * @example _converse.api.listen.on('configurationNeeded', () => { ... });
+                         */
+                        this.trigger('configurationNeeded');
+                        return; // We haven't yet entered the groupchat, so bail here.
+                    }
+                } else if (!this.features.get('fetched')) {
+                    // The features for this groupchat weren't fetched.
+                    // That must mean it's a new groupchat without locking
+                    // (in which case Prosody doesn't send a 201 status),
+                    // otherwise the features would have been fetched in
+                    // the "initialize" method already.
+                    if (this.getOwnAffiliation() === 'owner' && this.get('auto_configure')) {
+                        this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
+                    } else {
+                        this.getDiscoInfo();
                     }
                 }
-                this.session.save({'connection_status': converse.ROOMSTATUS.ENTERED});
+                this.session.trigger('change:connection_status');
             },
 
             /**

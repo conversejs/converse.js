@@ -2070,8 +2070,6 @@ converse.plugins.add('converse-muc', {
                     return actor ? __("%1$s has been banned by %2$s", nick, actor) : __("%1$s has been banned", nick);
                 } else if (code === '303') {
                     return __("%1$s\'s nickname has changed", nick);
-                } else if (code === '333') {
-                    return __("%1$s has exited the room due to a technical issue", nick);
                 } else  if (code === '307') {
                     return actor ? __("%1$s has been kicked out by %2$s", nick, actor) : __("%1$s has been kicked out", nick);
                 } else if (code === '321') {

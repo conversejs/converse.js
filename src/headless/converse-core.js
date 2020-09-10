@@ -1600,21 +1600,41 @@ Object.assign(converse, {
     },
     /**
      * Utility methods and globals from bundled 3rd party libraries.
-     * @memberOf converse
-     *
+     * @typedef ConverseEnv
      * @property {function} converse.env.$build    - Creates a Strophe.Builder, for creating stanza objects.
      * @property {function} converse.env.$iq       - Creates a Strophe.Builder with an <iq/> element as the root.
      * @property {function} converse.env.$msg      - Creates a Strophe.Builder with an <message/> element as the root.
      * @property {function} converse.env.$pres     - Creates a Strophe.Builder with an <presence/> element as the root.
      * @property {function} converse.env.Promise   - The Promise implementation used by Converse.
      * @property {function} converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
-     * @property {object} converse.env._           - The instance of [lodash-es](http://lodash.com) used by Converse.
      * @property {function} converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
-     * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
+     * @property {function} converse.env.sprintf
+     * @property {object} converse.env._           - The instance of [lodash-es](http://lodash.com) used by Converse.
+     * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
+     * @memberOf converse
      */
-    'env': { $build, $iq, $msg, $pres, Model, Collection, CustomElement, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u, html }
+    'env': {
+        $build,
+        $iq,
+        $msg,
+        $pres,
+        'utils': u,
+        Collection,
+        CustomElement,
+        Model,
+        Promise,
+        Strophe,
+        _,
+        dayjs,
+        html,
+        log,
+        sizzle,
+        sprintf,
+        stanza_utils,
+        u,
+    }
 });
 
 /**

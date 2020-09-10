@@ -671,8 +671,17 @@ converse.plugins.add('converse-muc', {
                 }
                 this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
+
+                /**
+                 * An object containing the original groupchat message stanza,
+                 * as well as the parsed attributes.
+                 * @typedef { Object } MUCMessageData
+                 * @property { XMLElement } stanza
+                 * @property { MUCMessageAttributes } stanza
+                 */
                 const attrs = await st.parseMUCMessage(stanza, this, _converse);
-                api.trigger('message', {stanza, attrs});
+                const data = {stanza, attrs};
+                api.trigger('message', data);
                 return attrs && this.queueMessage(attrs);
             },
 

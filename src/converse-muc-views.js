@@ -26,7 +26,7 @@ import tpl_spinner from "templates/spinner.html";
 import { ChatBoxView } from "./converse-chatview";
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from '@converse/skeletor/src/view.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { debounce, isString, isUndefined } from "lodash-es";
 import { render } from "lit-html";

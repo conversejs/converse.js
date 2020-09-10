@@ -5,7 +5,7 @@
  */
 import log from "@converse/headless/log";
 import st from "@converse/headless/utils/stanza";
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const { Strophe, sizzle } = converse.env;
@@ -36,9 +36,12 @@ converse.plugins.add('converse-notification', {
             notify_nicknames_without_references: false
         });
 
+        /**
+         * Is this a group message for which we should notify the user?
+         * @private
+         * @method _converse#shouldNotifyOfGroupMessage
+         */
         _converse.shouldNotifyOfGroupMessage = function (message, data) {
-            /* Is this a group message worthy of notification?
-             */
             const jid = message.getAttribute('from');
             const room_jid = Strophe.getBareJidFromJid(jid);
             const notify_all = api.settings.get('notify_all_room_messages');

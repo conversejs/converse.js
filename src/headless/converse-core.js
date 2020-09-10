@@ -5,8 +5,6 @@
  */
 import './polyfill';
 import 'strophe.js/src/websocket';
-import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
-import { Connection, MockConnection } from '@converse/headless/connection.js';
 import Storage from '@converse/skeletor/src/storage.js';
 import _ from './lodash.noconflict';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
@@ -17,13 +15,15 @@ import sizzle from 'sizzle';
 import stanza_utils from "@converse/headless/utils/stanza";
 import u from '@converse/headless/utils/core';
 import { Collection } from "@converse/skeletor/src/collection";
+import { Connection, MockConnection } from '@converse/headless/connection.js';
+import { CustomElement } from '../components/element';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Router } from '@converse/skeletor/src/router.js';
-import { CustomElement } from '../components/element';
-import { __, i18n } from './i18n';
+import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash-es';
 import { html } from 'lit-element';
+import { sprintf } from 'sprintf-js';
 
 
 dayjs.extend(advancedFormat);
@@ -152,6 +152,32 @@ CONNECTION_STATUS[Strophe.Status.ERROR] = 'ERROR';
 CONNECTION_STATUS[Strophe.Status.RECONNECTING] = 'RECONNECTING';
 CONNECTION_STATUS[Strophe.Status.REDIRECT] = 'REDIRECT';
 
+
+/**
+ * @namespace i18n
+ */
+export const i18n = {
+    initialize () {},
+
+    /**
+     * Overridable string wrapper method which can be used to provide i18n
+     * support.
+     *
+     * The default implementation in @converse/headless simply calls sprintf
+     * with the passed in arguments.
+     *
+     * If you install the full version of Converse, then this method gets
+     * overwritten in src/i18n/index.js to return a translated string.
+     * @method __
+     * @private
+     * @memberOf i18n
+     * @param { String } str
+     */
+    __ (...args) {
+        return sprintf(...args);
+    }
+};
+
 /**
  * A private, closured object containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
@@ -223,13 +249,12 @@ export const _converse = {
 
     /**
      * Translate the given string based on the current locale.
-     * Handles all MUC presence stanzas.
      * @method __
      * @private
      * @memberOf _converse
-     * @param { String } str - The string to translate
+     * @param { String } str
      */
-     '__': __,
+    '__': (...args) => i18n.__(...args),
 
     /**
      * A no-op method which is used to signal to gettext that the passed in string
@@ -1431,21 +1456,6 @@ _converse.ConnectionFeedback = Model.extend({
 });
 
 
-async function initLocale () {
-    if (_converse.isTestEnv()) {
-        _converse.locale = 'en';
-    } else {
-        try {
-            _converse.locale = i18n.getLocale(api.settings.get('i18n'), api.settings.get("locales"));
-            await i18n.fetchTranslations(_converse);
-        } catch (e) {
-            log.fatal(e.message);
-            _converse.locale = 'en';
-        }
-    }
-}
-
-
 function setUnloadEvent () {
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it
@@ -1536,7 +1546,6 @@ Object.assign(converse, {
             /^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel',
             l => log.setLogLevel(l)
         );
-        await initLocale();
         _converse.connfeedback = new _converse.ConnectionFeedback();
 
         /* When reloading the page:
@@ -1550,6 +1559,7 @@ Object.assign(converse, {
 
         await initSessionStorage();
         initClientConfig();
+        i18n.initialize();
         initPlugins();
         registerGlobalEventHandlers();
 

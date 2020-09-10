@@ -9,7 +9,7 @@ import "converse-profile";
 import log from "@converse/headless/log";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { concat, debounce, difference, invokeMap, range, omit } from "lodash-es";
 import { html } from 'lit-html';

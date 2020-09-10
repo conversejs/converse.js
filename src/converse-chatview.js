@@ -17,7 +17,7 @@ import tpl_toolbar from "templates/toolbar.js";
 import tpl_user_details_modal from "templates/user_details_modal.js";
 import { BootstrapModal } from "./converse-modal.js";
 import { View } from '@converse/skeletor/src/view.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { debounce, isString } from "lodash-es";
 import { html, render } from "lit-html";

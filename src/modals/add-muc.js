@@ -1,7 +1,7 @@
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
 import { BootstrapModal } from "../converse-modal.js";
 import { Strophe } from 'strophe.js/src/strophe';
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const u = converse.env.utils;

@@ -4,8 +4,10 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the internationalization module
  */
-import Jed from "jed";
-import dayjs from "dayjs";
+import Jed from 'jed';
+import dayjs from 'dayjs';
+import log from "@converse/headless/log";
+import { _converse, api, i18n } from '@converse/headless/converse-core';
 
 
 function detectLocale (library_check) {
@@ -63,12 +65,30 @@ function isLocaleAvailable (locale, available) {
     }
 }
 
+
+/* Fetch the translations for the given local at the given URL.
+ * @private
+ * @method i18n#fetchTranslations
+ * @param { _converse }
+ */
+async function fetchTranslations (_converse) {
+    const { api, locale } = _converse;
+    if (!isConverseLocale(locale, api.settings.get("locales")) || locale === 'en') {
+        return;
+    }
+    const { default: data } = await import(/*webpackChunkName: "locales/[request]" */ `../i18n/${locale}/LC_MESSAGES/converse.po`);
+    await import(/*webpackChunkName: "locales/dayjs/[request]" */ `dayjs/locale/${locale.toLowerCase().replace('_', '-')}`);
+    dayjs.locale(getLocale(locale, l => dayjs.locale(l)));
+    jed_instance = new Jed(data);
+}
+
+
 let jed_instance;
 
 /**
  * @namespace i18n
  */
-export const i18n = {
+Object.assign(i18n, {
 
     getLocale (preferred_locale, available_locales) {
         return getLocale(preferred_locale, preferred => isConverseLocale(preferred, available_locales));
@@ -86,25 +106,23 @@ export const i18n = {
         }
     },
 
-    /**
-     * Fetch the translations for the given local at the given URL.
-     * @private
-     * @method i18n#fetchTranslations
-     * @param { _converse }
-     */
-    async fetchTranslations (_converse) {
-        const locale = _converse.locale;
-        if (!isConverseLocale(locale, _converse.api.settings.get("locales")) || locale === 'en') {
-            return;
+    async initialize () {
+        if (_converse.isTestEnv()) {
+            _converse.locale = 'en';
+        } else {
+            try {
+                _converse.locale = i18n.getLocale(api.settings.get('i18n'), api.settings.get("locales"));
+                await fetchTranslations(_converse);
+            } catch (e) {
+                log.fatal(e.message);
+                _converse.locale = 'en';
+            }
         }
-        const { default: data } = await import(/*webpackChunkName: "locales/[request]" */ `../i18n/${locale}/LC_MESSAGES/converse.po`);
-        await import(/*webpackChunkName: "locales/dayjs/[request]" */ `dayjs/locale/${locale.toLowerCase().replace('_', '-')}`);
-        dayjs.locale(getLocale(_converse.locale, l => dayjs.locale(l)));
-        jed_instance = new Jed(data);
+    },
+
+    __ (...args) {
+        return i18n.translate(...args);
     }
-};
+});
 
-
-export const __ = function () {
-    return i18n.translate.apply(i18n, arguments);
-}
+export const __ = i18n.__;

@@ -10,7 +10,7 @@ import tpl_bookmarks_list from "templates/bookmarks_list.js"
 import tpl_muc_bookmark_form from "templates/muc_bookmark_form.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from '@converse/skeletor/src/view.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { invokeMap } from 'lodash-es';
 
 const { Strophe } = converse.env;

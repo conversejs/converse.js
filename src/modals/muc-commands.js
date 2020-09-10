@@ -1,5 +1,5 @@
 import { BootstrapModal } from "../converse-modal.js";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { api, converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";

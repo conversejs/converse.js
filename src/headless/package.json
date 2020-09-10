@@ -38,10 +38,10 @@
   "devDependencies": {
     "@converse/skeletor": "conversejs/skeletor#b260c554f4ce961c29deea4740083e58a489aa9b",
     "filesize": "^6.1.0",
-    "jed": "1.1.1",
     "localforage": "^1.7.3",
     "lodash-es": "^4.17.15",
     "pluggable.js": "2.0.1",
+    "sprintf-js": "^1.1.2",
     "strophe.js": "strophe/strophejs#ceb5640786dc60de4a13b18c9a263f2ef112874c"
   }
 }

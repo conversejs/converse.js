@@ -85,6 +85,7 @@
     "imports-loader": "^0.8.0",
     "install": "^0.13.0",
     "jasmine": "^3.5.0",
+    "jed": "1.1.1",
     "jsdoc": "^3.6.4",
     "karma": "^5.1.0",
     "karma-chrome-launcher": "^3.1.0",

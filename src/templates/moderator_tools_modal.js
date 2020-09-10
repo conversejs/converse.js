@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import spinner from "./spinner.js";
 import { modal_header_close_button } from "./buttons"
 

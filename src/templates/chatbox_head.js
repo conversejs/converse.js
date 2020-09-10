@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { until } from 'lit-html/directives/until.js';
 import avatar from "./avatar.js";
 

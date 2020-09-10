@@ -1,4 +1,4 @@
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { html } from "lit-html";
 import avatar from "./avatar.js";
 import { modal_close_button, modal_header_close_button } from "./buttons"

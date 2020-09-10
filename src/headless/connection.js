@@ -2,7 +2,6 @@ import log from "./log";
 import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
 import { Strophe } from 'strophe.js/src/core';
-import { __ } from './i18n';
 import { _converse, api, clearSession, tearDown } from "./converse-core";
 import { debounce, isElement, noop } from 'lodash';
 
@@ -105,6 +104,7 @@ export class Connection extends Strophe.Connection {
     }
 
     async reconnect () {
+        const { __ } = _converse;
         log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
         this.setConnectionStatus(
             Strophe.Status.RECONNECTING,
@@ -245,6 +245,7 @@ export class Connection extends Strophe.Connection {
      * @param { String } message
      */
     onConnectStatusChanged (status, message) {
+        const { __ } = _converse;
         log.debug(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.ATTACHFAIL) {
             this.setConnectionStatus(status);

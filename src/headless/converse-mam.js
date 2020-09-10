@@ -199,9 +199,8 @@ converse.plugins.add('converse-mam', {
         }
 
         function preMUCJoinMAMFetch (room) {
-            if (!_converse.muc_show_logs_before_join ||
+            if (!api.settings.get('muc_show_logs_before_join') ||
                     !room.features.get('mam_enabled') ||
-                    room.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
                     room.get('prejoin_mam_fetched')) {
                 return;
             }
@@ -213,10 +212,11 @@ converse.plugins.add('converse-mam', {
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(NS.MAM));
         api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
         api.listen.on('chatRoomViewInitialized', view => {
-            if (_converse.muc_show_logs_before_join) {
+            if (api.settings.get('muc_show_logs_before_join')) {
+                preMUCJoinMAMFetch(view.model);
                 // If we want to show MAM logs before entering the MUC, we need
                 // to be informed once it's clear that this MUC supports MAM.
-                view.model.features.on('change:mam_enabled', preMUCJoinMAMFetch(view.model));
+                view.model.features.on('change:mam_enabled', () => preMUCJoinMAMFetch(view.model));
             }
         });
         api.listen.on('enteredNewRoom', room => room.features.get('mam_enabled') && room.fetchNewestMessages());

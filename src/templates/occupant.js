@@ -6,14 +6,15 @@ const occupant_title = (o) => {
     const i18n_moderator_hint = __('This user is a moderator.');
     const i18n_participant_hint = __('This user can send messages in this groupchat.');
     const i18n_visitor_hint = __('This user can NOT send messages in this groupchat.')
+    const spaced_jid = `${o.jid} ` || '';
     if (o.role === "moderator") {
-        return `${o.jid} ${i18n_moderator_hint} ${o.hint_occupant}`;
+        return `${spaced_jid}${i18n_moderator_hint} ${o.hint_occupant}`;
     } else if (o.role === "participant") {
-        return `${o.jid} ${i18n_participant_hint} ${o.hint_occupant}`;
+        return `${spaced_jid}${i18n_participant_hint} ${o.hint_occupant}`;
     } else if (o.role === "visitor") {
-        return `${o.jid} ${i18n_visitor_hint} ${o.hint_occupant}`;
+        return `${spaced_jid}${i18n_visitor_hint} ${o.hint_occupant}`;
     } else if (!["visitor", "participant", "moderator"].includes(o.role)) {
-        return `${o.jid} ${o.hint_occupant}`;
+        return `${spaced_jid}${o.hint_occupant}`;
     }
 }
 

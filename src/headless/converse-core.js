@@ -82,13 +82,14 @@ const CORE_PLUGINS = [
     'converse-bookmarks',
     'converse-bosh',
     'converse-caps',
-    'converse-chatboxes',
+    'converse-carbons',
     'converse-chat',
+    'converse-chatboxes',
     'converse-disco',
     'converse-emoji',
+    'converse-headlines',
     'converse-mam',
     'converse-muc',
-    'converse-headlines',
     'converse-ping',
     'converse-pubsub',
     'converse-roster',
@@ -123,7 +124,6 @@ const DEFAULT_SETTINGS = {
         'gl', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'mr', 'oc',
         'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
     ],
-    message_carbons: true,
     nickname: undefined,
     password: undefined,
     persistent_store: 'localStorage',
@@ -1337,33 +1337,6 @@ async function cleanup () {
         api.promises.add('initialized')
     }
 }
-
-
-function enableCarbons () {
-    /* Ask the XMPP server to enable Message Carbons
-     * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
-     */
-    if (!api.settings.get("message_carbons") || !_converse.session || _converse.session.get('carbons_enabled')) {
-        return;
-    }
-    const carbons_iq = new Strophe.Builder('iq', {
-        'from': _converse.connection.jid,
-        'id': 'enablecarbons',
-        'type': 'set'
-      })
-      .c('enable', {xmlns: Strophe.NS.CARBONS});
-    _converse.connection.addHandler((iq) => {
-        if (iq.querySelectorAll('error').length > 0) {
-            log.warn('An error occurred while trying to enable message carbons.');
-        } else {
-            _converse.session.save({'carbons_enabled': true});
-            log.debug('Message carbons have been enabled.');
-        }
-    }, null, "iq", null, "enablecarbons");
-    _converse.connection.send(carbons_iq);
-}
-
-api.listen.on('afterResourceBinding', () => enableCarbons());
 
 
 function fetchLoginCredentials (wait=0) {

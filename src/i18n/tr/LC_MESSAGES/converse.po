@@ -1,0 +1,2580 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Jan-Carel Brand
+# This file is distributed under the same license as the Converse.js package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Converse.js 3.3.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-17 09:03+0200\n"
+"PO-Revision-Date: 2019-11-06 14:43+0000\n"
+"Last-Translator: Ömer Çakmak <faruk.omer.cakmak@gmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
+"translations/tr/>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.10-dev\n"
+
+#: dist/converse-no-dependencies.js:25173
+msgid "You're not allowed to send messages in this room"
+msgstr "Bu odada mesaj göndermek için izniniz yok"
+
+#: dist/converse-no-dependencies.js:25193
+msgid "This groupchat no longer exists"
+msgstr "Bu grup sohbeti artık mevcut değil"
+
+#: dist/converse-no-dependencies.js:25199
+msgid "The conversation has moved. Click below to enter."
+msgstr "Konuşma taşındı. Girmek için aşağıya tıklayın."
+
+#: dist/converse-no-dependencies.js:25275
+msgid "Create your account"
+msgstr "Hesabını oluştur"
+
+#: dist/converse-no-dependencies.js:25277
+msgid "Please enter the XMPP provider to register with:"
+msgstr "Lütfen kayıt yaptırmak için XMPP sağlayıcısını girin:"
+
+#: dist/converse-no-dependencies.js:25295
+#: dist/converse-no-dependencies.js:25329
+msgid "Already have a chat account?"
+msgstr "Zaten bir sohbet hesabınız var mı?"
+
+#: dist/converse-no-dependencies.js:25297
+#: dist/converse-no-dependencies.js:25331
+msgid "Log in here"
+msgstr "Giriş yapın"
+
+#: dist/converse-no-dependencies.js:25313
+msgid "Account Registration:"
+msgstr "Hesap kaydı:"
+
+#: dist/converse-no-dependencies.js:25321
+msgid "Register"
+msgstr "Kayıt ol"
+
+#: dist/converse-no-dependencies.js:25325
+msgid "Choose a different provider"
+msgstr "Farklı bir sağlayıcı seçin"
+
+#: dist/converse-no-dependencies.js:25345
+msgid "Hold tight, we're fetching the registration form…"
+msgstr "Sıkı tutun, kayıt formunu alıyoruz…"
+
+#: dist/converse-no-dependencies.js:25349
+#: dist/converse-no-dependencies.js:70258
+#: dist/converse-no-dependencies.js:71148
+#: dist/converse-no-dependencies.js:89901
+#: dist/converse-no-dependencies.js:94871
+msgid "Cancel"
+msgstr "İptal"
+
+#. Strophe
+#: dist/converse-no-dependencies.js:43311
+msgid "The connection has dropped, attempting to reconnect."
+msgstr "Bağlantı koptu, yeniden bağlanılmaya çalışılıyor."
+
+#. Strophe
+#: dist/converse-no-dependencies.js:43567
+msgid "An error occurred while connecting to the chat server."
+msgstr "Sohbet sunucusuna bağlanılırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:43574
+#, fuzzy
+msgid "Your XMPP address and/or password is incorrect. Please try again."
+msgstr "Jabber Kimlik ve/veya parola geçersiz. Lütfen tekrar deneyin."
+
+#: dist/converse-no-dependencies.js:43586
+#, javascript-format
+msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+msgstr "ÜZgünüz, bu XMPP hostuna bu domainle bağlanamadık :%1$s"
+
+#. Strophe
+#. Strophe
+#. Strophe
+#: dist/converse-no-dependencies.js:43588
+msgid "The XMPP server did not offer a supported authentication mechanism"
+msgstr "XMPP sunucusu desteklenen bir kimlik doğrulama mekanizması sunmadı"
+
+#: dist/converse-no-dependencies.js:51949
+msgid "Unencryptable OMEMO message"
+msgstr "Şifrelenemeyen ONEMO mesajı"
+
+#: dist/converse-no-dependencies.js:52008
+msgid "Sorry, could not determine upload URL."
+msgstr "Maalesef, yükleme URL’si belirlenemedi."
+
+#: dist/converse-no-dependencies.js:52031
+msgid "Sorry, could not determine file upload URL."
+msgstr "Maalesef, dosya yükleme URL’si belirlenemedi."
+
+#: dist/converse-no-dependencies.js:52074
+#, javascript-format
+msgid ""
+"Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
+"\""
+msgstr ""
+"Maalesef, dosyanızı başarıyla yükleyemedi. Sunucunuzun yanıtı: \"%1$s\""
+
+#: dist/converse-no-dependencies.js:52076
+msgid "Sorry, could not succesfully upload your file."
+msgstr "Maalesef, dosyanızı başarıyla yükleyemedi."
+
+#: dist/converse-no-dependencies.js:52282
+#: dist/converse-no-dependencies.js:59900
+#, fuzzy
+msgid "You're not allowed to retract your message."
+msgstr "Bu değişikliği yapmanıza izin verilmiyor"
+
+#: dist/converse-no-dependencies.js:52284
+#: dist/converse-no-dependencies.js:59904
+#, fuzzy
+msgid "Sorry, an error occurred while trying to retract your message."
+msgstr "Üzgünüm, yenilemeye çalışırken bir şeyler ters gitti"
+
+#: dist/converse-no-dependencies.js:52289
+#, fuzzy
+msgid "You're not allowed to send a message."
+msgstr "Bu odada mesaj göndermek için izniniz yok"
+
+#: dist/converse-no-dependencies.js:52291
+#: dist/converse-no-dependencies.js:59913
+#, fuzzy
+msgid "Sorry, an error occurred while trying to send your message."
+msgstr "Maalesef, cihazları kaldırmaya çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:53335
+#: dist/converse-no-dependencies.js:53358
+msgid "Sorry, looks like file upload is not supported by your server."
+msgstr ""
+"Maalesef, dosya yükleme sunucunuz tarafından desteklenmiyor gibi görünüyor."
+
+#: dist/converse-no-dependencies.js:53379
+#, javascript-format
+msgid ""
+"The size of your file, %1$s, exceeds the maximum allowed by your server, "
+"which is %2$s."
+msgstr ""
+"Dosyanızın boyutu, %1$s, sunucunuz tarafından izin verilen ve %2$s olan "
+"maksimum değeri aşıyor."
+
+#: dist/converse-no-dependencies.js:58098
+msgid "Smileys and emotions"
+msgstr "Suratlar ve duygular"
+
+#: dist/converse-no-dependencies.js:58099
+msgid "People"
+msgstr "İnsanlar"
+
+#: dist/converse-no-dependencies.js:58100
+msgid "Activities"
+msgstr "Faaliyetler"
+
+#: dist/converse-no-dependencies.js:58101
+msgid "Travel"
+msgstr "Seyahat"
+
+#: dist/converse-no-dependencies.js:58102
+msgid "Objects"
+msgstr "Nesneler"
+
+#: dist/converse-no-dependencies.js:58103
+msgid "Animals and nature"
+msgstr "Hayvanlar ve doğa"
+
+#: dist/converse-no-dependencies.js:58104
+msgid "Food and drink"
+msgstr "Yiyecek ve içecek"
+
+#: dist/converse-no-dependencies.js:58105
+msgid "Symbols"
+msgstr "Semboller"
+
+#: dist/converse-no-dependencies.js:58106
+msgid "Flags"
+msgstr "Bayraklar"
+
+#: dist/converse-no-dependencies.js:58107
+msgid "Stickers"
+msgstr "Çıkartma"
+
+#: dist/converse-no-dependencies.js:59090
+msgid "This groupchat is not anonymous"
+msgstr "Bu grup konuşması anonim değil"
+
+#: dist/converse-no-dependencies.js:59091
+msgid "This groupchat now shows unavailable members"
+msgstr "Bu grup konuşması uygun olmayan üyeleri gösteriyor"
+
+#: dist/converse-no-dependencies.js:59092
+msgid "This groupchat does not show unavailable members"
+msgstr "Bu grup konuşması uygun olmayan üyeleri gösteriyor"
+
+#: dist/converse-no-dependencies.js:59093
+msgid "The groupchat configuration has changed"
+msgstr "Grup sohbeti yapılandırması değiştirildi"
+
+#: dist/converse-no-dependencies.js:59094
+msgid "Groupchat logging is now enabled"
+msgstr "Grup sohbeti günlüğü artık etkin"
+
+#: dist/converse-no-dependencies.js:59095
+msgid "Groupchat logging is now disabled"
+msgstr "Grup Sohbeti günlüğü artık devre dışı"
+
+#: dist/converse-no-dependencies.js:59096
+msgid "This groupchat is now no longer anonymous"
+msgstr "Bu grup sohbeti artık anonim değil"
+
+#: dist/converse-no-dependencies.js:59097
+msgid "This groupchat is now semi-anonymous"
+msgstr "Bu grup sohbeti şimdi yarı anonim"
+
+#: dist/converse-no-dependencies.js:59098
+msgid "This groupchat is now fully-anonymous"
+msgstr "Bu grup sohbeti artık tamamen anonim"
+
+#: dist/converse-no-dependencies.js:59099
+msgid "A new groupchat has been created"
+msgstr "Yeni bir grup sohbeti oluşturuldu"
+
+#. XXX: Note the triple underscore function and not double underscore.
+#: dist/converse-no-dependencies.js:59103
+#, javascript-format
+msgid "Your nickname has been automatically set to %1$s"
+msgstr "Takma adınız otomatik %1$s olarak ayarlandı."
+
+#: dist/converse-no-dependencies.js:59104
+#, javascript-format
+msgid "Your nickname has been changed to %1$s"
+msgstr "Takma adınız %1$s olarak değiştirildi"
+
+#: dist/converse-no-dependencies.js:59107
+msgid "You have been banned from this groupchat"
+msgstr "Bu grup sohbetinden banlandınız"
+
+#: dist/converse-no-dependencies.js:59108
+#, fuzzy
+msgid "You have exited this groupchat due to a technical problem"
+msgstr "Üyelik değişikliği nedeniyle bu grup sohbetinden kaldırıldınız"
+
+#: dist/converse-no-dependencies.js:59109
+msgid "You have been kicked from this groupchat"
+msgstr "Bu grup sohbetinden atıldınız"
+
+#: dist/converse-no-dependencies.js:59110
+msgid ""
+"You have been removed from this groupchat because of an affiliation change"
+msgstr "Üyelik değişikliği nedeniyle bu grup sohbetinden kaldırıldınız"
+
+#: dist/converse-no-dependencies.js:59111
+msgid ""
+"You have been removed from this groupchat because the groupchat has changed "
+"to members-only and you're not a member"
+msgstr ""
+"Grup sohbeti yalnızca üyelere değiştirildiğinden ve üye olmadığınız için bu "
+"grup sohbetinden çıkardınız"
+
+#: dist/converse-no-dependencies.js:59112
+msgid ""
+"You have been removed from this groupchat because the service hosting it is "
+"being shut down"
+msgstr "Bu grup sohbeti kaldırıldı, çünkü barındırma hizmeti kapatıldı"
+
+#: dist/converse-no-dependencies.js:59902
+#, fuzzy
+msgid ""
+"Your retraction was not delivered because you're not present in the "
+"groupchat."
+msgstr "Mesajınız iletilmedi çünkü grup sohbetinde bulunmadınız."
+
+#: dist/converse-no-dependencies.js:59909
+#, fuzzy
+msgid "Your message was not delivered because you weren't allowed to send it."
+msgstr ""
+"Mesajınız iletilmedi çünkü bu grup sohbetinde mesaj göndermenize izin "
+"verilmiyor."
+
+#: dist/converse-no-dependencies.js:59911
+msgid ""
+"Your message was not delivered because you're not present in the groupchat."
+msgstr "Mesajınız iletilmedi çünkü grup sohbetinde bulunmadınız."
+
+#: dist/converse-no-dependencies.js:60131
+#, fuzzy
+msgid "A timeout happened while while trying to retract your message."
+msgstr "Maalesef, cihazları kaldırmaya çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:61301
+msgid "You're not allowed to register yourself in this groupchat."
+msgstr "Kendinizi bu grup sohbetine kaydettiremezsiniz."
+
+#: dist/converse-no-dependencies.js:61303
+msgid ""
+"You're not allowed to register in this groupchat because it's members-only."
+msgstr ""
+"Bu grup sohbetine kaydolmanıza izin verilmiyor çünkü sadece üyeler kayıt "
+"olabilirler."
+
+#: dist/converse-no-dependencies.js:61348
+msgid ""
+"Can't register your nickname in this groupchat, it doesn't support "
+"registration."
+msgstr "Takma adınız bu grup sohbetine kaydedilemiyor, kaydı desteklemiyor."
+
+#: dist/converse-no-dependencies.js:61350
+msgid ""
+"Can't register your nickname in this groupchat, invalid data form supplied."
+msgstr ""
+"Takma adınız bu grup sohbetine kaydedilemiyor, verilen geçersiz veri formu."
+
+#: dist/converse-no-dependencies.js:61551
+#, javascript-format
+msgid "Topic set by %1$s"
+msgstr "Konu %1$s tarafından ayarlandı"
+
+#: dist/converse-no-dependencies.js:61551
+#, javascript-format
+msgid "Topic cleared by %1$s"
+msgstr "Konu %1$s tarafından temizlendi"
+
+#: dist/converse-no-dependencies.js:62189
+#, fuzzy, javascript-format
+msgid "%1$s has been banned by %2$s"
+msgstr "%1$s banlandı"
+
+#: dist/converse-no-dependencies.js:62189
+#, javascript-format
+msgid "%1$s has been banned"
+msgstr "%1$s banlandı"
+
+#: dist/converse-no-dependencies.js:62191
+#, javascript-format
+msgid "%1$s's nickname has changed"
+msgstr "%1$s kullancı adını değiştirdi"
+
+#: dist/converse-no-dependencies.js:62193
+#, fuzzy, javascript-format
+msgid "%1$s has exited the room due to a technical issue"
+msgstr "%1$s grup sohbetine girdi"
+
+#: dist/converse-no-dependencies.js:62195
+#, fuzzy, javascript-format
+msgid "%1$s has been kicked out by %2$s"
+msgstr "%1$s atıldı"
+
+#: dist/converse-no-dependencies.js:62195
+#, javascript-format
+msgid "%1$s has been kicked out"
+msgstr "%1$s atıldı"
+
+#: dist/converse-no-dependencies.js:62197
+#, javascript-format
+msgid "%1$s has been removed because of an affiliation change"
+msgstr "%1$s bir kuruluş değişikliği nedeniyle kaldırıldı"
+
+#: dist/converse-no-dependencies.js:62199
+#, javascript-format
+msgid "%1$s has been removed for not being a member"
+msgstr "%1$s üye olmadığı için kaldırıldı"
+
+#: dist/converse-no-dependencies.js:62219
+#, javascript-format
+msgid "%1$s is no longer an admin of this groupchat"
+msgstr "%1$s artık bu toplu konuşmanın yöneticisi değil"
+
+#: dist/converse-no-dependencies.js:62224
+#, javascript-format
+msgid "%1$s is no longer an owner of this groupchat"
+msgstr "%1$s artık bu toplu konuşmanın sahibi değil"
+
+#: dist/converse-no-dependencies.js:62229
+#, javascript-format
+msgid "%1$s is no longer banned from this groupchat"
+msgstr "%1$s artık bu toplu konuşmada yasaklı değil"
+
+#: dist/converse-no-dependencies.js:62236
+#, javascript-format
+msgid "%1$s is no longer a member of this groupchat"
+msgstr "%1$s artık bu toplu konuşmanın üyesi değil"
+
+#: dist/converse-no-dependencies.js:62243
+#, javascript-format
+msgid "%1$s is now a member of this groupchat"
+msgstr "%1$s şimdi bu grup sohbetine üye"
+
+#: dist/converse-no-dependencies.js:62249
+#, javascript-format
+msgid "%1$s is now an %2$s of this groupchat"
+msgstr "%1$s artık bu toplu konuşmanın %2$s"
+
+#: dist/converse-no-dependencies.js:62374
+msgid ""
+"The nickname you chose is reserved or currently in use, please choose a "
+"different one."
+msgstr ""
+"Seçtiğiniz takma isim saklıdır veya kullanımda. Lütfen farklı bir tane seçin."
+
+#: dist/converse-no-dependencies.js:62401
+msgid "Password incorrect"
+msgstr "Yanlış parola"
+
+#: dist/converse-no-dependencies.js:62409
+msgid "You are not on the member list of this groupchat."
+msgstr "Bu grup sohbetinin üye listesinde değilsin."
+
+#: dist/converse-no-dependencies.js:62413
+msgid "You have been banned from this groupchat."
+msgstr "Bu grup sohbetinde yasaklandınız."
+
+#: dist/converse-no-dependencies.js:62419
+msgid "You are not allowed to create new groupchats."
+msgstr "Yeni grup sohbetleri oluşturmanıza izin verilmiyor."
+
+#: dist/converse-no-dependencies.js:62423
+msgid "Your nickname doesn't conform to this groupchat's policies."
+msgstr "Takma adınız bu grup sohbetinin politikalarına uymuyor."
+
+#: dist/converse-no-dependencies.js:62440
+msgid "This groupchat does not (yet) exist."
+msgstr "Bu grup sohbeti (henüz) yok."
+
+#: dist/converse-no-dependencies.js:62444
+msgid "This groupchat has reached its maximum number of participants."
+msgstr "Bu grup sohbeti maksimum katılımcı sayısına ulaştı."
+
+#: dist/converse-no-dependencies.js:62448
+msgid "Remote server not found"
+msgstr "Uzak sunucu bulunamadı"
+
+#: dist/converse-no-dependencies.js:62450
+#, javascript-format
+msgid "The explanation given is: \"%1$s\"."
+msgstr "Verilen açıklama: \"%1$s\"."
+
+#: dist/converse-no-dependencies.js:62839
+#, javascript-format
+msgid "%1$s has invited you to join a groupchat: %2$s"
+msgstr "%1$s sizi bir grup sohbetine davet etti: %2$s"
+
+#: dist/converse-no-dependencies.js:62841
+#, javascript-format
+msgid ""
+"%1$s has invited you to join a groupchat: %2$s, and left the following "
+"reason: \"%3$s\""
+msgstr ""
+"%1$s sizi bir grup sohbetine davet etti: %2$s ve aşağıdaki nedeni bıraktı: "
+"\"%3$s\""
+
+#: dist/converse-no-dependencies.js:63599
+#: dist/converse-no-dependencies.js:84363
+#: dist/converse-no-dependencies.js:85026
+#: dist/converse-no-dependencies.js:90959
+#: dist/converse-no-dependencies.js:90995
+#: dist/converse-no-dependencies.js:90999
+#: dist/converse-no-dependencies.js:96063
+#: dist/converse-no-dependencies.js:96147
+#: dist/converse-no-dependencies.js:96540
+#: dist/converse-no-dependencies.js:96543
+#: dist/converse-no-dependencies.js:99731
+msgid "Error"
+msgstr "Hata"
+
+#: dist/converse-no-dependencies.js:63599
+msgid "Sorry, something went wrong while trying to save your bookmark."
+msgstr "Üzgünüm, kaydetmeye çalışırken bir problem çıktı."
+
+#: dist/converse-no-dependencies.js:63663
+msgid "Timeout Error"
+msgstr "Zaman Aşımı Hatası"
+
+#: dist/converse-no-dependencies.js:63663
+msgid ""
+"The server did not return your bookmarks within the allowed time. You can "
+"reload the page to request them again."
+msgstr ""
+"Sunucu yer imlerinizi izin verilen süre içinde döndürmedi. Sayfayı tekrar "
+"istemek için yeniden yükleyebilirsiniz."
+
+#: dist/converse-no-dependencies.js:66725
+msgid "My contacts"
+msgstr "Kişilerim"
+
+#: dist/converse-no-dependencies.js:66726
+msgid "Pending contacts"
+msgstr "Bekleyen kişiler"
+
+#: dist/converse-no-dependencies.js:66727
+msgid "Contact requests"
+msgstr "İletişim istekleri"
+
+#: dist/converse-no-dependencies.js:66728
+msgid "Ungrouped"
+msgstr "Gruplanmamış"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:66729
+#: dist/converse-no-dependencies.js:77751
+#, fuzzy
+msgid "New messages"
+msgstr "Mesajları sil"
+
+#: dist/converse-no-dependencies.js:67393
+#, javascript-format
+msgid "Sorry, there was an error while trying to add %1$s as a contact."
+msgstr "Maalesef, %1$s kişiyi kişi olarak eklemeye çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:67685
+msgid "This client does not allow presence subscriptions"
+msgstr "Bu müşteri varlık aboneliklerine izin vermiyor"
+
+#: dist/converse-no-dependencies.js:67795
+msgid "Click to hide these contacts"
+msgstr "Bu kişileri gizlemek için tıklayın"
+
+#: dist/converse-no-dependencies.js:70210
+#: dist/converse-no-dependencies.js:70955
+#: dist/converse-no-dependencies.js:98746
+msgid "Unbookmark this groupchat"
+msgstr "Bu grup sohbetini favorilerden çıkar"
+
+#: dist/converse-no-dependencies.js:70212
+#: dist/converse-no-dependencies.js:88520
+#: dist/converse-no-dependencies.js:98762
+msgid "Click to open this groupchat"
+msgstr "Bu grup sohbetini açmak için tıkla"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:70218
+msgid "Click to toggle the bookmarks list"
+msgstr "Yer imlerini değiştirmek için tıkla"
+
+#: dist/converse-no-dependencies.js:70220
+msgid "Bookmarks"
+msgstr "Yer imleri"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:70254
+#: dist/converse-no-dependencies.js:70955
+#: dist/converse-no-dependencies.js:98744
+msgid "Bookmark this groupchat"
+msgstr "Sık kullanılanlara ekle"
+
+#: dist/converse-no-dependencies.js:70256
+msgid "Would you like this groupchat to be automatically joined upon startup?"
+msgstr "Bu grubun açılışta otomatik olarak açılmasını istiyor musun?"
+
+#: dist/converse-no-dependencies.js:70260
+msgid "The name for this bookmark:"
+msgstr "Bir isim gir:"
+
+#: dist/converse-no-dependencies.js:70262
+msgid "What should your nickname for this groupchat be?"
+msgstr "Bu grup için takma adın ne olmalı?"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:70264
+#: dist/converse-no-dependencies.js:89899
+#: dist/converse-no-dependencies.js:94876
+msgid "Save"
+msgstr "Kaydet"
+
+#: dist/converse-no-dependencies.js:70717
+#, javascript-format
+msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
+msgstr "%1$s, bunu sık kullanılanlardan kaldırmak istediğine emin misin?"
+
+#: dist/converse-no-dependencies.js:70956
+#, fuzzy
+msgid "Unbookmark"
+msgstr "Yer imleri"
+
+#: dist/converse-no-dependencies.js:70956
+#, fuzzy
+msgid "Bookmark"
+msgstr "Yer imleri"
+
+#: dist/converse-no-dependencies.js:71051
+#: dist/converse-no-dependencies.js:71052
+#: dist/converse-no-dependencies.js:84780
+#: dist/converse-no-dependencies.js:92842
+#: dist/converse-no-dependencies.js:94872
+msgid "Close"
+msgstr "Kapat"
+
+#: dist/converse-no-dependencies.js:71148
+msgid "OK"
+msgstr ""
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:71596
+msgid "Image: "
+msgstr ""
+
+#: dist/converse-no-dependencies.js:75683
+#, javascript-format
+msgid "Download audio file \"%1$s\""
+msgstr "\"%1$s\" ses dosyasını indirin"
+
+#: dist/converse-no-dependencies.js:75701
+#, javascript-format
+msgid "Download file \"%1$s\""
+msgstr "\"%1$s\" dosyasını indir"
+
+#: dist/converse-no-dependencies.js:77417
+#, fuzzy
+msgid "Cancel Editing"
+msgstr "Ayarları değiştir"
+
+#: dist/converse-no-dependencies.js:77417
+msgid "Edit"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:77446
+msgid "Retract"
+msgstr ""
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:77557
+msgid "Message versions"
+msgstr "Mesaj versiyonları"
+
+#: dist/converse-no-dependencies.js:78160
+msgid "Retry"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:78167
+msgid "Uploading file:"
+msgstr "Dosya yükleniyor:"
+
+#: dist/converse-no-dependencies.js:78281
+#: dist/converse-no-dependencies.js:78283
+#, fuzzy, javascript-format
+msgid "%1$s has removed this message"
+msgstr "%1$s üye olmadığı için kaldırıldı"
+
+#: dist/converse-no-dependencies.js:78295
+msgid "This message has been edited"
+msgstr "Bu mesaj düzenlendi"
+
+#: dist/converse-no-dependencies.js:78297
+msgid "Show more"
+msgstr "Fazlasını göster"
+
+#: dist/converse-no-dependencies.js:78301
+#, fuzzy
+msgid "Show less"
+msgstr "Kullanıcıları göster"
+
+#: dist/converse-no-dependencies.js:79160
+msgid "No message history available."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:80113
+msgid "Search results"
+msgstr "Arama Sonuçları"
+
+#: dist/converse-no-dependencies.js:80144
+msgid "Search"
+msgstr "Ara"
+
+#: dist/converse-no-dependencies.js:81120
+msgid "Insert emojis"
+msgstr "Emoji ekle"
+
+#: dist/converse-no-dependencies.js:81459
+#, fuzzy
+msgid "Send the message"
+msgstr "Bu mesajı düzenle"
+
+#: dist/converse-no-dependencies.js:81475
+msgid "Start a call"
+msgstr "Bir arama başlat"
+
+#: dist/converse-no-dependencies.js:81480
+msgid "Message characters remaining"
+msgstr "Kullanılabilir mesaj karakterleri"
+
+#: dist/converse-no-dependencies.js:81498
+#, fuzzy
+msgid "Hide participants"
+msgstr "Katılımcılar"
+
+#: dist/converse-no-dependencies.js:81500
+#, fuzzy
+msgid "Show participants"
+msgstr "Katılımcılar"
+
+#: dist/converse-no-dependencies.js:81516
+msgid "Choose a file to send"
+msgstr "Gönderilecek dosyayı seç"
+
+#: dist/converse-no-dependencies.js:81535
+msgid "Click to write as a normal (non-spoiler) message"
+msgstr "Normal (spoiler olmayan) mesaj olarak göndermek için tıkla"
+
+#: dist/converse-no-dependencies.js:81537
+msgid "Click to write your message as a spoiler"
+msgstr "Mesajını spoiler olarak yazmak için tıkla"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:83837
+#: dist/converse-no-dependencies.js:84077
+msgid "The User's Profile Image"
+msgstr "Bu Kullanıcının Profil Resmi"
+
+#: dist/converse-no-dependencies.js:84038
+msgid "Trusted"
+msgstr "Güvenilir"
+
+#: dist/converse-no-dependencies.js:84040
+msgid "Untrusted"
+msgstr "Güvenilmez"
+
+#: dist/converse-no-dependencies.js:84050
+msgid "OMEMO Fingerprints"
+msgstr "OMEMO Parmak İzleri"
+
+#: dist/converse-no-dependencies.js:84052
+#, fuzzy
+msgid "No OMEMO-enabled devices found"
+msgstr "Diğer OMEMO özellikli cihazlar"
+
+#: dist/converse-no-dependencies.js:84063
+msgid "Remove as contact"
+msgstr "Kişilerden kaldır"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:84069
+#: dist/converse-no-dependencies.js:85907
+#: dist/converse-no-dependencies.js:88377
+#: dist/converse-no-dependencies.js:93790
+#: dist/converse-no-dependencies.js:99092
+msgid "XMPP Address"
+msgstr "XMPP Adresi"
+
+#: dist/converse-no-dependencies.js:84071
+#: dist/converse-no-dependencies.js:94663
+msgid "Email"
+msgstr "E-Posta"
+
+#: dist/converse-no-dependencies.js:84073
+#: dist/converse-no-dependencies.js:94665
+msgid "Full Name"
+msgstr "Ad Soyad"
+
+#: dist/converse-no-dependencies.js:84075
+#: dist/converse-no-dependencies.js:88202
+#: dist/converse-no-dependencies.js:91883
+#: dist/converse-no-dependencies.js:94669
+#: dist/converse-no-dependencies.js:99094
+msgid "Nickname"
+msgstr "Rumuz"
+
+#: dist/converse-no-dependencies.js:84079
+msgid "Refresh"
+msgstr "Tazele"
+
+#: dist/converse-no-dependencies.js:84081
+#: dist/converse-no-dependencies.js:89056
+#: dist/converse-no-dependencies.js:94671
+msgid "Role"
+msgstr "rol"
+
+#: dist/converse-no-dependencies.js:84083
+#: dist/converse-no-dependencies.js:94677
+msgid "URL"
+msgstr "Bağlantı Adresi"
+
+#: dist/converse-no-dependencies.js:84326
+msgid "Sorry, something went wrong while trying to refresh"
+msgstr "Üzgünüm, yenilemeye çalışırken bir şeyler ters gitti"
+
+#: dist/converse-no-dependencies.js:84350
+#: dist/converse-no-dependencies.js:99703
+msgid "Are you sure you want to remove this contact?"
+msgstr "Bu kişiyi kaldırmak istediğinize emin misiniz?"
+
+#: dist/converse-no-dependencies.js:84363
+#: dist/converse-no-dependencies.js:99731
+#, javascript-format
+msgid "Sorry, there was an error while trying to remove %1$s as a contact."
+msgstr "Üzgünüz, %1$s kişisini kaldırmaya çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:84527
+#: dist/converse-no-dependencies.js:90581
+#, javascript-format
+msgid "%1$s is typing"
+msgstr "%1$s yazıyor"
+
+#: dist/converse-no-dependencies.js:84529
+#: dist/converse-no-dependencies.js:90583
+#, javascript-format
+msgid "%1$s has stopped typing"
+msgstr "%1$s yazmayı durdurdu"
+
+#: dist/converse-no-dependencies.js:84531
+#: dist/converse-no-dependencies.js:85446
+#: dist/converse-no-dependencies.js:90585
+#, javascript-format
+msgid "%1$s has gone away"
+msgstr "%1$s uzakta"
+
+#: dist/converse-no-dependencies.js:84537
+msgid "Remove messages"
+msgstr "Mesajları sil"
+
+#: dist/converse-no-dependencies.js:84537
+#, fuzzy
+msgid "Close this chat"
+msgstr "Bu sohbet kutusunu kapat"
+
+#: dist/converse-no-dependencies.js:84537
+msgid "Write in the third person"
+msgstr "Üçüncü kişi olarak yaz"
+
+#: dist/converse-no-dependencies.js:84537
+#: dist/converse-no-dependencies.js:90638
+msgid "Show this menu"
+msgstr "Menüyü göster"
+
+#: dist/converse-no-dependencies.js:84592
+msgid "Hidden message"
+msgstr "Gizli mesaj"
+
+#: dist/converse-no-dependencies.js:84592
+msgid "Message"
+msgstr "Mesaj"
+
+#: dist/converse-no-dependencies.js:84593
+msgid "Optional hint"
+msgstr "Opsiyonel ipucu"
+
+#: dist/converse-no-dependencies.js:84597
+msgid "You have unread messages"
+msgstr "Okunmamış mesajlarınız var"
+
+#: dist/converse-no-dependencies.js:84767
+#: dist/converse-no-dependencies.js:91072
+msgid "Details"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:84768
+#, fuzzy
+msgid "See more information about this person"
+msgstr "Grup hakkında daha fazla bilgi göster"
+
+#: dist/converse-no-dependencies.js:84781
+#, fuzzy
+msgid "Close and end this conversation"
+msgstr "Bu toplu konuşmayı kapat ve konuşmadan ayrıl"
+
+#: dist/converse-no-dependencies.js:85025
+msgid "Sorry, the connection has been lost, and your message could not be sent"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:85251
+#: dist/converse-no-dependencies.js:90871
+msgid ""
+"Be aware that other XMPP/Jabber clients (and servers) may not yet support "
+"retractions and that this message may not be removed everywhere."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:85252
+#: dist/converse-no-dependencies.js:90878
+#: dist/converse-no-dependencies.js:90916
+#, fuzzy
+msgid "Are you sure you want to retract this message?"
+msgstr "Bu kişiyi kaldırmak istediğinize emin misiniz?"
+
+#: dist/converse-no-dependencies.js:85259
+#: dist/converse-no-dependencies.js:90885
+#: dist/converse-no-dependencies.js:90923
+#: dist/converse-no-dependencies.js:91169
+#: dist/converse-no-dependencies.js:91655
+msgid "Confirm"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:85283
+msgid ""
+"You have an unsent message which will be lost if you continue. Are you sure?"
+msgstr ""
+"Henüz gönderilmemiş bir mesajınız var, devam ederseniz silinecek. Emin "
+"misiniz?"
+
+#: dist/converse-no-dependencies.js:85370
+msgid "Are you sure you want to clear the messages from this conversation?"
+msgstr "Bu konuşmadaki mesajları temizlemek istediğinize emin misiniz?"
+
+#: dist/converse-no-dependencies.js:85444
+#, javascript-format
+msgid "%1$s has gone offline"
+msgstr "%1$s çevrimdışı oldu"
+
+#: dist/converse-no-dependencies.js:85448
+#, javascript-format
+msgid "%1$s is busy"
+msgstr "%1$s meşgul"
+
+#: dist/converse-no-dependencies.js:85450
+#, javascript-format
+msgid "%1$s is online"
+msgstr "%1$s çevrimiçi"
+
+#: dist/converse-no-dependencies.js:85878
+msgid ""
+"To improve performance, we cache your data in this browser. Uncheck this box "
+"if this is a public computer or if you want your data to be deleted when you "
+"log out. It's important that you explicitly log out, otherwise not all "
+"cached data might be deleted. Please note, when using an untrusted device, "
+"OMEMO encryption is NOT available."
+msgstr ""
+"Performansı arttırmak amacı ile tarayıcınızda veri depoluyoruz. İnternet "
+"kafe gibi bilgisayarın genel kullanıldiği bir ortamda iseniz ve çıkış "
+"yaptığınıza bilgilerinizin silinmesini istiyorsanız bu kutuyu işaretlemeyin. "
+"Düzgün bir şekilde çıkış yapmanız tüm verinin silinmesi için önemlidir. "
+"Unutmayın ki, güvenilmeyen bir cihaz kullanırken OMEMO şifrelemesi "
+"çalışmayacaktır."
+
+#: dist/converse-no-dependencies.js:85880
+msgid "This is a trusted device"
+msgstr "Bu cihaz güvenilir"
+
+#: dist/converse-no-dependencies.js:85886
+#, fuzzy
+msgid "Password"
+msgstr "Şifre:"
+
+#: dist/converse-no-dependencies.js:85892
+msgid "Create an account"
+msgstr "Hesap oluştur"
+
+#: dist/converse-no-dependencies.js:85894
+msgid "Don't have a chat account?"
+msgstr "Sohbet hesabınız yok mu?"
+
+#: dist/converse-no-dependencies.js:85905
+msgid "Log in"
+msgstr "Oturum Aç"
+
+#: dist/converse-no-dependencies.js:85913
+msgid "Disconnected"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:85915
+msgid "Click here to log in anonymously"
+msgstr "Anonim olarak giriş yapmak için tıklayın"
+
+#: dist/converse-no-dependencies.js:86388
+msgid "Username"
+msgstr "Kullancıadı"
+
+#: dist/converse-no-dependencies.js:86388
+msgid "user@domain"
+msgstr "kullanıcı@alanadı"
+
+#: dist/converse-no-dependencies.js:86408
+#: dist/converse-no-dependencies.js:88375
+#: dist/converse-no-dependencies.js:99088
+msgid "Please enter a valid XMPP address"
+msgstr "Lütfen geçerli bir XMPP adresi girin"
+
+#: dist/converse-no-dependencies.js:86507
+msgid "Chat Contacts"
+msgstr "Kişilerinle Sohbet Et"
+
+#: dist/converse-no-dependencies.js:86507
+msgid "Toggle chat"
+msgstr "Sohbeti değiştir"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:87315
+msgid "Minimized"
+msgstr "Küçültüldü"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:87353
+msgid "Click to restore this chat"
+msgstr "Bu sohbeti geri yükle"
+
+#: dist/converse-no-dependencies.js:88073
+#: dist/converse-no-dependencies.js:88092
+#, fuzzy
+msgid "Minimize"
+msgstr "Küçültüldü"
+
+#: dist/converse-no-dependencies.js:88074
+#, fuzzy
+msgid "Minimize this chat"
+msgstr "Bu sohbet kutusunu küçült"
+
+#: dist/converse-no-dependencies.js:88093
+#, fuzzy
+msgid "Minimize this groupchat"
+msgstr "Bu sohbet kutusunu küçült"
+
+#: dist/converse-no-dependencies.js:88204
+msgid "This field is required"
+msgstr "Bu alan zorunludur"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:88210
+msgid "Join"
+msgstr "Katıl"
+
+#: dist/converse-no-dependencies.js:88212
+msgid "Enter a new Groupchat"
+msgstr "Yeni bir gruba katıl"
+
+#: dist/converse-no-dependencies.js:88249
+msgid "name@conference.example.org"
+msgstr "isim@konferans.ornek.org"
+
+#: dist/converse-no-dependencies.js:88254
+msgid "Groupchat name"
+msgstr "Grup Sohbeti adı"
+
+#: dist/converse-no-dependencies.js:88254
+msgid "Groupchat address"
+msgstr "Grup sohbeti adresi"
+
+#: dist/converse-no-dependencies.js:88325
+#, fuzzy
+msgid "Groupchat id is invalid."
+msgstr "Grup sohbeti günlüğü artık etkin"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:88369
+#: dist/converse-no-dependencies.js:91097
+msgid "Invite"
+msgstr "Davet et"
+
+#: dist/converse-no-dependencies.js:88371
+#, fuzzy
+msgid "Invite someone to this groupchat"
+msgstr "Bu grup sohbetini kaldır"
+
+#: dist/converse-no-dependencies.js:88373
+#, fuzzy
+msgid "user@example.org"
+msgstr "name@example.org"
+
+#: dist/converse-no-dependencies.js:88379
+#, fuzzy
+msgid "Optional reason for the invitation"
+msgstr "Opsiyonel ipucu"
+
+#: dist/converse-no-dependencies.js:88510
+msgid "Show groupchats"
+msgstr "Toplu konuşmaları göster"
+
+#: dist/converse-no-dependencies.js:88512
+msgid "Server address"
+msgstr "Sunucu adresi"
+
+#: dist/converse-no-dependencies.js:88518
+#: dist/converse-no-dependencies.js:98762
+msgid "Show more information on this groupchat"
+msgstr "Grup hakkında daha fazla bilgi göster"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:88526
+msgid "Query for Groupchats"
+msgstr "Toplu konuşma sorgusu"
+
+#: dist/converse-no-dependencies.js:88578
+msgid "Description:"
+msgstr "Açıklama:"
+
+#: dist/converse-no-dependencies.js:88579
+msgid "Groupchat Address (JID):"
+msgstr "Toplu konuşma Adresi (JID):"
+
+#: dist/converse-no-dependencies.js:88580
+msgid "Participants:"
+msgstr "Katılımcılar:"
+
+#: dist/converse-no-dependencies.js:88581
+msgid "Features:"
+msgstr "Özellikler:"
+
+#: dist/converse-no-dependencies.js:88582
+msgid "Requires authentication"
+msgstr "Kimlik doğrulama gerektirir"
+
+#: dist/converse-no-dependencies.js:88583
+#: dist/converse-no-dependencies.js:89660
+msgid "Hidden"
+msgstr "Gizli"
+
+#: dist/converse-no-dependencies.js:88584
+msgid "Requires an invitation"
+msgstr "Davet gerekli"
+
+#: dist/converse-no-dependencies.js:88585
+#: dist/converse-no-dependencies.js:89668
+msgid "Moderated"
+msgstr "Modere ediliyor"
+
+#: dist/converse-no-dependencies.js:88586
+msgid "Non-anonymous"
+msgstr "Anonim-olmayan"
+
+#: dist/converse-no-dependencies.js:88587
+#: dist/converse-no-dependencies.js:89688
+msgid "Open"
+msgstr "Açık"
+
+#: dist/converse-no-dependencies.js:88588
+msgid "Permanent"
+msgstr "Kalıcı"
+
+#: dist/converse-no-dependencies.js:88589
+#: dist/converse-no-dependencies.js:89700
+msgid "Public"
+msgstr "Herkese açık"
+
+#: dist/converse-no-dependencies.js:88590
+#: dist/converse-no-dependencies.js:89702
+msgid "Semi-anonymous"
+msgstr "Yarı-anonim"
+
+#: dist/converse-no-dependencies.js:88591
+#: dist/converse-no-dependencies.js:89706
+msgid "Temporary"
+msgstr "Geçici"
+
+#: dist/converse-no-dependencies.js:88592
+msgid "Unmoderated"
+msgstr "Modere edilmiyor"
+
+#: dist/converse-no-dependencies.js:88638
+msgid "conference.example.org"
+msgstr "konferans.ornek.org"
+
+#: dist/converse-no-dependencies.js:88697
+#, fuzzy
+msgid "Groupchats found"
+msgstr "Bulunan toplu konuşmalar:"
+
+#: dist/converse-no-dependencies.js:88705
+msgid "No groupchats found"
+msgstr "Toplu konuşma bulunamadı"
+
+#: dist/converse-no-dependencies.js:88983
+msgid ""
+"Moderators are privileged users who can change the roles of other users "
+"(except those with admin or owner affiliations."
+msgstr ""
+"Moderatörler, diğer kullanıcıların rollerini değiştirebilen ayrıcalıklı "
+"kullanıcılardır (yönetici veya sahiplik ilişkileri olanlar hariç)."
+
+#: dist/converse-no-dependencies.js:88985
+msgid "The default role, implies that you can read and write messages."
+msgstr ""
+"Varsayılan rol, mesajları okuyabileceğiniz ve yazabileceğiniz anlamına gelir."
+
+#: dist/converse-no-dependencies.js:88987
+msgid ""
+"Visitors aren't allowed to write messages in a moderated multi-user chat."
+msgstr ""
+"Ziyaretçilerin yönetilen çok kullanıcılı bir sohbette mesaj yazmasına izin "
+"verilmez."
+
+#: dist/converse-no-dependencies.js:88993
+msgid ""
+"Owner is the highest affiliation. Owners can modify roles and affiliations "
+"of all other users."
+msgstr ""
+"Sahip en yüksek üyedir. Sahipler diğer tüm kullanıcıların rollerini ve "
+"bağlantılarını değiştirebilir."
+
+#: dist/converse-no-dependencies.js:88995
+msgid ""
+"Admin is the 2nd highest affiliation. Admins can modify roles and "
+"affiliations of all other users except owners."
+msgstr ""
+"Yönetici, en yüksek 2. üyedir. Yöneticiler, sahipler dışındaki diğer tüm "
+"kullanıcıların rollerini ve bağlantılarını değiştirebilir."
+
+#: dist/converse-no-dependencies.js:88997
+msgid "To ban a user, you give them the affiliation of \"outcast\"."
+msgstr ""
+"Bir kullanıcıyı yasaklamak için onlara \"dışa vurma\" üyeliği verirsiniz."
+
+#: dist/converse-no-dependencies.js:89010
+msgid "Change role"
+msgstr "Role değiştir"
+
+#: dist/converse-no-dependencies.js:89012
+msgid "New Role"
+msgstr "Yeni rol"
+
+#: dist/converse-no-dependencies.js:89014
+#: dist/converse-no-dependencies.js:89030
+#: dist/converse-no-dependencies.js:91647
+msgid "Reason"
+msgstr "Sebep"
+
+#: dist/converse-no-dependencies.js:89026
+msgid "Change affiliation"
+msgstr "Üyeliği değiştir"
+
+#: dist/converse-no-dependencies.js:89028
+msgid "New affiliation"
+msgstr "Yeni üyelik"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:89046
+msgid "Affiliation"
+msgstr "Üyelik"
+
+#: dist/converse-no-dependencies.js:89048
+msgid "Moderator Tools"
+msgstr "Moderatör Araçları"
+
+#: dist/converse-no-dependencies.js:89050
+msgid "No users with that affiliation found."
+msgstr "Bu üyeliğe sahip hiçbir kullanıcı bulunamadı."
+
+#: dist/converse-no-dependencies.js:89052
+msgid "No users with that role found."
+msgstr "Bu role sahip hiçbir kullanıcı bulunamadı."
+
+#: dist/converse-no-dependencies.js:89054
+msgid "Type here to filter the search results"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:89058
+msgid "Show users"
+msgstr "Kullanıcıları göster"
+
+#: dist/converse-no-dependencies.js:89060
+msgid ""
+"Roles are assigned to users to grant or deny them certain abilities in a "
+"multi-user chat. They're assigned either explicitly or implicitly as part of "
+"an affiliation. A role that's not due to an affiliation, is only valid for "
+"the duration of the user's session."
+msgstr ""
+"Roller, çok kullanıcılı bir sohbette belirli beceriler kazandırmak veya "
+"reddetmek için kullanıcılara atanır. Bir üyeliğin bir parçası olarak açıkça "
+"veya dolaylı olarak atanırlar. Bir üyelikten kaynaklanmayan bir rol, "
+"yalnızca kullanıcının oturumu boyunca geçerlidir."
+
+#: dist/converse-no-dependencies.js:89062
+msgid ""
+"An affiliation is a long-lived entitlement which typically implies a certain "
+"role and which grants privileges and responsibilities. For example admins "
+"and owners automatically have the moderator role."
+msgstr ""
+"Bir ortaklık, genellikle belirli bir rol ifade eden ve ayrıcalıklar ve "
+"sorumluluklar veren uzun ömürlü bir haktır. Örneğin yöneticiler ve mal "
+"sahipleri otomatik olarak moderatör rolüne sahip."
+
+#: dist/converse-no-dependencies.js:89400
+#, fuzzy
+msgid "Timeout error while trying to set the affiliation"
+msgstr "Maalesef üyeliği ayarlamaya çalışırken bir sorun oluştu"
+
+#: dist/converse-no-dependencies.js:89402
+#, fuzzy
+msgid "Sorry, you're not allowed to make that change"
+msgstr "Bu değişikliği yapmanıza izin verilmiyor"
+
+#: dist/converse-no-dependencies.js:89404
+msgid "Sorry, something went wrong while trying to set the affiliation"
+msgstr "Maalesef üyeliği ayarlamaya çalışırken bir sorun oluştu"
+
+#: dist/converse-no-dependencies.js:89411
+msgid "Affiliation changed"
+msgstr "Üyelik değişti"
+
+#: dist/converse-no-dependencies.js:89446
+msgid "Role changed"
+msgstr "Rolünüz değişti"
+
+#: dist/converse-no-dependencies.js:89459
+msgid "You're not allowed to make that change"
+msgstr "Bu değişikliği yapmanıza izin verilmiyor"
+
+#: dist/converse-no-dependencies.js:89461
+msgid "Sorry, something went wrong while trying to set the role"
+msgstr "Maalesef, rolü belirlemeye çalışırken bir şeyler ters gitti"
+
+#: dist/converse-no-dependencies.js:89640
+msgid "Topic"
+msgstr "Konu"
+
+#: dist/converse-no-dependencies.js:89642
+msgid "Topic author"
+msgstr "Konu sahibi"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:89650
+msgid "Groupchat address (JID)"
+msgstr "Grup adresi (JID)"
+
+#: dist/converse-no-dependencies.js:89652
+msgid "Message archiving"
+msgstr "Mesaj arşivleme"
+
+#: dist/converse-no-dependencies.js:89654
+msgid "Messages are archived on the server"
+msgstr "Mesajlar sunucuda arşivlenir"
+
+#: dist/converse-no-dependencies.js:89656
+msgid "Description"
+msgstr "Açıklama"
+
+#: dist/converse-no-dependencies.js:89658
+msgid "Features"
+msgstr "Özellikler"
+
+#: dist/converse-no-dependencies.js:89662
+msgid "This groupchat is not publicly searchable"
+msgstr "Bu grup sohbeti herkes tarafından aranamaz"
+
+#: dist/converse-no-dependencies.js:89664
+msgid "This groupchat is restricted to members only"
+msgstr "Bu grup sohbeti yalnızca üyelerle sınırlıdır"
+
+#: dist/converse-no-dependencies.js:89666
+msgid "Members only"
+msgstr "Sadece üyeler"
+
+#: dist/converse-no-dependencies.js:89670
+msgid ""
+"Participants entering this groupchat need to request permission to write"
+msgstr ""
+"Bu grup sohbetine giren katılımcıların yazmak için izin istemeleri gerekir"
+
+#: dist/converse-no-dependencies.js:89672
+msgid "Name"
+msgstr "Ad"
+
+#: dist/converse-no-dependencies.js:89674
+msgid "This groupchat does not require a password upon entry"
+msgstr "Bu grup sohbeti girişte şifre gerektirmez"
+
+#: dist/converse-no-dependencies.js:89676
+msgid "No password required"
+msgstr "Şifre gerekmiyor"
+
+#: dist/converse-no-dependencies.js:89678
+msgid "Not anonymous"
+msgstr "İsimsiz değil"
+
+#: dist/converse-no-dependencies.js:89680
+msgid "All other groupchat participants can see your XMPP address"
+msgstr "Diğer tüm grup sohbet katılımcıları XMPP adresinizi görebilir"
+
+#: dist/converse-no-dependencies.js:89682
+msgid "Not moderated"
+msgstr "Yönetilmiyor"
+
+#: dist/converse-no-dependencies.js:89684
+msgid "Participants entering this groupchat can write right away"
+msgstr "Bu grup sohbetine katılan katılımcılar hemen yazabilir"
+
+#: dist/converse-no-dependencies.js:89686
+msgid "Online users"
+msgstr "Online Kullanıcılar"
+
+#: dist/converse-no-dependencies.js:89690
+msgid "Anyone can join this groupchat"
+msgstr "Herkes bu grup sohbetine katılabilir"
+
+#: dist/converse-no-dependencies.js:89692
+msgid "This groupchat requires a password before entry"
+msgstr "Bu grup sohbeti giriş yapmadan önce şifre gerektiriyor"
+
+#: dist/converse-no-dependencies.js:89694
+msgid "Password protected"
+msgstr "Şifre korumalı"
+
+#: dist/converse-no-dependencies.js:89696
+msgid "Persistent"
+msgstr "Kalıcı"
+
+#: dist/converse-no-dependencies.js:89698
+msgid "This groupchat persists even if it's unoccupied"
+msgstr "Bu grup sohbeti boş olsa bile devam ediyor"
+
+#: dist/converse-no-dependencies.js:89704
+msgid "Only moderators can see your XMPP address"
+msgstr "XMPP adresinizi yalnızca moderatörler görebilir"
+
+#: dist/converse-no-dependencies.js:89708
+msgid "This groupchat will disappear once the last person leaves"
+msgstr "Bu grup sohbeti son kişi ayrıldıktan sonra kaybolacak"
+
+#: dist/converse-no-dependencies.js:89710
+msgid "This groupchat is publicly searchable"
+msgstr "Bu grup sohbeti herkese açık olarak aranabilir"
+
+#: dist/converse-no-dependencies.js:89728
+#, javascript-format
+msgid "Groupchat info for %1$s"
+msgstr "%1$s için toplu konuşma bilgisi"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:89850
+#, fuzzy
+msgid "Hide the groupchat topic"
+msgstr "Bu sohbet kutusunu küçült"
+
+#: dist/converse-no-dependencies.js:89852
+#, fuzzy
+msgid "This groupchat is bookmarked"
+msgstr "Bu grup konuşması anonim değil"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:89933
+msgid "This groupchat requires a password"
+msgstr "Bu grup sohbeti bir şifre gerektiriyor"
+
+#: dist/converse-no-dependencies.js:89935
+msgid "Password: "
+msgstr "Parola: "
+
+#: dist/converse-no-dependencies.js:89937
+msgid "Submit"
+msgstr "Gönder"
+
+#: dist/converse-no-dependencies.js:90018
+msgid "This user is a moderator."
+msgstr "Bu kullanıcı bir moderatör."
+
+#: dist/converse-no-dependencies.js:90020
+msgid "This user can send messages in this groupchat."
+msgstr "Bu kullanıcı bu grup sohbetinde mesaj gönderebilir."
+
+#: dist/converse-no-dependencies.js:90022
+msgid "This user can NOT send messages in this groupchat."
+msgstr "Bu kullanıcı bu grup sohbetinde mesaj gönderemez."
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:90036
+msgid "Owner"
+msgstr "Sahip"
+
+#: dist/converse-no-dependencies.js:90038
+msgid "Admin"
+msgstr "Yönetici"
+
+#: dist/converse-no-dependencies.js:90040
+msgid "Member"
+msgstr "Üye"
+
+#: dist/converse-no-dependencies.js:90042
+msgid "Moderator"
+msgstr "Moderatör"
+
+#: dist/converse-no-dependencies.js:90044
+msgid "Visitor"
+msgstr "Ziyaretçi"
+
+#: dist/converse-no-dependencies.js:90085
+#, javascript-format
+msgid "Click to mention %1$s in your message."
+msgstr "Mesajınızda %1$s’i belirtmek için tıklayın."
+
+#: dist/converse-no-dependencies.js:90088
+msgid "Participants"
+msgstr "Katılımcılar"
+
+#: dist/converse-no-dependencies.js:90587
+#, javascript-format
+msgid "%1$s has entered the groupchat"
+msgstr "%1$s grup sohbetine girdi"
+
+#: dist/converse-no-dependencies.js:90589
+#, javascript-format
+msgid "%1$s has left the groupchat"
+msgstr "%1$s grup sohbetinden ayrıldı"
+
+#: dist/converse-no-dependencies.js:90591
+#, javascript-format
+msgid "%1$s is now a moderator"
+msgstr "%1$s artık bir moderatör"
+
+#: dist/converse-no-dependencies.js:90593
+#, javascript-format
+msgid "%1$s is no longer a moderator"
+msgstr "%1$s artık bir moderatör değil"
+
+#: dist/converse-no-dependencies.js:90595
+#, javascript-format
+msgid "%1$s has been given a voice"
+msgstr "%1$s üyeye ses verildi"
+
+#: dist/converse-no-dependencies.js:90597
+#, javascript-format
+msgid "%1$s has been muted"
+msgstr "%1$s susturuldu"
+
+#: dist/converse-no-dependencies.js:90606
+#, fuzzy, javascript-format
+msgid "%1$s and %2$s"
+msgstr "%1$s diyor"
+
+#: dist/converse-no-dependencies.js:90610
+#, fuzzy, javascript-format
+msgid "%1$s are typing"
+msgstr "%1$s yazıyor"
+
+#: dist/converse-no-dependencies.js:90612
+#, fuzzy, javascript-format
+msgid "%1$s have stopped typing"
+msgstr "%1$s yazmayı durdurdu"
+
+#: dist/converse-no-dependencies.js:90614
+#, fuzzy, javascript-format
+msgid "%1$s have gone away"
+msgstr "%1$s uzakta"
+
+#: dist/converse-no-dependencies.js:90616
+#, fuzzy, javascript-format
+msgid "%1$s have entered the groupchat"
+msgstr "%1$s grup sohbetine girdi"
+
+#: dist/converse-no-dependencies.js:90618
+#, fuzzy, javascript-format
+msgid "%1$s have left the groupchat"
+msgstr "%1$s grup sohbetinden ayrıldı"
+
+#: dist/converse-no-dependencies.js:90620
+#, fuzzy, javascript-format
+msgid "%1$s are now moderators"
+msgstr "%1$s artık bir moderatör"
+
+#: dist/converse-no-dependencies.js:90622
+#, fuzzy, javascript-format
+msgid "%1$s are no longer moderators"
+msgstr "%1$s artık bir moderatör değil"
+
+#: dist/converse-no-dependencies.js:90624
+#, fuzzy, javascript-format
+msgid "%1$s have been given voices"
+msgstr "%1$s üyeye ses verildi"
+
+#: dist/converse-no-dependencies.js:90626
+#, fuzzy, javascript-format
+msgid "%1$s have been muted"
+msgstr "%1$s susturuldu"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Change user's affiliation to admin"
+msgstr "Kullanıcının admin üyeliğini değiştir"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Ban user by changing their affiliation to outcast"
+msgstr ""
+"Kullanıcının üyeliğini kovulmuş olarak değiştirerek kullanıcıyı yasakla"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Clear the chat area"
+msgstr "Sohbeti temizle"
+
+#: dist/converse-no-dependencies.js:90638
+#, fuzzy
+msgid "Close this groupchat"
+msgstr "Bu grup sohbetini kaldır"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Change user role to participant"
+msgstr "Katılımcı olarak kullanıcı rolünü değiştirme"
+
+#: dist/converse-no-dependencies.js:90638
+#: dist/converse-no-dependencies.js:91144
+msgid "Remove this groupchat"
+msgstr "Bu grup sohbetini kaldır"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Kick user from groupchat"
+msgstr "Grup sohbetinden kullanıcıyı at"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Write in 3rd person"
+msgstr "3. kişiye yaz"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Grant membership to a user"
+msgstr "Bir kullanıcıya yetki ver"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Opens up the moderator tools GUI"
+msgstr "Yönetici araçları arayüzünü açar"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Remove user's ability to post messages"
+msgstr "Kullanıcının mesaj gönderme özelliğini kaldır"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Change your nickname"
+msgstr "Takma adınızı değiştirin"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Grant moderator role to user"
+msgstr "Kullanıcıya moderatör rolü verme"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Grant ownership of this groupchat"
+msgstr "Bu grup sohbetinin sahipliğini ver"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Register your nickname"
+msgstr "Takma adınızı kaydedin"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Revoke the user's current affiliation"
+msgstr "Kullanıcının mevcut üyeliğini iptal et"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Set groupchat subject"
+msgstr "Grup sohbeti konusunu ayarla"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Set groupchat subject (alias for /subject)"
+msgstr "Grup sohbeti konusunu ayarla (takma adı /konu )"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Allow muted user to post messages"
+msgstr "Sessiz kullanıcının mesaj göndermesine izin ver"
+
+#: dist/converse-no-dependencies.js:90940
+#, fuzzy
+msgid "You are about to retract this message."
+msgstr "Okunmamış mesajlarınız var"
+
+#: dist/converse-no-dependencies.js:90940
+#, fuzzy
+msgid ""
+"You may optionally include a message, explaining the reason for the "
+"retraction."
+msgstr ""
+"%1$s grubunu \"%2$s\" grup sohbetine davet etmek üzeresiniz. İsteğe bağlı "
+"olarak, davetiyenin nedenini açıklayan bir mesaj ekleyebilirsiniz."
+
+#: dist/converse-no-dependencies.js:90947
+#, fuzzy
+msgid "Message Retraction"
+msgstr "Mesaj versiyonları"
+
+#: dist/converse-no-dependencies.js:90947
+#, fuzzy
+msgid "Optional reason"
+msgstr "Opsiyonel ipucu"
+
+#: dist/converse-no-dependencies.js:90958
+#, fuzzy
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "Bu değişikliği yapmanıza izin verilmiyor"
+
+#: dist/converse-no-dependencies.js:90994
+#, fuzzy
+msgid "A timeout occurred while trying to retract the message"
+msgstr "Maalesef, cihazları kaldırmaya çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:90998
+#, fuzzy
+msgid "Sorry, you're not allowed to retract this message."
+msgstr "Bu değişikliği yapmanıza izin verilmiyor"
+
+#: dist/converse-no-dependencies.js:91073
+#, fuzzy
+msgid "Show more information about this groupchat"
+msgstr "Grup hakkında daha fazla bilgi göster"
+
+#: dist/converse-no-dependencies.js:91084
+msgid "Configure"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91085
+msgid "Configure this groupchat"
+msgstr "Bu toplu konuşmayı ayarlayın"
+
+#: dist/converse-no-dependencies.js:91098
+#, fuzzy
+msgid "Invite someone to join this groupchat"
+msgstr "Herkes bu grup sohbetine katılabilir"
+
+#: dist/converse-no-dependencies.js:91112
+#, fuzzy
+msgid "Show topic"
+msgstr "Toplu konuşmaları göster"
+
+#: dist/converse-no-dependencies.js:91112
+msgid "Hide topic"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91113
+msgid "Show the topic message in the heading"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91113
+msgid "Hide the topic in the heading"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91130
+#, fuzzy
+msgid "Moderate"
+msgstr "Modere ediliyor"
+
+#: dist/converse-no-dependencies.js:91131
+#, fuzzy
+msgid "Moderate this groupchat"
+msgstr "Gruptan ayrıl"
+
+#: dist/converse-no-dependencies.js:91143
+msgid "Destroy"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91157
+msgid "Leave"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91158
+#, fuzzy
+msgid "Leave and close this groupchat"
+msgstr "Gruptan ayrıl"
+
+#: dist/converse-no-dependencies.js:91167
+#, fuzzy
+msgid "Are you sure you want to leave this groupchat?"
+msgstr "%1$s grup sohbetinden ayrılmak istediğinize emin misiniz?"
+
+#: dist/converse-no-dependencies.js:91303
+msgid "Hide the list of participants"
+msgstr "Katılımcı listesini gizle"
+
+#: dist/converse-no-dependencies.js:91383
+msgid "Forbidden: you do not have the necessary role in order to do that."
+msgstr "Yasak: Bunu yapabilmek için gerekli rolün yok."
+
+#: dist/converse-no-dependencies.js:91417
+msgid ""
+"Forbidden: you do not have the necessary affiliation in order to do that."
+msgstr "Yasak: Bunu yapmak için gerekli üyeliğiniz yok."
+
+#: dist/converse-no-dependencies.js:91429
+#, javascript-format
+msgid ""
+"Error: the \"%1$s\" command takes two arguments, the user's nickname and "
+"optionally a reason."
+msgstr ""
+"Hata: \"%1$s\" komutu, kullanıcının takma adı ve isteğe bağlı olarak iki "
+"argüman alıyor."
+
+#: dist/converse-no-dependencies.js:91456
+#: dist/converse-no-dependencies.js:91479
+msgid "Error: couldn't find a groupchat participant based on your arguments"
+msgstr "Hata: Argümanlarına dayanarak grup sohbeti katılımcısı bulunamadı"
+
+#: dist/converse-no-dependencies.js:91466
+msgid "Error: found multiple groupchat participant based on your arguments"
+msgstr ""
+"Hata: Argümanlarınızı temel alarak birden fazla grup sohbeti katılımcısı "
+"bulundu"
+
+#: dist/converse-no-dependencies.js:91523
+msgid ""
+"Couldn't find a participant with that nickname. They might have left the "
+"groupchat."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91587
+#, fuzzy
+msgid "Sorry, an error happened while running the command."
+msgstr "Maalesef, profil verilerinizi kaydetmeye çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:91587
+#: dist/converse-no-dependencies.js:92266
+#, fuzzy
+msgid "Check your browser's developer console for details."
+msgstr ""
+"Herhangi bir hata çıktısı için tarayıcınızın geliştirici konsolunu kontrol "
+"edebilirsiniz."
+
+#: dist/converse-no-dependencies.js:91637
+#, fuzzy
+msgid "Are you sure you want to destroy this groupchat?"
+msgstr "%1$s grup sohbetinden ayrılmak istediğinize emin misiniz?"
+
+#: dist/converse-no-dependencies.js:91640
+#, fuzzy
+msgid "Please enter the XMPP address of this groupchat to confirm"
+msgstr "Lütfen kayıt yaptırmak için XMPP sağlayıcısını girin:"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:91642
+#: dist/converse-no-dependencies.js:99084
+msgid "name@example.org"
+msgstr "name@example.org"
+
+#: dist/converse-no-dependencies.js:91646
+#, fuzzy
+msgid "Optional reason for destroying this groupchat"
+msgstr "%1$s grup sohbetinden ayrılmak istediğinize emin misiniz?"
+
+#: dist/converse-no-dependencies.js:91650
+msgid "Optional XMPP address for a new groupchat that replaces this one"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91651
+#, fuzzy
+msgid "replacement@example.org"
+msgstr "name@example.org"
+
+#. e.g. Your nickname is "coolguy69"
+#: dist/converse-no-dependencies.js:91777
+#, javascript-format
+msgid "Your nickname is \"%1$s\""
+msgstr "Takma adınız \"%1$s\""
+
+#: dist/converse-no-dependencies.js:91809
+msgid "Error: invalid number of arguments"
+msgstr "Hata: geçersiz sayıda argüman"
+
+#: dist/converse-no-dependencies.js:91880
+#, fuzzy
+msgid "Choose a nickname to enter"
+msgstr "Gönderilecek dosyayı seç"
+
+#: dist/converse-no-dependencies.js:91880
+msgid "Please choose your nickname"
+msgstr "Lütfen takma adınızı seçin"
+
+#: dist/converse-no-dependencies.js:91884
+msgid "Enter groupchat"
+msgstr "Grup sohbeti girin"
+
+#: dist/converse-no-dependencies.js:92049
+#, javascript-format
+msgid "This action was done by %1$s."
+msgstr "Bu işlem %1$s tarafından yapıldı."
+
+#: dist/converse-no-dependencies.js:92055
+#, javascript-format
+msgid "The reason given is: \"%1$s\"."
+msgstr "Verilen sebep: \"%1$s\"."
+
+#: dist/converse-no-dependencies.js:92175
+msgid "Groupchats"
+msgstr "Grup Sohbetleri"
+
+#: dist/converse-no-dependencies.js:92176
+msgid "Add a new groupchat"
+msgstr "Yeni grup sohbeti ekle"
+
+#: dist/converse-no-dependencies.js:92177
+msgid "Query for groupchats"
+msgstr "Grup sohbetleri için sorgu"
+
+#: dist/converse-no-dependencies.js:92266
+#, fuzzy
+msgid "Sorry, an error occurred while trying to submit the config form."
+msgstr "Maalesef, cihazları kaldırmaya çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:92749
+msgid "Announcements"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:92753
+#, fuzzy
+msgid "Click to open this server message"
+msgstr "Bu grup sohbetini açmak için tıkla"
+
+#: dist/converse-no-dependencies.js:92843
+#, fuzzy
+msgid "Close these announcements"
+msgstr "Bu grup sohbetini kaldır"
+
+#. workaround for Prosody which doesn't give type "headline"
+#: dist/converse-no-dependencies.js:93020
+#: dist/converse-no-dependencies.js:93026
+#, javascript-format
+msgid "Notification from %1$s"
+msgstr "%1$s'dan bildirim"
+
+#: dist/converse-no-dependencies.js:93028
+#: dist/converse-no-dependencies.js:93038
+#: dist/converse-no-dependencies.js:93041
+#, javascript-format
+msgid "%1$s says"
+msgstr "%1$s diyor"
+
+#. TODO: we should suppress notifications if we cannot decrypt
+#. the message...
+#: dist/converse-no-dependencies.js:93050
+msgid "OMEMO Message received"
+msgstr "OMEMO Mesajı alındı"
+
+#: dist/converse-no-dependencies.js:93092
+msgid "has gone offline"
+msgstr "çevrimdışı oldu"
+
+#: dist/converse-no-dependencies.js:93094
+msgid "has gone away"
+msgstr "uzağa gitti"
+
+#: dist/converse-no-dependencies.js:93096
+msgid "is busy"
+msgstr "meşgul"
+
+#: dist/converse-no-dependencies.js:93098
+msgid "has come online"
+msgstr "çevrimiçi oldu"
+
+#: dist/converse-no-dependencies.js:93115
+msgid "wants to be your contact"
+msgstr "Kişilerine eklenmek istiyor"
+
+#: dist/converse-no-dependencies.js:93726
+msgid "Hide"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93728
+msgid "Execute"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93782
+msgid "On which entity do you want to run commands?"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93784
+msgid ""
+"Certain XMPP services and entities allow privileged users to execute ad-hoc "
+"commands on them."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93786
+msgid "Commands found"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93788
+msgid "List available commands"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93792
+#, fuzzy
+msgid "No commands found"
+msgstr "Toplu konuşma bulunamadı"
+
+#: dist/converse-no-dependencies.js:93974
+#, fuzzy
+msgid "Sorry, an error occurred while looking for commands on that entity."
+msgstr "Maalesef, cihazları kaldırmaya çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:93985
+msgid "The specified entity doesn't support ad-hoc commands"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:94096
+#, fuzzy
+msgid ""
+"Sorry, an error occurred while trying to execute the command. See the "
+"developer console for details"
+msgstr ""
+"Maalesef, komutu çalıştırırken bir hata oluştu. Ayrıntılar için "
+"tarayıcınızın geliştirici konsolunu kontrol edin."
+
+#: dist/converse-no-dependencies.js:94173
+msgid "About"
+msgstr "Hakkında"
+
+#: dist/converse-no-dependencies.js:94175
+msgid "Commands"
+msgstr ""
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:94181
+#, fuzzy
+msgid "Settings"
+msgstr "Ayarları değiştir"
+
+#: dist/converse-no-dependencies.js:94183
+#, javascript-format
+msgid ""
+"%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
+msgstr ""
+"%1$s Açık Kaynak %2$s XMPP sohbet istemcisi size %3$s getirdi Opkode %2$s"
+
+#: dist/converse-no-dependencies.js:94185
+#, javascript-format
+msgid "%1$s Translate %2$s it into your own language"
+msgstr "%1$s %2$s kendi dilinize çevirin"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:94293
+msgid "Log out"
+msgstr "Çıkış Yap"
+
+#: dist/converse-no-dependencies.js:94295
+msgid "Click to change your chat status"
+msgstr "Sohbet durumunuzu değiştirmek için tıklayın"
+
+#: dist/converse-no-dependencies.js:94297
+msgid "Show details about this chat client"
+msgstr "Bu sohbet istemcisi hakkındaki ayrıntıları göster"
+
+#: dist/converse-no-dependencies.js:94448
+msgid "Your avatar image"
+msgstr "Avatar resmin"
+
+#: dist/converse-no-dependencies.js:94619
+msgid "Checkbox for selecting the following fingerprint"
+msgstr "Aşağıdaki parmak izini seçmek için onay kutusu"
+
+#: dist/converse-no-dependencies.js:94625
+msgid "Device without a fingerprint"
+msgstr "Parmak izi olmayan cihaz"
+
+#: dist/converse-no-dependencies.js:94627
+#, fuzzy
+msgid "Checkbox for selecting the following device"
+msgstr "Aşağıdaki parmak izini seçmek için onay kutusu"
+
+#: dist/converse-no-dependencies.js:94637
+msgid "Other OMEMO-enabled devices"
+msgstr "Diğer OMEMO özellikli cihazlar"
+
+#: dist/converse-no-dependencies.js:94639
+msgid "Checkbox to select fingerprints of all other OMEMO devices"
+msgstr "Diğer tüm OMEMO cihazlarının parmak izlerini seçmek için onay kutusu"
+
+#: dist/converse-no-dependencies.js:94641
+msgid "Remove checked devices and close"
+msgstr "Kontrol edilen cihazları çıkarın ve kapatın"
+
+#: dist/converse-no-dependencies.js:94643
+msgid "Select all"
+msgstr "Tümünü seç"
+
+#: dist/converse-no-dependencies.js:94653
+msgid "This device's OMEMO fingerprint"
+msgstr "Bu cihazın OMEMO parmak izi"
+
+#: dist/converse-no-dependencies.js:94655
+msgid "Generate new keys and fingerprint"
+msgstr "Yeni anahtarlar ve parmak izi üret"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:94661
+msgid "Your Profile"
+msgstr "Profilin"
+
+#: dist/converse-no-dependencies.js:94667
+msgid "XMPP Address (JID)"
+msgstr "XMPP Adresi (JID)"
+
+#: dist/converse-no-dependencies.js:94673
+msgid "Save and close"
+msgstr "Kaydet ve kapat"
+
+#: dist/converse-no-dependencies.js:94675
+msgid ""
+"Use commas to separate multiple roles. Your roles are shown next to your "
+"name on your chat messages."
+msgstr ""
+"Birden fazla rolü ayırmak için virgül kullanın. Rolleriniz, sohbet "
+"mesajlarınızda adınızın yanında gösterilir."
+
+#: dist/converse-no-dependencies.js:94679
+msgid "OMEMO"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:94681
+#, fuzzy
+msgid "Profile"
+msgstr "Profilin"
+
+#: dist/converse-no-dependencies.js:94811
+msgid "Sorry, an error happened while trying to save your profile data."
+msgstr "Maalesef, profil verilerinizi kaydetmeye çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:94811
+msgid "You can check your browser's developer console for any error output."
+msgstr ""
+"Herhangi bir hata çıktısı için tarayıcınızın geliştirici konsolunu kontrol "
+"edebilirsiniz."
+
+#: dist/converse-no-dependencies.js:94869
+#: dist/converse-no-dependencies.js:99418
+msgid "Away"
+msgstr "Uzakta"
+
+#: dist/converse-no-dependencies.js:94870
+#: dist/converse-no-dependencies.js:99417
+msgid "Busy"
+msgstr "Meşgul"
+
+#: dist/converse-no-dependencies.js:94873
+msgid "Custom status"
+msgstr "Özel durum"
+
+#: dist/converse-no-dependencies.js:94874
+#: dist/converse-no-dependencies.js:99420
+msgid "Offline"
+msgstr "Çevrimdışı"
+
+#: dist/converse-no-dependencies.js:94875
+#: dist/converse-no-dependencies.js:99415
+msgid "Online"
+msgstr "Çevrim içi"
+
+#: dist/converse-no-dependencies.js:94877
+msgid "Away for long"
+msgstr "Uzun süre"
+
+#: dist/converse-no-dependencies.js:94878
+msgid "Change chat status"
+msgstr "Sohbet durumunu değiştir"
+
+#: dist/converse-no-dependencies.js:94879
+msgid "Personal status message"
+msgstr "Kişisel durum mesajı"
+
+#: dist/converse-no-dependencies.js:94929
+#, javascript-format
+msgid "I am %1$s"
+msgstr "Ben %1$s"
+
+#: dist/converse-no-dependencies.js:94971
+msgid "Are you sure you want to log out?"
+msgstr "Çıkış yapmak istediğinize emin misiniz?"
+
+#: dist/converse-no-dependencies.js:94979
+#: dist/converse-no-dependencies.js:94989
+msgid "online"
+msgstr "Çevrimiçi"
+
+#: dist/converse-no-dependencies.js:94981
+msgid "busy"
+msgstr "Meşgul"
+
+#: dist/converse-no-dependencies.js:94983
+msgid "away for long"
+msgstr "çok uzak"
+
+#: dist/converse-no-dependencies.js:94985
+msgid "away"
+msgstr "uzakta"
+
+#: dist/converse-no-dependencies.js:94987
+msgid "offline"
+msgstr "Çevrimdışı"
+
+#: dist/converse-no-dependencies.js:95977
+#, javascript-format
+msgid ""
+"%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
+"will no longer be possible in this grouchat."
+msgstr ""
+"%1$s, OMEMO'yu destekleyen bir müşteriye sahip görünmüyor. Şifreli sohbet "
+"artık bu grup sohbetinde mümkün olmayacak."
+
+#: dist/converse-no-dependencies.js:96058
+#, fuzzy
+msgid ""
+"Cannot use end-to-end encryption in this groupchat, either the groupchat has "
+"some anonymity or not all participants support OMEMO."
+msgstr ""
+"Bu grup sohbetinde uçtan uca şifreleme kullanılamaz, grup sohbetinde bir "
+"miktar anonimlik vardır veya katılımcıların tümü OMEMO'yu desteklemez."
+
+#: dist/converse-no-dependencies.js:96060
+#, javascript-format
+msgid ""
+"Cannot use end-to-end encryption because %1$s uses a client that doesn't "
+"support OMEMO."
+msgstr ""
+"Uçtan uca şifreleme kullanılamaz çünkü %1$s OMEMO'yu desteklemeyen bir "
+"istemci kullanıyor."
+
+#: dist/converse-no-dependencies.js:96079
+msgid "Messages are being sent in plaintext"
+msgstr "Mesajlar düz metin olarak gönderiliyor"
+
+#: dist/converse-no-dependencies.js:96081
+#, fuzzy
+msgid "Messages are sent encrypted"
+msgstr "Mesajlar düz metin olarak gönderiliyor"
+
+#: dist/converse-no-dependencies.js:96085
+msgid ""
+"This groupchat needs to be members-only and non-anonymous in order to "
+"support OMEMO encrypted messages"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96147
+msgid "Sorry, an error occurred while trying to remove the devices."
+msgstr "Maalesef, cihazları kaldırmaya çalışırken bir hata oluştu."
+
+#: dist/converse-no-dependencies.js:96153
+msgid ""
+"Are you sure you want to generate new OMEMO keys? This will remove your old "
+"keys and all previously encrypted messages will no longer be decryptable on "
+"this device."
+msgstr ""
+"Yeni OMEMO anahtarları oluşturmak istediğinize emin misiniz? Bu, eski "
+"anahtarlarınızı kaldırır ve önceden şifrelenen tüm mesajlar bu cihazda artık "
+"şifresi çözülemez."
+
+#: dist/converse-no-dependencies.js:96344
+#, fuzzy
+msgid "Sorry, could not decrypt a received OMEMO message due to an error."
+msgstr "Beklenmeyen bir hata nedeniyle şifreli bir mesaj gönderilemiyor."
+
+#: dist/converse-no-dependencies.js:96532
+#, javascript-format
+msgid ""
+"Sorry, we're unable to send an encrypted message because %1$s requires you "
+"to be subscribed to their presence in order to see their OMEMO information"
+msgstr ""
+"Üzgünüz, şifreli bir mesaj gönderemiyoruz, çünkü %1$s OMEMO bilgilerini "
+"görmek için varlıklarına abone olmanızı istiyor"
+
+#: dist/converse-no-dependencies.js:96534
+#, javascript-format
+msgid ""
+"Sorry, we're unable to send an encrypted message because the remote server "
+"for %1$s could not be found"
+msgstr ""
+"Maalesef, %1$s için uzak sunucu bulunamadığı için şifreli bir mesaj "
+"gönderemiyoruz"
+
+#: dist/converse-no-dependencies.js:96536
+msgid "Unable to send an encrypted message due to an unexpected error."
+msgstr "Beklenmeyen bir hata nedeniyle şifreli bir mesaj gönderilemiyor."
+
+#: dist/converse-no-dependencies.js:96622
+msgid ""
+"Sorry, no devices found to which we can send an OMEMO encrypted message."
+msgstr "Üzgünüz, OMEMO şifreli mesaj gönderebileceğimiz cihaz bulunamadı."
+
+#: dist/converse-no-dependencies.js:96723
+msgid ""
+"This is an OMEMO encrypted message which your client doesn’t seem to "
+"support. Find more information on https://conversations.im/omemo"
+msgstr ""
+"Bu, müşterinizin desteklemediği bir OMEMO şifreli mesajdır. https://"
+"conversations.im/omemo adresinde daha fazla bilgi bulabilirsiniz"
+
+#: dist/converse-no-dependencies.js:98011
+msgid " e.g. conversejs.org"
+msgstr " Örnek, conversejs.org"
+
+#: dist/converse-no-dependencies.js:98098
+msgid "Fetch registration form"
+msgstr "Kayıt formunu al"
+
+#: dist/converse-no-dependencies.js:98099
+msgid "Tip: A list of public XMPP providers is available"
+msgstr "İpucu: Genel XMPP sağlayıcılarının bir listesi var"
+
+#: dist/converse-no-dependencies.js:98100
+msgid "here"
+msgstr "burada"
+
+#: dist/converse-no-dependencies.js:98151
+msgid "Sorry, we're unable to connect to your chosen provider."
+msgstr "Üzgünüz, seçtiğiniz sağlayıcıya bağlanamıyoruz."
+
+#: dist/converse-no-dependencies.js:98167
+msgid ""
+"Sorry, the given provider does not support in band account registration. "
+"Please try with a different provider."
+msgstr ""
+"Maalesef, verilen sağlayıcı bant kaydı hesabı desteklemiyor. Lütfen farklı "
+"bir sağlayıcı ile deneyin."
+
+#: dist/converse-no-dependencies.js:98193
+#, javascript-format
+msgid ""
+"Something went wrong while establishing a connection with \"%1$s\". Are you "
+"sure it exists?"
+msgstr ""
+"\"%1$s\" ile bağlantı kurulurken bir şeyler ters gitti. Onun var olduğuna "
+"emin misin?"
+
+#: dist/converse-no-dependencies.js:98379
+msgid "Now logging you in"
+msgstr "Şimdi oturum açıyorsun"
+
+#: dist/converse-no-dependencies.js:98383
+msgid "Registered successfully"
+msgstr "Başarıyla kayıt olundu"
+
+#: dist/converse-no-dependencies.js:98495
+msgid ""
+"The provider rejected your registration attempt. Please check the values you "
+"entered for correctness."
+msgstr ""
+"Sağlayıcı, kayıt girişimini reddetti. Lütfen doğruluk için girdiğiniz "
+"değerleri kontrol edin."
+
+#: dist/converse-no-dependencies.js:98756
+msgid "Leave this groupchat"
+msgstr "Gruptan ayrıl"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:98766
+msgid "Click to toggle the list of open groupchats"
+msgstr "Açık grup sohbeti listesine geçmek için tıklayın"
+
+#: dist/converse-no-dependencies.js:98768
+msgid "Open Groupchats"
+msgstr "Grup Sohbetlerini Aç"
+
+#: dist/converse-no-dependencies.js:98972
+#, javascript-format
+msgid "Are you sure you want to leave the groupchat %1$s?"
+msgstr "%1$s grup sohbetinden ayrılmak istediğinize emin misiniz?"
+
+#: dist/converse-no-dependencies.js:99086
+msgid "Add"
+msgstr "Ekle"
+
+#: dist/converse-no-dependencies.js:99090
+msgid "Add a Contact"
+msgstr "Kişi ekle"
+
+#: dist/converse-no-dependencies.js:99224
+msgid "This contact is busy"
+msgstr "Bu kişi meşgul"
+
+#: dist/converse-no-dependencies.js:99225
+msgid "This contact is online"
+msgstr "Bu kişi çevrimiçi"
+
+#: dist/converse-no-dependencies.js:99226
+msgid "This contact is offline"
+msgstr "Bu kişi çevrimdışı"
+
+#: dist/converse-no-dependencies.js:99227
+msgid "This contact is unavailable"
+msgstr "Bu kişi mevcut değil"
+
+#: dist/converse-no-dependencies.js:99228
+msgid "This contact is away for an extended period"
+msgstr "Bu kişi uzun bir süre uzakta"
+
+#: dist/converse-no-dependencies.js:99229
+msgid "This contact is away"
+msgstr "Bu kişi uzakta"
+
+#: dist/converse-no-dependencies.js:99241
+msgid "Contact name"
+msgstr "Kişi adı"
+
+#: dist/converse-no-dependencies.js:99241
+msgid "Optional nickname"
+msgstr "İsteğe bağlı takma ad"
+
+#: dist/converse-no-dependencies.js:99333
+msgid "Sorry, could not find a contact with that name"
+msgstr "Maalesef, bu isimde bir kişi bulunamadı"
+
+#: dist/converse-no-dependencies.js:99358
+msgid "This contact has already been added"
+msgstr "Bu kişi zaten ekli"
+
+#: dist/converse-no-dependencies.js:99409
+msgid "Filter"
+msgstr "Süzgeç"
+
+#: dist/converse-no-dependencies.js:99410
+msgid "Filter by contact name"
+msgstr "Kişi adına göre süz"
+
+#: dist/converse-no-dependencies.js:99411
+msgid "Filter by group name"
+msgstr "Grup adına göre süz"
+
+#: dist/converse-no-dependencies.js:99412
+msgid "Filter by status"
+msgstr "Duruma göre süz"
+
+#: dist/converse-no-dependencies.js:99413
+msgid "Any"
+msgstr "Herhangi"
+
+#: dist/converse-no-dependencies.js:99414
+msgid "Unread"
+msgstr "Okunmamış"
+
+#: dist/converse-no-dependencies.js:99416
+msgid "Chatty"
+msgstr "Konuşkan"
+
+#: dist/converse-no-dependencies.js:99419
+msgid "Extended Away"
+msgstr "Uzatılmış"
+
+#: dist/converse-no-dependencies.js:99583
+#: dist/converse-no-dependencies.js:99645
+#, javascript-format
+msgid "Click to remove %1$s as a contact"
+msgstr "%1$s kişiyi bir kişi olarak kaldırmak için tıklayın"
+
+#: dist/converse-no-dependencies.js:99592
+#, javascript-format
+msgid "Click to accept the contact request from %1$s"
+msgstr "%1$s adresinden kişi isteğini kabul etmek için tıklayın"
+
+#: dist/converse-no-dependencies.js:99593
+#, javascript-format
+msgid "Click to decline the contact request from %1$s"
+msgstr "%1$s içinden kişi isteğini reddetmek için tıklayın"
+
+#: dist/converse-no-dependencies.js:99644
+#, fuzzy, javascript-format
+msgid "Click to chat with %1$s (XMPP address: %2$s)"
+msgstr "%1$s ile sohbet etmek için tıklayın (JID: %2$s)"
+
+#: dist/converse-no-dependencies.js:99772
+msgid "Are you sure you want to decline this contact request?"
+msgstr "Bu kişi isteğini reddetmek istediğinden emin misin?"
+
+#: dist/converse-no-dependencies.js:100099
+msgid "Contacts"
+msgstr "İletişim"
+
+#: dist/converse-no-dependencies.js:100100
+msgid "Add a contact"
+msgstr "Bir kişi ekle"
+
+#: dist/converse-no-dependencies.js:100101
+msgid "Re-sync your contacts"
+msgstr "Kişilerinizi yeniden senkronize edin"
+
+#, fuzzy
+#~ msgid "Show occupants"
+#~ msgstr "Toplu konuşmaları göster"
+
+#~ msgid "Edit this message"
+#~ msgstr "Bu mesajı düzenle"
+
+#, fuzzy
+#~ msgid "Retract this message"
+#~ msgstr "Bu mesajı düzenle"
+
+#, fuzzy, javascript-format
+#~ msgid "The message from the server is: \"%1$s\""
+#~ msgstr "Verilen sebep: \"%1$s\"."
+
+#~ msgid "Sorry, an error occurred:"
+#~ msgstr "Üzgünüz, bir hata oluştu:"
+
+#, javascript-format
+#~ msgid "Download image \"%1$s\""
+#~ msgstr "\"%1$s\" resmini indir"
+
+#~ msgid "Clear all messages"
+#~ msgstr "Tüm Mesajları sil"
+
+#~ msgid "You can run the following commands"
+#~ msgstr "Aşağıdaki komutları çalıştırabilirsiniz"
+
+#~ msgid "Typing from another device"
+#~ msgstr "Başka bir cihazdan yazmak"
+
+#~ msgid "Stopped typing on the other device"
+#~ msgstr "Başka cihazdan yazma durduruldu"
+
+#~ msgid "Close this chat box"
+#~ msgstr "Bu sohbet kutusunu kapat"
+
+#~ msgid "Show more details about this groupchat"
+#~ msgstr "Bu toplu konuşma için daha fazla detay göster"
+
+#, fuzzy
+#~ msgid "Invite someone"
+#~ msgstr "Davet et"
+
+#, javascript-format
+#~ msgid "%1$s has been banned from this groupchat"
+#~ msgstr "%1$s bu grup sohbetinde yasaklandı"
+
+#, javascript-format
+#~ msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
+#~ msgstr "%1$s ayrıldı ve grup sohbetine tekrar girdi. \"%2$s\""
+
+#, javascript-format
+#~ msgid "%1$s has left and re-entered the groupchat"
+#~ msgstr "%1$s ayrıldı ve grup sohbetine tekrar girdi"
+
+#, javascript-format
+#~ msgid "%1$s has entered the groupchat. \"%2$s\""
+#~ msgstr "Grup sohbetine %1$s girdi. \"%2$s\""
+
+#, javascript-format
+#~ msgid "%1$s has entered and left the groupchat. \"%2$s\""
+#~ msgstr "%1$s grup sohbetine girdi ve ayrıldı. \"%2$s\""
+
+#, javascript-format
+#~ msgid "%1$s has entered and left the groupchat"
+#~ msgstr "%1$s girip grup sohbetinden ayrıldı"
+
+#, javascript-format
+#~ msgid "%1$s has left the groupchat. \"%2$s\""
+#~ msgstr "%1$s grup sohbetinden ayrıldı. \"%2$s\""
+
+#~ msgid "Full Name:"
+#~ msgstr "Ad Soyad:"
+
+#~ msgid "XMPP Address:"
+#~ msgstr "XMPP Adresi:"
+
+#~ msgid "Nickname:"
+#~ msgstr "Rumuz:"
+
+#~ msgid "URL:"
+#~ msgstr "URL:"
+
+#~ msgid "Email:"
+#~ msgstr "E-Posta:"
+
+#~ msgid "Role:"
+#~ msgstr "Görev:"
+
+#~ msgid "password"
+#~ msgstr "parola"
+
+#~ msgid "No password"
+#~ msgstr "Parola yok"
+
+#~ msgid "this groupchat is restricted to members only"
+#~ msgstr "bu grup sohbeti yalnızca üyelerle sınırlıdır"
+
+#~ msgid "Download"
+#~ msgstr "İndir"
+
+#~ msgid "Send"
+#~ msgstr "Gönder"
+
+#~ msgid "Remove this bookmark"
+#~ msgstr "Sık kullanılanlardan kaldır"
+
+#, javascript-format
+#~ msgid ""
+#~ "You are about to invite %1$s to the groupchat \"%2$s\". You may "
+#~ "optionally include a message, explaining the reason for the invitation."
+#~ msgstr ""
+#~ "%1$s grubunu \"%2$s\" grup sohbetine davet etmek üzeresiniz. İsteğe bağlı "
+#~ "olarak, davetiyenin nedenini açıklayan bir mesaj ekleyebilirsiniz."
+
+#~ msgid "Your profile"
+#~ msgstr "Profilin"
+
+#, javascript-format
+#~ msgid "Download video file \"%1$s\""
+#~ msgstr "\"%1$s\" video dosyasını indirin"
+
+#~ msgid "You need to provide a nickname"
+#~ msgstr "Bir takma ad girmeniz gerekiyor"

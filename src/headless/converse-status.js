@@ -175,17 +175,14 @@ converse.plugins.add('converse-status', {
             }
             _converse.idle_seconds = 0;
             _converse.auto_changed_status = false; // Was the user's status changed by Converse?
+
+            const { unloadevent } = _converse;
             window.addEventListener('click', _converse.onUserActivity);
             window.addEventListener('focus', _converse.onUserActivity);
             window.addEventListener('keypress', _converse.onUserActivity);
             window.addEventListener('mousemove', _converse.onUserActivity);
-            const options = {'once': true, 'passive': true};
-            window.addEventListener(_converse.unloadevent, _converse.onUserActivity, options);
-            window.addEventListener(_converse.unloadevent, () => {
-                if (_converse.session) {
-                    _converse.session.save('active', false);
-                }
-            });
+            window.addEventListener(unloadevent, _converse.onUserActivity, {'once': true, 'passive': true});
+            window.addEventListener(unloadevent, () => _converse.session?.save('active', false));
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
@@ -232,6 +229,7 @@ converse.plugins.add('converse-status', {
             if (_converse.shouldClearCache() && _converse.xmppstatus) {
                 _converse.xmppstatus.destroy();
                 delete _converse.xmppstatus;
+                api.promises.add(['statusInitialized']);
             }
         });
 
@@ -268,16 +266,19 @@ converse.plugins.add('converse-status', {
             status: {
                 /**
                  * Return the current user's availability status.
+                 * @async
                  * @method _converse.api.user.status.get
                  * @example _converse.api.user.status.get();
                  */
-                get () {
+                async get () {
+                    await api.waitUntil('statusInitialized');
                     return _converse.xmppstatus.get('status');
                 },
 
                 /**
                  * The user's status can be set to one of the following values:
                  *
+                 * @async
                  * @method _converse.api.user.status.set
                  * @param {string} value The user's chat status (e.g. 'away', 'dnd', 'offline', 'online', 'unavailable' or 'xa')
                  * @param {string} [message] A custom status message
@@ -285,7 +286,7 @@ converse.plugins.add('converse-status', {
                  * @example _converse.api.user.status.set('dnd');
                  * @example _converse.api.user.status.set('dnd', 'In a meeting');
                  */
-                set (value, message) {
+                async set (value, message) {
                     const data = {'status': value};
                     if (!Object.keys(_converse.STATUS_WEIGHTS).includes(value)) {
                         throw new Error(
@@ -295,6 +296,7 @@ converse.plugins.add('converse-status', {
                     if (isString(message)) {
                         data.status_message = message;
                     }
+                    await api.waitUntil('statusInitialized');
                     _converse.xmppstatus.save(data);
                 },
 
@@ -306,19 +308,23 @@ converse.plugins.add('converse-status', {
                  */
                 message: {
                     /**
+                     * @async
                      * @method _converse.api.user.status.message.get
                      * @returns {string} The status message
                      * @example const message = _converse.api.user.status.message.get()
                      */
-                    get () {
+                    async get () {
+                        await api.waitUntil('statusInitialized');
                         return _converse.xmppstatus.get('status_message');
                     },
                     /**
+                     * @async
                      * @method _converse.api.user.status.message.set
                      * @param {string} status The status message
                      * @example _converse.api.user.status.message.set('In a meeting');
                      */
-                    set (status) {
+                    async set (status) {
+                        await api.waitUntil('statusInitialized');
                         _converse.xmppstatus.save({ status_message: status });
                     }
                 }

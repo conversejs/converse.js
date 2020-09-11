@@ -1,33 +1,7 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import spinner from "./spinner.js";
 import { modal_header_close_button } from "./buttons"
-
-
-const i18n_affiliation = __('Affiliation');
-const i18n_change_affiliation = __('Change affiliation');
-const i18n_change_role = __('Change role');
-const i18n_moderator_tools = __('Moderator Tools');
-const i18n_new_affiliation = __('New affiliation');
-const i18n_new_role = __('New Role');
-const i18n_no_users_with_aff = __('No users with that affiliation found.')
-const i18n_no_users_with_role = __('No users with that role found.');
-const i18n_reason = __('Reason');
-const i18n_filter = __('Type here to filter the search results');
-const i18n_role = __('Role');
-const i18n_show_users = __('Show users');
-
-const i18n_helptext_role = __(
-    "Roles are assigned to users to grant or deny them certain abilities in a multi-user chat. "+
-    "They're assigned either explicitly or implicitly as part of an affiliation. "+
-    "A role that's not due to an affiliation, is only valid for the duration of the user's session."
-);
-
-const i18n_helptext_affiliation = __(
-    "An affiliation is a long-lived entitlement which typically implies a certain role and which "+
-    "grants privileges and responsibilities. For example admins and owners automatically have the "+
-    "moderator role."
-);
 
 
 function getRoleHelpText (role) {
@@ -65,29 +39,34 @@ const affiliation_option = (o) => html`
 `;
 
 
-const tpl_set_role_form = (o) => html`
-    <form class="role-form hidden" @submit=${o.assignRole}>
-        <div class="form-group">
-            <input type="hidden" name="jid" value="${o.item.jid}"/>
-            <input type="hidden" name="nick" value="${o.item.nick}"/>
-            <div class="row">
-                <div class="col">
-                    <label><strong>${i18n_new_role}:</strong></label>
-                    <select class="custom-select select-role" name="role">
-                        ${ o.assignable_roles.map(role => html`<option value="${role}" ?selected=${role === o.item.role}>${role}</option>`) }
-                    </select>
-                </div>
-                <div class="col">
-                    <label><strong>${i18n_reason}:</strong></label>
-                    <input class="form-control" type="text" name="reason"/>
+const tpl_set_role_form = (o) => {
+    const i18n_change_role = __('Change role');
+    const i18n_new_role = __('New Role');
+    const i18n_reason = __('Reason');
+    return html`
+        <form class="role-form hidden" @submit=${o.assignRole}>
+            <div class="form-group">
+                <input type="hidden" name="jid" value="${o.item.jid}"/>
+                <input type="hidden" name="nick" value="${o.item.nick}"/>
+                <div class="row">
+                    <div class="col">
+                        <label><strong>${i18n_new_role}:</strong></label>
+                        <select class="custom-select select-role" name="role">
+                            ${ o.assignable_roles.map(role => html`<option value="${role}" ?selected=${role === o.item.role}>${role}</option>`) }
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label><strong>${i18n_reason}:</strong></label>
+                        <input class="form-control" type="text" name="reason"/>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <input type="submit" class="btn btn-primary" value="${i18n_change_role}"/>
-        </div>
-    </form>
-`;
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="${i18n_change_role}"/>
+            </div>
+        </form>
+    `;
+}
 
 
 const role_list_item = (o) => html`
@@ -108,29 +87,34 @@ const role_list_item = (o) => html`
 `;
 
 
-const tpl_set_affiliation_form = (o) => html`
-    <form class="affiliation-form hidden" @submit=${o.assignAffiliation}>
-        <div class="form-group">
-            <input type="hidden" name="jid" value="${o.item.jid}"/>
-            <input type="hidden" name="nick" value="${o.item.nick}"/>
-            <div class="row">
-                <div class="col">
-                    <label><strong>${i18n_new_affiliation}:</strong></label>
-                    <select class="custom-select select-affiliation" name="affiliation">
-                        ${ o.assignable_affiliations.map(aff => html`<option value="${aff}" ?selected=${aff === o.item.affiliation}>${aff}</option>`) }
-                    </select>
-                </div>
-                <div class="col">
-                    <label><strong>${i18n_reason}:</strong></label>
-                    <input class="form-control" type="text" name="reason"/>
+const tpl_set_affiliation_form = (o) => {
+    const i18n_change_affiliation = __('Change affiliation');
+    const i18n_new_affiliation = __('New affiliation');
+    const i18n_reason = __('Reason');
+    return html`
+        <form class="affiliation-form hidden" @submit=${o.assignAffiliation}>
+            <div class="form-group">
+                <input type="hidden" name="jid" value="${o.item.jid}"/>
+                <input type="hidden" name="nick" value="${o.item.nick}"/>
+                <div class="row">
+                    <div class="col">
+                        <label><strong>${i18n_new_affiliation}:</strong></label>
+                        <select class="custom-select select-affiliation" name="affiliation">
+                            ${ o.assignable_affiliations.map(aff => html`<option value="${aff}" ?selected=${aff === o.item.affiliation}>${aff}</option>`) }
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label><strong>${i18n_reason}:</strong></label>
+                        <input class="form-control" type="text" name="reason"/>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <input type="submit" class="btn btn-primary" name="change" value="${i18n_change_affiliation}"/>
-        </div>
-    </form>
-`;
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" name="change" value="${i18n_change_affiliation}"/>
+            </div>
+        </form>
+    `;
+}
 
 
 const affiliation_list_item = (o) => html`
@@ -164,6 +148,23 @@ const tpl_navigation = (o) => html`
 
 
 export default (o) => {
+    const i18n_affiliation = __('Affiliation');
+    const i18n_moderator_tools = __('Moderator Tools');
+    const i18n_no_users_with_aff = __('No users with that affiliation found.')
+    const i18n_no_users_with_role = __('No users with that role found.');
+    const i18n_filter = __('Type here to filter the search results');
+    const i18n_role = __('Role');
+    const i18n_show_users = __('Show users');
+    const i18n_helptext_role = __(
+        "Roles are assigned to users to grant or deny them certain abilities in a multi-user chat. "+
+        "They're assigned either explicitly or implicitly as part of an affiliation. "+
+        "A role that's not due to an affiliation, is only valid for the duration of the user's session."
+    );
+    const i18n_helptext_affiliation = __(
+        "An affiliation is a long-lived entitlement which typically implies a certain role and which "+
+        "grants privileges and responsibilities. For example admins and owners automatically have the "+
+        "moderator role."
+    );
     const show_both_tabs = o.queryable_roles.length && o.queryable_affiliations.length;
     return html`
     <div class="modal-dialog" role="document">

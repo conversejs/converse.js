@@ -9,6 +9,7 @@
  * Any of the following components may be removed if they're not needed.
  */
 import "@converse/headless/headless";
+import "i18n";
 import "converse-registry";
 import "converse-autocomplete";
 import "converse-bookmark-views";  // Views for XEP-0048 Bookmarks
@@ -29,6 +30,7 @@ import "converse-roomslist";       // Show currently open chat rooms
 import "converse-rosterview";
 import "converse-singleton";
 import "converse-uniview";
+import "./components/converse.js";
 /* END: Removable components */
 
 import "../sass/converse.scss";

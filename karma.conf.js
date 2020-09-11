@@ -26,7 +26,7 @@ module.exports = function(config) {
 
       { pattern: "spec/spoilers.js", type: 'module' },
       { pattern: "spec/emojis.js", type: 'module' },
-      { pattern: "spec/roomslist.js", type: 'module' },
+      { pattern: "spec/muclist.js", type: 'module' },
       { pattern: "spec/utils.js", type: 'module' },
       { pattern: "spec/converse.js", type: 'module' },
       { pattern: "spec/bookmarks.js", type: 'module' },
@@ -46,6 +46,7 @@ module.exports = function(config) {
       { pattern: "spec/chatbox.js", type: 'module' },
       { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "spec/messages.js", type: 'module' },
+      { pattern: "spec/receipts.js", type: 'module' },
       { pattern: "spec/muc_messages.js", type: 'module' },
       { pattern: "spec/mentions.js", type: 'module' },
       { pattern: "spec/retractions.js", type: 'module' },

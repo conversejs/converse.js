@@ -8,7 +8,7 @@ const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 describe("Emojis", function () {
     describe("The emoji picker", function () {
 
-        beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000));
+        beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000));
         afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
         it("can be opened by clicking a button in the chat toolbar",
@@ -340,6 +340,48 @@ describe("Emojis", function () {
             done()
         }));
 
+        it("can render emojis as images",
+            mock.initConverse(
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {'use_system_emojis': false},
+                async function (done, _converse) {
+
+            await mock.waitForRoster(_converse, 'current');
+            const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            _converse.handleMessageStanza($msg({
+                    'from': sender_jid,
+                    'to': _converse.connection.jid,
+                    'type': 'chat',
+                    'id': _converse.connection.getUniqueId()
+                }).c('body').t('😇').up()
+                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
+            const view = _converse.api.chatviews.get(sender_jid);
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.content.querySelector('.chat-msg__text')));
+
+            const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
+            let message = view.content.querySelector(last_msg_sel);
+            await u.waitUntil(() => u.isVisible(message.querySelector('.emoji')), 1000);
+            let imgs = message.querySelectorAll('.emoji');
+            expect(imgs.length).toBe(1);
+            expect(imgs[0].src).toBe(_converse.api.settings.get('emoji_image_path')+'/72x72/1f607.png');
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = ':poop: :innocent:';
+            view.onKeyDown({
+                target: textarea,
+                preventDefault: function preventDefault () {},
+                keyCode: 13 // Enter
+            });
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            message = view.content.querySelector(last_msg_sel);
+            await u.waitUntil(() => u.isVisible(message.querySelector('.emoji')), 1000);
+            imgs = message.querySelectorAll('.emoji');
+            expect(imgs.length).toBe(2);
+            expect(imgs[0].src).toBe(_converse.api.settings.get('emoji_image_path')+'/72x72/1f4a9.png');
+            expect(imgs[1].src).toBe(_converse.api.settings.get('emoji_image_path')+'/72x72/1f607.png');
+            done()
+        }));
 
         it("can show custom emojis",
             mock.initConverse(

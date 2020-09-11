@@ -6,12 +6,146 @@
 import "converse-chatview";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_headline_panel from "templates/headline_panel.js";
+import { ChatBoxView } from "./converse-chatview";
 import { View } from '@converse/skeletor/src/view.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { render } from "lit-html";
 
 const u = converse.env.utils;
+
+
+const HeadlinesBoxView = ChatBoxView.extend({
+    className: 'chatbox headlines',
+
+    events: {
+        'click .close-chatbox-button': 'close',
+        'click .toggle-chatbox-button': 'minimize',
+        'keypress textarea.chat-textarea': 'onKeyDown'
+    },
+
+    initialize () {
+        this.initDebounced();
+
+        this.model.disable_mam = true; // Don't do MAM queries for this box
+        this.listenTo(this.model.messages, 'add', this.renderChatHistory);
+        this.listenTo(this.model, 'show', this.show);
+        this.listenTo(this.model, 'destroy', this.hide);
+        this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged);
+
+        this.render();
+        this.renderHeading();
+        this.updateAfterMessagesFetched();
+        this.insertIntoDOM().hide();
+        this.model.maybeShow();
+        /**
+         * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
+         * @event _converse#headlinesBoxViewInitialized
+         * @type { _converse.HeadlinesBoxView }
+         * @example _converse.api.listen.on('headlinesBoxViewInitialized', view => { ... });
+         */
+        api.trigger('headlinesBoxViewInitialized', this);
+    },
+
+    render () {
+        this.el.setAttribute('id', this.model.get('box_id'))
+        const result = tpl_chatbox(
+            Object.assign(this.model.toJSON(), {
+                    info_close: '',
+                    label_personal_message: '',
+                    show_send_button: false,
+                    show_toolbar: false,
+                    unread_msgs: ''
+                }
+            ));
+        render(result, this.el);
+        this.content = this.el.querySelector('.chat-content');
+        this.msgs_container = this.el.querySelector('.chat-content__messages');
+        return this;
+    },
+
+    getNotifications () {
+        // Override method in ChatBox. We don't show notifications for
+        // headlines boxes.
+        return [];
+    },
+
+    /**
+     * Returns a list of objects which represent buttons for the headlines header.
+     * @async
+     * @emits _converse#getHeadingButtons
+     * @private
+     * @method _converse.HeadlinesBoxView#getHeadingButtons
+     */
+    getHeadingButtons () {
+        const buttons = [];
+        if (!api.settings.get("singleton")) {
+            buttons.push({
+                'a_class': 'close-chatbox-button',
+                'handler': ev => this.close(ev),
+                'i18n_text': __('Close'),
+                'i18n_title': __('Close these announcements'),
+                'icon_class': 'fa-times',
+                'name': 'close',
+                'standalone': api.settings.get("view_mode") === 'overlayed',
+            });
+        }
+        return _converse.api.hook('getHeadingButtons', this, buttons);
+    },
+
+    // Override to avoid the methods in converse-chatview.js
+    'renderMessageForm': function renderMessageForm () {},
+    'afterShown': function afterShown () {}
+});
+
+
+/**
+ * View which renders headlines section of the control box.
+ * @class
+ * @namespace _converse.HeadlinesPanel
+ * @memberOf _converse
+ */
+export const HeadlinesPanel = View.extend({
+    tagName: 'div',
+    className: 'controlbox-section',
+    id: 'headline',
+
+    events: {
+        'click .open-headline': 'openHeadline'
+    },
+
+    initialize () {
+        this.listenTo(this.model, 'add', this.renderIfHeadline)
+        this.listenTo(this.model, 'remove', this.renderIfHeadline)
+        this.listenTo(this.model, 'destroy', this.renderIfHeadline)
+        this.render();
+        this.insertIntoDOM();
+    },
+
+    toHTML () {
+        return tpl_headline_panel({
+            'heading_headline': __('Announcements'),
+            'headlineboxes': this.model.filter(m => m.get('type') === _converse.HEADLINES_TYPE),
+            'open_title': __('Click to open this server message'),
+        });
+    },
+
+    renderIfHeadline (model) {
+        return (model && model.get('type') === _converse.HEADLINES_TYPE) && this.render();
+    },
+
+    openHeadline (ev) {
+        ev.preventDefault();
+        const jid = ev.target.getAttribute('data-headline-jid');
+        const chat = _converse.chatboxes.get(jid);
+        chat.maybeShow(true);
+    },
+
+    insertIntoDOM () {
+        const view = _converse.chatboxviews.get('controlbox');
+        view && view.el.querySelector('.controlbox-pane').insertAdjacentElement('beforeEnd', this.el);
+    }
+});
 
 
 converse.plugins.add('converse-headlines-view', {
@@ -69,138 +203,8 @@ converse.plugins.add('converse-headlines-view', {
             Object.assign(_converse.ControlBoxView.prototype, viewWithHeadlinesPanel);
         }
 
-
-        /**
-         * View which renders headlines section of the control box.
-         * @class
-         * @namespace _converse.HeadlinesPanel
-         * @memberOf _converse
-         */
-        _converse.HeadlinesPanel = View.extend({
-            tagName: 'div',
-            className: 'controlbox-section',
-            id: 'headline',
-
-            events: {
-                'click .open-headline': 'openHeadline'
-            },
-
-            initialize () {
-                this.listenTo(this.model, 'add', this.renderIfHeadline)
-                this.listenTo(this.model, 'remove', this.renderIfHeadline)
-                this.listenTo(this.model, 'destroy', this.renderIfHeadline)
-                this.render();
-                this.insertIntoDOM();
-            },
-
-            toHTML () {
-                return tpl_headline_panel({
-                    'heading_headline': __('Announcements'),
-                    'headlineboxes': this.model.filter(m => m.get('type') === _converse.HEADLINES_TYPE),
-                    'open_title': __('Click to open this server message'),
-                });
-            },
-
-            renderIfHeadline (model) {
-                return (model && model.get('type') === _converse.HEADLINES_TYPE) && this.render();
-            },
-
-            openHeadline (ev) {
-                ev.preventDefault();
-                const jid = ev.target.getAttribute('data-headline-jid');
-                const chat = _converse.chatboxes.get(jid);
-                chat.maybeShow(true);
-            },
-
-            insertIntoDOM () {
-                const view = _converse.chatboxviews.get('controlbox');
-                view && view.el.querySelector('.controlbox-pane').insertAdjacentElement('beforeEnd', this.el);
-            }
-        });
-
-
-        _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
-            className: 'chatbox headlines',
-
-            events: {
-                'click .close-chatbox-button': 'close',
-                'click .toggle-chatbox-button': 'minimize',
-                'keypress textarea.chat-textarea': 'onKeyDown'
-            },
-
-            initialize () {
-                this.initDebounced();
-
-                this.model.disable_mam = true; // Don't do MAM queries for this box
-                this.listenTo(this.model.messages, 'add', this.renderChatHistory);
-                this.listenTo(this.model, 'show', this.show);
-                this.listenTo(this.model, 'destroy', this.hide);
-                this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged);
-
-                this.render();
-                this.renderHeading();
-                this.updateAfterMessagesFetched();
-                this.insertIntoDOM().hide();
-                this.model.maybeShow();
-                /**
-                 * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
-                 * @event _converse#headlinesBoxViewInitialized
-                 * @type { _converse.HeadlinesBoxView }
-                 * @example _converse.api.listen.on('headlinesBoxViewInitialized', view => { ... });
-                 */
-                api.trigger('headlinesBoxViewInitialized', this);
-            },
-
-            render () {
-                this.el.setAttribute('id', this.model.get('box_id'))
-                const result = tpl_chatbox(
-                    Object.assign(this.model.toJSON(), {
-                            info_close: '',
-                            label_personal_message: '',
-                            show_send_button: false,
-                            show_toolbar: false,
-                            unread_msgs: ''
-                        }
-                    ));
-                render(result, this.el);
-                this.content = this.el.querySelector('.chat-content');
-                this.msgs_container = this.el.querySelector('.chat-content__messages');
-                return this;
-            },
-
-            getNotifications () {
-                // Override method in ChatBox. We don't show notifications for
-                // headlines boxes.
-                return [];
-            },
-
-            /**
-             * Returns a list of objects which represent buttons for the headlines header.
-             * @async
-             * @emits _converse#getHeadingButtons
-             * @private
-             * @method _converse.HeadlinesBoxView#getHeadingButtons
-             */
-            getHeadingButtons () {
-                const buttons = [];
-                if (!api.settings.get("singleton")) {
-                    buttons.push({
-                        'a_class': 'close-chatbox-button',
-                        'handler': ev => this.close(ev),
-                        'i18n_text': __('Close'),
-                        'i18n_title': __('Close these announcements'),
-                        'icon_class': 'fa-times',
-                        'name': 'close',
-                        'standalone': api.settings.get("view_mode") === 'overlayed',
-                    });
-                }
-                return _converse.api.hook('getHeadingButtons', this, buttons);
-            },
-
-            // Override to avoid the methods in converse-chatview.js
-            'renderMessageForm': function renderMessageForm () {},
-            'afterShown': function afterShown () {}
-        });
+        _converse.HeadlinesBoxView = HeadlinesBoxView;
+        _converse.HeadlinesPanel = HeadlinesPanel;
 
 
         /************************ BEGIN Event Handlers ************************/

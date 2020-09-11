@@ -1,5 +1,5 @@
 import { CustomElement } from './element.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { api } from "@converse/headless/converse-core";
 import { html } from 'lit-element';
 import { until } from 'lit-html/directives/until.js';

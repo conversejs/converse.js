@@ -578,6 +578,9 @@ For documentation on the configuration options that ``Strophe.Connection``
 accepts, refer to the
 `Strophe.Connection documentation <http://strophe.im/strophejs/doc/1.2.8/files/strophe-js.html#Strophe.Connection.Strophe.Connection>`_.
 
+Restricting the supported authentication mechanisms:
+****************************************************
+
 As an example, suppose you want to restrict the supported SASL authentication
 mechanisms, then you'd pass in the ``mechanisms`` as a ``connection_options``
 ``key:value`` pair:
@@ -589,8 +592,28 @@ mechanisms, then you'd pass in the ``mechanisms`` as a ``connection_options``
                 'mechanisms': [
                     converse.env.Strophe.SASLMD5,
                 ]
-            },
+            }
         });
+
+Running the XMPP Connection inside a shared worker
+**************************************************
+
+Newer versions of Strophe.js, support the ability to run the XMPP Connection
+inside a `shared worker <https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker>`_ that's shared
+between open tabs in the browser in which Converse is running (and which have the same domain).
+
+*Note:* This feature is experimental and there currently is no way to
+synchronize actions between tabs. For example, sent 1-on-1 messages aren't
+reflected by the server, so you if you send such a message in one tab, it won't
+appear in another.
+
+
+.. code-block:: javascript
+
+        converse.initialize({
+            connection_options: { 'worker': true }
+        });
+
 
 .. _`credentials_url`:
 
@@ -813,6 +836,13 @@ Before version 1.0.3 Converse would ignore received messages if they were
 intended for a different resource then the current user had. It was decided to
 drop this restriction but leave it configurable.
 
+filter_url_query_params
+-----------------------
+
+* Default: ``null``
+
+Accepts a string or array of strings. Any query strings from URLs that match this setting will be removed.
+
 fullname
 --------
 
@@ -820,7 +850,7 @@ If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user's vCard will be fetched.
 
 geouri_regex
-----------------
+------------
 
 * Default:  ``/https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g``
 
@@ -883,6 +913,17 @@ The amount of seconds after which the user is considered to be idle
 and an idle presence according to XEP-0319 is sent.
 
 If the given value is negative or ``0``, this feature is disabled.
+
+image_urls_regex
+----------------
+
+* Default: ``null``
+
+Any URL in a message that matches the regex in this setting will be considered an image and rendered, if `show_images_inline`_ is set to ``true``.
+If the image cannot be rendered, a hyperlink will be rendered instead.
+
+
+For example, to render Imgur images inline, you can use the following regex: ``/^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i``
 
 jid
 ---
@@ -1325,6 +1366,16 @@ notification_icon
 This option specifies which icon is shown in HTML5 notifications, as provided
 by the ``src/converse-notification.js`` plugin.
 
+notify_nicknames_without_references
+-----------------------------------
+
+* Default: ``false``
+
+Enables notifications for nicknames in messages that don't have associated
+XEP-0372 references linking them to the JID of the person being mentioned.
+
+In Converse, these would be nicknames that weren't mentioned via the ``@`` sign.
+
 oauth_providers
 ---------------
 
@@ -1662,6 +1713,9 @@ show_images_inline
 
 If set to ``false``, images won't be rendered in chats, instead only their links will be shown.
 
+It also accepts an array strings of whitelisted domain names to only render images that belong to those domains.
+
+E.g. ``['imgur.com', 'imgbb.com']``
 
 show_retraction_warning
 -----------------------

@@ -447,7 +447,6 @@
             height: calc(100% - var(--overlayed-chat-head-height));
         }
         .chatbox-title {
-            cursor: pointer;
             padding: 0.5rem 0.75rem 0 0.75rem;
         }
         .chatbox-title--no-desc {
@@ -455,7 +454,8 @@
         }
         converse-dropdown {
             .btn--standalone {
-                padding: 0 0 0 0.5em;
+                padding: 0 0.2em;
+                margin: 0 0 0 0.5em;
             }
         }
     }

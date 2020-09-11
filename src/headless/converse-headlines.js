@@ -66,7 +66,7 @@ converse.plugins.add('converse-headlines', {
 
             initialize () {
                 this.initMessages();
-                this.set({'box_id': `box-${btoa(this.get('jid'))}`});
+                this.set({'box_id': `box-${this.get('jid')}`});
                 /**
                  * Triggered once a {@link _converse.HeadlinesBox} has been created and initialized.
                  * @event _converse#headlinesBoxInitialized
@@ -98,7 +98,7 @@ converse.plugins.add('converse-headlines', {
                 });
                 const attrs = await st.parseMessage(stanza, _converse);
                 await chatbox.createMessage(attrs);
-                api.trigger('message', {'chatbox': chatbox, 'stanza': stanza});
+                api.trigger('message', {chatbox, stanza, attrs});
             }
         }
 

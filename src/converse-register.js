@@ -7,7 +7,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-controlbox";
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { View } from "@converse/skeletor/src/view";
 import { pick } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/converse-core";
@@ -310,7 +310,9 @@ converse.plugins.add('converse-register', {
                     '_registering': true
                 });
                 await _converse.initConnection(this.domain);
-                _converse.connection.connect(this.domain, "", status => this.onConnectStatusChanged(status));
+                // When testing, the test tears down before the async function
+                // above finishes. So we use optional chaining here
+                _converse.connection?.connect(this.domain, "", status => this.onConnectStatusChanged(status));
                 return false;
             },
 

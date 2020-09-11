@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const { Promise, Strophe, $msg, $pres } = converse.env;
 const u = converse.env.utils;

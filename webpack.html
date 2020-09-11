@@ -20,6 +20,7 @@
         }
     });
     converse.initialize({
+        theme: 'concord',
         show_send_button: true,
         auto_away: 300,
         auto_register_muc_nickname: true,
@@ -27,7 +28,7 @@
         modtools_disable_assign: ['owner', 'moderator', 'participant', 'visitor'],
         modtools_disable_query: ['moderator', 'participant', 'visitor'],
         enable_smacks: true,
-        i18n: 'en',
+        // connection_options: { 'worker': '/dist/shared-connection-worker.js' },
         message_archiving: 'always',
         muc_domain: 'conference.chat.example.org',
         muc_respect_autojoin: true,

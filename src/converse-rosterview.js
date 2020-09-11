@@ -18,7 +18,7 @@ import { BootstrapModal } from "./converse-modal.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { OrderedListView } from "@converse/skeletor/src/overview";
 import { View } from '@converse/skeletor/src/view.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { compact, debounce, has, isString, uniq, without } from "lodash-es";
 
@@ -68,10 +68,7 @@ converse.plugins.add('converse-rosterview', {
 
             toHTML () {
                 const label_nickname = api.settings.get('xhr_user_search_url') ? __('Contact name') : __('Optional nickname');
-                return tpl_add_contact_modal(Object.assign(this.model.toJSON(), {
-                    '_converse': _converse,
-                    'label_nickname': label_nickname,
-                }));
+                return tpl_add_contact_modal(Object.assign(this.model.toJSON(), { _converse, label_nickname }));
             },
 
             afterRender () {

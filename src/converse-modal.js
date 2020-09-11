@@ -7,7 +7,7 @@ import { View } from '@converse/skeletor/src/view.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { isString } from "lodash-es";
 import { render } from 'lit-html';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import bootstrap from "bootstrap.native";
 import { converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
@@ -39,7 +39,7 @@ export const BootstrapModal = View.extend({
         this.insertIntoDOM();
         const Modal = bootstrap.Modal;
         this.modal = new Modal(this.el, {
-            backdrop: 'static',
+            backdrop: true,
             keyboard: true
         });
         this.el.addEventListener('hide.bs.modal', () => u.removeClass('selected', this.trigger_el), false);

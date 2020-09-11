@@ -3,7 +3,7 @@ import sizzle from "sizzle";
 import tpl_moderator_tools_modal from "../templates/moderator_tools_modal.js";
 import { AFFILIATIONS, ROLES } from "@converse/headless/converse-muc.js";
 import { BootstrapModal } from "../converse-modal.js";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { api, converse } from "@converse/headless/converse-core";
 
 const { Strophe } = converse.env;

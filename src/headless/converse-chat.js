@@ -330,7 +330,7 @@ converse.plugins.add('converse-chat', {
                     // but we're in embedded mode.
                     return;
                 }
-                this.set({'box_id': `box-${btoa(jid)}`});
+                this.set({'box_id': `box-${jid}`});
                 this.initNotifications();
                 this.initMessages();
 
@@ -457,8 +457,6 @@ converse.plugins.add('converse-chat', {
                     attrs.stanza && log.error(attrs.stanza);
                     return log.error(attrs.message);
                 }
-                // TODO: move to OMEMO
-                attrs = attrs.encrypted ? await this.decrypt(attrs) : attrs;
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, attrs);
@@ -475,7 +473,7 @@ converse.plugins.add('converse-chat', {
                     if (u.shouldCreateMessage(attrs)) {
                         const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
                         this.notifications.set({'chat_state': null});
-                        this.incrementUnreadMsgCounter(msg);
+                        this.handleUnreadMessage(msg);
                     }
                 }
             },
@@ -889,7 +887,7 @@ converse.plugins.add('converse-chat', {
 
             handleReceipt (attrs) {
                 if (attrs.sender === 'them') {
-                    if (attrs.is_receipt_request) {
+                    if (attrs.is_valid_receipt_request) {
                         this.sendReceiptStanza(attrs.from, attrs.msgid);
                     } else if (attrs.receipt_id) {
                         const message = this.messages.findWhere({'msgid': attrs.receipt_id});
@@ -1142,10 +1140,9 @@ converse.plugins.add('converse-chat', {
              * @returns {boolean}
              */
             isHidden () {
-                return this.get('hidden') ||
-                    this.get('minimized') ||
-                    this.isScrolledUp() ||
-                    _converse.windowState === 'hidden';
+                // Note: This methods gets overridden by converse-minimize
+                const hidden = _converse.isUniView() && this.get('hidden');
+                return hidden || this.isScrolledUp() || _converse.windowState === 'hidden';
             },
 
             /**
@@ -1154,7 +1151,7 @@ converse.plugins.add('converse-chat', {
              * @private
              * @param {_converse.Message} message
              */
-            incrementUnreadMsgCounter (message) {
+            handleUnreadMessage (message) {
                 if (!message?.get('body')) {
                     return
                 }
@@ -1216,15 +1213,23 @@ converse.plugins.add('converse-chat', {
             }
             const has_body = !!sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length;
             const chatbox = await api.chats.get(attrs.contact_jid, {'nickname': attrs.nick }, has_body);
-            chatbox && await chatbox.queueMessage(attrs);
+            await chatbox?.queueMessage(attrs);
+            /**
+             * An object containing the original message stanza, as well as the
+             * parsed attributes.
+             * @typedef { Object } MessageData
+             * @property { XMLElement } stanza
+             * @property { MessageAttributes } stanza
+             */
+            const data = {stanza, attrs};
             /**
              * Triggered when a message stanza is been received and processed.
              * @event _converse#message
              * @type { object }
-             * @property { XMLElement } stanza
+             * @property { MessageData|MUCMessageData } data
              * @example _converse.api.listen.on('message', obj => { ... });
              */
-            api.trigger('message', {'stanza': stanza});
+            api.trigger('message', data);
         }
 
 

@@ -1,10 +1,17 @@
-/* global mock */
+/* global mock, converse */
+
+const u = converse.env.utils;
 
 describe("Converse", function() {
 
-    describe("Settings", function () {
+    it("Can be inserted into a custom element after having been initialized",
+            mock.initConverse([], {'root': new DocumentFragment()}, async (done) => {
 
-    });
+        expect(document.body.querySelector('div#conversejs')).toBe(null);
+        document.body.appendChild(document.createElement('converse-root'));
+        await u.waitUntil(() => document.body.querySelector('div#conversejs') !== null);
+        done();
+    }));
 
     describe("Authentication", function () {
 
@@ -55,7 +62,8 @@ describe("Converse", function() {
 
     describe("Automatic status change", function () {
 
-        it("happens when the client is idle for long enough", mock.initConverse((done, _converse) => {
+        it("happens when the client is idle for long enough",
+                mock.initConverse(['initialized'], {}, async (done, _converse) => {
             let i = 0;
             // Usually initialized by registerIntervalHandler
             _converse.idle_seconds = 0;
@@ -63,26 +71,26 @@ describe("Converse", function() {
             _converse.api.settings.set('auto_away', 3);
             _converse.api.settings.set('auto_xa', 6);
 
-            expect(_converse.api.user.status.get()).toBe('online');
+            expect(await _converse.api.user.status.get()).toBe('online');
             while (i <= _converse.api.settings.get("auto_away")) {
                 _converse.onEverySecond(); i++;
             }
             expect(_converse.auto_changed_status).toBe(true);
 
             while (i <= _converse.auto_xa) {
-                expect(_converse.api.user.status.get()).toBe('away');
+                expect(await _converse.api.user.status.get()).toBe('away');
                 _converse.onEverySecond();
                 i++;
             }
-            expect(_converse.api.user.status.get()).toBe('xa');
+            expect(await _converse.api.user.status.get()).toBe('xa');
             expect(_converse.auto_changed_status).toBe(true);
 
             _converse.onUserActivity();
-            expect(_converse.api.user.status.get()).toBe('online');
+            expect(await _converse.api.user.status.get()).toBe('online');
             expect(_converse.auto_changed_status).toBe(false);
 
             // Check that it also works for the chat feature
-            _converse.api.user.status.set('chat')
+            await _converse.api.user.status.set('chat')
             i = 0;
             while (i <= _converse.api.settings.get("auto_away")) {
                 _converse.onEverySecond();
@@ -90,36 +98,36 @@ describe("Converse", function() {
             }
             expect(_converse.auto_changed_status).toBe(true);
             while (i <= _converse.auto_xa) {
-                expect(_converse.api.user.status.get()).toBe('away');
+                expect(await _converse.api.user.status.get()).toBe('away');
                 _converse.onEverySecond();
                 i++;
             }
-            expect(_converse.api.user.status.get()).toBe('xa');
+            expect(await _converse.api.user.status.get()).toBe('xa');
             expect(_converse.auto_changed_status).toBe(true);
 
             _converse.onUserActivity();
-            expect(_converse.api.user.status.get()).toBe('online');
+            expect(await _converse.api.user.status.get()).toBe('online');
             expect(_converse.auto_changed_status).toBe(false);
 
             // Check that it doesn't work for 'dnd'
-            _converse.api.user.status.set('dnd');
+            await _converse.api.user.status.set('dnd');
             i = 0;
             while (i <= _converse.api.settings.get("auto_away")) {
                 _converse.onEverySecond();
                 i++;
             }
-            expect(_converse.api.user.status.get()).toBe('dnd');
+            expect(await _converse.api.user.status.get()).toBe('dnd');
             expect(_converse.auto_changed_status).toBe(false);
             while (i <= _converse.auto_xa) {
-                expect(_converse.api.user.status.get()).toBe('dnd');
+                expect(await _converse.api.user.status.get()).toBe('dnd');
                 _converse.onEverySecond();
                 i++;
             }
-            expect(_converse.api.user.status.get()).toBe('dnd');
+            expect(await _converse.api.user.status.get()).toBe('dnd');
             expect(_converse.auto_changed_status).toBe(false);
 
             _converse.onUserActivity();
-            expect(_converse.api.user.status.get()).toBe('dnd');
+            expect(await _converse.api.user.status.get()).toBe('dnd');
             expect(_converse.auto_changed_status).toBe(false);
             done();
         }));
@@ -129,47 +137,51 @@ describe("Converse", function() {
 
         describe("The \"status\" API", function () {
 
-            it("has a method for getting the user's availability", mock.initConverse((done, _converse) => {
+            it("has a method for getting the user's availability",
+                    mock.initConverse(['statusInitialized'], {}, async(done, _converse) => {
                 _converse.xmppstatus.set('status', 'online');
-                expect(_converse.api.user.status.get()).toBe('online');
+                expect(await _converse.api.user.status.get()).toBe('online');
                 _converse.xmppstatus.set('status', 'dnd');
-                expect(_converse.api.user.status.get()).toBe('dnd');
+                expect(await _converse.api.user.status.get()).toBe('dnd');
                 done();
             }));
 
-            it("has a method for setting the user's availability", mock.initConverse((done, _converse) => {
-                _converse.api.user.status.set('away');
-                expect(_converse.xmppstatus.get('status')).toBe('away');
-                _converse.api.user.status.set('dnd');
-                expect(_converse.xmppstatus.get('status')).toBe('dnd');
-                _converse.api.user.status.set('xa');
-                expect(_converse.xmppstatus.get('status')).toBe('xa');
-                _converse.api.user.status.set('chat');
-                expect(_converse.xmppstatus.get('status')).toBe('chat');
-                expect(() => _converse.api.user.status.set('invalid')).toThrow(
-                    new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1')
-                );
-                done();
+            it("has a method for setting the user's availability", mock.initConverse(async (done, _converse) => {
+                await _converse.api.user.status.set('away');
+                expect(await _converse.xmppstatus.get('status')).toBe('away');
+                await _converse.api.user.status.set('dnd');
+                expect(await _converse.xmppstatus.get('status')).toBe('dnd');
+                await _converse.api.user.status.set('xa');
+                expect(await _converse.xmppstatus.get('status')).toBe('xa');
+                await _converse.api.user.status.set('chat');
+                expect(await _converse.xmppstatus.get('status')).toBe('chat');
+                const promise = _converse.api.user.status.set('invalid')
+                promise.catch(e => {
+                    expect(e.message).toBe('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
+                    done();
+                });
             }));
 
-            it("allows setting the status message as well", mock.initConverse((done, _converse) => {
-                _converse.api.user.status.set('away', "I'm in a meeting");
+            it("allows setting the status message as well", mock.initConverse(async (done, _converse) => {
+                await _converse.api.user.status.set('away', "I'm in a meeting");
                 expect(_converse.xmppstatus.get('status')).toBe('away');
                 expect(_converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
                 done();
             }));
 
-            it("has a method for getting the user's status message", mock.initConverse((done, _converse) => {
-                _converse.xmppstatus.set('status_message', undefined);
-                expect(_converse.api.user.status.message.get()).toBe(undefined);
-                _converse.xmppstatus.set('status_message', "I'm in a meeting");
-                expect(_converse.api.user.status.message.get()).toBe("I'm in a meeting");
+            it("has a method for getting the user's status message",
+                    mock.initConverse(['statusInitialized'], {}, async (done, _converse) => {
+                await _converse.xmppstatus.set('status_message', undefined);
+                expect(await _converse.api.user.status.message.get()).toBe(undefined);
+                await _converse.xmppstatus.set('status_message', "I'm in a meeting");
+                expect(await _converse.api.user.status.message.get()).toBe("I'm in a meeting");
                 done();
             }));
 
-            it("has a method for setting the user's status message", mock.initConverse((done, _converse) => {
+            it("has a method for setting the user's status message",
+                    mock.initConverse(['statusInitialized'], {}, async (done, _converse) => {
                 _converse.xmppstatus.set('status_message', undefined);
-                _converse.api.user.status.message.set("I'm in a meeting");
+                await _converse.api.user.status.message.set("I'm in a meeting");
                 expect(_converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
                 done();
             }));
@@ -277,7 +289,7 @@ describe("Converse", function() {
             // Test for one JID
             chat = await _converse.api.chats.open(jid);
             expect(chat instanceof Object).toBeTruthy();
-            expect(chat.get('box_id')).toBe(`box-${btoa(jid)}`);
+            expect(chat.get('box_id')).toBe(`box-${jid}`);
 
             const view = _converse.chatboxviews.get(jid);
             await u.waitUntil(() => u.isVisible(view.el));
@@ -286,8 +298,8 @@ describe("Converse", function() {
             await u.waitUntil(() => _converse.chatboxes.length == 3);
             const list = await _converse.api.chats.get([jid, jid2]);
             expect(Array.isArray(list)).toBeTruthy();
-            expect(list[0].get('box_id')).toBe(`box-${btoa(jid)}`);
-            expect(list[1].get('box_id')).toBe(`box-${btoa(jid2)}`);
+            expect(list[0].get('box_id')).toBe(`box-${jid}`);
+            expect(list[1].get('box_id')).toBe(`box-${jid2}`);
             done();
         }));
 
@@ -307,7 +319,7 @@ describe("Converse", function() {
 
             chat = await _converse.api.chats.open(jid);
             expect(chat instanceof Object).toBeTruthy();
-            expect(chat.get('box_id')).toBe(`box-${btoa(jid)}`);
+            expect(chat.get('box_id')).toBe(`box-${jid}`);
             expect(
                 Object.keys(chat),
                 ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
@@ -317,8 +329,8 @@ describe("Converse", function() {
             // Test for multiple JIDs
             const list = await _converse.api.chats.open([jid, jid2]);
             expect(Array.isArray(list)).toBeTruthy();
-            expect(list[0].get('box_id')).toBe(`box-${btoa(jid)}`);
-            expect(list[1].get('box_id')).toBe(`box-${btoa(jid2)}`);
+            expect(list[0].get('box_id')).toBe(`box-${jid}`);
+            expect(list[1].get('box_id')).toBe(`box-${jid2}`);
             done();
         }));
     });
@@ -353,6 +365,28 @@ describe("Converse", function() {
             expect(_converse.api.settings.get('emoji_categories')?.food).toBe(undefined);
             done();
         }));
+
+        it("only overrides the passed in properties",
+                mock.initConverse([],
+                {
+                    'root': document.createElement('div').attachShadow({ 'mode': 'open' }),
+                    'emoji_categories': { 'travel': ':rocket:' },
+                },
+                (done, _converse) => {
+                    expect(_converse.api.settings.get('emoji_categories')?.travel).toBe(':rocket:');
+
+                    // Test that the extend command doesn't override user-provided site
+                    // settings (i.e. settings passed in via converse.initialize).
+                    _converse.api.settings.extend({
+                        'emoji_categories': { 'travel': ':motorcycle:', 'food': ':burger:' },
+                    });
+
+                    expect(_converse.api.settings.get('emoji_categories').travel).toBe(':rocket:');
+                    expect(_converse.api.settings.get('emoji_categories').food).toBe(undefined);
+                    done();
+                }
+            )
+        );
 
     });
 

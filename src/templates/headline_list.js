@@ -1,5 +1,4 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
 
 const tpl_headline_box = (o) => html`
     <div class="list-item controlbox-padded d-flex flex-row"

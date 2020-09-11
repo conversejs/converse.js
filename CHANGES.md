@@ -26,8 +26,14 @@ Soon we'll deprecate the latter, so prepare now.
 - #2006: fix rendering of emojis in case `use_system_emojis == false`
 - #2028: Implement XEP-0333 `displayed` chat marker
 - #2101: Improve contrast of text in control box
+- #2187: Avoid merging initial settings with themselves every time settings are extended.
+- #2199: Fix BOSH session restore.
+- #2201: added html to converse.env
+- #2213: added CustomElement to converse.env
+- #2220: fix rendering of emojis in case `use_system_emojis == false` (again).
 - Removed the mockups from the project. Recommended to use tests instead.
 - The API method `api.settings.update` has been deprecated in favor of `api.settings.extend`.
+- The API methods under the `api.user.status` namespace are now asynchronous and need to be `await`ed.
 - Filter roster contacts via all available information (JID, nickname and VCard full name).
 - Allow ignoring of bootstrap modules at build using environment variable. For xample: `export BOOTSTRAP_IGNORE_MODULES="Modal,Dropdown" && make dist`
 - Bugfix. Handle stanza that clears the MUC subject
@@ -44,6 +50,7 @@ Soon we'll deprecate the latter, so prepare now.
 - New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
 - New config option [muc_hats_from_vcard](https://conversejs.org/docs/html/configuration.html#muc-hats-from-vcard).
 - New config option [muc_send_probes](https://conversejs.org/docs/html/configuration.html#muc-send-probes).
+- New config option [notify_nicknames_without_references](https://conversejs.org/docs/html/configuration.html#notify-nicknames-without-references).
 - New config option [show_message_avatar](https://conversejs.org/docs/html/configuration.html#show-message-avatar).
 - New public API [converse.insertInto](https://conversejs.org/docs/html/api/converse.html#.insertInto)
 

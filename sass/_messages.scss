@@ -11,7 +11,8 @@
         .mention--self {
             font-weight: normal;
         }
-        &.date-separator {
+        &.date-separator,
+        &.separator {
             height: 2em;
             margin: 0;
             position: relative;
@@ -201,6 +202,7 @@
                     word-break: break-all;
                     display: inline;
                     &.chat-image__link {
+                        width: fit-content;
                         display: block;
                     }
                 }

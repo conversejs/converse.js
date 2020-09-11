@@ -3,6 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import './components/converse.js';
 import "@converse/headless/converse-chatboxes";
 import tpl_avatar from "templates/avatar.svg";
 import tpl_background_logo from "templates/background_logo.html";
@@ -39,6 +40,75 @@ const AvatarMixin = {
 };
 
 
+const ViewWithAvatar = View.extend(AvatarMixin);
+
+
+const ChatBoxViews = Overview.extend({
+
+    _ensureElement () {
+        /* Override method from backbone.js
+            * If the #conversejs element doesn't exist, create it.
+            */
+        if (this.el) {
+            this.setElement(result(this, 'el'), false);
+        } else {
+            let el = _converse.root.querySelector('#conversejs');
+            if (el === null) {
+                el = document.createElement('div');
+                el.setAttribute('id', 'conversejs');
+                u.addClass(`theme-${api.settings.get('theme')}`, el);
+                const body = _converse.root.querySelector('body');
+                if (body) {
+                    body.appendChild(el);
+                } else {
+                    // Perhaps inside a web component?
+                    _converse.root.appendChild(el);
+                }
+            }
+            this.setElement(el, false);
+        }
+    },
+
+    initialize () {
+        this.listenTo(this.model, "destroy", this.removeChat)
+        const bg = document.getElementById('conversejs-bg');
+        if (bg && !bg.innerHTML.trim()) {
+            bg.innerHTML = tpl_background_logo();
+        }
+        const body = document.querySelector('body');
+        body.classList.add(`converse-${api.settings.get("view_mode")}`);
+        this.el.classList.add(`converse-${api.settings.get("view_mode")}`);
+        if (api.settings.get("singleton")) {
+            this.el.classList.add(`converse-singleton`);
+        }
+        this.render();
+    },
+
+    render () {
+        this._ensureElement();
+        render(tpl_converse(), this.el);
+        this.row_el = this.el.querySelector('.row');
+    },
+
+    /*(
+     * Add a new DOM element (likely a chat box) into the
+     * the row managed by this overview.
+     * @param { HTMLElement } el
+     */
+    insertRowColumn (el) {
+        this.row_el.insertAdjacentElement('afterBegin', el);
+    },
+
+    removeChat (item) {
+        this.remove(item.get('id'));
+    },
+
+    closeAllChatBoxes () {
+        return Promise.all(this.map(v => v.close({'name': 'closeAllChatBoxes'})));
+    }
+});
+
+
 converse.plugins.add('converse-chatboxviews', {
 
     dependencies: ["converse-chatboxes", "converse-vcard"],
@@ -48,7 +118,6 @@ converse.plugins.add('converse-chatboxviews', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
-
         api.elements.register();
 
         api.promises.add(['chatBoxViewsInitialized']);
@@ -62,79 +131,12 @@ converse.plugins.add('converse-chatboxviews', {
             'theme': 'default'
         });
 
-        _converse.ViewWithAvatar = View.extend(AvatarMixin);
-
-
-        _converse.ChatBoxViews = Overview.extend({
-
-            _ensureElement () {
-                /* Override method from backbone.js
-                 * If the #conversejs element doesn't exist, create it.
-                 */
-                if (!this.el) {
-                    let el = _converse.root.querySelector('#conversejs');
-                    if (el === null) {
-                        el = document.createElement('div');
-                        el.setAttribute('id', 'conversejs');
-                        u.addClass(`theme-${api.settings.get('theme')}`, el);
-                        const body = _converse.root.querySelector('body');
-                        if (body) {
-                            body.appendChild(el);
-                        } else {
-                            // Perhaps inside a web component?
-                            _converse.root.appendChild(el);
-                        }
-                    }
-                    el.innerHTML = '';
-                    this.setElement(el, false);
-                } else {
-                    this.setElement(result(this, 'el'), false);
-                }
-            },
-
-            initialize () {
-                this.listenTo(this.model, "destroy", this.removeChat)
-                const bg = document.getElementById('conversejs-bg');
-                if (bg && !bg.innerHTML.trim()) {
-                    bg.innerHTML = tpl_background_logo();
-                }
-                const body = document.querySelector('body');
-                body.classList.add(`converse-${api.settings.get("view_mode")}`);
-                this.el.classList.add(`converse-${api.settings.get("view_mode")}`);
-                if (api.settings.get("singleton")) {
-                    this.el.classList.add(`converse-singleton`);
-                }
-                this.render();
-            },
-
-            render () {
-                try {
-                    render(tpl_converse(), this.el);
-                } catch (e) {
-                    this._ensureElement();
-                    render(tpl_converse(), this.el);
-                }
-                this.row_el = this.el.querySelector('.row');
-            },
-
-            insertRowColumn (el) {
-                /* Add a new DOM element (likely a chat box) into the
-                 * the row managed by this overview.
-                 */
-                this.row_el.insertAdjacentElement('afterBegin', el);
-            },
-
-            removeChat (item) {
-                this.remove(item.get('id'));
-            },
-
-            closeAllChatBoxes () {
-                return Promise.all(this.map(v => v.close({'name': 'closeAllChatBoxes'})));
-            }
-        });
-
+        _converse.ViewWithAvatar = ViewWithAvatar;
+        _converse.ChatBoxViews = ChatBoxViews;
 
         /************************ BEGIN Event Handlers ************************/
+        api.listen.on('cleanup', () => (delete _converse.chatboxviews));
+
         api.listen.on('chatBoxesInitialized', () => {
             _converse.chatboxviews = new _converse.ChatBoxViews({
                 'model': _converse.chatboxes
@@ -176,6 +178,10 @@ converse.plugins.add('converse-chatboxviews', {
                 const el = _converse.chatboxviews?.el;
                 if (el && !container.contains(el)) {
                     container.insertAdjacentElement('afterBegin', el);
+                    api.chatviews.get()
+                        .filter(v => v.model.get('id') !== 'controlbox')
+                        .forEach(v => v.maintainScrollTop());
+
                 } else if (!el) {
                     throw new Error("Cannot insert non-existing #conversejs element into the DOM");
                 }

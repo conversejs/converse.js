@@ -51,12 +51,14 @@ $mobile_portrait_length: 480px !default;
 
     --flyout-padding: 0.5em;
 
-    --chat-head-color: var(--green);
+    --chat-correcting-color: var(--chat-head-color-lighten-50-percent);
     --chat-head-color-dark: #1E9652;
     --chat-head-color-darker: #0E763B;
     --chat-head-color-lighten-50-percent: #e7f7ee; // lighten($green, 50%)
+    --chat-head-color: var(--green);
     --chat-head-text-color: white;
-    --chat-correcting-color: var(--chat-head-color-lighten-50-percent);
+    --chat-toolbar-btn-color: var(--green);
+    --chat-toolbar-btn-disabled-color: gray;
 
     --chat-content-background-color: white;
 
@@ -113,19 +115,21 @@ $mobile_portrait_length: 480px !default;
     --heading-display: block;
     --heading-color: white;
 
-    --chatroom-head-color: white;
-    --chatroom-head-bg-color: var(--redder-orange);
-    --chatroom-head-bg-color-dark: #D24E2B; // $red
-    --chatroom-head-button-color: var(--chatroom-head-bg-color);
-    --chatroom-head-title-font-weight: normal;
-    --chatroom-head-title-padding-right: 0px;
-    --chatroom-head-description-link-color: white;
-    --chatroom-head-description-display: block;
-    --chatroom-head-border-bottom: 0px;
-    --chatroom-width: 500px;
-    --chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
     --chatroom-badge-color: var(--chatroom-head-bg-color);
     --chatroom-badge-hover-color: var(--chatroom-head-bg-color-dark);
+    --chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
+    --chatroom-head-bg-color-dark: #D24E2B; // $red
+    --chatroom-head-bg-color: var(--redder-orange);
+    --chatroom-head-border-bottom: 0px;
+    --chatroom-head-button-color: var(--chatroom-head-bg-color);
+    --chatroom-head-color: white;
+    --chatroom-head-description-display: block;
+    --chatroom-head-description-link-color: white;
+    --chatroom-head-title-font-weight: normal;
+    --chatroom-head-title-padding-right: 0px;
+    --chatroom-width: 500px;
+    --muc-toolbar-btn-color: var(--redder-orange);
+    --muc-toolbar-btn-disabled-color: gray;
 
     --headline-head-color: var(--orange);
     --headline-message-color: #D2842B;
@@ -216,20 +220,22 @@ $mobile_portrait_length: 480px !default;
 
     --link-hover-color: var(--lighter-blue);
 
-    --chatroom-head-color: #7E7E7E;
-    --chatroom-head-bg-color: white;
-    --chatroom-head-button-color: #999;
-    --chatroom-head-title-font-weight: bold;
-    --chatroom-head-title-padding-right: 12px;
-    --chatroom-head-description-color: black;
-    --chatroom-head-description-link-color: #00b3f4;
-    --chatroom-head-description-display: inline;
-    --chatroom-head-description-border-left: 1px solid #DDD;
-    --chatroom-head-description-padding-left: 12px;
-    --chatroom-head-border-bottom: 1px solid #EEE;
-    --chatroom-correcting-color: #FFFFC0;
     --chatroom-badge-color: var(--redder-orange);
     --chatroom-badge-hover-color: #D24E2B; // $red
+    --chatroom-correcting-color: #FFFFC0;
+    --chatroom-head-bg-color: white;
+    --chatroom-head-border-bottom: 1px solid #EEE;
+    --chatroom-head-button-color: #999;
+    --chatroom-head-color: #7E7E7E;
+    --chatroom-head-description-border-left: 1px solid #DDD;
+    --chatroom-head-description-color: black;
+    --chatroom-head-description-display: inline;
+    --chatroom-head-description-link-color: #00b3f4;
+    --chatroom-head-description-padding-left: 12px;
+    --chatroom-head-title-font-weight: bold;
+    --chatroom-head-title-padding-right: 12px;
+    --muc-toolbar-btn-color: #7E7E7E;
+    --muc-toolbar-btn-disabled-color: lightgray;
 
     --occupants-background-color: #F3F3F3;
     --occupants-border-left: 0px;

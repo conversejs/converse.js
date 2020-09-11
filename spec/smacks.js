@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const $iq = converse.env.$iq;
 const $msg = converse.env.$msg;
@@ -23,8 +23,7 @@ describe("XEP-0198 Stream Management", function () {
 
         await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
         const sent_stanzas = _converse.connection.sent_stanzas;
-        let stanza = await u.waitUntil(() =>
-            sent_stanzas.filter(s => (s.tagName === 'enable')).pop());
+        let stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'enable'), 1000).pop());
 
         expect(_converse.session.get('smacks_enabled')).toBe(false);
         expect(Strophe.serialize(stanza)).toEqual('<enable resume="true" xmlns="urn:xmpp:sm:3"/>');
@@ -33,7 +32,7 @@ describe("XEP-0198 Stream Management", function () {
         _converse.connection._dataRecv(mock.createRequest(result));
         expect(_converse.session.get('smacks_enabled')).toBe(true);
 
-        await u.waitUntil(() => view.renderControlBoxPane.calls.count());
+        await u.waitUntil(() => view.renderControlBoxPane.calls?.count());
 
         let IQ_stanzas = _converse.connection.IQ_stanzas;
         await u.waitUntil(() => IQ_stanzas.length === 4);
@@ -105,7 +104,7 @@ describe("XEP-0198 Stream Management", function () {
         _converse.connection.IQ_stanzas = [];
         IQ_stanzas = _converse.connection.IQ_stanzas;
         await _converse.api.connection.reconnect();
-        stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'resume')).pop());
+        stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'resume')).pop(), 1000);
         expect(Strophe.serialize(stanza)).toEqual('<resume h="2" previd="some-long-sm-id" xmlns="urn:xmpp:sm:3"/>');
 
         result = u.toStanza(`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`);

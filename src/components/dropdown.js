@@ -15,7 +15,7 @@ export class BaseDropdown extends CustomElement {
         this.button = this.dropdown.querySelector('button');
         this.dropdown.addEventListener('click', ev => this.toggleMenu(ev));
         this.dropdown.addEventListener('keyup', ev => this.handleKeyUp(ev));
-        document.addEventListener('click', ev => !this.contains(ev.target) && this.hideMenu(ev));
+        document.addEventListener('click', ev => !this.contains(ev.composedPath()[0]) && this.hideMenu(ev));
     }
 
     hideMenu () {
@@ -30,7 +30,6 @@ export class BaseDropdown extends CustomElement {
     }
 
     toggleMenu (ev) {
-        ev.stopPropagation();
         ev.preventDefault();
         if (u.hasClass('show', this.menu)) {
             this.hideMenu();

@@ -9,7 +9,7 @@ import "converse-profile";
 import log from "@converse/headless/log";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { concat, debounce, difference, invokeMap, range, omit } from "lodash-es";
 import { html } from 'lit-html';
@@ -40,6 +40,149 @@ class IQError extends Error {
     }
 }
 
+const omemo = converse.env.omemo = {
+
+    async encryptMessage (plaintext) {
+        // The client MUST use fresh, randomly generated key/IV pairs
+        // with AES-128 in Galois/Counter Mode (GCM).
+
+        // For GCM a 12 byte IV is strongly suggested as other IV lengths
+        // will require additional calculations. In principle any IV size
+        // can be used as long as the IV doesn't ever repeat. NIST however
+        // suggests that only an IV size of 12 bytes needs to be supported
+        // by implementations.
+        //
+        // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
+        const iv = crypto.getRandomValues(new window.Uint8Array(12)),
+                key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]),
+                algo = {
+                    'name': 'AES-GCM',
+                    'iv': iv,
+                    'tagLength': TAG_LENGTH
+                },
+                encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
+                length = encrypted.byteLength - ((128 + 7) >> 3),
+                ciphertext = encrypted.slice(0, length),
+                tag = encrypted.slice(length),
+                exported_key = await crypto.subtle.exportKey("raw", key);
+
+        return {
+            'key': exported_key,
+            'tag': tag,
+            'key_and_tag': u.appendArrayBuffer(exported_key, tag),
+            'payload': u.arrayBufferToBase64(ciphertext),
+            'iv': u.arrayBufferToBase64(iv)
+        };
+    },
+
+    async decryptMessage (obj) {
+        const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt','decrypt']);
+        const cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag);
+        const algo = {
+            'name': "AES-GCM",
+            'iv': u.base64ToArrayBuffer(obj.iv),
+            'tagLength': TAG_LENGTH
+        };
+        return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
+    }
+};
+
+function getSessionCipher (jid, id) {
+    const address = new libsignal.SignalProtocolAddress(jid, id);
+    return new window.libsignal.SessionCipher(_converse.omemo_store, address);
+}
+
+async function handleDecryptedWhisperMessage (attrs, key_and_tag) {
+    const encrypted = attrs.encrypted;
+    const devicelist = _converse.devicelists.getDeviceList(attrs.from);
+    await devicelist._devices_promise;
+
+    let device = devicelist.get(encrypted.device_id);
+    if (!device) {
+        device = await devicelist.devices.create({'id': encrypted.device_id, 'jid': attrs.from}, {'promise': true});
+    }
+    if (encrypted.payload) {
+        const key = key_and_tag.slice(0, 16);
+        const tag = key_and_tag.slice(16);
+        const result = await omemo.decryptMessage(Object.assign(encrypted, {'key': key, 'tag': tag}));
+        device.save('active', true);
+        return result;
+    }
+}
+
+function getDecryptionErrorAttributes (e) {
+    if (api.settings.get("loglevel") === 'debug') {
+        return {
+            'error_text': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
+            'error_type': 'Decryption',
+            'is_ephemeral': true,
+            'is_error': true,
+            'type': 'error',
+        }
+    } else {
+        return {};
+    }
+}
+
+async function decryptPrekeyWhisperMessage (attrs) {
+    const session_cipher = getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
+    const key = u.base64ToArrayBuffer(attrs.encrypted.key);
+    let key_and_tag;
+    try {
+        key_and_tag = await session_cipher.decryptPreKeyWhisperMessage(key, 'binary');
+    } catch (e) {
+        // TODO from the XEP:
+        // There are various reasons why decryption of an
+        // OMEMOKeyExchange or an OMEMOAuthenticatedMessage
+        // could fail. One reason is if the message was
+        // received twice and already decrypted once, in this
+        // case the client MUST ignore the decryption failure
+        // and not show any warnings/errors. In all other cases
+        // of decryption failure, clients SHOULD respond by
+        // forcibly doing a new key exchange and sending a new
+        // OMEMOKeyExchange with a potentially empty SCE
+        // payload. By building a new session with the original
+        // sender this way, the invalid session of the original
+        // sender will get overwritten with this newly created,
+        // valid session.
+        log.error(`${e.name} ${e.message}`);
+        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+    }
+    // TODO from the XEP:
+    // When a client receives the first message for a given
+    // ratchet key with a counter of 53 or higher, it MUST send
+    // a heartbeat message. Heartbeat messages are normal OMEMO
+    // encrypted messages where the SCE payload does not include
+    // any elements. These heartbeat messages cause the ratchet
+    // to forward, thus consequent messages will have the
+    // counter restarted from 0.
+    try {
+        const plaintext = await handleDecryptedWhisperMessage(attrs, key_and_tag);
+        await _converse.omemo_store.generateMissingPreKeys();
+        await _converse.omemo_store.publishBundle();
+        if (plaintext) {
+            return Object.assign(attrs, {'plaintext': plaintext});
+        } else {
+            return Object.assign(attrs, {'is_only_key': true});
+        }
+    } catch (e) {
+        log.error(`${e.name} ${e.message}`);
+        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+    }
+}
+
+async function decryptWhisperMessage (attrs) {
+    const session_cipher = getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
+    const key = u.base64ToArrayBuffer(attrs.encrypted.key);
+    try {
+        const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary')
+        const plaintext = await handleDecryptedWhisperMessage(attrs, key_and_tag);
+        return Object.assign(attrs, {'plaintext': plaintext});
+    } catch (e) {
+        log.error(`${e.name} ${e.message}`);
+        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+    }
+}
 
 function addKeysToMessageStanza (stanza, dicts, iv) {
     for (const i in dicts) {
@@ -84,7 +227,6 @@ function parseBundle (bundle_el) {
     }
 }
 
-
 async function generateFingerprint (device) {
     if (device.get('bundle')?.fingerprint) {
         return;
@@ -107,11 +249,14 @@ function generateDeviceID () {
     /* Generates a device ID, making sure that it's unique */
     const existing_ids = _converse.devicelists.get(_converse.bare_jid).devices.pluck('id');
     let device_id = libsignal.KeyHelper.generateRegistrationId();
+
+    // Before publishing a freshly generated device id for the first time,
+    // a device MUST check whether that device id already exists, and if so, generate a new one.
     let i = 0;
     while (existing_ids.includes(device_id)) {
         device_id = libsignal.KeyHelper.generateRegistrationId();
         i++;
-        if (i == 10) {
+        if (i === 10) {
             throw new Error("Unable to generate a unique device ID");
         }
     }
@@ -119,10 +264,13 @@ function generateDeviceID () {
 }
 
 async function buildSession (device) {
-    const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
-            sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
-            prekey = device.getRandomPreKey(),
-            bundle = await device.getBundle();
+    // TODO: check device-get('jid') versus the 'from' attribute which is used
+    // to build a session when receiving an encrypted message in a MUC.
+    // https://github.com/conversejs/converse.js/issues/1481#issuecomment-509183431
+    const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
+    const sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address);
+    const prekey = device.getRandomPreKey();
+    const bundle = await device.getBundle();
 
     return sessionBuilder.processPreKey({
         'registrationId': parseInt(device.get('id'), 10),
@@ -143,7 +291,7 @@ async function getSession (device) {
     const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
     const session = await _converse.omemo_store.loadSession(address.toString());
     if (session) {
-        return Promise.resolve(session);
+        return session;
     } else {
         try {
             const session = await buildSession(device);
@@ -161,11 +309,11 @@ function updateBundleFromStanza (stanza) {
     if (!items_el || !items_el.getAttribute('node').startsWith(Strophe.NS.OMEMO_BUNDLES)) {
         return;
     }
-    const device_id = items_el.getAttribute('node').split(':')[1],
-            jid = stanza.getAttribute('from'),
-            bundle_el = sizzle(`item > bundle`, items_el).pop(),
-            devicelist = _converse.devicelists.getDeviceList(jid),
-            device = devicelist.devices.get(device_id) || devicelist.devices.create({'id': device_id, 'jid': jid});
+    const device_id = items_el.getAttribute('node').split(':')[1];
+    const jid = stanza.getAttribute('from');
+    const bundle_el = sizzle(`item > bundle`, items_el).pop();
+    const devicelist = _converse.devicelists.getDeviceList(jid);
+    const device = devicelist.devices.get(device_id) || devicelist.devices.create({'id': device_id, 'jid': jid});
     device.save({'bundle': parseBundle(bundle_el)});
 }
 
@@ -260,10 +408,9 @@ async function initOMEMO () {
         return;
     }
     /**
-        * Triggered once OMEMO support has been initialized
-        * @event _converse#OMEMOInitialized
-        * @example _converse.api.listen.on('OMEMOInitialized', () => { ... });
-        */
+     * Triggered once OMEMO support has been initialized
+     * @event _converse#OMEMOInitialized
+     * @example _converse.api.listen.on('OMEMOInitialized', () => { ... }); */
     api.trigger('OMEMOInitialized');
 }
 
@@ -298,7 +445,6 @@ async function checkOMEMOSupported (chatbox) {
     }
 }
 
-
 function toggleOMEMO (ev) {
     ev.stopPropagation();
     ev.preventDefault();
@@ -307,7 +453,7 @@ function toggleOMEMO (ev) {
         let messages;
         if (toolbar_el.model.get('type') === _converse.CHATROOMS_TYPE) {
             messages = [__(
-                'Cannot use end-to-end encryption in toolbar_el groupchat, '+
+                'Cannot use end-to-end encryption in this groupchat, '+
                 'either the groupchat has some anonymity or not all participants support OMEMO.'
             )];
         } else {
@@ -491,120 +637,8 @@ converse.plugins.add('converse-omemo', {
          */
         const OMEMOEnabledChatBox = {
 
-            async encryptMessage (plaintext) {
-                // The client MUST use fresh, randomly generated key/IV pairs
-                // with AES-128 in Galois/Counter Mode (GCM).
-
-                // For GCM a 12 byte IV is strongly suggested as other IV lengths
-                // will require additional calculations. In principle any IV size
-                // can be used as long as the IV doesn't ever repeat. NIST however
-                // suggests that only an IV size of 12 bytes needs to be supported
-                // by implementations.
-                //
-                // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
-
-                const iv = crypto.getRandomValues(new window.Uint8Array(12)),
-                      key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]),
-                      algo = {
-                          'name': 'AES-GCM',
-                          'iv': iv,
-                          'tagLength': TAG_LENGTH
-                      },
-                      encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
-                      length = encrypted.byteLength - ((128 + 7) >> 3),
-                      ciphertext = encrypted.slice(0, length),
-                      tag = encrypted.slice(length),
-                      exported_key = await crypto.subtle.exportKey("raw", key);
-
-                return Promise.resolve({
-                    'key': exported_key,
-                    'tag': tag,
-                    'key_and_tag': u.appendArrayBuffer(exported_key, tag),
-                    'payload': u.arrayBufferToBase64(ciphertext),
-                    'iv': u.arrayBufferToBase64(iv)
-                });
-            },
-
-            async decryptMessage (obj) {
-                const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt','decrypt']);
-                const cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag);
-                const algo = {
-                    'name': "AES-GCM",
-                    'iv': u.base64ToArrayBuffer(obj.iv),
-                    'tagLength': TAG_LENGTH
-                };
-                return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
-            },
-
-            reportDecryptionError (e) {
-                if (api.settings.get("loglevel") === 'debug') {
-                    this.createMessage({
-                        'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
-                        'type': 'error',
-                    });
-                }
-                log.error(`${e.name} ${e.message}`);
-            },
-
-            async handleDecryptedWhisperMessage (attrs, key_and_tag) {
-                const encrypted = attrs.encrypted;
-                const devicelist = _converse.devicelists.getDeviceList(this.get('jid'));
-                await devicelist._devices_promise;
-
-                this.save('omemo_supported', true);
-                let device = devicelist.get(encrypted.device_id);
-                if (!device) {
-                    device = await devicelist.devices.create({'id': encrypted.device_id, 'jid': attrs.from}, {'promise': true});
-                }
-                if (encrypted.payload) {
-                    const key = key_and_tag.slice(0, 16);
-                    const tag = key_and_tag.slice(16);
-                    const result = await this.decryptMessage(Object.assign(encrypted, {'key': key, 'tag': tag}));
-                    device.save('active', true);
-                    return result;
-                }
-            },
-
-            async decrypt (attrs) {
-                const session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
-
-                // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
-                const key = u.base64ToArrayBuffer(attrs.encrypted.key);
-                if (attrs.encrypted.prekey === true) {
-                    try {
-                        const key_and_tag = await session_cipher.decryptPreKeyWhisperMessage(key, 'binary');
-                        const plaintext = await this.handleDecryptedWhisperMessage(attrs, key_and_tag);
-                        await _converse.omemo_store.generateMissingPreKeys();
-                        await _converse.omemo_store.publishBundle();
-                        if (plaintext) {
-                            return Object.assign(attrs, {'plaintext': plaintext});
-                        } else {
-                            return Object.assign(attrs, {'is_only_key': true});
-                        }
-                    } catch (e) {
-                        this.reportDecryptionError(e);
-                        return attrs;
-                    }
-                } else {
-                    try {
-                        const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary')
-                        const plaintext = await this.handleDecryptedWhisperMessage(attrs, key_and_tag);
-                        return Object.assign(attrs, {'plaintext': plaintext});
-                    } catch (e) {
-                        this.reportDecryptionError(e);
-                        return attrs;
-                    }
-                }
-            },
-
-            getSessionCipher (jid, id) {
-                const address = new libsignal.SignalProtocolAddress(jid, id);
-                this.session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
-                return this.session_cipher;
-            },
-
             encryptKey (plaintext, device) {
-                return this.getSessionCipher(device.get('jid'), device.get('id'))
+                return getSessionCipher(device.get('jid'), device.get('id'))
                     .encrypt(plaintext)
                     .then(payload => ({'payload': payload, 'device': device}));
             },
@@ -713,7 +747,7 @@ converse.plugins.add('converse-omemo', {
             stanza.c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                   .c('header', {'sid':  _converse.omemo_store.get('device_id')});
 
-            return chatbox.encryptMessage(message.get('message')).then(obj => {
+            return omemo.encryptMessage(message.get('message')).then(obj => {
                 // The 16 bytes key and the GCM authentication tag (The tag
                 // SHOULD have at least 128 bit) are concatenated and for each
                 // intended recipient device, i.e. both own devices as well as
@@ -916,17 +950,20 @@ converse.plugins.add('converse-omemo', {
                 device.save('bundle', Object.assign(bundle, {'prekeys': marshalled_keys}));
             },
 
+            /**
+             * Generate a the data used by the X3DH key agreement protocol
+             * that can be used to build a session with a device.
+             */
             async generateBundle () {
-                /* The first thing that needs to happen if a client wants to
-                 * start using OMEMO is they need to generate an IdentityKey
-                 * and a Device ID. The IdentityKey is a Curve25519 [6]
-                 * public/private Key pair. The Device ID is a randomly
-                 * generated integer between 1 and 2^31 - 1.
-                 */
+                // The first thing that needs to happen if a client wants to
+                // start using OMEMO is they need to generate an IdentityKey
+                // and a Device ID. The IdentityKey is a Curve25519 [6]
+                // public/private Key pair. The Device ID is a randomly
+                // generated integer between 1 and 2^31 - 1.
                 const identity_keypair = await libsignal.KeyHelper.generateIdentityKeyPair();
-                const bundle = {},
-                      identity_key = u.arrayBufferToBase64(identity_keypair.pubKey),
-                      device_id = generateDeviceID();
+                const bundle = {};
+                const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey);
+                const device_id = generateDeviceID();
 
                 bundle['identity_key'] = identity_key;
                 bundle['device_id'] = device_id;
@@ -1078,18 +1115,29 @@ converse.plugins.add('converse-omemo', {
                 return this._devices_promise;
             },
 
-            async publishCurrentDevice (device_ids) {
-                if (this.get('jid') !== _converse.bare_jid) {
-                    return // We only publish for ourselves.
-                }
-                await restoreOMEMOSession();
+            async getOwnDeviceId () {
                 let device_id = _converse.omemo_store.get('device_id');
                 if (!this.devices.findWhere({'id': device_id})) {
                     // Generate a new bundle if we cannot find our device
                     await _converse.omemo_store.generateBundle();
                     device_id = _converse.omemo_store.get('device_id');
                 }
-                if (!device_ids.includes(device_id)) {
+                return device_id;
+            },
+
+            async publishCurrentDevice (device_ids) {
+                if (this.get('jid') !== _converse.bare_jid) {
+                    return // We only publish for ourselves.
+                }
+                await restoreOMEMOSession();
+
+                if (!_converse.omemo_store) {
+                    // Happens during tests. The connection gets torn down
+                    // before publishCurrentDevice has time to finish.
+                    log.warn('publishCurrentDevice: omemo_store is not defined, likely a timing issue');
+                    return;
+                }
+                if (!device_ids.includes(await this.getOwnDeviceId())) {
                     return this.publishDevices();
                 }
             },
@@ -1117,6 +1165,11 @@ converse.plugins.add('converse-omemo', {
                 return device_ids;
             },
 
+            /**
+             * Send an IQ stanza to the current user's "devices" PEP node to
+             * ensure that all devices are published for potential chat partners to see.
+             * See: https://xmpp.org/extensions/xep-0384.html#usecases-announcing
+             */
             publishDevices () {
                 const item = $build('item').c('list', {'xmlns': Strophe.NS.OMEMO})
                 this.devices.filter(d => d.get('active')).forEach(d => item.c('device', {'id': d.get('id')}).up());
@@ -1152,8 +1205,22 @@ converse.plugins.add('converse-omemo', {
             }
         });
 
+        function parseEncryptedMessage (stanza, attrs) {
+            if (attrs.is_encrypted) {
+                // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
+                if (attrs.encrypted.prekey === true) {
+                    return decryptPrekeyWhisperMessage(attrs);
+                } else {
+                    return decryptWhisperMessage(attrs);
+                }
+            } else {
+                return attrs;
+            }
+        }
 
         /******************** Event Handlers ********************/
+        api.listen.on('parseMessage', parseEncryptedMessage);
+        api.listen.on('parseMUCMessage', parseEncryptedMessage);
 
         api.waitUntil('chatBoxesInitialized').then(() =>
             _converse.chatboxes.on('add', chatbox => {
@@ -1166,6 +1233,11 @@ converse.plugins.add('converse-omemo', {
         );
 
         const onChatInitialized = view => {
+            view.listenTo(view.model.messages, 'add', (message) => {
+                if (message.get('is_encrypted') && !message.get('is_error')) {
+                    view.model.save('omemo_supported', true);
+                }
+            });
             view.listenTo(view.model, 'change:omemo_supported', () => {
                 if (!view.model.get('omemo_supported') && view.model.get('omemo_active')) {
                     view.model.set('omemo_active', false);
@@ -1236,8 +1308,8 @@ converse.plugins.add('converse-omemo', {
                      */
                     'generate': async () => {
                         // Remove current device
-                        const devicelist = _converse.devicelists.get(_converse.bare_jid),
-                              device_id = _converse.omemo_store.get('device_id');
+                        const devicelist = _converse.devicelists.get(_converse.bare_jid);
+                        const device_id = _converse.omemo_store.get('device_id');
                         if (device_id) {
                             const device = devicelist.devices.get(device_id);
                             _converse.omemo_store.unset(device_id);

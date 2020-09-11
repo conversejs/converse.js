@@ -12,7 +12,6 @@ const u = converse.env.utils;
 
 describe("Groupchats", function () {
 
-
     describe("The \"rooms\" API", function () {
 
         it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
@@ -273,6 +272,7 @@ describe("Groupchats", function () {
 
             let IQ_stanzas = _converse.connection.IQ_stanzas;
             const muc_jid = 'lounge@montague.lit';
+            const nick = 'nicky';
             await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
 
             const disco_selector = `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
@@ -292,12 +292,14 @@ describe("Groupchats", function () {
             await mock.waitForReservedNick(_converse, muc_jid, '');
             const input = await u.waitUntil(() => view.el.querySelector('input[name="nick"]'), 1000);
             expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.NICKNAME_REQUIRED);
-            input.value = 'nicky';
+            input.value = nick;
             view.el.querySelector('input[type=submit]').click();
             expect(view.model.join).toHaveBeenCalled();
+
             _converse.connection.IQ_stanzas = [];
             await mock.getRoomFeatures(_converse, muc_jid);
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+            await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
 
             // The user has just entered the room (because join was called)
             // and receives their own presence from the server.
@@ -682,8 +684,7 @@ describe("Groupchats", function () {
                 const toggle = view.el.querySelector('.hide-topic');
                 expect(toggle.textContent).toBe('Hide topic');
                 toggle.click();
-                await u.waitUntil(() => !u.isVisible(topic_el));
-                expect(view.el.querySelector('.hide-topic').textContent).toBe('Show topic');
+                await u.waitUntil(() => view.el.querySelector('.hide-topic').textContent === 'Show topic');
                 done();
             }));
 
@@ -2864,38 +2865,6 @@ describe("Groupchats", function () {
             done();
         }));
 
-        it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
-            await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit'),
-                  trimmed_chatboxes = _converse.minimized_chats;
-
-            spyOn(view, 'onMinimized').and.callThrough();
-            spyOn(view, 'onMaximized').and.callThrough();
-            spyOn(_converse.api, "trigger").and.callThrough();
-            view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-            const button = await u.waitUntil(() => view.el.querySelector('.toggle-chatbox-button'));
-            button.click();
-
-            expect(view.onMinimized).toHaveBeenCalled();
-            expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
-            expect(u.isVisible(view.el)).toBeFalsy();
-            expect(view.model.get('minimized')).toBeTruthy();
-            expect(view.onMinimized).toHaveBeenCalled();
-            await u.waitUntil(() => trimmed_chatboxes.get(view.model.get('id')));
-            const trimmedview = trimmed_chatboxes.get(view.model.get('id'));
-            trimmedview.el.querySelector("a.restore-chat").click();
-            expect(view.onMaximized).toHaveBeenCalled();
-            expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
-            expect(view.model.get('minimized')).toBeFalsy();
-            expect(_converse.api.trigger.calls.count(), 3);
-            done();
-
-        }));
-
         it("can be closed again by clicking a DOM element with class 'close-chatbox-button'",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -4862,7 +4831,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.list_rooms_modal;
+            const modal = roomspanel.muc_list_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
             roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -4939,7 +4908,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.list_rooms_modal;
+            const modal = roomspanel.muc_list_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const server_input = modal.el.querySelector('input[name="server"]');
             expect(server_input.value).toBe('muc.example.org');
@@ -4956,7 +4925,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.list_rooms_modal;
+            const modal = roomspanel.muc_list_modal;
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
             roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called

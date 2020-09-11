@@ -1,0 +1,2664 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Jan-Carel Brand
+# This file is distributed under the same license as the Converse.js package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Converse.js 3.3.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-17 09:03+0200\n"
+"PO-Revision-Date: 2020-05-08 03:15+0000\n"
+"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
+"translations/ar/>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Weblate 4.1-dev\n"
+
+#: dist/converse-no-dependencies.js:25173
+msgid "You're not allowed to send messages in this room"
+msgstr "لا يُسمح لك بإرسال رسائل إلى هذه الغرفة"
+
+#: dist/converse-no-dependencies.js:25193
+msgid "This groupchat no longer exists"
+msgstr "فريق المحادثة هذا لم يعد موجودا"
+
+#: dist/converse-no-dependencies.js:25199
+msgid "The conversation has moved. Click below to enter."
+msgstr "تم نقل المحادثة. انقر أدناه للدخول."
+
+#: dist/converse-no-dependencies.js:25275
+msgid "Create your account"
+msgstr "إنشئ حسابك"
+
+#: dist/converse-no-dependencies.js:25277
+msgid "Please enter the XMPP provider to register with:"
+msgstr "يرجى إدخال مزود خدمة XMPP الذي تود إنشاء حسابك فيه :"
+
+#: dist/converse-no-dependencies.js:25295
+#: dist/converse-no-dependencies.js:25329
+msgid "Already have a chat account?"
+msgstr "هل تمتلك حساب مُحادثة؟"
+
+#: dist/converse-no-dependencies.js:25297
+#: dist/converse-no-dependencies.js:25331
+msgid "Log in here"
+msgstr "قم بتسجيل الدخول هنا"
+
+#: dist/converse-no-dependencies.js:25313
+msgid "Account Registration:"
+msgstr "إنشاء حساب :"
+
+#: dist/converse-no-dependencies.js:25321
+msgid "Register"
+msgstr "تسجيل حساب"
+
+#: dist/converse-no-dependencies.js:25325
+msgid "Choose a different provider"
+msgstr "إختر مزود خدمة آخَر"
+
+#: dist/converse-no-dependencies.js:25345
+msgid "Hold tight, we're fetching the registration form…"
+msgstr "تحلى بالصبر، جارٍ جلب استمارة التسجيل …"
+
+#: dist/converse-no-dependencies.js:25349
+#: dist/converse-no-dependencies.js:70258
+#: dist/converse-no-dependencies.js:71148
+#: dist/converse-no-dependencies.js:89901
+#: dist/converse-no-dependencies.js:94871
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. Strophe
+#: dist/converse-no-dependencies.js:43311
+msgid "The connection has dropped, attempting to reconnect."
+msgstr "لقد إنقطع الإتصال، عملية إعادة الربط جارية."
+
+#. Strophe
+#: dist/converse-no-dependencies.js:43567
+msgid "An error occurred while connecting to the chat server."
+msgstr "طرأ هناك خطأ أثناء الربط بخادم المحادثة."
+
+#: dist/converse-no-dependencies.js:43574
+#, fuzzy
+msgid "Your XMPP address and/or password is incorrect. Please try again."
+msgstr "مُعرِّف جابر الخاص بك أو كلمتك السرية خاطئة. يرجى إعادة المحاولة ثانية."
+
+#: dist/converse-no-dependencies.js:43586
+#, javascript-format
+msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+msgstr "عذرا، لم نتمكن مِن الاتصال بخادوم XMPP عبر النطاق : %1$s"
+
+#. Strophe
+#. Strophe
+#. Strophe
+#: dist/converse-no-dependencies.js:43588
+msgid "The XMPP server did not offer a supported authentication mechanism"
+msgstr "إنّ خادم XMPP لم يقدم دعم آلية المصادقة"
+
+#: dist/converse-no-dependencies.js:51949
+msgid "Unencryptable OMEMO message"
+msgstr "رسالة أوميمو غير مشفّرة"
+
+#: dist/converse-no-dependencies.js:52008
+msgid "Sorry, could not determine upload URL."
+msgstr "عذرًا ، تعذر تحديد عنوان URL للتحميل."
+
+#: dist/converse-no-dependencies.js:52031
+msgid "Sorry, could not determine file upload URL."
+msgstr "عذرًا ، تعذر تحديد عنوان URL لتحميل الملف."
+
+#: dist/converse-no-dependencies.js:52074
+#, javascript-format
+msgid ""
+"Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
+"\""
+msgstr "للأسف لم نتمكّن مِن القيام برفع ملفك بنجاح. أجاب خادومك : \"%1$s\""
+
+#: dist/converse-no-dependencies.js:52076
+msgid "Sorry, could not succesfully upload your file."
+msgstr "للأسف لم نتمكّن مِن القيام برفع ملفك بنجاح."
+
+#: dist/converse-no-dependencies.js:52282
+#: dist/converse-no-dependencies.js:59900
+#, fuzzy
+msgid "You're not allowed to retract your message."
+msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+
+#: dist/converse-no-dependencies.js:52284
+#: dist/converse-no-dependencies.js:59904
+#, fuzzy
+msgid "Sorry, an error occurred while trying to retract your message."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ بالفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:52289
+#, fuzzy
+msgid "You're not allowed to send a message."
+msgstr "لا يُسمح لك بإرسال رسائل إلى هذه الغرفة"
+
+#: dist/converse-no-dependencies.js:52291
+#: dist/converse-no-dependencies.js:59913
+#, fuzzy
+msgid "Sorry, an error occurred while trying to send your message."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+
+#: dist/converse-no-dependencies.js:53335
+#: dist/converse-no-dependencies.js:53358
+msgid "Sorry, looks like file upload is not supported by your server."
+msgstr "للأسف يبدو أن خاصية رفع الملفات لا يدعمها خادومكم."
+
+#: dist/converse-no-dependencies.js:53379
+#, javascript-format
+msgid ""
+"The size of your file, %1$s, exceeds the maximum allowed by your server, "
+"which is %2$s."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:58098
+msgid "Smileys and emotions"
+msgstr "الوجوه الضاحكة والعواطف"
+
+#: dist/converse-no-dependencies.js:58099
+msgid "People"
+msgstr "أشخاص"
+
+#: dist/converse-no-dependencies.js:58100
+msgid "Activities"
+msgstr "أنشطة"
+
+#: dist/converse-no-dependencies.js:58101
+msgid "Travel"
+msgstr "سفر"
+
+#: dist/converse-no-dependencies.js:58102
+msgid "Objects"
+msgstr "أشياء"
+
+#: dist/converse-no-dependencies.js:58103
+msgid "Animals and nature"
+msgstr "حيوانات وطبيعة"
+
+#: dist/converse-no-dependencies.js:58104
+msgid "Food and drink"
+msgstr "طعام وشراب"
+
+#: dist/converse-no-dependencies.js:58105
+msgid "Symbols"
+msgstr "رموز"
+
+#: dist/converse-no-dependencies.js:58106
+msgid "Flags"
+msgstr "أعلام"
+
+#: dist/converse-no-dependencies.js:58107
+msgid "Stickers"
+msgstr "ملصقات"
+
+#: dist/converse-no-dependencies.js:59090
+msgid "This groupchat is not anonymous"
+msgstr "فريق المحادثة هذا ليس مجهولًا"
+
+#: dist/converse-no-dependencies.js:59091
+msgid "This groupchat now shows unavailable members"
+msgstr "فريق المحادثة هذا يعرض الآن الأعضاء المشغولين"
+
+#: dist/converse-no-dependencies.js:59092
+msgid "This groupchat does not show unavailable members"
+msgstr "فريق المحادثة هذا لا يعرض الأعضاء المشغولين"
+
+#: dist/converse-no-dependencies.js:59093
+msgid "The groupchat configuration has changed"
+msgstr "تم تعديل خيارات فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:59094
+#, fuzzy
+msgid "Groupchat logging is now enabled"
+msgstr "الإلتحاق بفريق المحادثة مسموح الآن للجميع"
+
+#: dist/converse-no-dependencies.js:59095
+#, fuzzy
+msgid "Groupchat logging is now disabled"
+msgstr "تم تعطيل امكانية الإلتحاق بفريق المحادثة"
+
+#: dist/converse-no-dependencies.js:59096
+msgid "This groupchat is now no longer anonymous"
+msgstr "لم يَعُد فريق المحادثة مجهولا بعد الآن"
+
+#: dist/converse-no-dependencies.js:59097
+msgid "This groupchat is now semi-anonymous"
+msgstr "أصبح فريق المحادثة مجهولا نسبيًا"
+
+#: dist/converse-no-dependencies.js:59098
+msgid "This groupchat is now fully-anonymous"
+msgstr "أصبح فريق المحادثة الآن مجهولا تمامًا"
+
+#: dist/converse-no-dependencies.js:59099
+msgid "A new groupchat has been created"
+msgstr "تم إنشاء فريق محادثة جديد"
+
+#. XXX: Note the triple underscore function and not double underscore.
+#: dist/converse-no-dependencies.js:59103
+#, javascript-format
+msgid "Your nickname has been automatically set to %1$s"
+msgstr "لقد تم تغيير إسمك المستعار آليا إلى %1$s"
+
+#: dist/converse-no-dependencies.js:59104
+#, javascript-format
+msgid "Your nickname has been changed to %1$s"
+msgstr "لقد تم تغيير إسمك المُستعار إلى %1$s"
+
+#: dist/converse-no-dependencies.js:59107
+msgid "You have been banned from this groupchat"
+msgstr "لقد تم طردُك مِن فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:59108
+#, fuzzy
+msgid "You have exited this groupchat due to a technical problem"
+msgstr "لقد تم إزالتك من هذه المحادثة الجماعية بسبب تغير في الانتساب"
+
+#: dist/converse-no-dependencies.js:59109
+msgid "You have been kicked from this groupchat"
+msgstr "لقد تم طردُك مؤقتًا مِن فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:59110
+msgid ""
+"You have been removed from this groupchat because of an affiliation change"
+msgstr "لقد تم إزالتك من هذه المحادثة الجماعية بسبب تغير في الانتساب"
+
+#: dist/converse-no-dependencies.js:59111
+msgid ""
+"You have been removed from this groupchat because the groupchat has changed "
+"to members-only and you're not a member"
+msgstr ""
+"تمت إزالتك من فريق الدردشة هذا لأن فريق الدردشة تغير إلى الأعضاء فقط وأنت "
+"لست عضوًا فيه"
+
+#: dist/converse-no-dependencies.js:59112
+msgid ""
+"You have been removed from this groupchat because the service hosting it is "
+"being shut down"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:59902
+#, fuzzy
+msgid ""
+"Your retraction was not delivered because you're not present in the "
+"groupchat."
+msgstr "لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا."
+
+#: dist/converse-no-dependencies.js:59909
+#, fuzzy
+msgid "Your message was not delivered because you weren't allowed to send it."
+msgstr "المعذرة، لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:59911
+#, fuzzy
+msgid ""
+"Your message was not delivered because you're not present in the groupchat."
+msgstr "لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا."
+
+#: dist/converse-no-dependencies.js:60131
+#, fuzzy
+msgid "A timeout happened while while trying to retract your message."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+
+#: dist/converse-no-dependencies.js:61301
+msgid "You're not allowed to register yourself in this groupchat."
+msgstr "لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا."
+
+#: dist/converse-no-dependencies.js:61303
+#, fuzzy
+msgid ""
+"You're not allowed to register in this groupchat because it's members-only."
+msgstr "لا يُسمح لك بإنشاء غُرف محادثة جديدة."
+
+#: dist/converse-no-dependencies.js:61348
+msgid ""
+"Can't register your nickname in this groupchat, it doesn't support "
+"registration."
+msgstr ""
+"لا يمكن تسجيل اسمك المستعار في في فريق الدردشة هذا ، إنه لا يدعم التسجيل."
+
+#: dist/converse-no-dependencies.js:61350
+msgid ""
+"Can't register your nickname in this groupchat, invalid data form supplied."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:61551
+#, javascript-format
+msgid "Topic set by %1$s"
+msgstr "قام %1$s بتحديد الموضوع"
+
+#: dist/converse-no-dependencies.js:61551
+#, javascript-format
+msgid "Topic cleared by %1$s"
+msgstr "قام %1$s بمحو الموضوع"
+
+#: dist/converse-no-dependencies.js:62189
+#, javascript-format
+msgid "%1$s has been banned by %2$s"
+msgstr "لقد تم طرد %1$s من طرف %2$s"
+
+#: dist/converse-no-dependencies.js:62189
+#, javascript-format
+msgid "%1$s has been banned"
+msgstr "لقد تم طرد %1$s"
+
+#: dist/converse-no-dependencies.js:62191
+#, javascript-format
+msgid "%1$s's nickname has changed"
+msgstr "لقد قام %1$s بتغيير إسمه المُستعار"
+
+#: dist/converse-no-dependencies.js:62193
+#, fuzzy, javascript-format
+msgid "%1$s has exited the room due to a technical issue"
+msgstr "لقد إلتحق %1$s بفريق المحادثة"
+
+#: dist/converse-no-dependencies.js:62195
+#, javascript-format
+msgid "%1$s has been kicked out by %2$s"
+msgstr "لقد تم طرد %1$s مؤقتًا مِن طرف %2$s"
+
+#: dist/converse-no-dependencies.js:62195
+#, javascript-format
+msgid "%1$s has been kicked out"
+msgstr "لقد تم طرد %1$s مِن فريق المحادثة مؤقتًا"
+
+#: dist/converse-no-dependencies.js:62197
+#, javascript-format
+msgid "%1$s has been removed because of an affiliation change"
+msgstr "تمت إزالة %1$s بسبب تغير في الانتساب"
+
+#: dist/converse-no-dependencies.js:62199
+#, javascript-format
+msgid "%1$s has been removed for not being a member"
+msgstr "تمت إزالة %1$s لأنه ليس عضو مُنتم إلى الغرفة"
+
+#: dist/converse-no-dependencies.js:62219
+#, javascript-format
+msgid "%1$s is no longer an admin of this groupchat"
+msgstr "لم يعد %1$s مديرا لفريق المحادثة هذا بعد الآن"
+
+#: dist/converse-no-dependencies.js:62224
+#, javascript-format
+msgid "%1$s is no longer an owner of this groupchat"
+msgstr "لم يعد %1$s مالكا لفريق المحادثة الجماعية هذا"
+
+#: dist/converse-no-dependencies.js:62229
+#, fuzzy, javascript-format
+msgid "%1$s is no longer banned from this groupchat"
+msgstr "لقد تم طردُك مِن فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:62236
+#, fuzzy, javascript-format
+msgid "%1$s is no longer a member of this groupchat"
+msgstr "لم يعد %1$s مالكا لفريق المحادثة الجماعية هذا"
+
+#: dist/converse-no-dependencies.js:62243
+#, fuzzy, javascript-format
+msgid "%1$s is now a member of this groupchat"
+msgstr "أصبح الآن %1$s  مِن بين الأعضاء الدائمين في فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:62249
+#, javascript-format
+msgid "%1$s is now an %2$s of this groupchat"
+msgstr "أصبح الآن %1$s %2$s لفريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:62374
+msgid ""
+"The nickname you chose is reserved or currently in use, please choose a "
+"different one."
+msgstr ""
+"إنّ الإسم المستعار الذي قمت باختياره محجوز أو مُستعمَل حاليا مِن طرف شخص آخَر، "
+"يُرجى اختيار إسمٍ آخَر."
+
+#: dist/converse-no-dependencies.js:62401
+msgid "Password incorrect"
+msgstr "الكلمة السرية خاطئة"
+
+#: dist/converse-no-dependencies.js:62409
+msgid "You are not on the member list of this groupchat."
+msgstr "أنت لست مِن بين قائمة أعضاء فريق المحادثة هذا."
+
+#: dist/converse-no-dependencies.js:62413
+msgid "You have been banned from this groupchat."
+msgstr "لقد تم طردُك مِن فريق المحادثة هذا."
+
+#: dist/converse-no-dependencies.js:62419
+msgid "You are not allowed to create new groupchats."
+msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+
+#: dist/converse-no-dependencies.js:62423
+msgid "Your nickname doesn't conform to this groupchat's policies."
+msgstr "إنّ إسمك المستعار لا يتماشى مع سياسة فريق المحادثة هذا."
+
+#: dist/converse-no-dependencies.js:62440
+msgid "This groupchat does not (yet) exist."
+msgstr "فريق المحادثة هذا ليس له وُجود بعد."
+
+#: dist/converse-no-dependencies.js:62444
+msgid "This groupchat has reached its maximum number of participants."
+msgstr "لقد بلغ فريق المحادثة الحالي الحد الأقصى لاستيعاب الأعضاء."
+
+#: dist/converse-no-dependencies.js:62448
+msgid "Remote server not found"
+msgstr "لم يتم العثور على الخادم عن بُعد"
+
+#: dist/converse-no-dependencies.js:62450
+#, javascript-format
+msgid "The explanation given is: \"%1$s\"."
+msgstr "السبب : \"%1$s\"."
+
+#: dist/converse-no-dependencies.js:62839
+#, javascript-format
+msgid "%1$s has invited you to join a groupchat: %2$s"
+msgstr "قام %1$s بدعوتك للإلتحاق بفريق المحادثة : %2$s"
+
+#: dist/converse-no-dependencies.js:62841
+#, javascript-format
+msgid ""
+"%1$s has invited you to join a groupchat: %2$s, and left the following "
+"reason: \"%3$s\""
+msgstr "قام %1$s بدعوتك للالتحاق بفريق المحادثة : %2$s لهذا السبب: \"%3$s\""
+
+#: dist/converse-no-dependencies.js:63599
+#: dist/converse-no-dependencies.js:84363
+#: dist/converse-no-dependencies.js:85026
+#: dist/converse-no-dependencies.js:90959
+#: dist/converse-no-dependencies.js:90995
+#: dist/converse-no-dependencies.js:90999
+#: dist/converse-no-dependencies.js:96063
+#: dist/converse-no-dependencies.js:96147
+#: dist/converse-no-dependencies.js:96540
+#: dist/converse-no-dependencies.js:96543
+#: dist/converse-no-dependencies.js:99731
+msgid "Error"
+msgstr "خطأ"
+
+#: dist/converse-no-dependencies.js:63599
+msgid "Sorry, something went wrong while trying to save your bookmark."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الإحتفاظ بالفواصل المرجعية."
+
+#: dist/converse-no-dependencies.js:63663
+msgid "Timeout Error"
+msgstr "خطأ في مهلة الإنتظار"
+
+#: dist/converse-no-dependencies.js:63663
+msgid ""
+"The server did not return your bookmarks within the allowed time. You can "
+"reload the page to request them again."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:66725
+msgid "My contacts"
+msgstr "جهات إتصالي"
+
+#: dist/converse-no-dependencies.js:66726
+msgid "Pending contacts"
+msgstr "المُراسلون المُعلّقون"
+
+#: dist/converse-no-dependencies.js:66727
+msgid "Contact requests"
+msgstr "طلبات التراسل"
+
+#: dist/converse-no-dependencies.js:66728
+msgid "Ungrouped"
+msgstr "بدون فريق"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:66729
+#: dist/converse-no-dependencies.js:77751
+msgid "New messages"
+msgstr "الرسائل الجديدة"
+
+#: dist/converse-no-dependencies.js:67393
+#, javascript-format
+msgid "Sorry, there was an error while trying to add %1$s as a contact."
+msgstr "المعذرة، لقد حدث هناك خطأ أثناء محاولة إضافة %1$s كمُراسِل."
+
+#: dist/converse-no-dependencies.js:67685
+msgid "This client does not allow presence subscriptions"
+msgstr "هذا العميل لا يسمح اشتراكات التواجد"
+
+#: dist/converse-no-dependencies.js:67795
+msgid "Click to hide these contacts"
+msgstr "أْنقُر لإخفاء هؤلاء المراسلين"
+
+#: dist/converse-no-dependencies.js:70210
+#: dist/converse-no-dependencies.js:70955
+#: dist/converse-no-dependencies.js:98746
+msgid "Unbookmark this groupchat"
+msgstr "تنحية فريق المحادثة مِن الفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:70212
+#: dist/converse-no-dependencies.js:88520
+#: dist/converse-no-dependencies.js:98762
+msgid "Click to open this groupchat"
+msgstr "أنقر لفتح فريق المحادثة هذا"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:70218
+msgid "Click to toggle the bookmarks list"
+msgstr "أنقر للإنتقال إلى قائمة الإشارات المرجعية"
+
+#: dist/converse-no-dependencies.js:70220
+msgid "Bookmarks"
+msgstr "الفواصل المرجعية"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:70254
+#: dist/converse-no-dependencies.js:70955
+#: dist/converse-no-dependencies.js:98744
+msgid "Bookmark this groupchat"
+msgstr "إضافة فريق المحادثة هذا إلى الفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:70256
+msgid "Would you like this groupchat to be automatically joined upon startup?"
+msgstr "هل تريد الإلتحاق آليًا بفريق المحادثة هذا مباشَرةً بعد الإتصال ؟"
+
+#: dist/converse-no-dependencies.js:70260
+msgid "The name for this bookmark:"
+msgstr "تسمية الفاصلة المرجعية :"
+
+#: dist/converse-no-dependencies.js:70262
+msgid "What should your nickname for this groupchat be?"
+msgstr "ما هو الإسم المُستعار الذي تريد استخدامه في فريق المحادثة هذا ؟"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:70264
+#: dist/converse-no-dependencies.js:89899
+#: dist/converse-no-dependencies.js:94876
+msgid "Save"
+msgstr "حفظ"
+
+#: dist/converse-no-dependencies.js:70717
+#, javascript-format
+msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
+msgstr "هل أنت متأكد أنك تريد إزالة الفاصلة المرجعية \"%1$s\" ؟"
+
+#: dist/converse-no-dependencies.js:70956
+msgid "Unbookmark"
+msgstr "إزاحة من الفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:70956
+msgid "Bookmark"
+msgstr "إضافة إلى الفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:71051
+#: dist/converse-no-dependencies.js:71052
+#: dist/converse-no-dependencies.js:84780
+#: dist/converse-no-dependencies.js:92842
+#: dist/converse-no-dependencies.js:94872
+msgid "Close"
+msgstr "إغلاق"
+
+#: dist/converse-no-dependencies.js:71148
+msgid "OK"
+msgstr "حسنا"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:71596
+msgid "Image: "
+msgstr ""
+
+#: dist/converse-no-dependencies.js:75683
+#, javascript-format
+msgid "Download audio file \"%1$s\""
+msgstr "تنزيل الملف الصوتي: \"%1$s\""
+
+#: dist/converse-no-dependencies.js:75701
+#, javascript-format
+msgid "Download file \"%1$s\""
+msgstr "تنزيل الملف: \"%1$s\""
+
+#: dist/converse-no-dependencies.js:77417
+#, fuzzy
+msgid "Cancel Editing"
+msgstr "تغيير الإعدادات"
+
+#: dist/converse-no-dependencies.js:77417
+msgid "Edit"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:77446
+msgid "Retract"
+msgstr ""
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:77557
+msgid "Message versions"
+msgstr "أرشفة الرسائل"
+
+#: dist/converse-no-dependencies.js:78160
+msgid "Retry"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:78167
+msgid "Uploading file:"
+msgstr "تحميل الملف:"
+
+#: dist/converse-no-dependencies.js:78281
+#: dist/converse-no-dependencies.js:78283
+#, fuzzy, javascript-format
+msgid "%1$s has removed this message"
+msgstr "تمت إزالة %1$s لأنه ليس عضو مُنتم إلى الغرفة"
+
+#: dist/converse-no-dependencies.js:78295
+msgid "This message has been edited"
+msgstr "تم إعادة تحرير هذه الرسالة"
+
+#: dist/converse-no-dependencies.js:78297
+msgid "Show more"
+msgstr "عرض المزيد"
+
+#: dist/converse-no-dependencies.js:78301
+#, fuzzy
+msgid "Show less"
+msgstr "اظهر المستخدمين"
+
+#: dist/converse-no-dependencies.js:79160
+msgid "No message history available."
+msgstr "ليس هناك أي سجلّ متاح للرسائل."
+
+#: dist/converse-no-dependencies.js:80113
+msgid "Search results"
+msgstr "نتائج البحث"
+
+#: dist/converse-no-dependencies.js:80144
+msgid "Search"
+msgstr "بحث"
+
+#: dist/converse-no-dependencies.js:81120
+msgid "Insert emojis"
+msgstr "إدراج وجه مبتسم"
+
+#: dist/converse-no-dependencies.js:81459
+msgid "Send the message"
+msgstr "ارسل الرسالة"
+
+#: dist/converse-no-dependencies.js:81475
+msgid "Start a call"
+msgstr "إبدأ مكالمة"
+
+#: dist/converse-no-dependencies.js:81480
+#, fuzzy
+msgid "Message characters remaining"
+msgstr "أرشفة الرسائل"
+
+#: dist/converse-no-dependencies.js:81498
+#, fuzzy
+msgid "Hide participants"
+msgstr "المشاركون"
+
+#: dist/converse-no-dependencies.js:81500
+#, fuzzy
+msgid "Show participants"
+msgstr "المشاركون"
+
+#: dist/converse-no-dependencies.js:81516
+msgid "Choose a file to send"
+msgstr "اختر الملف الذي تريد إرساله"
+
+#: dist/converse-no-dependencies.js:81535
+#, fuzzy
+msgid "Click to write as a normal (non-spoiler) message"
+msgstr "أنقر هنا لتحرير رسالة خاصة بحالتك"
+
+#: dist/converse-no-dependencies.js:81537
+#, fuzzy
+msgid "Click to write your message as a spoiler"
+msgstr "أنقر هنا لتحرير رسالة خاصة بحالتك"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:83837
+#: dist/converse-no-dependencies.js:84077
+msgid "The User's Profile Image"
+msgstr "الصورة الشخصية للمستخدم"
+
+#: dist/converse-no-dependencies.js:84038
+msgid "Trusted"
+msgstr "موثوق فيه"
+
+#: dist/converse-no-dependencies.js:84040
+msgid "Untrusted"
+msgstr "غير موثوق فيه"
+
+#: dist/converse-no-dependencies.js:84050
+msgid "OMEMO Fingerprints"
+msgstr "بصمات أوميمو"
+
+#: dist/converse-no-dependencies.js:84052
+#, fuzzy
+msgid "No OMEMO-enabled devices found"
+msgstr "الأجهزة الأخرى التي تدعم أوميمو"
+
+#: dist/converse-no-dependencies.js:84063
+msgid "Remove as contact"
+msgstr "إزالة مِن المراسِلين"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:84069
+#: dist/converse-no-dependencies.js:85907
+#: dist/converse-no-dependencies.js:88377
+#: dist/converse-no-dependencies.js:93790
+#: dist/converse-no-dependencies.js:99092
+msgid "XMPP Address"
+msgstr "عنوان XMPP"
+
+#: dist/converse-no-dependencies.js:84071
+#: dist/converse-no-dependencies.js:94663
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+#: dist/converse-no-dependencies.js:84073
+#: dist/converse-no-dependencies.js:94665
+msgid "Full Name"
+msgstr "الإسم الكامل"
+
+#: dist/converse-no-dependencies.js:84075
+#: dist/converse-no-dependencies.js:88202
+#: dist/converse-no-dependencies.js:91883
+#: dist/converse-no-dependencies.js:94669
+#: dist/converse-no-dependencies.js:99094
+msgid "Nickname"
+msgstr "الإسم المُستعار"
+
+#: dist/converse-no-dependencies.js:84079
+msgid "Refresh"
+msgstr "تحديث"
+
+#: dist/converse-no-dependencies.js:84081
+#: dist/converse-no-dependencies.js:89056
+#: dist/converse-no-dependencies.js:94671
+msgid "Role"
+msgstr "الدور"
+
+#: dist/converse-no-dependencies.js:84083
+#: dist/converse-no-dependencies.js:94677
+msgid "URL"
+msgstr "عنوان الرابط"
+
+#: dist/converse-no-dependencies.js:84326
+msgid "Sorry, something went wrong while trying to refresh"
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ بالفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:84350
+#: dist/converse-no-dependencies.js:99703
+msgid "Are you sure you want to remove this contact?"
+msgstr "هل أنت متأكد أنك تريد حذف هذا المراسل ؟"
+
+#: dist/converse-no-dependencies.js:84363
+#: dist/converse-no-dependencies.js:99731
+#, javascript-format
+msgid "Sorry, there was an error while trying to remove %1$s as a contact."
+msgstr "عذرا، لقد حدث خطأ أثناء محاولة إزالة %1$s كمراسل."
+
+#: dist/converse-no-dependencies.js:84527
+#: dist/converse-no-dependencies.js:90581
+#, javascript-format
+msgid "%1$s is typing"
+msgstr "إنّ %1$s يكتب حاليا"
+
+#: dist/converse-no-dependencies.js:84529
+#: dist/converse-no-dependencies.js:90583
+#, javascript-format
+msgid "%1$s has stopped typing"
+msgstr "%1$s توقّفَ عن الكتابة"
+
+#: dist/converse-no-dependencies.js:84531
+#: dist/converse-no-dependencies.js:85446
+#: dist/converse-no-dependencies.js:90585
+#, javascript-format
+msgid "%1$s has gone away"
+msgstr "%1$s غائب"
+
+#: dist/converse-no-dependencies.js:84537
+msgid "Remove messages"
+msgstr "حذف الرسائل"
+
+#: dist/converse-no-dependencies.js:84537
+msgid "Close this chat"
+msgstr "اغلق هذه المحادثة"
+
+#: dist/converse-no-dependencies.js:84537
+msgid "Write in the third person"
+msgstr "كتابة لشخص ثالث"
+
+#: dist/converse-no-dependencies.js:84537
+#: dist/converse-no-dependencies.js:90638
+msgid "Show this menu"
+msgstr "اظهار هذه القائمة"
+
+#: dist/converse-no-dependencies.js:84592
+msgid "Hidden message"
+msgstr "رسالة مخفية"
+
+#: dist/converse-no-dependencies.js:84592
+msgid "Message"
+msgstr "رسالة"
+
+#: dist/converse-no-dependencies.js:84593
+msgid "Optional hint"
+msgstr "دليل اختياري"
+
+#: dist/converse-no-dependencies.js:84597
+msgid "You have unread messages"
+msgstr "لقد ورَدَت إليك رسائل غير مقروءة"
+
+#: dist/converse-no-dependencies.js:84767
+#: dist/converse-no-dependencies.js:91072
+msgid "Details"
+msgstr "التفاصيل"
+
+#: dist/converse-no-dependencies.js:84768
+msgid "See more information about this person"
+msgstr "عرض المزيد مِن التفاصيل عن هذا الشخص"
+
+#: dist/converse-no-dependencies.js:84781
+#, fuzzy
+msgid "Close and end this conversation"
+msgstr "إنهاء المحادثة المشفرة المعمّاة"
+
+#: dist/converse-no-dependencies.js:85025
+msgid "Sorry, the connection has been lost, and your message could not be sent"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:85251
+#: dist/converse-no-dependencies.js:90871
+msgid ""
+"Be aware that other XMPP/Jabber clients (and servers) may not yet support "
+"retractions and that this message may not be removed everywhere."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:85252
+#: dist/converse-no-dependencies.js:90878
+#: dist/converse-no-dependencies.js:90916
+msgid "Are you sure you want to retract this message?"
+msgstr "هل أنت متأكد أنك تريد سحب هذه الرسالة؟"
+
+#: dist/converse-no-dependencies.js:85259
+#: dist/converse-no-dependencies.js:90885
+#: dist/converse-no-dependencies.js:90923
+#: dist/converse-no-dependencies.js:91169
+#: dist/converse-no-dependencies.js:91655
+msgid "Confirm"
+msgstr "أكّد"
+
+#: dist/converse-no-dependencies.js:85283
+msgid ""
+"You have an unsent message which will be lost if you continue. Are you sure?"
+msgstr "لديك رسالة غير مرسلة ستفقدها إذا تابعت. هل أنت واثق؟"
+
+#: dist/converse-no-dependencies.js:85370
+msgid "Are you sure you want to clear the messages from this conversation?"
+msgstr "هل أنت متأكد أنك تود مسح الرسائل مِن نافذة المحادثة هذه ؟"
+
+#: dist/converse-no-dependencies.js:85444
+#, javascript-format
+msgid "%1$s has gone offline"
+msgstr "%1$s قد قطع الإتصال"
+
+#: dist/converse-no-dependencies.js:85448
+#, javascript-format
+msgid "%1$s is busy"
+msgstr "%1$s مشغول"
+
+#: dist/converse-no-dependencies.js:85450
+#, javascript-format
+msgid "%1$s is online"
+msgstr "%1$s متصل"
+
+#: dist/converse-no-dependencies.js:85878
+msgid ""
+"To improve performance, we cache your data in this browser. Uncheck this box "
+"if this is a public computer or if you want your data to be deleted when you "
+"log out. It's important that you explicitly log out, otherwise not all "
+"cached data might be deleted. Please note, when using an untrusted device, "
+"OMEMO encryption is NOT available."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:85880
+msgid "This is a trusted device"
+msgstr "هذا جهاز موثوق فيه"
+
+#: dist/converse-no-dependencies.js:85886
+msgid "Password"
+msgstr "كلمة السر"
+
+#: dist/converse-no-dependencies.js:85892
+msgid "Create an account"
+msgstr "أنشئ حسابًا"
+
+#: dist/converse-no-dependencies.js:85894
+msgid "Don't have a chat account?"
+msgstr "لا تمتلكون حسابًا للمحادثة بعدُ؟"
+
+#: dist/converse-no-dependencies.js:85905
+msgid "Log in"
+msgstr "تسجيل الدخول"
+
+#: dist/converse-no-dependencies.js:85913
+msgid "Disconnected"
+msgstr "غير متصل"
+
+#: dist/converse-no-dependencies.js:85915
+msgid "Click here to log in anonymously"
+msgstr "أُنقُر هنا لتسجيل الدخول كشخص مجهول"
+
+#: dist/converse-no-dependencies.js:86388
+msgid "Username"
+msgstr "اسم المستخدِم"
+
+#: dist/converse-no-dependencies.js:86388
+msgid "user@domain"
+msgstr "user@domain"
+
+#: dist/converse-no-dependencies.js:86408
+#: dist/converse-no-dependencies.js:88375
+#: dist/converse-no-dependencies.js:99088
+msgid "Please enter a valid XMPP address"
+msgstr "يرجى ادخال عنوان XMPP صحيح"
+
+#: dist/converse-no-dependencies.js:86507
+msgid "Chat Contacts"
+msgstr "جهات الاتصال"
+
+#: dist/converse-no-dependencies.js:86507
+msgid "Toggle chat"
+msgstr "الانتقال إلى الدردشة"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:87315
+msgid "Minimized"
+msgstr "تصغير"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:87353
+msgid "Click to restore this chat"
+msgstr "أنقر لاستعادة هذه المحادثة"
+
+#: dist/converse-no-dependencies.js:88073
+#: dist/converse-no-dependencies.js:88092
+msgid "Minimize"
+msgstr "تصغير"
+
+#: dist/converse-no-dependencies.js:88074
+#, fuzzy
+msgid "Minimize this chat"
+msgstr "تصغير نافذة المحادثة هذه"
+
+#: dist/converse-no-dependencies.js:88093
+#, fuzzy
+msgid "Minimize this groupchat"
+msgstr "تصغير نافذة المحادثة هذه"
+
+#: dist/converse-no-dependencies.js:88204
+msgid "This field is required"
+msgstr "هذا الحقل مطلوب"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:88210
+msgid "Join"
+msgstr "الإلتحاق بالغرفة"
+
+#: dist/converse-no-dependencies.js:88212
+msgid "Enter a new Groupchat"
+msgstr "الدخول إلى فريق محادثة جديد"
+
+#: dist/converse-no-dependencies.js:88249
+msgid "name@conference.example.org"
+msgstr "name@conference.example.org"
+
+#: dist/converse-no-dependencies.js:88254
+msgid "Groupchat name"
+msgstr "اسم المحادثة الجماعية"
+
+#: dist/converse-no-dependencies.js:88254
+msgid "Groupchat address"
+msgstr "عنوان فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:88325
+#, fuzzy
+msgid "Groupchat id is invalid."
+msgstr "الإلتحاق بفريق المحادثة مسموح الآن للجميع"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:88369
+#: dist/converse-no-dependencies.js:91097
+msgid "Invite"
+msgstr "دعوة"
+
+#: dist/converse-no-dependencies.js:88371
+#, fuzzy
+msgid "Invite someone to this groupchat"
+msgstr "إزالة فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:88373
+msgid "user@example.org"
+msgstr "user@example.org"
+
+#: dist/converse-no-dependencies.js:88379
+msgid "Optional reason for the invitation"
+msgstr "سبب اختياري للدعوة"
+
+#: dist/converse-no-dependencies.js:88510
+msgid "Show groupchats"
+msgstr "عرض فِرَق المحادثة"
+
+#: dist/converse-no-dependencies.js:88512
+msgid "Server address"
+msgstr "عنوان الخادوم"
+
+#: dist/converse-no-dependencies.js:88518
+#: dist/converse-no-dependencies.js:98762
+msgid "Show more information on this groupchat"
+msgstr "عرض المزيد مِن التفاصيل عن فريق المحادثة هذا"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:88526
+msgid "Query for Groupchats"
+msgstr "البحث عن فِرق محادثة"
+
+#: dist/converse-no-dependencies.js:88578
+msgid "Description:"
+msgstr "التفاصيل :"
+
+#: dist/converse-no-dependencies.js:88579
+msgid "Groupchat Address (JID):"
+msgstr "عنوان فريق المحادثة (JID) :"
+
+#: dist/converse-no-dependencies.js:88580
+msgid "Participants:"
+msgstr "المشتركون :"
+
+#: dist/converse-no-dependencies.js:88581
+msgid "Features:"
+msgstr "الميزات :"
+
+#: dist/converse-no-dependencies.js:88582
+msgid "Requires authentication"
+msgstr "يتطلّب المصادقة"
+
+#: dist/converse-no-dependencies.js:88583
+#: dist/converse-no-dependencies.js:89660
+msgid "Hidden"
+msgstr "خفية"
+
+#: dist/converse-no-dependencies.js:88584
+msgid "Requires an invitation"
+msgstr "تستلزم دعوة"
+
+#: dist/converse-no-dependencies.js:88585
+#: dist/converse-no-dependencies.js:89668
+msgid "Moderated"
+msgstr "تحت الإشراف"
+
+#: dist/converse-no-dependencies.js:88586
+msgid "Non-anonymous"
+msgstr "غير مجهولة"
+
+#: dist/converse-no-dependencies.js:88587
+#: dist/converse-no-dependencies.js:89688
+msgid "Open"
+msgstr "مفتوحة"
+
+#: dist/converse-no-dependencies.js:88588
+msgid "Permanent"
+msgstr "دائم"
+
+#: dist/converse-no-dependencies.js:88589
+#: dist/converse-no-dependencies.js:89700
+msgid "Public"
+msgstr "عمومية"
+
+#: dist/converse-no-dependencies.js:88590
+#: dist/converse-no-dependencies.js:89702
+msgid "Semi-anonymous"
+msgstr "مجهولة نسبيًا"
+
+#: dist/converse-no-dependencies.js:88591
+#: dist/converse-no-dependencies.js:89706
+msgid "Temporary"
+msgstr "مُؤقّتة"
+
+#: dist/converse-no-dependencies.js:88592
+msgid "Unmoderated"
+msgstr "ليست تحت الإشراف"
+
+#: dist/converse-no-dependencies.js:88638
+msgid "conference.example.org"
+msgstr "conference.example.org"
+
+#: dist/converse-no-dependencies.js:88697
+#, fuzzy
+msgid "Groupchats found"
+msgstr "تم العثور على فِرَق المحادثة :"
+
+#: dist/converse-no-dependencies.js:88705
+msgid "No groupchats found"
+msgstr "لم يتم العثور على أي فريق محادثة"
+
+#: dist/converse-no-dependencies.js:88983
+msgid ""
+"Moderators are privileged users who can change the roles of other users "
+"(except those with admin or owner affiliations."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:88985
+msgid "The default role, implies that you can read and write messages."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:88987
+msgid ""
+"Visitors aren't allowed to write messages in a moderated multi-user chat."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:88993
+msgid ""
+"Owner is the highest affiliation. Owners can modify roles and affiliations "
+"of all other users."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:88995
+msgid ""
+"Admin is the 2nd highest affiliation. Admins can modify roles and "
+"affiliations of all other users except owners."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:88997
+msgid "To ban a user, you give them the affiliation of \"outcast\"."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:89010
+#, fuzzy
+msgid "Change role"
+msgstr "تغيير الإعدادات"
+
+#: dist/converse-no-dependencies.js:89012
+msgid "New Role"
+msgstr "الدورالجديد"
+
+#: dist/converse-no-dependencies.js:89014
+#: dist/converse-no-dependencies.js:89030
+#: dist/converse-no-dependencies.js:91647
+msgid "Reason"
+msgstr "السبب"
+
+#: dist/converse-no-dependencies.js:89026
+#, fuzzy
+msgid "Change affiliation"
+msgstr "تغيير دور المستخدم إلى صفة مدير"
+
+#: dist/converse-no-dependencies.js:89028
+msgid "New affiliation"
+msgstr "انتماء جديد"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:89046
+msgid "Affiliation"
+msgstr "الانتماء"
+
+#: dist/converse-no-dependencies.js:89048
+msgid "Moderator Tools"
+msgstr "أدوات الإشراف"
+
+#: dist/converse-no-dependencies.js:89050
+msgid "No users with that affiliation found."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:89052
+#, fuzzy
+msgid "No users with that role found."
+msgstr "لم يتم العثور على أي مستخدِم"
+
+#: dist/converse-no-dependencies.js:89054
+msgid "Type here to filter the search results"
+msgstr "اكتب هنا لتصفية نتائج البحث"
+
+#: dist/converse-no-dependencies.js:89058
+msgid "Show users"
+msgstr "اظهر المستخدمين"
+
+#: dist/converse-no-dependencies.js:89060
+msgid ""
+"Roles are assigned to users to grant or deny them certain abilities in a "
+"multi-user chat. They're assigned either explicitly or implicitly as part of "
+"an affiliation. A role that's not due to an affiliation, is only valid for "
+"the duration of the user's session."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:89062
+msgid ""
+"An affiliation is a long-lived entitlement which typically implies a certain "
+"role and which grants privileges and responsibilities. For example admins "
+"and owners automatically have the moderator role."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:89400
+#, fuzzy
+msgid "Timeout error while trying to set the affiliation"
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ بالفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:89402
+#, fuzzy
+msgid "Sorry, you're not allowed to make that change"
+msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+
+#: dist/converse-no-dependencies.js:89404
+#, fuzzy
+msgid "Sorry, something went wrong while trying to set the affiliation"
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ بالفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:89411
+msgid "Affiliation changed"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:89446
+#, fuzzy
+msgid "Role changed"
+msgstr "الانتقال إلى الدردشة"
+
+#: dist/converse-no-dependencies.js:89459
+#, fuzzy
+msgid "You're not allowed to make that change"
+msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+
+#: dist/converse-no-dependencies.js:89461
+#, fuzzy
+msgid "Sorry, something went wrong while trying to set the role"
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ بالفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:89640
+msgid "Topic"
+msgstr "الموضوع"
+
+#: dist/converse-no-dependencies.js:89642
+msgid "Topic author"
+msgstr "كاتب الموضوع"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:89650
+msgid "Groupchat address (JID)"
+msgstr "عنوان فريق المحادثة (JID)"
+
+#: dist/converse-no-dependencies.js:89652
+msgid "Message archiving"
+msgstr "أرشفة الرسائل"
+
+#: dist/converse-no-dependencies.js:89654
+msgid "Messages are archived on the server"
+msgstr "الرسائل محفوظة على الخادوم"
+
+#: dist/converse-no-dependencies.js:89656
+msgid "Description"
+msgstr "الوصف"
+
+#: dist/converse-no-dependencies.js:89658
+msgid "Features"
+msgstr "الميزات"
+
+#: dist/converse-no-dependencies.js:89662
+msgid "This groupchat is not publicly searchable"
+msgstr "ليس بالإمكان البحث عن فريق المحادثة هذا عبر البحث العمومي"
+
+#: dist/converse-no-dependencies.js:89664
+msgid "This groupchat is restricted to members only"
+msgstr "فريق المحادثة هذا مخصص للأعضاء المُنتمين إليه فقط"
+
+#: dist/converse-no-dependencies.js:89666
+msgid "Members only"
+msgstr "الأعضاء فقط"
+
+#: dist/converse-no-dependencies.js:89670
+msgid ""
+"Participants entering this groupchat need to request permission to write"
+msgstr "يحتاج المشاركون الذين يدخلون فريق المحادثة هذا إلى طلب إذن للكتابة"
+
+#: dist/converse-no-dependencies.js:89672
+msgid "Name"
+msgstr "الإسم"
+
+#: dist/converse-no-dependencies.js:89674
+msgid "This groupchat does not require a password upon entry"
+msgstr "فريق المحادثة هذا لا يتطلّب كلمة سرية قبل الدخول إليها"
+
+#: dist/converse-no-dependencies.js:89676
+msgid "No password required"
+msgstr "بدون كلمة سرية"
+
+#: dist/converse-no-dependencies.js:89678
+msgid "Not anonymous"
+msgstr "غير مجهول"
+
+#: dist/converse-no-dependencies.js:89680
+msgid "All other groupchat participants can see your XMPP address"
+msgstr "يُمكن لكافة المشارِكين في فريق المحادثة الإطلاع على عنوان XMPP الخاص بك"
+
+#: dist/converse-no-dependencies.js:89682
+msgid "Not moderated"
+msgstr "ليس تحت الإشراف"
+
+#: dist/converse-no-dependencies.js:89684
+msgid "Participants entering this groupchat can write right away"
+msgstr ""
+"يمكن للمشاركين الذين يدخلون إلى فريق الدردشة الجماعية هذا الكتابة على الفور"
+
+#: dist/converse-no-dependencies.js:89686
+msgid "Online users"
+msgstr "المستخدِدون المتصلون"
+
+#: dist/converse-no-dependencies.js:89690
+msgid "Anyone can join this groupchat"
+msgstr "يمكن للجميع الإلتحاق بفريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:89692
+msgid "This groupchat requires a password before entry"
+msgstr "كلمة السر لازمة للدخول إلى فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:89694
+msgid "Password protected"
+msgstr "مؤمَّنة بكلمة سرية"
+
+#: dist/converse-no-dependencies.js:89696
+msgid "Persistent"
+msgstr "دائمة"
+
+#: dist/converse-no-dependencies.js:89698
+msgid "This groupchat persists even if it's unoccupied"
+msgstr "فريق المحادثة هذا غير زائل حتى و إن كان لا يحتوي على مقيمين"
+
+#: dist/converse-no-dependencies.js:89704
+msgid "Only moderators can see your XMPP address"
+msgstr "بإمكان المشرفين فقط رؤية عنوان XMPP الخاص بك"
+
+#: dist/converse-no-dependencies.js:89708
+msgid "This groupchat will disappear once the last person leaves"
+msgstr "سوف يختفي فريق المحادثة هذا عندما يخرج منه آخِر مُستخدِم"
+
+#: dist/converse-no-dependencies.js:89710
+msgid "This groupchat is publicly searchable"
+msgstr "يمكن البحث العمومي عن فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:89728
+#, javascript-format
+msgid "Groupchat info for %1$s"
+msgstr "معلومات فريق المحادثة %1$s"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:89850
+msgid "Hide the groupchat topic"
+msgstr "إخفاء موضوع فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:89852
+#, fuzzy
+msgid "This groupchat is bookmarked"
+msgstr "فريق المحادثة هذا تحت الإشراف"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:89933
+msgid "This groupchat requires a password"
+msgstr "فريق المحادثة مؤمَّن بكلمة سرية"
+
+#: dist/converse-no-dependencies.js:89935
+msgid "Password: "
+msgstr "كلمة السر : "
+
+#: dist/converse-no-dependencies.js:89937
+msgid "Submit"
+msgstr "إرسال"
+
+#: dist/converse-no-dependencies.js:90018
+msgid "This user is a moderator."
+msgstr "إنّ هذا المستخدِم مشرف في الغرفة."
+
+#: dist/converse-no-dependencies.js:90020
+msgid "This user can send messages in this groupchat."
+msgstr "بإمكان هذا المستخدم إرسال رسائل إلى فريق المحادثة هذا."
+
+#: dist/converse-no-dependencies.js:90022
+msgid "This user can NOT send messages in this groupchat."
+msgstr "لا يمكن لهذا المستخدِم إرسال رسائل في فريق المحادثة هذا."
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:90036
+msgid "Owner"
+msgstr "مالك"
+
+#: dist/converse-no-dependencies.js:90038
+msgid "Admin"
+msgstr "المدير"
+
+#: dist/converse-no-dependencies.js:90040
+msgid "Member"
+msgstr "عضو"
+
+#: dist/converse-no-dependencies.js:90042
+msgid "Moderator"
+msgstr "المشرف"
+
+#: dist/converse-no-dependencies.js:90044
+msgid "Visitor"
+msgstr "زائر"
+
+#: dist/converse-no-dependencies.js:90085
+#, javascript-format
+msgid "Click to mention %1$s in your message."
+msgstr "أنقر للإشارة إلى %1$s في رسالتك."
+
+#: dist/converse-no-dependencies.js:90088
+msgid "Participants"
+msgstr "المشاركون"
+
+#: dist/converse-no-dependencies.js:90587
+#, javascript-format
+msgid "%1$s has entered the groupchat"
+msgstr "لقد إلتحق %1$s بفريق المحادثة"
+
+#: dist/converse-no-dependencies.js:90589
+#, javascript-format
+msgid "%1$s has left the groupchat"
+msgstr "غادر %1$s فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:90591
+#, javascript-format
+msgid "%1$s is now a moderator"
+msgstr "أصبح %1$s مُشرفًا"
+
+#: dist/converse-no-dependencies.js:90593
+#, javascript-format
+msgid "%1$s is no longer a moderator"
+msgstr "لم يعُد %1$s مِن المُشْرِفين"
+
+#: dist/converse-no-dependencies.js:90595
+#, fuzzy, javascript-format
+msgid "%1$s has been given a voice"
+msgstr "تم منح فرصة الكلام مُجدَّدًا إلى %1$s"
+
+#: dist/converse-no-dependencies.js:90597
+#, javascript-format
+msgid "%1$s has been muted"
+msgstr "تم كتم %1$s"
+
+#: dist/converse-no-dependencies.js:90606
+#, javascript-format
+msgid "%1$s and %2$s"
+msgstr "%1$s و %2$s"
+
+#: dist/converse-no-dependencies.js:90610
+#, javascript-format
+msgid "%1$s are typing"
+msgstr "إنّ %1$s يكتبون حاليا"
+
+#: dist/converse-no-dependencies.js:90612
+#, javascript-format
+msgid "%1$s have stopped typing"
+msgstr "%1$s توقّفوا عن الكتابة"
+
+#: dist/converse-no-dependencies.js:90614
+#, fuzzy, javascript-format
+msgid "%1$s have gone away"
+msgstr "%1$s غائب"
+
+#: dist/converse-no-dependencies.js:90616
+#, fuzzy, javascript-format
+msgid "%1$s have entered the groupchat"
+msgstr "لقد إلتحق %1$s بفريق المحادثة"
+
+#: dist/converse-no-dependencies.js:90618
+#, fuzzy, javascript-format
+msgid "%1$s have left the groupchat"
+msgstr "غادر %1$s فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:90620
+#, fuzzy, javascript-format
+msgid "%1$s are now moderators"
+msgstr "أصبح %1$s مُشرفًا"
+
+#: dist/converse-no-dependencies.js:90622
+#, fuzzy, javascript-format
+msgid "%1$s are no longer moderators"
+msgstr "لم يعُد %1$s مِن المُشْرِفين"
+
+#: dist/converse-no-dependencies.js:90624
+#, fuzzy, javascript-format
+msgid "%1$s have been given voices"
+msgstr "تم منح فرصة الكلام مُجدَّدًا إلى %1$s"
+
+#: dist/converse-no-dependencies.js:90626
+#, fuzzy, javascript-format
+msgid "%1$s have been muted"
+msgstr "تم كتم %1$s"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Change user's affiliation to admin"
+msgstr "تغيير دور المستخدم إلى صفة مدير"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Ban user by changing their affiliation to outcast"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:90638
+#, fuzzy
+msgid "Clear the chat area"
+msgstr "غلق نافذة المحادثة هذه"
+
+#: dist/converse-no-dependencies.js:90638
+#, fuzzy
+msgid "Close this groupchat"
+msgstr "إزالة فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Change user role to participant"
+msgstr "تغيير دور المستخدِم إلى مُشترِك"
+
+#: dist/converse-no-dependencies.js:90638
+#: dist/converse-no-dependencies.js:91144
+msgid "Remove this groupchat"
+msgstr "إزالة فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Kick user from groupchat"
+msgstr "طرد المستخدِم مؤقتًا مِن فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Write in 3rd person"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Grant membership to a user"
+msgstr "منح صفة العضوية لمستخدِم"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Opens up the moderator tools GUI"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Remove user's ability to post messages"
+msgstr "منع المستخدم مِن بعث رسائل"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Change your nickname"
+msgstr "غيّر إسمك المُستعار"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Grant moderator role to user"
+msgstr "ترقية المستخدِم إلى رتبة مشرف"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Grant ownership of this groupchat"
+msgstr "منح صفة ملكية فريق المحادثة للمستخدِم"
+
+#: dist/converse-no-dependencies.js:90638
+#, fuzzy
+msgid "Register your nickname"
+msgstr "غيّر إسمك المُستعار"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Revoke the user's current affiliation"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Set groupchat subject"
+msgstr "تحديد موضوع فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Set groupchat subject (alias for /subject)"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:90638
+msgid "Allow muted user to post messages"
+msgstr "السماح للمستخدم المكتوم نشر رسائل"
+
+#: dist/converse-no-dependencies.js:90940
+#, fuzzy
+msgid "You are about to retract this message."
+msgstr "لقد ورَدَت إليك رسائل غير مقروءة"
+
+#: dist/converse-no-dependencies.js:90940
+msgid ""
+"You may optionally include a message, explaining the reason for the "
+"retraction."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:90947
+#, fuzzy
+msgid "Message Retraction"
+msgstr "أرشفة الرسائل"
+
+#: dist/converse-no-dependencies.js:90947
+#, fuzzy
+msgid "Optional reason"
+msgstr "دليل اختياري"
+
+#: dist/converse-no-dependencies.js:90958
+msgid "Sorry, you're not allowed to retract this message"
+msgstr "عذراً، لا يُسمح لك بسحب هذه الرسالة"
+
+#: dist/converse-no-dependencies.js:90994
+#, fuzzy
+msgid "A timeout occurred while trying to retract the message"
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+
+#: dist/converse-no-dependencies.js:90998
+#, fuzzy
+msgid "Sorry, you're not allowed to retract this message."
+msgstr "لا يُسمح لك بإنشاء فِرَق محادثة جُدد."
+
+#: dist/converse-no-dependencies.js:91073
+#, fuzzy
+msgid "Show more information about this groupchat"
+msgstr "عرض المزيد مِن التفاصيل عن فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:91084
+#, fuzzy
+msgid "Configure"
+msgstr "أكّد"
+
+#: dist/converse-no-dependencies.js:91085
+msgid "Configure this groupchat"
+msgstr "إعداد فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:91098
+#, fuzzy
+msgid "Invite someone to join this groupchat"
+msgstr "يمكن للجميع الإلتحاق بفريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:91112
+#, fuzzy
+msgid "Show topic"
+msgstr "عرض فِرَق المحادثة"
+
+#: dist/converse-no-dependencies.js:91112
+msgid "Hide topic"
+msgstr "إخفاء الموضوع"
+
+#: dist/converse-no-dependencies.js:91113
+msgid "Show the topic message in the heading"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91113
+msgid "Hide the topic in the heading"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91130
+#, fuzzy
+msgid "Moderate"
+msgstr "تحت الإشراف"
+
+#: dist/converse-no-dependencies.js:91131
+#, fuzzy
+msgid "Moderate this groupchat"
+msgstr "مغادرة فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:91143
+#, fuzzy
+msgid "Destroy"
+msgstr "غرفة محادثة مؤقتة"
+
+#: dist/converse-no-dependencies.js:91157
+msgid "Leave"
+msgstr "مغادرة"
+
+#: dist/converse-no-dependencies.js:91158
+#, fuzzy
+msgid "Leave and close this groupchat"
+msgstr "مغادرة فريق المحادثة"
+
+#: dist/converse-no-dependencies.js:91167
+#, fuzzy
+msgid "Are you sure you want to leave this groupchat?"
+msgstr "هل أنت متأكد أنك تريد الإنسحاب مِن فريق المحادثة %1$s ؟"
+
+#: dist/converse-no-dependencies.js:91303
+msgid "Hide the list of participants"
+msgstr "إخفاء قائمة المشاركين"
+
+#: dist/converse-no-dependencies.js:91383
+msgid "Forbidden: you do not have the necessary role in order to do that."
+msgstr "ممنوع: ليس لديك الدور اللازم من أجل القيام بذلك."
+
+#: dist/converse-no-dependencies.js:91417
+msgid ""
+"Forbidden: you do not have the necessary affiliation in order to do that."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91429
+#, javascript-format
+msgid ""
+"Error: the \"%1$s\" command takes two arguments, the user's nickname and "
+"optionally a reason."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91456
+#: dist/converse-no-dependencies.js:91479
+#, fuzzy
+msgid "Error: couldn't find a groupchat participant based on your arguments"
+msgstr "يُمكن لكافة المشارِكين في فريق المحادثة الإطلاع على عنوان XMPP الخاص بك"
+
+#: dist/converse-no-dependencies.js:91466
+#, fuzzy
+msgid "Error: found multiple groupchat participant based on your arguments"
+msgstr "يُمكن لكافة المشارِكين في فريق المحادثة الإطلاع على عنوان XMPP الخاص بك"
+
+#: dist/converse-no-dependencies.js:91523
+msgid ""
+"Couldn't find a participant with that nickname. They might have left the "
+"groupchat."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91587
+#, fuzzy
+msgid "Sorry, an error happened while running the command."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ ببيانات ملفك الشخصي."
+
+#: dist/converse-no-dependencies.js:91587
+#: dist/converse-no-dependencies.js:92266
+msgid "Check your browser's developer console for details."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91637
+#, fuzzy
+msgid "Are you sure you want to destroy this groupchat?"
+msgstr "هل أنت متأكد أنك تريد الإنسحاب مِن فريق المحادثة %1$s ؟"
+
+#: dist/converse-no-dependencies.js:91640
+#, fuzzy
+msgid "Please enter the XMPP address of this groupchat to confirm"
+msgstr "يرجى إدخال مزود خدمة XMPP الذي تود إنشاء حسابك فيه :"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:91642
+#: dist/converse-no-dependencies.js:99084
+msgid "name@example.org"
+msgstr "name@example.org"
+
+#: dist/converse-no-dependencies.js:91646
+#, fuzzy
+msgid "Optional reason for destroying this groupchat"
+msgstr "هل أنت متأكد أنك تريد الإنسحاب مِن فريق المحادثة %1$s ؟"
+
+#: dist/converse-no-dependencies.js:91650
+msgid "Optional XMPP address for a new groupchat that replaces this one"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91651
+#, fuzzy
+msgid "replacement@example.org"
+msgstr "name@example.org"
+
+#. e.g. Your nickname is "coolguy69"
+#: dist/converse-no-dependencies.js:91777
+#, fuzzy, javascript-format
+msgid "Your nickname is \"%1$s\""
+msgstr "لقد تم تغيير إسمك المُستعار إلى %1$s"
+
+#: dist/converse-no-dependencies.js:91809
+msgid "Error: invalid number of arguments"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:91880
+#, fuzzy
+msgid "Choose a nickname to enter"
+msgstr "اختر الملف الذي تريد إرساله"
+
+#: dist/converse-no-dependencies.js:91880
+msgid "Please choose your nickname"
+msgstr "يرجى اختيار إسمك المُستعار"
+
+#: dist/converse-no-dependencies.js:91884
+msgid "Enter groupchat"
+msgstr "الإلتحاق بفريق المحادثة"
+
+#: dist/converse-no-dependencies.js:92049
+#, javascript-format
+msgid "This action was done by %1$s."
+msgstr "قام %1$s بهذا الإجراء."
+
+#: dist/converse-no-dependencies.js:92055
+#, javascript-format
+msgid "The reason given is: \"%1$s\"."
+msgstr "السبب : \"%1$s\"."
+
+#: dist/converse-no-dependencies.js:92175
+msgid "Groupchats"
+msgstr "فِرَق المحادثة"
+
+#: dist/converse-no-dependencies.js:92176
+msgid "Add a new groupchat"
+msgstr "إضافة فريق محادثة جديد"
+
+#: dist/converse-no-dependencies.js:92177
+msgid "Query for groupchats"
+msgstr "البحث عن فِرَق للمحادثة"
+
+#: dist/converse-no-dependencies.js:92266
+#, fuzzy
+msgid "Sorry, an error occurred while trying to submit the config form."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+
+#: dist/converse-no-dependencies.js:92749
+msgid "Announcements"
+msgstr "الإعلانات"
+
+#: dist/converse-no-dependencies.js:92753
+#, fuzzy
+msgid "Click to open this server message"
+msgstr "أنقر لفتح فريق المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:92843
+#, fuzzy
+msgid "Close these announcements"
+msgstr "إزالة فريق المحادثة هذا"
+
+#. workaround for Prosody which doesn't give type "headline"
+#: dist/converse-no-dependencies.js:93020
+#: dist/converse-no-dependencies.js:93026
+#, javascript-format
+msgid "Notification from %1$s"
+msgstr "إشعار مِن %1$s"
+
+#: dist/converse-no-dependencies.js:93028
+#: dist/converse-no-dependencies.js:93038
+#: dist/converse-no-dependencies.js:93041
+#, javascript-format
+msgid "%1$s says"
+msgstr "%1$s قال"
+
+#. TODO: we should suppress notifications if we cannot decrypt
+#. the message...
+#: dist/converse-no-dependencies.js:93050
+msgid "OMEMO Message received"
+msgstr "تم تلقي رسالة أوميمو"
+
+#: dist/converse-no-dependencies.js:93092
+msgid "has gone offline"
+msgstr "قد قطع الإتصال"
+
+#: dist/converse-no-dependencies.js:93094
+msgid "has gone away"
+msgstr "قد غاب"
+
+#: dist/converse-no-dependencies.js:93096
+msgid "is busy"
+msgstr "مشغول"
+
+#: dist/converse-no-dependencies.js:93098
+msgid "has come online"
+msgstr "صار مُتّصلا الآن"
+
+#: dist/converse-no-dependencies.js:93115
+msgid "wants to be your contact"
+msgstr "يُريد أن يُصبح مُراسلك"
+
+#: dist/converse-no-dependencies.js:93726
+msgid "Hide"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93728
+msgid "Execute"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93782
+msgid "On which entity do you want to run commands?"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93784
+msgid ""
+"Certain XMPP services and entities allow privileged users to execute ad-hoc "
+"commands on them."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93786
+msgid "Commands found"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93788
+msgid "List available commands"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:93792
+#, fuzzy
+msgid "No commands found"
+msgstr "لم يتم العثور على أي فريق محادثة"
+
+#: dist/converse-no-dependencies.js:93974
+#, fuzzy
+msgid "Sorry, an error occurred while looking for commands on that entity."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+
+#: dist/converse-no-dependencies.js:93985
+msgid "The specified entity doesn't support ad-hoc commands"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:94096
+#, fuzzy
+msgid ""
+"Sorry, an error occurred while trying to execute the command. See the "
+"developer console for details"
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+
+#: dist/converse-no-dependencies.js:94173
+msgid "About"
+msgstr "عن"
+
+#: dist/converse-no-dependencies.js:94175
+msgid "Commands"
+msgstr ""
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:94181
+#, fuzzy
+msgid "Settings"
+msgstr "تغيير الإعدادات"
+
+#: dist/converse-no-dependencies.js:94183
+#, javascript-format
+msgid ""
+"%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
+msgstr ""
+"برنامج %1$sحر ومفتوح المصدر%2$s للمحادثة عبر XMPP طوّره لكم %3$s Opkode %2$s"
+
+#: dist/converse-no-dependencies.js:94185
+#, javascript-format
+msgid "%1$s Translate %2$s it into your own language"
+msgstr "%1$s ترجموه %2$s إلى لغتكم"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:94293
+msgid "Log out"
+msgstr "الخروج"
+
+#: dist/converse-no-dependencies.js:94295
+msgid "Click to change your chat status"
+msgstr "أنقر لتغيير حالتك للدردشة"
+
+#: dist/converse-no-dependencies.js:94297
+msgid "Show details about this chat client"
+msgstr "عرض المزيد مِن التفاصيل عن برنامج المحادثة هذا"
+
+#: dist/converse-no-dependencies.js:94448
+msgid "Your avatar image"
+msgstr "صورتك الرمزية"
+
+#: dist/converse-no-dependencies.js:94619
+msgid "Checkbox for selecting the following fingerprint"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:94625
+msgid "Device without a fingerprint"
+msgstr "الجهاز مِن دون بصمة"
+
+#: dist/converse-no-dependencies.js:94627
+msgid "Checkbox for selecting the following device"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:94637
+msgid "Other OMEMO-enabled devices"
+msgstr "الأجهزة الأخرى التي تدعم أوميمو"
+
+#: dist/converse-no-dependencies.js:94639
+msgid "Checkbox to select fingerprints of all other OMEMO devices"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:94641
+msgid "Remove checked devices and close"
+msgstr "أزالة الأجهزة التي تم اختيارها ثم إغلاق"
+
+#: dist/converse-no-dependencies.js:94643
+msgid "Select all"
+msgstr "اختيار الكل"
+
+#: dist/converse-no-dependencies.js:94653
+msgid "This device's OMEMO fingerprint"
+msgstr "بصمة أوميمو الخاصة بهذا الجهاز"
+
+#: dist/converse-no-dependencies.js:94655
+msgid "Generate new keys and fingerprint"
+msgstr "توليد مفاتيح جديدة وبصمة"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:94661
+msgid "Your Profile"
+msgstr "ملفك الشخصي"
+
+#: dist/converse-no-dependencies.js:94667
+msgid "XMPP Address (JID)"
+msgstr "عنوان  XMPP (JID)"
+
+#: dist/converse-no-dependencies.js:94673
+msgid "Save and close"
+msgstr "حفظ وإغلاق"
+
+#: dist/converse-no-dependencies.js:94675
+msgid ""
+"Use commas to separate multiple roles. Your roles are shown next to your "
+"name on your chat messages."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:94679
+msgid "OMEMO"
+msgstr "OMEMO"
+
+#: dist/converse-no-dependencies.js:94681
+#, fuzzy
+msgid "Profile"
+msgstr "ملفك الشخصي"
+
+#: dist/converse-no-dependencies.js:94811
+msgid "Sorry, an error happened while trying to save your profile data."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ ببيانات ملفك الشخصي."
+
+#: dist/converse-no-dependencies.js:94811
+msgid "You can check your browser's developer console for any error output."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:94869
+#: dist/converse-no-dependencies.js:99418
+msgid "Away"
+msgstr "غائب"
+
+#: dist/converse-no-dependencies.js:94870
+#: dist/converse-no-dependencies.js:99417
+msgid "Busy"
+msgstr "مشغول"
+
+#: dist/converse-no-dependencies.js:94873
+msgid "Custom status"
+msgstr "حالتك الخاصة"
+
+#: dist/converse-no-dependencies.js:94874
+#: dist/converse-no-dependencies.js:99420
+msgid "Offline"
+msgstr "غير متصل"
+
+#: dist/converse-no-dependencies.js:94875
+#: dist/converse-no-dependencies.js:99415
+msgid "Online"
+msgstr "مُتّصل"
+
+#: dist/converse-no-dependencies.js:94877
+msgid "Away for long"
+msgstr "غائب لمدة قد تطول"
+
+#: dist/converse-no-dependencies.js:94878
+msgid "Change chat status"
+msgstr "أنقر لتغيير حالة الدردشة"
+
+#: dist/converse-no-dependencies.js:94879
+msgid "Personal status message"
+msgstr "رسالة الحالة الخاصة"
+
+#: dist/converse-no-dependencies.js:94929
+#, javascript-format
+msgid "I am %1$s"
+msgstr "أنا %1$s"
+
+#: dist/converse-no-dependencies.js:94971
+msgid "Are you sure you want to log out?"
+msgstr "هل أنت متأكد أنك تريد الخروج ؟"
+
+#: dist/converse-no-dependencies.js:94979
+#: dist/converse-no-dependencies.js:94989
+msgid "online"
+msgstr "متصل"
+
+#: dist/converse-no-dependencies.js:94981
+msgid "busy"
+msgstr "مشغول"
+
+#: dist/converse-no-dependencies.js:94983
+msgid "away for long"
+msgstr "غائب لمدة قد تطول"
+
+#: dist/converse-no-dependencies.js:94985
+msgid "away"
+msgstr "غائب"
+
+#: dist/converse-no-dependencies.js:94987
+msgid "offline"
+msgstr "غير متصل"
+
+#: dist/converse-no-dependencies.js:95977
+#, javascript-format
+msgid ""
+"%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
+"will no longer be possible in this grouchat."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96058
+msgid ""
+"Cannot use end-to-end encryption in this groupchat, either the groupchat has "
+"some anonymity or not all participants support OMEMO."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96060
+#, javascript-format
+msgid ""
+"Cannot use end-to-end encryption because %1$s uses a client that doesn't "
+"support OMEMO."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96079
+msgid "Messages are being sent in plaintext"
+msgstr "يتم إرسال الرسائل كنص عادي صاف"
+
+#: dist/converse-no-dependencies.js:96081
+#, fuzzy
+msgid "Messages are sent encrypted"
+msgstr "لم تعُد رسائلك مشفرة بعد الآن"
+
+#: dist/converse-no-dependencies.js:96085
+msgid ""
+"This groupchat needs to be members-only and non-anonymous in order to "
+"support OMEMO encrypted messages"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96147
+msgid "Sorry, an error occurred while trying to remove the devices."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة حذف الأجهزة."
+
+#: dist/converse-no-dependencies.js:96153
+msgid ""
+"Are you sure you want to generate new OMEMO keys? This will remove your old "
+"keys and all previously encrypted messages will no longer be decryptable on "
+"this device."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96344
+msgid "Sorry, could not decrypt a received OMEMO message due to an error."
+msgstr "آسف ، لقد تعذر فك تشفير رسالة OMEMO المتلقاة بسبب خطا."
+
+#: dist/converse-no-dependencies.js:96532
+#, javascript-format
+msgid ""
+"Sorry, we're unable to send an encrypted message because %1$s requires you "
+"to be subscribed to their presence in order to see their OMEMO information"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96534
+#, javascript-format
+msgid ""
+"Sorry, we're unable to send an encrypted message because the remote server "
+"for %1$s could not be found"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96536
+msgid "Unable to send an encrypted message due to an unexpected error."
+msgstr "المعذرة، لا يمكن إرسال رسالة مشفرة بسبب حدوث خطأ غير متوقع."
+
+#: dist/converse-no-dependencies.js:96622
+msgid ""
+"Sorry, no devices found to which we can send an OMEMO encrypted message."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:96723
+msgid ""
+"This is an OMEMO encrypted message which your client doesn’t seem to "
+"support. Find more information on https://conversations.im/omemo"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:98011
+msgid " e.g. conversejs.org"
+msgstr " مثال conversejs.org"
+
+#: dist/converse-no-dependencies.js:98098
+msgid "Fetch registration form"
+msgstr "جارٍ جلب استمارة التسجيل"
+
+#: dist/converse-no-dependencies.js:98099
+msgid "Tip: A list of public XMPP providers is available"
+msgstr "نصيحة: قائمة علنية لمزوّدي خدمة XMPP متوفرة"
+
+#: dist/converse-no-dependencies.js:98100
+msgid "here"
+msgstr "هنا"
+
+#: dist/converse-no-dependencies.js:98151
+msgid "Sorry, we're unable to connect to your chosen provider."
+msgstr "المعذرة، لم نتمكن بربطك بموفر خدمة المحادثة الذي قمت باختياره."
+
+#: dist/converse-no-dependencies.js:98167
+msgid ""
+"Sorry, the given provider does not support in band account registration. "
+"Please try with a different provider."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:98193
+#, javascript-format
+msgid ""
+"Something went wrong while establishing a connection with \"%1$s\". Are you "
+"sure it exists?"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:98379
+msgid "Now logging you in"
+msgstr "جارٍ تسجيل دخولك الآن"
+
+#: dist/converse-no-dependencies.js:98383
+msgid "Registered successfully"
+msgstr "تم تسجيل حسابك بنجاح"
+
+#: dist/converse-no-dependencies.js:98495
+msgid ""
+"The provider rejected your registration attempt. Please check the values you "
+"entered for correctness."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:98756
+msgid "Leave this groupchat"
+msgstr "مغادرة فريق المحادثة"
+
+#. harmony default export
+#: dist/converse-no-dependencies.js:98766
+msgid "Click to toggle the list of open groupchats"
+msgstr "أنقر لفتح قائمة فِرَق المحادثة"
+
+#: dist/converse-no-dependencies.js:98768
+msgid "Open Groupchats"
+msgstr "فتح فِرق الدردشات الجماعية"
+
+#: dist/converse-no-dependencies.js:98972
+#, javascript-format
+msgid "Are you sure you want to leave the groupchat %1$s?"
+msgstr "هل أنت متأكد أنك تريد الإنسحاب مِن فريق المحادثة %1$s ؟"
+
+#: dist/converse-no-dependencies.js:99086
+msgid "Add"
+msgstr "إضافة"
+
+#: dist/converse-no-dependencies.js:99090
+msgid "Add a Contact"
+msgstr "إضافة مراسل"
+
+#: dist/converse-no-dependencies.js:99224
+msgid "This contact is busy"
+msgstr "إنّ المُراسَل مشغول"
+
+#: dist/converse-no-dependencies.js:99225
+msgid "This contact is online"
+msgstr "إنّ هذا المُراسَل غير مُتصل"
+
+#: dist/converse-no-dependencies.js:99226
+msgid "This contact is offline"
+msgstr "هذا المراسل غير متصل"
+
+#: dist/converse-no-dependencies.js:99227
+msgid "This contact is unavailable"
+msgstr "إنّ هذا المراسَل غير متوفر"
+
+#: dist/converse-no-dependencies.js:99228
+msgid "This contact is away for an extended period"
+msgstr "لقد غاب هذا المستخدِم ثانية لفترة أطوَل"
+
+#: dist/converse-no-dependencies.js:99229
+msgid "This contact is away"
+msgstr "إنّ هذا المراسَل غائب"
+
+#: dist/converse-no-dependencies.js:99241
+msgid "Contact name"
+msgstr "إسم المراسل"
+
+#: dist/converse-no-dependencies.js:99241
+msgid "Optional nickname"
+msgstr "إسم مستعار اختياري"
+
+#: dist/converse-no-dependencies.js:99333
+msgid "Sorry, could not find a contact with that name"
+msgstr "المعذرة ، لم نعثر على مستخدم بهذا الإسم"
+
+#: dist/converse-no-dependencies.js:99358
+#, fuzzy
+msgid "This contact has already been added"
+msgstr "لقد غاب هذا المستخدِم ثانية لفترة أطوَل"
+
+#: dist/converse-no-dependencies.js:99409
+msgid "Filter"
+msgstr "عامل التصفية"
+
+#: dist/converse-no-dependencies.js:99410
+msgid "Filter by contact name"
+msgstr "فرز حسب اسم جهة الاتصال"
+
+#: dist/converse-no-dependencies.js:99411
+msgid "Filter by group name"
+msgstr "فرز حسب اسم المجموعة"
+
+#: dist/converse-no-dependencies.js:99412
+msgid "Filter by status"
+msgstr "تصنيف حسب الحالة"
+
+#: dist/converse-no-dependencies.js:99413
+msgid "Any"
+msgstr "الكل"
+
+#: dist/converse-no-dependencies.js:99414
+msgid "Unread"
+msgstr "غير مقروءة"
+
+#: dist/converse-no-dependencies.js:99416
+msgid "Chatty"
+msgstr "كثيرة الدردشة"
+
+#: dist/converse-no-dependencies.js:99419
+msgid "Extended Away"
+msgstr "تمديد فترة الغياب"
+
+#: dist/converse-no-dependencies.js:99583
+#: dist/converse-no-dependencies.js:99645
+#, javascript-format
+msgid "Click to remove %1$s as a contact"
+msgstr "أنقر لإزالة %1$s مِن قائمة مراسليك"
+
+#: dist/converse-no-dependencies.js:99592
+#, javascript-format
+msgid "Click to accept the contact request from %1$s"
+msgstr "أنقر لقبول طلب التراسل مع %1$s"
+
+#: dist/converse-no-dependencies.js:99593
+#, javascript-format
+msgid "Click to decline the contact request from %1$s"
+msgstr "أنقر لرفض طلب التراسل مع %1$s"
+
+#: dist/converse-no-dependencies.js:99644
+#, fuzzy, javascript-format
+msgid "Click to chat with %1$s (XMPP address: %2$s)"
+msgstr "أنقر للتحدث مع %1$s (JID : %2$s)"
+
+#: dist/converse-no-dependencies.js:99772
+msgid "Are you sure you want to decline this contact request?"
+msgstr "هل أنت متأكد أنك تود رفض طلب التراسل مع هذا المستخدِم ؟"
+
+#: dist/converse-no-dependencies.js:100099
+msgid "Contacts"
+msgstr "جهات الإتصال"
+
+#: dist/converse-no-dependencies.js:100100
+msgid "Add a contact"
+msgstr "إضافة مراسل"
+
+#: dist/converse-no-dependencies.js:100101
+msgid "Re-sync your contacts"
+msgstr "أعد مزامنة قائمة مراسليك"
+
+#, fuzzy
+#~ msgid "Hide occupants"
+#~ msgstr "المُقيمون في الغرفة"
+
+#, fuzzy
+#~ msgid "Show occupants"
+#~ msgstr "عرض فِرَق المحادثة"
+
+#~ msgid "Edit this message"
+#~ msgstr "تعديل هذه الرسالة"
+
+#~ msgid "Retract this message"
+#~ msgstr "اسحب هذه الرسالة"
+
+#, fuzzy, javascript-format
+#~ msgid "The message from the server is: \"%1$s\""
+#~ msgstr "السبب : \"%1$s\"."
+
+#~ msgid "Sorry, an error occurred:"
+#~ msgstr "عذراً، حدث خطأ:"
+
+#, javascript-format
+#~ msgid "Download image \"%1$s\""
+#~ msgstr "تنزيل الصورة: \"%1$s\""
+
+#~ msgid "Clear all messages"
+#~ msgstr "تنظيف كافة الرسائل"
+
+#~ msgid "You can run the following commands"
+#~ msgstr "يمكنك تنفيد الأوامر التالية"
+
+#~ msgid "Typing from another device"
+#~ msgstr "يكتب عبر جهاز آخَر"
+
+#~ msgid "Stopped typing on the other device"
+#~ msgstr "توقّف عن الكتابة عبر الجهاز الآخَر"
+
+#~ msgid "Close this chat box"
+#~ msgstr "غلق نافذة المحادثة هذه"
+
+#~ msgid "Show more details about this groupchat"
+#~ msgstr "عرض المزيد مِن التفاصيل عن فريق المحادثة هذا"
+
+#, fuzzy
+#~ msgid "Invite someone"
+#~ msgstr "دعوة"
+
+#, javascript-format
+#~ msgid "%1$s has been banned from this groupchat"
+#~ msgstr "لقد تم طردُ %1$s مِن فريق المحادثة هذا"
+
+#~ msgid "Close and leave this groupchat"
+#~ msgstr "إغلاق فريق المحادثة هذا و مغادرته"
+
+#, javascript-format
+#~ msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
+#~ msgstr "لقد انسحب %1$s مِن فريق المحادثة ثم قام بالالتحاق به مجددا. \"%2$s\""
+
+#, javascript-format
+#~ msgid "%1$s has left and re-entered the groupchat"
+#~ msgstr "لقد انسحب %1$s مِن فريق المحادثة ثم قام بالإلتحاق به مجددا"
+
+#, javascript-format
+#~ msgid "%1$s has entered the groupchat. \"%2$s\""
+#~ msgstr "لقد إلتحق %1$s بفريق المحادثة. \"%2$s\""
+
+#, javascript-format
+#~ msgid "%1$s has entered and left the groupchat. \"%2$s\""
+#~ msgstr "لقد إلتحق %1$s بفريق المحادثة ثم غادره. \"%2$s\""
+
+#, javascript-format
+#~ msgid "%1$s has entered and left the groupchat"
+#~ msgstr "لقد إلتحق %1$s بفريق المحادثة ثم غادره"
+
+#, javascript-format
+#~ msgid "%1$s has left the groupchat. \"%2$s\""
+#~ msgstr "غادر %1$s فريق المحادثة. \"%2$s\""
+
+#~ msgid "Full Name:"
+#~ msgstr "الإسم الكامل:"
+
+#~ msgid "XMPP Address:"
+#~ msgstr "عنوان XMPP:"
+
+#~ msgid "Nickname:"
+#~ msgstr "الإسم المُستعار:"
+
+#~ msgid "Email:"
+#~ msgstr "البريد الإلكتروني:"
+
+#~ msgid "Role:"
+#~ msgstr "الدور:"
+
+#~ msgid "password"
+#~ msgstr "كلمة السر"
+
+#~ msgid "No password"
+#~ msgstr "بدون كلمة سرية"
+
+#~ msgid "this groupchat is restricted to members only"
+#~ msgstr "فريق المحادثة الحالي مخصص للأعضاء المُنتمين إليه فقط"
+
+#~ msgid "Download"
+#~ msgstr "تنزيل"
+
+#~ msgid "Send"
+#~ msgstr "ابعث"
+
+#~ msgid "Remove this bookmark"
+#~ msgstr "إزالة هذه الفاصلة المرجعية"
+
+#~ msgid "Your profile"
+#~ msgstr "ملفك الشخصي"
+
+#, javascript-format
+#~ msgid "Download video file \"%1$s\""
+#~ msgstr "تنزيل ملف الفيديو: \"%1$s\""
+
+#~ msgid "Groups"
+#~ msgstr "الفِرَق"
+
+#~ msgid "%1$s is no longer a permanent member of this groupchat"
+#~ msgstr "لم يَعُد %1$s مِن بين قائمة الأعضاء الدائمين لفريق المحادثة هذا"
+
+#~ msgid "Ban user from groupchat"
+#~ msgstr "طرد المستخدِم من فريق المحادثة"
+
+#~ msgid "Register a nickname for this groupchat"
+#~ msgstr "قم بتسجيل اسم مستعار خاص بفريق المحادثة هذا"
+
+#~ msgid "Revoke user's membership"
+#~ msgstr "إسقاط صفة العضوية مِن المستخدِم"
+
+#~ msgid "No nickname was specified."
+#~ msgstr "لم تقم باختيار أي إسم مستعار."
+
+#~ msgid "Error: the groupchat %1$s does not exist."
+#~ msgstr "خطأ: فريق المحادثة هذا %1$s ليس له وُجود."
+
+#, fuzzy
+#~ msgid "Destroy groupchat"
+#~ msgstr "الإلتحاق بفريق المحادثة"
+
+#~ msgid "Please enter a valid XMPP username"
+#~ msgstr "يُرجى إدخال إسم مستخدِم XMPP صحيح"
+
+#~ msgid "XMPP Username:"
+#~ msgstr "إسم المستخدِم :"
+
+#~ msgid "%1$s is now an "
+#~ msgstr "أصبح %1$s "
+
+#~ msgid "This groupchat is not being moderated"
+#~ msgstr "أصبح فريق المحادثة هذا مِن دون إشراف"
+
+#~ msgid "Jabber ID"
+#~ msgstr "مُعرَّف حساب جابر"
+
+#~ msgid "Personal message"
+#~ msgstr "رسالة خاصة"
+
+#~ msgid "Your server's response: \"%1$s\""
+#~ msgstr "رد الخادم : \"%1$s\""
+
+#~ msgid "Open room"
+#~ msgstr "فتح غرفة المحادثة"
+
+#~ msgid "Query for Chatrooms"
+#~ msgstr "الإستعلام عن قاعات الدردشة"
+
+#~ msgid "Chatrooms"
+#~ msgstr "غُرف المحادثة"
+
+#~ msgid "Re-establishing encrypted session"
+#~ msgstr "إعادة ربط الجلسة المُشفّرة"
+
+#~ msgid "Generating private key."
+#~ msgstr "توليد مفتاح خاص."
+
+#~ msgid "Your browser might become unresponsive."
+#~ msgstr "مِن الممكن ألَّا يستجيب مُتصفّحك."
+
+#~ msgid "Could not verify this user's identify."
+#~ msgstr "لا يمكن التأكد مِن هوية هذا المستخدِم."
+
+#~ msgid "Exchanging private key with contact."
+#~ msgstr "تبادُل المفتاح الخاص مع المُراسل."
+
+#~ msgid ""
+#~ "Your messages are now encrypted but your contact's identity has not been "
+#~ "verified."
+#~ msgstr "إنّ رسائلك مشفرة الآن و لكن لم يتم التحقق بعد مِن هوية مُراسلك."
+
+#~ msgid "Your contact's identify has been verified."
+#~ msgstr "تم التحقق مِن هوية مُراسلك."
+
+#~ msgid "Your message could not be sent"
+#~ msgstr "تعذر إرسال رسالتك"
+
+#~ msgid "We received an unencrypted message"
+#~ msgstr "لقد تلقيت رسالة غير مُعمّاة"
+
+#~ msgid "We received an unreadable encrypted message"
+#~ msgstr "لقد تلقينا رسالة مشفرة غير قابل للقراءة"
+
+#~ msgid "What is your security question?"
+#~ msgstr "ما هو سؤال أمانك ؟"
+
+#~ msgid "What is the answer to the security question?"
+#~ msgstr "ما هو الجواب عن سؤال أمانك ؟"
+
+#~ msgid "Invalid authentication scheme provided"
+#~ msgstr "لقد تم تقديم نظام مصادقة غير صحيح"
+
+#~ msgid ""
+#~ "Your messages are not encrypted. Click here to enable OTR encryption."
+#~ msgstr "إنّ رسائلك غير مُعمّاة. أنقر هنا لتشغيل التعمية عبر OTR."
+
+#~ msgid "Your messages are encrypted, but your contact has not been verified."
+#~ msgstr "إنّ رسائلك مشفرة و لكن لم يتم التحقق مِن مُراسلك."
+
+#~ msgid "Your messages are encrypted and your contact verified."
+#~ msgstr "إنّ رسائلك مشفرة و تم التحقق مِن مُراسلك."
+
+#~ msgid "Refresh encrypted conversation"
+#~ msgstr "تحديث المحادثة المشفرة المعمّاة"
+
+#~ msgid "Start encrypted conversation"
+#~ msgstr "إبدأ محادثةً مشفرة و معمّاة"
+
+#~ msgid "Verify with SMP"
+#~ msgstr "التحقق عبر SMP"
+
+#~ msgid "What's this?"
+#~ msgstr "ما هذا ؟"
+
+#~ msgid "unencrypted"
+#~ msgstr "غير مشفرة"
+
+#~ msgid "unverified"
+#~ msgstr "غير متحقق منه"
+
+#~ msgid "verified"
+#~ msgstr "تم التحقق منه"
+
+#~ msgid "finished"
+#~ msgstr "انتهى"
+
+#~ msgid "Open Rooms"
+#~ msgstr "إفتح الغُرف"
+
+#~ msgid "Error: could not execute the command"
+#~ msgstr "خطأ : لا يمكن تنفيذ الأمر"
+
+#~ msgid "Show hidden message"
+#~ msgstr "عرض الرسالة الخفية"
+
+#~ msgid "me"
+#~ msgstr "أنا"
+
+#~ msgid "Are you sure you want to clear the messages from this room?"
+#~ msgstr "هل أنت متأكد أنك تريد إزالة جميع رسائل هذه الغرفة ؟"
+
+#~ msgid "Login"
+#~ msgstr "تسجيل الدخول"
+
+#~ msgid "State"
+#~ msgstr "الحالة"
+
+#~ msgid "Click to add new chat contacts"
+#~ msgstr "أنقر لإضافة مُراسلين للتحادث"
+
+#~ msgid "Room name"
+#~ msgstr "إسم غرفة المحادثة"
+
+#~ msgid "Rooms"
+#~ msgstr "غُرف المحادثة"

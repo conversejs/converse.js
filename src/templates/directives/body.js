@@ -117,12 +117,13 @@ function addHyperlinks (text, onImgLoad, onImgClick) {
     const show_images = api.settings.get('show_images_inline');
     objs.forEach(url_obj => {
         const url_text = text.slice(url_obj.start, url_obj.end);
+        const filtered_url = u.filterQueryParamsFromURL(url_text);
         text.addTemplateResult(
             url_obj.start,
             url_obj.end,
-            show_images && u.isImageURL(url_text) ?
-                u.convertToImageTag(url_text, onImgLoad, onImgClick) :
-                u.convertUrlToHyperlink(url_text),
+            show_images && u.isImageURL(url_text) && u.isImageDomainAllowed(url_text) ?
+                u.convertToImageTag(filtered_url, onImgLoad, onImgClick) :
+                u.convertUrlToHyperlink(filtered_url),
         );
     });
 }
@@ -168,12 +169,12 @@ class MessageBodyRenderer {
         // image loads, it triggers 'scroll' and the chat will be marked as scrolled,
         // which is technically true, but not what we want because the user
         // didn't initiate the scrolling.
-        this.scrolled = this.chatview.model.get('scrolled');
+        this.was_scrolled_up = this.chatview.model.get('scrolled');
         this.text = this.component.model.getMessageText();
     }
 
     scrollDownOnImageLoad () {
-        if (!this.scrolled) {
+        if (!this.was_scrolled_up) {
             this.chatview.scrollDown();
         }
     }

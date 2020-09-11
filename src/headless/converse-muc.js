@@ -384,7 +384,7 @@ converse.plugins.add('converse-muc', {
             async initialize () {
                 this.initialized = u.getResolveablePromise();
                 this.debouncedRejoin = debounce(this.rejoin, 250);
-                this.set('box_id', `box-${btoa(this.get('jid'))}`);
+                this.set('box_id', `box-${this.get('jid')}`);
                 this.initNotifications();
                 this.initMessages();
                 this.initOccupants();
@@ -669,10 +669,19 @@ converse.plugins.add('converse-muc', {
                     // they shouldn't have a `type` attribute.
                     return log.warn(`Received a MAM message with type "groupchat"`);
                 }
-                api.trigger('message', {'stanza': stanza});
                 this.createInfoMessages(stanza);
                 this.fetchFeaturesIfConfigurationChanged(stanza);
+
+                /**
+                 * An object containing the original groupchat message stanza,
+                 * as well as the parsed attributes.
+                 * @typedef { Object } MUCMessageData
+                 * @property { XMLElement } stanza
+                 * @property { MUCMessageAttributes } stanza
+                 */
                 const attrs = await st.parseMUCMessage(stanza, this, _converse);
+                const data = {stanza, attrs};
+                api.trigger('message', data);
                 return attrs && this.queueMessage(attrs);
             },
 
@@ -1993,12 +2002,10 @@ converse.plugins.add('converse-muc', {
                     attrs.stanza && log.error(attrs.stanza);
                     return log.error(attrs.message);
                 }
-                // TODO: move to OMEMO
-                attrs = attrs.encrypted ? await this.decrypt(attrs) : attrs;
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     return this.updateMessage(message, attrs);
-                } else if (attrs.is_receipt_request || attrs.is_marker || this.ignorableCSN(attrs)) {
+                } else if (attrs.is_valid_receipt_request || attrs.is_marker || this.ignorableCSN(attrs)) {
                     return;
                 }
                 if (await this.handleRetraction(attrs) ||
@@ -2014,7 +2021,7 @@ converse.plugins.add('converse-muc', {
                 if (u.shouldCreateGroupchatMessage(attrs)) {
                     const msg = this.handleCorrection(attrs) || await this.createMessage(attrs);
                     this.removeNotification(attrs.nick, ['composing', 'paused']);
-                    this.incrementUnreadMsgCounter(msg);
+                    this.handleUnreadMessage(msg);
                 }
             },
 
@@ -2062,15 +2069,13 @@ converse.plugins.add('converse-muc', {
                 if (code === '301') {
                     return actor ? __("%1$s has been banned by %2$s", nick, actor) : __("%1$s has been banned", nick);
                 } else if (code === '303') {
-                    return ___("%1$s\'s nickname has changed", nick);
-                } else if (code === '333') {
-                    return ___("%1$s has exited the room due to a technical issue");
+                    return __("%1$s\'s nickname has changed", nick);
                 } else  if (code === '307') {
                     return actor ? __("%1$s has been kicked out by %2$s", nick, actor) : __("%1$s has been kicked out", nick);
                 } else if (code === '321') {
-                    return __("%1$s has been removed because of an affiliation change");
+                    return __("%1$s has been removed because of an affiliation change", nick);
                 } else if (code === '322') {
-                    return ___("%1$s has been removed for not being a member");
+                    return __("%1$s has been removed for not being a member", nick);
                 }
             },
 
@@ -2341,9 +2346,16 @@ converse.plugins.add('converse-muc', {
              */
             onOwnPresence (stanza) {
                 if (stanza.getAttribute('type') !== 'unavailable') {
-                    this.session.save('connection_status', converse.ROOMSTATUS.ENTERED);
+                    // Set connection_status before creating the occupant, but
+                    // only trigger afterwards, so that plugins can access the
+                    // occupant in their event handlers.
+                    const old_status = this.session.get('connection_status');
+                    this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, {'silent': true});
+                    this.updateOccupantsOnPresence(stanza);
+                    this.session.trigger('change:connection_status', this.session, old_status);
+                } else {
+                    this.updateOccupantsOnPresence(stanza);
                 }
-                this.updateOccupantsOnPresence(stanza);
 
                 if (stanza.getAttribute('type') === 'unavailable') {
                     this.handleDisconnection(stanza);
@@ -2402,10 +2414,10 @@ converse.plugins.add('converse-muc', {
 
             /* Given a newly received message, update the unread counter if necessary.
              * @private
-             * @method _converse.ChatRoom#incrementUnreadMsgCounter
+             * @method _converse.ChatRoom#handleUnreadMessage
              * @param { XMLElement } - The <messsage> stanza
              */
-            incrementUnreadMsgCounter (message) {
+            handleUnreadMessage (message) {
                 if (!message?.get('body')) {
                     return
                 }
@@ -2652,25 +2664,24 @@ converse.plugins.add('converse-muc', {
             return api.rooms.get(jid, attrs, true);
         };
 
-        /**
-         * Automatically join groupchats, based on the
+        /* Automatically join groupchats, based on the
          * "auto_join_rooms" configuration setting, which is an array
-         * of strings (groupchat JIDs) or objects (with groupchat JID and other
-         * settings).
+         * of strings (groupchat JIDs) or objects (with groupchat JID and other settings).
          */
-        function autoJoinRooms () {
-            api.settings.get('auto_join_rooms').forEach(groupchat => {
-                if (isString(groupchat)) {
-                    if (_converse.chatboxes.where({'jid': groupchat}).length) {
-                        return;
+        async function autoJoinRooms () {
+            await Promise.all(api.settings.get('auto_join_rooms').map(muc => {
+                if (isString(muc)) {
+                    if (_converse.chatboxes.where({'jid': muc}).length) {
+                        return Promise.resolve();
                     }
-                    api.rooms.open(groupchat);
-                } else if (isObject(groupchat)) {
-                    api.rooms.open(groupchat.jid, clone(groupchat));
+                    return api.rooms.open(muc);
+                } else if (isObject(muc)) {
+                    return api.rooms.open(muc.jid, clone(muc));
                 } else {
-                    log.error('Invalid groupchat criteria specified for "auto_join_rooms"');
+                    log.error('Invalid muc criteria specified for "auto_join_rooms"');
+                    return Promise.resolve();
                 }
-            });
+            }));
             /**
              * Triggered once any rooms that have been configured to be automatically joined,
              * specified via the _`auto_join_rooms` setting, have been entered.

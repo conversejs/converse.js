@@ -454,7 +454,7 @@ describe("Message Archive Management", function () {
         }));
 
        it("can be used to query for archived messages from a chat room",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse(['statusInitialized'], {}, async function (done, _converse) {
 
             const room_jid = 'coven@chat.shakespeare.lit';
             _converse.api.archive.query({'with': room_jid, 'groupchat': true});
@@ -479,7 +479,7 @@ describe("Message Archive Management", function () {
        }));
 
         it("checks whether returned MAM messages from a MUC room are from the right JID",
-                mock.initConverse([], {}, async function (done, _converse) {
+                mock.initConverse(['statusInitialized'], {}, async function (done, _converse) {
 
             const room_jid = 'coven@chat.shakespeare.lit';
             const promise = _converse.api.archive.query({'with': room_jid, 'groupchat': true, 'max':'10'});

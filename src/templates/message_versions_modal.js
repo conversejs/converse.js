@@ -1,17 +1,14 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import dayjs from 'dayjs';
 import { modal_close_button, modal_header_close_button } from "./buttons"
-
-
-const i18n_message_versions = __('Message versions');
 
 
 export default (o) => html`
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="message-versions-modal-label">${i18n_message_versions}</h4>
+                <h4 class="modal-title" id="message-versions-modal-label">${__('Message versions')}</h4>
                 ${modal_header_close_button}
             </div>
             <div class="modal-body">

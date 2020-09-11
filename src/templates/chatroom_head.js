@@ -1,18 +1,18 @@
 import '../components/dropdown.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { html } from "lit-html";
 import { until } from 'lit-html/directives/until.js';
 import { converse } from "@converse/headless/converse-core";
 
 const u = converse.env.utils;
-const i18n_hide_topic = __('Hide the groupchat topic');
-const i18n_bookmarked = __('This groupchat is bookmarked');
 
 
 const tpl_standalone_btns = (o) => o.standalone_btns.reverse().map(b => until(b, ''));
 
 
 export default (o) => {
+    const i18n_hide_topic = __('Hide the groupchat topic');
+    const i18n_bookmarked = __('This groupchat is bookmarked');
     const subject = o.subject ? u.addHyperlinks(o.subject.text) : '';
     const show_subject = (subject && !o.subject_hidden);
     return html`

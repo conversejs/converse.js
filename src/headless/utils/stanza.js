@@ -537,7 +537,7 @@ const st = {
          * *Hook* which allows plugins to add additional parsing
          * @event _converse#parseMessage
          */
-        return api.hook('parseMessage', attrs);
+        return api.hook('parseMessage', _converse, attrs);
     },
 
     /**
@@ -685,7 +685,7 @@ const st = {
          * *Hook* which allows plugins to add additional parsing
          * @event _converse#parseMUCMessage
          */
-        return api.hook('parseMUCMessage', stanza, attrs);
+        return api.hook('parseMUCMessage', chatbox, attrs);
     },
 
     /**

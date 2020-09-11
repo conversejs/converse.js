@@ -1205,7 +1205,7 @@ converse.plugins.add('converse-omemo', {
             }
         });
 
-        function parseEncryptedMessage (attrs) {
+        function parseEncryptedMessage (stanza, attrs) {
             if (attrs.is_encrypted) {
                 // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
                 if (attrs.encrypted.prekey === true) {

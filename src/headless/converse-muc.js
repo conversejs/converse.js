@@ -2349,9 +2349,10 @@ converse.plugins.add('converse-muc', {
                     // Set connection_status before creating the occupant, but
                     // only trigger afterwards, so that plugins can access the
                     // occupant in their event handlers.
+                    const old_status = this.session.get('connection_status');
                     this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, {'silent': true});
                     this.updateOccupantsOnPresence(stanza);
-                    this.session.trigger('change:connection_status');
+                    this.session.trigger('change:connection_status', this.session, old_status);
                 } else {
                     this.updateOccupantsOnPresence(stanza);
                 }

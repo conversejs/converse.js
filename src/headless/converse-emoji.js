@@ -147,7 +147,7 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
 export function getShortnameReferences (text) {
     const references = [...text.matchAll(shortnames_regex)];
     return references.map(ref => {
-        const cp = converse.emojis.by_sn[ref[0]].cp;
+        const cp = converse.emojis.by_sn?.[ref[0]]?.cp;
         return {
             cp,
             'begin': ref.index,

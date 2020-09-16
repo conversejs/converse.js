@@ -50,25 +50,24 @@ function getCorrectionAttributes (stanza, original_stanza) {
 
 function getEncryptionAttributes (stanza, _converse) {
     const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
+    const attrs = { 'is_encrypted': !!encrypted };
     if (!encrypted || !_converse.config.get('trusted')) {
-        return {};
+        return attrs;
     }
+    const header = encrypted.querySelector('header');
+    attrs['encrypted'] = {'device_id': header.getAttribute('sid')};
+
     const device_id = _converse.omemo_store?.get('device_id');
     const key = device_id && sizzle(`key[rid="${device_id}"]`, encrypted).pop();
     if (key) {
-        const header = encrypted.querySelector('header');
-        return {
-            'is_encrypted': true,
-            'encrypted': {
-                'device_id': header.getAttribute('sid'),
-                'iv': header.querySelector('iv').textContent,
-                'key': key.textContent,
-                'payload': encrypted.querySelector('payload')?.textContent || null,
-                'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
-            }
-        }
+        Object.assign(attrs.encrypted, {
+            'iv': header.querySelector('iv').textContent,
+            'key': key.textContent,
+            'payload': encrypted.querySelector('payload')?.textContent || null,
+            'prekey': ['true', '1'].includes(key.getAttribute('prekey'))
+        });
     }
-    return {};
+    return attrs;
 }
 
 
@@ -537,7 +536,7 @@ const st = {
          * *Hook* which allows plugins to add additional parsing
          * @event _converse#parseMessage
          */
-        return api.hook('parseMessage', _converse, attrs);
+        return api.hook('parseMessage', stanza, attrs);
     },
 
     /**
@@ -685,7 +684,7 @@ const st = {
          * *Hook* which allows plugins to add additional parsing
          * @event _converse#parseMUCMessage
          */
-        return api.hook('parseMUCMessage', chatbox, attrs);
+        return api.hook('parseMUCMessage', stanza, attrs);
     },
 
     /**

@@ -466,7 +466,7 @@ export const api = _converse.api = {
      * @method _converse.api.hook
      * @param {string} name - The hook name
      * @param {...any} context - The context to which the hook applies (could be for example, a {@link _converse.ChatBox)).
-     * @param {...any} data - The data structure to be intercepted and * modified by the hook listeners.
+     * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
      */
     hook (name, context, data) {
         const events = _converse._events[name] || [];

@@ -187,9 +187,9 @@ async function decryptWhisperMessage (attrs) {
 function addKeysToMessageStanza (stanza, dicts, iv) {
     for (const i in dicts) {
         if (Object.prototype.hasOwnProperty.call(dicts, i)) {
-            const payload = dicts[i].payload,
-                    device = dicts[i].device,
-                    prekey = 3 == parseInt(payload.type, 10);
+            const payload = dicts[i].payload;
+            const device = dicts[i].device;
+            const prekey = 3 == parseInt(payload.type, 10);
 
             stanza.c('key', {'rid': device.get('id') }).t(btoa(payload.body));
             if (prekey) {
@@ -1206,7 +1206,7 @@ converse.plugins.add('converse-omemo', {
         });
 
         function parseEncryptedMessage (stanza, attrs) {
-            if (attrs.is_encrypted) {
+            if (attrs.is_encrypted && attrs.encrypted.key) {
                 // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
                 if (attrs.encrypted.prekey === true) {
                     return decryptPrekeyWhisperMessage(attrs);

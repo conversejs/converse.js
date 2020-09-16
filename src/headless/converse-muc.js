@@ -1930,6 +1930,21 @@ converse.plugins.add('converse-muc', {
                 return false;
             },
 
+            getMessageBodyQueryAttrs (attrs) {
+                if (attrs.message && attrs.msgid) {
+                    const query = {
+                        'from': attrs.from,
+                        'msgid': attrs.msgid
+                    }
+                    if (!attrs.is_encrypted) {
+                        // We can't match the message if it's a reflected
+                        // encrypted MUC message
+                        query['message'] =  attrs.message;
+                    }
+                    return query;
+                }
+            },
+
             /**
              * Queue an incoming message stanza meant for this {@link _converse.Chatroom} for processing.
              * @async

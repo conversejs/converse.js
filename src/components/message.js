@@ -161,7 +161,7 @@ export default class Message extends CustomElement {
             this.message_type !== 'info' &&
             prev_model.get('type') !== 'info' &&
             date.isBefore(dayjs(prev_model.get('time')).add(10, 'minutes')) &&
-            this.is_encrypted === prev_model.get('is_encrypted');
+            !!this.is_encrypted === !!prev_model.get('is_encrypted');
     }
 
     getExtraMessageClasses () {

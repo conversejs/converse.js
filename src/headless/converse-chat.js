@@ -1215,19 +1215,19 @@ converse.plugins.add('converse-chat', {
             const chatbox = await api.chats.get(attrs.contact_jid, {'nickname': attrs.nick }, has_body);
             await chatbox?.queueMessage(attrs);
             /**
+             * @typedef { Object } MessageData
              * An object containing the original message stanza, as well as the
              * parsed attributes.
-             * @typedef { Object } MessageData
              * @property { XMLElement } stanza
              * @property { MessageAttributes } stanza
+             * @property { ChatBox } chatbox
              */
-            const data = {stanza, attrs};
+            const data = {stanza, attrs, chatbox};
             /**
              * Triggered when a message stanza is been received and processed.
              * @event _converse#message
              * @type { object }
-             * @property { MessageData|MUCMessageData } data
-             * @example _converse.api.listen.on('message', obj => { ... });
+             * @property { module:converse-chat~MessageData } data
              */
             api.trigger('message', data);
         }

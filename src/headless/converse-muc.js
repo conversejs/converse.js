@@ -662,6 +662,12 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            /**
+             * Parses an incoming message stanza and queues it for processing.
+             * @private
+             * @method _converse.ChatRoom#handleMessageStanza
+             * @param { XMLElement } stanza
+             */
             async handleMessageStanza (stanza) {
                 if (st.isArchived(stanza)) {
                     // MAM messages are handled in converse-mam.
@@ -673,14 +679,21 @@ converse.plugins.add('converse-muc', {
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
                 /**
+                 * @typedef { Object } MUCMessageData
                  * An object containing the original groupchat message stanza,
                  * as well as the parsed attributes.
-                 * @typedef { Object } MUCMessageData
                  * @property { XMLElement } stanza
-                 * @property { MUCMessageAttributes } stanza
+                 * @property { MUCMessageAttributes } attrs
+                 * @property { ChatRoom } chatbox
                  */
                 const attrs = await st.parseMUCMessage(stanza, this, _converse);
-                const data = {stanza, attrs};
+                const data = {stanza, attrs, 'chatbox': this};
+                /**
+                 * Triggered when a groupchat message stanza has been received and parsed.
+                 * @event _converse#message
+                 * @type { object }
+                 * @property { module:converse-muc~MUCMessageData } data
+                 */
                 api.trigger('message', data);
                 return attrs && this.queueMessage(attrs);
             },

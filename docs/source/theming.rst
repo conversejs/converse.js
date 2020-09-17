@@ -53,7 +53,7 @@ To generate the CSS you can run::
     make css
 
 Testing your changes
-=======
+====================
 
 The recommended way to test your changes is to run the tests that are part of the Converse source code.
 By executing ``make test`` you'll run all tests (which live in the ``spec`` folder) which will open a browser window in which tests are processed.

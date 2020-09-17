@@ -18,7 +18,7 @@ const tpl_message = (o) => html`
         ?editable=${o.editable}
         ?has_mentions=${o.has_mentions}
         ?is_delayed=${o.is_delayed}
-        ?is_encrypted=${o.is_encrypted}
+        ?is_encrypted=${!!o.is_encrypted}
         ?is_first_unread=${o.is_first_unread}
         ?is_me_message=${o.is_me_message}
         ?is_only_emojis=${o.is_only_emojis}

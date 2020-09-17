@@ -172,7 +172,17 @@ async function decryptPrekeyWhisperMessage (attrs) {
 }
 
 async function decryptWhisperMessage (attrs) {
-    const session_cipher = getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
+    const from_jid = attrs.from_muc ? attrs.from_real_jid : attrs.from;
+    if (!from_jid) {
+        Object.assign(attrs, {
+            'error_text': __("Sorry, could not decrypt a received OMEMO because we don't have the JID for that user."),
+            'error_type': 'Decryption',
+            'is_ephemeral': false,
+            'is_error': true,
+            'type': 'error',
+        });
+    }
+    const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
     const key = u.base64ToArrayBuffer(attrs.encrypted.key);
     try {
         const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary')
@@ -187,9 +197,9 @@ async function decryptWhisperMessage (attrs) {
 function addKeysToMessageStanza (stanza, dicts, iv) {
     for (const i in dicts) {
         if (Object.prototype.hasOwnProperty.call(dicts, i)) {
-            const payload = dicts[i].payload,
-                    device = dicts[i].device,
-                    prekey = 3 == parseInt(payload.type, 10);
+            const payload = dicts[i].payload;
+            const device = dicts[i].device;
+            const prekey = 3 == parseInt(payload.type, 10);
 
             stanza.c('key', {'rid': device.get('id') }).t(btoa(payload.body));
             if (prekey) {
@@ -1206,7 +1216,7 @@ converse.plugins.add('converse-omemo', {
         });
 
         function parseEncryptedMessage (stanza, attrs) {
-            if (attrs.is_encrypted) {
+            if (attrs.is_encrypted && attrs.encrypted.key) {
                 // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
                 if (attrs.encrypted.prekey === true) {
                     return decryptPrekeyWhisperMessage(attrs);

@@ -662,6 +662,12 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            /**
+             * Parses an incoming message stanza and queues it for processing.
+             * @private
+             * @method _converse.ChatRoom#handleMessageStanza
+             * @param { XMLElement } stanza
+             */
             async handleMessageStanza (stanza) {
                 if (st.isArchived(stanza)) {
                     // MAM messages are handled in converse-mam.
@@ -673,14 +679,21 @@ converse.plugins.add('converse-muc', {
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
                 /**
+                 * @typedef { Object } MUCMessageData
                  * An object containing the original groupchat message stanza,
                  * as well as the parsed attributes.
-                 * @typedef { Object } MUCMessageData
                  * @property { XMLElement } stanza
-                 * @property { MUCMessageAttributes } stanza
+                 * @property { MUCMessageAttributes } attrs
+                 * @property { ChatRoom } chatbox
                  */
                 const attrs = await st.parseMUCMessage(stanza, this, _converse);
-                const data = {stanza, attrs};
+                const data = {stanza, attrs, 'chatbox': this};
+                /**
+                 * Triggered when a groupchat message stanza has been received and parsed.
+                 * @event _converse#message
+                 * @type { object }
+                 * @property { module:converse-muc~MUCMessageData } data
+                 */
                 api.trigger('message', data);
                 return attrs && this.queueMessage(attrs);
             },
@@ -1917,6 +1930,21 @@ converse.plugins.add('converse-muc', {
                 return false;
             },
 
+            getMessageBodyQueryAttrs (attrs) {
+                if (attrs.message && attrs.msgid) {
+                    const query = {
+                        'from': attrs.from,
+                        'msgid': attrs.msgid
+                    }
+                    if (!attrs.is_encrypted) {
+                        // We can't match the message if it's a reflected
+                        // encrypted MUC message
+                        query['message'] =  attrs.message;
+                    }
+                    return query;
+                }
+            },
+
             /**
              * Queue an incoming message stanza meant for this {@link _converse.Chatroom} for processing.
              * @async
@@ -2041,6 +2069,10 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            /**
+             * Handle a presence stanza that disconnects the user from the MUC
+             * @param { XMLElement } stanza
+             */
             handleDisconnection (stanza) {
                 const is_self = stanza.querySelector("status[code='110']") !== null;
                 const x = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza).pop();
@@ -2573,6 +2605,11 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
+             * @typedef { Object} OccupantData
+             * @property { String } [jid]
+             * @property { String } [nick]
+             */
+            /**
              * Try to find an existing occupant based on the passed in
              * data object.
              *
@@ -2581,7 +2618,7 @@ converse.plugins.add('converse-muc', {
              * but should have at least one or the other.
              * @private
              * @method _converse.ChatRoomOccupants#findOccupant
-             * @param { Object } data
+             * @param { OccupantData } data
              */
             findOccupant (data) {
                 const jid = Strophe.getBareJidFromJid(data.jid);

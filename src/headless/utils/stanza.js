@@ -567,6 +567,7 @@ const st = {
         }
         const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
         const from = stanza.getAttribute('from');
+        const nick = Strophe.unescapeNode(Strophe.getResourceFromJid(from));
         const marker = st.getChatMarker(stanza);
         const now =  (new Date()).toISOString();
         /**
@@ -594,8 +595,9 @@ const st = {
          * @property { String } error_condition - The defined error condition
          * @property { String } error_text - The error text received from the server
          * @property { String } error_type - The type of error received from the server
-         * @property { String } from - The sender JID
+         * @property { String } from - The sender JID (${muc_jid}/${nick})
          * @property { String } from_muc - The JID of the MUC from which this message was sent
+         * @property { String } from_real_jid - The real JID of the sender, if available
          * @property { String } fullname - The full name of the sender
          * @property { String } marker - The XEP-0333 Chat Marker value
          * @property { String } marker_id - The `id` attribute of a XEP-0333 chat marker
@@ -623,9 +625,11 @@ const st = {
          */
         let attrs = Object.assign({
                 from,
+                nick,
                 'body': stanza.querySelector('body')?.textContent?.trim(),
                 'chat_state': getChatState(stanza),
                 'from_muc': Strophe.getBareJidFromJid(from),
+                'from_real_jid': chatbox.occupants.findOccupant({nick})?.get('jid'),
                 'is_archived': st.isArchived(original_stanza),
                 'is_carbon': isCarbon(original_stanza),
                 'is_delayed': !!delay,
@@ -634,7 +638,6 @@ const st = {
                 'is_marker': !!marker,
                 'marker_id': marker && marker.getAttribute('id'),
                 'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
-                'nick': Strophe.unescapeNode(Strophe.getResourceFromJid(from)),
                 'receipt_id': getReceiptId(stanza),
                 'received': (new Date()).toISOString(),
                 'references': getReferences(stanza),
@@ -653,6 +656,7 @@ const st = {
             getModerationAttributes(stanza),
             getEncryptionAttributes(stanza, _converse)
         );
+
 
         await api.emojis.initialize();
         attrs = Object.assign({

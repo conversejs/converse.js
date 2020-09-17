@@ -172,7 +172,17 @@ async function decryptPrekeyWhisperMessage (attrs) {
 }
 
 async function decryptWhisperMessage (attrs) {
-    const session_cipher = getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
+    const from_jid = attrs.from_muc ? attrs.from_real_jid : attrs.from;
+    if (!from_jid) {
+        Object.assign(attrs, {
+            'error_text': __("Sorry, could not decrypt a received OMEMO because we don't have the JID for that user."),
+            'error_type': 'Decryption',
+            'is_ephemeral': false,
+            'is_error': true,
+            'type': 'error',
+        });
+    }
+    const session_cipher = getSessionCipher(from_jid, parseInt(attrs.encrypted.device_id, 10));
     const key = u.base64ToArrayBuffer(attrs.encrypted.key);
     try {
         const key_and_tag = await session_cipher.decryptWhisperMessage(key, 'binary')

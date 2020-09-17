@@ -184,21 +184,16 @@ export class AutoComplete {
         } else if (typeof list === "string" && list.includes(",")) {
             this._list = list.split(/\s*,\s*/);
         } else { // Element or CSS selector
-            list = helpers.getElement(list);
-            if (list && list.children) {
-                const items = [];
-                Array.prototype.slice.apply(list.children).forEach(function (el) {
-                    if (!el.disabled) {
-                        const text = el.textContent.trim(),
-                            value = el.value || text,
-                            label = el.label || text;
-                        if (value !== "") {
-                            items.push({ label: label, value: value });
-                        }
-                    }
-                });
-                this._list = items;
-            }
+            const children = helpers.getElement(list)?.children || [];
+            this._list = Array.from(children)
+                .filter(el => !el.disabled)
+                .map(el => {
+                    const text = el.textContent.trim();
+                    const value = el.value || text;
+                    const label = el.label || text;
+                    return (value !== "") ? { label, value } : null;
+                })
+                .filter(i => i);
         }
 
         if (document.activeElement === this.input) {

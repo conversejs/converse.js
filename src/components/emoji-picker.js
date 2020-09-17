@@ -200,8 +200,14 @@ export default class EmojiPicker extends CustomElement {
     }
 
     onEnterPressed (ev) {
+        if (ev.emoji_keypress_handled) {
+            // Prevent the emoji from being inserted a 2nd time due to this
+            // method being called by two event handlers: onKeyDown and _onGlobalKeyDown
+            return;
+        }
         ev.preventDefault();
         ev.stopPropagation();
+        ev.emoji_keypress_handled = true;
         if (converse.emojis.shortnames.includes(ev.target.value)) {
             this.insertIntoTextArea(ev.target.value);
         } else if (this.search_results.length === 1) {

@@ -22,13 +22,6 @@ export const FILTER_STARTSWITH = function (text, input) {
 };
 
 
-const SORT_BYLENGTH = function (a, b) {
-    if (a.length !== b.length) {
-        return a.length - b.length;
-    }
-    return a < b? -1 : 1;
-};
-
 const SORT_BY_QUERY = function (a, b) {
     const query = a.query;
     if (a.label.indexOf(query) === b.label.indexOf(query)) {

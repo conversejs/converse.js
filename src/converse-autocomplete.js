@@ -29,6 +29,14 @@ const SORT_BYLENGTH = function (a, b) {
     return a < b? -1 : 1;
 };
 
+const SORT_BY_QUERY = function (a, b) {
+    const query = a.query;
+    if (a.label.indexOf(query) === b.label.indexOf(query)) {
+        return 0
+    }
+    return a.label.indexOf(query) < b.label.indexOf(query) ? -1 : 1
+}
+
 
 const ITEM = (text, input) => {
     input = input.trim();
@@ -147,7 +155,7 @@ export class AutoComplete {
             'auto_first': false, // Should the first element be automatically selected?
             'data': a => a,
             'filter': FILTER_CONTAINS,
-            'sort': config.sort === false ? false : SORT_BYLENGTH,
+            'sort': config.sort === false ? false : SORT_BY_QUERY,
             'item': ITEM
         }, config);
 

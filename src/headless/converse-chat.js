@@ -179,8 +179,7 @@ converse.plugins.add('converse-chat', {
 
             getMessageText () {
                 if (this.get('is_encrypted')) {
-                    return this.get('plaintext') ||
-                           (api.settings.get('loglevel') === 'debug' ? __('Unencryptable OMEMO message') : null);
+                    return this.get('plaintext') || this.get('body') || __('Undecryptable OMEMO message');
                 }
                 return this.get('message');
             },
@@ -788,11 +787,16 @@ converse.plugins.add('converse-chat', {
 
             getMessageBodyQueryAttrs (attrs) {
                 if (attrs.message && attrs.msgid) {
-                    return {
-                        'message': attrs.message,
+                    const query = {
                         'from': attrs.from,
                         'msgid': attrs.msgid
                     }
+                    if (!attrs.is_encrypted) {
+                        // We can't match the message if it's a reflected
+                        // encrypted message (e.g. via MAM or in a MUC)
+                        query['message'] =  attrs.message;
+                    }
+                    return query;
                 }
             },
 

@@ -70,7 +70,7 @@ async function initializedOMEMO (_converse) {
 }
 
 
-fdescribe("The OMEMO module", function() {
+describe("The OMEMO module", function() {
 
     it("adds methods for encrypting and decrypting messages via AES GCM",
         mock.initConverse(

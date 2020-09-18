@@ -1328,11 +1328,14 @@ converse.plugins.add('converse-omemo', {
                             }
                             devicelist.devices.trigger('remove');
                         }
-                        // Generate new bundle and publish
+                        // Generate new device bundle and publish
+                        // https://xmpp.org/extensions/attic/xep-0384-0.3.0.html#usecases-announcing
                         await _converse.omemo_store.generateBundle();
                         await devicelist.publishDevices();
                         const device = devicelist.devices.get(_converse.omemo_store.get('device_id'));
-                        return generateFingerprint(device);
+                        const fp = generateFingerprint(device);
+                        await _converse.omemo_store.publishBundle();
+                        return fp;
                     }
                 }
             }

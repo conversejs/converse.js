@@ -298,6 +298,10 @@ async function buildSession (device) {
 }
 
 async function getSession (device) {
+    if (!device.get('bundle')) {
+        log.error(`Could not build an OMEMO session for device ${device.get('id')} because we don't have its bundle`);
+        return null;
+    }
     const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
     const session = await _converse.omemo_store.loadSession(address.toString());
     if (session) {
@@ -716,9 +720,11 @@ converse.plugins.add('converse-omemo', {
             // Filter out our own device
             const id = _converse.omemo_store.get('device_id');
             devices = devices.filter(d => d.get('id') !== id);
-
+            // Fetch bundles if necessary
             await Promise.all(devices.map(d => d.getBundle()));
-            const sessions = await Promise.all(devices.map(d => getSession(d)));
+
+            const sessions = devices.filter(d => d).map(d => getSession(d));
+            await Promise.all(sessions);
             if (sessions.includes(null)) {
                 // We couldn't build a session for certain devices.
                 devices = devices.filter(d => sessions[devices.indexOf(d)]);
@@ -1025,6 +1031,11 @@ converse.plugins.add('converse-omemo', {
             }
         });
 
+        /**
+         * @class
+         * @namespace _converse.Device
+         * @memberOf _converse
+         */
         _converse.Device = Model.extend({
             defaults: {
                 'trusted': UNDECIDED,
@@ -1049,22 +1060,26 @@ converse.plugins.add('converse-omemo', {
                 try {
                     iq = await api.sendIQ(stanza)
                 } catch (iq) {
-                    throw new IQError("Could not fetch bundle", iq);
+                    log.error(`Could not fetch bundle for device ${this.get('id')} from ${this.get('jid')}`);
+                    log.error(iq);
+                    return null;
                 }
                 if (iq.querySelector('error')) {
                     throw new IQError("Could not fetch bundle", iq);
                 }
-                const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),
-                      bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
-                      bundle = parseBundle(bundle_el);
+                const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop();
+                const bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop();
+                const bundle = parseBundle(bundle_el);
                 this.save('bundle', bundle);
                 return bundle;
             },
 
+            /**
+             * Fetch and save the bundle information associated with
+             * this device, if the information is not cached already.
+             * @method _converse.Device#getBundle
+             */
             getBundle () {
-                /* Fetch and save the bundle information associated with
-                 * this device, if the information is not at hand already.
-                 */
                 if (this.get('bundle')) {
                     return Promise.resolve(this.get('bundle'), this);
                 } else {

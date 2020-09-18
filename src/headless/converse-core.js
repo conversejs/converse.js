@@ -912,7 +912,7 @@ export const api = _converse.api = {
      * @param { Boolean } reject - Whether an error IQ should cause the promise
      *  to be rejected. If `false`, the promise will resolve instead of being rejected.
      * @returns {Promise} A promise which resolves when we receive a `result` stanza
-     * or is rejected when we receive an `error` stanza.
+     *  or is rejected when we receive an `error` stanza.
      */
     sendIQ (stanza, timeout, reject=true) {
         timeout = timeout || _converse.STANZA_TIMEOUT;

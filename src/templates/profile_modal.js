@@ -65,6 +65,7 @@ const device_list = (o) => {
 }
 
 
+// TODO: this needs to go as a component into the OMEMO plugin folder
 const omemo_page = (o) => {
     const i18n_fingerprint = __("This device's OMEMO fingerprint");
     const i18n_generate = __('Generate new keys and fingerprint');

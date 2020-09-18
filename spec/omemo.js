@@ -833,7 +833,7 @@ describe("The OMEMO module", function() {
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute(`id`)}" type="set" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                     `<publish node="eu.siacs.conversations.axolotl.devicelist">`+
-                        `<item>`+
+                        `<item id="current">`+
                             `<list xmlns="eu.siacs.conversations.axolotl">`+
                                 `<device id="123456789"/>`+
                                 `<device id="444"/>`+
@@ -1139,7 +1139,7 @@ describe("The OMEMO module", function() {
             `<iq from="romeo@montague.lit" id="${iq_stanza.getAttribute(`id`)}" type="set" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                     `<publish node="eu.siacs.conversations.axolotl.devicelist">`+
-                        `<item>`+
+                        `<item id="current">`+
                             `<list xmlns="eu.siacs.conversations.axolotl">`+
                                 `<device id="482886413b977930064a5888b92134fe"/>`+
                                 `<device id="123456789"/>`+

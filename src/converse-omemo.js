@@ -1181,7 +1181,7 @@ converse.plugins.add('converse-omemo', {
              * See: https://xmpp.org/extensions/xep-0384.html#usecases-announcing
              */
             publishDevices () {
-                const item = $build('item').c('list', {'xmlns': Strophe.NS.OMEMO})
+                const item = $build('item', {'id': 'current'}).c('list', {'xmlns': Strophe.NS.OMEMO})
                 this.devices.filter(d => d.get('active')).forEach(d => item.c('device', {'id': d.get('id')}).up());
                 const options = {'pubsub#access_model': 'open'};
                 return api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);

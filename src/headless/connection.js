@@ -314,7 +314,7 @@ export class Connection extends Strophe.Connection {
         if (type.toLowerCase() === 'websocket') {
             return this._proto instanceof Strophe.Websocket;
         } else if (type.toLowerCase() === 'bosh') {
-            return Strophe.BOSH && this._proto instanceof Strophe.Bosh;
+            return Strophe.Bosh && this._proto instanceof Strophe.Bosh;
         }
     }
 

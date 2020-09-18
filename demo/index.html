@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Converse.js</title>
+    <title>Converse Demos</title>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Converse.js: A free chat client for your website" />
+    <meta name="description" content="Converse XMPP/Jabber Chat"/>
     <meta name="author" content="JC Brand" />
-    <meta name="keywords" content="xmpp chat webchat converse.js" />
+    <meta name="keywords" content="xmpp chat webchat converse.js Converse" />
 
-    <link rel="shortcut icon" type="image/ico" href="images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="../dist/website.min.css" />
-    <script type="text/javascript" src="/analytics.js"></script>
+    <!-- These files are NOT needed when using converse.js in your own project. -->
+    <link rel="shortcut icon" type="image/ico" href="/dist/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="/dist/website.min.css" />
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
-    <![if gte IE 9]>
-        <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/6.0.0/dist/converse.min.css" />
-        <script src="https://cdn.conversejs.org/6.0.0/dist/converse.min.js"></script>
-    <![endif]>
+    <script type="text/javascript" src="analytics.js"></script>
+    <!-- *********************************************************************** -->
+
+    <link rel="manifest" href="/manifest.json">
+    <link type="text/css" rel="stylesheet" media="screen" href="/dist/converse.min.css" />
+    <script src="https://cdn.conversejs.org/3rdparty/libsignal-protocol.min.js"></script>
+    <script src="/dist/converse.min.js"></script>
 </head>
 
 <body id="page-top" data-spy="scroll" class="converse-website">

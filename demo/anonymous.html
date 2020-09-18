@@ -1,36 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Converse.js</title>
+    <title>Converse - Anonymous login demo</title>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Converse.js: A free chat client for your website" />
+    <meta name="description" content="Converse XMPP/Jabber Chat"/>
     <meta name="author" content="JC Brand" />
-    <meta name="keywords" content="xmpp chat webchat converse.js" />
-    <link rel="shortcut icon" type="image/ico" href="../images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/6.0.0/dist/font-awesome.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/6.0.0/dist/website.min.css" />
-    <script type="text/javascript" src="../analytics.js"></script>
+    <meta name="keywords" content="xmpp chat webchat converse.js Converse" />
+
+    <!-- These files are NOT needed when using converse.js in your own project. -->
+    <link rel="shortcut icon" type="image/ico" href="/dist/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="/dist/website.min.css" />
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
-    <![if gt IE 11]>
-        <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/6.0.0/dist/converse.min.css" />
-        <script src="https://cdn.conversejs.org/6.0.0/dist/converse.min.js"></script>
-    <![endif]>
+    <script type="text/javascript" src="analytics.js"></script>
+    <!-- *********************************************************************** -->
+
+    <link rel="manifest" href="/manifest.json">
+    <link type="text/css" rel="stylesheet" media="screen" href="/dist/converse.min.css" />
+    <script src="https://cdn.conversejs.org/3rdparty/libsignal-protocol.min.js"></script>
+    <script src="/dist/converse.min.js"></script>
 </head>
 
 <body id="page-top" data-spy="scroll" class="converse-website">
 <section class="section-wrapper">
-	<nav class="navbar sticky-top navbar-expand-lg" role="navigation">
-		<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-			<span class="page-scroll">
-				<a class="navbar-brand" href="/"><span class="converse-brand-heading">Home</span></a>
-				<a class="navbar-brand" href="/demo"><span class="converse-brand-heading">Demos</span></a>
-			</span>
-		</div>
-	</nav>
+    <nav class="navbar sticky-top navbar-expand-lg" role="navigation">
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <span class="page-scroll">
+                <a class="navbar-brand" href="/"><span class="converse-brand-heading">Home</span></a>
+                <a class="navbar-brand" href="/demo"><span class="converse-brand-heading">Demos</span></a>
+            </span>
+        </div>
+    </nav>
 
-    <section id="intro" class="intro container">
+    <section id="intro" class="intro" class="container">
         <div class="row">
             <div class="col-md-12 col-md-offset-2">
                 <h1 class="brand-heading fade-in">
@@ -39,7 +42,7 @@
                         xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink"
                         viewBox="0 0 364 364">
-                    <title>Home</title>
+                    <title>Converse</title>
                     <g class="cls-1" id="g904">
                         <g data-name="Layer 2">
                             <g data-name="Layer 7">

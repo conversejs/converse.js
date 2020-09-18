@@ -25,30 +25,15 @@ Generating builds
 Creating JavaScript and CSS bundles and distribution files
 ==========================================================
 
-Converse uses `webpack <https://webpack.js.org/>`_ to create bundles containing the
-core JavaScript code and all of the 3rd party dependencies.
+Converse uses `webpack <https://webpack.js.org/>`_ to create the final JavaScript and CSS distribution files.
 
-Similarly, we use `Sass <http://sass-lang.com/>`_ to generate the CSS bundle
-from ``.scss`` files in the ``sass`` directory.
+The generated distribution files are all placed in the ``./dist`` directory.
+The Converse repository does not include ``dist`` directory by default.
 
-The generated JavaScript bundles are contained in the `dist <https://github.com/conversejs/converse.js/tree/master/dist>`_ directory
-and the generated CSS bundles in the `css <https://github.com/conversejs/converse.js/tree/master/css>`_ directory.
-
-To generate a prticular bundle, for example the minified file ``converse.min.js``, you can run ``make dist/converse.min.js``.
-This is also true for any of the other bundle files.
-
-To generate all CSS and JavaScript bundles, you can run ``make dist``.
+To generate the ``./dist`` directory and all CSS and JavaScript bundles, simply run ``make dist``.
 
 When you're developing, and constantly changing code, you can run ``make watch``
 to let the bundles be automatically generated as soon as you edit a file.
-
-The Converse repository does not include the minified files in the ``dist`` or
-``css`` directories. Before deployment, you'll want to generate them yourself.
-
-To only generate the minified files, you can make them individually. ::
-
-    make dist/converse.min.js
-    make dist/converse.min.css
 
 .. note::
 

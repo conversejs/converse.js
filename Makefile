@@ -55,7 +55,7 @@ help:
 ## Miscellaneous
 
 .PHONY: serve
-serve: node_modules
+serve: node_modules dist
 	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1
 
 .PHONY: serve_bg
@@ -137,8 +137,10 @@ devserver: node_modules
 ## Builds
 
 dist/converse.js:: node_modules
+	npm run dev
 
 dist/converse.css:: node_modules
+	npm run dev
 
 dist/website.css:: node_modules sass
 	$(SASS) --source-map true --include-path $(BOOTSTRAP) sass/website.scss $@

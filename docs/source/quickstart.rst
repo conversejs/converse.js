@@ -9,18 +9,17 @@ Quickstart
 Getting a demo up and running
 =============================
 
-You can try out the latest version of Converse on `conversejs.org <https://conversejs.org>`_
+You can try out the latest version of Converse at `conversejs.org <https://conversejs.org>`_
 for the overlayed version and `conversejs.org/fullscreen.html <https://conversejs.org/fullscreen.html>`_
 for the full page version.
 
-If you want to host Converse yourself, there are a few options available to
-you.
+If you want to host and serve Converse yourself, there are a few options available.
 
 Let your XMPP server serve Converse for you
 -------------------------------------------
 
 If you run your own XMPP server, you might first want to check whether it has
-a plugin or module for hosting Converse for you.
+a plugin or module for hosting Converse.
 
 * OpenFire has the `inverse <https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=inverse>`_ plugin.
 * Prosody has `mod_conversejs <https://modules.prosody.im/mod_conversejs.html>`_.
@@ -29,16 +28,14 @@ a plugin or module for hosting Converse for you.
 Serving Converse yourself
 -------------------------
 
-Alternative you can serve only Converse without requiring any particular
-XMPP server.
+Alternative you can serve only Converse without requiring any particular XMPP server.
 
-To do so, you'll need to get the right files to host, for which you have four
-options.
+To do so, you'll need to get the right files to host, for which you have four options.
 
 .. note::
 
-    Pro-tip, if you just want to quickly test things locally, you can quickly start
-    up an HTTP server with Python by running ``python -m SimpleHTTPServer``
+    Pro-tip, if you just want to quickly test things locally, you can run ``make serve`` inside a checkout of the Converse repo.
+    Converse is then hosted at http://localhost:8000
 
 
 Option 1: Use the content delivery network
@@ -91,13 +88,9 @@ Have a look at the :ref:`creating_builds` section on how to create your own buil
 In short, you should be able to do it by running ``make dist`` inside a
 checkout of the `Converse repo <http://github.com/conversejs/converse.js/>`_.
 
-.. note::
+To build the files and also start an HTTP server, you can run ``make serve``.
 
-    When hosting Converse yourself without using the CDN (options 2 and 4),
-    you'll need to need to make sure that the ``webfonts`` directory is available in
-    the same location as ``converse.min.css``.
-
-
+The distribution files will be added to the ``./dist`` folder inside the repo.
 
 
 Initializing Converse
@@ -125,9 +118,9 @@ Fullscreen version
 Converse also comes in a fullscreen version.
 A hosted version is available online at `conversejs.org/fullscreen <https://conversejs.org/fullscreen.html>`_.
 
-Originally this version was available as a separate build file, but 
+Originally this version was available as a separate build file, but
 as of version 4.0.0 and higher, the difference between the "overlay" and the
-"fullscreen" versions of converse.js is simply a matter of configuring the 
+"fullscreen" versions of converse.js is simply a matter of configuring the
 :ref:`view_mode`.
 
 For example::

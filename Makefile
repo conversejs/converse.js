@@ -199,7 +199,7 @@ eslint: node_modules
 	$(ESLINT) spec/ --global converse
 
 .PHONY: check
-check: dev eslint
+check: eslint | dist/converse.js dist/converse.css
 	$(KARMA) start karma.conf.js $(ARGS)
 
 .PHONY: test

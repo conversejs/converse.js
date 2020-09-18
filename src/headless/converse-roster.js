@@ -38,11 +38,11 @@ converse.plugins.add('converse-roster', {
             'rosterInitialized',
         ]);
 
-        _converse.HEADER_CURRENT_CONTACTS =  __('My contacts');
-        _converse.HEADER_PENDING_CONTACTS = __('Pending contacts');
-        _converse.HEADER_REQUESTING_CONTACTS = __('Contact requests');
-        _converse.HEADER_UNGROUPED = __('Ungrouped');
-        _converse.HEADER_UNREAD = __('New messages');
+        _converse.HEADER_CURRENT_CONTACTS =  'My contacts';
+        _converse.HEADER_PENDING_CONTACTS = 'Pending contacts';
+        _converse.HEADER_REQUESTING_CONTACTS = 'Contact requests';
+        _converse.HEADER_UNGROUPED = 'Ungrouped';
+        _converse.HEADER_UNREAD = 'New messages';
 
         const HEADER_WEIGHTS = {};
         HEADER_WEIGHTS[_converse.HEADER_UNREAD] = 0;

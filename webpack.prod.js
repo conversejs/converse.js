@@ -11,7 +11,7 @@ const plugins = [
     new MiniCssExtractPlugin({filename: '../dist/converse.min.css'}),
     new CopyWebpackPlugin({
         patterns: [
-            {from: 'src/headless/node_modules/strophe.js/src/shared-connection-worker.js', to: 'shared-connection-worker.js'},
+            {from: 'node_modules/strophe.js/src/shared-connection-worker.js', to: 'shared-connection-worker.js'},
             {from: 'sounds', to: 'sounds'},
             {from: 'images/favicon.ico', to: 'images/favicon.ico'},
             {from: 'images/custom_emojis', to: 'images/custom_emojis'},

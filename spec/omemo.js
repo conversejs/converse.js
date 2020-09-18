@@ -57,6 +57,7 @@ async function initializedOMEMO (_converse) {
         'to': _converse.bare_jid,
         'type': 'result'});
     _converse.connection._dataRecv(mock.createRequest(stanza));
+
     iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse))
 
     stanza = $iq({
@@ -69,7 +70,7 @@ async function initializedOMEMO (_converse) {
 }
 
 
-describe("The OMEMO module", function() {
+fdescribe("The OMEMO module", function() {
 
     it("adds methods for encrypting and decrypting messages via AES GCM",
         mock.initConverse(
@@ -244,7 +245,8 @@ describe("The OMEMO module", function() {
         await u.waitUntil(() => initializedOMEMO(_converse));
 
         const toolbar = view.el.querySelector('.chat-toolbar');
-        toolbar.querySelector('.toggle-omemo').click();
+        const el = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
+        el.click();
         expect(view.model.get('omemo_active')).toBe(true);
 
         // newguy enters the room
@@ -433,7 +435,19 @@ describe("The OMEMO module", function() {
                 </sent>
             </message>
         `);
+        _converse.connection.IQ_stanzas = [];
         _converse.connection._dataRecv(mock.createRequest(carbon));
+
+        // The message received is a prekey message, so missing prekeys are
+        // generated and a new bundle published.
+        iq_stanza = await u.waitUntil(() => bundleHasBeenPublished(_converse));
+        const result_iq = $iq({
+            'from': _converse.bare_jid,
+            'id': iq_stanza.getAttribute('id'),
+            'to': _converse.bare_jid,
+            'type': 'result'});
+        _converse.connection._dataRecv(mock.createRequest(result_iq));
+
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.length).toBe(1);
 
@@ -501,7 +515,7 @@ describe("The OMEMO module", function() {
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
         const toolbar = view.el.querySelector('.chat-toolbar');
-        const toggle = toolbar.querySelector('.toggle-omemo');
+        const toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
         toggle.click();
         expect(view.model.get('omemo_active')).toBe(true);
         expect(view.model.get('omemo_supported')).toBe(true);
@@ -1283,7 +1297,7 @@ describe("The OMEMO module", function() {
         await u.waitUntil(() => initializedOMEMO(_converse));
 
         const toolbar = view.el.querySelector('.chat-toolbar');
-        let toggle = toolbar.querySelector('.toggle-omemo');
+        let toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
         expect(view.model.get('omemo_active')).toBe(undefined);
         expect(view.model.get('omemo_supported')).toBe(true);
         await u.waitUntil(() => !toggle.disabled);

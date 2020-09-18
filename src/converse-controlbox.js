@@ -251,9 +251,6 @@ converse.plugins.add('converse-controlbox', {
                     this.insertBrandHeading();
                 }
                 this.loginpanel.initPopovers();
-                if (api.settings.get('auto_focus')) {
-                    this.loginpanel.el.querySelector('#converse-login-jid').focus();
-                }
                 return this;
             },
 

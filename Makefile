@@ -175,8 +175,8 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 src/headless/dist/converse-headless.min.js: src webpack.common.js node_modules @converse/headless
 	npm run headless
 
-dist:: node_modules src/*
-	npm run dev && npm run build && make dist/website.css && make dist/website.min.css
+dist:: node_modules src/* | dist/converse.js dist/converse.css dist/website.css dist/website.min.css
+	npm run prod
 
 .PHONY: install
 install:: dist

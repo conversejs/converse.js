@@ -545,7 +545,7 @@ converse.plugins.add('converse-rosterview', {
             render () {
                 this.el.setAttribute('data-group', this.model.get('name'));
                 this.el.innerHTML = tpl_group_header({
-                    'label_group': this.model.get('name'),
+                    'label_group': __(this.model.get('name')),
                     'desc_group_toggle': this.model.get('description'),
                     'toggle_state': this.model.get('state'),
                     '_converse': _converse

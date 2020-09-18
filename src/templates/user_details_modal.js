@@ -38,8 +38,8 @@ const fingerprints = (o) => {
         <ul class="list-group fingerprints">
             <li class="list-group-item active">${i18n_fingerprints}</li>
             ${ devices.length ?
-                    devices.map(device => device_fingerprint(Object.assign({device}, o))) :
-                    html`<li class="list-group-item"> ${i18n_no_devices} </li>` }
+                devices.map(device => device_fingerprint(Object.assign({device}, o))) :
+                html`<li class="list-group-item"> ${i18n_no_devices} </li>` }
         </ul>
     `;
 }
@@ -65,7 +65,9 @@ export default (o) => {
     const i18n_url = __('URL');
     const avatar_data = {
         'alt_text': i18n_profile,
-        'extra_classes': 'mb-3'
+        'extra_classes': 'mb-3',
+        'height': '120',
+        'width': '120'
     }
 
     return html`
@@ -76,7 +78,7 @@ export default (o) => {
                     ${modal_header_close_button}
                 </div>
                 <div class="modal-body">
-                    ${ o.image ? avatar(Object.assign(avatar_data, o)) : '' }
+                    ${ o.image ? html`<div class="mb-4">${avatar(Object.assign(o, avatar_data))}</div>` : '' }
                     ${ o.fullname ? html`<p><label>${i18n_full_name}:</label> ${o.fullname}</p>` : '' }
                     <p><label>${i18n_address}:</label> <a href="xmpp:${o.jid}">${o.jid}</a></p>
                     ${ o.nickname ? html`<p><label>${i18n_nickname}:</label> ${o.nickname}</p>` : '' }

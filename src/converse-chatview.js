@@ -1093,8 +1093,8 @@ converse.plugins.add('converse-chatview', {
             },
 
             toHTML () {
-                const vcard = this.model?.vcard,
-                      vcard_json = vcard ? vcard.toJSON() : {};
+                const vcard = this.model?.vcard;
+                const vcard_json = vcard ? vcard.toJSON() : {};
                 return tpl_user_details_modal(Object.assign(
                     this.model.toJSON(),
                     vcard_json, {

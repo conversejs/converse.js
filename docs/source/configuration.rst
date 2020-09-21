@@ -1366,6 +1366,16 @@ notification_icon
 This option specifies which icon is shown in HTML5 notifications, as provided
 by the ``src/converse-notification.js`` plugin.
 
+notify_nicknames_without_references
+-----------------------------------
+
+* Default: ``false``
+
+Enables notifications for nicknames in messages that don't have associated
+XEP-0372 references linking them to the JID of the person being mentioned.
+
+In Converse, these would be nicknames that weren't mentioned via the ``@`` sign.
+
 oauth_providers
 ---------------
 

@@ -18,7 +18,7 @@ import { BootstrapModal } from "./converse-modal.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { OrderedListView } from "@converse/skeletor/src/overview";
 import { View } from '@converse/skeletor/src/view.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import { compact, debounce, has, isString, uniq, without } from "lodash-es";
 
@@ -545,7 +545,7 @@ converse.plugins.add('converse-rosterview', {
             render () {
                 this.el.setAttribute('data-group', this.model.get('name'));
                 this.el.innerHTML = tpl_group_header({
-                    'label_group': this.model.get('name'),
+                    'label_group': __(this.model.get('name')),
                     'desc_group_toggle': this.model.get('description'),
                     'toggle_state': this.model.get('state'),
                     '_converse': _converse

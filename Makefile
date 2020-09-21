@@ -55,7 +55,7 @@ help:
 ## Miscellaneous
 
 .PHONY: serve
-serve: node_modules
+serve: node_modules dist
 	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1
 
 .PHONY: serve_bg
@@ -137,8 +137,10 @@ devserver: node_modules
 ## Builds
 
 dist/converse.js:: node_modules
+	npm run dev
 
 dist/converse.css:: node_modules
+	npm run dev
 
 dist/website.css:: node_modules sass
 	$(SASS) --source-map true --include-path $(BOOTSTRAP) sass/website.scss $@
@@ -175,8 +177,8 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 src/headless/dist/converse-headless.min.js: src webpack.common.js node_modules @converse/headless
 	npm run headless
 
-dist:: node_modules src/*
-	npm run dev && npm run build && make dist/website.css && make dist/website.min.css
+dist:: node_modules src/* | dist/converse.js dist/converse.css dist/website.css dist/website.min.css
+	npm run prod
 
 .PHONY: install
 install:: dist
@@ -197,7 +199,7 @@ eslint: node_modules
 	$(ESLINT) spec/ --global converse
 
 .PHONY: check
-check: dev eslint
+check: eslint | dist/converse.js dist/converse.css
 	$(KARMA) start karma.conf.js $(ARGS)
 
 .PHONY: test

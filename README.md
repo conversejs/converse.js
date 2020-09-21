@@ -79,7 +79,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0085](https://xmpp.org/extensions/xep-0085.html) Chat State Notifications
 - [XEP-0124](https://xmpp.org/extensions/xep-0124.html) Bidirectional-streams Over Synchronous HTTP (BOSH)
 - [XEP-0144](https://xmpp.org/extensions/xep-0144.html) Roster item exchange
-- [XEP-0156](https://xmpp.org/extensions/xep-0156.html) Disovering Alternative XMPP Connection Methods
+- [XEP-0156](https://xmpp.org/extensions/xep-0156.html) Discovering Alternative XMPP Connection Methods
 - [XEP-0163](https://xmpp.org/extensions/xep-0163.html) Personal Eventing Protocol (limited support)
 - [XEP-0184](https://xmpp.org/extensions/xep-0184.html) Message Receipt
 - [XEP-0198](https://xmpp.org/extensions/xep-0198.html) Stream Management
@@ -108,18 +108,20 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 
 ## Integration into other servers and frameworks
 
--   **[Prosody](https://prosody.im/)**: [mod_conversejs](https://modules.prosody.im/mod_conversejs.html)
--   **[Openfire](https://www.igniterealtime.org/projects/openfire/index.jsp)**: [inverse.jar](https://www.igniterealtime.org/projects/openfire/plugins.jsp)
--   **[Ruby on Rails](https://rubyonrails.org)**: [conversejs-rails](https://github.com/mikemarsian/conversejs-rails)
--   **[Django](https://www.djangoproject.com)**: [django-conversejs](https://pypi.python.org/pypi/django-conversejs) or [django-xmpp](https://github.com/fpytloun/django-xmpp)
--   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
--   **[Roundcube](https://roundcube.net)**: [roundcube-converse.js-xmpp-plugin](https://github.com/devurandom/roundcube-converse.js-xmpp-plugin)
--   **[Wordpress](https://wordpress.org)**: [ConverseJS](https://wordpress.org/plugins/conversejs/)
--   **[Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)**: [Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)
--   **[Plone](https://plone.com)**: [collective.converse](https://github.com/collective/collective.converse)
 -   **[Alfresco](https://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
+-   **[Django](https://www.djangoproject.com)**: [django-conversejs](https://pypi.python.org/pypi/django-conversejs) or [django-xmpp](https://github.com/fpytloun/django-xmpp)
+-   **[Elgg](https://elgg.org)**: [plugin](https://elgg.org/plugins/2997196)
 -   **[Friendica](https://friendi.ca)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
+-   **[Openfire](https://www.igniterealtime.org/projects/openfire/index.jsp)**: [inverse.jar](https://www.igniterealtime.org/projects/openfire/plugins.jsp)
+-   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
+-   **[Plone](https://plone.com)**: [collective.converse](https://github.com/collective/collective.converse)
+-   **[Prosody](https://prosody.im/)**: [mod_conversejs](https://modules.prosody.im/mod_conversejs.html)
+-   **[Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)**: [Pàdé](https://www.igniterealtime.org/projects/pade/index.jsp)
+-   **[Roundcube](https://roundcube.net)**: [roundcube-converse.js-xmpp-plugin](https://github.com/devurandom/roundcube-converse.js-xmpp-plugin)
+-   **[Ruby on Rails](https://rubyonrails.org)**: [conversejs-rails](https://github.com/mikemarsian/conversejs-rails)
 -   **[Tiki Wiki CMS Groupware](https://tiki.org)**: [built-in optional feature](https://doc.tiki.org/XMPP)
+-   **[Wordpress](https://wordpress.org)**: [ConverseJS](https://wordpress.org/plugins/conversejs/)
+
 
 ## Tests
 

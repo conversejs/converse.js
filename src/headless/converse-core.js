@@ -5,8 +5,6 @@
  */
 import './polyfill';
 import 'strophe.js/src/websocket';
-import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
-import { Connection, MockConnection } from '@converse/headless/connection.js';
 import Storage from '@converse/skeletor/src/storage.js';
 import _ from './lodash.noconflict';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
@@ -17,13 +15,15 @@ import sizzle from 'sizzle';
 import stanza_utils from "@converse/headless/utils/stanza";
 import u from '@converse/headless/utils/core';
 import { Collection } from "@converse/skeletor/src/collection";
+import { Connection, MockConnection } from '@converse/headless/connection.js';
+import { CustomElement } from '../components/element';
 import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Router } from '@converse/skeletor/src/router.js';
-import { CustomElement } from '../components/element';
-import { __, i18n } from './i18n';
+import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash-es';
 import { html } from 'lit-element';
+import { sprintf } from 'sprintf-js';
 
 
 dayjs.extend(advancedFormat);
@@ -82,13 +82,14 @@ const CORE_PLUGINS = [
     'converse-bookmarks',
     'converse-bosh',
     'converse-caps',
-    'converse-chatboxes',
+    'converse-carbons',
     'converse-chat',
+    'converse-chatboxes',
     'converse-disco',
     'converse-emoji',
+    'converse-headlines',
     'converse-mam',
     'converse-muc',
-    'converse-headlines',
     'converse-ping',
     'converse-pubsub',
     'converse-roster',
@@ -123,7 +124,6 @@ const DEFAULT_SETTINGS = {
         'gl', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'mr', 'oc',
         'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
     ],
-    message_carbons: true,
     nickname: undefined,
     password: undefined,
     persistent_store: 'localStorage',
@@ -151,6 +151,32 @@ CONNECTION_STATUS[Strophe.Status.DISCONNECTING] = 'DISCONNECTING';
 CONNECTION_STATUS[Strophe.Status.ERROR] = 'ERROR';
 CONNECTION_STATUS[Strophe.Status.RECONNECTING] = 'RECONNECTING';
 CONNECTION_STATUS[Strophe.Status.REDIRECT] = 'REDIRECT';
+
+
+/**
+ * @namespace i18n
+ */
+export const i18n = {
+    initialize () {},
+
+    /**
+     * Overridable string wrapper method which can be used to provide i18n
+     * support.
+     *
+     * The default implementation in @converse/headless simply calls sprintf
+     * with the passed in arguments.
+     *
+     * If you install the full version of Converse, then this method gets
+     * overwritten in src/i18n/index.js to return a translated string.
+     * @method __
+     * @private
+     * @memberOf i18n
+     * @param { String } str
+     */
+    __ (...args) {
+        return sprintf(...args);
+    }
+};
 
 /**
  * A private, closured object containing the private api (via {@link _converse.api})
@@ -223,13 +249,12 @@ export const _converse = {
 
     /**
      * Translate the given string based on the current locale.
-     * Handles all MUC presence stanzas.
      * @method __
      * @private
      * @memberOf _converse
-     * @param { String } str - The string to translate
+     * @param { String } str
      */
-     '__': __,
+    '__': (...args) => i18n.__(...args),
 
     /**
      * A no-op method which is used to signal to gettext that the passed in string
@@ -441,7 +466,7 @@ export const api = _converse.api = {
      * @method _converse.api.hook
      * @param {string} name - The hook name
      * @param {...any} context - The context to which the hook applies (could be for example, a {@link _converse.ChatBox)).
-     * @param {...any} data - The data structure to be intercepted and * modified by the hook listeners.
+     * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
      */
     hook (name, context, data) {
         const events = _converse._events[name] || [];
@@ -887,7 +912,7 @@ export const api = _converse.api = {
      * @param { Boolean } reject - Whether an error IQ should cause the promise
      *  to be rejected. If `false`, the promise will resolve instead of being rejected.
      * @returns {Promise} A promise which resolves when we receive a `result` stanza
-     * or is rejected when we receive an `error` stanza.
+     *  or is rejected when we receive an `error` stanza.
      */
     sendIQ (stanza, timeout, reject=true) {
         timeout = timeout || _converse.STANZA_TIMEOUT;
@@ -1314,33 +1339,6 @@ async function cleanup () {
 }
 
 
-function enableCarbons () {
-    /* Ask the XMPP server to enable Message Carbons
-     * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
-     */
-    if (!api.settings.get("message_carbons") || !_converse.session || _converse.session.get('carbons_enabled')) {
-        return;
-    }
-    const carbons_iq = new Strophe.Builder('iq', {
-        'from': _converse.connection.jid,
-        'id': 'enablecarbons',
-        'type': 'set'
-      })
-      .c('enable', {xmlns: Strophe.NS.CARBONS});
-    _converse.connection.addHandler((iq) => {
-        if (iq.querySelectorAll('error').length > 0) {
-            log.warn('An error occurred while trying to enable message carbons.');
-        } else {
-            _converse.session.save({'carbons_enabled': true});
-            log.debug('Message carbons have been enabled.');
-        }
-    }, null, "iq", null, "enablecarbons");
-    _converse.connection.send(carbons_iq);
-}
-
-api.listen.on('afterResourceBinding', () => enableCarbons());
-
-
 function fetchLoginCredentials (wait=0) {
     return new Promise(
         debounce((resolve, reject) => {
@@ -1429,21 +1427,6 @@ _converse.ConnectionFeedback = Model.extend({
         this.on('change', () => api.trigger('connfeedback', _converse.connfeedback));
     }
 });
-
-
-async function initLocale () {
-    if (_converse.isTestEnv()) {
-        _converse.locale = 'en';
-    } else {
-        try {
-            _converse.locale = i18n.getLocale(api.settings.get('i18n'), api.settings.get("locales"));
-            await i18n.fetchTranslations(_converse);
-        } catch (e) {
-            log.fatal(e.message);
-            _converse.locale = 'en';
-        }
-    }
-}
 
 
 function setUnloadEvent () {
@@ -1536,7 +1519,6 @@ Object.assign(converse, {
             /^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel',
             l => log.setLogLevel(l)
         );
-        await initLocale();
         _converse.connfeedback = new _converse.ConnectionFeedback();
 
         /* When reloading the page:
@@ -1550,6 +1532,7 @@ Object.assign(converse, {
 
         await initSessionStorage();
         initClientConfig();
+        i18n.initialize();
         initPlugins();
         registerGlobalEventHandlers();
 
@@ -1617,21 +1600,41 @@ Object.assign(converse, {
     },
     /**
      * Utility methods and globals from bundled 3rd party libraries.
-     * @memberOf converse
-     *
+     * @typedef ConverseEnv
      * @property {function} converse.env.$build    - Creates a Strophe.Builder, for creating stanza objects.
      * @property {function} converse.env.$iq       - Creates a Strophe.Builder with an <iq/> element as the root.
      * @property {function} converse.env.$msg      - Creates a Strophe.Builder with an <message/> element as the root.
      * @property {function} converse.env.$pres     - Creates a Strophe.Builder with an <presence/> element as the root.
      * @property {function} converse.env.Promise   - The Promise implementation used by Converse.
      * @property {function} converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
-     * @property {object} converse.env._           - The instance of [lodash-es](http://lodash.com) used by Converse.
      * @property {function} converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
-     * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
+     * @property {function} converse.env.sprintf
+     * @property {object} converse.env._           - The instance of [lodash-es](http://lodash.com) used by Converse.
+     * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
+     * @memberOf converse
      */
-    'env': { $build, $iq, $msg, $pres, Model, Collection, CustomElement, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u, html }
+    'env': {
+        $build,
+        $iq,
+        $msg,
+        $pres,
+        'utils': u,
+        Collection,
+        CustomElement,
+        Model,
+        Promise,
+        Strophe,
+        _,
+        dayjs,
+        html,
+        log,
+        sizzle,
+        sprintf,
+        stanza_utils,
+        u,
+    }
 });
 
 /**

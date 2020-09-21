@@ -12,7 +12,7 @@ import { _converse, api, converse } from "@converse/headless/converse-core";
 import tpl_rooms_list from "templates/rooms_list.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from '@converse/skeletor/src/view.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 
 
 const { Strophe } = converse.env;

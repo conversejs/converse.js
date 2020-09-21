@@ -179,8 +179,7 @@ converse.plugins.add('converse-chat', {
 
             getMessageText () {
                 if (this.get('is_encrypted')) {
-                    return this.get('plaintext') ||
-                           (api.settings.get('loglevel') === 'debug' ? __('Unencryptable OMEMO message') : null);
+                    return this.get('plaintext') || this.get('body') || __('Undecryptable OMEMO message');
                 }
                 return this.get('message');
             },
@@ -457,8 +456,6 @@ converse.plugins.add('converse-chat', {
                     attrs.stanza && log.error(attrs.stanza);
                     return log.error(attrs.message);
                 }
-                // TODO: move to OMEMO
-                attrs = attrs.encrypted ? await this.decrypt(attrs) : attrs;
                 const message = this.getDuplicateMessage(attrs);
                 if (message) {
                     this.updateMessage(message, attrs);
@@ -790,11 +787,16 @@ converse.plugins.add('converse-chat', {
 
             getMessageBodyQueryAttrs (attrs) {
                 if (attrs.message && attrs.msgid) {
-                    return {
-                        'message': attrs.message,
+                    const query = {
                         'from': attrs.from,
                         'msgid': attrs.msgid
                     }
+                    if (!attrs.is_encrypted) {
+                        // We can't match the message if it's a reflected
+                        // encrypted message (e.g. via MAM or in a MUC)
+                        query['message'] =  attrs.message;
+                    }
+                    return query;
                 }
             },
 
@@ -1143,7 +1145,7 @@ converse.plugins.add('converse-chat', {
              */
             isHidden () {
                 // Note: This methods gets overridden by converse-minimize
-                const hidden = ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")) && this.get('hidden');
+                const hidden = _converse.isUniView() && this.get('hidden');
                 return hidden || this.isScrolledUp() || _converse.windowState === 'hidden';
             },
 
@@ -1215,15 +1217,23 @@ converse.plugins.add('converse-chat', {
             }
             const has_body = !!sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length;
             const chatbox = await api.chats.get(attrs.contact_jid, {'nickname': attrs.nick }, has_body);
-            chatbox && await chatbox.queueMessage(attrs);
+            await chatbox?.queueMessage(attrs);
+            /**
+             * @typedef { Object } MessageData
+             * An object containing the original message stanza, as well as the
+             * parsed attributes.
+             * @property { XMLElement } stanza
+             * @property { MessageAttributes } stanza
+             * @property { ChatBox } chatbox
+             */
+            const data = {stanza, attrs, chatbox};
             /**
              * Triggered when a message stanza is been received and processed.
              * @event _converse#message
              * @type { object }
-             * @property { XMLElement } stanza
-             * @example _converse.api.listen.on('message', obj => { ... });
+             * @property { module:converse-chat~MessageData } data
              */
-            api.trigger('message', {'stanza': stanza});
+            api.trigger('message', data);
         }
 
 

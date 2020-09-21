@@ -1,6 +1,6 @@
 import { html } from "lit-html";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { modal_header_close_button } from "./buttons"
 import xss from "xss/dist/xss";
 

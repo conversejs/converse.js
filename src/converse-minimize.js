@@ -8,7 +8,7 @@ import 'converse-chatview';
 import tpl_chats_panel from 'templates/chats_panel.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from '@converse/skeletor/src/view';
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from '@converse/headless/converse-core';
 import { debounce } from 'lodash-es';
 import { render } from 'lit-html';

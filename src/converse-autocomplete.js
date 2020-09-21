@@ -86,9 +86,17 @@ const helpers = {
 }
 
 
+/**
+ * An autocomplete suggestion
+ */
 class Suggestion extends String {
 
-    constructor (data) {
+    /**
+     * @param { Any } data - The auto-complete data. Ideally an object e.g. { label, value },
+     *      which specifies the value and human-presentable label of the suggestion.
+     * @param { string } query - The query string being auto-completed
+     */
+    constructor (data, query) {
         super();
         const o = Array.isArray(data)
             ? { label: data[0], value: data[1] }
@@ -96,6 +104,7 @@ class Suggestion extends String {
 
         this.label = o.label || o.value;
         this.value = o.value;
+        this.query = query;
     }
 
     get lenth () {
@@ -184,21 +193,16 @@ export class AutoComplete {
         } else if (typeof list === "string" && list.includes(",")) {
             this._list = list.split(/\s*,\s*/);
         } else { // Element or CSS selector
-            list = helpers.getElement(list);
-            if (list && list.children) {
-                const items = [];
-                Array.prototype.slice.apply(list.children).forEach(function (el) {
-                    if (!el.disabled) {
-                        const text = el.textContent.trim(),
-                            value = el.value || text,
-                            label = el.label || text;
-                        if (value !== "") {
-                            items.push({ label: label, value: value });
-                        }
-                    }
-                });
-                this._list = items;
-            }
+            const children = helpers.getElement(list)?.children || [];
+            this._list = Array.from(children)
+                .filter(el => !el.disabled)
+                .map(el => {
+                    const text = el.textContent.trim();
+                    const value = el.value || text;
+                    const label = el.label || text;
+                    return (value !== "") ? { label, value } : null;
+                })
+                .filter(i => i);
         }
 
         if (document.activeElement === this.input) {
@@ -386,7 +390,7 @@ export class AutoComplete {
             this.ul.innerHTML = "";
 
             this.suggestions = list
-                .map(item => new Suggestion(this.data(item, value)))
+                .map(item => new Suggestion(this.data(item, value), value))
                 .filter(item => this.filter(item, value));
 
             if (this.sort !== false) {

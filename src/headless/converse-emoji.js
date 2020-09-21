@@ -12,6 +12,7 @@ import { html } from 'lit-html';
 const u = converse.env.utils;
 
 converse.emojis = {
+    'initialized': false,
     'initialized_promise': u.getResolveablePromise()
 };
 
@@ -145,6 +146,12 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
 
 
 export function getShortnameReferences (text) {
+    if (!converse.emojis.initialized) {
+        throw new Error(
+            'getShortnameReferences called before emojis are initialized. '+
+            'To avoid this problem, first await the converse.emojis.initilaized_promise.'
+        );
+    }
     const references = [...text.matchAll(shortnames_regex)];
     return references.map(ref => {
         const cp = converse.emojis.by_sn[ref[0]].cp;

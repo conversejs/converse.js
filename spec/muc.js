@@ -272,6 +272,7 @@ describe("Groupchats", function () {
 
             let IQ_stanzas = _converse.connection.IQ_stanzas;
             const muc_jid = 'lounge@montague.lit';
+            const nick = 'nicky';
             await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
 
             const disco_selector = `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`;
@@ -291,12 +292,14 @@ describe("Groupchats", function () {
             await mock.waitForReservedNick(_converse, muc_jid, '');
             const input = await u.waitUntil(() => view.el.querySelector('input[name="nick"]'), 1000);
             expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.NICKNAME_REQUIRED);
-            input.value = 'nicky';
+            input.value = nick;
             view.el.querySelector('input[type=submit]').click();
             expect(view.model.join).toHaveBeenCalled();
+
             _converse.connection.IQ_stanzas = [];
             await mock.getRoomFeatures(_converse, muc_jid);
             await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+            await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
 
             // The user has just entered the room (because join was called)
             // and receives their own presence from the server.

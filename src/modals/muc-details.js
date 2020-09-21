@@ -1,5 +1,5 @@
 import { BootstrapModal } from "../converse-modal.js";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import tpl_chatroom_details_modal from "../templates/chatroom_details_modal.js";
 
 

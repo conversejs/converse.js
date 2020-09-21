@@ -1,5 +1,5 @@
 /**
- * @copyright 2020, the Converse.js contributors
+ * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  * @description This is the MUC utilities module.
  */

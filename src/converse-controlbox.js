@@ -12,7 +12,7 @@ import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
 import tpl_login_panel from "templates/login_panel.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from "@converse/skeletor/src/view";
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 
 const { Strophe, dayjs } = converse.env;
@@ -251,9 +251,6 @@ converse.plugins.add('converse-controlbox', {
                     this.insertBrandHeading();
                 }
                 this.loginpanel.initPopovers();
-                if (api.settings.get('auto_focus')) {
-                    this.loginpanel.el.querySelector('#converse-login-jid').focus();
-                }
                 return this;
             },
 

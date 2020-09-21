@@ -6,14 +6,15 @@
 configuration settings should now be accessed via `_converse.api.settings.get` and not directly on the `_converse` object.
 Soon we'll deprecate the latter, so prepare now.
 
-- #515 Add support for XEP-0050 Ad-Hoc commands
 - #1313: Stylistic improvements to the send button
+- #1481: MUC OMEMO: Error No record for device
 - #1490: Busy-loop when fetching registration form fails
 - #1535: Add option to destroy a MUC
 - #1715: Update chat state notification after receiving a message correction.
 - #1793: Send button doesn't appear in Firefox in 1:1 chats
 - #1820: Set focus on jid field after controlbox is loaded
 - #1822: Don't log error if user has no bookmarks
+- #515 Add support for XEP-0050 Ad-Hoc commands
 - #1823: New config options [muc_roomid_policy](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy)
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact
@@ -50,6 +51,7 @@ Soon we'll deprecate the latter, so prepare now.
 - New config option [modtools_disable_query](https://conversejs.org/docs/html/configuration.html#modtools-disable-query)
 - New config option [muc_hats_from_vcard](https://conversejs.org/docs/html/configuration.html#muc-hats-from-vcard).
 - New config option [muc_send_probes](https://conversejs.org/docs/html/configuration.html#muc-send-probes).
+- New config option [notify_nicknames_without_references](https://conversejs.org/docs/html/configuration.html#notify-nicknames-without-references).
 - New config option [show_message_avatar](https://conversejs.org/docs/html/configuration.html#show-message-avatar).
 - New public API [converse.insertInto](https://conversejs.org/docs/html/api/converse.html#.insertInto)
 

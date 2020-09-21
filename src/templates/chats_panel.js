@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 
 export default (o) =>
     html`<div id="minimized-chats" class="${o.chats.length ? '' : 'hidden'}">

@@ -8,7 +8,7 @@ import filesize from 'filesize';
 import tpl_chat_message from '../templates/chat_message.js';
 import tpl_spinner from '../templates/spinner.js';
 import { CustomElement } from './element.js';
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { _converse, api, converse } from  '@converse/headless/converse-core';
 import { html } from 'lit-element';
 import { renderAvatar } from './../templates/directives/avatar';
@@ -161,7 +161,7 @@ export default class Message extends CustomElement {
             this.message_type !== 'info' &&
             prev_model.get('type') !== 'info' &&
             date.isBefore(dayjs(prev_model.get('time')).add(10, 'minutes')) &&
-            this.is_encrypted === prev_model.get('is_encrypted');
+            !!this.is_encrypted === !!prev_model.get('is_encrypted');
     }
 
     getExtraMessageClasses () {

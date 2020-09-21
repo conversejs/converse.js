@@ -1,6 +1,6 @@
 import "../components/image_picker.js";
 import spinner from "./spinner.js";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { _converse, converse } from  "@converse/headless/converse-core";
 import { html } from "lit-html";
 import { modal_header_close_button } from "./buttons";
@@ -65,6 +65,7 @@ const device_list = (o) => {
 }
 
 
+// TODO: this needs to go as a component into the OMEMO plugin folder
 const omemo_page = (o) => {
     const i18n_fingerprint = __("This device's OMEMO fingerprint");
     const i18n_generate = __('Generate new keys and fingerprint');

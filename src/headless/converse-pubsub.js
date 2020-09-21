@@ -66,7 +66,7 @@ converse.plugins.add('converse-pubsub', {
                         }
                     }
                     try {
-                        api.sendIQ(stanza);
+                        await api.sendIQ(stanza);
                     } catch (iq) {
                         if (iq instanceof Element &&
                                 strict_options &&
@@ -77,7 +77,7 @@ converse.plugins.add('converse-pubsub', {
                             const el = stanza.nodeTree;
                             el.querySelector('publish-options').outerHTML = '';
                             log.warn(`PubSub: Republishing without publish options. ${el.outerHTML}`);
-                            api.sendIQ(el);
+                            await api.sendIQ(el);
                         } else {
                             throw iq;
                         }

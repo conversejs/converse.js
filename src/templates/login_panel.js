@@ -1,6 +1,7 @@
-import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
 import tpl_spinner from './spinner.js';
+import { __ } from '../i18n';
+import { api } from "@converse/headless/converse-core";
+import { html } from "lit-html";
 
 
 const trust_checkbox = (o) => {
@@ -45,7 +46,7 @@ const register_link = () => {
 const show_register_link = (o) => {
     const _converse = o._converse;
     return _converse.allow_registration &&
-        !_converse.api.settings.get("auto_login") &&
+        !api.settings.get("auto_login") &&
         _converse.pluggable.plugins['converse-register'].enabled(_converse);
 }
 
@@ -56,7 +57,13 @@ const auth_fields = (o) => {
     return html`
         <div class="form-group">
             <label for="converse-login-jid">${i18n_xmpp_address}:</label>
-            <input id="converse-login-jid" class="form-control" required="required" type="text" name="jid" placeholder="${o.placeholder_username}"/>
+            <input id="converse-login-jid"
+                ?autofocus=${api.settings.get('auto_focus') ? true : false}
+                required
+                class="form-control"
+                type="text"
+                name="jid"
+                placeholder="${o.placeholder_username}"/>
         </div>
         ${ (o.authentication !== o.EXTERNAL) ? password_input() : '' }
         ${ o.show_trust_checkbox ? trust_checkbox(o) : '' }

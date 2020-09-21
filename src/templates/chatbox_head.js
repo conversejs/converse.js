@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { __ } from '@converse/headless/i18n';
+import { __ } from '../i18n';
 import { until } from 'lit-html/directives/until.js';
 import avatar from "./avatar.js";
 
@@ -18,7 +18,7 @@ export default (o) => {
         <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
             <div class="chatbox-title--row">
                 ${ (!o._converse.api.settings.get("singleton")) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
-                ${ (o.type !== o._converse.HEADLINES_TYPE) ? avatar(Object.assign({}, o, avatar_data)) : '' }
+                ${ (o.type !== o._converse.HEADLINES_TYPE) ? html`<span class="mr-2">${avatar(Object.assign({}, o, avatar_data))}</span>` : '' }
                 <div class="chatbox-title__text" title="${o.jid}">
                     ${ o.url ? html`<a href="${o.url}" target="_blank" rel="noopener" class="user">${o.display_name}</a>` : o.display_name}
                 </div>

@@ -7,7 +7,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-controlbox";
-import { __ } from '@converse/headless/i18n';
+import { __ } from './i18n';
 import { View } from "@converse/skeletor/src/view";
 import { pick } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/converse-core";

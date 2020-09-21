@@ -29,7 +29,6 @@ import "converse-register";        // XEP-0077 In-band registration
 import "converse-roomslist";       // Show currently open chat rooms
 import "converse-rosterview";
 import "converse-singleton";
-import "converse-uniview";
 import "./components/converse.js";
 /* END: Removable components */
 
@@ -57,8 +56,7 @@ const WHITELISTED_PLUGINS = [
     'converse-register',
     'converse-roomslist',
     'converse-rosterview',
-    'converse-singleton',
-    'converse-uniview'
+    'converse-singleton'
 ];
 
 const initialize = converse.initialize;

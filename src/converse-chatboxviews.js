@@ -109,6 +109,57 @@ const ChatBoxViews = Overview.extend({
 });
 
 
+function onChatBoxViewsInitialized () {
+    _converse.chatboxviews = new _converse.ChatBoxViews({
+        'model': _converse.chatboxes
+    });
+    /**
+     * Triggered once the _converse.ChatBoxViews view-colleciton has been initialized
+     * @event _converse#chatBoxViewsInitialized
+     * @example _converse.api.listen.on('chatBoxViewsInitialized', () => { ... });
+     */
+    api.trigger('chatBoxViewsInitialized');
+}
+
+
+function hideChat (view) {
+    if (view.model.get('id') === 'controlbox') { return; }
+    u.safeSave(view.model, {'hidden': true});
+    view.hide();
+}
+
+
+function beforeShowingChatView (view) {
+    if (_converse.isUniView()) {
+        /* We only have one chat visible at any one
+         * time. So before opening a chat, we make sure all other
+         * chats are hidden.
+         */
+        Object.values(_converse.chatboxviews.xget(view.model.get('id')))
+            .filter(v => !v.model.get('hidden'))
+            .forEach(hideChat);
+
+        if (view.model.get('hidden')) {
+            return new Promise(resolve => {
+                u.safeSave(
+                    view.model,
+                    {'hidden': false}, {
+                        'success': resolve,
+                        'failure': resolve
+                    }
+                );
+            });
+        }
+    }
+}
+
+
+function calculateViewportHeightUnit () {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+
 converse.plugins.add('converse-chatboxviews', {
 
     dependencies: ["converse-chatboxes", "converse-vcard"],
@@ -135,29 +186,12 @@ converse.plugins.add('converse-chatboxviews', {
         _converse.ChatBoxViews = ChatBoxViews;
 
         /************************ BEGIN Event Handlers ************************/
+        api.listen.on('beforeShowingChatView', beforeShowingChatView);
+        api.listen.on('chatBoxesInitialized', onChatBoxViewsInitialized);
         api.listen.on('cleanup', () => (delete _converse.chatboxviews));
-
-        api.listen.on('chatBoxesInitialized', () => {
-            _converse.chatboxviews = new _converse.ChatBoxViews({
-                'model': _converse.chatboxes
-            });
-            /**
-             * Triggered once the _converse.ChatBoxViews view-colleciton has been initialized
-             * @event _converse#chatBoxViewsInitialized
-             * @example _converse.api.listen.on('chatBoxViewsInitialized', () => { ... });
-             */
-            api.trigger('chatBoxViewsInitialized');
-        });
-
         api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());
-
-
-        function calculateViewportHeightUnit () {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-        api.listen.on('chatBoxViewsInitialized', () => calculateViewportHeightUnit());
-        window.addEventListener('resize', () => calculateViewportHeightUnit());
+        api.listen.on('chatBoxViewsInitialized', calculateViewportHeightUnit);
+        window.addEventListener('resize', calculateViewportHeightUnit);
         /************************ END Event Handlers ************************/
 
 

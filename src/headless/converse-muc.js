@@ -370,7 +370,7 @@ converse.plugins.add('converse-muc', {
                     'num_unread_general': 0,
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'hidden': ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")),
+                    'hidden': _converse.isUniView(),
                     'message_type': 'groupchat',
                     'name': '',
                     'num_unread': 0,

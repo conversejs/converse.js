@@ -32,6 +32,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #2201: added html to converse.env
 - #2213: added CustomElement to converse.env
 - #2220: fix rendering of emojis in case `use_system_emojis == false` (again).
+- The plugin `converse-uniview` has been removed and its functionality merged into `converse-chatboxviews`
 - Removed the mockups from the project. Recommended to use tests instead.
 - The API method `api.settings.update` has been deprecated in favor of `api.settings.extend`.
 - The API methods under the `api.user.status` namespace are now asynchronous and need to be `await`ed.

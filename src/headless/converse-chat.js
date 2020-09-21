@@ -304,7 +304,7 @@ converse.plugins.add('converse-chat', {
                 return {
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'hidden': ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")),
+                    'hidden': _converse.isUniView(),
                     'message_type': 'chat',
                     'nickname': undefined,
                     'num_unread': 0,
@@ -1133,8 +1133,13 @@ converse.plugins.add('converse-chat', {
                 });
             },
 
-            maybeShow () {
-                return this.trigger("show");
+            maybeShow (force) {
+                force && u.safeSave(this, {'hidden': false});
+                if (_converse.isUniView() && this.get('hidden')) {
+                    return;
+                } else {
+                    return this.trigger("show");
+                }
             },
 
             /**

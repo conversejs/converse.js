@@ -451,7 +451,11 @@ export const ChatBoxView = View.extend({
     },
 
     shouldShowOnTextMessage () {
-        return !u.isVisible(this.el);
+        if (_converse.isUniView()) {
+            return false;
+        } else {
+            return !u.isVisible(this.el);
+        }
     },
 
     /**

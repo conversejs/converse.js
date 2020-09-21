@@ -52,11 +52,12 @@ export const ChatBoxView = View.extend({
     async initialize () {
         this.initDebounced();
 
+        this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
+        this.listenTo(this.model, 'change:hidden', m => m.get('hidden') ? this.hide() : this.show());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model, 'vcard:change', this.renderHeading);
-        this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
 
         if (this.model.contact) {
             this.listenTo(this.model.contact, 'destroy', this.renderHeading);

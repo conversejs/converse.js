@@ -2018,7 +2018,7 @@ describe("Groupchats", function () {
             spyOn(view.model, 'directInvite').and.callThrough();
 
             const input = modal.el.querySelector('#invitee_jids');
-            input.value = "Balt";
+            input.value = "Balth";
             modal.el.querySelector('button[type="submit"]').click();
 
             await u.waitUntil(() => modal.el.querySelector('.error'));
@@ -2032,7 +2032,7 @@ describe("Groupchats", function () {
             let sent_stanza;
             spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
             const hint = await u.waitUntil(() => modal.el.querySelector('.suggestion-box__results li'));
-            expect(input.value).toBe('Balt');
+            expect(input.value).toBe('Balth');
             expect(hint.textContent.trim()).toBe('Balthasar');
 
             evt = new Event('mousedown', {'bubbles': true});

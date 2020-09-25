@@ -2196,6 +2196,7 @@ converse.plugins.add('converse-muc', {
                     data.reason = item ? item.querySelector('reason')?.textContent : undefined;
                     data.message = this.getActionInfoMessage(code, nick, data.actor);
                 } else if (is_self && (code in _converse.muc.new_nickname_messages)) {
+                    // XXX: Side-effect of setting the nick. Should ideally be refactored out of this method
                     let nick;
                     if (is_self && code === "210") {
                         nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
@@ -2363,13 +2364,17 @@ converse.plugins.add('converse-muc', {
              */
             onOwnPresence (stanza) {
                 if (stanza.getAttribute('type') !== 'unavailable') {
-                    // Set connection_status before creating the occupant, but
-                    // only trigger afterwards, so that plugins can access the
-                    // occupant in their event handlers.
                     const old_status = this.session.get('connection_status');
-                    this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, {'silent': true});
-                    this.updateOccupantsOnPresence(stanza);
-                    this.session.trigger('change:connection_status', this.session, old_status);
+                    if (old_status !== converse.ROOMSTATUS.ENTERED) {
+                        // Set connection_status before creating the occupant, but
+                        // only trigger afterwards, so that plugins can access the
+                        // occupant in their event handlers.
+                        this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, {'silent': true});
+                        this.updateOccupantsOnPresence(stanza);
+                        this.session.trigger('change:connection_status', this.session, old_status);
+                    } else {
+                        this.updateOccupantsOnPresence(stanza);
+                    }
                 } else {
                     this.updateOccupantsOnPresence(stanza);
                 }

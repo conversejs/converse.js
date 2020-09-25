@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const $iq = converse.env.$iq;
 const $pres = converse.env.$pres;
@@ -651,7 +651,7 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => (sizzle(".pending-contact-name:contains('"+name+"')", _converse.rosterview.el).length === 0), 1000);
             expect(window.confirm).toHaveBeenCalled();
             expect(contact.removeFromRoster).toHaveBeenCalled();
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster">`+
                         `<item jid="lord.capulet@montague.lit" subscription="remove"/>`+
@@ -829,7 +829,7 @@ describe("The Contacts Roster", function () {
             });
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
             expect(window.confirm).toHaveBeenCalled();
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster"><item jid="mercutio@montague.lit" subscription="remove"/></query>`+
                 `</iq>`);

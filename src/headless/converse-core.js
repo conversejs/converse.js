@@ -209,6 +209,10 @@ export const _converse = {
     OPENED: 'opened',
     PREBIND: 'prebind',
 
+    /**
+     * @constant
+     * @type { integer }
+     */
     STANZA_TIMEOUT: 10000,
 
     SUCCESS: 'success',
@@ -463,10 +467,10 @@ export const api = _converse.api = {
      * A hook is a special kind of event which allows you to intercept a data
      * structure in order to modify it, before passing it back.
      * @async
-     * @method _converse.api.hook
      * @param {string} name - The hook name
      * @param {...any} context - The context to which the hook applies (could be for example, a {@link _converse.ChatBox)).
      * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
+     * @returns {Promise<any>} - A promise that resolves with the modified data structure.
      */
     hook (name, context, data) {
         const events = _converse._events[name] || [];
@@ -516,6 +520,7 @@ export const api = _converse.api = {
          *  initialized. It's used together with the `auto_login` configuration flag
          *  to determine whether Converse should try to log the user in if it
          *  fails to restore a previous auth'd session.
+         *  @returns  {void}
          */
         async login (jid, password, automatic=false) {
             jid = jid || _converse.jid;
@@ -879,6 +884,8 @@ export const api = _converse.api = {
     /**
      * Allows you to send XML stanzas.
      * @method _converse.api.send
+     * @param {XMLElement} stanza
+     * @return {void}
      * @example
      * const msg = converse.env.$msg({
      *     'from': 'juliet@example.com/balcony',
@@ -905,29 +912,37 @@ export const api = _converse.api = {
     },
 
     /**
-     * Send an IQ stanza and receive a promise
+     * Send an IQ stanza
      * @method _converse.api.sendIQ
-     * @param { XMLElement } stanza
-     * @param { Integer } timeout
-     * @param { Boolean } reject - Whether an error IQ should cause the promise
+     * @param {XMLElement} stanza
+     * @param {Integer} [timeout=_converse.STANZA_TIMEOUT]
+     * @param {Boolean} [reject=true] - Whether an error IQ should cause the promise
      *  to be rejected. If `false`, the promise will resolve instead of being rejected.
-     * @returns {Promise} A promise which resolves when we receive a `result` stanza
-     *  or is rejected when we receive an `error` stanza.
+     * @returns {Promise} A promise which resolves (or potentially rejected) once we
+     *  receive a `result` or `error` stanza or once a timeout is reached.
+     *  If the IQ stanza being sent is of type `result` or `error`, there's
+     *  nothing to wait for, so an already resolved promise is returned.
      */
-    sendIQ (stanza, timeout, reject=true) {
-        timeout = timeout || _converse.STANZA_TIMEOUT;
+    sendIQ (stanza, timeout=_converse.STANZA_TIMEOUT, reject=true) {
         let promise;
-        if (reject) {
-            promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
-            promise.catch(e => {
-                if (e === null) {
-                    throw new TimeoutError(
-                        `Timeout error after ${timeout}ms for the following IQ stanza: ${Strophe.serialize(stanza)}`
-                    );
-                }
-            });
+        stanza = stanza?.nodeTree ?? stanza;
+        if (['get', 'set'].includes(stanza.getAttribute('type'))) {
+            timeout = timeout || _converse.STANZA_TIMEOUT;
+            if (reject) {
+                promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
+                promise.catch(e => {
+                    if (e === null) {
+                        throw new TimeoutError(
+                            `Timeout error after ${timeout}ms for the following IQ stanza: ${Strophe.serialize(stanza)}`
+                        );
+                    }
+                });
+            } else {
+                promise = new Promise(resolve => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
+            }
         } else {
-            promise = new Promise(resolve => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
+            _converse.connection.sendIQ(stanza);
+            promise = new Promise.resolve();
         }
         api.trigger('send', stanza);
         return promise;

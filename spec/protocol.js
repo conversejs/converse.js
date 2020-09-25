@@ -1,6 +1,8 @@
-/*global mock */
+/*global mock, converse */
 
 // See: https://xmpp.org/rfcs/rfc3921.html
+
+const Strophe = converse.env.Strophe;
 
 describe("The Protocol", function () {
 
@@ -103,7 +105,7 @@ describe("The Protocol", function () {
              */
             await mock.waitForRoster(_converse, 'all', 0);
             expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
-            expect(sent_stanza.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster">`+
                         `<item jid="contact@example.org"/>`+
@@ -430,7 +432,7 @@ describe("The Protocol", function () {
             /* _converse.js will then also automatically remove the
              * contact from the user's roster.
              */
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq type="set" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster">`+
                         `<item jid="contact@example.org" subscription="remove"/>`+

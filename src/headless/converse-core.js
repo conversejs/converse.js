@@ -942,7 +942,7 @@ export const api = _converse.api = {
             }
         } else {
             _converse.connection.sendIQ(stanza);
-            promise = new Promise.resolve();
+            promise = Promise.resolve();
         }
         api.trigger('send', stanza);
         return promise;

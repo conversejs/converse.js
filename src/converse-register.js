@@ -556,7 +556,9 @@ converse.plugins.add('converse-register', {
 
                 if (this.form_type === 'xform') {
                     iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
-                    inputs.forEach(input => iq.cnode(utils.webForm2xForm(input)).up());
+
+                    const xml_nodes = inputs.map(i => utils.webForm2xForm(i)).filter(n => n);
+                    xml_nodes.forEach(n => iq.cnode(n).up());
                 } else {
                     inputs.forEach(input => iq.c(input.getAttribute('name'), {}, input.value));
                 }

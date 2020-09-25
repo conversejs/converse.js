@@ -1088,7 +1088,6 @@ export const ChatRoomView = ChatBoxView.extend({
         this.hideChatRoomContents();
         this.model.save('config_stanza', stanza.outerHTML);
         if (!this.config_form) {
-            const { _converse } = this.__super__;
             this.config_form = new _converse.MUCConfigForm({
                 'model': this.model,
                 'chatroomview': this
@@ -1511,15 +1510,15 @@ converse.plugins.add('converse-muc-views', {
             async submitConfigForm (ev) {
                 ev.preventDefault();
                 const inputs = sizzle(':input:not([type=button]):not([type=submit])', ev.target);
-                const configArray = inputs.map(u.webForm2xForm);
+                const config_array = inputs.map(u.webForm2xForm).filter(f => f);
                 try {
-                    await this.model.sendConfiguration(configArray);
+                    await this.model.sendConfiguration(config_array);
                 } catch (e) {
                     log.error(e);
                     const message =
                         __("Sorry, an error occurred while trying to submit the config form.") + " " +
                         __("Check your browser's developer console for details.");
-                    this.model.createMessage({message, 'type': 'error'});
+                    api.alert('error', __('Error'), message);
                 }
                 await this.model.refreshDiscoInfo();
                 this.chatroomview.closeForm();

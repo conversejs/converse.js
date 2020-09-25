@@ -13,6 +13,10 @@ import u from "./core";
  * @param { DOMElement } field - the field to convert
  */
 u.webForm2xForm = function (field) {
+    const name = field.getAttribute('name');
+    if (!name) {
+        return null; // See #1924
+    }
     let value;
     if (field.getAttribute('type') === 'checkbox') {
         value = field.checked && 1 || 0;
@@ -23,11 +27,6 @@ u.webForm2xForm = function (field) {
     } else {
         value = field.value;
     }
-    return u.stringToNode(
-        tpl_field({
-            'name': field.getAttribute('name'),
-            'value': value
-        })
-    );
+    return u.stringToNode(tpl_field({ name, value }));
 };
 export default u;

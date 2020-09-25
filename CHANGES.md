@@ -19,6 +19,7 @@ Soon we'll deprecate the latter, so prepare now.
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact
 - #1839: Headline messages are shown in controlbox
+- #1924: Configuring an ejabberd room fails
 - #1896: Don't send receipts for messages fetched from the archive
 - #1937: Editing a message removes the mentions highlight
 - #1963: Mentions are visually incorrect when used in message replies

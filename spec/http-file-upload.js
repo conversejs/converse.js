@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const Strophe = converse.env.Strophe;
 const $iq = converse.env.$iq;
@@ -391,7 +391,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
                         .then(() => {
                             message.set('progress', 1);
-                            u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1')
+                            u.waitUntil(() => view.el.querySelector('.chat-content progress')?.getAttribute('value') === '1')
                         }).then(() => {
                             message.save({
                                 'upload': _converse.SUCCESS,

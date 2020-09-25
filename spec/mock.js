@@ -39,13 +39,12 @@ mock.initConverse = function (promise_names=[], settings=null, func) {
 };
 
 window.addEventListener('converse-loaded', () => {
-    const { _, u, sizzle, Strophe, dayjs, $iq, $msg, $pres } = converse.env;
+    const { u, sizzle, Strophe, dayjs, $iq, $msg, $pres } = converse.env;
 
     mock.waitUntilDiscoConfirmed = async function (_converse, entity_jid, identities, features=[], items=[], type='info') {
         const iq = await u.waitUntil(() => {
-            return _.filter(
-                _converse.connection.IQ_stanzas,
-                (iq) => sizzle(`iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`, iq).length
+            return _converse.connection.IQ_stanzas.filter(
+                iq => sizzle(`iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`, iq).length
             ).pop();
         }, 300);
         const stanza = $iq({
@@ -55,15 +54,9 @@ window.addEventListener('converse-loaded', () => {
             'id': iq.getAttribute('id'),
         }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#'+type});
 
-        _.forEach(identities, function (identity) {
-            stanza.c('identity', {'category': identity.category, 'type': identity.type}).up()
-        });
-        _.forEach(features, function (feature) {
-            stanza.c('feature', {'var': feature}).up();
-        });
-        _.forEach(items, function (item) {
-            stanza.c('item', {'jid': item}).up();
-        });
+        identities?.forEach(identity => stanza.c('identity', {'category': identity.category, 'type': identity.type}).up());
+        features?.forEach(feature => stanza.c('feature', {'var': feature}).up());
+        items?.forEach(item => stanza.c('item', {'jid': item}).up());
         _converse.connection._dataRecv(mock.createRequest(stanza));
     }
 
@@ -99,9 +92,7 @@ window.addEventListener('converse-loaded', () => {
         const controlbox = document.querySelector("#controlbox");
         if (u.isVisible(controlbox)) {
             const button = controlbox.querySelector(".close-chatbox-button");
-            if (!_.isNull(button)) {
-                button.click();
-            }
+            (button !== null) && button.click();
         }
         return this;
     };
@@ -239,9 +230,8 @@ window.addEventListener('converse-loaded', () => {
         const stanzas = _converse.connection.IQ_stanzas;
 
         if (affiliations.includes('member')) {
-            const member_IQ = await u.waitUntil(() => _.filter(
-                stanzas,
-                s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
+            const member_IQ = await u.waitUntil(() =>
+                stanzas.filter(s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="member"]`, s).length
             ).pop());
             const member_list_stanza = $iq({
                     'from': 'coven@chat.shakespeare.lit',
@@ -260,8 +250,7 @@ window.addEventListener('converse-loaded', () => {
         }
 
         if (affiliations.includes('admin')) {
-            const admin_IQ = await u.waitUntil(() => _.filter(
-                stanzas,
+            const admin_IQ = await u.waitUntil(() => stanzas.filter(
                 s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="admin"]`, s).length
             ).pop());
             const admin_list_stanza = $iq({
@@ -281,8 +270,7 @@ window.addEventListener('converse-loaded', () => {
         }
 
         if (affiliations.includes('owner')) {
-            const owner_IQ = await u.waitUntil(() => _.filter(
-                stanzas,
+            const owner_IQ = await u.waitUntil(() => stanzas.filter(
                 s => sizzle(`iq[to="${muc_jid}"] query[xmlns="${Strophe.NS.MUC_ADMIN}"] item[affiliation="owner"]`, s).length
             ).pop());
             const owner_list_stanza = $iq({
@@ -452,7 +440,7 @@ window.addEventListener('converse-loaded', () => {
         view.el.querySelector('.chat-textarea').value = message;
         view.onKeyDown({
             target: view.el.querySelector('textarea.chat-textarea'),
-            preventDefault: _.noop,
+            preventDefault: () => {},
             keyCode: 13
         });
         return promise;
@@ -652,7 +640,7 @@ window.addEventListener('converse-loaded', () => {
 
         _converse.api.vcard.get = function (model, force) {
             let jid;
-            if (_.isString(model)) {
+            if (typeof model === 'string' || model instanceof String) {
                 jid = model;
             } else if (!model.get('vcard_updated') || force) {
                 jid = model.get('jid') || model.get('muc_jid');
@@ -671,15 +659,15 @@ window.addEventListener('converse-loaded', () => {
             const vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
             return {
                 'vcard': vcard,
-                'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
-                'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
-                'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
-                'url': _.get(vcard.querySelector('URL'), 'textContent'),
+                'fullname': vcard.querySelector('FN')?.textContent,
+                'image': vcard.querySelector('PHOTO BINVAL')?.textContent,
+                'image_type': vcard.querySelector('PHOTO TYPE')?.textContent,
+                'url': vcard.querySelector('URL')?.textContent,
                 'vcard_updated': dayjs().format(),
                 'vcard_error': undefined
             };
         };
-        if (_.get(settings, 'auto_login') !== false) {
+        if (settings?.auto_login !== false) {
             _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
             await _converse.api.waitUntil('afterResourceBinding');
         }

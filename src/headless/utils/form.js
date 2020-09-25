@@ -3,7 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the form utilities module.
  */
-import tpl_field from "../templates/field.html";
 import u from "./core";
 
 /**
@@ -27,6 +26,11 @@ u.webForm2xForm = function (field) {
     } else {
         value = field.value;
     }
-    return u.stringToNode(tpl_field({ name, value }));
+    return u.toStanza(`
+        <field var="${name}">
+            ${ value.constructor === Array ?
+                value.map(v => `<value>${v}</value>`) :
+                `<value>${value}</value>` }
+        </field>`);
 };
 export default u;

@@ -6,7 +6,6 @@
 import './polyfill';
 import 'strophe.js/src/websocket';
 import Storage from '@converse/skeletor/src/storage.js';
-import _ from './lodash.noconflict';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
 import log from '@converse/headless/log';
@@ -54,18 +53,6 @@ Strophe.addNamespace('STANZAS', 'urn:ietf:params:xml:ns:xmpp-stanzas');
 Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
-
-// Use Mustache style syntax for variable interpolation
-/* Configuration of Lodash templates (this config is distinct to the
- * config of requirejs-tpl in main.js). This one is for normal inline templates.
- */
-_.templateSettings = {
-    'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
-    'evaluate': /\{\[([\s\S]+?)\]\}/g,
-    'interpolate': /\{\{([\s\S]+?)\}\}/g,
-    'imports': { '_': _ }
-};
-
 
 /**
  * Custom error for indicating timeouts
@@ -1641,7 +1628,6 @@ Object.assign(converse, {
         Model,
         Promise,
         Strophe,
-        _,
         dayjs,
         html,
         log,

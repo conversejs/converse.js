@@ -5,7 +5,6 @@
  */
 import "./converse-status";
 import log from "@converse/headless/log";
-import tpl_vcard from "./templates/vcard.html";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
@@ -294,7 +293,19 @@ converse.plugins.add('converse-vcard', {
                     if (!jid) {
                         throw Error("No jid provided for the VCard data");
                     }
-                    const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+                    const div = document.createElement('div');
+                    const vcard_el = u.toStanza(`
+                        <vCard xmlns="vcard-temp">
+                            <FN>${data.fn}</FN>
+                            <NICKNAME>${data.nickname}</NICKNAME>
+                            <URL>${data.url}</URL>
+                            <ROLE>${data.role}</ROLE>
+                            <EMAIL><INTERNET/><PREF/><USERID>${data.email}</USERID></EMAIL>
+                            <PHOTO>
+                                <TYPE>${data.image_type}</TYPE>
+                                <BINVAL>${data.image}</BINVAL>
+                            </PHOTO>
+                        </vCard>`, div);
                     let result;
                     try {
                         result = await api.sendIQ(createStanza("set", jid, vcard_el));

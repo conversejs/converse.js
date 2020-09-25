@@ -193,7 +193,7 @@ u.isServiceUnavailableError = function (stanza) {
 /**
  * Merge the second object into the first one.
  * @private
- * @method u#stringToNode
+ * @method u#merge
  * @param { Object } first
  * @param { Object } second
  */
@@ -205,20 +205,6 @@ u.merge = function merge (first, second) {
             first[k] = second[k];
         }
     }
-};
-
-/**
- * Converts an HTML string into a DOM Node.
- * Expects that the HTML string has only one top-level element,
- * i.e. not multiple ones.
- * @private
- * @method u#stringToNode
- * @param { String } s - The HTML string
- */
-u.stringToNode = function (s) {
-    var div = document.createElement('div');
-    div.innerHTML = s;
-    return div.firstElementChild;
 };
 
 u.getOuterWidth = function (el, include_margin=false) {

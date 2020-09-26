@@ -6,7 +6,7 @@
 import './components/converse.js';
 import "@converse/headless/converse-chatboxes";
 import tpl_avatar from "templates/avatar.svg";
-import tpl_background_logo from "templates/background_logo.html";
+import tpl_background_logo from "templates/background_logo.js";
 import tpl_converse from "templates/converse.js";
 import { Overview } from "@converse/skeletor/src/overview";
 import { View } from "@converse/skeletor/src/view";
@@ -73,7 +73,7 @@ const ChatBoxViews = Overview.extend({
         this.listenTo(this.model, "destroy", this.removeChat)
         const bg = document.getElementById('conversejs-bg');
         if (bg && !bg.innerHTML.trim()) {
-            bg.innerHTML = tpl_background_logo();
+            render(tpl_background_logo(), bg);
         }
         const body = document.querySelector('body');
         body.classList.add(`converse-${api.settings.get("view_mode")}`);

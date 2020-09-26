@@ -13,15 +13,15 @@ import ModeratorToolsModal from "./modals/moderator-tools.js";
 import RoomDetailsModal from 'modals/muc-details.js';
 import log from "@converse/headless/log";
 import tpl_chatroom from "templates/chatroom.js";
-import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
-import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
-import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
+import tpl_muc_bottom_panel from "templates/muc_bottom_panel.js";
+import tpl_muc_destroyed from "templates/muc_destroyed.js";
+import tpl_muc_disconnect from "templates/muc_disconnect.js";
 import tpl_chatroom_head from "templates/chatroom_head.js";
-import tpl_chatroom_nickname_form from "templates/chatroom_nickname_form.html";
+import tpl_muc_nickname_form from "templates/muc_nickname_form.js";
 import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_muc_password_form from "templates/muc_password_form.js";
 import tpl_muc_sidebar from "templates/muc_sidebar.js";
-import tpl_room_panel from "templates/room_panel.html";
+import tpl_room_panel from "templates/room_panel.js";
 import tpl_spinner from "templates/spinner.js";
 import { ChatBoxView } from "./converse-chatview";
 import { Model } from '@converse/skeletor/src/model.js';
@@ -269,12 +269,11 @@ export const ChatRoomView = ChatBoxView.extend({
         render(tpl, this.el.querySelector('.chat-head-chatroom'));
     },
 
-
     renderBottomPanel () {
         const container = this.el.querySelector('.bottom-panel');
         const entered = this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
         const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
-        container.innerHTML = tpl_chatroom_bottom_panel({__, can_edit, entered});
+        render(tpl_muc_bottom_panel({ can_edit, entered }), container);
         if (entered && can_edit) {
             this.renderMessageForm();
             this.initMentionAutoComplete();
@@ -1104,29 +1103,21 @@ export const ChatRoomView = ChatBoxView.extend({
      * @method _converse.ChatRoomView#renderNicknameForm
      */
     renderNicknameForm () {
-        const heading = api.settings.get('muc_show_logs_before_join') ?
-            __('Choose a nickname to enter') :
-            __('Please choose your nickname');
-
-        const html = tpl_chatroom_nickname_form(Object.assign({
-            heading,
-            'label_nickname': __('Nickname'),
-            'label_join': __('Enter groupchat'),
-        }, this.model.toJSON()));
-
+        const tmp_result = tpl_muc_nickname_form(this.model.get('nick'));
         if (api.settings.get('muc_show_logs_before_join')) {
             const container = this.el.querySelector('.muc-bottom-panel');
-            container.innerHTML = html;
+            render(container, tmp_result);
             u.addClass('muc-bottom-panel--nickname', container);
         } else {
             const form = this.el.querySelector('.muc-nickname-form');
+            const form_el = u.getElementFromTemplateResult(tmp_result);
             if (form) {
                 sizzle('.spinner', this.el).forEach(u.removeElement);
-                form.outerHTML = html;
+                form.outerHTML = form_el.outerHTML;
             } else {
                 this.hideChatRoomContents();
                 const container = this.el.querySelector('.chatroom-body');
-                container.insertAdjacentHTML('beforeend', html);
+                container.insertAdjacentElement('beforeend', form_el);
             }
         }
         u.safeSave(this.model.session, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
@@ -1207,11 +1198,7 @@ export const ChatRoomView = ChatBoxView.extend({
             'moved_jid': undefined
         });
         const container = this.el.querySelector('.disconnect-container');
-        container.innerHTML = tpl_chatroom_destroyed({
-            '__':__,
-            'jid': moved_jid,
-            'reason': reason ? `"${reason}"` : null
-        });
+        render(tpl_muc_destroyed(moved_jid, reason), container);
         const switch_el = container.querySelector('a.switch-chat');
         if (switch_el) {
             switch_el.addEventListener('click', async ev => {
@@ -1248,7 +1235,7 @@ export const ChatRoomView = ChatBoxView.extend({
             'disconnection_actor': undefined
         });
         const container = this.el.querySelector('.disconnect-container');
-        container.innerHTML = tpl_chatroom_disconnect({messages})
+        render(tpl_muc_disconnect(messages), container);
         u.showElement(container);
     },
 
@@ -1354,13 +1341,12 @@ export const RoomsPanel = View.extend({
         'click a.controlbox-heading__btn.show-list-muc-modal': 'showMUCListModal'
     },
 
-    render () {
-        this.el.innerHTML = tpl_room_panel({
+    toHTML () {
+        return tpl_room_panel({
             'heading_chatrooms': __('Groupchats'),
             'title_new_room': __('Add a new groupchat'),
             'title_list_rooms': __('Query for groupchats')
         });
-        return this;
     },
 
     showAddRoomModal (ev) {

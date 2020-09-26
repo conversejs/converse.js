@@ -4189,6 +4189,7 @@ describe("Groupchats", function () {
                 .toBe('Please choose your nickname');
 
             const input = sizzle('.chatroom-body form.chatroom-form input:first', view.el).pop();
+            expect(input.value).toBe('romeo');
             input.value = 'nicky';
             view.el.querySelector('input[type=submit]').click();
             done();

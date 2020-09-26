@@ -12,7 +12,7 @@ import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.js";
-import tpl_spinner from "templates/spinner.html";
+import tpl_spinner from "templates/spinner.js";
 import tpl_toolbar from "templates/toolbar.js";
 import tpl_user_details_modal from "templates/user_details_modal.js";
 import { BootstrapModal } from "./converse-modal.js";
@@ -421,11 +421,12 @@ export const ChatBoxView = View.extend({
 
     addSpinner (append=false) {
         if (this.el.querySelector('.spinner') === null) {
+            const el = u.getElementFromTemplateResult(tpl_spinner());
             if (append) {
-                this.content.insertAdjacentHTML('beforeend', tpl_spinner());
+                this.content.insertAdjacentElement('beforeend', el);
                 this.scrollDown();
             } else {
-                this.content.insertAdjacentHTML('afterbegin', tpl_spinner());
+                this.content.insertAdjacentElement('afterbegin', el);
             }
         }
     },

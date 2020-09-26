@@ -20,7 +20,7 @@ import tpl_select_option from "../templates/select_option.html";
 import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
 import { api } from  "@converse/headless/converse-core";
-import { html } from "lit-html";
+import { html, render } from "lit-html";
 import { isFunction } from "lodash-es";
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
@@ -250,6 +250,12 @@ u.removeClass = function (className, el) {
 u.removeElement = function (el) {
     (el instanceof Element) && el.parentNode && el.parentNode.removeChild(el);
     return el;
+}
+
+u.getElementFromTemplateResult = function (tr) {
+    const div = document.createElement('div');
+    render(tr, div);
+    return div.firstElementChild;
 }
 
 u.showElement = el => {

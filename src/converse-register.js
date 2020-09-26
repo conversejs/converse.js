@@ -7,18 +7,19 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-controlbox";
-import { __ } from './i18n';
-import { View } from "@converse/skeletor/src/view";
-import { pick } from "lodash-es";
-import { _converse, api, converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";
 import tpl_form_input from "templates/form_input.html";
 import tpl_form_username from "templates/form_username.html";
 import tpl_register_panel from "templates/register_panel.html";
 import tpl_registration_form from "templates/registration_form.html";
 import tpl_registration_request from "templates/registration_request.html";
-import tpl_spinner from "templates/spinner.html";
+import tpl_spinner from "templates/spinner.js";
 import utils from "@converse/headless/utils/form";
+import { View } from "@converse/skeletor/src/view";
+import { __ } from './i18n';
+import { _converse, api, converse } from "@converse/headless/converse-core";
+import { pick } from "lodash-es";
+import { render } from 'lit-html';
 
 // Strophe methods for building stanzas
 const { Strophe, sizzle, $iq } = converse.env;
@@ -352,7 +353,7 @@ converse.plugins.add('converse-register', {
 
             showSpinner () {
                 const form = this.el.querySelector('form');
-                form.innerHTML = tpl_spinner();
+                render(tpl_spinner(), form);
                 this.model.set('registration_form_rendered', false);
                 return this;
             },

@@ -22,7 +22,7 @@ import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_muc_password_form from "templates/muc_password_form.js";
 import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_room_panel from "templates/room_panel.html";
-import tpl_spinner from "templates/spinner.html";
+import tpl_spinner from "templates/spinner.js";
 import { ChatBoxView } from "./converse-chatview";
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from '@converse/skeletor/src/view.js';
@@ -1315,7 +1315,10 @@ export const ChatRoomView = ChatBoxView.extend({
         sizzle('.spinner', this.el).forEach(u.removeElement);
         this.hideChatRoomContents();
         const container_el = this.el.querySelector('.chatroom-body');
-        container_el.insertAdjacentHTML('afterbegin', tpl_spinner());
+        container_el.insertAdjacentElement(
+            'afterbegin',
+            u.getElementFromTemplateResult(tpl_spinner())
+        );
     },
 
     /**

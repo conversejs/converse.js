@@ -5,7 +5,7 @@
  */
 import './components/converse.js';
 import "@converse/headless/converse-chatboxes";
-import tpl_avatar from "templates/avatar.svg";
+import tpl_avatar from "templates/avatar.js";
 import tpl_background_logo from "templates/background_logo.js";
 import tpl_converse from "templates/converse.js";
 import { Overview } from "@converse/skeletor/src/overview";
@@ -30,11 +30,10 @@ const AvatarMixin = {
                 'classes': avatar_el.getAttribute('class'),
                 'width': avatar_el.getAttribute('width'),
                 'height': avatar_el.getAttribute('height'),
+                'image_type':  this.model.vcard.get('image_type'),
+                'image':  this.model.vcard.get('image')
             }
-            const image_type = this.model.vcard.get('image_type');
-            const image = this.model.vcard.get('image');
-            data['image'] = "data:" + image_type + ";base64," + image;
-            avatar_el.outerHTML = tpl_avatar(data);
+            avatar_el.outerHTML = u.getElementFromTemplateResult(tpl_avatar(data)).outerHTML;
         }
     },
 };

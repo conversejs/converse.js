@@ -177,10 +177,14 @@ u.applyDragResistance = function (value, default_value) {
 };
 
 
+/**
+ * Return the height of the passed in DOM element,
+ * based on the heights of its children.
+ * @method u#calculateElementHeight
+ * @param {HTMLElement} el
+ * @returns {integer}
+ */
 u.calculateElementHeight = function (el) {
-    /* Return the height of the passed in DOM element,
-     * based on the heights of its children.
-     */
     return Array.from(el.children).reduce((result, child) => result + child.offsetHeight, 0);
 }
 

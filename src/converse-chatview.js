@@ -74,7 +74,6 @@ export const ChatBoxView = View.extend({
 
         // Need to be registered after render has been called.
         this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-        this.listenTo(this.model.messages, 'change', this.renderChatHistory);
         this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
         this.listenTo(this.model.messages, 'rendered', this.maybeScrollDown);
         this.listenTo(this.model.messages, 'reset', this.renderChatHistory);

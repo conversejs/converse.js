@@ -344,8 +344,7 @@ describe("A Chat Message", function () {
             keyCode: 13 // Enter
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-
-        expect(textarea.value).toBe('');
+        await u.waitUntil(() => textarea.value === '');
         const messages = view.el.querySelectorAll('.chat-msg');
         expect(messages.length).toBe(3);
         expect(messages[0].querySelector('.chat-msg__text').textContent)

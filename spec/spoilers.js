@@ -1,4 +1,4 @@
-/* global mock */
+/* global mock, converse */
 
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 

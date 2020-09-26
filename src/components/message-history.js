@@ -81,6 +81,19 @@ function getHats (model) {
 }
 
 
+export function getDerivedMessageProps (chatbox, model) {
+    const is_groupchat = model.get('type') === 'groupchat';
+    return {
+        'has_mentions': is_groupchat && model.get('sender') === 'them' && chatbox.isUserMentioned(model),
+        'hats': getHats(model),
+        'is_first_unread': chatbox.get('first_unread_id') === model.get('id'),
+        'is_me_message': model.isMeCommand(),
+        'is_retracted': model.get('retracted') || model.get('moderated') === 'retracted',
+        'username': model.getDisplayName(),
+    }
+}
+
+
 export default class MessageHistory extends CustomElement {
 
     static get properties () {
@@ -104,20 +117,13 @@ export default class MessageHistory extends CustomElement {
         }
         const day = getDayIndicator(model);
         const templates = day ? [day] : [];
-        const is_groupchat = model.get('type') === 'groupchat';
-        const chatbox = this.chatview.model;
         const message = tpl_message(
-            Object.assign(model.toJSON(), {
-                'chatview': this.chatview,
-                'has_mentions': is_groupchat && model.get('sender') === 'them' && chatbox.isUserMentioned(model),
-                'hats': getHats(model),
-                'is_first_unread': chatbox.get('first_unread_id') === model.get('id'),
-                'is_me_message': model.isMeCommand(),
-                'is_retracted': model.get('retracted') || model.get('moderated') === 'retracted',
-                'occupant': model.occupant,
-                'username': model.getDisplayName(),
-                model,
-            }));
+            Object.assign(
+                model.toJSON(),
+                getDerivedMessageProps(this.chatview.model, model),
+                { 'chatview': this.chatview, model }
+            )
+        );
         return [...templates, message];
     }
 }

@@ -31,10 +31,13 @@ const SORT_BY_LENGTH = function (a, b) {
 
 const SORT_BY_QUERY_POSITION = function (a, b) {
     const query = a.query;
-    if (a.label.indexOf(query) === b.label.indexOf(query)) {
+    const x = a.label.toLowerCase().indexOf(query);
+    const y = b.label.toLowerCase().indexOf(query);
+
+    if (x === y) {
         return SORT_BY_LENGTH(a, b);
     }
-    return a.label.indexOf(query) < b.label.indexOf(query) ? -1 : 1
+    return (x === -1 ? Infinity : x) < (y === -1 ? Infinity : y) ? -1 : 1
 }
 
 

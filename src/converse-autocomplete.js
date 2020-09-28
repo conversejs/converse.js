@@ -30,7 +30,7 @@ const SORT_BY_LENGTH = function (a, b) {
 };
 
 const SORT_BY_QUERY_POSITION = function (a, b) {
-    const query = a.query;
+    const query = a.query.toLowerCase();
     const x = a.label.toLowerCase().indexOf(query);
     const y = b.label.toLowerCase().indexOf(query);
 

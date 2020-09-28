@@ -1534,7 +1534,7 @@ Object.assign(converse, {
 
         await initSessionStorage();
         initClientConfig();
-        i18n.initialize();
+        await i18n.initialize();
         initPlugins();
         registerGlobalEventHandlers();
 

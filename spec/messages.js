@@ -1876,15 +1876,16 @@ describe("A Chat Message", function () {
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg img').length, 2000);
-
+            _converse.connection._dataRecv(mock.createRequest(stanza));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg a').length, 1000);
             const msg = view.el.querySelector('.chat-msg .chat-msg__text');
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you seen this funny image?');
             const media = view.el.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
+                `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                `Download image file "conversejs-filled.svg"</a>`);
             done();
         }));
     });

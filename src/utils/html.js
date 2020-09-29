@@ -115,10 +115,11 @@ function renderAudioURL (_converse, uri) {
 }
 
 function renderImageURL (_converse, uri) {
-    if (!_converse.api.settings.get('show_images_inline')) {
-        return u.convertURIoHyperlink(uri);
-    }
-    return tpl_image({'url': uri.toString()});
+    const { __ } = _converse;
+    return tpl_file({
+        'url': uri.toString(),
+        'label_download': __('Download image file "%1$s"', getFileName(uri))
+    })
 }
 
 function renderFileURL (_converse, uri) {

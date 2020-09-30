@@ -72,7 +72,7 @@
     "bootstrap.native-loader": "2.0.0",
     "clean-css-cli": "^4.3.0",
     "copy-webpack-plugin": "^6.0.2",
-    "css-loader": "^3.5.3",
+    "css-loader": "^4.3.0",
     "dayjs": "1.8.30",
     "eslint": "^7.3.0",
     "eslint-plugin-lodash": "^7.1.0",

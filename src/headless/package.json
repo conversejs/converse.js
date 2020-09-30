@@ -38,7 +38,7 @@
   "devDependencies": {
     "@converse/skeletor": "conversejs/skeletor#0f819a4f3ea013b3a48c3fcb600c3138559e1c0d",
     "filesize": "^6.1.0",
-    "localforage": "^1.7.3",
+    "localforage": "^1.9.0",
     "lodash-es": "^4.17.15",
     "pluggable.js": "2.0.1",
     "sprintf-js": "^1.1.2",

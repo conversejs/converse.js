@@ -1106,7 +1106,7 @@ export const ChatRoomView = ChatBoxView.extend({
         const tmp_result = tpl_muc_nickname_form(this.model.get('nick'));
         if (api.settings.get('muc_show_logs_before_join')) {
             const container = this.el.querySelector('.muc-bottom-panel');
-            render(container, tmp_result);
+            render(tmp_result, container);
             u.addClass('muc-bottom-panel--nickname', container);
         } else {
             const form = this.el.querySelector('.muc-nickname-form');

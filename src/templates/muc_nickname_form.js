@@ -15,7 +15,7 @@ export default (nickname) => {
             <form class="converse-form chatroom-form converse-centered-form">
                 <fieldset class="form-group">
                     <label>${i18n_heading}</label>
-                    <input type="text" required="required" name="nick" value="${nickname}"
+                    <input type="text" required="required" name="nick" value="${nickname || ''}"
                         class="form-control" placeholder="${i18n_nickname}"/>
                 </fieldset>
                 <fieldset class="form-group">

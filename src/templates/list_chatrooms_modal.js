@@ -15,7 +15,7 @@ const form = (o) => {
                 <label for="chatroom">${i18n_server_address}:</label>
                 <input type="text"
                     @change=${o.setDomainFromEvent}
-                    value="${o.muc_domain}"
+                    value="${o.muc_domain || ''}"
                     required="required"
                     name="server"
                     class="form-control"

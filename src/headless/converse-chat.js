@@ -1012,7 +1012,7 @@ converse.plugins.add('converse-chat', {
              * @method _converse.ChatBox#createMessage
              */
             createMessage (attrs, options) {
-                return this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options));
+                return this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options)).catch(e => log.error(e));
             },
 
             /**

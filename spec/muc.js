@@ -458,7 +458,7 @@ describe("Groupchats", function () {
                         `<x type="submit" xmlns="jabber:x:data">`+
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>`+
                     `</query>`+
                 `</iq>`);
 

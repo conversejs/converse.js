@@ -32,7 +32,7 @@ describe("Message Archive Management", function () {
                         `<x type="submit" xmlns="jabber:x:data">`+
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>2</max></set>`+
                     `</query>`+
                 `</iq>`);
 
@@ -105,7 +105,7 @@ describe("Message Archive Management", function () {
                         `<x type="submit" xmlns="jabber:x:data">`+
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max><after>${message.querySelector('result').getAttribute('id')}</after></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><after>${message.querySelector('result').getAttribute('id')}</after><max>2</max></set>`+
                     `</query>`+
                 `</iq>`);
 
@@ -165,7 +165,8 @@ describe("Message Archive Management", function () {
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                         `</x>`+
                         `<set xmlns="http://jabber.org/protocol/rsm">`+
-                            `<max>2</max><after>${last_msg_id}</after>`+
+                            `<after>${last_msg_id}</after>`+
+                            `<max>2</max>`+
                         `</set>`+
                     `</query>`+
                 `</iq>`);
@@ -695,8 +696,8 @@ describe("Message Archive Management", function () {
                             `</field>`+
                         `</x>`+
                         `<set xmlns="http://jabber.org/protocol/rsm">`+
-                            `<max>10</max>`+
                             `<after>09af3-cc343-b409f</after>`+
+                            `<max>10</max>`+
                         `</set>`+
                     `</query>`+
                 `</iq>`);
@@ -725,49 +726,7 @@ describe("Message Archive Management", function () {
                             `</field>`+
                         `</x>`+
                         `<set xmlns="http://jabber.org/protocol/rsm">`+
-                            `<max>10</max>`+
                             `<before></before>`+
-                        `</set>`+
-                    `</query>`+
-                `</iq>`);
-            done();
-       }));
-
-       it("accepts a _converse.RSM object for the query options",
-                mock.initConverse([], {}, async function (done, _converse) {
-
-            await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
-            let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
-            // Normally the user wouldn't manually make a _converse.RSM object
-            // and pass it in. However, in the callback method an RSM object is
-            // returned which can be reused for easy paging. This test is
-            // more for that usecase.
-            const rsm =  new _converse.RSM({'max': '10'});
-            rsm['with'] = 'romeo@montague.lit'; // eslint-disable-line dot-notation
-            rsm.start = '2010-06-07T00:00:00Z';
-            _converse.api.archive.query(rsm);
-            await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
-            expect(Strophe.serialize(sent_stanza)).toBe(
-                `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
-                    `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
-                        `<x type="submit" xmlns="jabber:x:data">`+
-                            `<field type="hidden" var="FORM_TYPE">`+
-                                `<value>urn:xmpp:mam:2</value>`+
-                            `</field>`+
-                            `<field var="with">`+
-                                `<value>romeo@montague.lit</value>`+
-                            `</field>`+
-                            `<field var="start">`+
-                                `<value>${dayjs(rsm.start).toISOString()}</value>`+
-                            `</field>`+
-                        `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm">`+
                             `<max>10</max>`+
                         `</set>`+
                     `</query>`+
@@ -850,11 +809,10 @@ describe("Message Archive Management", function () {
             expect(result.messages.length).toBe(2);
             expect(result.messages[0].outerHTML).toBe(msg1.nodeTree.outerHTML);
             expect(result.messages[1].outerHTML).toBe(msg2.nodeTree.outerHTML);
-            expect(result.rsm['with']).toBe('romeo@capulet.lit'); // eslint-disable-line dot-notation
-            expect(result.rsm.max).toBe('10');
-            expect(result.rsm.count).toBe('16');
-            expect(result.rsm.first).toBe('23452-4534-1');
-            expect(result.rsm.last).toBe('09af3-cc343-b409f');
+            expect(result.rsm.query.max).toBe('10');
+            expect(result.rsm.result.count).toBe(16);
+            expect(result.rsm.result.first).toBe('23452-4534-1');
+            expect(result.rsm.result.last).toBe('09af3-cc343-b409f');
             done()
        }));
     });
@@ -962,7 +920,7 @@ describe("Chatboxes", function () {
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                             `<field var="with"><value>mercutio@montague.lit</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>`+
                     `</query>`+
                 `</iq>`
             );
@@ -1033,7 +991,7 @@ describe("Chatboxes", function () {
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                             `<field var="with"><value>mercutio@montague.lit</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>`+
                     `</query>`+
                 `</iq>`);
 
@@ -1058,7 +1016,7 @@ describe("Chatboxes", function () {
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                             `<field var="with"><value>mercutio@montague.lit</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>`+
                     `</query>`+
                 `</iq>`);
 

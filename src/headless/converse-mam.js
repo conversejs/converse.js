@@ -7,18 +7,14 @@
 import "./converse-disco";
 import "./converse-rsm";
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { intersection, pick } from 'lodash-es'
 import log from "./log";
 import sizzle from "sizzle";
 import st from "./utils/stanza";
+import { RSM } from '@converse/headless/converse-rsm';
 
 const { Strophe, $iq, dayjs } = converse.env;
 const { NS } = Strophe;
 const u = converse.env.utils;
-
-// XEP-0313 Message Archive Management
-const MAM_ATTRIBUTES = ['with', 'start', 'end'];
-
 
 /**
  * The MUC utils object. Contains utility functions related to multi-user chat.
@@ -77,7 +73,7 @@ const MAMEnabledChat = {
      * Fetch XEP-0313 archived messages based on the passed in criteria.
      * @private
      * @param { Object } options
-     * @param { integer } [options.max] - The maxinum number of items to return.
+     * @param { integer } [options.max] - The maximum number of items to return.
      *  Defaults to "archived_messages_page_size"
      * @param { string } [options.after] - The XEP-0359 stanza ID of a message
      *  after which messages should be returned. Implies forward paging.
@@ -102,20 +98,21 @@ const MAMEnabledChat = {
         if (!(await api.disco.supports(NS.MAM, mam_jid))) {
             return;
         }
+        const max = api.settings.get('archived_messages_page_size')
         const query = Object.assign({
             'groupchat': is_muc,
-            'max': api.settings.get('archived_messages_page_size'),
+            'max': max,
             'with': this.get('jid'),
         }, options);
 
         const result = await api.archive.query(query);
         await this.handleMAMResult(result, query, options, page_direction);
 
-        if (page_direction && result.rsm) {
+        if (page_direction && result.rsm && !result.complete) {
             if (page_direction === 'forwards') {
-                options = result.rsm.next(api.settings.get('archived_messages_page_size'), options.before);
+                options = result.rsm.next(max, options.before).query;
             } else if (page_direction === 'backwards') {
-                options = result.rsm.previous(api.settings.get('archived_messages_page_size'), options.after);
+                options = result.rsm.previous(max, options.after).query;
             }
             return this.fetchArchivedMessages(options, page_direction);
         } else {
@@ -253,36 +250,38 @@ converse.plugins.add('converse-mam', {
              * option in the configuration settings section, which you'll
              * usually want to use in conjunction with this API.
              *
-             * @namespace api.archive
-             * @memberOf api
+             * @namespace _converse.api.archive
+             * @memberOf _converse.api
              */
-            'archive': {
+            archive: {
+                 /**
+                  * @typedef { module:converse-rsm~RSMQueryParameters } MAMFilterParameters
+                  * Filter parameters which can be used to filter a MAM XEP-0313 archive
+                  * @property { String } [end] - A date string in ISO-8601 format, before which messages should be returned. Implies backward paging.
+                  * @property { String } [start] - A date string in ISO-8601 format, after which messages should be returned. Implies forward paging.
+                  * @property { String } [with] - A JID against which to match messages, according to either their `to` or `from` attributes.
+                  *     An item in a MUC archive matches if the publisher of the item matches the JID.
+                  *     If `with` is omitted, all messages that match the rest of the query will be returned, regardless of to/from
+                  *     addresses of each message.
+                  */
+
+                 /**
+                  * The options that can be passed in to the { @link _converse.api.archive.query } method
+                  * @typedef { module:converse-mam~MAMFilterParameters } ArchiveQueryOptions
+                  * @property { Boolean } [groupchat=false] - Whether the MAM archive is for a groupchat.
+                  */
+
                  /**
                   * Query for archived messages.
                   *
                   * The options parameter can also be an instance of
-                  * _converse.RSM to enable easy querying between results pages.
+                  * RSM to enable easy querying between results pages.
                   *
-                  * @method api.archive.query
-                  * @param {(Object|_converse.RSM)} options Query parameters, either
-                  *      MAM-specific or also for Result Set Management.
-                  *      Can be either an object or an instance of _converse.RSM.
-                  *      Valid query parameters are:
-                  * * `with`
-                  * * `start`
-                  * * `end`
-                  * * `first`
-                  * * `last`
-                  * * `after`
-                  * * `before`
-                  * * `index`
-                  * * `count`
-                  * * `groupchat`
+                  * @method _converse.api.archive.query
+                  * @param { module:converse-mam~ArchiveQueryOptions } options - An object containing query parameters
                   * @throws {Error} An error is thrown if the XMPP server responds with an error.
-                  * @returns { (Promise<Object> | _converse.TimeoutError) } A promise which resolves
-                  * to an object which will have keys `messages` and `rsm` which contains a _converse.RSM
-                  * object on which "next" or "previous" can be called before passing it in again
-                  * to this method, to get the next or previous page in the result set.
+                  * @returns { Promise<module:converse-mam~MAMQueryResult> } A promise which resolves
+                  *     to a { @link module:converse-mam~MAMQueryResult } object.
                   *
                   * @example
                   * // Requesting all archived messages
@@ -369,7 +368,7 @@ converse.plugins.add('converse-mam', {
                   * // repeatedly make a further query to fetch the next batch of messages.
                   * //
                   * // To simplify this usecase for you, the callback method receives not only an array
-                  * // with the returned archived messages, but also a special _converse.RSM (*Result Set Management*)
+                  * // with the returned archived messages, but also a special RSM (*Result Set Management*)
                   * // object which contains the query parameters you passed in, as well
                   * // as two utility methods `next`, and `previous`.
                   * //
@@ -378,18 +377,19 @@ converse.plugins.add('converse-mam', {
                   * // archived messages. Please note, when calling these methods, pass in an integer
                   * // to limit your results.
                   *
+                  * const options = {'with': 'john@doe.net', 'max':10};
                   * let result;
                   * try {
-                  *     result = await api.archive.query({'with': 'john@doe.net', 'max':10});
+                  *     result = await api.archive.query(options);
                   * } catch (e) {
                   *     // The query was not successful
                   * }
                   * // Do something with the messages, like showing them in your webpage.
                   * result.messages.forEach(m => this.showMessage(m));
                   *
-                  * while (result.rsm) {
+                  * while (!result.complete) {
                   *     try {
-                  *         result = await api.archive.query(rsm.next(10));
+                  *         result = await api.archive.query(Object.assign(options, rsm.next(10).query));
                   *     } catch (e) {
                   *         // The query was not successful
                   *     }
@@ -407,8 +407,9 @@ converse.plugins.add('converse-mam', {
                   * // message, pass in the `before` parameter with an empty string value `''`.
                   *
                   * let result;
+                  * const options = {'before': '', 'max':5};
                   * try {
-                  *     result = await api.archive.query({'before': '', 'max':5});
+                  *     result = await api.archive.query(options);
                   * } catch (e) {
                   *     // The query was not successful
                   * }
@@ -417,7 +418,7 @@ converse.plugins.add('converse-mam', {
                   *
                   * // Now we query again, to get the previous batch.
                   * try {
-                  *      result = await api.archive.query(rsm.previous(5););
+                  *      result = await api.archive.query(Object.assign(options, rsm.previous(5).query));
                   * } catch (e) {
                   *     // The query was not successful
                   * }
@@ -468,10 +469,9 @@ converse.plugins.add('converse-mam', {
                             }
                         });
                         stanza.up();
-                        if (options instanceof _converse.RSM) {
-                            stanza.cnode(options.toXML());
-                        } else if (intersection(_converse.RSM_ATTRIBUTES, Object.keys(options)).length) {
-                            stanza.cnode(new _converse.RSM(options).toXML());
+                        const rsm = new RSM(options);
+                        if (Object.keys(rsm.query).length) {
+                            stanza.cnode(rsm.toXML());
                         }
                     }
 
@@ -498,28 +498,40 @@ converse.plugins.add('converse-mam', {
                     let error;
                     const iq_result = await api.sendIQ(stanza, api.settings.get('message_archiving_timeout'), false)
                     if (iq_result === null) {
-                        const err_msg = "Timeout while trying to fetch archived messages.";
+                        const { __ } = _converse;
+                        const err_msg = __("Timeout while trying to fetch archived messages.");
                         log.error(err_msg);
                         error = new _converse.TimeoutError(err_msg);
                         return { messages, error };
 
                     } else if (u.isErrorStanza(iq_result)) {
-                        log.error("Error stanza received while trying to fetch archived messages");
+                        const { __ } = _converse;
+                        const err_msg = __('An error occurred while querying for archived messages.');
+                        log.error(err_msg);
                         log.error(iq_result);
-                        return { messages };
+                        error = new Error(err_msg);
+                        return { messages, error };
                     }
                     _converse.connection.deleteHandler(message_handler);
 
                     let rsm;
                     const fin = iq_result && sizzle(`fin[xmlns="${NS.MAM}"]`, iq_result).pop();
-                    if (fin && [null, 'false'].includes(fin.getAttribute('complete'))) {
-                        const set = sizzle(`set[xmlns="${NS.RSM}"]`, fin).pop();
-                        if (set) {
-                            rsm = new _converse.RSM({'xml': set});
-                            Object.assign(rsm, Object.assign(pick(options, [...MAM_ATTRIBUTES, ..._converse.RSM_ATTRIBUTES]), rsm));
-                        }
+                    const complete = fin?.getAttribute('complete') === 'true'
+                    const set = sizzle(`set[xmlns="${NS.RSM}"]`, fin).pop();
+                    if (set) {
+                        rsm = new RSM({...options, 'xml': set});
                     }
-                    return { messages, rsm, error };
+                    /**
+                     * @typedef { Object } MAMQueryResult
+                     * @property { Array } messages
+                     * @property { RSM } [rsm] - An instance of { @link RSM }.
+                     *  You can call `next()` or `previous()` on this instance,
+                     *  to get the RSM query parameters for the next or previous
+                     *  page in the result set.
+                     * @property { Boolean } complete
+                     * @property { Error } [error]
+                     */
+                    return { messages, rsm, complete };
                 }
             }
         });

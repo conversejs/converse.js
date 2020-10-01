@@ -6,7 +6,7 @@
 import "@converse/headless/converse-status";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
-import { invoke, isEmpty, isNaN, isString, propertyOf, sum } from "lodash-es";
+import { invoke, isNaN, propertyOf, sum } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import log from "./log";
 
@@ -514,7 +514,7 @@ converse.plugins.add('converse-roster', {
              * @param { Function } errback - A function to call if an error occurred
              */
             sendContactAddIQ (jid, name, groups) {
-                name = isEmpty(name) ? null : name;
+                name = name ? name : null;
                 const iq = $iq({'type': 'set'})
                     .c('query', {'xmlns': Strophe.NS.ROSTER})
                     .c('item', { jid, name });
@@ -1075,7 +1075,7 @@ converse.plugins.add('converse-roster', {
                     const _getter = jid => _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (jids === undefined) {
                         jids = _converse.roster.pluck('jid');
-                    } else if (isString(jids)) {
+                    } else if (typeof jids === 'string') {
                         return _getter(jids);
                     }
                     return jids.map(_getter);
@@ -1086,8 +1086,7 @@ converse.plugins.add('converse-roster', {
                  *
                  * @method _converse.api.contacts.add
                  * @param {string} jid The JID of the contact to be added
-                 * @param {string} [name] A custom name to show the user by
-                 *     in the roster.
+                 * @param {string} [name] A custom name to show the user by in the roster
                  * @example
                  *     _converse.api.contacts.add('buddy@example.com')
                  * @example
@@ -1095,10 +1094,10 @@ converse.plugins.add('converse-roster', {
                  */
                 async add (jid, name) {
                     await api.waitUntil('rosterContactsFetched');
-                    if (!isString(jid) || !jid.includes('@')) {
+                    if (typeof jid !== 'string' || !jid.includes('@')) {
                         throw new TypeError('contacts.add: invalid jid');
                     }
-                    return _converse.roster.addAndSubscribe(jid, isEmpty(name)? jid: name);
+                    return _converse.roster.addAndSubscribe(jid, name);
                 }
             }
         });

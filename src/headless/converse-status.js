@@ -3,7 +3,7 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { isNaN, isObject, isString } from "lodash-es";
+import { isNaN, isObject } from "lodash-es";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 
@@ -49,8 +49,8 @@ converse.plugins.add('converse-status', {
             },
 
             constructPresence (type, to=null, status_message) {
-                type = isString(type) ? type : (this.get('status') || api.settings.get("default_state"));
-                status_message = isString(status_message) ? status_message : this.get('status_message');
+                type = typeof type === 'string' ? type : (this.get('status') || api.settings.get("default_state"));
+                status_message = typeof status_message === 'string' ? status_message : this.get('status_message');
                 let presence;
                 const attrs = {to};
                 if ((type === 'unavailable') ||
@@ -293,7 +293,7 @@ converse.plugins.add('converse-status', {
                             'Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1'
                         );
                     }
-                    if (isString(message)) {
+                    if (typeof message === 'string') {
                         data.status_message = message;
                     }
                     await api.waitUntil('statusInitialized');

@@ -6,7 +6,6 @@
 import { ASCII_REPLACE_REGEX, CODEPOINTS_REGEX } from './emoji_regexes.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
-import { find, isString, uniq } from "lodash-es";
 import { html } from 'lit-html';
 
 const u = converse.env.utils;
@@ -89,10 +88,13 @@ function convert (unicode) {
     return fromCodePoint(unicode);
 }
 
+function unique (arr) {
+    return [...new Set(arr)];
+}
 
 function getTonedEmojis () {
     if (!converse.emojis.toned) {
-        converse.emojis.toned = uniq(
+        converse.emojis.toned = unique(
             Object.values(converse.emojis.json.people)
                 .filter(person => person.sn.includes('_tone'))
                 .map(person => person.sn.replace(/_tone[1-5]/, ''))
@@ -198,7 +200,7 @@ function addEmojisMarkup (text, options) {
         .forEach(ref => {
             const text = list.shift();
             const emoji = getEmojiMarkup(ref, options);
-            if (isString(emoji)) {
+            if (typeof emoji === 'string') {
                 list = [text.slice(0, ref.begin) + emoji + text.slice(ref.end), ...list];
             } else {
                 list = [text.slice(0, ref.begin), emoji, text.slice(ref.end), ...list];
@@ -349,7 +351,7 @@ converse.plugins.add('converse-emoji', {
                     .filter((c, i, arr) => arr.indexOf(c) == i);
 
                 emojis_by_attribute[attr] = {};
-                all_variants.forEach(v => (emojis_by_attribute[attr][v] = find(converse.emojis.list, i => (i[attr] === v))));
+                all_variants.forEach(v => (emojis_by_attribute[attr][v] = converse.emojis.list.find(i => i[attr] === v)));
                 return emojis_by_attribute[attr];
             }
         });

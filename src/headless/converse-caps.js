@@ -5,7 +5,6 @@
  */
 import SHA1 from 'strophe.js/src/sha1';
 import { converse } from "@converse/headless/converse-core";
-import { get } from "lodash-es";
 
 const { Strophe, $build } = converse.env;
 
@@ -25,7 +24,7 @@ function generateVerificationString (_converse) {
         propertySort(identities, "lang");
     }
 
-    let S = identities.reduce((result, id) => `${result}${id.category}/${id.type}/${get(id, 'lang', '')}/${id.name}<`, "");
+    let S = identities.reduce((result, id) => `${result}${id.category}/${id.type}/${id?.lang ?? ''}/${id.name}<`, "");
     features.sort();
     S = features.reduce((result, feature) => `${result}${feature}<`, S);
     return SHA1.b64_sha1(S);

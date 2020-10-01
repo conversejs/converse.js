@@ -5,7 +5,7 @@
  */
 import * as strophe from 'strophe.js/src/core';
 import { Model } from '@converse/skeletor/src/model.js';
-import { compact, last, isElement, isObject, isString } from "lodash-es";
+import { compact, last, isElement, isObject } from "lodash-es";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
 
@@ -71,7 +71,7 @@ u.prefixMentions = function (message) {
 };
 
 u.isValidJID = function (jid) {
-    if (isString(jid)) {
+    if (typeof jid === 'string') {
         return compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     }
     return false;
@@ -82,7 +82,7 @@ u.isValidMUCJID = function (jid) {
 };
 
 u.isSameBareJID = function (jid1, jid2) {
-    if (!isString(jid1) || !isString(jid2)) {
+    if (typeof jid1 !== 'string' || typeof jid2 !== 'string') {
         return false;
     }
     return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
@@ -91,7 +91,7 @@ u.isSameBareJID = function (jid1, jid2) {
 
 
 u.isSameDomain = function (jid1, jid2) {
-    if (!isString(jid1) || !isString(jid2)) {
+    if (typeof jid1 !== 'string' || typeof jid2 !== 'string') {
         return false;
     }
     return Strophe.getDomainFromJid(jid1).toLowerCase() ===

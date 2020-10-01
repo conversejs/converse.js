@@ -28,7 +28,7 @@ import { Model } from '@converse/skeletor/src/model.js';
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { debounce, isString, isUndefined } from "lodash-es";
+import { debounce } from "lodash-es";
 import { render } from "lit-html";
 
 const { Strophe, sizzle, $pres } = converse.env;
@@ -504,7 +504,7 @@ export const ChatRoomView = ChatBoxView.extend({
         if (!this.verifyRoles(['moderator'])) {
             return;
         }
-        if (isUndefined(this.model.modtools_modal)) {
+        if (typeof this.model.modtools_modal === 'undefined') {
             const model = new Model({'affiliation': affiliation});
             this.modtools_modal = new ModeratorToolsModal({model, _converse, 'chatroomview': this});
         } else {
@@ -1736,7 +1736,7 @@ converse.plugins.add('converse-muc-views', {
                     let views;
                     if (jids === undefined) {
                         views = _converse.chatboxviews;
-                    } else if (isString(jids)) {
+                    } else if (typeof jids === 'string') {
                         views = [_converse.chatboxviews.get(jids)].filter(v => v);
                     } else if (Array.isArray(jids)) {
                         views = jids.map(jid => _converse.chatboxviews.get(jid));

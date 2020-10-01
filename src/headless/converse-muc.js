@@ -9,7 +9,7 @@ import "./converse-disco";
 import "./converse-emoji";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
-import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash-es";
+import { debounce, intersection, invoke, isElement, isObject, pick, zipObject } from "lodash-es";
 import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
@@ -135,7 +135,7 @@ converse.plugins.add('converse-muc', {
         });
         api.promises.add(['roomsAutoJoined']);
 
-        if (api.settings.get('locked_muc_domain') && !isString(api.settings.get('muc_domain'))) {
+        if (api.settings.get('locked_muc_domain') && (typeof api.settings.get('muc_domain') !== 'string')) {
             throw new Error("Config Error: it makes no sense to set locked_muc_domain "+
                             "to true when muc_domain is not set");
         }
@@ -1372,7 +1372,7 @@ converse.plugins.add('converse-muc', {
              * @returns { Promise }
              */
             setAffiliations (members) {
-                const affiliations = uniq(members.map(m => m.affiliation));
+                const affiliations = [...new Set(members.map(m => m.affiliation))];
                 return Promise.all(affiliations.map(a => this.setAffiliation(a, members)));
             },
 
@@ -1713,7 +1713,7 @@ converse.plugins.add('converse-muc', {
              *  message, as returned by {@link st.parseMUCMessage}
              */
             async handleSubjectChange (attrs) {
-                if (isString(attrs.subject) && !attrs.thread && !attrs.message) {
+                if (typeof attrs.subject === 'string' && !attrs.thread && !attrs.message) {
                     // https://xmpp.org/extensions/xep-0045.html#subject-mod
                     // -----------------------------------------------------
                     // The subject is changed by sending a message of type "groupchat" to the <room@service>,
@@ -2697,13 +2697,13 @@ converse.plugins.add('converse-muc', {
          */
         async function autoJoinRooms () {
             await Promise.all(api.settings.get('auto_join_rooms').map(muc => {
-                if (isString(muc)) {
+                if (typeof muc === 'string') {
                     if (_converse.chatboxes.where({'jid': muc}).length) {
                         return Promise.resolve();
                     }
                     return api.rooms.open(muc);
                 } else if (isObject(muc)) {
-                    return api.rooms.open(muc.jid, clone(muc));
+                    return api.rooms.open(muc.jid, {...muc});
                 } else {
                     log.error('Invalid muc criteria specified for "auto_join_rooms"');
                     return Promise.resolve();
@@ -2816,13 +2816,13 @@ converse.plugins.add('converse-muc', {
                  * @returns {Promise} Promise which resolves with the Model representing the chat.
                  */
                 create (jids, attrs={}) {
-                    attrs = isString(attrs) ? {'nick': attrs} : (attrs || {});
+                    attrs = typeof attrs === 'string' ? {'nick': attrs} : (attrs || {});
                     if (!attrs.nick && api.settings.get('muc_nickname_from_jid')) {
                         attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                     }
                     if (jids === undefined) {
                         throw new TypeError('rooms.create: You need to provide at least one JID');
-                    } else if (isString(jids)) {
+                    } else if (typeof jids === 'string') {
                         return createChatRoom(jids, attrs);
                     }
                     return jids.map(jid => createChatRoom(jid, attrs));
@@ -2893,7 +2893,7 @@ converse.plugins.add('converse-muc', {
                         const err_msg = 'rooms.open: You need to provide at least one JID';
                         log.error(err_msg);
                         throw(new TypeError(err_msg));
-                    } else if (isString(jids)) {
+                    } else if (typeof jids === 'string') {
                         const room = await api.rooms.create(jids, attrs);
                         room && room.maybeShow(force);
                         return room;
@@ -2944,7 +2944,7 @@ converse.plugins.add('converse-muc', {
                     if (jids === undefined) {
                         const chats = await api.chatboxes.get();
                         return chats.filter(c => (c.get('type') === _converse.CHATROOMS_TYPE));
-                    } else if (isString(jids)) {
+                    } else if (typeof jids === 'string') {
                         return _get(jids);
                     }
                     return Promise.all(jids.map(jid => _get(jid)));

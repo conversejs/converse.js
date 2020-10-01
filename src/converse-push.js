@@ -7,7 +7,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { filter, reject } from 'lodash-es';
 import log from "@converse/headless/log";
 
 const { Strophe, $iq } = converse.env;
@@ -95,8 +94,8 @@ converse.plugins.add('converse-push', {
             if (push_enabled.includes(domain)) {
                 return;
             }
-            const enabled_services = reject(api.settings.get('push_app_servers'), 'disable');
-            const disabled_services = filter(api.settings.get('push_app_servers'), 'disable');
+            const enabled_services = api.settings.get('push_app_servers').filter(s => !s.disable);
+            const disabled_services = api.settings.get('push_app_servers').filter(s => s.disable);
             const enabled = enabled_services.map(s => enablePushAppServer(domain, s));
             const disabled = disabled_services.map(s => disablePushAppServer(domain, s));
             try {

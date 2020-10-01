@@ -19,7 +19,7 @@ import { BootstrapModal } from "./converse-modal.js";
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { debounce, isString } from "lodash-es";
+import { debounce } from "lodash-es";
 import { html, render } from "lit-html";
 
 
@@ -1216,7 +1216,7 @@ converse.plugins.add('converse-chatview', {
                     if (jids === undefined) {
                         return Object.values(_converse.chatboxviews.getAll());
                     }
-                    if (isString(jids)) {
+                    if (typeof jids === 'string') {
                         return _converse.chatboxviews.get(jids);
                     }
                     return jids.map(jid => _converse.chatboxviews.get(jid));

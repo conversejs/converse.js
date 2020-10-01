@@ -20,7 +20,7 @@ import { Events } from '@converse/skeletor/src/events.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { Router } from '@converse/skeletor/src/router.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
-import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash-es';
+import { assignIn, debounce, invoke, isFunction, isObject, pick } from 'lodash-es';
 import { html } from 'lit-element';
 import { sprintf } from 'sprintf-js';
 
@@ -712,7 +712,7 @@ export const api = _converse.api = {
             if (isObject(key)) {
                 assignIn(_converse, pick(key, Object.keys(DEFAULT_SETTINGS)));
                 assignIn(_converse.settings, pick(key, Object.keys(DEFAULT_SETTINGS)));
-            } else if (isString('string')) {
+            } else if (typeof key === 'string') {
                 o[key] = val;
                 assignIn(_converse, pick(o, Object.keys(DEFAULT_SETTINGS)));
                 assignIn(_converse.settings, pick(o, Object.keys(DEFAULT_SETTINGS)));
@@ -887,7 +887,7 @@ export const api = _converse.api = {
             log.warn(Strophe.serialize(stanza));
             return;
         }
-        if (isString(stanza)) {
+        if (typeof stanza === 'string') {
             stanza = u.toStanza(stanza);
         }
         if (stanza.tagName === 'iq') {

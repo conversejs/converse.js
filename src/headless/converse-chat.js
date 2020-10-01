@@ -304,7 +304,7 @@ converse.plugins.add('converse-chat', {
                 return {
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'hidden': _converse.isUniView(),
+                    'hidden': _converse.isUniView() && !api.settings.get('singleton'),
                     'message_type': 'chat',
                     'nickname': undefined,
                     'num_unread': 0,

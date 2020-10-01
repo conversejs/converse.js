@@ -33,6 +33,27 @@ describe("The Controlbox", function () {
         done();
     }));
 
+
+    it("can be closed by clicking a DOM element with class 'close-chatbox-button'",
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+
+        await mock.openControlBox(_converse);
+        const controlview = _converse.chatboxviews.get('controlbox');
+
+        spyOn(controlview, 'close').and.callThrough();
+        spyOn(_converse.api, "trigger").and.callThrough();
+
+        // We need to rebind all events otherwise our spy won't be called
+        controlview.delegateEvents();
+
+        controlview.el.querySelector('.close-chatbox-button').click();
+        expect(controlview.close).toHaveBeenCalled();
+        await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
+        expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+        done();
+    }));
+
+
     describe("The \"Contacts\" section", function () {
 
         it("can be used to add contact and it checks for case-sensivity",

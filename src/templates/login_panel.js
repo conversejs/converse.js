@@ -87,6 +87,7 @@ const form_fields = (o) => {
 
 
 export default (o) => html`
+    <converse-brand-heading></converse-brand-heading>
     <form id="converse-login" class="converse-form" method="post">
         <div class="conn-feedback fade-in ${ !o.conn_feedback_subject ? 'hidden' : o.conn_feedback_class }">
             <p class="feedback-subject">${ o.conn_feedback_subject }</p>

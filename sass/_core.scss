@@ -137,7 +137,7 @@ body.converse-fullscreen {
         width: 100%;
     }
 
-    .brand-heading-container {
+    converse-brand-heading {
         text-align: center;
     }
 
@@ -147,43 +147,62 @@ body.converse-fullscreen {
         align-items: flex-start;
         font-family: var(--branding-font);
         color: var(--link-color);
-        margin-bottom: 1em;
+        margin-bottom: 0.75em;
 
-        .brand-name {
-            color: var(--link-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: -0.5em;
-        }
+      .brand-name-wrapper {
+        display: flex;
+        white-space: nowrap;
+        margin: auto;
+      }
 
-        .brand-name__text {
-            font-size: 120%;
-            vertical-align: text-bottom;
-        }
+      .brand-name {
+          color: var(--link-color);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-top: -0.25em;
 
-        .converse-svg-logo {
-            color: var(--link-color);
-            height: 1.5em;
-            margin-right: 0.25em;
-            margin-bottom: -0.25em;
-            .cls-1 {
-                isolation: isolate;
-            }
-            .cls-2 {
-                opacity: 0.5;
-                mix-blend-mode: multiply;
-            }
-            .cls-3 {
-                fill: var(--link-color);
-            }
-            .cls-4 {
-                fill: var(--link-color);
-            }
-        }
-    }
+          .byline {
+              font-family: var(--heading-font);
+              font-size: 0.3em;
+              margin-bottom: 0.75em;
+              margin-left: -2.7em;
+              opacity: 0.55;
+              word-spacing: 5px;
+          }
+      }
 
-    .brand-heading--inverse {
+      .brand-subtitle {
+          color: var(--text-color);
+      }
+
+      .brand-name__text {
+          font-size: 120%;
+          vertical-align: text-bottom;
+      }
+
+      .converse-svg-logo {
+          color: var(--link-color);
+          height: 1.5em;
+          margin-right: 0.25em;
+          margin-bottom: -0.25em;
+          .cls-1 {
+              isolation: isolate;
+          }
+          .cls-2 {
+              opacity: 0.5;
+              mix-blend-mode: multiply;
+          }
+          .cls-3 {
+              fill: var(--link-color);
+          }
+          .cls-4 {
+              fill: var(--link-color);
+          }
+      }
+  }
+
+  .brand-heading--inverse {
         .converse-svg-logo {
             margin-bottom: 0em;
             margin-top: -0.2em;

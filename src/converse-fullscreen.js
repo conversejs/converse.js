@@ -7,38 +7,13 @@ import "@converse/headless/converse-muc";
 import "converse-chatview";
 import "converse-controlbox";
 import "converse-singleton";
-import { _converse, api, converse } from "@converse/headless/converse-core";
-import tpl_brand_heading from "templates/inverse_brand_heading.html";
+import { api, converse } from "@converse/headless/converse-core";
 
 
 converse.plugins.add('converse-fullscreen', {
 
     enabled (_converse) {
         return _converse.isUniView();
-    },
-
-    overrides: {
-        // overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        //
-        // new functions which don't exist yet can also be added.
-
-        ControlBoxView: {
-            createBrandHeadingHTML() {
-                return tpl_brand_heading({
-                    'version_name': _converse.VERSION_NAME
-                });
-            },
-
-            insertBrandHeading () {
-                const el = _converse.root.getElementById('converse-login-panel');
-                el.parentNode.insertAdjacentHTML(
-                    'afterbegin',
-                    this.createBrandHeadingHTML()
-                );
-            }
-        }
     },
 
     initialize () {

@@ -56,7 +56,7 @@ export default (o) => {
 
                         <span class="modal-alert"></span>
                         <br/>
-                        <div class="container brand-heading-container">
+                        <div class="container">
                             <h6 class="brand-heading">Converse</h6>
                             <p class="brand-subtitle">${o.version_name}</p>
                             <p class="brand-subtitle">${unsafeHTML(xss.filterXSS(first_subtitle, {'whiteList': {'a': []}}))}</p>

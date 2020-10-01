@@ -502,6 +502,7 @@ function getOMEMOToolbarButton (toolbar_el, buttons) {
                 @click=${toggleOMEMO}>
         <converse-icon class="fa ${model.get('omemo_active') ? `fa-lock` : `fa-unlock`}"
                     path-prefix="${api.settings.get('assets_path')}" size="1em"
+                    color="${model.get('omemo_active') ? `#3DAC44` : `#F75681`}"
         ></converse-icon>
         </button>`
     );

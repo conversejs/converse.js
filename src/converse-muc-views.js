@@ -1103,14 +1103,14 @@ export const ChatRoomView = ChatBoxView.extend({
      * @method _converse.ChatRoomView#renderNicknameForm
      */
     renderNicknameForm () {
-        const tmp_result = tpl_muc_nickname_form(this.model.get('nick'));
+        const tpl_result = tpl_muc_nickname_form(this.model.toJSON());
         if (api.settings.get('muc_show_logs_before_join')) {
             const container = this.el.querySelector('.muc-bottom-panel');
-            render(tmp_result, container);
+            render(tpl_result, container);
             u.addClass('muc-bottom-panel--nickname', container);
         } else {
             const form = this.el.querySelector('.muc-nickname-form');
-            const form_el = u.getElementFromTemplateResult(tmp_result);
+            const form_el = u.getElementFromTemplateResult(tpl_result);
             if (form) {
                 sizzle('.spinner', this.el).forEach(u.removeElement);
                 form.outerHTML = form_el.outerHTML;

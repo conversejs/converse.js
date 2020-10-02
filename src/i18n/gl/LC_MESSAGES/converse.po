@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-08-20 15:36+0000\n"
+"PO-Revision-Date: 2020-11-18 18:21+0100\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
@@ -88,8 +88,7 @@ msgstr "Lamentámolo, non podemos conectar co servidor XMPP con dominio: %1$s"
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "O servidor XMPP non ofrece un mecanismo de autenticación soportado"
 
-#: dist/converse-no-dependencies.js:53653
-#, fuzzy
+#: dist/converse-no-dependencies.js:55021
 msgid "Undecryptable OMEMO message"
 msgstr "Mensaxe OMEMO non descifrable"
 
@@ -914,11 +913,11 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
-"Para mellorar o rendemento, almacenamos os seus datos no navegador. "
-"Desmarque esta opción si se trata de unha computadora pública para borrar os "
-"datos cando se desconecte. É importante que se desconecte de xeito "
-"explícito, se non non se borrarán os datos. O cifrado OMEMO non está "
-"dispoñible cando está a utilizar un dispositivo non confiable."
+"Para mellorar o rendemento, almacenamos os teus datos no navegador. Desmarca "
+"esta opción se se trata dunha computadora pública para borrar os datos cando "
+"te desconectes. É importante que te desconectes de xeito explícito, se non "
+"non se borrarán os datos. O cifrado OMEMO non está dispoñible cando estás a "
+"utilizar un dispositivo non confiable."
 
 #: dist/converse-no-dependencies.js:86106
 msgid "This is a trusted device"
@@ -1270,8 +1269,8 @@ msgid ""
 "an affiliation. A role that's not due to an affiliation, is only valid for "
 "the duration of the user's session."
 msgstr ""
-"Os roles asígnanse as usuarias para outorgar ou denegarlles certos permisos "
-"nunha conversa multiusuario.  Asígnanse de xeito implícito ou explícito como "
+"Os roles asígnanse ás usuarias para outorgar ou denegarlles certos permisos "
+"nunha conversa multiusuario. Asígnanse de xeito implícito ou explícito como "
 "parte da filiación. Un rol que non é debido a filiación só é valido durante "
 "a duración da sesión do usuario."
 
@@ -1859,10 +1858,9 @@ msgstr "Notificación de %1$s"
 msgid "%1$s says"
 msgstr "%1$s di"
 
-#: dist/converse-no-dependencies.js:94073
-#, fuzzy
+#: dist/converse-no-dependencies.js:92298
 msgid "Encrypted message received"
-msgstr "Mensaxe OMEMO recibida"
+msgstr "Recibida unha mensaxe cifrada"
 
 #: dist/converse-no-dependencies.js:94115
 msgid "has gone offline"
@@ -1950,8 +1948,8 @@ msgstr "Axustes"
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
-"Cliente de %1$s código aberto %2$s para conversas XMPP proporcionado por  "
-"%3$s Opkode %2$s"
+"Cliente de %1$s código aberto %2$s para conversas XMPP proporcionado por %3$"
+"s Opkode %2$s"
 
 #: dist/converse-no-dependencies.js:94965
 #, javascript-format
@@ -2120,12 +2118,13 @@ msgstr "desconectado"
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "Lamentámolo, non se descifrou a mensaxe OMEMO debido a un fallo."
 
-#: dist/converse-no-dependencies.js:96591
-#, fuzzy
+#: dist/converse-no-dependencies.js:95009
 msgid ""
 "Sorry, could not decrypt a received OMEMO because we don't have the JID for "
 "that user."
-msgstr "Lamentámolo, non se descifrou a mensaxe OMEMO debido a un fallo."
+msgstr ""
+"Lamentámolo, non se descifrou a mensaxe OMEMO porque non temos o JID desta "
+"usuaria."
 
 #: dist/converse-no-dependencies.js:97137
 #, javascript-format

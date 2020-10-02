@@ -124,12 +124,12 @@
             @media screen and (max-height: $mobile-landscape-height) {
                 height: var(--mobile-chat-height);
                 width: var(--mobile-chat-width);
-                height: 100vh;
+                height: var(--fullpage-chat-height);
             }
             @media screen and (max-width: $mobile-portrait-length) {
                 height: var(--mobile-chat-height);
                 width: var(--mobile-chat-width);
-                height: 100vh;
+                height: var(--fullpage-chat-height);
             }
             .chatroom-body {
                 flex-direction: row;

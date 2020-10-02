@@ -593,7 +593,7 @@
                     bottom: 0;
                     border-radius: 0;
                     width: 100vw !important;
-                    height: 100vh !important;
+                    height: var(--fullpage-chat-height);
                 }
             }
 
@@ -601,7 +601,7 @@
                 width: 100vw !important;
                 .box-flyout {
                     width: 100vw !important;
-                    height: 100vh !important;
+                    height: var(--fullpage-chat-height);
                     margin-right: -15px;
                 }
                 .sidebar {

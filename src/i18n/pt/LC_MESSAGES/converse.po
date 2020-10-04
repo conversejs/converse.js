@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-07-19 19:26+0000\n"
+"PO-Revision-Date: 2020-11-18 18:25+0100\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/conversejs/"
 "translations/pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
@@ -947,9 +947,9 @@ msgid ""
 msgstr ""
 "Para melhorar o desempenho, armazenamos os seus dados em cache neste "
 "navegador. Desmarque esta caixa se este for um computador público ou se "
-"pretender que os seus dados sejam eliminados quando terminar a sessão. É "
+"pretender que os seus dados sejam apagados quando terminar a sessão. É "
 "importante que você se desconecte explicitamente, caso contrário não todos "
-"os dados armazenados em cache podem ser excluídos. Observe que, ao usar um "
+"os dados armazenados em cache podem ser apagados. Observe que, ao usar um "
 "aparelho não confiável, a criptografia OMEMO NÃO está disponível."
 
 #: dist/converse-no-dependencies.js:86106
@@ -2015,7 +2015,7 @@ msgstr "Sair"
 
 #: dist/converse-no-dependencies.js:95075
 msgid "Click to change your chat status"
-msgstr "Clique para mudar seu status no chat"
+msgstr "Clique para mudar o seu estado no chat"
 
 #: dist/converse-no-dependencies.js:95077
 msgid "Show details about this chat client"
@@ -2040,7 +2040,7 @@ msgstr "Caixa de verificação para seleccionar a impressão digital seguinte"
 
 #: dist/converse-no-dependencies.js:95417
 msgid "Other OMEMO-enabled devices"
-msgstr "Outros aparelhos habilitados para OMEMO"
+msgstr "Outros aparelhos ativado para OMEMO"
 
 #: dist/converse-no-dependencies.js:95419
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
@@ -2116,7 +2116,7 @@ msgstr "Ocupado"
 
 #: dist/converse-no-dependencies.js:95654
 msgid "Custom status"
-msgstr "Status customizado"
+msgstr "Estado customizado"
 
 #: dist/converse-no-dependencies.js:95655
 #: dist/converse-no-dependencies.js:100398

@@ -517,7 +517,7 @@ const st = {
 
         if (attrs.is_archived) {
             const from = original_stanza.getAttribute('from');
-            if (from && contact_jid && from !== contact_jid) {
+            if (from && from !== _converse.bare_jid) {
                 return new StanzaParseError(`Invalid Stanza: Forged MAM message from ${from}`, stanza);
             }
         }

@@ -80,7 +80,6 @@ const CORE_PLUGINS = [
     'converse-ping',
     'converse-pubsub',
     'converse-roster',
-    'converse-rsm',
     'converse-smacks',
     'converse-status',
     'converse-vcard'

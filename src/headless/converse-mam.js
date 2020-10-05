@@ -126,7 +126,7 @@ const MAMEnabledChat = {
 
 converse.plugins.add('converse-mam', {
 
-    dependencies: ['converse-rsm', 'converse-disco', 'converse-muc'],
+    dependencies: ['converse-disco', 'converse-muc'],
 
 
     initialize () {

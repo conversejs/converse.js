@@ -112,7 +112,7 @@ export default BootstrapModal.extend({
 
     afterRender () {
         if (api.settings.get('locked_muc_domain')) {
-            this.updateRoomsList();
+            this.el.addEventListener('shown.bs.modal', () => this.updateRoomsList());
         } else {
             this.el.addEventListener('shown.bs.modal',
                 () => this.el.querySelector('input[name="server"]').focus(),

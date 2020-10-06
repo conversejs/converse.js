@@ -34,6 +34,8 @@ Soon we'll deprecate the latter, so prepare now.
 - #2201: added html to converse.env
 - #2213: added CustomElement to converse.env
 - #2220: fix rendering of emojis in case `use_system_emojis == false` (again).
+- #2092: fixes room list update loop when having the `locked_muc_domain` set to false or hidden
+
 - The `api.archive.query` method no longer accepts an RSM instance as argument.
 - The plugin `converse-uniview` has been removed and its functionality merged into `converse-chatboxviews`
 - Removed the mockups from the project. Recommended to use tests instead.

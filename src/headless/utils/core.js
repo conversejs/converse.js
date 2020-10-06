@@ -412,7 +412,7 @@ u.getCurrentWord = function (input, index, delineator) {
     if (!index) {
         index = input.selectionEnd || undefined;
     }
-    let [word] = input.value.slice(0, index).split('\n').slice(-1)[0].split(' ').slice(-1);
+    let [word] = input.value.slice(0, index).split(/\s/).slice(-1);
     if (delineator) {
         [word] = word.split(delineator).slice(-1);
     }

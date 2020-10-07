@@ -440,6 +440,8 @@ converse.plugins.add('converse-muc', {
              * @method _converse.ChatRoom#join
              * @param { String } nick - The user's nickname
              * @param { String } [password] - Optional password, if required by the groupchat.
+             *  Will fall back to the `password` value stored in the room
+             *  model (if available).
              */
             async join (nick, password) {
                 if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
@@ -462,6 +464,7 @@ converse.plugins.add('converse-muc', {
                 }).c("x", {'xmlns': Strophe.NS.MUC})
                   .c("history", {'maxstanzas': this.features.get('mam_enabled') ? 0 : api.settings.get('muc_history_max_stanzas')}).up();
 
+                password = password || this.get('password');
                 if (password) {
                     stanza.cnode(Strophe.xmlElement("password", [], password));
                 }

@@ -6,6 +6,7 @@
 configuration settings should now be accessed via `_converse.api.settings.get` and not directly on the `_converse` object.
 Soon we'll deprecate the latter, so prepare now.
 
+- #2275: Allow selected characters to precede a mention
 - #2231: add sort_by_query and remove sort_by_length
 - #1313: Stylistic improvements to the send button
 - #1481: MUC OMEMO: Error No record for device

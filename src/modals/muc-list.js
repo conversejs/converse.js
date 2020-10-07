@@ -93,6 +93,11 @@ export default BootstrapModal.extend({
             this.model.save('muc_domain', api.settings.get('muc_domain'));
         }
         this.listenTo(this.model, 'change:muc_domain', this.onDomainChange);
+
+        this.el.addEventListener('shown.bs.modal', () => api.settings.get('locked_muc_domain')
+          ? this.updateRoomsList()
+          : this.el.querySelector('input[name="server"]').focus()
+        );
     },
 
     toHTML () {
@@ -108,17 +113,6 @@ export default BootstrapModal.extend({
                 'submitForm': ev => this.showRooms(ev),
                 'toggleRoomInfo': ev => this.toggleRoomInfo(ev)
             }));
-    },
-
-    afterRender () {
-        if (api.settings.get('locked_muc_domain')) {
-            this.updateRoomsList();
-        } else {
-            this.el.addEventListener('shown.bs.modal',
-                () => this.el.querySelector('input[name="server"]').focus(),
-                false
-            );
-        }
     },
 
     openRoom (ev) {

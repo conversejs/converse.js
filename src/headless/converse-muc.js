@@ -963,7 +963,9 @@ converse.plugins.add('converse-muc', {
             getAllKnownNicknamesRegex () {
                 const longNickString = this.getAllKnownNicknames().join('|');
                 const escapedLongNickString = p.escapeRegexString(longNickString)
-                return RegExp(`(?:\\s|^)@(${escapedLongNickString})(?![\\w@-])`, 'ig');
+                const mention_boundaries = converse.MENTION_BOUNDARIES.join('|');
+                const escaped_mention_boundaries = p.escapeRegexString(mention_boundaries);
+                return RegExp(`(?:\\s|^)[${escaped_mention_boundaries}]?@(${escapedLongNickString})(?![\\w@-])`, 'ig');
             },
 
             getOccupantByJID (jid) {

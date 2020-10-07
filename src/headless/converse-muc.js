@@ -973,7 +973,7 @@ converse.plugins.add('converse-muc', {
             getAllKnownNicknamesRegex () {
                 const longNickString = this.getAllKnownNicknames().join('|');
                 const escapedLongNickString = p.escapeRegexString(longNickString)
-                return RegExp(`(?:\\s|^)@(${escapedLongNickString})(?![\\w@-])`, 'ig');
+                return RegExp(`(?:\\s|^).?@(${escapedLongNickString})(?![\\w@-])`, 'ig');
             },
 
             getOccupantByJID (jid) {

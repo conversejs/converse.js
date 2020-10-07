@@ -425,12 +425,16 @@ u.getCurrentWord = function (input, index, delineator) {
     return word;
 };
 
-u.replaceCurrentWord = function (input, new_value) {
+u.replaceCurrentWord = function (input, new_value, opening_mention_chars=[]) {
     const caret = input.selectionEnd || undefined,
-          current_word = last(input.value.slice(0, caret).split(' ')),
-          value = input.value;
-    input.value = value.slice(0, caret - current_word.length) + `${new_value} ` + value.slice(caret);
-    input.selectionEnd = caret - current_word.length + new_value.length + 1;
+        current_word = last(input.value.slice(0, caret).split(/\s/)),
+        value = input.value,
+        opening_mention_char = opening_mention_chars.includes(current_word[0])
+            ? current_word[0]
+            : '';
+    input.value = value.slice(0, caret - current_word.length) + opening_mention_char + `${new_value} ` + value.slice(caret);
+    const selection_end = caret - current_word.length + new_value.length + 1;
+    input.selectionEnd = opening_mention_char ? selection_end + 1 : selection_end;
 };
 
 u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true) {

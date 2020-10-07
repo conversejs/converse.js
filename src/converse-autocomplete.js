@@ -7,8 +7,9 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { Events } from '@converse/skeletor/src/events.js';
-import { converse } from "@converse/headless/converse-core";
+import { api, converse } from "@converse/headless/converse-core";
 
+converse.DEFAULT_OPENING_MENTION_CHARACTERS = ['"', '(', '<', '#', '!', '\\', '/', '+', '~', '[', '{', '^'];
 const u = converse.env.utils;
 
 
@@ -245,7 +246,7 @@ export class AutoComplete {
 
     insertValue (suggestion) {
         if (this.match_current_word) {
-            u.replaceCurrentWord(this.input, suggestion.value);
+            u.replaceCurrentWord(this.input, suggestion.value, api.settings.get('opening_mention_characters'));
         } else {
             this.input.value = suggestion.value;
         }
@@ -365,7 +366,9 @@ export class AutoComplete {
             this.auto_completing = true;
         } else if (ev.key === "Backspace") {
             const word = u.getCurrentWord(ev.target, ev.target.selectionEnd-1);
-            if (this.ac_triggers.includes(word[0])) {
+            const opening_mention_chars = api.settings.get('opening_mention_characters');
+            if (this.ac_triggers.includes(word[0]) ||
+            (opening_mention_chars.includes(word[0]) && this.ac_triggers.includes(word[1]))) {
                 this.auto_completing = true;
             }
         }
@@ -386,12 +389,17 @@ export class AutoComplete {
             return;
         }
 
+        const opening_mention_chars = api.settings.get('opening_mention_characters');
         let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
-        const contains_trigger = this.ac_triggers.includes(value[0]);
+        const contains_trigger =
+            this.ac_triggers.includes(value[0]) ||
+            (opening_mention_chars.includes(value[0]) && this.ac_triggers.includes(value[1]));
         if (contains_trigger) {
             this.auto_completing = true;
             if (!this.include_triggers.includes(ev.key)) {
-                value = value.slice('1');
+                value = opening_mention_chars.includes(value[0])
+                    ? value.slice('2')
+                    : value.slice('1');
             }
         }
 
@@ -435,6 +443,9 @@ converse.plugins.add("converse-autocomplete", {
         _converse.FILTER_CONTAINS = FILTER_CONTAINS;
         _converse.FILTER_STARTSWITH = FILTER_STARTSWITH;
         _converse.AutoComplete = AutoComplete;
+        api.settings.extend({
+            'opening_mention_characters': [...converse.DEFAULT_OPENING_MENTION_CHARACTERS],
+        });
     }
 });
 

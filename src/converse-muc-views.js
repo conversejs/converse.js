@@ -1581,16 +1581,6 @@ converse.plugins.add('converse-muc-views', {
                     u.hideElement(this.el);
                 } else {
                     u.showElement(this.el);
-                    this.setOccupantsHeight();
-                }
-            },
-
-            setOccupantsHeight () {
-                // TODO: remove the features section in sidebar and then this as well
-                const el = this.el.querySelector('.chatroom-features');
-                if (el) {
-                    this.el.querySelector('.occupant-list').style.cssText =
-                        `height: calc(100% - ${el.offsetHeight}px - 5em);`;
                 }
             }
         });
@@ -1747,4 +1737,3 @@ converse.plugins.add('converse-muc-views', {
         });
     }
 });
-

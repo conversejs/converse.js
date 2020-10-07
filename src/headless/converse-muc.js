@@ -1102,8 +1102,9 @@ converse.plugins.add('converse-muc', {
                     'jid': this.get('jid')
                 };
                 if (reason !== null) { attrs.reason = reason; }
-                if (this.get('password')) { attrs.password = this.get('password'); }
-
+                if (this.get('password')) {
+                    attrs.password = this.get('password');
+                }
                 const invitation = $msg({
                     'from': _converse.connection.jid,
                     'to': recipient,
@@ -2684,13 +2685,6 @@ converse.plugins.add('converse-muc', {
             api.listen.on('reconnected', registerDirectInvitationHandler);
         }
 
-        const createChatRoom = function (jid, attrs) {
-            if (jid.startsWith('xmpp:') && jid.endsWith('?join')) {
-                jid = jid.replace(/^xmpp:/, '').replace(/\?join$/, '');
-            }
-            return api.rooms.get(jid, attrs, true);
-        };
-
         /* Automatically join groupchats, based on the
          * "auto_join_rooms" configuration setting, which is an array
          * of strings (groupchat JIDs) or objects (with groupchat JID and other settings).
@@ -2823,9 +2817,9 @@ converse.plugins.add('converse-muc', {
                     if (jids === undefined) {
                         throw new TypeError('rooms.create: You need to provide at least one JID');
                     } else if (typeof jids === 'string') {
-                        return createChatRoom(jids, attrs);
+                        return api.rooms.get(u.getJIDFromURI(jids), attrs, true);
                     }
-                    return jids.map(jid => createChatRoom(jid, attrs));
+                    return jids.map(jid => api.rooms.get(u.getJIDFromURI(jid), attrs, true));
                 },
 
                 /**
@@ -2894,11 +2888,11 @@ converse.plugins.add('converse-muc', {
                         log.error(err_msg);
                         throw(new TypeError(err_msg));
                     } else if (typeof jids === 'string') {
-                        const room = await api.rooms.create(jids, attrs);
+                        const room = await api.rooms.get(jids, attrs, true);
                         room && room.maybeShow(force);
                         return room;
                     } else {
-                        const rooms = await Promise.all(jids.map(jid => api.rooms.create(jid, attrs)));
+                        const rooms = await Promise.all(jids.map(jid => api.rooms.get(jid, attrs, true)));
                         rooms.forEach(r => r.maybeShow(force));
                         return rooms;
                     }
@@ -2909,12 +2903,8 @@ converse.plugins.add('converse-muc', {
                  *
                  * @method api.rooms.get
                  * @param {string} [jid] The room JID (if not specified, all rooms will be returned).
-                 * @param {object} attrs A map containing any extra room attributes For example, if you want
-                 *     to specify the nickname, use `{'nick': 'bloodninja'}`. Previously (before
-                 *     version 1.0.7, the second parameter only accepted the nickname (as a string
-                 *     value). This is currently still accepted, but then you can't pass in any
-                 *     other room attributes. If the nickname is not specified then the node part of
-                 *     the user's JID will be used.
+                 * @param {object} [attrs] A map containing any extra room attributes For example, if you want
+                 *     to specify a nickname and password, use `{'nick': 'bloodninja', 'password': 'secret'}`.
                  * @param {boolean} create A boolean indicating whether the room should be created
                  *     if not found (default: `false`)
                  * @returns { Promise<_converse.ChatRoom> }
@@ -2930,6 +2920,7 @@ converse.plugins.add('converse-muc', {
                  */
                 async get (jids, attrs={}, create=false) {
                     async function _get (jid) {
+                        jid = u.getJIDFromURI(jid);
                         let model = await api.chatboxes.get(jid);
                         if (!model && create) {
                             model = await api.chatboxes.create(jid, attrs, _converse.ChatRoom);
@@ -2954,5 +2945,3 @@ converse.plugins.add('converse-muc', {
         /************************ END API ************************/
     }
 });
-
-

@@ -34,6 +34,12 @@ const parser = new DOMParser();
 const parserErrorNS = parser.parseFromString('invalid', 'text/xml')
                             .getElementsByTagName("parsererror")[0].namespaceURI;
 
+u.getJIDFromURI = function (jid) {
+    return jid.startsWith('xmpp:') && jid.endsWith('?join')
+        ? jid.replace(/^xmpp:/, '').replace(/\?join$/, '')
+        : jid;
+}
+
 u.toStanza = function (string) {
     const node = parser.parseFromString(string, "text/xml");
     if (node.getElementsByTagNameNS(parserErrorNS, 'parsererror').length) {

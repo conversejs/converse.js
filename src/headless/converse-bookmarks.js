@@ -116,7 +116,10 @@ converse.plugins.add('converse-bookmarks', {
 
             async openBookmarkedRoom (bookmark) {
                 if ( api.settings.get('muc_respect_autojoin') && bookmark.get('autojoin')) {
-                    const groupchat = await api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                    const groupchat = await api.rooms.create(
+                        bookmark.get('jid'),
+                        {'nick': bookmark.get('nick')}
+                    );
                     groupchat.maybeShow();
                 }
                 return bookmark;

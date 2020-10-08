@@ -635,7 +635,7 @@ converse.plugins.add('converse-chat', {
              */
             shouldShowErrorMessage (attrs) {
                 const msg = this.getMessageReferencedByError(attrs);
-                if (!msg && attrs.body === null) {
+                if (!msg && !attrs.body) {
                     // If the error refers to a message not included in our store,
                     // and it doesn't have a <body> tag, we assume that this was a
                     // CSI message (which we don't store).

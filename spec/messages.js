@@ -1589,9 +1589,9 @@ describe("A Chat Message", function () {
                     .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                         .t('Something else went wrong as well');
                 _converse.connection._dataRecv(mock.createRequest(stanza));
-                await u.waitUntil(() => view.model.messages.length > 3);
+                await u.waitUntil(() => view.model.messages.length > 2);
                 await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                expect(view.content.querySelectorAll('.chat-error').length).toEqual(1);
+                expect(view.content.querySelectorAll('.chat-msg__error').length).toEqual(3);
 
                 // Ensure messages with error are not editable
                 document.querySelectorAll('.chat-msg__actions').forEach(elem => {
@@ -1637,6 +1637,9 @@ describe("A Chat Message", function () {
                             .t('User session not found')
                 _converse.connection._dataRecv(mock.createRequest(stanza));
                 const view = _converse.chatboxviews.get(contact_jid);
+                const msg_text = 'This message will show!';
+                await view.model.sendMessage(msg_text);
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(view.content.querySelectorAll('.chat-error').length).toEqual(0);
                 done();
             }));

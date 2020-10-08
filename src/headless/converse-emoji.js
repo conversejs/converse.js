@@ -154,7 +154,7 @@ export function getShortnameReferences (text) {
             'To avoid this problem, first await the converse.emojis.initilaized_promise.'
         );
     }
-    const references = [...text.matchAll(shortnames_regex)];
+    const references = [...text.matchAll(shortnames_regex)].filter(ref => ref[0].length > 0);
     return references.map(ref => {
         const cp = converse.emojis.by_sn[ref[0]].cp;
         return {

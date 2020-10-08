@@ -115,6 +115,7 @@ $mobile_portrait_length: 480px !default;
     --heading-display: block;
     --heading-color: white;
 
+    --chatroom-send-button-bg: var(--redder-orange);
     --chatroom-badge-color: var(--chatroom-head-bg-color);
     --chatroom-badge-hover-color: var(--chatroom-head-bg-color-dark);
     --chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
@@ -219,6 +220,7 @@ $mobile_portrait_length: 480px !default;
 
     --link-hover-color: var(--lighter-blue);
 
+    --chatroom-send-button-bg: #333;
     --chatroom-badge-color: var(--redder-orange);
     --chatroom-badge-hover-color: #D24E2B; // $red
     --chatroom-correcting-color: #FFFFC0;

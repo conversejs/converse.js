@@ -187,6 +187,8 @@ async function sendEnableStanza () {
     }
 }
 
+const smacks_handlers = [];
+
 async function enableStreamManagement () {
     if (!api.settings.get('enable_smacks')) {
         return;
@@ -194,9 +196,13 @@ async function enableStreamManagement () {
     if (!(await isStreamManagementSupported())) {
         return;
     }
-    _converse.connection.addHandler(stanzaHandler);
-    _converse.connection.addHandler(sendAck, Strophe.NS.SM, 'r');
-    _converse.connection.addHandler(handleAck, Strophe.NS.SM, 'a');
+    const conn = _converse.connection;
+    while (smacks_handlers.length) {
+        conn.deleteHandler(smacks_handlers.pop());
+    }
+    smacks_handlers.push(conn.addHandler(stanzaHandler));
+    smacks_handlers.push(conn.addHandler(sendAck, Strophe.NS.SM, 'r'));
+    smacks_handlers.push(conn.addHandler(handleAck, Strophe.NS.SM, 'a'));
     if (_converse.session.get('smacks_stream_id')) {
         await sendResumeStanza();
     } else {
@@ -237,7 +243,6 @@ function onStanzaSent (stanza) {
 converse.plugins.add('converse-smacks', {
 
     initialize () {
-
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these

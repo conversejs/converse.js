@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-08-16 02:32+0000\n"
+"PO-Revision-Date: 2020-11-18 18:26+0100\n"
 "Last-Translator: Vincent L <vincent.laporte+weblate@mailbox.org>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3.2\n"
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
@@ -90,10 +90,9 @@ msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
 "Lo servidor XMPP a pas prepausat un mecanisme d’autentificacion pres en carga"
 
-#: dist/converse-no-dependencies.js:53653
-#, fuzzy
+#: dist/converse-no-dependencies.js:55021
 msgid "Undecryptable OMEMO message"
-msgstr "Messatge OMEMO pas chifrable"
+msgstr "Messatge OMEMO pas deschifrable"
 
 #: dist/converse-no-dependencies.js:53712
 msgid "Sorry, could not determine upload URL."
@@ -116,11 +115,10 @@ msgstr ""
 msgid "Sorry, could not succesfully upload your file."
 msgstr "O planhèm, lo mandadís del fichièr a pas reüssit."
 
-#: dist/converse-no-dependencies.js:53997
-#: dist/converse-no-dependencies.js:59461
-#, fuzzy
+#: dist/converse-no-dependencies.js:55354
+#: dist/converse-no-dependencies.js:60856
 msgid "You're not allowed to retract your message."
-msgstr "Avètz pas lo drech de cambiar aquò"
+msgstr "Avètz pas lo drech de tirar vòstre messatge."
 
 #: dist/converse-no-dependencies.js:53999
 #: dist/converse-no-dependencies.js:59465
@@ -620,7 +618,7 @@ msgstr "D’acòrdi"
 #. harmony default export
 #: dist/converse-no-dependencies.js:71650
 msgid "Image: "
-msgstr ""
+msgstr "Imatge : "
 
 #: dist/converse-no-dependencies.js:73042
 #, javascript-format
@@ -644,11 +642,11 @@ msgstr "Cambiar las preferéncias"
 
 #: dist/converse-no-dependencies.js:74777
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: dist/converse-no-dependencies.js:74806
 msgid "Retract"
-msgstr ""
+msgstr "Tirar"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:74917
@@ -657,7 +655,7 @@ msgstr "Versions del messatge"
 
 #: dist/converse-no-dependencies.js:75508
 msgid "Retry"
-msgstr ""
+msgstr "Tornar ensajar"
 
 #: dist/converse-no-dependencies.js:75515
 msgid "Uploading file:"

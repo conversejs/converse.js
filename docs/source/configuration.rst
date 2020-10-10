@@ -1416,10 +1416,10 @@ omemo_default
 
 Use OMEMO encryption by default when the chat supports it.
 
-opening_mention_characters
+mention_boundaries
 __________________________
 
-* Default: ``['"', '(', '<', '#', '!', '\\', '/', '+', '~', '[', '{', '^']``
+* Default: ``['"', '(', '<', '#', '!', '\\', '/', '+', '~', '[', '{', '^', '>']``
 
 List of characters allowed before the ``@`` in a mention.
 Allows to interact with the mention autocompletion component when one of 

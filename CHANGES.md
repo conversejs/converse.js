@@ -6,8 +6,7 @@
 configuration settings should now be accessed via `_converse.api.settings.get` and not directly on the `_converse` object.
 Soon we'll deprecate the latter, so prepare now.
 
-- #2275: Allow selected characters to precede a mention
-- #2231: add sort_by_query and remove sort_by_length
+- #515 Add support for XEP-0050 Ad-Hoc commands
 - #1313: Stylistic improvements to the send button
 - #1481: MUC OMEMO: Error No record for device
 - #1490: Busy-loop when fetching registration form fails
@@ -16,26 +15,27 @@ Soon we'll deprecate the latter, so prepare now.
 - #1793: Send button doesn't appear in Firefox in 1:1 chats
 - #1820: Set focus on jid field after controlbox is loaded
 - #1822: Don't log error if user has no bookmarks
-- #515 Add support for XEP-0050 Ad-Hoc commands
 - #1823: New config options [muc_roomid_policy](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy)
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact
 - #1839: Headline messages are shown in controlbox
-- #1924: Configuring an ejabberd room fails
 - #1896: Don't send receipts for messages fetched from the archive
+- #1924: Configuring an ejabberd room fails
 - #1937: Editing a message removes the mentions highlight
 - #1963: Mentions are visually incorrect when used in message replies
 - #1999: Demarcate first unread message
 - #2002: fix rendering of `muc_roomid_policy_hint`
 - #2006: fix rendering of emojis in case `use_system_emojis == false`
 - #2028: Implement XEP-0333 `displayed` chat marker
+- #2092: fixes room list update loop when having the `locked_muc_domain` truthy or `'hidden'`
 - #2101: Improve contrast of text in control box
 - #2187: Avoid merging initial settings with themselves every time settings are extended.
 - #2199: Fix BOSH session restore.
 - #2201: added html to converse.env
 - #2213: added CustomElement to converse.env
 - #2220: fix rendering of emojis in case `use_system_emojis == false` (again).
-- #2092: fixes room list update loop when having the `locked_muc_domain` truthy or `'hidden'`
+- #2231: add sort_by_query and remove sort_by_length
+- #2275: Allow selected characters to precede a mention
 - The `api.archive.query` method no longer accepts an RSM instance as argument.
 - The plugin `converse-uniview` has been removed and its functionality merged into `converse-chatboxviews`
 - Removed the mockups from the project. Recommended to use tests instead.

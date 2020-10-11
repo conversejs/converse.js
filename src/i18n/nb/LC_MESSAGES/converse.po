@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-08-11 11:32+0000\n"
+"PO-Revision-Date: 2020-11-18 18:27+0100\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -612,7 +612,7 @@ msgstr "OK"
 #. harmony default export
 #: dist/converse-no-dependencies.js:71650
 msgid "Image: "
-msgstr ""
+msgstr "Bilde: "
 
 #: dist/converse-no-dependencies.js:73042
 #, fuzzy, javascript-format
@@ -636,11 +636,11 @@ msgstr "Endre innstillinger"
 
 #: dist/converse-no-dependencies.js:74777
 msgid "Edit"
-msgstr ""
+msgstr "Rediger"
 
 #: dist/converse-no-dependencies.js:74806
 msgid "Retract"
-msgstr ""
+msgstr "Trekk tilbake"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:74917
@@ -649,7 +649,7 @@ msgstr "Meldingsversjoner"
 
 #: dist/converse-no-dependencies.js:75508
 msgid "Retry"
-msgstr ""
+msgstr "Prøv igjen"
 
 #: dist/converse-no-dependencies.js:75515
 msgid "Uploading file:"
@@ -868,7 +868,7 @@ msgstr "Lukk og avslutt denne samtalen"
 
 #: dist/converse-no-dependencies.js:82588
 msgid "Sorry, the connection has been lost, and your message could not be sent"
-msgstr ""
+msgstr "Forbindelsen gikk tapt, og meldingen din kunne ikke sendes"
 
 #: dist/converse-no-dependencies.js:82814
 #: dist/converse-no-dependencies.js:91751
@@ -1893,7 +1893,7 @@ msgstr "Er du sikker på at ønsker å forlate rommet \"%1$s\"?"
 
 #: dist/converse-no-dependencies.js:92539
 msgid "Optional XMPP address for a new groupchat that replaces this one"
-msgstr ""
+msgstr "Valgfri XMPP-adresse for en ny gruppesludring som erstatter denne"
 
 #: dist/converse-no-dependencies.js:92540
 #, fuzzy
@@ -1989,15 +1989,16 @@ msgstr "ønsker å bli kontaktfestet"
 
 #: dist/converse-no-dependencies.js:94504
 msgid "Hide"
-msgstr ""
+msgstr "Skjul"
 
 #: dist/converse-no-dependencies.js:94506
 msgid "Execute"
-msgstr ""
+msgstr "Kjør"
 
-#: dist/converse-no-dependencies.js:94560
+#: dist/converse-no-dependencies.js:93028
+#, fuzzy
 msgid "On which entity do you want to run commands?"
-msgstr ""
+msgstr "Hvilken identitet ønsker du å kjøre kommandoene på?"
 
 #: dist/converse-no-dependencies.js:94562
 msgid ""
@@ -2012,21 +2013,21 @@ msgstr "Rom funnet"
 
 #: dist/converse-no-dependencies.js:94566
 msgid "List available commands"
-msgstr ""
+msgstr "List opp tilgjengelige kommandoer"
 
 #: dist/converse-no-dependencies.js:94570
 #, fuzzy
 msgid "No commands found"
 msgstr "Rom funnet"
 
-#: dist/converse-no-dependencies.js:94752
-#, fuzzy
+#: dist/converse-no-dependencies.js:93220
 msgid "Sorry, an error occurred while looking for commands on that entity."
-msgstr "En feil skjedde ved forsøk på å fjerne enhetene."
+msgstr "Klarte ikke å se etter kommandoer på denne identiteten."
 
-#: dist/converse-no-dependencies.js:94763
+#: dist/converse-no-dependencies.js:93231
+#, fuzzy
 msgid "The specified entity doesn't support ad-hoc commands"
-msgstr ""
+msgstr "Angitt identitet støtter ikke ad-hoc-kommandoer"
 
 #: dist/converse-no-dependencies.js:94876
 #, fuzzy
@@ -2043,7 +2044,7 @@ msgstr "Om"
 
 #: dist/converse-no-dependencies.js:94955
 msgid "Commands"
-msgstr ""
+msgstr "Kommandoer"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:94961
@@ -2277,6 +2278,8 @@ msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
 msgstr ""
+"Denne gruppesludringen må være kun for medlemmer, og ikke anonym for å "
+"støtte OMEMO-krypterte meldinger"
 
 #: dist/converse-no-dependencies.js:97274
 #, javascript-format

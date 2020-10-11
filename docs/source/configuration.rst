@@ -1010,15 +1010,29 @@ VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
 
 If no nickame value is found, then an error will be raised.
 
-muc_hats_from_vcard
+muc_hats
 -------------------
 
-* Default: ``false``
+* Default: ``['hats']``
 
 Since version 7 Converse now has rudimentary support for `XEP-0317 Hats <https://xmpp.org/extensions/xep-0317.html>`_.
 
-Previously we used a non-standard hack of showing the VCard roles as if they
-were hats. Set this value to ``true`` for the old behaviour.
+It is also possible to display VCard roles, MUC affiliation and MUC role along with hats.
+By default only regular hats are considered.
+For the inclusion of VCard roles ``'vcard_roles'`` must be added to the list.
+For the inclusion of MUC affiliation and MUC role, the specific affiliations and roles
+to be used must be added to the list e.g. ``'owner','participant'``.
+
+Example:
+
+For regular hats and VCard roles this setting should be set to:
+``'muc_hats': ['hats', 'vcard_roles']``
+
+For VCard roles, admin MUC affiliation and moderator MUC role:
+``'muc_hats': ['vcard_roles', 'admin', 'moderator']``
+
+And to prevent the displaying of anything, an empty list must be used:
+``'muc_hats': []``
 
 
 muc_mention_autocomplete_min_chars

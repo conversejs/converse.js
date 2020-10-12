@@ -57,7 +57,7 @@ class MessageText extends String {
     addTemplate(references, begin, end, templating_function) {
         for (let ref of references) {
           if (ref.begin < begin && end <= ref.end) {
-            return addTemplate(ref.references, begin, end, templating_function);
+            return this.addTemplate(ref.references, begin, end, templating_function);
           }
         }
         const reference = { begin, end, references: [], templating_function };
@@ -96,7 +96,7 @@ class MessageText extends String {
                 const text = list.shift();
                 list = [
                     text.slice(0, ref.begin - outer_ref_begin),
-                    ref.templating_function(innerMarshall(ref.references, original_text.slice(ref.begin, ref.end), original_text, ref.begin, true)),
+                    ref.templating_function(this.innerMarshall(ref.references, original_text.slice(ref.begin, ref.end), original_text, ref.begin, true)),
                     text.slice(ref.end - outer_ref_begin),
                     ...list
                 ];
@@ -117,7 +117,7 @@ class MessageText extends String {
         //             ...list
         //         ];
         //     });
-        const list = innerMarshall (this.references, this.toString(), this.toString(), outer_ref_begin=0, inner=false)
+        const list = this.innerMarshall (this.references, this.toString(), this.toString(), outer_ref_begin=0, inner=false)
 
         // Subtract `/me ` from 3rd person messages
         if (this.isMeCommand()) list[0] = list[0].substring(4);
@@ -154,7 +154,7 @@ const styling_templates = {
 function addStylingReferences(references, text) {
     helpers.getStylingReferences(text).forEach((ref) => {
       if (styling_templates[ref.type]) {
-        references = addTemplate(references, ref.begin, ref.end, styling_templates[ref.type]);
+        references = this.addTemplate(references, ref.begin, ref.end, styling_templates[ref.type]);
       }
     });
     return references;

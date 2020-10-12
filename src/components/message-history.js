@@ -74,16 +74,16 @@ function getHats (model) {
         let vcard_roles = []
         if (allowed_hats.includes('vcard_roles')) {
             vcard_roles = model.vcard ? model.vcard.get('role') : null;
-            vcard_roles = vcard_roles ? vcard_roles.split(',').filter(hat => hat) : [];
+            vcard_roles = vcard_roles ? vcard_roles.split(',').filter(hat => hat).map((hat) => ({title: hat})) : [];
         }
         const muc_role = model.occupant ? [model.occupant.get('role')] : [];
         const muc_affiliation = model.occupant ? [model.occupant.get('affiliation')] : [];
 
-        const vcard_affiliation_role_hats = [...vcard_roles, ...muc_role, ...muc_affiliation]
+        const affiliation_role_hats = [...muc_role, ...muc_affiliation]
             .filter(hat => hat).filter((hat) => (allowed_hats.includes(hat.toLowerCase())))
             .map((hat) => ({title: hat}));
         const hats = allowed_hats.includes('hats') ? model.occupant?.get('hats') || [] : [];
-        return [...hats, ...vcard_affiliation_role_hats];
+        return [...hats, ...vcard_roles, ...affiliation_role_hats];
     }
     return [];
 }

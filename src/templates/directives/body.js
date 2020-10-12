@@ -3,6 +3,7 @@ import log from '@converse/headless/log';
 import { _converse, api, converse } from  "@converse/headless/converse-core";
 import { convertASCII2Emoji, getEmojiMarkup, getCodePointReferences, getShortnameReferences } from "@converse/headless/converse-emoji.js";
 import { directive, html } from "lit-html";
+import { helpers } from "@converse/headless/utils/parse-helpers";
 import { until } from 'lit-html/directives/until.js';
 
 const u = converse.env.utils;
@@ -50,8 +51,29 @@ class MessageText extends String {
      * which is being replaced with markup.
      * @param { Object } template - The lit-html TemplateResult instance
      */
-    addTemplateResult (begin, end, template) {
-        this.references.push({begin, end, template});
+    // addTemplateResult (begin, end, template) {
+    //     this.references.push({begin, end, template});
+    // }
+    addTemplate(references, begin, end, templating_function) {
+        for (let ref of references) {
+          if (ref.begin < begin && end <= ref.end) {
+            return addTemplate(ref.references, begin, end, templating_function);
+          }
+        }
+        const reference = { begin, end, references: [], templating_function };
+        const inner_references = [];
+        const current_references = [];
+        for (let ref of references) {
+          if (ref.begin > reference.begin && reference.end >= ref.end) {
+            inner_references.push({ ...ref });
+          } else {
+            current_references.push({ ...ref });
+          }
+        }
+        reference.references = [...inner_references];
+        current_references.push({ ...reference });
+        references = [...current_references];
+        return references;
     }
 
     isMeCommand () {
@@ -66,19 +88,36 @@ class MessageText extends String {
         return convertASCII2Emoji(text.replace(/\n\n+/g, '\n\n'));
     }
 
-    marshall () {
-        let list = [this.toString()];
-        this.references
+    innerMarshall (references, message, original_text, outer_ref_begin=0, inner=false) {
+        let list = [message.toString()];
+        references
             .sort((a, b) => b.begin - a.begin)
             .forEach(ref => {
                 const text = list.shift();
                 list = [
-                    text.slice(0, ref.begin),
-                    ref.template,
-                    text.slice(ref.end),
+                    text.slice(0, ref.begin - outer_ref_begin),
+                    ref.templating_function(innerMarshall(ref.references, original_text.slice(ref.begin, ref.end), original_text, ref.begin, true)),
+                    text.slice(ref.end - outer_ref_begin),
                     ...list
                 ];
             });
+        return inner ? list.filter(n => n).join('') : list.filter(n => n);
+    }
+
+    marshall () {
+        // let list = [this.toString()];
+        // this.references
+        //     .sort((a, b) => b.begin - a.begin)
+        //     .forEach(ref => {
+        //         const text = list.shift();
+        //         list = [
+        //             text.slice(0, ref.begin),
+        //             ref.template,
+        //             text.slice(ref.end),
+        //             ...list
+        //         ];
+        //     });
+        const list = innerMarshall (this.references, this.toString(), this.toString(), outer_ref_begin=0, inner=false)
 
         // Subtract `/me ` from 3rd person messages
         if (this.isMeCommand()) list[0] = list[0].substring(4);
@@ -88,6 +127,38 @@ class MessageText extends String {
     }
 }
 
+const styling_templates = {
+    strong: function (o) {
+      return html`<b>${o}</b>`;
+    },
+    strike: function (o) {
+      return html`<del>${o}</del>`;
+    },
+    emphasis: function (o) {
+      return html`<i>${o}</i>`;
+    },
+    preformated: function (o) {
+      return html`<code>${o}</code>`;
+    },
+    BLANK: function (o) {
+      return "";
+    },
+    PREFORMATED: function (o) {
+      return html`<code>${o}</code>`;
+    },
+    QUOTE: function (o) {
+      return html`<div class="quote">${o}</div>`;
+    },
+};
+
+function addStylingReferences(references, text) {
+    helpers.getStylingReferences(text).forEach((ref) => {
+      if (styling_templates[ref.type]) {
+        references = addTemplate(references, ref.begin, ref.end, styling_templates[ref.type]);
+      }
+    });
+    return references;
+}
 
 function addMapURLs (text) {
     const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
@@ -202,7 +273,7 @@ class MessageBodyRenderer {
         addMapURLs(text);
         await addEmojis(text);
         addReferences(text, this.model);
-
+        addStylingReferences(references, text)
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text
          * after the default transformations have been applied.

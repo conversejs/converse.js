@@ -10,7 +10,7 @@ export default (o) => html`
                 <h4 class="modal-title" id="message-versions-modal-label">${__('Image: ')}<a target="_blank" rel="noopener" href="${o.src}">${o.src}</a></h4>
                 ${modal_header_close_button}
             </div>
-            <div class="modal-body fit-content">
+            <div class="modal-body modal-body--image fit-content">
                 <img class="chat-image" src="${o.src}"/>
             </div>
             <div class="modal-footer">${modal_close_button}</div>

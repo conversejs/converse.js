@@ -37,7 +37,7 @@ describe("A sent presence stanza", function () {
             `<presence xmlns="jabber:client">`+
                 `<status>Hello world</status>`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
         _converse.priority = 2;
@@ -47,7 +47,7 @@ describe("A sent presence stanza", function () {
                 `<show>away</show>`+
                 `<status>Going jogging</status>`+
                 `<priority>2</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
 
@@ -58,7 +58,7 @@ describe("A sent presence stanza", function () {
                 `<show>dnd</show>`+
                 `<status>Doing taxes</status>`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
         done();
@@ -88,7 +88,7 @@ describe("A sent presence stanza", function () {
             .toBe(`<presence xmlns="jabber:client">`+
                     `<status>My custom status</status>`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
                     `</presence>`)
 
         await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
@@ -105,7 +105,7 @@ describe("A sent presence stanza", function () {
                     `<show>dnd</show>`+
                     `<status>My custom status</status>`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`)
         done();
     }));

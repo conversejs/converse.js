@@ -13,6 +13,9 @@ export default (o) => {
                 data-from="${o.from}"
                 data-encrypted="${o.is_encrypted}">
 
+            <!-- Anchor to allow us to scroll the message into view -->
+            <a id="${o.msgid}"></a>
+
             ${ o.shouldShowAvatar() ? renderAvatar(o.getAvatarData()) : '' }
             <div class="chat-msg__content chat-msg__content--${o.sender} ${o.is_me_message ? 'chat-msg__content--action' : ''}">
 

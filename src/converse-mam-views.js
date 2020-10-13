@@ -27,6 +27,7 @@ converse.plugins.add('converse-mam-views', {
                         await view.model.fetchArchivedMessages({'end': oldest_message.get('time')});
                     }
                     view.clearSpinner();
+                    _converse.router.history.navigate(`#${oldest_message.get('msgid')}`);
                 }
             }
         });

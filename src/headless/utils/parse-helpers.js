@@ -40,27 +40,8 @@ const reduceReferences = ([text, refs], ref, index) => {
 
 helpers.reduceTextFromReferences = (text, refs) => refs.reduce(reduceReferences, [text, []]);
 
-helpers.getLineSpans = (line, offset = 0, start = 0) => {
-    const spans = { open: [], closed: [] };
-    let char;
-    for (let index = start; index < line.length; index++) {
-        char = line[index];
-        if (isStylingDirective(char)) {
-            if (!hasOpenedSpan(char, spans)) {
-                if (isOpeningDirective(char, index, line, start)) {
-                    openSpan(char, index, spans);
-                }
-            } else {
-                if (isClosingDirective(index, line)) {
-                    closeSpan(char, index, offset, spans);
-                }
-            }
-        }
-    }
-    return [...spans['closed']];
-};
 
-helpers.getStylingReferences = (message) => {
+export function getStylingReferences (message) {
     const line_space_offsets = {};
     const line_offsets = {};
     const lines = message.split("\n");
@@ -161,6 +142,26 @@ function closeSpan(character, index, offset, spans) {
     }
 }
 
+function getLineSpans (line, offset = 0, start = 0) {
+    const spans = { open: [], closed: [] };
+    let char;
+    for (let index = start; index < line.length; index++) {
+        char = line[index];
+        if (isStylingDirective(char)) {
+            if (!hasOpenedSpan(char, spans)) {
+                if (isOpeningDirective(char, index, line, start)) {
+                    openSpan(char, index, spans);
+                }
+            } else {
+                if (isClosingDirective(index, line)) {
+                    closeSpan(char, index, offset, spans);
+                }
+            }
+        }
+    }
+    return [...spans['closed']];
+};
+
 function initOffsets(line_space_offsets, line_offsets, number_of_lines) {
     for (let index = 0; index < number_of_lines; index++) {
       line_space_offsets[index] = 0;
@@ -209,7 +210,7 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
         isPreformatedEnding = isPreformatedBlockEnding(line, line_offsets, line_space_offsets, index);
         if (isLastPreformatedLine || (!just_opened && isPreformatedEnding)) {
           if (isPreformatedEnding) {
-            let { block_reference } = closeBlock("PREFORMATED", offset, blocks, line, STYLING_DIRECTIVES.preformated_block.length - 1);
+            let { block_reference } = closeBlock("PREFORMATED", offset, blocks, line, STYLING_DIRECTIVES.preformated_block.length);
             references = [...references, ...block_reference];
           } else {
             let { block_reference } = closeBlock("PREFORMATED", offset, blocks, line);
@@ -249,7 +250,7 @@ function openBlock(type, text_offset, line_offsets, line_space_offsets, begin, b
           type: "QUOTE",
           begin_line: begin,
           begin: total_offset,
-          beginning_offset: STYLING_DIRECTIVES.quote.length - 1,
+          beginning_offset: STYLING_DIRECTIVES.quote.length,
           text_offset,
         });
       } else if (
@@ -260,7 +261,7 @@ function openBlock(type, text_offset, line_offsets, line_space_offsets, begin, b
           type: "QUOTE",
           begin_line: begin,
           begin: total_offset,
-          beginning_offset: STYLING_DIRECTIVES.quote.length,
+          beginning_offset: STYLING_DIRECTIVES.quote.length + 1,
           text_offset,
         });
       }
@@ -271,7 +272,7 @@ function openBlock(type, text_offset, line_offsets, line_space_offsets, begin, b
           type: "PREFORMATED",
           begin_line: begin,
           begin: total_offset,
-          beginning_offset: STYLING_DIRECTIVES.preformated_block.length - 1,
+          beginning_offset: STYLING_DIRECTIVES.preformated_block.length,
           text_offset,
         });
       } else if (
@@ -282,7 +283,7 @@ function openBlock(type, text_offset, line_offsets, line_space_offsets, begin, b
           type: "PREFORMATED",
           begin_line: begin,
           begin: total_offset,
-          beginning_offset: STYLING_DIRECTIVES.preformated_block.length,
+          beginning_offset: STYLING_DIRECTIVES.preformated_block.length + 1,
           text_offset,
         });
       }

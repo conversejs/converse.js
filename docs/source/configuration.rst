@@ -1013,20 +1013,20 @@ If no nickame value is found, then an error will be raised.
 muc_hats
 -------------------
 
-* Default: ``['hats']``
+* Default: ``['xep317']``
 
 Since version 7 Converse now has rudimentary support for `XEP-0317 Hats <https://xmpp.org/extensions/xep-0317.html>`_.
 
 It is also possible to display VCard roles, MUC affiliation and MUC role along with hats.
-By default only regular hats are considered.
+By default only XEP-0317 hats are considered.
 For the inclusion of VCard roles ``'vcard_roles'`` must be added to the list.
 For the inclusion of MUC affiliation and MUC role, the specific affiliations and roles
 to be used must be added to the list e.g. ``'owner','participant'``.
 
 Example:
 
-For regular hats and VCard roles this setting should be set to:
-``'muc_hats': ['hats', 'vcard_roles']``
+For XEP-0317 hats and VCard roles this setting should be set to:
+``'muc_hats': ['xep317', 'vcard_roles']``
 
 For VCard roles, admin MUC affiliation and moderator MUC role:
 ``'muc_hats': ['vcard_roles', 'admin', 'moderator']``

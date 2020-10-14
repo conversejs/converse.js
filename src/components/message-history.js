@@ -82,7 +82,7 @@ function getHats (model) {
         const affiliation_role_hats = [...muc_role, ...muc_affiliation]
             .filter(hat => hat).filter((hat) => (allowed_hats.includes(hat.toLowerCase())))
             .map((hat) => ({title: hat}));
-        const hats = allowed_hats.includes('hats') ? model.occupant?.get('hats') || [] : [];
+        const hats = allowed_hats.includes('xep317') ? model.occupant?.get('hats') || [] : [];
         return [...hats, ...vcard_roles, ...affiliation_role_hats];
     }
     return [];

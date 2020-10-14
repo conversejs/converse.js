@@ -3,7 +3,7 @@ import log from '@converse/headless/log';
 import { _converse, api, converse } from  "@converse/headless/converse-core";
 import { convertASCII2Emoji, getEmojiMarkup, getCodePointReferences, getShortnameReferences } from "@converse/headless/converse-emoji.js";
 import { directive, html } from "lit-html";
-import { helpers } from "@converse/headless/utils/parse-helpers";
+import { getStylingReferences } from "@converse/headless/utils/parse-helpers";
 import { until } from 'lit-html/directives/until.js';
 
 const u = converse.env.utils;
@@ -54,13 +54,14 @@ class MessageText extends String {
     // addTemplateResult (begin, end, template) {
     //     this.references.push({begin, end, template});
     // }
-    addTemplate(references, begin, end, templating_function) {
+    addTemplate(begin, end, template, ref_object = '', references = this.references) {
         for (let ref of references) {
           if (ref.begin < begin && end <= ref.end) {
-            return this.addTemplate(ref.references, begin, end, templating_function);
+            return this.addTemplate(begin, end, template, ref.references, ref_object);
           }
         }
-        const reference = { begin, end, references: [], templating_function };
+        const reference = { begin, end, references: [], template };
+        if (ref_object)  reference.ref = {...ref_object}
         const inner_references = [];
         const current_references = [];
         for (let ref of references) {
@@ -72,8 +73,7 @@ class MessageText extends String {
         }
         reference.references = [...inner_references];
         current_references.push({ ...reference });
-        references = [...current_references];
-        return references;
+        references.splice(0, references.length, ...current_references);
     }
 
     isMeCommand () {
@@ -96,12 +96,17 @@ class MessageText extends String {
                 const text = list.shift();
                 list = [
                     text.slice(0, ref.begin - outer_ref_begin),
-                    ref.templating_function(this.innerMarshall(ref.references, original_text.slice(ref.begin, ref.end), original_text, ref.begin, true)),
+                    typeof ref.template === 'function'
+                    ? ref.template(
+                        this.innerMarshall(ref.references, original_text.slice(ref.begin, ref.end), original_text, ref.begin, true),
+                        ref.ref)
+                    : ref.template,
                     text.slice(ref.end - outer_ref_begin),
                     ...list
                 ];
             });
-        return inner ? list.filter(n => n).join('') : list.filter(n => n);
+        // return inner ? list.filter(n => n).join('') : list.filter(n => n);
+        return inner ? list.filter(n => n) : list.filter(n => n);
     }
 
     marshall () {
@@ -117,7 +122,7 @@ class MessageText extends String {
         //             ...list
         //         ];
         //     });
-        const list = this.innerMarshall (this.references, this.toString(), this.toString(), outer_ref_begin=0, inner=false)
+        const list = this.innerMarshall (this.references, this.toString(), this.toString());
 
         // Subtract `/me ` from 3rd person messages
         if (this.isMeCommand()) list[0] = list[0].substring(4);
@@ -128,43 +133,60 @@ class MessageText extends String {
 }
 
 const styling_templates = {
-    strong: function (o) {
-      return html`<b>${o}</b>`;
+    strong: (text) => {
+      return html`<b>${text}</b>`;
     },
-    strike: function (o) {
-      return html`<del>${o}</del>`;
+    strike: (text) => {
+      return html`<del>${text}</del>`;
     },
-    emphasis: function (o) {
-      return html`<i>${o}</i>`;
+    emphasis: (text) => {
+      return html`<i>${text}</i>`;
     },
-    preformated: function (o) {
-      return html`<code>${o}</code>`;
+    preformated: (text) => {
+      return html`<code>${text}</code>`;
     },
-    BLANK: function (o) {
+    BLANK: function (text) {
       return "";
     },
-    PREFORMATED: function (o) {
-      return html`<code>${o}</code>`;
+    PREFORMATED: function (text, ref) {
+      return html`<div class="code_block">${extractStylingDirectives (text, ref)}</div>`;
     },
-    QUOTE: function (o) {
-      return html`<div class="quote">${o}</div>`;
+    QUOTE: function (text, ref) {
+      return html`<div class="quote">${extractStylingDirectives (text, ref)}</div>`;
     },
 };
 
-function addStylingReferences(references, text) {
-    helpers.getStylingReferences(text).forEach((ref) => {
+function extractStylingDirectives (text, ref) {
+    if (typeof text === 'string') {
+        return text.slice(ref.beginning_offset, text.length - ref.closing_offset);
+    }
+    else if (Array.isArray(text)) {
+        if (text.length === 1 && typeof text[0] === 'string') {
+            return text[0].slice(ref.beginning_offset, text[0].length - ref.closing_offset);
+        }
+        if (typeof text[0] === 'string') {
+            text[0] = text[0].slice(ref.beginning_offset);
+        }
+        if (typeof text[text.length - 1] === 'string') {
+            text[text.length - 1] = text[text.length - 1].slice(0, text[text.length - 1].length - ref.closing_offset);
+        }
+    }
+    return text;
+}
+
+function addStylingReferences(text) {
+    getStylingReferences(text).forEach((ref) => {
       if (styling_templates[ref.type]) {
-        references = this.addTemplate(references, ref.begin, ref.end, styling_templates[ref.type]);
+        text.addTemplate(ref.begin, ref.end, styling_templates[ref.type], ref);
       }
     });
-    return references;
 }
 
 function addMapURLs (text) {
     const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
     const matches = text.matchAll(regex);
     for (const m of matches) {
-        text.addTemplateResult(
+        text.addTemplate(
             m.index,
             m.index+m.input.length,
             u.convertUrlToHyperlink(m.input.replace(regex, _converse.geouri_replacement))
@@ -189,7 +211,7 @@ function addHyperlinks (text, onImgLoad, onImgClick) {
     objs.forEach(url_obj => {
         const url_text = text.slice(url_obj.start, url_obj.end);
         const filtered_url = u.filterQueryParamsFromURL(url_text);
-        text.addTemplateResult(
+        text.addTemplate(
             url_obj.start,
             url_obj.end,
             show_images && u.isImageURL(url_text) && u.isImageDomainAllowed(url_text) ?
@@ -204,7 +226,7 @@ async function addEmojis (text) {
     await api.emojis.initialize();
     const references = [...getShortnameReferences(text.toString()), ...getCodePointReferences(text.toString())];
     references.forEach(e => {
-        text.addTemplateResult(
+        text.addTemplate(
             e.begin,
             e.end,
             getEmojiMarkup(e, {'add_title_wrapper': true})
@@ -222,9 +244,9 @@ function addReferences (text, model) {
     model.get('references')?.forEach(ref => {
         const mention = text.slice(ref.begin, ref.end);
         if (mention === nick) {
-            text.addTemplateResult(ref.begin, ref.end, tpl_mention_with_nick({mention}));
+            text.addTemplate(ref.begin, ref.end, tpl_mention_with_nick({mention}));
         } else {
-            text.addTemplateResult(ref.begin, ref.end, tpl_mention({mention}));
+            text.addTemplate(ref.begin, ref.end, tpl_mention({mention}));
         }
     });
 }
@@ -273,7 +295,7 @@ class MessageBodyRenderer {
         addMapURLs(text);
         await addEmojis(text);
         addReferences(text, this.model);
-        addStylingReferences(references, text)
+        addStylingReferences(text);
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text
          * after the default transformations have been applied.

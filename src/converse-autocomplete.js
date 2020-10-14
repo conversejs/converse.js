@@ -7,9 +7,9 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { Events } from '@converse/skeletor/src/events.js';
-import { api, converse } from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/converse-core";
 
-converse.DEFAULT_MENTION_BOUNDARIES = ['"', '(', '<', '#', '!', '\\', '/', '+', '~', '[', '{', '^', '>'];
+converse.MENTION_BOUNDARIES = ['"', '(', '<', '#', '!', '\\', '/', '+', '~', '[', '{', '^', '>'];
 const u = converse.env.utils;
 
 
@@ -251,7 +251,7 @@ export class AutoComplete {
 
     insertValue (suggestion) {
         if (this.match_current_word) {
-            u.replaceCurrentWord(this.input, suggestion.value, api.settings.get('mention_boundaries'));
+            u.replaceCurrentWord(this.input, suggestion.value, converse.MENTION_BOUNDARIES);
         } else {
             this.input.value = suggestion.value;
         }
@@ -371,8 +371,7 @@ export class AutoComplete {
             this.auto_completing = true;
         } else if (ev.key === "Backspace") {
             const word = u.getCurrentWord(ev.target, ev.target.selectionEnd-1);
-            const mention_boundaries = api.settings.get('mention_boundaries');
-            if (helpers.isMention(word, this.ac_triggers, mention_boundaries)) {
+            if (helpers.isMention(word, this.ac_triggers, converse.MENTION_BOUNDARIES)) {
                 this.auto_completing = true;
             }
         }
@@ -393,13 +392,12 @@ export class AutoComplete {
             return;
         }
 
-        const mention_boundaries = api.settings.get('mention_boundaries');
         let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
-        const contains_trigger = helpers.isMention(value, this.ac_triggers, mention_boundaries);
+        const contains_trigger = helpers.isMention(value, this.ac_triggers, converse.MENTION_BOUNDARIES);
         if (contains_trigger) {
             this.auto_completing = true;
             if (!this.include_triggers.includes(ev.key)) {
-                value = mention_boundaries.includes(value[0])
+                value = converse.MENTION_BOUNDARIES.includes(value[0])
                     ? value.slice('2')
                     : value.slice('1');
             }
@@ -445,9 +443,6 @@ converse.plugins.add("converse-autocomplete", {
         _converse.FILTER_CONTAINS = FILTER_CONTAINS;
         _converse.FILTER_STARTSWITH = FILTER_STARTSWITH;
         _converse.AutoComplete = AutoComplete;
-        api.settings.extend({
-            'mention_boundaries': [...converse.DEFAULT_MENTION_BOUNDARIES],
-        });
     }
 });
 

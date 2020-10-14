@@ -7,7 +7,7 @@
 const helpers = {};
 
 // Captures all mentions, but includes a space before the @
-helpers.mention_regex = /(?:\s|^)(.?[@][\w_-]+(?:\.\w+)*)/gi;
+helpers.mention_regex = /(?:\s|^)([@][\w_-]+(?:\.\w+)*)/gi;
 
 helpers.matchRegexInText = text => regex => text.matchAll(regex);
 

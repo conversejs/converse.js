@@ -1416,23 +1416,6 @@ omemo_default
 
 Use OMEMO encryption by default when the chat supports it.
 
-mention_boundaries
-__________________________
-
-* Default: ``['"', '(', '<', '#', '!', '\\', '/', '+', '~', '[', '{', '^', '>']``
-
-List of characters allowed before the ``@`` in a mention.
-Allows to interact with the mention autocompletion component when one of 
-the specified characters is preceding the ``@`` in a mention.
-
-If no character should be allowed before the ``@`` in a mention other than
-whitespace characters, this setting should be set to empty list: ``[]``
-
-Example:
-
-Typing ``(@`` triggers the mention autocompletion component but typing ``>@`` doesn't.
-
-
 ping_interval
 -------------
 

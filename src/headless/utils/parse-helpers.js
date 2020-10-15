@@ -185,7 +185,7 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
         applyLineSpaceOffset(line, line_offsets, line_space_offsets, index);
 
         if (isLastBlockLine(index, last_line_index, "QUOTE", line_offsets, line_space_offsets, lines)) {
-          const { begin, index_begin, block_reference } = closeBlock("QUOTE", offset, blocks, line);
+          const { begin, index_begin, block_reference } = closeBlock(offset, blocks, line);
           inner_references = getMessageStylingReferences(lines, line_offsets, line_space_offsets, index, index_begin, begin);
           references = [...references, ...inner_references, ...block_reference];
         }
@@ -207,10 +207,10 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
         isPreformatedEnding = isPreformatedBlockEnding(line, line_offsets, line_space_offsets, index);
         if (isLastPreformatedLine || (!just_opened && isPreformatedEnding)) {
           if (isPreformatedEnding) {
-            const { block_reference } = closeBlock("PREFORMATED", offset, blocks, line, STYLING_DIRECTIVES.preformated_block.length);
+            const { block_reference } = closeBlock(offset, blocks, line, STYLING_DIRECTIVES.preformated_block.length);
             references = [...references, ...block_reference];
           } else {
-            const { block_reference } = closeBlock("PREFORMATED", offset, blocks, line);
+            const { block_reference } = closeBlock(offset, blocks, line);
             references = [...references, ...block_reference];
           }
         }
@@ -287,7 +287,7 @@ function openBlock(type, text_offset, line_offsets, line_space_offsets, begin, b
     }
 }
 
-function closeBlock(type, text_offset, blocks, line, closing_offset = 0) {
+function closeBlock(text_offset, blocks, line, closing_offset = 0) {
     const total_offset = text_offset + line.length;
     const current_block = { ...blocks["open"][0] };
     blocks["open"] = [];

@@ -4,6 +4,8 @@
  * @license Mozilla Public License (MPLv2)
  */
 
+import _ from './lodash.noconflict';
+
 /* START: Removable components
  * --------------------
  * Any of the following components may be removed if they're not needed.
@@ -29,7 +31,6 @@ import "converse-register";        // XEP-0077 In-band registration
 import "converse-roomslist";       // Show currently open chat rooms
 import "converse-rosterview";
 import "converse-singleton";
-import "converse-uniview";
 import "./components/converse.js";
 /* END: Removable components */
 
@@ -57,9 +58,22 @@ const WHITELISTED_PLUGINS = [
     'converse-register',
     'converse-roomslist',
     'converse-rosterview',
-    'converse-singleton',
-    'converse-uniview'
+    'converse-singleton'
 ];
+
+// Use Mustache style syntax for variable interpolation
+/* Configuration of Lodash templates (this config is distinct to the
+ * config of requirejs-tpl in main.js). This one is for normal inline templates.
+ */
+_.templateSettings = {
+    'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
+    'evaluate': /\{\[([\s\S]+?)\]\}/g,
+    'interpolate': /\{\{([\s\S]+?)\}\}/g,
+    'imports': { '_': _ }
+};
+
+converse.env._ = _;
+
 
 const initialize = converse.initialize;
 

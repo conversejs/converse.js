@@ -260,27 +260,14 @@ describe("Chatboxes", function () {
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
-            await mock.openControlBox(_converse);
-
             const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
             await mock.openChatBoxFor(_converse, contact_jid);
-            const controlview = _converse.chatboxviews.get('controlbox'), // The controlbox is currently open
-                  chatview = _converse.chatboxviews.get(contact_jid);
-
+            const chatview = _converse.chatboxviews.get(contact_jid);
             spyOn(chatview, 'close').and.callThrough();
-            spyOn(controlview, 'close').and.callThrough();
             spyOn(_converse.api, "trigger").and.callThrough();
-
             // We need to rebind all events otherwise our spy won't be called
-            controlview.delegateEvents();
             chatview.delegateEvents();
-
-            controlview.el.querySelector('.close-chatbox-button').click();
-            expect(controlview.close).toHaveBeenCalled();
-            await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
-            expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-
             chatview.el.querySelector('.close-chatbox-button').click();
             expect(chatview.close).toHaveBeenCalled();
             await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));

@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
 import log from "../log";
-import { api } from "@converse/headless/converse-core";
+import { _converse, api } from "@converse/headless/converse-core";
 
 const Strophe = strophe.default.Strophe;
 const $msg = strophe.default.$msg;
@@ -132,12 +132,8 @@ function getStanzaIDs (stanza, original_stanza) {
     // Store the archive id
     const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop();
     if (result) {
-        const by_jid = original_stanza.getAttribute('from');
-        if (by_jid) {
-            attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
-        } else {
-            attrs[`stanza_id`] = result.getAttribute('id');
-        }
+        const by_jid = original_stanza.getAttribute('from') || _converse.bare_jid;
+        attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
     }
 
     // Store the origin id
@@ -517,7 +513,7 @@ const st = {
 
         if (attrs.is_archived) {
             const from = original_stanza.getAttribute('from');
-            if (from && contact_jid && from !== contact_jid) {
+            if (from && from !== _converse.bare_jid) {
                 return new StanzaParseError(`Invalid Stanza: Forged MAM message from ${from}`, stanza);
             }
         }

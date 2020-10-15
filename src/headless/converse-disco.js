@@ -9,7 +9,7 @@ import sizzle from "sizzle";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
-import { isEmpty, isObject } from "lodash-es";
+import { isObject } from "lodash-es";
 
 const { Strophe, $iq, utils } = converse.env;
 
@@ -172,7 +172,7 @@ converse.plugins.add('converse-disco', {
             },
 
             async queryForItems () {
-                if (isEmpty(this.identities.where({'category': 'server'}))) {
+                if (this.identities.where({'category': 'server'}).length === 0) {
                     // Don't fetch features and items if this is not a
                     // server or a conference component.
                     return;

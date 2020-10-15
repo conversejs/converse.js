@@ -3,7 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the form utilities module.
  */
-import tpl_field from "../templates/field.html";
 import u from "./core";
 
 /**
@@ -13,6 +12,10 @@ import u from "./core";
  * @param { DOMElement } field - the field to convert
  */
 u.webForm2xForm = function (field) {
+    const name = field.getAttribute('name');
+    if (!name) {
+        return null; // See #1924
+    }
     let value;
     if (field.getAttribute('type') === 'checkbox') {
         value = field.checked && 1 || 0;
@@ -23,11 +26,11 @@ u.webForm2xForm = function (field) {
     } else {
         value = field.value;
     }
-    return u.stringToNode(
-        tpl_field({
-            'name': field.getAttribute('name'),
-            'value': value
-        })
-    );
+    return u.toStanza(`
+        <field var="${name}">
+            ${ value.constructor === Array ?
+                value.map(v => `<value>${v}</value>`) :
+                `<value>${value}</value>` }
+        </field>`);
 };
 export default u;

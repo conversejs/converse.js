@@ -15,6 +15,7 @@ export class CustomElement extends LitElement {
     }
 
     disconnectedCallback () {
+        super.disconnectedCallback();
         this.stopListening();
     }
 }

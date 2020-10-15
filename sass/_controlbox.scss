@@ -67,8 +67,20 @@
 
     #controlbox {
         order: -1;
-
         color: var(--controlbox-text-color);
+
+        converse-brand-heading {
+            width: 100%;
+            display: block;
+        }
+
+        .brand-name-wrapper {
+            font-size: 200%;
+        }
+
+        .brand-name-wrapper--fullscreen {
+            font-size: 100%;
+        }
 
         .open-rooms-toggle, .open-rooms-toggle .fa {
             color: var(--groupchats-header-color) !important;
@@ -78,7 +90,7 @@
         }
 
         .box-flyout {
-            background-color: white;
+            background-color: var(--controlbox-pane-background-color);
         }
 
         margin-right: calc(3 * var(--chat-gutter));
@@ -178,11 +190,7 @@
         }
 
         #converse-login-panel {
-            flex-direction: column;
-
-            .brand-heading {
-                color: var(--global-background-color);
-            }
+            flex-direction: row;
         }
 
         .toggle-register-login {
@@ -411,10 +419,6 @@
             }
         }
 
-        .brand-heading-container {
-            width: 100%;
-        }
-
         .controlbox-head {
             display: flex;
             flex-direction: row-reverse;
@@ -497,7 +501,7 @@
             line-height: var(--line-height-huge);
         }
 
-        .brand-heading-container {
+        converse-brand-heading {
             @include make-col(12);
             margin-top: 5em;
             margin-bottom: 1em;
@@ -589,7 +593,7 @@
                     bottom: 0;
                     border-radius: 0;
                     width: 100vw !important;
-                    height: 100vh !important;
+                    height: var(--fullpage-chat-height);
                 }
             }
 
@@ -597,7 +601,7 @@
                 width: 100vw !important;
                 .box-flyout {
                     width: 100vw !important;
-                    height: 100vh !important;
+                    height: var(--fullpage-chat-height);
                     margin-right: -15px;
                 }
                 .sidebar {

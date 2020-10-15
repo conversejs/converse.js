@@ -4,16 +4,17 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "converse-chatview";
+import "./components/brand-heading";
 import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
-import tpl_brand_heading from "templates/converse_brand_heading.html";
-import tpl_controlbox from "templates/controlbox.html";
+import tpl_controlbox from "templates/controlbox.js";
 import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
 import tpl_login_panel from "templates/login_panel.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from "@converse/skeletor/src/view";
 import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
+import { render } from 'lit-html';
 
 const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
@@ -198,7 +199,12 @@ converse.plugins.add('converse-controlbox', {
                         this.model.set('closed', !api.settings.get('show_controlbox_by_default'));
                     }
                 }
-                this.el.innerHTML = tpl_controlbox(Object.assign(this.model.toJSON()));
+
+               const tpl_result = tpl_controlbox({
+                    'sticky_controlbox': api.settings.get('sticky_controlbox'),
+                     ...this.model.toJSON()
+                });
+                render(tpl_result, this.el);
 
                 if (!this.model.get('closed')) {
                     this.show();
@@ -221,22 +227,6 @@ converse.plugins.add('converse-controlbox', {
                 }
             },
 
-             createBrandHeadingHTML () {
-                return tpl_brand_heading({
-                    'sticky_controlbox': api.settings.get('sticky_controlbox')
-                });
-            },
-
-            insertBrandHeading () {
-                const heading_el = this.el.querySelector('.brand-heading-container');
-                if (heading_el === null) {
-                    const el = this.el.querySelector('.controlbox-head');
-                    el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
-                } else {
-                    heading_el.outerHTML = this.createBrandHeadingHTML();
-                }
-            },
-
             renderLoginPanel () {
                 this.el.classList.add("logged-out");
                 if (this.loginpanel) {
@@ -248,7 +238,6 @@ converse.plugins.add('converse-controlbox', {
                     const panes = this.el.querySelector('.controlbox-panes');
                     panes.innerHTML = '';
                     panes.appendChild(this.loginpanel.render().el);
-                    this.insertBrandHeading();
                 }
                 this.loginpanel.initPopovers();
                 return this;

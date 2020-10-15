@@ -2,6 +2,7 @@ import './message-body.js';
 import '../converse-registry';
 import './dropdown.js';
 import './message-actions.js';
+import { getDerivedMessageProps } from './message-history';
 import MessageVersionsModal from '../modals/message-versions.js';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
@@ -72,6 +73,21 @@ export default class Message extends CustomElement {
         } else {
             return this.renderChatMessage();
         }
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        // Listen to changes and update properties (which will trigger a
+        // re-render if necessary).
+        this.listenTo(this.model, 'change', (model) => {
+            const chatbox = this.model.collection.chatbox;
+            Object.assign(this, getDerivedMessageProps(chatbox, this.model));
+            Object.keys(model.changed)
+                .filter(p => Object.keys(Message.properties).includes(p))
+                .forEach(p => (this[p] = model.changed[p]));
+        });
+        const vcard = this.model.vcard;
+        vcard && this.listenTo(vcard, 'change', () => this.requestUpdate());
     }
 
     updated () {

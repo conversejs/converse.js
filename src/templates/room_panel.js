@@ -1,0 +1,10 @@
+import { html } from "lit-html";
+
+export default (o) => html`
+    <div class="d-flex controlbox-padded">
+        <span class="w-100 controlbox-heading controlbox-heading--groupchats">${o.heading_chatrooms}</span>
+        <a class="controlbox-heading__btn show-list-muc-modal fa fa-list-ul" title="${o.title_list_rooms}" data-toggle="modal" data-target="#list-chatrooms-modal"></a>
+        <a class="controlbox-heading__btn show-add-muc-modal fa fa-plus" title="${o.title_new_room}" data-toggle="modal" data-target="#add-chatrooms-modal"></a>
+    </div>
+    <div class="list-container list-container--openrooms hidden"></div>
+    <div class="list-container list-container--bookmarks hidden"></div>`;

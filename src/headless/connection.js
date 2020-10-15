@@ -3,7 +3,7 @@ import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
 import { Strophe } from 'strophe.js/src/core';
 import { _converse, api, clearSession, tearDown } from "./converse-core";
-import { debounce, isElement, noop } from 'lodash';
+import { debounce, isElement } from 'lodash';
 
 
 const BOSH_WAIT = 59;
@@ -362,9 +362,9 @@ export class MockConnection extends Connection {
                 '</session>'+
             '</stream:features>').firstChild;
 
-        this._proto._processRequest = noop;
+        this._proto._processRequest = () => {};
         this._proto._disconnect = () => this._onDisconnectTimeout();
-        this._proto._onDisconnectTimeout = noop;
+        this._proto._onDisconnectTimeout = () => {};
         this._proto._connect = () => {
             this.connected = true;
             this.mock = true;

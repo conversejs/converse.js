@@ -3,7 +3,6 @@
  * @copyright 2020, the Converse.js contributors
  * @description XEP-0045 Multi-User Chat Views
  */
-import { isString } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/converse-core";
 import st from "./utils/stanza";
 
@@ -148,7 +147,7 @@ converse.plugins.add('converse-headlines', {
                     if (jids === undefined) {
                         const chats = await api.chatboxes.get();
                         return chats.filter(c => (c.get('type') === _converse.HEADLINES_TYPE));
-                    } else if (isString(jids)) {
+                    } else if (typeof jids === 'string') {
                         return _get(jids);
                     }
                     return Promise.all(jids.map(jid => _get(jid)));

@@ -9,7 +9,7 @@ import st from "./utils/stanza";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
-import { find, isMatch, isObject, isString, pick } from "lodash-es";
+import { find, isMatch, isObject, pick } from "lodash-es";
 
 const { $msg, Strophe, sizzle, utils } = converse.env;
 const u = converse.env.utils;
@@ -304,7 +304,7 @@ converse.plugins.add('converse-chat', {
                 return {
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'hidden': ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")),
+                    'hidden': _converse.isUniView() && !api.settings.get('singleton'),
                     'message_type': 'chat',
                     'nickname': undefined,
                     'num_unread': 0,
@@ -635,7 +635,7 @@ converse.plugins.add('converse-chat', {
              */
             shouldShowErrorMessage (attrs) {
                 const msg = this.getMessageReferencedByError(attrs);
-                if (!msg && attrs.body === null) {
+                if (!msg && !attrs.body) {
                     // If the error refers to a message not included in our store,
                     // and it doesn't have a <body> tag, we assume that this was a
                     // CSI message (which we don't store).
@@ -1012,7 +1012,7 @@ converse.plugins.add('converse-chat', {
              * @method _converse.ChatBox#createMessage
              */
             createMessage (attrs, options) {
-                return this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options));
+                return this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options)).catch(e => log.error(e));
             },
 
             /**
@@ -1133,8 +1133,13 @@ converse.plugins.add('converse-chat', {
                 });
             },
 
-            maybeShow () {
-                return this.trigger("show");
+            maybeShow (force) {
+                force && u.safeSave(this, {'hidden': false});
+                if (_converse.isUniView() && this.get('hidden')) {
+                    return;
+                } else {
+                    return this.trigger("show");
+                }
             },
 
             /**
@@ -1277,7 +1282,7 @@ converse.plugins.add('converse-chat', {
                 if (_converse.chatboxes.where({'jid': jid}).length) {
                     return;
                 }
-                if (isString(jid)) {
+                if (typeof jid === 'string') {
                     api.chats.open(jid);
                 } else {
                     log.error('Invalid jid criteria specified for "auto_join_private_chats"');
@@ -1333,7 +1338,7 @@ converse.plugins.add('converse-chat', {
                  * @param {object} [attrs] An object containing configuration attributes.
                  */
                 async create (jids, attrs) {
-                    if (isString(jids)) {
+                    if (typeof jids === 'string') {
                         if (attrs && !attrs?.fullname) {
                             const contact = await api.contacts.get(jids);
                             attrs.fullname = contact?.attributes?.fullname;
@@ -1397,7 +1402,7 @@ converse.plugins.add('converse-chat', {
                  * });
                  */
                 async open (jids, attrs, force) {
-                    if (isString(jids)) {
+                    if (typeof jids === 'string') {
                         const chat = await api.chats.get(jids, attrs, true);
                         if (chat) {
                             return chat.maybeShow(force);
@@ -1452,7 +1457,7 @@ converse.plugins.add('converse-chat', {
                     if (jids === undefined) {
                         const chats = await api.chatboxes.get();
                         return chats.filter(c => (c.get('type') === _converse.PRIVATE_CHAT_TYPE));
-                    } else if (isString(jids)) {
+                    } else if (typeof jids === 'string') {
                         return _get(jids);
                     }
                     return Promise.all(jids.map(jid => _get(jid)));

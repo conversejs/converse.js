@@ -3,7 +3,7 @@ import sizzle from 'sizzle';
 import st from "@converse/headless/utils/stanza";
 import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
 import tpl_room_description from "templates/room_description.html";
-import tpl_spinner from "templates/spinner.html";
+import tpl_spinner from "templates/spinner.js";
 import { BootstrapModal } from "../converse-modal.js";
 import { Strophe, $iq } from 'strophe.js/src/strophe';
 import { __ } from '../i18n';
@@ -70,7 +70,10 @@ function toggleRoomInfo (ev) {
         u.slideIn(div_el).then(u.removeElement)
         parent_el.querySelector('a.room-info').classList.remove('selected');
     } else {
-        parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
+        parent_el.insertAdjacentElement(
+            'beforeend',
+            u.getElementFromTemplateResult(tpl_spinner())
+        );
         api.disco.info(ev.target.getAttribute('data-room-jid'), null)
             .then(stanza => insertRoomInfo(parent_el, stanza))
             .catch(e => log.error(e));
@@ -90,6 +93,11 @@ export default BootstrapModal.extend({
             this.model.save('muc_domain', api.settings.get('muc_domain'));
         }
         this.listenTo(this.model, 'change:muc_domain', this.onDomainChange);
+
+        this.el.addEventListener('shown.bs.modal', () => api.settings.get('locked_muc_domain')
+          ? this.updateRoomsList()
+          : this.el.querySelector('input[name="server"]').focus()
+        );
     },
 
     toHTML () {
@@ -105,17 +113,6 @@ export default BootstrapModal.extend({
                 'submitForm': ev => this.showRooms(ev),
                 'toggleRoomInfo': ev => this.toggleRoomInfo(ev)
             }));
-    },
-
-    afterRender () {
-        if (api.settings.get('locked_muc_domain')) {
-            this.updateRoomsList();
-        } else {
-            this.el.addEventListener('shown.bs.modal',
-                () => this.el.querySelector('input[name="server"]').focus(),
-                false
-            );
-        }
     },
 
     openRoom (ev) {

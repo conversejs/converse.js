@@ -3,7 +3,6 @@ import log from '@converse/headless/log';
 import { _converse, api, converse } from  "@converse/headless/converse-core";
 import { convertASCII2Emoji, getEmojiMarkup, getCodePointReferences, getShortnameReferences } from "@converse/headless/converse-emoji.js";
 import { directive, html } from "lit-html";
-import { isString } from "lodash-es";
 import { until } from 'lit-html/directives/until.js';
 
 const u = converse.env.utils;
@@ -84,6 +83,7 @@ class MessageText extends String {
         // Subtract `/me ` from 3rd person messages
         if (this.isMeCommand()) list[0] = list[0].substring(4);
 
+        const isString = (s) => typeof s === 'string';
         return list.reduce((acc, i) => isString(i) ? [...acc, MessageText.replaceText(i)] : [...acc, i], []);
     }
 }

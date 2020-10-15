@@ -20,7 +20,7 @@ import { OrderedListView } from "@converse/skeletor/src/overview";
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { compact, debounce, has, isString, uniq, without } from "lodash-es";
+import { compact, debounce, has, without } from "lodash-es";
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
@@ -72,7 +72,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             afterRender () {
-                if (api.settings.get('xhr_user_search_url') && isString(api.settings.get('xhr_user_search_url'))) {
+                if (typeof api.settings.get('xhr_user_search_url') === 'string') {
                     this.initXHRAutoComplete();
                 } else {
                     this.initJIDAutoComplete();
@@ -89,7 +89,7 @@ converse.plugins.add('converse-rosterview', {
                 this.jid_auto_complete = new _converse.AutoComplete(el, {
                     'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
                     'filter': _converse.FILTER_STARTSWITH,
-                    'list': uniq(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))
+                    'list': [...new Set(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))]
                 });
             },
 
@@ -172,7 +172,7 @@ converse.plugins.add('converse-rosterview', {
                 const data = new FormData(ev.target),
                       jid = (data.get('jid') || '').trim();
 
-                if (!jid && api.settings.get('xhr_user_search_url') && isString(api.settings.get('xhr_user_search_url'))) {
+                if (!jid && typeof api.settings.get('xhr_user_search_url') === 'string') {
                     const input_el = this.el.querySelector('input[name="name"]');
                     this.xhr.open("GET", `${api.settings.get('xhr_user_search_url')}q=${encodeURIComponent(input_el.value)}`, true);
                     this.xhr.send()
@@ -545,7 +545,7 @@ converse.plugins.add('converse-rosterview', {
             render () {
                 this.el.setAttribute('data-group', this.model.get('name'));
                 this.el.innerHTML = tpl_group_header({
-                    'label_group': __(this.model.get('name')),
+                    'label_group': this.model.get('name'),
                     'desc_group_toggle': this.model.get('description'),
                     'toggle_state': this.model.get('state'),
                     '_converse': _converse

@@ -5,11 +5,9 @@
  */
 import "./converse-status";
 import log from "@converse/headless/log";
-import tpl_vcard from "./templates/vcard.html";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "./converse-core";
-import { has, isString } from "lodash-es";
 
 const { Strophe, $iq, dayjs } = converse.env;
 const u = converse.env.utils;
@@ -31,7 +29,7 @@ converse.plugins.add('converse-vcard', {
                 }
             },
 
-            getFullname (){
+            getFullname () {
                 const { _converse } = this.__super__;
                 const fullname = this.__super__.getFullname.apply(this);
                 if (!fullname && _converse.xmppstatus.vcard) {
@@ -89,7 +87,7 @@ converse.plugins.add('converse-vcard', {
                 } else {
                     (attrs = {})[key] = val;
                 }
-                if (has(attrs, 'image') && !attrs['image']) {
+                if ('image' in attrs && !attrs['image']) {
                     attrs['image'] = _converse.DEFAULT_IMAGE;
                     attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
                     return Model.prototype.set.call(this, attrs, options);
@@ -294,7 +292,19 @@ converse.plugins.add('converse-vcard', {
                     if (!jid) {
                         throw Error("No jid provided for the VCard data");
                     }
-                    const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+                    const div = document.createElement('div');
+                    const vcard_el = u.toStanza(`
+                        <vCard xmlns="vcard-temp">
+                            <FN>${data.fn}</FN>
+                            <NICKNAME>${data.nickname}</NICKNAME>
+                            <URL>${data.url}</URL>
+                            <ROLE>${data.role}</ROLE>
+                            <EMAIL><INTERNET/><PREF/><USERID>${data.email}</USERID></EMAIL>
+                            <PHOTO>
+                                <TYPE>${data.image_type}</TYPE>
+                                <BINVAL>${data.image}</BINVAL>
+                            </PHOTO>
+                        </vCard>`, div);
                     let result;
                     try {
                         result = await api.sendIQ(createStanza("set", jid, vcard_el));
@@ -326,7 +336,7 @@ converse.plugins.add('converse-vcard', {
                  * });
                  */
                  get (model, force) {
-                    if (isString(model)) {
+                    if (typeof model === 'string') {
                         return getVCard(_converse, model);
                     } else if (force ||
                             !model.get('vcard_updated') ||
@@ -360,7 +370,7 @@ converse.plugins.add('converse-vcard', {
                  */
                 async update (model, force) {
                     const data = await this.get(model, force);
-                    model = isString(model) ? _converse.vcards.findWhere({'jid': model}) : model;
+                    model = typeof model === 'string' ? _converse.vcards.findWhere({'jid': model}) : model;
                     if (!model) {
                         log.error(`Could not find a VCard model for ${model}`);
                         return;

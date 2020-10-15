@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const Strophe = converse.env.Strophe;
 const $iq = converse.env.$iq;
@@ -224,7 +224,9 @@ describe("XEP-0363: HTTP File Upload", function () {
 
             describe("when clicked and a file chosen", function () {
 
-                it("is uploaded and sent out", mock.initConverse(async (done, _converse) => {
+                it("is uploaded and sent out", mock.initConverse(
+                        ['rosterGroupsFetched', 'chatBoxesFetched'], {} ,async (done, _converse) => {
+
                     const base_url = 'https://conversejs.org';
                     await mock.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
@@ -316,11 +318,15 @@ describe("XEP-0363: HTTP File Upload", function () {
                                 `</x>`+
                                 `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
-                    await u.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
+                    const img_link_el = await u.waitUntil(() => view.el.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders
-                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(img_link_el.outerHTML.replace(/<!---->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
+
+                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                        `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                        `Download image file "conversejs-filled.svg"</a>`);
                     XMLHttpRequest.prototype.send = send_backup;
                     done();
                 }));
@@ -391,7 +397,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                         u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
                         .then(() => {
                             message.set('progress', 1);
-                            u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1')
+                            u.waitUntil(() => view.el.querySelector('.chat-content progress')?.getAttribute('value') === '1')
                         }).then(() => {
                             message.save({
                                 'upload': _converse.SUCCESS,
@@ -420,11 +426,15 @@ describe("XEP-0363: HTTP File Upload", function () {
                                 `</x>`+
                                 `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
-                    await u.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
+                    const img_link_el = await u.waitUntil(() => view.el.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders
-                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(img_link_el.outerHTML.replace(/<!---->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
+
+                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                        `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                        `Download image file "conversejs-filled.svg"</a>`);
 
                     XMLHttpRequest.prototype.send = send_backup;
                     done();

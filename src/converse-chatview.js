@@ -12,14 +12,14 @@ import log from "@converse/headless/log";
 import tpl_chatbox from "templates/chatbox.js";
 import tpl_chatbox_head from "templates/chatbox_head.js";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.js";
-import tpl_spinner from "templates/spinner.html";
+import tpl_spinner from "templates/spinner.js";
 import tpl_toolbar from "templates/toolbar.js";
 import tpl_user_details_modal from "templates/user_details_modal.js";
 import { BootstrapModal } from "./converse-modal.js";
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { debounce, isString } from "lodash-es";
+import { debounce } from "lodash-es";
 import { html, render } from "lit-html";
 
 
@@ -52,11 +52,12 @@ export const ChatBoxView = View.extend({
     async initialize () {
         this.initDebounced();
 
+        this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
+        this.listenTo(this.model, 'change:hidden', m => m.get('hidden') ? this.hide() : this.show());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model, 'vcard:change', this.renderHeading);
-        this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
 
         if (this.model.contact) {
             this.listenTo(this.model.contact, 'destroy', this.renderHeading);
@@ -73,7 +74,6 @@ export const ChatBoxView = View.extend({
 
         // Need to be registered after render has been called.
         this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-        this.listenTo(this.model.messages, 'change', this.renderChatHistory);
         this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
         this.listenTo(this.model.messages, 'rendered', this.maybeScrollDown);
         this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
@@ -363,7 +363,8 @@ export const ChatBoxView = View.extend({
      *  - An optional message that serves as the cause for needing to scroll down.
      */
     maybeScrollDown (message) {
-        if (message?.get('sender') === 'me' || !this.model.isHidden()) {
+        const new_own_msg = !(message?.get('is_archived')) && message?.get('sender') === 'me';
+        if ((new_own_msg || !this.model.get('scrolled')) && !this.model.isHidden()) {
             this.debouncedScrollDown();
         }
     },
@@ -420,11 +421,12 @@ export const ChatBoxView = View.extend({
 
     addSpinner (append=false) {
         if (this.el.querySelector('.spinner') === null) {
+            const el = u.getElementFromTemplateResult(tpl_spinner());
             if (append) {
-                this.content.insertAdjacentHTML('beforeend', tpl_spinner());
+                this.content.insertAdjacentElement('beforeend', el);
                 this.scrollDown();
             } else {
-                this.content.insertAdjacentHTML('afterbegin', tpl_spinner());
+                this.content.insertAdjacentElement('afterbegin', el);
             }
         }
     },
@@ -450,7 +452,11 @@ export const ChatBoxView = View.extend({
     },
 
     shouldShowOnTextMessage () {
-        return !u.isVisible(this.el);
+        if (_converse.isUniView()) {
+            return false;
+        } else {
+            return !u.isVisible(this.el);
+        }
     },
 
     /**
@@ -996,7 +1002,12 @@ export const ChatBoxView = View.extend({
 
     onScrolledDown () {
         this.hideNewMessagesIndicator();
-        (!this.model.isHidden()) && this.model.clearUnreadMsgCounter();
+        if (!this.model.isHidden()) {
+            this.model.clearUnreadMsgCounter();
+            // Clear location hash if set to one of the messages in our history
+            const hash = window.location.hash;
+            hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
+        }
         /**
          * Triggered once the chat's message area has been scrolled down to the bottom.
          * @event _converse#chatBoxScrolledDown
@@ -1051,7 +1062,7 @@ converse.plugins.add('converse-chatview', {
             'filter_url_query_params': null,
             'image_urls_regex': null,
             'message_limit': 0,
-            'muc_hats_from_vcard': false,
+            'muc_hats': ['xep317'],
             'show_images_inline': true,
             'show_message_avatar': true,
             'show_retraction_warning': true,
@@ -1211,7 +1222,7 @@ converse.plugins.add('converse-chatview', {
                     if (jids === undefined) {
                         return Object.values(_converse.chatboxviews.getAll());
                     }
-                    if (isString(jids)) {
+                    if (typeof jids === 'string') {
                         return _converse.chatboxviews.get(jids);
                     }
                     return jids.map(jid => _converse.chatboxviews.get(jid));

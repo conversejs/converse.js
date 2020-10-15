@@ -22,12 +22,23 @@ export const FILTER_STARTSWITH = function (text, input) {
 };
 
 
-const SORT_BYLENGTH = function (a, b) {
+const SORT_BY_LENGTH = function (a, b) {
     if (a.length !== b.length) {
         return a.length - b.length;
     }
     return a < b? -1 : 1;
 };
+
+const SORT_BY_QUERY_POSITION = function (a, b) {
+    const query = a.query.toLowerCase();
+    const x = a.label.toLowerCase().indexOf(query);
+    const y = b.label.toLowerCase().indexOf(query);
+
+    if (x === y) {
+        return SORT_BY_LENGTH(a, b);
+    }
+    return (x === -1 ? Infinity : x) < (y === -1 ? Infinity : y) ? -1 : 1
+}
 
 
 const ITEM = (text, input) => {
@@ -147,7 +158,7 @@ export class AutoComplete {
             'auto_first': false, // Should the first element be automatically selected?
             'data': a => a,
             'filter': FILTER_CONTAINS,
-            'sort': config.sort === false ? false : SORT_BYLENGTH,
+            'sort': config.sort === false ? false : SORT_BY_QUERY_POSITION,
             'item': ITEM
         }, config);
 

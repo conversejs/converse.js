@@ -60,6 +60,107 @@ describe("The nickname autocomplete feature", function () {
         done();
     }));
 
+    it("shows all autocompletion options when the user presses @ right after a new line",
+        mock.initConverse(
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+        await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
+        const view = _converse.chatboxviews.get('lounge@montague.lit');
+
+        // Nicknames from presences
+        ['dick', 'harry'].forEach((nick) => {
+            _converse.connection._dataRecv(mock.createRequest(
+                $pres({
+                    'to': 'tom@montague.lit/resource',
+                    'from': `lounge@montague.lit/${nick}`
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': `${nick}@montague.lit/resource`,
+                    'role': 'participant'
+                })));
+        });
+
+        // Nicknames from messages
+        const msg = $msg({
+                from: 'lounge@montague.lit/jane',
+                id: u.getUniqueId(),
+                to: 'romeo@montague.lit',
+                type: 'groupchat'
+            }).c('body').t('Hello world').tree();
+        await view.model.handleMessageStanza(msg);
+
+        // Test that pressing @ brings up all options
+        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const at_event = {
+            'target': textarea,
+            'preventDefault': function preventDefault () {},
+            'stopPropagation': function stopPropagation () {},
+            'keyCode': 50,
+            'key': '@'
+        };
+        textarea.value = '\n'
+        view.onKeyDown(at_event);
+        textarea.value = '\n@';
+        view.onKeyUp(at_event);
+
+        await u.waitUntil(() => view.el.querySelectorAll('.suggestion-box__results li').length === 4);
+        expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
+        expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
+        expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
+        expect(view.el.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
+        done();
+    }));
+
+    it("should order by query index position and length", mock.initConverse(
+        ['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
+            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
+            const view = _converse.chatboxviews.get('lounge@montague.lit');
+
+            // Nicknames from presences
+            ['bernard', 'naber', 'helberlo', 'john', 'jones'].forEach((nick) => {
+                _converse.connection._dataRecv(mock.createRequest(
+                    $pres({
+                        'to': 'tom@montague.lit/resource',
+                        'from': `lounge@montague.lit/${nick}`
+                    })
+                        .c('x', { xmlns: Strophe.NS.MUC_USER })
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': `${nick}@montague.lit/resource`,
+                            'role': 'participant'
+                        })));
+            });
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            const at_event = {
+                'target': textarea,
+                'preventDefault': function preventDefault() { },
+                'stopPropagation': function stopPropagation() { },
+                'keyCode': 50,
+                'key': '@'
+            };
+
+            // Test that results are sorted by query index
+            view.onKeyDown(at_event);
+            textarea.value = '@ber';
+            view.onKeyUp(at_event);
+            await u.waitUntil(() => view.el.querySelectorAll('.suggestion-box__results li').length === 3);
+            expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('bernard');
+            expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('naber');
+            expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('helberlo');
+
+            // Test that when the query index is equal, results should be sorted by length
+            textarea.value = '@jo';
+            view.onKeyUp(at_event);
+            await u.waitUntil(() => view.el.querySelectorAll('.suggestion-box__results li').length === 2);
+            expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('john');
+            expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('jones');
+            done();
+    }));
+
     it("autocompletes when the user presses tab",
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {},

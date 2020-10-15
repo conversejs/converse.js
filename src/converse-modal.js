@@ -5,7 +5,6 @@
  */
 import { View } from '@converse/skeletor/src/view.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { isString } from "lodash-es";
 import { render } from 'lit-html';
 import { __ } from './i18n';
 import bootstrap from "bootstrap.native";
@@ -186,7 +185,7 @@ converse.plugins.add('converse-modal', {
              *  filled in fields or `false` if the confirm dialog was closed or canceled.
              */
             async confirm (title, messages=[], fields=[]) {
-                if (isString(messages)) {
+                if (typeof messages === 'string') {
                     messages = [messages];
                 }
                 const model = new Model({title, messages, fields, 'type': 'confirm'})
@@ -212,7 +211,7 @@ converse.plugins.add('converse-modal', {
              *  user or `false` if the user canceled the prompt.
              */
             async prompt (title, messages=[], placeholder='') {
-                if (isString(messages)) {
+                if (typeof messages === 'string') {
                     messages = [messages];
                 }
                 const model = new Model({
@@ -244,7 +243,7 @@ converse.plugins.add('converse-modal', {
              * @param { (String[]|String) } messages - The alert text to show to the user.
              */
             alert (type, title, messages) {
-                if (isString(messages)) {
+                if (typeof messages === 'string') {
                     messages = [messages];
                 }
                 let level;

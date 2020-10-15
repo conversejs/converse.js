@@ -9,7 +9,7 @@ import "./converse-disco";
 import "./converse-emoji";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';
-import { clone, debounce, intersection, invoke, isElement, isObject, isString, pick, uniq, zipObject } from "lodash-es";
+import { debounce, intersection, invoke, isElement, isObject, pick, zipObject } from "lodash-es";
 import { _converse, api, converse } from "./converse-core";
 import log from "./log";
 import muc_utils from "./utils/muc";
@@ -135,7 +135,7 @@ converse.plugins.add('converse-muc', {
         });
         api.promises.add(['roomsAutoJoined']);
 
-        if (api.settings.get('locked_muc_domain') && !isString(api.settings.get('muc_domain'))) {
+        if (api.settings.get('locked_muc_domain') && (typeof api.settings.get('muc_domain') !== 'string')) {
             throw new Error("Config Error: it makes no sense to set locked_muc_domain "+
                             "to true when muc_domain is not set");
         }
@@ -370,7 +370,7 @@ converse.plugins.add('converse-muc', {
                     'num_unread_general': 0,
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'hidden': ['mobile', 'fullscreen'].includes(api.settings.get("view_mode")),
+                    'hidden': _converse.isUniView() && !api.settings.get('singleton'),
                     'message_type': 'groupchat',
                     'name': '',
                     'num_unread': 0,
@@ -440,6 +440,8 @@ converse.plugins.add('converse-muc', {
              * @method _converse.ChatRoom#join
              * @param { String } nick - The user's nickname
              * @param { String } [password] - Optional password, if required by the groupchat.
+             *  Will fall back to the `password` value stored in the room
+             *  model (if available).
              */
             async join (nick, password) {
                 if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
@@ -462,6 +464,7 @@ converse.plugins.add('converse-muc', {
                 }).c("x", {'xmlns': Strophe.NS.MUC})
                   .c("history", {'maxstanzas': this.features.get('mam_enabled') ? 0 : api.settings.get('muc_history_max_stanzas')}).up();
 
+                password = password || this.get('password');
                 if (password) {
                     stanza.cnode(Strophe.xmlElement("password", [], password));
                 }
@@ -1102,8 +1105,9 @@ converse.plugins.add('converse-muc', {
                     'jid': this.get('jid')
                 };
                 if (reason !== null) { attrs.reason = reason; }
-                if (this.get('password')) { attrs.password = this.get('password'); }
-
+                if (this.get('password')) {
+                    attrs.password = this.get('password');
+                }
                 const invitation = $msg({
                     'from': _converse.connection.jid,
                     'to': recipient,
@@ -1372,7 +1376,7 @@ converse.plugins.add('converse-muc', {
              * @returns { Promise }
              */
             setAffiliations (members) {
-                const affiliations = uniq(members.map(m => m.affiliation));
+                const affiliations = [...new Set(members.map(m => m.affiliation))];
                 return Promise.all(affiliations.map(a => this.setAffiliation(a, members)));
             },
 
@@ -1713,7 +1717,7 @@ converse.plugins.add('converse-muc', {
              *  message, as returned by {@link st.parseMUCMessage}
              */
             async handleSubjectChange (attrs) {
-                if (isString(attrs.subject) && !attrs.thread && !attrs.message) {
+                if (typeof attrs.subject === 'string' && !attrs.thread && !attrs.message) {
                     // https://xmpp.org/extensions/xep-0045.html#subject-mod
                     // -----------------------------------------------------
                     // The subject is changed by sending a message of type "groupchat" to the <room@service>,
@@ -2196,6 +2200,7 @@ converse.plugins.add('converse-muc', {
                     data.reason = item ? item.querySelector('reason')?.textContent : undefined;
                     data.message = this.getActionInfoMessage(code, nick, data.actor);
                 } else if (is_self && (code in _converse.muc.new_nickname_messages)) {
+                    // XXX: Side-effect of setting the nick. Should ideally be refactored out of this method
                     let nick;
                     if (is_self && code === "210") {
                         nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
@@ -2363,13 +2368,17 @@ converse.plugins.add('converse-muc', {
              */
             onOwnPresence (stanza) {
                 if (stanza.getAttribute('type') !== 'unavailable') {
-                    // Set connection_status before creating the occupant, but
-                    // only trigger afterwards, so that plugins can access the
-                    // occupant in their event handlers.
                     const old_status = this.session.get('connection_status');
-                    this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, {'silent': true});
-                    this.updateOccupantsOnPresence(stanza);
-                    this.session.trigger('change:connection_status', this.session, old_status);
+                    if (old_status !== converse.ROOMSTATUS.ENTERED) {
+                        // Set connection_status before creating the occupant, but
+                        // only trigger afterwards, so that plugins can access the
+                        // occupant in their event handlers.
+                        this.session.save('connection_status', converse.ROOMSTATUS.ENTERED, {'silent': true});
+                        this.updateOccupantsOnPresence(stanza);
+                        this.session.trigger('change:connection_status', this.session, old_status);
+                    } else {
+                        this.updateOccupantsOnPresence(stanza);
+                    }
                 } else {
                     this.updateOccupantsOnPresence(stanza);
                 }
@@ -2679,26 +2688,19 @@ converse.plugins.add('converse-muc', {
             api.listen.on('reconnected', registerDirectInvitationHandler);
         }
 
-        const createChatRoom = function (jid, attrs) {
-            if (jid.startsWith('xmpp:') && jid.endsWith('?join')) {
-                jid = jid.replace(/^xmpp:/, '').replace(/\?join$/, '');
-            }
-            return api.rooms.get(jid, attrs, true);
-        };
-
         /* Automatically join groupchats, based on the
          * "auto_join_rooms" configuration setting, which is an array
          * of strings (groupchat JIDs) or objects (with groupchat JID and other settings).
          */
         async function autoJoinRooms () {
             await Promise.all(api.settings.get('auto_join_rooms').map(muc => {
-                if (isString(muc)) {
+                if (typeof muc === 'string') {
                     if (_converse.chatboxes.where({'jid': muc}).length) {
                         return Promise.resolve();
                     }
                     return api.rooms.open(muc);
                 } else if (isObject(muc)) {
-                    return api.rooms.open(muc.jid, clone(muc));
+                    return api.rooms.open(muc.jid, {...muc});
                 } else {
                     log.error('Invalid muc criteria specified for "auto_join_rooms"');
                     return Promise.resolve();
@@ -2811,16 +2813,16 @@ converse.plugins.add('converse-muc', {
                  * @returns {Promise} Promise which resolves with the Model representing the chat.
                  */
                 create (jids, attrs={}) {
-                    attrs = isString(attrs) ? {'nick': attrs} : (attrs || {});
+                    attrs = typeof attrs === 'string' ? {'nick': attrs} : (attrs || {});
                     if (!attrs.nick && api.settings.get('muc_nickname_from_jid')) {
                         attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                     }
                     if (jids === undefined) {
                         throw new TypeError('rooms.create: You need to provide at least one JID');
-                    } else if (isString(jids)) {
-                        return createChatRoom(jids, attrs);
+                    } else if (typeof jids === 'string') {
+                        return api.rooms.get(u.getJIDFromURI(jids), attrs, true);
                     }
-                    return jids.map(jid => createChatRoom(jid, attrs));
+                    return jids.map(jid => api.rooms.get(u.getJIDFromURI(jid), attrs, true));
                 },
 
                 /**
@@ -2888,12 +2890,12 @@ converse.plugins.add('converse-muc', {
                         const err_msg = 'rooms.open: You need to provide at least one JID';
                         log.error(err_msg);
                         throw(new TypeError(err_msg));
-                    } else if (isString(jids)) {
-                        const room = await api.rooms.create(jids, attrs);
+                    } else if (typeof jids === 'string') {
+                        const room = await api.rooms.get(jids, attrs, true);
                         room && room.maybeShow(force);
                         return room;
                     } else {
-                        const rooms = await Promise.all(jids.map(jid => api.rooms.create(jid, attrs)));
+                        const rooms = await Promise.all(jids.map(jid => api.rooms.get(jid, attrs, true)));
                         rooms.forEach(r => r.maybeShow(force));
                         return rooms;
                     }
@@ -2904,12 +2906,8 @@ converse.plugins.add('converse-muc', {
                  *
                  * @method api.rooms.get
                  * @param {string} [jid] The room JID (if not specified, all rooms will be returned).
-                 * @param {object} attrs A map containing any extra room attributes For example, if you want
-                 *     to specify the nickname, use `{'nick': 'bloodninja'}`. Previously (before
-                 *     version 1.0.7, the second parameter only accepted the nickname (as a string
-                 *     value). This is currently still accepted, but then you can't pass in any
-                 *     other room attributes. If the nickname is not specified then the node part of
-                 *     the user's JID will be used.
+                 * @param {object} [attrs] A map containing any extra room attributes For example, if you want
+                 *     to specify a nickname and password, use `{'nick': 'bloodninja', 'password': 'secret'}`.
                  * @param {boolean} create A boolean indicating whether the room should be created
                  *     if not found (default: `false`)
                  * @returns { Promise<_converse.ChatRoom> }
@@ -2925,6 +2923,7 @@ converse.plugins.add('converse-muc', {
                  */
                 async get (jids, attrs={}, create=false) {
                     async function _get (jid) {
+                        jid = u.getJIDFromURI(jid);
                         let model = await api.chatboxes.get(jid);
                         if (!model && create) {
                             model = await api.chatboxes.create(jid, attrs, _converse.ChatRoom);
@@ -2939,7 +2938,7 @@ converse.plugins.add('converse-muc', {
                     if (jids === undefined) {
                         const chats = await api.chatboxes.get();
                         return chats.filter(c => (c.get('type') === _converse.CHATROOMS_TYPE));
-                    } else if (isString(jids)) {
+                    } else if (typeof jids === 'string') {
                         return _get(jids);
                     }
                     return Promise.all(jids.map(jid => _get(jid)));
@@ -2949,5 +2948,3 @@ converse.plugins.add('converse-muc', {
         /************************ END API ************************/
     }
 });
-
-

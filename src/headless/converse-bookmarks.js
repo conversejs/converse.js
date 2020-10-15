@@ -14,6 +14,7 @@ import { _converse, api, converse } from "@converse/headless/converse-core";
 const { Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
 
+Strophe.addNamespace('BOOKMARKS', 'storage:bookmarks');
 
 converse.plugins.add('converse-bookmarks', {
 
@@ -116,7 +117,10 @@ converse.plugins.add('converse-bookmarks', {
 
             async openBookmarkedRoom (bookmark) {
                 if ( api.settings.get('muc_respect_autojoin') && bookmark.get('autojoin')) {
-                    const groupchat = await api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                    const groupchat = await api.rooms.create(
+                        bookmark.get('jid'),
+                        {'nick': bookmark.get('nick')}
+                    );
                     groupchat.maybeShow();
                 }
                 return bookmark;
@@ -286,6 +290,12 @@ converse.plugins.add('converse-bookmarks', {
                 api.trigger('bookmarksInitialized');
             }
         }
+
+        api.listen.on('addClientFeatures', () => { 
+            if (api.settings.get('allow_bookmarks')) {
+                api.disco.own.features.add(Strophe.NS.BOOKMARKS + '+notify')
+            }
+        })
 
         api.listen.on('clearSession', () => {
             if (_converse.bookmarks !== undefined) {

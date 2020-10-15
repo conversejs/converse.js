@@ -18,6 +18,70 @@ describe("Message Archive Management", function () {
 
     describe("The XEP-0313 Archive", function () {
 
+
+        it("is queried when the user scrolls up",
+                mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (done, _converse) {
+
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
+            const sent_IQs = _converse.connection.IQ_stanzas;
+            let stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            const queryid = stanza.querySelector('query').getAttribute('queryid');
+            let msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
+                        .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                            .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                .c('message', {
+                                    'xmlns':'jabber:client',
+                                    'to': _converse.bare_jid,
+                                    'id': _converse.connection.getUniqueId(),
+                                    'from': contact_jid,
+                                    'type':'chat'
+                                }).c('body').t("Meet me at the dance");
+            _converse.connection._dataRecv(mock.createRequest(msg));
+
+            msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
+                        .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                            .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                .c('message', {
+                                    'xmlns':'jabber:client',
+                                    'to': _converse.bare_jid,
+                                    'id': _converse.connection.getUniqueId(),
+                                    'from': contact_jid,
+                                    'type':'chat'
+                                }).c('body').t("Thrice the brinded cat hath mew'd.");
+            _converse.connection._dataRecv(mock.createRequest(msg));
+
+            const iq_result = $iq({'type': 'result', 'id': stanza.getAttribute('id')})
+                .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
+                    .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
+                        .c('first', {'index': '0'}).t('23452-4534-1').up()
+                        .c('last').t('09af3-cc343-b409f').up()
+                        .c('count').t('16');
+            _converse.connection._dataRecv(mock.createRequest(iq_result));
+
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            expect(view.model.messages.length).toBe(2);
+
+            while (sent_IQs.length) { sent_IQs.pop(); }
+            _converse.api.trigger('chatBoxScrolledUp', view);
+            stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            expect(Strophe.serialize(stanza)).toBe(
+                `<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                    `<query queryid="${stanza.querySelector('query').getAttribute('queryid')}" xmlns="urn:xmpp:mam:2">`+
+                    `<x type="submit" xmlns="jabber:x:data">`+
+                        `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field><field var="with"><value>mercutio@montague.lit</value></field>`+
+                    `</x>`+
+                    `<set xmlns="http://jabber.org/protocol/rsm"><before>${view.model.messages.at(0).get('stanza_id romeo@montague.lit')}</before><max>2</max></set></query>`+
+                `</iq>`
+            );
+            done();
+        }));
+
         it("is queried when the user enters a new MUC",
                 mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (done, _converse) {
 
@@ -32,7 +96,7 @@ describe("Message Archive Management", function () {
                         `<x type="submit" xmlns="jabber:x:data">`+
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>2</max></set>`+
                     `</query>`+
                 `</iq>`);
 
@@ -105,7 +169,7 @@ describe("Message Archive Management", function () {
                         `<x type="submit" xmlns="jabber:x:data">`+
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max><after>${message.querySelector('result').getAttribute('id')}</after></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><after>${message.querySelector('result').getAttribute('id')}</after><max>2</max></set>`+
                     `</query>`+
                 `</iq>`);
 
@@ -165,7 +229,8 @@ describe("Message Archive Management", function () {
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                         `</x>`+
                         `<set xmlns="http://jabber.org/protocol/rsm">`+
-                            `<max>2</max><after>${last_msg_id}</after>`+
+                            `<after>${last_msg_id}</after>`+
+                            `<max>2</max>`+
                         `</set>`+
                     `</query>`+
                 `</iq>`);
@@ -264,6 +329,60 @@ describe("Message Archive Management", function () {
                 done();
             }));
 
+            it("is not discarded if it comes from the right sender",
+                mock.initConverse(
+                    ['discoInitialized'], {},
+                    async function (done, _converse) {
+
+                await mock.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+                await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
+                const sent_IQs = _converse.connection.IQ_stanzas;
+                const stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+                const queryid = stanza.querySelector('query').getAttribute('queryid');
+                let msg = $msg({'id': _converse.connection.getUniqueId(), 'from': _converse.bare_jid, 'to': _converse.bare_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to': _converse.bare_jid,
+                                        'id': _converse.connection.getUniqueId(),
+                                        'from': contact_jid,
+                                        'type':'chat'
+                                    }).c('body').t("Meet me at the dance");
+                spyOn(converse.env.log, 'warn');
+                _converse.connection._dataRecv(mock.createRequest(msg));
+
+                msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to': _converse.bare_jid,
+                                        'id': _converse.connection.getUniqueId(),
+                                        'from': contact_jid,
+                                        'type':'chat'
+                                    }).c('body').t("Thrice the brinded cat hath mew'd.");
+                _converse.connection._dataRecv(mock.createRequest(msg));
+
+                const iq_result = $iq({'type': 'result', 'id': stanza.getAttribute('id')})
+                    .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
+                        .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
+                            .c('first', {'index': '0'}).t('23452-4534-1').up()
+                            .c('last').t('09af3-cc343-b409f').up()
+                            .c('count').t('16');
+                _converse.connection._dataRecv(mock.createRequest(iq_result));
+
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
+                expect(view.model.messages.length).toBe(2);
+                expect(view.model.messages.at(0).get('message')).toBe("Meet me at the dance");
+                expect(view.model.messages.at(1).get('message')).toBe("Thrice the brinded cat hath mew'd.");
+                done();
+            }));
 
             it("updates the is_archived value of an already cached version",
                 mock.initConverse(
@@ -418,8 +537,8 @@ describe("Message Archive Management", function () {
             });
             _converse.api.archive.query();
             await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-            expect(sent_stanza.toString()).toBe(
+            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${IQ_id}" type="set" xmlns="jabber:client"><query queryid="${queryid}" xmlns="urn:xmpp:mam:2"/></iq>`);
             done();
         }));
@@ -436,8 +555,8 @@ describe("Message Archive Management", function () {
             });
             _converse.api.archive.query({'with':'juliet@capulet.lit'});
             await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-            expect(sent_stanza.toString()).toBe(
+            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                     `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
                         `<x type="submit" xmlns="jabber:x:data">`+
@@ -564,8 +683,8 @@ describe("Message Archive Management", function () {
                 'end': end
             });
             await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-            expect(sent_stanza.toString()).toBe(
+            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                     `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
                         `<x type="submit" xmlns="jabber:x:data">`+
@@ -613,8 +732,8 @@ describe("Message Archive Management", function () {
             const start = '2010-06-07T00:00:00Z';
             _converse.api.archive.query({'start': start});
             await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-            expect(sent_stanza.toString()).toBe(
+            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                     `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
                         `<x type="submit" xmlns="jabber:x:data">`+
@@ -644,8 +763,8 @@ describe("Message Archive Management", function () {
             const start = '2010-06-07T00:00:00Z';
             _converse.api.archive.query({'start': start, 'max':10});
             await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-            expect(sent_stanza.toString()).toBe(
+            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                     `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
                         `<x type="submit" xmlns="jabber:x:data">`+
@@ -682,8 +801,8 @@ describe("Message Archive Management", function () {
                 'max':10
             });
             await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-            expect(sent_stanza.toString()).toBe(
+            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                     `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
                         `<x type="submit" xmlns="jabber:x:data">`+
@@ -695,8 +814,8 @@ describe("Message Archive Management", function () {
                             `</field>`+
                         `</x>`+
                         `<set xmlns="http://jabber.org/protocol/rsm">`+
-                            `<max>10</max>`+
                             `<after>09af3-cc343-b409f</after>`+
+                            `<max>10</max>`+
                         `</set>`+
                     `</query>`+
                 `</iq>`);
@@ -715,8 +834,8 @@ describe("Message Archive Management", function () {
             });
             _converse.api.archive.query({'before': '', 'max':10});
             await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-            expect(sent_stanza.toString()).toBe(
+            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                     `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
                         `<x type="submit" xmlns="jabber:x:data">`+
@@ -725,49 +844,7 @@ describe("Message Archive Management", function () {
                             `</field>`+
                         `</x>`+
                         `<set xmlns="http://jabber.org/protocol/rsm">`+
-                            `<max>10</max>`+
                             `<before></before>`+
-                        `</set>`+
-                    `</query>`+
-                `</iq>`);
-            done();
-       }));
-
-       it("accepts a _converse.RSM object for the query options",
-                mock.initConverse([], {}, async function (done, _converse) {
-
-            await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
-            let sent_stanza, IQ_id;
-            const sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
-            // Normally the user wouldn't manually make a _converse.RSM object
-            // and pass it in. However, in the callback method an RSM object is
-            // returned which can be reused for easy paging. This test is
-            // more for that usecase.
-            const rsm =  new _converse.RSM({'max': '10'});
-            rsm['with'] = 'romeo@montague.lit'; // eslint-disable-line dot-notation
-            rsm.start = '2010-06-07T00:00:00Z';
-            _converse.api.archive.query(rsm);
-            await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-            expect(sent_stanza.toString()).toBe(
-                `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
-                    `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
-                        `<x type="submit" xmlns="jabber:x:data">`+
-                            `<field type="hidden" var="FORM_TYPE">`+
-                                `<value>urn:xmpp:mam:2</value>`+
-                            `</field>`+
-                            `<field var="with">`+
-                                `<value>romeo@montague.lit</value>`+
-                            `</field>`+
-                            `<field var="start">`+
-                                `<value>${dayjs(rsm.start).toISOString()}</value>`+
-                            `</field>`+
-                        `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm">`+
                             `<max>10</max>`+
                         `</set>`+
                     `</query>`+
@@ -787,7 +864,7 @@ describe("Message Archive Management", function () {
             });
             const promise = _converse.api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'});
             await u.waitUntil(() => sent_stanza);
-            const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
+            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
 
             /*  <message id='aeb213' to='juliet@capulet.lit/chamber'>
              *  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='28482-98726-73623'>
@@ -850,11 +927,10 @@ describe("Message Archive Management", function () {
             expect(result.messages.length).toBe(2);
             expect(result.messages[0].outerHTML).toBe(msg1.nodeTree.outerHTML);
             expect(result.messages[1].outerHTML).toBe(msg2.nodeTree.outerHTML);
-            expect(result.rsm['with']).toBe('romeo@capulet.lit'); // eslint-disable-line dot-notation
-            expect(result.rsm.max).toBe('10');
-            expect(result.rsm.count).toBe('16');
-            expect(result.rsm.first).toBe('23452-4534-1');
-            expect(result.rsm.last).toBe('09af3-cc343-b409f');
+            expect(result.rsm.query.max).toBe('10');
+            expect(result.rsm.result.count).toBe(16);
+            expect(result.rsm.result.first).toBe('23452-4534-1');
+            expect(result.rsm.result.last).toBe('09af3-cc343-b409f');
             done()
        }));
     });
@@ -953,16 +1029,16 @@ describe("Chatboxes", function () {
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
             await u.waitUntil(() => sent_stanza);
-            const stanza_el = sent_stanza.root().nodeTree;
+            const stanza_el = sent_stanza;
             const queryid = stanza_el.querySelector('query').getAttribute('queryid');
-            expect(sent_stanza.toString()).toBe(
+            expect(Strophe.serialize(sent_stanza)).toBe(
                 `<iq id="${stanza_el.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                     `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
                         `<x type="submit" xmlns="jabber:x:data">`+
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                             `<field var="with"><value>mercutio@montague.lit</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>`+
                     `</query>`+
                 `</iq>`
             );
@@ -1033,7 +1109,7 @@ describe("Chatboxes", function () {
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                             `<field var="with"><value>mercutio@montague.lit</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>`+
                     `</query>`+
                 `</iq>`);
 
@@ -1058,7 +1134,7 @@ describe("Chatboxes", function () {
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                             `<field var="with"><value>mercutio@montague.lit</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>`+
                     `</query>`+
                 `</iq>`);
 

@@ -1,5 +1,8 @@
 /* global mock, converse */
 
+const Strophe = converse.env.Strophe;
+
+
 describe("A chat room", function () {
 
     it("can be bookmarked", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
@@ -19,7 +22,7 @@ describe("A chat room", function () {
         spyOn(_converse.connection, 'getUniqueId').and.callThrough();
 
         await mock.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
-        var jid = 'theplay@conference.shakespeare.lit';
+        const jid = 'theplay@conference.shakespeare.lit';
         const view = _converse.chatboxviews.get(jid);
         spyOn(view, 'renderBookmarkForm').and.callThrough();
         spyOn(view, 'closeForm').and.callThrough();
@@ -78,7 +81,7 @@ describe("A chat room", function () {
         view.el.querySelector('.btn-primary').click();
 
         await u.waitUntil(() => sent_stanza);
-        expect(sent_stanza.toLocaleString()).toBe(
+        expect(Strophe.serialize(sent_stanza)).toBe(
             `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="set" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                     `<publish node="storage:bookmarks">`+

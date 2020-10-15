@@ -458,7 +458,7 @@ describe("Groupchats", function () {
                         `<x type="submit" xmlns="jabber:x:data">`+
                             `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
                         `</x>`+
-                        `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><before></before><max>50</max></set>`+
                     `</query>`+
                 `</iq>`);
 
@@ -1496,7 +1496,7 @@ describe("Groupchats", function () {
              *  <query xmlns='http://jabber.org/protocol/muc#owner'/>
              *  </iq>
              */
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="`+IQ_id+`" to="coven@chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#owner"/>`+
                 `</iq>`);
@@ -1645,11 +1645,10 @@ describe("Groupchats", function () {
 
             view.el.querySelector('.chatroom-form input[type="submit"]').click();
 
-            const sent_stanza = sent_IQ.nodeTree;
-            expect(sent_stanza.querySelector('field[var="muc#roomconfig_membersonly"] value').textContent.trim()).toBe('1');
-            expect(sent_stanza.querySelector('field[var="muc#roomconfig_moderatedroom"] value').textContent.trim()).toBe('1');
-            expect(sent_stanza.querySelector('field[var="muc#roomconfig_allowpm"] value').textContent.trim()).toBe('moderators');
-            expect(sent_stanza.querySelector('field[var="muc#roomconfig_presencebroadcast"] value').textContent.trim()).toBe('moderator');
+            expect(sent_IQ.querySelector('field[var="muc#roomconfig_membersonly"] value').textContent.trim()).toBe('1');
+            expect(sent_IQ.querySelector('field[var="muc#roomconfig_moderatedroom"] value').textContent.trim()).toBe('1');
+            expect(sent_IQ.querySelector('field[var="muc#roomconfig_allowpm"] value').textContent.trim()).toBe('moderators');
+            expect(sent_IQ.querySelector('field[var="muc#roomconfig_presencebroadcast"] value').textContent.trim()).toBe('moderator');
             done();
         }));
 
@@ -3433,7 +3432,7 @@ describe("Groupchats", function () {
             expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
             expect(view.model.setAffiliation).toHaveBeenCalled();
             // Check that the member list now gets updated
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                         `<item affiliation="owner" jid="annoyingguy@montague.lit">`+
@@ -3513,7 +3512,7 @@ describe("Groupchats", function () {
             expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setAffiliation).toHaveBeenCalled();
             // Check that the member list now gets updated
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                         `<item affiliation="outcast" jid="annoyingguy@montague.lit">`+
@@ -3612,7 +3611,7 @@ describe("Groupchats", function () {
 
             expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setRole).toHaveBeenCalled();
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                         `<item nick="annoying guy" role="none">`+
@@ -3717,7 +3716,7 @@ describe("Groupchats", function () {
 
             expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setRole).toHaveBeenCalled();
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                         `<item nick="trustworthyguy" role="moderator">`+
@@ -3761,7 +3760,7 @@ describe("Groupchats", function () {
 
             expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
             expect(view.model.setRole).toHaveBeenCalled();
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                         `<item nick="trustworthyguy" role="participant">`+
@@ -3857,7 +3856,7 @@ describe("Groupchats", function () {
 
             expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
             expect(view.model.setRole).toHaveBeenCalled();
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                         `<item nick="annoyingGuy" role="visitor">`+
@@ -3898,7 +3897,7 @@ describe("Groupchats", function () {
 
             expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
             expect(view.model.setRole).toHaveBeenCalled();
-            expect(sent_IQ.toLocaleString()).toBe(
+            expect(Strophe.serialize(sent_IQ)).toBe(
                 `<iq id="${IQ_id}" to="lounge@montague.lit" type="set" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                         `<item nick="annoyingGuy" role="participant">`+
@@ -4190,6 +4189,7 @@ describe("Groupchats", function () {
                 .toBe('Please choose your nickname');
 
             const input = sizzle('.chatroom-body form.chatroom-form input:first', view.el).pop();
+            expect(input.value).toBe('romeo');
             input.value = 'nicky';
             view.el.querySelector('input[type=submit]').click();
             done();
@@ -5453,7 +5453,7 @@ describe("Groupchats", function () {
             expect(Strophe.serialize(probe)).toBe(
                 `<presence to="${muc_jid}/ralphm" type="probe" xmlns="jabber:client">`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
 
             let presence = u.toStanza(
@@ -5485,7 +5485,7 @@ describe("Groupchats", function () {
             expect(Strophe.serialize(probe)).toBe(
                 `<presence to="${muc_jid}/gonePhising" type="probe" xmlns="jabber:client">`+
                     `<priority>0</priority>`+
-                    `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
 
             presence = u.toStanza(

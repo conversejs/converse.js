@@ -210,9 +210,10 @@ export default class AdHocCommands extends CustomElement {
 
         const cmd = this.commands.filter(c => c.node === node)[0];
         const inputs = sizzle(':input:not([type=button]):not([type=submit])', ev.target);
-        const configArray = inputs
+        const config_array = inputs
             .filter(i => !['command_jid', 'command_node'].includes(i.getAttribute('name')))
-            .map(u.webForm2xForm);
+            .map(u.webForm2xForm)
+            .filter(n => n);
 
         const iq = $iq({to: jid, type: "set"})
             .c("command", {
@@ -220,7 +221,7 @@ export default class AdHocCommands extends CustomElement {
                 'node': cmd.node,
                 'xmlns': Strophe.NS.ADHOC
             }).c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
-        configArray.forEach(node => iq.cnode(node).up());
+        config_array.forEach(node => iq.cnode(node).up());
 
         let result;
         try {

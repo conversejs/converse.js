@@ -5,7 +5,7 @@
  */
 import * as strophe from 'strophe.js/src/core';
 import { Model } from '@converse/skeletor/src/model.js';
-import { compact, last, isElement, isObject, isString } from "lodash-es";
+import { compact, last, isElement, isObject } from "lodash-es";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
 
@@ -33,6 +33,12 @@ u.isTagEqual = function (stanza, name) {
 const parser = new DOMParser();
 const parserErrorNS = parser.parseFromString('invalid', 'text/xml')
                             .getElementsByTagName("parsererror")[0].namespaceURI;
+
+u.getJIDFromURI = function (jid) {
+    return jid.startsWith('xmpp:') && jid.endsWith('?join')
+        ? jid.replace(/^xmpp:/, '').replace(/\?join$/, '')
+        : jid;
+}
 
 u.toStanza = function (string) {
     const node = parser.parseFromString(string, "text/xml");
@@ -71,7 +77,7 @@ u.prefixMentions = function (message) {
 };
 
 u.isValidJID = function (jid) {
-    if (isString(jid)) {
+    if (typeof jid === 'string') {
         return compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     }
     return false;
@@ -82,7 +88,7 @@ u.isValidMUCJID = function (jid) {
 };
 
 u.isSameBareJID = function (jid1, jid2) {
-    if (!isString(jid1) || !isString(jid2)) {
+    if (typeof jid1 !== 'string' || typeof jid2 !== 'string') {
         return false;
     }
     return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
@@ -91,7 +97,7 @@ u.isSameBareJID = function (jid1, jid2) {
 
 
 u.isSameDomain = function (jid1, jid2) {
-    if (!isString(jid1) || !isString(jid2)) {
+    if (typeof jid1 !== 'string' || typeof jid2 !== 'string') {
         return false;
     }
     return Strophe.getDomainFromJid(jid1).toLowerCase() ===
@@ -193,7 +199,7 @@ u.isServiceUnavailableError = function (stanza) {
 /**
  * Merge the second object into the first one.
  * @private
- * @method u#stringToNode
+ * @method u#merge
  * @param { Object } first
  * @param { Object } second
  */
@@ -205,20 +211,6 @@ u.merge = function merge (first, second) {
             first[k] = second[k];
         }
     }
-};
-
-/**
- * Converts an HTML string into a DOM Node.
- * Expects that the HTML string has only one top-level element,
- * i.e. not multiple ones.
- * @private
- * @method u#stringToNode
- * @param { String } s - The HTML string
- */
-u.stringToNode = function (s) {
-    var div = document.createElement('div');
-    div.innerHTML = s;
-    return div.firstElementChild;
 };
 
 u.getOuterWidth = function (el, include_margin=false) {
@@ -426,7 +418,7 @@ u.getCurrentWord = function (input, index, delineator) {
     if (!index) {
         index = input.selectionEnd || undefined;
     }
-    let [word] = input.value.slice(0, index).split(' ').slice(-1);
+    let [word] = input.value.slice(0, index).split(/\s/).slice(-1);
     if (delineator) {
         [word] = word.split(delineator).slice(-1);
     }

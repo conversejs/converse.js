@@ -1,8 +1,0 @@
-<div class="alert alert-danger">
-    <h3 class="alert-heading disconnect-msg">{{{o.__('This groupchat no longer exists')}}}</h3>
-    <p class="destroyed-reason">{{{o.reason}}}</p>
-    {[ if (o.jid) { ]}
-        <p class="moved-label">{{{o.__('The conversation has moved. Click below to enter.') }}}</p>
-        <p class="moved-link"><a class="switch-chat" href="#">{{{o.jid}}}</a></p>
-    {[ } ]}
-</div>

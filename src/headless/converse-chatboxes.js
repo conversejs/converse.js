@@ -6,7 +6,6 @@
 import "./converse-emoji";
 import { Collection } from "@converse/skeletor/src/collection";
 import { _converse, api, converse } from "./converse-core";
-import { isString } from "lodash-es";
 import log from "./log";
 
 const { Strophe } = converse.env;
@@ -153,7 +152,7 @@ converse.plugins.add('converse-chatboxes', {
                  */
                 async create (jids=[], attrs={}, model) {
                     await api.waitUntil('chatBoxesFetched');
-                    if (isString(jids)) {
+                    if (typeof jids === 'string') {
                         return createChatBox(jids, attrs, model);
                     } else {
                         return Promise.all(jids.map(jid => createChatBox(jid, attrs, model)));
@@ -168,7 +167,7 @@ converse.plugins.add('converse-chatboxes', {
                     await api.waitUntil('chatBoxesFetched');
                     if (jids === undefined) {
                         return _converse.chatboxes.models;
-                    } else if (isString(jids)) {
+                    } else if (typeof jids === 'string') {
                         return _converse.chatboxes.get(jids.toLowerCase());
                     } else {
                         jids = jids.map(j => j.toLowerCase());

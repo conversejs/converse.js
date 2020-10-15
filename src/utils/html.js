@@ -20,7 +20,7 @@ import tpl_select_option from "../templates/select_option.html";
 import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
 import { api } from  "@converse/headless/converse-core";
-import { html } from "lit-html";
+import { html, render } from "lit-html";
 import { isFunction } from "lodash-es";
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
@@ -115,10 +115,11 @@ function renderAudioURL (_converse, uri) {
 }
 
 function renderImageURL (_converse, uri) {
-    if (!_converse.api.settings.get('show_images_inline')) {
-        return u.convertURIoHyperlink(uri);
-    }
-    return tpl_image({'url': uri.toString()});
+    const { __ } = _converse;
+    return tpl_file({
+        'url': uri.toString(),
+        'label_download': __('Download image file "%1$s"', getFileName(uri))
+    })
 }
 
 function renderFileURL (_converse, uri) {
@@ -177,10 +178,14 @@ u.applyDragResistance = function (value, default_value) {
 };
 
 
+/**
+ * Return the height of the passed in DOM element,
+ * based on the heights of its children.
+ * @method u#calculateElementHeight
+ * @param {HTMLElement} el
+ * @returns {integer}
+ */
 u.calculateElementHeight = function (el) {
-    /* Return the height of the passed in DOM element,
-     * based on the heights of its children.
-     */
     return Array.from(el.children).reduce((result, child) => result + child.offsetHeight, 0);
 }
 
@@ -250,6 +255,12 @@ u.removeClass = function (className, el) {
 u.removeElement = function (el) {
     (el instanceof Element) && el.parentNode && el.parentNode.removeChild(el);
     return el;
+}
+
+u.getElementFromTemplateResult = function (tr) {
+    const div = document.createElement('div');
+    render(tr, div);
+    return div.firstElementChild;
 }
 
 u.showElement = el => {

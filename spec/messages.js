@@ -344,8 +344,7 @@ describe("A Chat Message", function () {
             keyCode: 13 // Enter
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-
-        expect(textarea.value).toBe('');
+        await u.waitUntil(() => textarea.value === '');
         const messages = view.el.querySelectorAll('.chat-msg');
         expect(messages.length).toBe(3);
         expect(messages[0].querySelector('.chat-msg__text').textContent)
@@ -1590,9 +1589,9 @@ describe("A Chat Message", function () {
                     .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                         .t('Something else went wrong as well');
                 _converse.connection._dataRecv(mock.createRequest(stanza));
-                await u.waitUntil(() => view.model.messages.length > 3);
+                await u.waitUntil(() => view.model.messages.length > 2);
                 await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                expect(view.content.querySelectorAll('.chat-error').length).toEqual(1);
+                expect(view.content.querySelectorAll('.chat-msg__error').length).toEqual(3);
 
                 // Ensure messages with error are not editable
                 document.querySelectorAll('.chat-msg__actions').forEach(elem => {
@@ -1638,6 +1637,9 @@ describe("A Chat Message", function () {
                             .t('User session not found')
                 _converse.connection._dataRecv(mock.createRequest(stanza));
                 const view = _converse.chatboxviews.get(contact_jid);
+                const msg_text = 'This message will show!';
+                await view.model.sendMessage(msg_text);
+                await new Promise(resolve => view.model.messages.once('rendered', resolve));
                 expect(view.content.querySelectorAll('.chat-error').length).toEqual(0);
                 done();
             }));
@@ -1877,15 +1879,16 @@ describe("A Chat Message", function () {
                     <x xmlns="jabber:x:oob"><url>${url}</url></x>
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg img').length, 2000);
-
+            _converse.connection._dataRecv(mock.createRequest(stanza));
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg a').length, 1000);
             const msg = view.el.querySelector('.chat-msg .chat-msg__text');
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you seen this funny image?');
             const media = view.el.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
-                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
+                `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
+                `Download image file "conversejs-filled.svg"</a>`);
             done();
         }));
     });

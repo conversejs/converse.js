@@ -4,7 +4,7 @@ import { BaseDropdown } from "./dropdown.js";
 import { CustomElement } from './element.js';
 import { __ } from '../i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
-import { debounce, find } from "lodash-es";
+import { debounce } from "lodash-es";
 import { html } from "lit-element";
 import { tpl_emoji_picker } from "../templates/emoji_picker.js";
 import { until } from 'lit-html/directives/until.js';
@@ -177,7 +177,7 @@ export default class EmojiPicker extends CustomElement {
         if (ev.keyCode === converse.keycodes.TAB) {
             if (ev.target.value) {
                 ev.preventDefault();
-                const match = find(converse.emojis.shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
+                const match = converse.emojis.shortnames.find(sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
                 match && this.model.set({'query': match});
             } else if (!this.navigator.enabled) {
                 this.enableArrowNavigation(ev);

@@ -214,12 +214,20 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
             references = [...references, ...block_reference];
           }
         }
-      } // REGULAR TEXT
+      } // PLAIN
       else if (!blockIsOpened(blocks, "PREFORMATED")) {
         local_offset = line_space_offsets[index] + line_offsets[index];
-        if (local_offset !== 0 && index !== first_line_index) {
-          block_reference = applyLineBlankReference(line, offset, local_offset);
-          references = [...references, block_reference];
+        if (local_offset !== 0) {
+            if (index === first_line_index) {
+                if (line[local_offset] === ' ') {
+                    references = [...references, { type: "BLANK", begin: local_offset, end: local_offset + 1}];
+                    local_offset = local_offset + 1;
+                }
+            } else {
+                block_reference = applyLineBlankReference(line, offset, local_offset, true);
+                references = [...references, block_reference];
+                if (line[local_offset] === ' ') local_offset = local_offset + 1;
+            }
         }
         references = [...references, ...getLineSpans(line, offset, local_offset)];
       }
@@ -231,11 +239,14 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
 
 function applyLineBlankReference(line, offset, local_offset) {
     const local_line = line.slice(local_offset);
+    const blank_reference = { type: "BLANK", begin: offset};
     if (local_line.startsWith(" " + STYLING_DIRECTIVES.quote)) {
-      return { type: "BLANK", begin: offset, end: offset + local_offset - 1};
+        blank_reference.end = offset + local_offset - 1;
     } else {
-      return { type: "BLANK", begin: offset, end: offset + local_offset};
+        blank_reference.end = offset + local_offset;
     }
+    if (local_line[0] === ' ') blank_reference.end = blank_reference.end + 1;
+    return blank_reference;
 }
 
 function openBlock(type, text_offset, line_offsets, line_space_offsets, begin, blocks, line) {

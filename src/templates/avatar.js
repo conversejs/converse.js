@@ -6,5 +6,5 @@ const getImgHref = (image, image_type) => {
 
 export default  (o) => html`
     <svg xmlns="http://www.w3.org/2000/svg" class="avatar ${o.classes}" width="${o.width}" height="${o.height}">
-        <image width="${o.width}" height="${o.height}" preserveAspectRatio="xMidYMid meet" href="${getImgHref(o.image, o.image_type)}"/>
+        <image width="${o.width}" height="${o.height}" preserveAspectRatio="xMidYMid slice" href="${getImgHref(o.image, o.image_type)}"/>
     </svg>`;

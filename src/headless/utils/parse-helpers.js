@@ -40,7 +40,6 @@ const reduceReferences = ([text, refs], ref, index) => {
 
 helpers.reduceTextFromReferences = (text, refs) => refs.reduce(reduceReferences, [text, []]);
 
-
 export function getStylingReferences (message) {
     const line_space_offsets = {};
     const line_offsets = {};
@@ -54,8 +53,6 @@ export function getStylingReferences (message) {
     );
 }
 export default helpers;
-
-
 
 const SPAN_STYLING_DIRECTIVES = {
     '*': 'strong',
@@ -78,7 +75,7 @@ function isStylingDirective(character) {
 }
 
 function hasOpenedSpan(character, spans) {
-    for (let span of spans['open']) {
+    for (const span of spans['open']) {
         if (span['type'] === SPAN_STYLING_DIRECTIVES[character]) {
             return true;
         }
@@ -125,7 +122,7 @@ function voidPreformatedInnerSpans(begin, spans) {
 function closeSpan(character, index, offset, spans) {
     let nest_depth;
     let closing_span;
-    let span_type = SPAN_STYLING_DIRECTIVES[character];
+    const span_type = SPAN_STYLING_DIRECTIVES[character];
     for (let idx = 0; idx < spans['open'].length; idx++) {
         if (span_type === spans['open'][idx]['type']) {
             closing_span = Object.assign({}, spans['open'][idx]);
@@ -160,7 +157,7 @@ function getLineSpans (line, offset = 0, start = 0) {
         }
     }
     return [...spans['closed']];
-};
+}
 
 function initOffsets(line_space_offsets, line_offsets, number_of_lines) {
     for (let index = 0; index < number_of_lines; index++) {
@@ -188,7 +185,7 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
         applyLineSpaceOffset(line, line_offsets, line_space_offsets, index);
 
         if (isLastBlockLine(index, last_line_index, "QUOTE", line_offsets, line_space_offsets, lines)) {
-          let { begin, index_begin, block_reference } = closeBlock("QUOTE", offset, blocks, line);
+          const { begin, index_begin, block_reference } = closeBlock("QUOTE", offset, blocks, line);
           inner_references = getMessageStylingReferences(lines, line_offsets, line_space_offsets, index, index_begin, begin);
           references = [...references, ...inner_references, ...block_reference];
         }
@@ -210,10 +207,10 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
         isPreformatedEnding = isPreformatedBlockEnding(line, line_offsets, line_space_offsets, index);
         if (isLastPreformatedLine || (!just_opened && isPreformatedEnding)) {
           if (isPreformatedEnding) {
-            let { block_reference } = closeBlock("PREFORMATED", offset, blocks, line, STYLING_DIRECTIVES.preformated_block.length);
+            const { block_reference } = closeBlock("PREFORMATED", offset, blocks, line, STYLING_DIRECTIVES.preformated_block.length);
             references = [...references, ...block_reference];
           } else {
-            let { block_reference } = closeBlock("PREFORMATED", offset, blocks, line);
+            const { block_reference } = closeBlock("PREFORMATED", offset, blocks, line);
             references = [...references, ...block_reference];
           }
         }
@@ -233,7 +230,7 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
 }
 
 function applyLineBlankReference(line, offset, local_offset) {
-    let local_line = line.slice(local_offset);
+    const local_line = line.slice(local_offset);
     if (local_line.startsWith(" " + STYLING_DIRECTIVES.quote)) {
       return { type: "BLANK", begin: offset, end: offset + local_offset - 1};
     } else {
@@ -242,8 +239,8 @@ function applyLineBlankReference(line, offset, local_offset) {
 }
 
 function openBlock(type, text_offset, line_offsets, line_space_offsets, begin, blocks, line) {
-    let local_offset = line_space_offsets[begin] + line_offsets[begin];
-    let total_offset = local_offset + text_offset;
+    const local_offset = line_space_offsets[begin] + line_offsets[begin];
+    const total_offset = local_offset + text_offset;
     if (type === "QUOTE") {
       if (line[local_offset] === STYLING_DIRECTIVES.quote) {
         blocks["open"].push({
@@ -266,7 +263,7 @@ function openBlock(type, text_offset, line_offsets, line_space_offsets, begin, b
         });
       }
     } else if (type === "PREFORMATED") {
-      let local_line = line.slice(local_offset);
+      const local_line = line.slice(local_offset);
       if (local_line.startsWith(STYLING_DIRECTIVES.preformated_block)) {
         blocks["open"].push({
           type: "PREFORMATED",
@@ -291,8 +288,8 @@ function openBlock(type, text_offset, line_offsets, line_space_offsets, begin, b
 }
 
 function closeBlock(type, text_offset, blocks, line, closing_offset = 0) {
-    let total_offset = text_offset + line.length;
-    let current_block = { ...blocks["open"][0] };
+    const total_offset = text_offset + line.length;
+    const current_block = { ...blocks["open"][0] };
     blocks["open"] = [];
     return {
       begin: current_block.text_offset,
@@ -314,7 +311,7 @@ function blockIsOpened(blocks, type = "") {
 }
 
 function applyLineSpaceOffset(line, line_offsets, line_space_offsets, line_index) {
-    let local_offset = line_space_offsets[line_index] + line_offsets[line_index];
+    const local_offset = line_space_offsets[line_index] + line_offsets[line_index];
     const local_line = line.slice(local_offset);
     if (
       line_offsets[line_index] !== 0 &&
@@ -326,7 +323,7 @@ function applyLineSpaceOffset(line, line_offsets, line_space_offsets, line_index
 }
 
 function isQuote(line, line_offsets, line_space_offsets, line_index) {
-    let local_offset = line_space_offsets[line_index] + line_offsets[line_index];
+    const local_offset = line_space_offsets[line_index] + line_offsets[line_index];
     const local_line = line.slice(local_offset);
     if (local_line.startsWith(STYLING_DIRECTIVES.quote)) return true;
     // Already inside a quote block.
@@ -339,7 +336,7 @@ function isQuote(line, line_offsets, line_space_offsets, line_index) {
 }
 
 function isPreformatedBlock(line, line_offsets, line_space_offsets, line_index) {
-    let local_offset = line_space_offsets[line_index] + line_offsets[line_index];
+    const local_offset = line_space_offsets[line_index] + line_offsets[line_index];
     const local_line = line.slice(local_offset);
     if (local_line.startsWith(STYLING_DIRECTIVES.preformated_block)) return true;
     // Already inside a quote block.
@@ -352,7 +349,7 @@ function isPreformatedBlock(line, line_offsets, line_space_offsets, line_index) 
 }
 
 function isPreformatedBlockEnding(line, line_offsets, line_space_offsets, line_index) {
-    let local_offset = line_space_offsets[line_index] + line_offsets[line_index];
+    const local_offset = line_space_offsets[line_index] + line_offsets[line_index];
     const local_line = line.slice(local_offset);
     if (local_line === STYLING_DIRECTIVES.preformated_block) return true;
     if (line_offsets[line_index] !== 0) {

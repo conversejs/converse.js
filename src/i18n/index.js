@@ -73,12 +73,14 @@ function isLocaleAvailable (locale, available) {
  */
 async function fetchTranslations (_converse) {
     const { api, locale } = _converse;
+    const dayjs_locale = locale.toLowerCase().replace('_', '-');
+
     if (!isConverseLocale(locale, api.settings.get("locales")) || locale === 'en') {
         return;
     }
     const { default: data } = await import(/*webpackChunkName: "locales/[request]" */ `../i18n/${locale}/LC_MESSAGES/converse.po`);
-    await import(/*webpackChunkName: "locales/dayjs/[request]" */ `dayjs/locale/${locale.toLowerCase().replace('_', '-')}`);
-    dayjs.locale(getLocale(locale, l => dayjs.locale(l)));
+    await import(/*webpackChunkName: "locales/dayjs/[request]" */ `dayjs/locale/${dayjs_locale}`);
+    dayjs.locale(getLocale(dayjs_locale, l => dayjs.locale(l)));
     jed_instance = new Jed(data);
 }
 

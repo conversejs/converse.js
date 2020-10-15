@@ -41,8 +41,8 @@ class MessageText extends String {
      * The "rich" markup parts of a chat message are represented by lit-html
      * TemplateResult objects.
      *
-     * This method can be used to add new template results to this message's
-     * text.
+     * This method can be used to add new templates or tempalte results to
+     * this message's text.
      *
      * @method MessageText.addTemplateResult
      * @param { Number } begin - The starting index of the plain message text
@@ -50,14 +50,12 @@ class MessageText extends String {
      * @param { Number } end - The ending index of the plain message text
      * which is being replaced with markup.
      * @param { Object } template - The lit-html TemplateResult instance
+     * or the function that generates the TemplateResult
      */
-    // addTemplateResult (begin, end, template) {
-    //     this.references.push({begin, end, template});
-    // }
     addTemplate(begin, end, template, ref_object = '', references = this.references) {
         for (let ref of references) {
           if (ref.begin < begin && end <= ref.end) {
-            return this.addTemplate(begin, end, template, ref.references, ref_object);
+            return this.addTemplate(begin, end, template, ref_object, ref.references);
           }
         }
         const reference = { begin, end, references: [], template };
@@ -88,7 +86,7 @@ class MessageText extends String {
         return convertASCII2Emoji(text.replace(/\n\n+/g, '\n\n'));
     }
 
-    innerMarshall (references, message, original_text, outer_ref_begin=0, inner=false) {
+    innerMarshall (references, message, original_text, outer_ref_begin=0) {
         let list = [message.toString()];
         references
             .sort((a, b) => b.begin - a.begin)
@@ -98,30 +96,17 @@ class MessageText extends String {
                     text.slice(0, ref.begin - outer_ref_begin),
                     typeof ref.template === 'function'
                     ? ref.template(
-                        this.innerMarshall(ref.references, original_text.slice(ref.begin, ref.end), original_text, ref.begin, true),
+                        this.innerMarshall(ref.references, original_text.slice(ref.begin, ref.end), original_text, ref.begin),
                         ref.ref)
                     : ref.template,
                     text.slice(ref.end - outer_ref_begin),
                     ...list
                 ];
             });
-        // return inner ? list.filter(n => n).join('') : list.filter(n => n);
-        return inner ? list.filter(n => n) : list.filter(n => n);
+        return list.filter(n => n);
     }
 
     marshall () {
-        // let list = [this.toString()];
-        // this.references
-        //     .sort((a, b) => b.begin - a.begin)
-        //     .forEach(ref => {
-        //         const text = list.shift();
-        //         list = [
-        //             text.slice(0, ref.begin),
-        //             ref.template,
-        //             text.slice(ref.end),
-        //             ...list
-        //         ];
-        //     });
         const list = this.innerMarshall (this.references, this.toString(), this.toString());
 
         // Subtract `/me ` from 3rd person messages

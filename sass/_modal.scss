@@ -28,6 +28,12 @@
                     }
                 }
             }
+            .modal-body--image {
+                .chat-image {
+                    max-height: 99%;
+                    max-width: 100%;
+                }
+            }
             .modal-footer {
                 justify-content: flex-start;
             }

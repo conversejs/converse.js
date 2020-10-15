@@ -18,6 +18,70 @@ describe("Message Archive Management", function () {
 
     describe("The XEP-0313 Archive", function () {
 
+
+        it("is queried when the user scrolls up",
+                mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (done, _converse) {
+
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
+            const sent_IQs = _converse.connection.IQ_stanzas;
+            let stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            const queryid = stanza.querySelector('query').getAttribute('queryid');
+            let msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
+                        .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                            .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                .c('message', {
+                                    'xmlns':'jabber:client',
+                                    'to': _converse.bare_jid,
+                                    'id': _converse.connection.getUniqueId(),
+                                    'from': contact_jid,
+                                    'type':'chat'
+                                }).c('body').t("Meet me at the dance");
+            _converse.connection._dataRecv(mock.createRequest(msg));
+
+            msg = $msg({'id': _converse.connection.getUniqueId(), 'to': _converse.bare_jid})
+                        .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id': _converse.connection.getUniqueId()})
+                            .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                .c('message', {
+                                    'xmlns':'jabber:client',
+                                    'to': _converse.bare_jid,
+                                    'id': _converse.connection.getUniqueId(),
+                                    'from': contact_jid,
+                                    'type':'chat'
+                                }).c('body').t("Thrice the brinded cat hath mew'd.");
+            _converse.connection._dataRecv(mock.createRequest(msg));
+
+            const iq_result = $iq({'type': 'result', 'id': stanza.getAttribute('id')})
+                .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
+                    .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
+                        .c('first', {'index': '0'}).t('23452-4534-1').up()
+                        .c('last').t('09af3-cc343-b409f').up()
+                        .c('count').t('16');
+            _converse.connection._dataRecv(mock.createRequest(iq_result));
+
+            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            expect(view.model.messages.length).toBe(2);
+
+            while (sent_IQs.length) { sent_IQs.pop(); }
+            _converse.api.trigger('chatBoxScrolledUp', view);
+            stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[type="set"] query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            expect(Strophe.serialize(stanza)).toBe(
+                `<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                    `<query queryid="${stanza.querySelector('query').getAttribute('queryid')}" xmlns="urn:xmpp:mam:2">`+
+                    `<x type="submit" xmlns="jabber:x:data">`+
+                        `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field><field var="with"><value>mercutio@montague.lit</value></field>`+
+                    `</x>`+
+                    `<set xmlns="http://jabber.org/protocol/rsm"><before>${view.model.messages.at(0).get('stanza_id romeo@montague.lit')}</before><max>2</max></set></query>`+
+                `</iq>`
+            );
+            done();
+        }));
+
         it("is queried when the user enters a new MUC",
                 mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (done, _converse) {
 

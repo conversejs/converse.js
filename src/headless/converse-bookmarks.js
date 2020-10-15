@@ -14,6 +14,7 @@ import { _converse, api, converse } from "@converse/headless/converse-core";
 const { Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
 
+Strophe.addNamespace('BOOKMARKS', 'storage:bookmarks');
 
 converse.plugins.add('converse-bookmarks', {
 
@@ -289,6 +290,12 @@ converse.plugins.add('converse-bookmarks', {
                 api.trigger('bookmarksInitialized');
             }
         }
+
+        api.listen.on('addClientFeatures', () => { 
+            if (api.settings.get('allow_bookmarks')) {
+                api.disco.own.features.add(Strophe.NS.BOOKMARKS + '+notify')
+            }
+        })
 
         api.listen.on('clearSession', () => {
             if (_converse.bookmarks !== undefined) {

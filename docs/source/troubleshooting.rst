@@ -114,3 +114,28 @@ what you're using as the HTTP file server.
 CORS is enabled by adding an ``Access-Control-Allow-Origin`` header, so you'll
 have to configure your file server to add this header.
 
+
+Common errors
+=============
+
+Error: A "url" property or function must be specified
+-----------------------------------------------------
+
+That's a relatively generic `Skeletor <https://github.com/conversejs/skeletor>`_ (or `Backbone <http://backbonejs.org/>_`)
+error and by itself it usually doesn't give enough information to know how to fix the underlying issue.
+
+Generally, this error happens when a Model is being persisted (e.g. when model.save() is called,
+but there is no information specifying where/how it should be persisted.
+
+The Converse models are persisted to browser storage (e.g. sessionStorage, localStorage or IndexedDB),
+and this happens by adding a browserStorage attribute on the model, or on the collection containing the model.
+
+See for example here: https://github.com/conversejs/converse.js/blob/395aa8cb959bbb7e26472ed3356160c8044be081/src/headless/converse-chat.js#L359
+
+If this error occurs, it means that a model being persisted doesn't have the ``browserStorage`` attribute,
+and it's containing collection (if there is one) also doesn't have that attribute.
+
+This usually happens when a model has been removed from a collection, and then ``.save()`` is called on it.
+
+In the context of Converse it might mean that there's an attempt to persist data before all models have been properly initialized,
+or conversely after models have been removed from their containing collections.

@@ -363,7 +363,8 @@ export const ChatBoxView = View.extend({
      *  - An optional message that serves as the cause for needing to scroll down.
      */
     maybeScrollDown (message) {
-        if (message?.get('sender') === 'me' || !this.model.isHidden()) {
+        const new_own_msg = !(message?.get('is_archived')) && message?.get('sender') === 'me';
+        if ((new_own_msg || !this.model.get('scrolled')) && !this.model.isHidden()) {
             this.debouncedScrollDown();
         }
     },
@@ -1001,7 +1002,12 @@ export const ChatBoxView = View.extend({
 
     onScrolledDown () {
         this.hideNewMessagesIndicator();
-        (!this.model.isHidden()) && this.model.clearUnreadMsgCounter();
+        if (!this.model.isHidden()) {
+            this.model.clearUnreadMsgCounter();
+            // Clear location hash if set to one of the messages in our history
+            const hash = window.location.hash;
+            hash && this.model.messages.get(hash.slice(1)) && _converse.router.history.navigate();
+        }
         /**
          * Triggered once the chat's message area has been scrolled down to the bottom.
          * @event _converse#chatBoxScrolledDown
@@ -1056,7 +1062,7 @@ converse.plugins.add('converse-chatview', {
             'filter_url_query_params': null,
             'image_urls_regex': null,
             'message_limit': 0,
-            'muc_hats_from_vcard': false,
+            'muc_hats': ['xep317'],
             'show_images_inline': true,
             'show_message_avatar': true,
             'show_retraction_warning': true,

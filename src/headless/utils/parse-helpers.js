@@ -1,7 +1,7 @@
 /**
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
- * @description Pure functions to help funcitonally parse messages.
+ * @description Pure functions to help functionally parse messages.
  * @todo Other parsing helpers can be made more abstract and placed here.
  */
 const helpers = {};

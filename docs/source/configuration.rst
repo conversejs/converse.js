@@ -184,6 +184,13 @@ Determines who is allowed to retract messages. If set to ``'all'``, then normal
 users may retract their own messages and ``'moderators'`` may retract the messages of
 other users.
 
+allow_message_styling
+---------------------
+
+* Default:  ``true``
+* Possible values: ``true``, ``false``
+
+Determines wehether support for XEP-0393 Message Styling hints are enabled or not.
 
 allow_muc
 ---------
@@ -1603,10 +1610,10 @@ From version 7.0.0 onwards, Converse supports storing data in
 
 When Converse is running inside a web browser extension, it can now take advantage of storage optimized to meet the specific storage needs of extensions.
 
-BrowserExtSync represents the sync storage area. 
+BrowserExtSync represents the sync storage area.
 Items in sync storage are synced by the browser and are available across all instances of that browser that the user is logged into, across different devices.
 
-BrowserExtLocal represents the local storage area. 
+BrowserExtLocal represents the local storage area.
 Items in local storage are local to the machine the extension was installed on
 
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 8.0.0 (Unreleased)
+
+- #1083: Add support for XEP-0393 Message Styling
+- New configuration setting: [allow_message_styling](https://conversejs.org/docs/html/configuration.html#allow-message-styling) instead.
+
 ## 7.0.2 (2020-11-23)
 
 - Updated translations: de, nb, gl, tr
@@ -19,6 +24,8 @@
 configuration settings should now be accessed via `_converse.api.settings.get` and not directly on the `_converse` object.
 Soon we'll deprecate the latter, so prepare now.
 
+- #515 Add support for XEP-0050 Ad-Hoc commands
+- #1083 Add support for XEP-0393 Message Styling
 - #2231: add sort_by_query and remove sort_by_length
 - #1313: Stylistic improvements to the send button
 - #1481: MUC OMEMO: Error No record for device
@@ -28,7 +35,6 @@ Soon we'll deprecate the latter, so prepare now.
 - #1793: Send button doesn't appear in Firefox in 1:1 chats
 - #1820: Set focus on jid field after controlbox is loaded
 - #1822: Don't log error if user has no bookmarks
-- #515 Add support for XEP-0050 Ad-Hoc commands
 - #1823: New config options [muc_roomid_policy](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy)
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact

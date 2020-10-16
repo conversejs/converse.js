@@ -569,7 +569,6 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '') ===
             'This message contains a hyperlink with forbidden query params: <a target="_blank" rel="noopener" href="https://www.opkode.com/?id=0">https://www.opkode.com/?id=0</a>');
 
-
         // Test assigning a string to filter_url_query_params
         _converse.api.settings.set('filter_url_query_params', 'utm_medium');
         message = 'Another message with a hyperlink with forbidden query params: https://www.opkode.com/?id=0&utm_content=1&utm_medium=2&s=1';

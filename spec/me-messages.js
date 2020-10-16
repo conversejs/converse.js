@@ -4,7 +4,7 @@ const { u, sizzle, $msg } = converse.env;
 
 describe("A Groupchat Message", function () {
 
-    fit("supports the /me command",
+    it("supports the /me command",
         mock.initConverse(
             ['rosterGroupsFetched'], {},
             async function (done, _converse) {

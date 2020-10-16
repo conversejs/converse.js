@@ -43,6 +43,7 @@ converse.plugins.add('converse-chat', {
         api.settings.extend({
             'allow_message_corrections': 'all',
             'allow_message_retraction': 'all',
+            'allow_message_styling': true,
             'auto_join_private_chats': [],
             'clear_messages_on_reconnection': false,
             'filter_by_resource': false,

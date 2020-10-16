@@ -103,7 +103,7 @@ class MessageText extends String {
                     ...list
                 ];
             });
-        return list.filter(n => n);
+        return flatten(list.filter(n => n));
     }
 
     marshall () {
@@ -117,27 +117,53 @@ class MessageText extends String {
     }
 }
 
+function flatten (list) {
+    const objects = getObjects(list);
+    if (!objects.length) {
+        return list.join('')
+    }
+    const flattened = [];
+    let index = 0;
+    for (const obj_index of objects) {
+        flattened.push(list.slice(index, obj_index).join(''));
+        flattened.push(list[obj_index]);
+        index = obj_index + 1;
+    }
+    flattened.push(list.slice(index).join(''));
+    return flattened
+}
+
+function getObjects (list) {
+    const object_indices = [];
+    for (const [index, item] of list.entries()){
+        if (typeof item === 'object') {
+            object_indices.push(index);
+        }
+    }
+    return object_indices;
+}
+
 const styling_templates = {
     strong: (text) => {
-      return html`<b>${text}</b>`;
+      return flatten(['<b>', ...text,'</b>']);
     },
     strike: (text) => {
-      return html`<del>${text}</del>`;
+      return `<del>${text}</del>`;
     },
     emphasis: (text) => {
-      return html`<i>${text}</i>`;
+      return `<i>${text}</i>`;
     },
     preformated: (text) => {
-      return html`<code>${text}</code>`;
+      return `<code>${text}</code>`;
     },
     BLANK: function (text) {
       return "";
     },
     PREFORMATED: function (text, ref) {
-      return html`<div class="code_block">${extractStylingDirectives (text, ref)}</div>`;
+      return flatten(['<div class="code_block">', ...extractStylingDirectives(text, ref),'</div>']);
     },
     QUOTE: function (text, ref) {
-      return html`<div class="quote">${extractStylingDirectives (text, ref)}</div>`;
+      return `<div class="quote">${extractStylingDirectives (text, ref)}</div>`;
     },
 };
 

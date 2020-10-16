@@ -441,9 +441,10 @@ const st = {
          * @property { Boolean } is_markable - Can this message be marked with a XEP-0333 chat marker?
          * @property { Boolean } is_marker - Is this message a XEP-0333 Chat Marker?
          * @property { Boolean } is_only_emojis - Does the message body contain only emojis?
-         * @property { Boolean } is_valid_receipt_request - Does this message request a XEP-0184 receipt (and is not from us or a carbon or archived message)
          * @property { Boolean } is_spoiler - Is this a XEP-0382 spoiler message?
          * @property { Boolean } is_tombstone - Is this a XEP-0424 tombstone?
+         * @property { Boolean } is_unstyled - Whether XEP-0393 styling hints should be ignored
+         * @property { Boolean } is_valid_receipt_request - Does this message request a XEP-0184 receipt (and is not from us or a carbon or archived message)
          * @property { Object } encrypted -  XEP-0384 encryption payload attributes
          * @property { String } body - The contents of the <body> tag of the message stanza
          * @property { String } chat_state - The XEP-0085 chat state notification contained in this message
@@ -489,6 +490,7 @@ const st = {
                 'is_delayed': !!delay,
                 'is_markable': !!sizzle(`markable[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length,
                 'is_marker': !!marker,
+                'is_unstyled': !!sizzle(`unstyled[xmlns="${Strophe.NS.STYLING}"]`, stanza).length,
                 'marker_id': marker && marker.getAttribute('id'),
                 'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
                 'nick': contact?.attributes?.nickname,
@@ -581,9 +583,10 @@ const st = {
          * @property { Boolean } is_markable - Can this message be marked with a XEP-0333 chat marker?
          * @property { Boolean } is_marker - Is this message a XEP-0333 Chat Marker?
          * @property { Boolean } is_only_emojis - Does the message body contain only emojis?
-         * @property { Boolean } is_valid_receipt_request - Does this message request a XEP-0184 receipt (and is not from us or a carbon or archived message)
          * @property { Boolean } is_spoiler - Is this a XEP-0382 spoiler message?
          * @property { Boolean } is_tombstone - Is this a XEP-0424 tombstone?
+         * @property { Boolean } is_unstyled - Whether XEP-0393 styling hints should be ignored
+         * @property { Boolean } is_valid_receipt_request - Does this message request a XEP-0184 receipt (and is not from us or a carbon or archived message)
          * @property { Object } encrypted -  XEP-0384 encryption payload attributes
          * @property { String } body - The contents of the <body> tag of the message stanza
          * @property { String } chat_state - The XEP-0085 chat state notification contained in this message
@@ -632,6 +635,7 @@ const st = {
                 'is_headline': st.isHeadline(stanza),
                 'is_markable': !!sizzle(`markable[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length,
                 'is_marker': !!marker,
+                'is_unstyled': !!sizzle(`unstyled[xmlns="${Strophe.NS.STYLING}"]`, stanza).length,
                 'marker_id': marker && marker.getAttribute('id'),
                 'msgid': stanza.getAttribute('id') || original_stanza.getAttribute('id'),
                 'receipt_id': getReceiptId(stanza),

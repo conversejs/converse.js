@@ -107,9 +107,7 @@ describe("An incoming groupchat message", function () {
         const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
         expect(message.classList.length).toEqual(1);
         expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
-            '&gt;hello <span class="mention">z3r0</span> '+
-            '<span class="mention mention--self badge badge-info">tom</span> '+
-            '<span class="mention">mr.robot</span>, how are you?');
+            '<blockquote>hello <span class="mention">z3r0</span> <span class="mention mention--self badge badge-info">tom</span> <span class="mention">mr.robot</span>, how are you?</blockquote>');
         done();
     }));
 });

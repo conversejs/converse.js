@@ -1,10 +1,25 @@
 #conversejs {
+    .styling-directive {
+        color: var(--subdued-color);
+    }
+
     .older-msg {
         time {
             font-weight: bold;
         }
     }
     .message {
+        blockquote {
+            margin-left: 0.5em;
+            margin-bottom: 0.25em;
+            padding-right: 1em;
+            color: var(--subdued-color);
+            border-left: 0.3em solid var(--subdued-color);
+            padding-left: 0.5em;
+        }
+        code {
+            font-family: monospace;
+        }
         .mention {
             font-weight: bold;
         }

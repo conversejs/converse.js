@@ -101,6 +101,7 @@ In embedded mode, Converse can be embedded into an element in the DOM.
 - [XEP-0372](https://xmpp.org/extensions/xep-0372.html) References
 - [XEP-0382](https://xmpp.org/extensions/xep-0382.html) Spoiler messages
 - [XEP-0384](https://xmpp.org/extensions/xep-0384.html) OMEMO Encryption
+- [XEP-0393](https://xmpp.org/extensions/xep-0393.html) Message styling
 - [XEP-0422](https://xmpp.org/extensions/xep-0422.html) Message Fastening (limited support)
 - [XEP-0424](https://xmpp.org/extensions/xep-0424.html) Message Retractions
 - [XEP-0425](https://xmpp.org/extensions/xep-0425.html) Message Moderation

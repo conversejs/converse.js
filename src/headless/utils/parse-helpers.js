@@ -195,9 +195,14 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
         blockIsOpened(blocks, "PREFORMATED")
       ) {
         local_offset = line_space_offsets[index] + line_offsets[index];
-        if (local_offset !== 0 && index !== first_line_index) {
-          block_reference = applyLineBlankReference(line, offset, local_offset);
-          references = [...references, block_reference];
+        if (local_offset !== 0 ) {
+            if(index !== first_line_index) {
+                block_reference = applyLineBlankReference(line, offset, local_offset);
+                references = [...references, block_reference];
+            }
+            else if(line_offsets[index -1] > 0 && line_offsets[index] > line_offsets[index -1] && index > 0) {
+                references = [...references, { type: "BLANK", begin: offset, end: offset + local_offset - 1 }];
+            }
         }
         if (!blockIsOpened(blocks)) {
           openBlock("PREFORMATED", offset, line_offsets, line_space_offsets, index, blocks, line);
@@ -219,8 +224,11 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
         local_offset = line_space_offsets[index] + line_offsets[index];
         if (local_offset !== 0) {
             if (index === first_line_index) {
+                if(line_offsets[index -1] > 0 && line_offsets[index] > line_offsets[index -1] && index > 0) {
+                    references = [...references, { type: "BLANK", begin: offset, end: offset + local_offset - 1 }];
+                }
                 if (line[local_offset] === ' ') {
-                    references = [...references, { type: "BLANK", begin: local_offset, end: local_offset + 1}];
+                    references = [...references, { type: "BLANK", begin: offset + local_offset, end: offset + local_offset + 1}];
                     local_offset = local_offset + 1;
                 }
             } else {

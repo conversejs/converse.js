@@ -128,7 +128,7 @@ const styling_templates = {
       return html`<i>${text}</i>`;
     },
     preformated: (text) => {
-      return html`<code>${text}</code>`;
+      return html`<span class= "code_span">${text}</span>`;
     },
     BLANK: function (text) {
       return "";

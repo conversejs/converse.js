@@ -5,7 +5,8 @@ import { convertASCII2Emoji, getEmojiMarkup, getCodePointReferences, getShortnam
 import { directive, html } from "lit-html";
 import { getStylingReferences } from "@converse/headless/utils/parse-helpers";
 import { until } from 'lit-html/directives/until.js';
-
+import xss from "xss/dist/xss";
+import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 const u = converse.env.utils;
 
 
@@ -92,13 +93,14 @@ class MessageText extends String {
             .sort((a, b) => b.begin - a.begin)
             .forEach(ref => {
                 const text = list.shift();
+                const template = typeof ref.template === 'function'
+                ? ref.template(
+                    this.innerMarshall(ref.references, original_text.slice(ref.begin, ref.end), original_text, ref.begin),
+                    ref.ref)
+                : [ref.template];
                 list = [
                     text.slice(0, ref.begin - outer_ref_begin),
-                    typeof ref.template === 'function'
-                    ? ref.template(
-                        this.innerMarshall(ref.references, original_text.slice(ref.begin, ref.end), original_text, ref.begin),
-                        ref.ref)
-                    : ref.template,
+                    ...template,
                     text.slice(ref.end - outer_ref_begin),
                     ...list
                 ];
@@ -120,7 +122,7 @@ class MessageText extends String {
 function flatten (list) {
     const objects = getObjects(list);
     if (!objects.length) {
-        return list.join('')
+        return [list.join('')];
     }
     const flattened = [];
     let index = 0;
@@ -129,7 +131,6 @@ function flatten (list) {
         flattened.push(list[obj_index]);
         index = obj_index + 1;
     }
-    flattened.push(list.slice(index).join(''));
     return flattened
 }
 
@@ -148,22 +149,22 @@ const styling_templates = {
       return flatten(['<b>', ...text,'</b>']);
     },
     strike: (text) => {
-      return `<del>${text}</del>`;
+      return flatten(['<del>', ...text, '</del>']);
     },
     emphasis: (text) => {
-      return `<i>${text}</i>`;
+      return flatten(['<i>', ...text, '</i>']);
     },
     preformated: (text) => {
-      return `<code>${text}</code>`;
+      return flatten(['<span class= "code_span">', ...text, '</span>']);
     },
     BLANK: function (text) {
       return "";
     },
     PREFORMATED: function (text, ref) {
-      return flatten(['<div class="code_block">', ...extractStylingDirectives(text, ref),'</div>']);
+      return flatten(['<div class="code_block">', ...extractStylingDirectives(text, ref), '</div>']);
     },
     QUOTE: function (text, ref) {
-      return `<div class="quote">${extractStylingDirectives (text, ref)}</div>`;
+      return flatten(['<div class="quote">', ...extractStylingDirectives (text, ref), '</div>']);
     },
 };
 

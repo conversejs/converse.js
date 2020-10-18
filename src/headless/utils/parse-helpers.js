@@ -232,7 +232,7 @@ function getMessageStylingReferences(lines, line_offsets, line_space_offsets, la
                     local_offset = local_offset + 1;
                 }
             } else {
-                block_reference = applyLineBlankReference(line, offset, local_offset, true);
+                block_reference = applyLineBlankReference(line, offset, local_offset);
                 references = [...references, block_reference];
                 if (line[local_offset] === ' ') local_offset = local_offset + 1;
             }

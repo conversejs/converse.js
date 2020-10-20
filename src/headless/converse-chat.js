@@ -1315,9 +1315,10 @@ converse.plugins.add('converse-chat', {
         api.listen.on('chatBoxesFetched', autoJoinChats);
         api.listen.on('presencesInitialized', registerMessageHandlers);
 
-        api.listen.on('clearSession', () => {
+        api.listen.on('clearSession', async () => {
             if (_converse.shouldClearCache()) {
-                return Promise.all(_converse.chatboxes.map(c => c.messages && c.messages.clearStore({'silent': true})));
+                await Promise.all(_converse.chatboxes.map(c => c.messages && c.messages.clearStore({'silent': true})));
+                _converse.chatboxes.clearStore({'silent': true});
             }
         });
         /************************ END Event Handlers ************************/

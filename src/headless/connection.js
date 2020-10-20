@@ -404,4 +404,3 @@ export class MockConnection extends Connection {
         }
     }
 }
-

@@ -36,6 +36,10 @@ Soon we'll deprecate the latter, so prepare now.
 - #2220: fix rendering of emojis in case `use_system_emojis == false` (again).
 - #2092: fixes room list update loop when having the `locked_muc_domain` truthy or `'hidden'`
 - #2285: Rename config option `muc_hats_from_vcard` to [muc_hats](https://conversejs.org/docs/html/configuration.html#muc-hats). Now accepts a list instead of a boolean and allows for more flexible choices regarding user badges.
+- The `trusted` configuration setting has been removed in favor of two new settings:
+    [allow_user_trust_override](https://conversejs.org/docs/html/configuration.html#allow-user-trust-override)
+    [clear_cache_on_logout](https://conversejs.org/docs/html/configuration.html#clear-cache-on-logout)
+- The `persistent_store` setting can now also be set to `sessionStorage`
 - The `api.archive.query` method no longer accepts an RSM instance as argument.
 - The plugin `converse-uniview` has been removed and its functionality merged into `converse-chatboxviews`
 - Removed the mockups from the project. Recommended to use tests instead.

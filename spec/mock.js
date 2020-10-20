@@ -75,16 +75,20 @@ window.addEventListener('converse-loaded', () => {
         return Promise.all(_converse.chatboxviews.map(view => view.close()));
     };
 
-    mock.openControlBox = async function (_converse) {
-        const model = await _converse.api.controlbox.open();
-        await u.waitUntil(() => model.get('connected'));
-        var toggle = document.querySelector(".toggle-controlbox");
+    mock.toggleControlBox = function () {
+        const toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
             if (!u.isVisible(toggle)) {
                 u.removeClass('hidden', toggle);
             }
             toggle.click();
         }
+    }
+
+    mock.openControlBox = async function (_converse) {
+        const model = await _converse.api.controlbox.open();
+        await u.waitUntil(() => model.get('connected'));
+        mock.toggleControlBox();
         return this;
     };
 

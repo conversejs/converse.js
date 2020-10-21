@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import tpl_new_day from "../templates//new_day.js";
 import { CustomElement } from './element.js';
 import { __ } from '../i18n';
-import { api } from "@converse/headless/converse-core";
+import { _converse, api } from "@converse/headless/converse-core";
 import { html } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat.js';
 
@@ -67,8 +67,10 @@ function getDayIndicator (model) {
         });
     }
 }
-
-function getHats (model) {
+// This is set to _converse so that it can be overriden. An attempt was made to use
+// a hook instead, but hook returns a promise and it forces the asynchronicity up
+// to the render method.
+_converse.getHats = function (model) {
     if (model.get('type') === 'groupchat') {
         const allowed_hats = api.settings.get('muc_hats').filter(hat => hat).map((hat) => (hat.toLowerCase()));
         let vcard_roles = []
@@ -93,7 +95,7 @@ export function getDerivedMessageProps (chatbox, model) {
     const is_groupchat = model.get('type') === 'groupchat';
     return {
         'has_mentions': is_groupchat && model.get('sender') === 'them' && chatbox.isUserMentioned(model),
-        'hats': getHats(model),
+        'hats': _converse.getHats(model),
         'is_first_unread': chatbox.get('first_unread_id') === model.get('id'),
         'is_me_message': model.isMeCommand(),
         'is_retracted': model.get('retracted') || model.get('moderated') === 'retracted',

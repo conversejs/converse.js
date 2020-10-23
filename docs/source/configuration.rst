@@ -910,6 +910,14 @@ geouri_replacement
 String used to replace geo-URIs with. Ought to be a link to osm or similar. ``$1`` and ``$2`` is replaced by
 latitude and longitude respectively.
 
+hide_muc_participants
+---------------------
+
+* Default:  ``false``
+
+Option which allows you to hide the participants list by default.
+
+
 hide_offline_users
 ------------------
 

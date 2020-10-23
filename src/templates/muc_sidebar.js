@@ -17,6 +17,14 @@ const PRETTY_CHAT_STATUS = {
 export default (o) => {
     const i18n_occupant_hint = (occupant) => __('Click to mention %1$s in your message.', occupant.get('nick'))
     const i18n_participants = __('Participants');
+    const occupant_tpls = o.occupants.map(occupant => {
+        return tpl_occupant(Object.assign({
+            'jid': '',
+            'hint_show': PRETTY_CHAT_STATUS[occupant.get('show')],
+            'hint_occupant': i18n_occupant_hint(occupant)
+        }, occupant.toJSON()));
+    });
+
     return html`
         <div class="occupants-header">
             <i class="hide-occupants fa fa-times"></i>
@@ -25,16 +33,6 @@ export default (o) => {
             </div>
         </div>
         <div class="dragresize dragresize-occupants-left"></div>
-        <ul class="occupant-list">
-            ${ o.occupants.map(occupant => {
-                return tpl_occupant(
-                        Object.assign({
-                            'jid': '',
-                            'hint_show': PRETTY_CHAT_STATUS[occupant.get('show')],
-                            'hint_occupant': i18n_occupant_hint(occupant)
-                        }, occupant.toJSON())
-                    );
-            }) }
-        </ul>
+        <ul class="occupant-list">${occupant_tpls}</ul>
     `;
 }

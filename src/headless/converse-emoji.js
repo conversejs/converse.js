@@ -32,9 +32,6 @@ const ASCII_LIST = {
     '=#':'1f636', ':)':'1f642', '=]':'1f642', '=)':'1f642', ':]':'1f642'
 };
 
-let shortnames_regex;
-
-
 function toCodePoint(unicode_surrogates) {
     const r = [];
     let  p = 0;
@@ -154,7 +151,7 @@ export function getShortnameReferences (text) {
             'To avoid this problem, first await the converse.emojis.initilaized_promise.'
         );
     }
-    const references = [...text.matchAll(shortnames_regex)].filter(ref => ref[0].length > 0);
+    const references = [...text.matchAll(converse.emojis.shortnames_regex)].filter(ref => ref[0].length > 0);
     return references.map(ref => {
         const cp = converse.emojis.by_sn[ref[0]].cp;
         return {
@@ -381,7 +378,7 @@ converse.plugins.add('converse-emoji', {
                         converse.emojis.list.sort((a, b) => a.sn < b.sn ? -1 : (a.sn > b.sn ? 1 : 0));
                         converse.emojis.shortnames = converse.emojis.list.map(m => m.sn);
                         const getShortNames = () => converse.emojis.shortnames.map(s => s.replace(/[+]/g, "\\$&")).join('|');
-                        shortnames_regex = new RegExp(getShortNames(), "gi");
+                        converse.emojis.shortnames_regex = new RegExp(getShortNames(), "gi");
                         converse.emojis.toned = getTonedEmojis();
                         converse.emojis.initialized_promise.resolve();
                     }

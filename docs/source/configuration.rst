@@ -35,8 +35,8 @@ login
 ~~~~~
 
 The default means is ``login``, which means that the user either logs in manually with their
-username and password, or automatically if used together with ``auto_login=true``
-and ``jid`` and ``password`` values. See `auto_login`_.
+username and password, or automatically if used together with `auto_login`_ set to ``true``
+and ``jid`` and ``password`` values.
 
 external
 ~~~~~~~~
@@ -83,7 +83,7 @@ A JID (jabber ID), SID (session ID) and RID (Request ID).
 
 Converse needs these tokens in order to attach to that same session.
 
-In addition to setting ``authentication`` to ``prebind``, you'll also need to
+In addition to setting `authentication`_ to ``prebind``, you'll also need to
 set the `prebind_url`_ and `bosh-service-url`_.
 
 Here's an example of Converse being initialized with these options:
@@ -243,6 +243,35 @@ Support for `XEP-0077: In band registration <https://xmpp.org/extensions/xep-007
 
 Allow XMPP account registration showing the corresponding UI register form interface.
 
+
+allow_user_trust_override
+-------------------------
+
+* Default: ``true``
+* Allowed values: ``true``, ``false``, ``off``
+
+This setting determines whether a user may decide whether
+Converse is ``trusted`` or not (e.g. in the particular browser).
+
+This is done via a *This is a trusted device* checkbox in the login form.
+If this setting is set to ``true`` or ``off``, the checkbox will be shown to the user, otherwise not.
+
+When this setting is set to ``true``, the checkbox will be checked by default.
+To not have it checked by default, set this setting to ``off``.
+
+If the user indicates that this device/browser is not trusted, then effectively
+it's the same as setting `clear_cache_on_logout`_ to ``true``
+and `persistent_store`_ to ``sessionStorage``.
+
+``sessionStorage`` only persists while the current tab or window containing a Converse instance is open.
+As soon as it's closed, the data is cleared.
+
+The data that is cached (or cleared) includes your sent and received messages, which chats you had
+open, what features the XMPP server supports and what your online status was.
+
+Clearing the cache makes Converse much slower when the user logs in again, because all data needs to be fetch anew.
+
+
 archived_messages_page_size
 ---------------------------
 
@@ -312,15 +341,15 @@ auto_login
 This option can be used to let Converse automatically log the user in as
 soon as the page loads.
 
-If ``authentication`` is set to ``login``, then you will also need to provide a
+If `authentication`_ is set to ``login``, then you will also need to provide a
 valid ``jid`` and ``password`` values, either manually by passing them in, or
 by the `credentials_url`_ setting. Setting a ``credentials_url`` is preferable
 to manually passing in ``jid`` and ``password`` values, because it allows
-better reconnection with ``auto_reconnect``. When the connection drops,
+better reconnection with `auto_reconnect`_. When the connection drops,
 Converse will automatically fetch new login credentials from the
 ``credentials_url`` and reconnect.
 
-If ``authentication`` is set to ``anonymous``, then you will also need to provide the
+If `authentication`_ is set to ``anonymous``, then you will also need to provide the
 server's domain via the `jid`_ setting.
 
 This is a useful setting if you'd like to create a custom login form in your
@@ -332,19 +361,19 @@ in to their XMPP account.
 .. note::
 
   The interaction between ``keepalive`` and ``auto_login`` is unfortunately
-  inconsistent depending on the ``authentication`` method used.
+  inconsistent depending on the `authentication`_ method used.
 
-  If ``auto_login`` is set to ``false`` and ``authentication`` is set to
+  If ``auto_login`` is set to ``false`` and `authentication`_ is set to
   ``anonymous``, ``external`` or ``prebind``, then Converse won't automatically
   log the user in.
 
-  If ``authentication`` set to ``login`` the situation is much more
+  If `authentication`_ set to ``login`` the situation is much more
   ambiguous, since we don't have a way to distinguish between wether we're
   restoring a previous session (``keepalive``) or whether we're
   automatically setting up a new session (``auto_login``).
 
   So currently if EITHER ``keepalive`` or ``auto_login`` is ``true`` and
-  ``authentication`` is set to ``login``, then Converse will try to log the user in.
+  `authentication`_ is set to ``login``, then Converse will try to log the user in.
 
 
 auto_away
@@ -377,13 +406,13 @@ auto_reconnect
 Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.
 
-This option works best when you have ``authentication`` set to ``prebind`` and have
+This option works best when you have `authentication`_ set to ``prebind`` and have
 also specified a ``prebind_url`` URL, from where Converse can fetch the BOSH
 tokens. In this case, Converse will automaticallly reconnect when the
 connection drops but also reestablish earlier lost connections (due to
 network outages, closing your laptop etc.).
 
-When ``authentication`` is set to `login`, then this option will only work when
+When `authentication`_ is set to `login`, then this option will only work when
 the page hasn't been reloaded yet, because then the user's password has been
 wiped from memory. This configuration can however still be useful when using
 Converse in desktop apps, for example those based on `CEF <https://bitbucket.org/chromiumembedded/cef>`_
@@ -528,6 +557,23 @@ A more modern alternative to BOSH is to use `websockets <https://developer.mozil
 Please see the :ref:`websocket-url` configuration setting.
 
 
+clear_cache_on_logout
+---------------------
+
+* Default: ``false``
+
+If set to ``true``, all locally cached data will be cleared when the user logs out,
+regardless of the `persistent_store`_ being used (``localStorage``, ``IndexedDB`` or ``sessionStorage``).
+
+*Note*: If `allow_user_trust_override`_ is set to ``true`` and the user
+indicates that this device/browser is **not** trusted, then the cache will be
+cleared on logout, even if this setting is set to ``true``.
+
+*Note*: If this setting is set to ``true``, then OMEMO will be disabled, since
+otherwise it won't be possible to decrypt archived messages that were
+already decrypted previously (due to forward security).
+
+
 clear_messages_on_reconnection
 ------------------------------
 
@@ -623,13 +669,13 @@ credentials_url
 * Default:  ``null``
 * Type:  URL
 
-This setting should be used in conjunction with ``authentication`` set to ``login``.
+This setting should be used in conjunction with `authentication`_ set to ``login``.
 
 It allows you to specify a URL which Converse will call when it needs to get
 the username and password (or authentication token) which Converse will use
 to automatically log the user in.
 
-If ``auto_reconnect`` is also set to ``true``, then Converse will automatically
+If `auto_reconnect`_ is also set to ``true``, then Converse will automatically
 fetch new credentials from the ``credentials_url`` whenever the connection or
 session drops, and then attempt to reconnect and establish a new session.
 
@@ -874,7 +920,7 @@ If set to ``true``, then offline users aren't shown in the roster.
 hide_open_bookmarks
 -------------------
 
-* Default:  ``false`` (``true`` when the :ref:`view_mode` is set to ``fullscreen``).
+* Default:  ``false`` (``true`` when the `view_mode`_ is set to ``fullscreen``).
 
 This setting applies to the ``converse-bookmarks`` plugin and specfically the
 list of bookmarks shown in the ``Rooms`` tab of the control box.
@@ -1468,7 +1514,7 @@ prebind_url
 
 See also: :ref:`session-support`
 
-This setting should be used in conjunction with ``authentication`` set to `prebind`.
+This setting should be used in conjunction with `authentication`_ set to `prebind`.
 
 It allows you to specify a URL which Converse will call when it needs to get
 the RID and SID (Request ID and Session ID) tokens of a BOSH connection, which
@@ -1533,7 +1579,7 @@ persistent_store
 ----------------
 
 * Default: ``localStorage``
-* Valid options: ``localStorage``, ``IndexedDB``
+* Valid options: ``localStorage``, ``IndexedDB``, ``sessionStorage``
 
 Determines which store is used for storing persistent data.
 
@@ -1676,7 +1722,7 @@ Specifies whether the info icon is shown on the controlbox which when clicked op
 show_controlbox_by_default
 --------------------------
 
-* Default:  ``false`` (``true`` when the ``view_mode`` is set to ``fullscreen``)
+* Default:  ``false`` (``true`` when the `view_mode`_ is set to ``fullscreen``)
 
 The "controlbox" refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.
@@ -1776,8 +1822,6 @@ Alternatively you could use it with `view_mode`_ set to ``overlayed`` to create
 a single helpdesk-type chat.
 
 
-
-
 smacks_max_unacked_stanzas
 --------------------------
 
@@ -1864,42 +1908,6 @@ theme
 
 Let's you set a color theme for Converse.
 
-
-trusted
--------
-
-* Default: ``true``
-
-This setting determines whether the default value of the "This is a trusted device"
-checkbox in the login form.
-
-When the current device is not trusted, then the cache will be cleared when
-the user logs out.
-
-Additionally, it determines the type of `browser storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
-(``localStorage`` or ``sessionStorage``) used by Converse to cache user data.
-
-If ``trusted`` is set to ``false``, then ``sessionStorage`` is used instead of
-``localStorage``.
-
-The main difference between the two is that ``sessionStorage`` only persists while
-the current tab or window containing a Converse instance is open. As soon as
-it's closed, the data is cleared (as long as there aren't any other tabs with
-the same domain open).
-
-Data in ``localStorage`` on the other hand is kept indefinitely.
-
-The data that is cached includes your sent and received messages, which chats you had
-open, what features the XMPP server supports and what your online status was.
-
-Clearing the cache makes Converse much slower when the user logs
-in again, because all data needs to be fetch anew.
-
-If ``trusted`` is set to ``on`` or ``off`` the "This is a trusted device"
-checkbox in the login form will not appear at all and cannot be changed by the user.
-``on`` means to trust the device as stated above and use ``localStorage``. ``off``
-means to not trust the device (cache is cleared when the user logs out) and to use
-``sessionStorage``.
 
 time_format
 -----------

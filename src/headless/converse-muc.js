@@ -1814,18 +1814,18 @@ converse.plugins.add('converse-muc', {
              * @returns {Promise<boolean>}
              */
             async isJoined () {
+                const jid = this.get('jid');
                 const ping = $iq({
-                    'to': `${this.get('jid')}/${this.get('nick')}`,
+                    'to': `${jid}/${this.get('nick')}`,
                     'type': "get"
                 }).c("ping", {'xmlns': Strophe.NS.PING});
                 try {
                     await api.sendIQ(ping);
                 } catch (e) {
                     if (e === null) {
-                        log.error(`Timeout error while checking whether we're joined to MUC: ${this.get('jid')}`);
+                        log.warn(`isJoined: Timeout error while checking whether we're joined to MUC: ${jid}`);
                     } else {
-                        log.error(`Apparently we're no longer connected to MUC: ${this.get('jid')}`);
-                        log.error(e);
+                        log.warn(`isJoined: Apparently we're no longer connected to MUC: ${jid}`);
                     }
                     return false;
                 }

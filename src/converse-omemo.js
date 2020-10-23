@@ -405,7 +405,8 @@ async function fetchOwnDevices () {
 }
 
 async function initOMEMO () {
-    if (!_converse.config.get('trusted')) {
+    if (!_converse.config.get('trusted') || api.settings.get('clear_cache_on_logout')) {
+        log.warn("Not initializing OMEMO, since this browser is not trusted or clear_cache_on_logout is set to true");
         return;
     }
     _converse.devicelists = new _converse.DeviceLists();
@@ -513,7 +514,9 @@ function getOMEMOToolbarButton (toolbar_el, buttons) {
 converse.plugins.add('converse-omemo', {
 
     enabled (_converse) {
-        return window.libsignal && !_converse.api.settings.get("blacklisted_plugins").includes('converse-omemo') && _converse.config.get('trusted');
+        return window.libsignal &&
+            !_converse.api.settings.get("blacklisted_plugins").includes('converse-omemo') &&
+            (_converse.config.get('trusted') || !api.settings.get('clear_cache_on_logout'));
     },
 
     dependencies: ["converse-chatview", "converse-pubsub", "converse-profile"],
@@ -1358,4 +1361,3 @@ converse.plugins.add('converse-omemo', {
         });
     }
 });
-

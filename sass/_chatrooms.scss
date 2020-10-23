@@ -89,8 +89,9 @@
         .chatbox-title__text {
             display: var(--heading-display);
             font-weight: var(--chatroom-head-title-font-weight);
-            padding-right: var(--chatroom-head-title-padding-right);
             margin: auto 0;
+            padding-right: var(--chatroom-head-title-padding-right);
+            white-space: nowrap;
             .chatroom-jid {
                 font-size: var(--font-size-small);
             }
@@ -515,6 +516,28 @@
             .occupants {
                 .occupant-list {
                     padding-left: 0.3em;
+                }
+            }
+        }
+    }
+}
+
+
+@include media-breakpoint-down(sm) {
+    #conversejs.converse-mobile,
+    #conversejs.converse-overlayed,
+    #conversejs.converse-fullscreen {
+        .chatbox {
+            .box-flyout {
+                .chat-head-chatroom {
+                    .chatbox-navback {
+                        margin-right: 0 !important;
+                        .fa-arrow-left {
+                            &:before {
+                                color: var(--chatroom-head-color);
+                            }
+                        }
+                    }
                 }
             }
         }

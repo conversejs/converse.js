@@ -17,7 +17,7 @@ export default (o) => {
     const show_subject = (subject && !o.subject_hidden);
     return html`
         <div class="chatbox-title ${ show_subject ? '' :  "chatbox-title--no-desc"}">
-            ${ (o._converse.standalone) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
+            ${ (!o._converse.api.settings.get("singleton")) ? html`<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>` : '' }
             <div class="chatbox-title__text" title="${ (o._converse.locked_muc_domain !== 'hidden') ? o.jid : '' }">${ o.title }
                 ${ (o.bookmarked) ? html`<i class="fa fa-bookmark chatbox-title__text--bookmarked" title="${i18n_bookmarked}"></i>` : '' }
             </div>

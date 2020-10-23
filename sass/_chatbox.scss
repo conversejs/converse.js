@@ -618,8 +618,9 @@
         .chatbox {
             .box-flyout {
                 .chatbox-navback {
+                    margin: auto 0;
+                    margin-right: 1em;
                     display: flex;
-                    padding-right: 1em;
                     .fa-arrow-left {
                         &:before {
                             color: white;

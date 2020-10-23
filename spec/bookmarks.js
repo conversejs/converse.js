@@ -318,52 +318,90 @@ describe("A chat room", function () {
 describe("Bookmarks", function () {
 
     it("can be pushed from the XMPP server", mock.initConverse(
-            ['rosterGroupsFetched', 'connected'], {}, async function (done, _converse) {
+            ['connected', 'rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
 
         const { $msg, u } = converse.env;
         await mock.waitUntilBookmarksReturned(_converse);
 
         /* The stored data is automatically pushed to all of the user's
-            * connected resources.
-            *
-            * Publisher receives event notification
-            * -------------------------------------
-            * <message from='juliet@capulet.lit'
-            *         to='juliet@capulet.lit/balcony'
-            *         type='headline'
-            *         id='rnfoo1'>
-            * <event xmlns='http://jabber.org/protocol/pubsub#event'>
-            *     <items node='storage:bookmarks'>
-            *     <item id='current'>
-            *         <storage xmlns='storage:bookmarks'>
-            *         <conference name='The Play&apos;s the Thing'
-            *                     autojoin='true'
-            *                     jid='theplay@conference.shakespeare.lit'>
-            *             <nick>JC</nick>
-            *         </conference>
-            *         </storage>
-            *     </item>
-            *     </items>
-            * </event>
-            * </message>
-            */
-        const stanza = $msg({
+         * connected resources.
+         *
+         * Publisher receives event notification
+         * -------------------------------------
+         * <message from='juliet@capulet.lit'
+         *         to='juliet@capulet.lit/balcony'
+         *         type='headline'
+         *         id='rnfoo1'>
+         * <event xmlns='http://jabber.org/protocol/pubsub#event'>
+         *     <items node='storage:bookmarks'>
+         *     <item id='current'>
+         *         <storage xmlns='storage:bookmarks'>
+         *         <conference name='The Play&apos;s the Thing'
+         *                     autojoin='true'
+         *                     jid='theplay@conference.shakespeare.lit'>
+         *             <nick>JC</nick>
+         *         </conference>
+         *         </storage>
+         *     </item>
+         *     </items>
+         * </event>
+         * </message>
+         */
+        let stanza = $msg({
             'from': 'romeo@montague.lit',
-            'to': 'romeo@montague.lit/orchard',
+            'to': _converse.jid,
             'type': 'headline',
-            'id': 'rnfoo1'
+            'id': u.getUniqueId()
         }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
             .c('items', {'node': 'storage:bookmarks'})
                 .c('item', {'id': 'current'})
                     .c('storage', {'xmlns': 'storage:bookmarks'})
-                        .c('conference', {'name': 'The Play&apos;s the Thing',
-                                        'autojoin': 'true',
-                                        'jid':'theplay@conference.shakespeare.lit'})
-                            .c('nick').t('JC');
+                        .c('conference', {
+                            'name': 'The Play&apos;s the Thing',
+                            'autojoin': 'true',
+                            'jid':'theplay@conference.shakespeare.lit'
+                        }).c('nick').t('JC').up().up()
+                        .c('conference', {
+                            'name': 'Another bookmark',
+                            'autojoin': 'false',
+                            'jid':'another@conference.shakespeare.lit'
+                        }).c('nick').t('JC');
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.bookmarks.length);
-        expect(_converse.bookmarks.length).toBe(1);
+        expect(_converse.bookmarks.length).toBe(2);
+        expect(_converse.bookmarks.map(b => b.get('name'))).toEqual(['Another bookmark', 'The Play&apos;s the Thing']);
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
+
+        stanza = $msg({
+            'from': 'romeo@montague.lit',
+            'to': _converse.jid,
+            'type': 'headline',
+            'id': u.getUniqueId()
+        }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+            .c('items', {'node': 'storage:bookmarks'})
+                .c('item', {'id': 'current'})
+                    .c('storage', {'xmlns': 'storage:bookmarks'})
+                        .c('conference', {
+                            'name': 'The Play&apos;s the Thing',
+                            'autojoin': 'true',
+                            'jid':'theplay@conference.shakespeare.lit'
+                        }).c('nick').t('JC').up().up()
+                        .c('conference', {
+                            'name': 'Second bookmark',
+                            'autojoin': 'false',
+                            'jid':'another@conference.shakespeare.lit'
+                        }).c('nick').t('JC').up().up()
+                        .c('conference', {
+                            'name': 'Yet another bookmark',
+                            'autojoin': 'false',
+                            'jid':'yab@conference.shakespeare.lit'
+                        }).c('nick').t('JC');
+        _converse.connection._dataRecv(mock.createRequest(stanza));
+
+        await u.waitUntil(() => _converse.bookmarks.length === 3);
+        expect(_converse.bookmarks.map(b => b.get('name'))).toEqual(['Second bookmark', 'The Play&apos;s the Thing', 'Yet another bookmark']);
+        expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
+        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(2);
         done();
     }));
 

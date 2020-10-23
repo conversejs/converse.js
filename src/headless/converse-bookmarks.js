@@ -16,6 +16,17 @@ const u = converse.env.utils;
 
 Strophe.addNamespace('BOOKMARKS', 'storage:bookmarks');
 
+
+function handleBookmarksPush (message) {
+    if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"] items[node="${Strophe.NS.BOOKMARKS}"]`, message).length) {
+        api.waitUntil('bookmarksInitialized')
+            .then(() => _converse.bookmarks.createBookmarksFromStanza(message))
+            .catch(e => log.fatal(e));
+    }
+    return true;
+}
+
+
 converse.plugins.add('converse-bookmarks', {
 
     /* Plugin dependencies are other plugins which might be
@@ -92,6 +103,7 @@ converse.plugins.add('converse-bookmarks', {
         }
 
         _converse.Bookmark = Model.extend({
+            idAttribute: 'jid',
             getDisplayName () {
                 return Strophe.xmlunescape(this.get('name'));
             }
@@ -150,9 +162,9 @@ converse.plugins.add('converse-bookmarks', {
                         'from': _converse.connection.jid,
                     })
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                        .c('publish', {'node': 'storage:bookmarks'})
+                        .c('publish', {'node': Strophe.NS.BOOKMARKS})
                             .c('item', {'id': 'current'})
-                                .c('storage', {'xmlns':'storage:bookmarks'});
+                                .c('storage', {'xmlns': Strophe.NS.BOOKMARKS});
                 this.forEach(model => {
                     stanza.c('conference', {
                         'name': model.get('name'),
@@ -186,7 +198,7 @@ converse.plugins.add('converse-bookmarks', {
                     'from': _converse.connection.jid,
                     'type': 'get',
                 }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                    .c('items', {'node': 'storage:bookmarks'});
+                    .c('items', {'node': Strophe.NS.BOOKMARKS});
                 api.sendIQ(stanza)
                     .then(iq => this.onBookmarksReceived(deferred, iq))
                     .catch(iq => this.onBookmarksReceivedError(deferred, iq)
@@ -208,18 +220,18 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             createBookmarksFromStanza (stanza) {
-                const bookmarks = sizzle(
-                    `items[node="storage:bookmarks"] item storage[xmlns="storage:bookmarks"] conference`,
-                    stanza
-                );
-                bookmarks.forEach(bookmark => {
-                    const jid = bookmark.getAttribute('jid');
-                    this.create({
+                const xmlns = Strophe.NS.BOOKMARKS;
+                const sel = `items[node="${xmlns}"] item storage[xmlns="${xmlns}"] conference`;
+                sizzle(sel, stanza).forEach(el => {
+                    const jid = el.getAttribute('jid');
+                    const bookmark = this.get(jid);
+                    const attrs = {
                         'jid': jid,
-                        'name': bookmark.getAttribute('name') || jid,
-                        'autojoin': bookmark.getAttribute('autojoin') === 'true',
-                        'nick': bookmark.querySelector('nick')?.textContent || ''
-                    });
+                        'name': el.getAttribute('name') || jid,
+                        'autojoin': el.getAttribute('autojoin') === 'true',
+                        'nick': el.querySelector('nick')?.textContent || ''
+                    }
+                    bookmark ? bookmark.save(attrs) : this.create(attrs);
                 });
             },
 
@@ -291,7 +303,7 @@ converse.plugins.add('converse-bookmarks', {
             }
         }
 
-        api.listen.on('addClientFeatures', () => { 
+        api.listen.on('addClientFeatures', () => {
             if (api.settings.get('allow_bookmarks')) {
                 api.disco.own.features.add(Strophe.NS.BOOKMARKS + '+notify')
             }
@@ -309,14 +321,8 @@ converse.plugins.add('converse-bookmarks', {
 
         api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
-            _converse.connection.addHandler(message => {
-                if (sizzle('event[xmlns="'+Strophe.NS.PUBSUB+'#event"] items[node="storage:bookmarks"]', message).length) {
-                    api.waitUntil('bookmarksInitialized')
-                        .then(() => _converse.bookmarks.createBookmarksFromStanza(message))
-                        .catch(e => log.fatal(e));
-                }
-            }, null, 'message', 'headline', null, _converse.bare_jid);
-
+            const { connection } = _converse;
+            connection.addHandler(handleBookmarksPush, null, 'message', 'headline', null, _converse.bare_jid);
             await Promise.all([api.waitUntil('chatBoxesFetched')]);
             initBookmarks();
         });

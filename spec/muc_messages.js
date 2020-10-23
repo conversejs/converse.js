@@ -592,6 +592,102 @@ describe("A Groupchat Message", function () {
         done();
     }));
 
+    it("keeps the same position in history after a correction",
+        mock.initConverse(
+            ['rosterGroupsFetched'], {},
+            async function (done, _converse) {
+
+        const muc_jid = 'lounge@montague.lit';
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const view = _converse.api.chatviews.get(muc_jid);
+        const stanza = $pres({
+                to: 'romeo@montague.lit/_converse.js-29092160',
+                from: 'coven@chat.shakespeare.lit/newguy'
+            })
+            .c('x', {xmlns: Strophe.NS.MUC_USER})
+            .c('item', {
+                'affiliation': 'none',
+                'jid': 'newguy@montague.lit/_converse.js-290929789',
+                'role': 'participant'
+            }).tree();
+        _converse.connection._dataRecv(mock.createRequest(stanza));
+        const msg_id = u.getUniqueId();
+
+        // Receiving the first message
+        await view.model.handleMessageStanza($msg({
+                'from': 'lounge@montague.lit/newguy',
+                'to': _converse.connection.jid,
+                'type': 'groupchat',
+                'id': msg_id,
+            }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+
+        // Receiving own message to check order against
+        await view.model.handleMessageStanza($msg({
+            'from': 'lounge@montague.lit/romeo',
+            'to': _converse.connection.jid,
+            'type': 'groupchat',
+            'id': msg_id,
+        }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
+        expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+        expect(view.el.querySelectorAll('.chat-msg__text')[0].textContent)
+            .toBe('But soft, what light through yonder airlock breaks?');
+        expect(view.el.querySelectorAll('.chat-msg__text')[1].textContent)
+        .toBe('But soft, what light through yonder airlock breaks?');
+
+        // First message correction
+        await view.model.handleMessageStanza($msg({
+                'from': 'lounge@montague.lit/newguy',
+                'to': _converse.connection.jid,
+                'type': 'groupchat',
+                'id': u.getUniqueId(),
+            }).c('body').t('But soft, what light through yonder chimney breaks?').up()
+                .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+
+        await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
+            'But soft, what light through yonder chimney breaks?', 500);
+        expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+        await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
+
+        // Second message correction
+        await view.model.handleMessageStanza($msg({
+                'from': 'lounge@montague.lit/newguy',
+                'to': _converse.connection.jid,
+                'type': 'groupchat',
+                'id': u.getUniqueId(),
+            }).c('body').t('But soft, what light through yonder window breaks?').up()
+                .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+
+        // Second own message
+        await view.model.handleMessageStanza($msg({
+            'from': 'lounge@montague.lit/romeo',
+            'to': _converse.connection.jid,
+            'type': 'groupchat',
+            'id': u.getUniqueId(),
+        }).c('body').t('But soft, what light through yonder window breaks?').tree());
+
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__text')[0].textContent ===
+            'But soft, what light through yonder window breaks?', 500);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__text').length === 3);
+        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__text')[2].textContent ===
+            'But soft, what light through yonder window breaks?', 500);
+
+        expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
+        expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
+        const edit = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
+        edit.click();
+        const modal = await u.waitUntil(() => view.el.querySelectorAll('converse-chat-message')[0].message_versions_modal);
+        await u.waitUntil(() => u.isVisible(modal.el), 1000);
+        const older_msgs = modal.el.querySelectorAll('.older-msg');
+        expect(older_msgs.length).toBe(2);
+        expect(older_msgs[0].childNodes[2].textContent).toBe('But soft, what light through yonder airlock breaks?');
+        expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
+        expect(older_msgs[1].childNodes[0].nodeName).toBe('TIME');
+        expect(older_msgs[1].childNodes[2].textContent).toBe('But soft, what light through yonder chimney breaks?');
+        done();
+    }));
+
     it("can be sent as a correction by using the up arrow",
         mock.initConverse(
             ['rosterGroupsFetched'], {},

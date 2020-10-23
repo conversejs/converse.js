@@ -744,9 +744,14 @@ converse.plugins.add('converse-chat', {
                     message.save({'older_versions': older_versions});
                 } else {
                     // This is a correction of an earlier message we already received
-                    older_versions[message.get('time')] = message.get('message');
+                    if(Object.keys(older_versions).length) {
+                        older_versions[message.get('edited')] = message.get('message');
+                    }else {
+                        older_versions[message.get('time')] = message.get('message');
+                    }
                     attrs = Object.assign(attrs, {'older_versions': older_versions});
                     delete attrs['id']; // Delete id, otherwise a new cache entry gets created
+                    attrs['time'] = message.get('time');
                     message.save(attrs);
                 }
                 return message;

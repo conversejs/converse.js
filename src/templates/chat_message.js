@@ -28,7 +28,7 @@ export default (o) => {
                 <div class="chat-msg__body chat-msg__body--${o.message_type} ${o.received ? 'chat-msg__body--received' : '' } ${o.is_delayed ? 'chat-msg__body--delayed' : '' }">
                     <div class="chat-msg__message">
                         ${ (o.is_me_message) ? html`
-                            <time timestamp="${o.time}" class="chat-msg__time">${o.pretty_time}</time>&nbsp;
+                            <time timestamp="${o.edited || o.time}" class="chat-msg__time">${o.pretty_time}</time>&nbsp;
                             <span class="chat-msg__author">${ o.is_me_message ? '**' : ''}${o.username}</span>&nbsp;` : '' }
                         ${ o.is_retracted ? o.renderRetraction() : o.renderMessageText() }
                     </div>

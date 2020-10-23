@@ -63,7 +63,7 @@ export default class Message extends CustomElement {
 
     render () {
         const format = api.settings.get('time_format');
-        this.pretty_time = dayjs(this.time).format(format);
+        this.pretty_time = dayjs(this.edited || this.time).format(format);
         if (this.show_spinner) {
             return tpl_spinner();
         } else if (this.model.get('file') && !this.model.get('oob_url')) {
@@ -264,7 +264,7 @@ export default class Message extends CustomElement {
     renderAvatarByline () {
         return html`
             ${ this.hats.map(h => html`<span class="badge badge-secondary">${h.title}</span>`) }
-            <time timestamp="${this.time}" class="chat-msg__time">${this.pretty_time}</time>
+            <time timestamp="${this.edited || this.time}" class="chat-msg__time">${this.pretty_time}</time>
         `;
     }
 

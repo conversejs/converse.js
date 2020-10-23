@@ -744,7 +744,6 @@ export const ChatRoomView = ChatBoxView.extend({
      * @method _converse.ChatRoomView#hideOccupants
      */
     hideOccupants (ev) {
-        debugger;
         if (ev) {
             ev.preventDefault();
             ev.stopPropagation();

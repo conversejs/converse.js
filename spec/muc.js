@@ -4186,7 +4186,7 @@ describe("Groupchats", function () {
             const view = _converse.chatboxviews.get(muc_jid);
             _converse.connection._dataRecv(mock.createRequest(presence));
             expect(sizzle('.chatroom-body form.chatroom-form label:first', view.el).pop().textContent.trim())
-                .toBe('Please choose your nickname');
+                .toBe('The nickname you chose is reserved or currently in use, please choose a different one.');
 
             const input = sizzle('.chatroom-body form.chatroom-form input:first', view.el).pop();
             expect(input.value).toBe('romeo');

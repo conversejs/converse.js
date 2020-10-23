@@ -15,8 +15,13 @@ export default (o) => {
             <form class="converse-form chatroom-form converse-centered-form">
                 <fieldset class="form-group">
                     <label>${i18n_heading}</label>
-                    <input type="text" required="required" name="nick" value="${o.nick || ''}"
-                        class="form-control" placeholder="${i18n_nickname}"/>
+                    <p class="validation-message">${o.validation_message}</p>
+                    <input type="text" 
+                        required="required" 
+                        name="nick" 
+                        value="${o.nick || ''}"
+                        class="form-control ${o.validation_message ? 'error': ''}" 
+                        placeholder="${i18n_nickname}"/>
                 </fieldset>
                 <fieldset class="form-group">
                     <input type="submit" class="btn btn-primary" name="join" value="${i18n_join}"/>

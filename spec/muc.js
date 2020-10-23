@@ -4165,8 +4165,8 @@ describe("Groupchats", function () {
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                   .c('error').attrs({by:'lounge@montague.lit', type:'auth'})
                       .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-
             _converse.connection._dataRecv(mock.createRequest(presence));
+
             expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent.trim())
                 .toBe('You have been banned from this groupchat.');
             done();
@@ -4179,24 +4179,40 @@ describe("Groupchats", function () {
 
             const muc_jid = 'conflicted@muc.montague.lit';
             await mock.openChatRoomViaModal(_converse, muc_jid, 'romeo');
-            var presence = $pres().attrs({
+            const iq = await u.waitUntil(() => _.filter(
+                _converse.connection.IQ_stanzas,
+                iq => iq.querySelector(
+                    `iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                )).pop());
+
+            const features_stanza = $iq({
+                    'from': muc_jid,
+                    'id': iq.getAttribute('id'),
+                    'to': 'romeo@montague.lit/desktop',
+                    'type': 'result'
+                })
+                .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                    .c('identity', {'category': 'conference', 'name': 'A Dark Cave', 'type': 'text'}).up()
+                    .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                    .c('feature', {'var': 'muc_hidden'}).up()
+                    .c('feature', {'var': 'muc_temporary'}).up()
+            _converse.connection._dataRecv(mock.createRequest(features_stanza));
+
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+
+            const presence = $pres().attrs({
                     from: `${muc_jid}/romeo`,
                     id: u.getUniqueId(),
                     to: 'romeo@montague.lit/pda',
                     type: 'error'
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                  .c('error').attrs({by:'lounge@montague.lit', type:'cancel'})
+                  .c('error').attrs({by: muc_jid, type:'cancel'})
                       .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-
-            const view = _converse.chatboxviews.get(muc_jid);
             _converse.connection._dataRecv(mock.createRequest(presence));
-            expect(sizzle('.chatroom-body form.chatroom-form label:first', view.el).pop().textContent.trim())
-                .toBe('Please choose your nickname');
 
-            const input = sizzle('.chatroom-body form.chatroom-form input:first', view.el).pop();
-            expect(input.value).toBe('romeo');
-            input.value = 'nicky';
-            view.el.querySelector('input[type=submit]').click();
+            expect(view.el.querySelector('.muc-nickname-form .validation-message').textContent.trim())
+                .toBe('The nickname you chose is reserved or currently in use, please choose a different one.');
             done();
         }));
 

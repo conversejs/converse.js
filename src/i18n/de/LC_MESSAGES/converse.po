@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-09-24 08:57+0200\n"
+"PO-Revision-Date: 2020-11-18 18:28+0100\n"
 "Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1823,7 +1823,7 @@ msgstr "Einzelheiten finden Sie in der Entwicklerkonsole Ihres Browsers."
 
 #: dist/converse-no-dependencies.js:92526
 msgid "Are you sure you want to destroy this groupchat?"
-msgstr "Möchten Sie den Gruppenchat „%1$s” wirklich zerstören?"
+msgstr "Möchten Sie den diesen Gruppenchat wirklich zerstören?"
 
 #: dist/converse-no-dependencies.js:92529
 msgid "Please enter the XMPP address of this groupchat to confirm"
@@ -1945,13 +1945,15 @@ msgstr "Ausführen"
 
 #: dist/converse-no-dependencies.js:94560
 msgid "On which entity do you want to run commands?"
-msgstr ""
+msgstr "Auf welcher Instanz wollen Sie Befehle ausführen?"
 
 #: dist/converse-no-dependencies.js:94562
 msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
 msgstr ""
+"Bestimmte XMPP-Dienste und Instanzen erlauben es privilegierten Benutzern, "
+"Ad-hoc-Befehle darauf auszuführen."
 
 #: dist/converse-no-dependencies.js:94564
 msgid "Commands found"
@@ -1968,10 +1970,12 @@ msgstr "Keine Befehle gefunden"
 #: dist/converse-no-dependencies.js:94752
 msgid "Sorry, an error occurred while looking for commands on that entity."
 msgstr ""
+"Entschuldigung, bei der Suche nach Befehlen für diese Instanz ist ein Fehler "
+"aufgetreten."
 
 #: dist/converse-no-dependencies.js:94763
 msgid "The specified entity doesn't support ad-hoc commands"
-msgstr ""
+msgstr "Die angegebene Instanz unterstützt keine Ad-hoc-Befehle"
 
 #: dist/converse-no-dependencies.js:94876
 msgid ""
@@ -2172,14 +2176,13 @@ msgstr ""
 "Leider konnte eine empfangene OMEMO-Nachricht aufgrund eines Fehlers nicht "
 "entschlüsselt werden."
 
-#: dist/converse-no-dependencies.js:96591
-#, fuzzy
+#: dist/converse-no-dependencies.js:95009
 msgid ""
 "Sorry, could not decrypt a received OMEMO because we don't have the JID for "
 "that user."
 msgstr ""
-"Leider konnte eine empfangene OMEMO-Nachricht aufgrund eines Fehlers nicht "
-"entschlüsselt werden."
+"Leider konnte eine empfangene OMEMO-Nachricht aufgrund der fehlenden JID des "
+"Nutzers nicht entschlüsselt werden."
 
 #: dist/converse-no-dependencies.js:97137
 #, javascript-format

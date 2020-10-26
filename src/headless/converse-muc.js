@@ -2475,6 +2475,34 @@ converse.plugins.add('converse-muc', {
                     'num_unread': 0,
                     'num_unread_general': 0
                 });
+            },
+
+            listMutedUsers () {
+                const stanza = $iq({
+                    type: 'get'
+                })
+                .c('blocklist', {xmlns: Strophe.NS.BLOCKING});
+                return api.sendIQ(stanza);
+            },
+
+            async onMuteUser (message) {
+                const jid = message.get('from');
+                const stanza = $iq({
+                    to: message.get('muc_domain'),
+                    from: _converse.connection.jid,
+                    type: 'set'
+                })
+                .c('block', {xmlns: Strophe.NS.BLOCKING})
+                .c('item', {jid});
+
+                await api.sendIQ(stanza);
+
+                const mapMessages = (msg) => new Promise((resolve) => {
+                    if (msg.get('from') === jid) {
+                        msg.destroy({ success: resolve, error: resolve })
+                    }
+                });
+                await Promise.all(Array.from(this.messages).map(mapMessages));
             }
         });
 

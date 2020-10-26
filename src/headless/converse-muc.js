@@ -1795,7 +1795,6 @@ converse.plugins.add('converse-muc', {
 
 
             getUpdatedMessageAttributes (message, attrs) {
-                // Overridden in converse-muc and converse-mam
                 const new_attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs);
                 if (this.isOwnMessage(attrs)) {
                     const stanza_id_keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id'));

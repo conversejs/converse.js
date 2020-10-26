@@ -121,7 +121,6 @@ export default class MessageHistory extends CustomElement {
     }
 
     renderMessage (model) {
-        // XXX: leaky abstraction "is_only_key" from converse-omemo
         if (model.get('dangling_retraction') || model.get('is_only_key')) {
             return '';
         }

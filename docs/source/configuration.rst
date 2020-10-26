@@ -1670,6 +1670,7 @@ For example:
 
     initConverse(shadowRoot) {
         window.addEventListener("converse-loaded", function(event) {
+            const { converse } = event.detail;
             converse.initialize({
                 root: shadowRoot,
                 // Other settings go here...

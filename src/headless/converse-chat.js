@@ -578,11 +578,8 @@ converse.plugins.add('converse-chat', {
             },
 
             updateMessage (message, attrs) {
-                // Overridden in converse-muc and converse-mam
                 const new_attrs = this.getUpdatedMessageAttributes(message, attrs);
-                if (attrs) {
-                    message.save(new_attrs);
-                }
+                new_attrs && message.save(new_attrs);
             },
 
             /**

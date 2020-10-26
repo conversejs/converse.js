@@ -1655,6 +1655,5 @@ Object.assign(converse, {
  * @event converse-loaded
  * @example window.addEventListener('converse-loaded', () => converse.initialize());
  */
-const ev = new CustomEvent('converse-loaded')
-ev.converse = converse;
+const ev = new CustomEvent('converse-loaded', {'detail': { converse }});
 window.dispatchEvent(ev);

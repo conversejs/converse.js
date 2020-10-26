@@ -564,6 +564,15 @@ export const ChatRoomView = ChatBoxView.extend({
             'name': 'details'
         });
 
+        buttons.push({
+            'i18n_text': __('Muted users list'),
+            'i18n_title': __('See muted users'),
+            'handler': ev => this.listMutedUsers(ev),
+            'a_class': 'configure-chatroom-button',
+            'icon_class': 'fa-wrench',
+            'name': 'configure'
+        });
+
         if (this.model.getOwnAffiliation() === 'owner') {
             buttons.push({
                 'i18n_text': __('Configure'),
@@ -679,6 +688,9 @@ export const ChatRoomView = ChatBoxView.extend({
         this.muc_invite_modal.show(ev);
     },
 
+    listMutedUsers (ev) {
+        this.model.listMutedUsers();
+    },
 
     /**
      * Callback method that gets called after the chat has become visible.

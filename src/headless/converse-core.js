@@ -28,6 +28,7 @@ import { sprintf } from 'sprintf-js';
 dayjs.extend(advancedFormat);
 
 // Add Strophe Namespaces
+Strophe.addNamespace('BLOCKING', 'urn:xmpp:blocking');
 Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
 Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
 Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');

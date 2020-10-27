@@ -92,11 +92,6 @@ converse.plugins.add('converse-minimize', {
                     this.__super__.isNewMessageHidden.apply(this, arguments);
             },
 
-            shouldShowOnTextMessage () {
-                return !this.model.get('minimized') &&
-                    this.__super__.shouldShowOnTextMessage.apply(this, arguments);
-            },
-
             setChatBoxHeight (height) {
                 if (!this.model.get('minimized')) {
                     return this.__super__.setChatBoxHeight.call(this, height);
@@ -107,7 +102,7 @@ converse.plugins.add('converse-minimize', {
                 if (!this.model.get('minimized')) {
                     return this.__super__.setChatBoxWidth.call(this, width);
                 }
-            },
+            }
         }
     },
 

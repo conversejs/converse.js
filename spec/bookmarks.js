@@ -1,6 +1,6 @@
 /* global mock, converse */
 
-const Strophe = converse.env.Strophe;
+const { Strophe, u, sizzle, $iq } = converse.env;
 
 
 describe("A chat room", function () {
@@ -497,7 +497,6 @@ describe("Bookmarks", function () {
             );
             mock.openControlBox(_converse);
 
-            const { Strophe, u, sizzle, $iq } = converse.env;
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             const sent_stanza = await u.waitUntil(
                 () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
@@ -562,6 +561,54 @@ describe("Bookmarks", function () {
             done();
         }));
 
+        it("can be used to open a MUC from a bookmark", mock.initConverse(
+                ['rosterGroupsFetched'], {'view_mode': 'fullscreen'}, async function (done, _converse) {
+
+            const api = _converse.api;
+            await mock.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
+            await mock.openControlBox(_converse);
+            const view = await _converse.chatboxviews.get('controlbox');
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const sent_stanza = await u.waitUntil(
+                () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
+            const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
+                .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                    .c('items', {'node': 'storage:bookmarks'})
+                        .c('item', {'id': 'current'})
+                            .c('storage', {'xmlns': 'storage:bookmarks'})
+                                .c('conference', {
+                                    'name': 'The Play&apos;s the Thing',
+                                    'autojoin': 'false',
+                                    'jid': 'theplay@conference.shakespeare.lit'
+                                }).c('nick').t('JC').up().up()
+                                .c('conference', {
+                                    'name': '1st Bookmark',
+                                    'autojoin': 'false',
+                                    'jid': 'first@conference.shakespeare.lit'
+                                }).c('nick').t('JC');
+            _converse.connection._dataRecv(mock.createRequest(stanza));
+            await u.waitUntil(() => view.el.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length);
+            expect(view.el.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(2);
+            view.el.querySelector('.bookmarks.rooms-list .open-room').click();
+            await u.waitUntil(() => _converse.chatboxes.length === 2);
+            expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(false);
+
+            await u.waitUntil(() => view.el.querySelectorAll('.list-container--bookmarks .available-chatroom:not(.hidden)').length === 1);
+            view.el.querySelector('.list-container--bookmarks .available-chatroom:not(.hidden) .open-room').click();
+            await u.waitUntil(() => _converse.chatboxes.length === 3);
+            expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(true);
+            expect((await api.rooms.get('theplay@conference.shakespeare.lit')).get('hidden')).toBe(false);
+
+            view.el.querySelector('.list-container--openrooms .open-room:first-child').click();
+            await u.waitUntil(() => view.el.querySelector('.list-item.open').getAttribute('data-room-jid') === 'first@conference.shakespeare.lit');
+            expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(false);
+            expect((await api.rooms.get('theplay@conference.shakespeare.lit')).get('hidden')).toBe(true);
+            done();
+        }));
 
         it("remembers the toggle state of the bookmarks list", mock.initConverse(
                 ['rosterGroupsFetched'], {}, async function (done, _converse) {

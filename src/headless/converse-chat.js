@@ -1136,7 +1136,17 @@ converse.plugins.add('converse-chat', {
             },
 
             maybeShow (force) {
-                force && u.safeSave(this, {'hidden': false});
+                if (force) {
+                    if (_converse.isUniView()) {
+                        // We only have one chat visible at any one time.
+                        // So before opening a chat, we make sure all other chats are hidden.
+                        const filter = c => !c.get('hidden') &&
+                            c.get('jid') !== this.get('jid') &&
+                            c.get('id') !== 'controlbox';
+                        _converse.chatboxes.filter(filter).forEach(c => u.safeSave(c, {'hidden': true}));
+                    }
+                    u.safeSave(this, {'hidden': false});
+                }
                 if (_converse.isUniView() && this.get('hidden')) {
                     return;
                 } else {

@@ -121,38 +121,6 @@ function onChatBoxViewsInitialized () {
 }
 
 
-function hideChat (view) {
-    if (view.model.get('id') === 'controlbox') { return; }
-    u.safeSave(view.model, {'hidden': true});
-    view.hide();
-}
-
-
-function beforeShowingChatView (view) {
-    if (_converse.isUniView()) {
-        /* We only have one chat visible at any one
-         * time. So before opening a chat, we make sure all other
-         * chats are hidden.
-         */
-        Object.values(_converse.chatboxviews.xget(view.model.get('id')))
-            .filter(v => !v.model.get('hidden'))
-            .forEach(hideChat);
-
-        if (view.model.get('hidden')) {
-            return new Promise(resolve => {
-                u.safeSave(
-                    view.model,
-                    {'hidden': false}, {
-                        'success': resolve,
-                        'failure': resolve
-                    }
-                );
-            });
-        }
-    }
-}
-
-
 function calculateViewportHeightUnit () {
     const vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -185,7 +153,6 @@ converse.plugins.add('converse-chatboxviews', {
         _converse.ChatBoxViews = ChatBoxViews;
 
         /************************ BEGIN Event Handlers ************************/
-        api.listen.on('beforeShowingChatView', beforeShowingChatView);
         api.listen.on('chatBoxesInitialized', onChatBoxViewsInitialized);
         api.listen.on('cleanup', () => (delete _converse.chatboxviews));
         api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());

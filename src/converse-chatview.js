@@ -231,8 +231,7 @@ export const ChatBoxView = View.extend({
 
     showControlBox () {
         // Used in mobile view, to navigate back to the controlbox
-        const view = _converse.chatboxviews.get('controlbox');
-        view.show();
+        _converse.chatboxviews.get('controlbox')?.show();
         this.hide();
     },
 
@@ -449,14 +448,6 @@ export const ChatBoxView = View.extend({
             'contact': item.attributes,
             'message': item.get('status')
         });
-    },
-
-    shouldShowOnTextMessage () {
-        if (_converse.isUniView()) {
-            return false;
-        } else {
-            return !u.isVisible(this.el);
-        }
     },
 
     /**
@@ -929,19 +920,14 @@ export const ChatBoxView = View.extend({
     },
 
     show () {
+        if (this.model.get('hidden')) {
+            log.debug(`Not showing chat ${this.model.get('jid')} because it's set as hidden`);
+            return;
+        }
         if (u.isVisible(this.el)) {
             this.maybeFocus();
             return;
         }
-        /**
-         * Triggered just before a {@link _converse.ChatBoxView} or {@link _converse.ChatRoomView}
-         * will be shown.
-         * @event _converse#beforeShowingChatView
-         * @type {object}
-         * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
-         */
-        api.trigger('beforeShowingChatView', this);
-
         if (api.settings.get('animate')) {
             u.fadeIn(this.el, () => this.afterShown());
         } else {

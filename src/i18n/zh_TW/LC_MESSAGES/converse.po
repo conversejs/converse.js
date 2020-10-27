@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-09-02 21:36+0000\n"
+"PO-Revision-Date: 2020-11-18 18:39+0100\n"
 "Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "domain: converse\n"
 "lang: zh\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -90,8 +90,7 @@ msgstr "抱歉，我們無法使用域名「%1$s」來連線 XMPP 主機"
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "此 XMPP 伺服器不提供支援的認證機制"
 
-#: dist/converse-no-dependencies.js:53653
-#, fuzzy
+#: dist/converse-no-dependencies.js:55021
 msgid "Undecryptable OMEMO message"
 msgstr "無法加密的 OMEMO 訊息"
 
@@ -938,7 +937,7 @@ msgstr "使用者名稱"
 
 #: dist/converse-no-dependencies.js:86647
 msgid "user@domain"
-msgstr "user@domain"
+msgstr "使用者@域名"
 
 #: dist/converse-no-dependencies.js:86667
 #: dist/converse-no-dependencies.js:89332
@@ -1445,7 +1444,7 @@ msgstr "這間聊天室需要密碼"
 
 #: dist/converse-no-dependencies.js:91059
 msgid "Password: "
-msgstr "密碼："
+msgstr "密碼： "
 
 #: dist/converse-no-dependencies.js:91061
 msgid "Submit"
@@ -1826,8 +1825,7 @@ msgstr "來自 %1$s 的通知"
 msgid "%1$s says"
 msgstr "%1$s 說"
 
-#: dist/converse-no-dependencies.js:94073
-#, fuzzy
+#: dist/converse-no-dependencies.js:92298
 msgid "Encrypted message received"
 msgstr "收到 OMEMO 加密訊息"
 
@@ -2078,12 +2076,11 @@ msgstr "離線"
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "抱歉，解密一條 OMEMO 加密訊息時遇到了錯誤。"
 
-#: dist/converse-no-dependencies.js:96591
-#, fuzzy
+#: dist/converse-no-dependencies.js:95009
 msgid ""
 "Sorry, could not decrypt a received OMEMO because we don't have the JID for "
 "that user."
-msgstr "抱歉，解密一條 OMEMO 加密訊息時遇到了錯誤。"
+msgstr "抱歉，無法解密收到的 OMEMO 加密訊息，因爲没有該使用者的 JID。"
 
 #: dist/converse-no-dependencies.js:97137
 #, javascript-format

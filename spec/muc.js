@@ -1731,7 +1731,7 @@ describe("Groupchats", function () {
             view.model.rejoin();
             // Test that members aren't removed when we reconnect
             expect(view.model.occupants.length).toBe(8);
-            expect(occupants.querySelectorAll('li').length).toBe(8);
+            await u.waitUntil(() => occupants.querySelectorAll('li').length === 8);
             done();
         }));
 
@@ -1784,8 +1784,8 @@ describe("Groupchats", function () {
                     role: 'none'
                 });
                 _converse.connection._dataRecv(mock.createRequest(presence));
-                expect(occupants.querySelectorAll('li').length).toBe(i+1);
             }
+            await u.waitUntil(() => occupants.querySelectorAll('li').length === 1);
             done();
         }));
 

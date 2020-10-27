@@ -355,6 +355,7 @@ converse.plugins.add('converse-chat', {
 
             initMessages () {
                 this.messages = new this.messagesCollection();
+                this.messages.fetched = u.getResolveablePromise();
                 this.messages.chatbox = this;
                 this.messages.browserStorage = _converse.createStore(this.getMessagesCacheKey());
                 this.listenTo(this.messages, 'change:upload', message => {
@@ -380,11 +381,11 @@ converse.plugins.add('converse-chat', {
             },
 
             fetchMessages () {
-                if (this.messages.fetched) {
+                if (this.messages.fetched_flag) {
                     log.info(`Not re-fetching messages for ${this.get('jid')}`);
                     return;
                 }
-                this.messages.fetched = u.getResolveablePromise();
+                this.messages.fetched_flag = true;
                 const resolve = this.messages.fetched.resolve;
                 this.messages.fetch({
                     'add': true,
@@ -439,8 +440,9 @@ converse.plugins.add('converse-chat', {
              * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
              */
             queueMessage (attrs) {
-                this.msg_chain = (this.msg_chain || this.messages.fetched);
-                this.msg_chain = this.msg_chain.then(() => this.onMessage(attrs));
+                this.msg_chain = (this.msg_chain || this.messages.fetched)
+                    .then(() => this.onMessage(attrs))
+                    .catch(e => log.error(e));
                 return this.msg_chain;
             },
 
@@ -485,7 +487,8 @@ converse.plugins.add('converse-chat', {
                     log.error(e);
                 } finally {
                     delete this.msg_chain;
-                    delete this.messages.fetched;
+                    delete this.messages.fetched_flag;
+                    this.messages.fetched = u.getResolveablePromise();
                 }
             },
 
@@ -1009,12 +1012,19 @@ converse.plugins.add('converse-chat', {
             },
 
             /**
+             * Queue the creation of a message, to make sure that we don't run
+             * into a race condition whereby we're creating a new message
+             * before the collection has been fetched.
              * @async
              * @private
-             * @method _converse.ChatBox#createMessage
+             * @method _converse.ChatRoom#queueMessageCreation
+             * @param { Object } attrs
              */
-            createMessage (attrs, options) {
-                return this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options)).catch(e => log.error(e));
+            async createMessage (attrs, options) {
+                attrs.time = attrs.time || (new Date()).toISOString();
+                await this.messages.fetched;
+                const p = this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options));
+                return p;
             },
 
             /**

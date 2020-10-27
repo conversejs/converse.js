@@ -427,8 +427,8 @@ converse.plugins.add('converse-muc', {
                 if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED && (await this.isJoined())) {
                     // We've restored the room from cache and we're still joined.
                     await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
-                    await this.fetchOccupants();
-                    await this.fetchMessages();
+                    await this.fetchOccupants().catch(e => log.error(e));
+                    await this.fetchMessages().catch(e => log.error(e));
                     return true;
                 } else {
                     await this.clearCache();

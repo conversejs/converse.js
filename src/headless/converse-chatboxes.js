@@ -89,7 +89,6 @@ converse.plugins.add('converse-chatboxes', {
             }
         });
 
-
         async function createChatBox (jid, attrs, Model) {
             jid = Strophe.getBareJidFromJid(jid.toLowerCase());
             Object.assign(attrs, {'jid': jid, 'id': jid});
@@ -106,7 +105,6 @@ converse.plugins.add('converse-chatboxes', {
                 return null;
             }
             _converse.chatboxes.add(chatbox);
-            await chatbox.messages.fetched;
             return chatbox;
         }
 

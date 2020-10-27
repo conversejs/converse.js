@@ -5,7 +5,8 @@ const { Strophe, u, sizzle, $iq } = converse.env;
 
 describe("A chat room", function () {
 
-    it("can be bookmarked", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
+    it("can be bookmarked", mock.initConverse(
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -13,17 +14,18 @@ describe("A chat room", function () {
             ['http://jabber.org/protocol/pubsub#publish-options']
         );
         const { u, $iq } = converse.env;
-        let sent_stanza, IQ_id;
-        const sendIQ = _converse.connection.sendIQ;
-        spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-            sent_stanza = iq;
-            IQ_id = sendIQ.bind(this)(iq, callback, errback);
-        });
         spyOn(_converse.connection, 'getUniqueId').and.callThrough();
 
+        const nick = 'JC';
+        const muc_jid = 'theplay@conference.shakespeare.lit';
         await mock.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
-        const jid = 'theplay@conference.shakespeare.lit';
-        const view = _converse.chatboxviews.get(jid);
+        await mock.getRoomFeatures(_converse, muc_jid, []);
+        await mock.waitForReservedNick(_converse, muc_jid, nick);
+        await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
+        const view = _converse.chatboxviews.get(muc_jid);
+        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        await mock.returnMemberLists(_converse, muc_jid, [], ['member', 'admin', 'owner']);
+
         spyOn(view, 'renderBookmarkForm').and.callThrough();
         spyOn(view, 'closeForm').and.callThrough();
         await u.waitUntil(() => view.el.querySelector('.toggle-bookmark') !== null);
@@ -77,12 +79,13 @@ describe("A chat room", function () {
         form.querySelector('input[name="autojoin"]').checked = 'checked';
         form.querySelector('input[name="nick"]').value = 'JC';
 
-        _converse.connection.IQ_stanzas = [];
-        view.el.querySelector('.btn-primary').click();
+        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        view.el.querySelector('.muc-bookmark-form .btn-primary').click();
 
-        await u.waitUntil(() => sent_stanza);
+        const sent_stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(s => sizzle('iq publish[node="storage:bookmarks"]', s).length).pop());
         expect(Strophe.serialize(sent_stanza)).toBe(
-            `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="set" xmlns="jabber:client">`+
+            `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                     `<publish node="storage:bookmarks">`+
                         `<item id="current">`+
@@ -110,13 +113,13 @@ describe("A chat room", function () {
             `</iq>`
         );
         /* Server acknowledges successful storage
-            *
-            * <iq to='juliet@capulet.lit/balcony' type='result' id='pip1'/>
-            */
+         *
+         * <iq to='juliet@capulet.lit/balcony' type='result' id='pip1'/>
+         */
         const stanza = $iq({
             'to':_converse.connection.jid,
             'type':'result',
-            'id':IQ_id
+            'id': sent_stanza.getAttribute('id')
         });
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.get('bookmarked'));

@@ -63,9 +63,10 @@ converse.plugins.add('converse-headlines', {
                 }
             },
 
-            initialize () {
-                this.initMessages();
+            async initialize () {
                 this.set({'box_id': `box-${this.get('jid')}`});
+                this.initMessages();
+                await this.fetchMessages();
                 /**
                  * Triggered once a {@link _converse.HeadlinesBox} has been created and initialized.
                  * @event _converse#headlinesBoxInitialized

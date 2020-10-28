@@ -80,8 +80,10 @@ export const ChatBoxView = View.extend({
         this.listenTo(this.model.notifications, 'change', this.renderNotifications);
         this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
 
-        await this.updateAfterMessagesFetched();
+        await this.model.messages.fetched;
+        this.insertIntoDOM();
         this.model.maybeShow();
+        this.scrollDown();
         /**
          * Triggered once the {@link _converse.ChatBoxView} has been initialized
          * @event _converse#chatBoxViewInitialized
@@ -335,21 +337,6 @@ export const ChatBoxView = View.extend({
     getToolbarOptions () {
         //  FIXME: can this be removed?
         return {};
-    },
-
-    async updateAfterMessagesFetched () {
-        await this.model.messages.fetched;
-        this.renderChatContent();
-        this.insertIntoDOM();
-        this.scrollDown();
-        /**
-         * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
-         * `sessionStorage` but **NOT** from the server.
-         * @event _converse#afterMessagesFetched
-         * @type {_converse.ChatBoxView | _converse.ChatRoomView}
-         * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
-         */
-        api.trigger('afterMessagesFetched', this.model);
     },
 
     /**

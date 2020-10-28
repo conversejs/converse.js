@@ -121,15 +121,14 @@ export const ChatRoomView = ChatBoxView.extend({
         this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
         this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
 
-        await this.updateAfterMessagesFetched();
-
+        this.renderChatContent();
+        this.insertIntoDOM();
         // Register later due to await
         const user_settings = await _converse.api.user.settings.getModel();
         this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
-
         this.onConnectionStatusChanged();
         this.model.maybeShow();
-
+        this.scrollDown();
         /**
          * Triggered once a { @link _converse.ChatRoomView } has been opened
          * @event _converse#chatRoomViewInitialized

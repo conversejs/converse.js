@@ -356,6 +356,16 @@ converse.plugins.add('converse-chat', {
             initMessages () {
                 this.messages = new this.messagesCollection();
                 this.messages.fetched = u.getResolveablePromise();
+                this.messages.fetched.then(() => {
+                    /**
+                     * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
+                     * `sessionStorage` but **NOT** from the server.
+                     * @event _converse#afterMessagesFetched
+                     * @type {_converse.ChatBoxView | _converse.ChatRoomView}
+                     * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+                     */
+                    api.trigger('afterMessagesFetched', this);
+                });
                 this.messages.chatbox = this;
                 this.messages.browserStorage = _converse.createStore(this.getMessagesCacheKey());
                 this.listenTo(this.messages, 'change:upload', message => {

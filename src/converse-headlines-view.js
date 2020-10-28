@@ -24,7 +24,7 @@ const HeadlinesBoxView = ChatBoxView.extend({
         'keypress textarea.chat-textarea': 'onKeyDown'
     },
 
-    initialize () {
+    async initialize () {
         this.initDebounced();
 
         this.model.disable_mam = true; // Don't do MAM queries for this box
@@ -35,9 +35,10 @@ const HeadlinesBoxView = ChatBoxView.extend({
 
         this.render();
         this.renderHeading();
-        this.updateAfterMessagesFetched();
-        this.insertIntoDOM().hide();
+        await this.model.messages.fetched;
+        this.insertIntoDOM();
         this.model.maybeShow();
+        this.scrollDown();
         /**
          * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
          * @event _converse#headlinesBoxViewInitialized

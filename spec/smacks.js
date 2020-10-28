@@ -231,9 +231,8 @@ describe("XEP-0198 Stream Management", function () {
             })
         );
 
-        _converse.no_connection_on_bind = true; // XXX Don't trigger CONNECTED in tests/mock.js
+        _converse.no_connection_on_bind = true; // XXX Don't trigger CONNECTED in MockConnection
         await _converse.api.user.login('romeo@montague.lit', 'secret');
-        delete _converse.no_connection_on_bind;
 
         const sent_stanzas = _converse.connection.sent_stanzas;
         const stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'resume')).pop());
@@ -242,7 +241,6 @@ describe("XEP-0198 Stream Management", function () {
         const result = u.toStanza(`<resumed xmlns="urn:xmpp:sm:3" h="another-sequence-number" previd="some-long-sm-id"/>`);
         _converse.connection._dataRecv(mock.createRequest(result));
         expect(_converse.session.get('smacks_enabled')).toBe(true);
-
 
         const nick = 'romeo';
         const func = _converse.chatboxes.onChatBoxesFetched;
@@ -274,6 +272,8 @@ describe("XEP-0198 Stream Management", function () {
 
         await u.waitUntil(() => muc.messages.length);
         expect(muc.messages.at(0).get('message')).toBe('First message')
+
+        delete _converse.no_connection_on_bind;
         done();
     }));
 });

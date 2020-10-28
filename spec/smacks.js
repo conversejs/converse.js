@@ -262,17 +262,12 @@ describe("XEP-0198 Stream Management", function () {
 
         await _converse.api.waitUntil('chatBoxesFetched');
         const muc = _converse.chatboxes.get(muc_jid);
-        await u.waitUntil(() => muc.message_queue.length === 1);
-
-        const view = _converse.chatboxviews.get(muc_jid);
         await mock.getRoomFeatures(_converse, muc_jid);
         await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
-        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
-        await view.model.messages.fetched;
-
+        await u.waitUntil(() => (muc.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        await muc.messages.fetched;
         await u.waitUntil(() => muc.messages.length);
         expect(muc.messages.at(0).get('message')).toBe('First message')
-
         delete _converse.no_connection_on_bind;
         done();
     }));

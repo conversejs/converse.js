@@ -475,13 +475,6 @@ converse.plugins.add('converse-muc', {
                 return this;
             },
 
-            async fetchMessages () {
-                await _converse.ChatBox.prototype.fetchMessages.call(this);
-                const queued_messages = this.message_queue.map(m => this.queueMessage(m));
-                this.message_queue = [];
-                return Promise.all(queued_messages);
-            },
-
             async clearCache () {
                 this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                 if (this.occupants.length) {
@@ -531,11 +524,6 @@ converse.plugins.add('converse-muc', {
             rejoin () {
                 this.clearCache();
                 return this.join();
-            },
-
-            initMessages () {
-                this.message_queue = [];
-                _converse.ChatBox.prototype.initMessages.call(this);
             },
 
             async onConnectionStatusChanged () {
@@ -1936,24 +1924,6 @@ converse.plugins.add('converse-muc', {
             },
 
             /**
-             * Queue an incoming message stanza meant for this {@link _converse.Chatroom} for processing.
-             * @async
-             * @private
-             * @method _converse.ChatRoom#queueMessage
-             * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
-             */
-            queueMessage (attrs) {
-                if (this.messages?.fetched) {
-                    this.msg_chain = (this.msg_chain || this.messages.fetched);
-                    this.msg_chain = this.msg_chain.then(() => this.onMessage(attrs));
-                    return this.msg_chain;
-                } else {
-                    this.message_queue.push(attrs);
-                    return Promise.resolve();
-                }
-            },
-
-            /**
              * @param {String} actor - The nickname of the actor that caused the notification
              * @param {String|Array<String>} states - The state or states representing the type of notificcation
              */
@@ -2752,7 +2722,6 @@ converse.plugins.add('converse-muc', {
                             const muc = _converse.chatboxes.get(muc_jid);
                             if (muc) {
                                 await muc.initialized;
-                                await muc.messages.fetched
                                 muc.message_handler.run(stanza);
                             }
                         });

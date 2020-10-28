@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-09-06 15:45+0000\n"
+"PO-Revision-Date: 2020-11-18 18:29+0100\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -98,10 +98,9 @@ msgstr ""
 "Le serveur XMPP n’a pas proposé un mécanisme d’authentification pris en "
 "charge"
 
-#: dist/converse-no-dependencies.js:53653
-#, fuzzy
+#: dist/converse-no-dependencies.js:55021
 msgid "Undecryptable OMEMO message"
-msgstr "Message OMEMO non chiffrable"
+msgstr "Message OMEMO non déchiffrable"
 
 #: dist/converse-no-dependencies.js:53712
 msgid "Sorry, could not determine upload URL."
@@ -1912,10 +1911,9 @@ msgstr "Notification depuis %1$s"
 msgid "%1$s says"
 msgstr "%1$s dit"
 
-#: dist/converse-no-dependencies.js:94073
-#, fuzzy
+#: dist/converse-no-dependencies.js:92298
 msgid "Encrypted message received"
-msgstr "Message OMEMO reçu"
+msgstr "Message chiffré reçu"
 
 #: dist/converse-no-dependencies.js:94115
 msgid "has gone offline"

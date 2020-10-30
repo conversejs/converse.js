@@ -10,6 +10,8 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
 import log from '@converse/headless/log';
 import pluggable from 'pluggable.js/src/pluggable';
+import syncDriver from 'localforage-webextensionstorage-driver/sync';
+import localDriver from 'localforage-webextensionstorage-driver/local';
 import sizzle from 'sizzle';
 import stanza_utils from "@converse/headless/utils/stanza";
 import u from '@converse/headless/utils/core';
@@ -976,7 +978,17 @@ async function initSessionStorage () {
 function initPersistentStorage () {
     if (api.settings.get('persistent_store') === 'sessionStorage') {
         return;
+    } else if (_converse.api.settings.get("persistent_store") === 'BrowserExtLocal') {
+        Storage.localForage.defineDriver(localDriver).then(() => Storage.localForage.setDriver('webExtensionLocalStorage'));
+        _converse.storage['persistent'] = Storage.localForage;
+        return;
+
+    } else if (_converse.api.settings.get("persistent_store") === 'BrowserExtSync') {
+        Storage.localForage.defineDriver(syncDriver).then(() => Storage.localForage.setDriver('webExtensionSyncStorage'));
+        _converse.storage['persistent'] = Storage.localForage;
+        return;
     }
+
     const config = {
         'name': _converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
         'storeName': _converse.bare_jid

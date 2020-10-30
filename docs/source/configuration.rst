@@ -1587,7 +1587,7 @@ persistent_store
 ----------------
 
 * Default: ``localStorage``
-* Valid options: ``localStorage``, ``IndexedDB``, ``sessionStorage``
+* Valid options: ``localStorage``, ``IndexedDB``, ``sessionStorage``, ``BrowserExtLocal``, ``BrowserExtSync``
 
 Determines which store is used for storing persistent data.
 
@@ -1597,6 +1597,17 @@ From version 6.0.0 onwards, Converse supports storing data in
 IndexedDB is not subjected to the same space constraints as localStorage and is
 also a requirement for progressive web apps which don't need persistent a
 internet connectivity to be functional.
+
+From version 7.0.0 onwards, Converse supports storing data in
+`Browser Extension storage <https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage#Example_extensions>`_.
+
+When Converse is running inside a web browser extension, it can now take advantage of storage optimized to meet the specific storage needs of extensions.
+
+BrowserExtSync represents the sync storage area. 
+Items in sync storage are synced by the browser and are available across all instances of that browser that the user is logged into, across different devices.
+
+BrowserExtLocal represents the local storage area. 
+Items in local storage are local to the machine the extension was installed on
 
 
 push_app_servers

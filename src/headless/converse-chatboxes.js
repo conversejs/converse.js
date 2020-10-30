@@ -32,7 +32,8 @@ converse.plugins.add('converse-chatboxes', {
             'privateChatsAutoJoined'
         ]);
 
-        let msg_counter = 0, favicon = new Favico({type : 'circle', position: 'up', animation: 'none'});
+        let msg_counter = 0;
+        const favicon = new Favico({type : 'circle', position: 'up', animation: 'none'});
 
         _converse.incrementMsgCounter = function () {
             msg_counter += 1;

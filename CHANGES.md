@@ -41,6 +41,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #2307: BootstrapModal is not accessible to plugins
 - #2308: Allow getHats method to be overriden in the `overrides` object in plugins.
 - #2321: When Converse runs inside a browser extension, enable browser sync and local storage for persistent storage
+- #1250: Change favicon color when unread messages
 - The `trusted` configuration setting has been removed in favor of two new settings:
     [allow_user_trust_override](https://conversejs.org/docs/html/configuration.html#allow-user-trust-override)
     [clear_cache_on_logout](https://conversejs.org/docs/html/configuration.html#clear-cache-on-logout)

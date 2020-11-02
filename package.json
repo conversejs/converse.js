@@ -78,6 +78,7 @@
     "eslint-plugin-lodash": "^7.1.0",
     "exports-loader": "^0.7.0",
     "fast-text-encoding": "^1.0.2",
+    "favico.js-slevomat": "^0.3.11",    
     "file-loader": "^6.0.0",
     "haunted": "^4.7.0",
     "html-webpack-plugin": "^4.3.0",

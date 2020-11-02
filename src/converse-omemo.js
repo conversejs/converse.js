@@ -515,8 +515,9 @@ converse.plugins.add('converse-omemo', {
 
     enabled (_converse) {
         return window.libsignal &&
-            !_converse.api.settings.get("blacklisted_plugins").includes('converse-omemo') &&
-            (_converse.config.get('trusted') || !api.settings.get('clear_cache_on_logout'));
+            _converse.config.get('trusted') &&
+            !api.settings.get('clear_cache_on_logout') &&
+            !_converse.api.settings.get("blacklisted_plugins").includes('converse-omemo');
     },
 
     dependencies: ["converse-chatview", "converse-pubsub", "converse-profile"],

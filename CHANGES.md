@@ -2,6 +2,8 @@
 
 ## 7.0.1 (Unreleased)
 
+- #2328: Honor `use_system_emojis` in emoji-picker
+
 ## 7.0.0 (2020-11-18)
 
 *Note for plugin authors:*

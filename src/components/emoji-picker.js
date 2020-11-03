@@ -61,7 +61,7 @@ export default class EmojiPicker extends CustomElement {
             'query': this.query,
             'search_results': this.search_results,
             'render_emojis': this.render_emojis,
-            'sn2Emoji': shortname => u.shortnamesToEmojis(this.getTonedShortname(shortname))
+            'sn2Emoji': shortname => u.shortnamesToEmojis(this.getTonedShortname(shortname), {'add_title_wrapper': true})
         });
     }
 

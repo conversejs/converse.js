@@ -28,7 +28,7 @@ const emoji_picker_header = (o) => {
 const emoji_item = (o) => {
     return html`
         <li class="emoji insert-emoji ${o.shouldBeHidden(o.emoji.sn) ? 'hidden' : ''}" data-emoji="${o.emoji.sn}" title="${o.emoji.sn}">
-            <a href="#" @click=${o.insertEmoji} data-emoji="${o.emoji.sn}">${u.shortnamesToEmojis(o.emoji.sn)}</a>
+            <a href="#" @click=${o.insertEmoji} data-emoji="${o.emoji.sn}">${u.shortnamesToEmojis(o.emoji.sn, {'add_title_wrapper': true})}</a>
         </li>
     `;
 }
@@ -65,7 +65,7 @@ export const tpl_all_emojis = (o) => {
 const skintone_emoji = (o) => {
     return html`
         <li data-skintone="${o.skintone}" class="emoji-skintone ${(o.current_skintone === o.skintone) ? 'picked' : ''}">
-            <a class="pick-skintone" href="#" data-skintone="${o.skintone}" @click=${o.onSkintonePicked}>${u.shortnamesToEmojis(':'+o.skintone+':')}</a>
+            <a class="pick-skintone" href="#" data-skintone="${o.skintone}" @click=${o.onSkintonePicked}>${u.shortnamesToEmojis(':'+o.skintone+':', {'add_title_wrapper': true})}</a>
         </li>`;
 }
 

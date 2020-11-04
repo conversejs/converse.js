@@ -1058,16 +1058,16 @@ describe("Chatboxes", function () {
             await mock.openControlBox(_converse);
 
             expect(document.title).toBe('Converse Tests');
-
+            
+            _converse.api.settings.set('update_title', false);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const previous_state = _converse.windowState;
-            const message = 'This message will increment the message counter';
             const msg = $msg({
                     from: sender_jid,
                     to: _converse.connection.jid,
                     type: 'chat',
                     id: u.getUniqueId()
-                }).c('body').t(message).up()
+                }).c('body').t('This message will increment the message counter').up()
                   .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
             _converse.windowState = 'hidden';
 
@@ -1078,8 +1078,21 @@ describe("Chatboxes", function () {
             await _converse.handleMessageStanza(msg);
             expect(_converse.incrementMsgCounter).toHaveBeenCalled();
             expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
-            expect(document.title).toBe('Messages (1) Converse Tests');
+            expect(document.title).toBe('Converse Tests');
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
+            
+            _converse.api.settings.set('update_title', true);
+            const msg2 = $msg({
+                    from: sender_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: u.getUniqueId()
+                }).c('body').t('This message increment the message counter AND update the page title').up()
+                  .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+
+            await _converse.handleMessageStanza(msg2);
+            expect(document.title).toBe('Messages (2) Converse Tests');
+
             _converse.windowSate = previous_state;
             done();
         }));

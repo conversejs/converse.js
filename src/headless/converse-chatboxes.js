@@ -32,32 +32,40 @@ converse.plugins.add('converse-chatboxes', {
             'privateChatsAutoJoined'
         ]);
 
+        api.settings.extend({
+            'update_title': true
+        });
+
         let msg_counter = 0;
         const favicon = new Favico({type : 'circle', position: 'up', animation: 'none'});
 
         _converse.incrementMsgCounter = function () {
             msg_counter += 1;
             favicon.badge(msg_counter);
-            const title = document.title;
-            if (!title) {
-                return;
-            }
-            if (title.search(/^Messages \(\d+\) /) === -1) {
-                document.title = `Messages (${msg_counter}) ${title}`;
-            } else {
-                document.title = title.replace(/^Messages \(\d+\) /, `Messages (${msg_counter}) `);
+            if (api.settings.get('update_title')) {
+                const title = document.title;
+                if (!title) {
+                    return;
+                }
+                if (title.search(/^Messages \(\d+\) /) === -1) {
+                    document.title = `Messages (${msg_counter}) ${title}`;
+                } else {
+                    document.title = title.replace(/^Messages \(\d+\) /, `Messages (${msg_counter}) `);
+                }
             }
         };
 
         _converse.clearMsgCounter = function () {
             msg_counter = 0;
             favicon.badge(msg_counter);
-            const title = document.title;
-            if (!title) {
-                return;
-            }
-            if (title.search(/^Messages \(\d+\) /) !== -1) {
-                document.title = title.replace(/^Messages \(\d+\) /, "");
+            if (api.settings.get('update_title')) {
+                const title = document.title;
+                if (!title) {
+                    return;
+                }
+                if (title.search(/^Messages \(\d+\) /) !== -1) {
+                    document.title = title.replace(/^Messages \(\d+\) /, "");
+                }
             }
         };
 

@@ -1954,6 +1954,13 @@ Converse render the emojis with `Twemoji <https://twemoji.twitter.com/>`_.
 See also `emoji_image_path`_.
 
 
+update_title
+------------
+* Default: ``true``
+
+Determines whether to shows unread messages counter in the page title.
+
+
 visible_toolbar_buttons
 -----------------------
 

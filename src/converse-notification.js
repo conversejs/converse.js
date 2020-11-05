@@ -3,6 +3,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import Favico from 'favico.js-slevomat';
 import log from "@converse/headless/log";
 import { __ } from './i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
@@ -11,6 +12,18 @@ const { Strophe } = converse.env;
 const u = converse.env.utils;
 
 const supports_html5_notification = "Notification" in window;
+
+converse.env.Favico = Favico;
+let favicon;
+
+function updateUnreadFavicon () {
+    if (api.settings.get('update_title')) {
+        favicon = favicon ?? new converse.env.Favico({type: 'circle', animation: 'pop'});
+        const chats = _converse.chatboxes.models;
+        const num_unread = chats.reduce((acc, chat) => (acc + (chat.get('num_unread') || 0)), 0);
+        favicon.badge(num_unread);
+    }
+}
 
 
 converse.plugins.add('converse-notification', {
@@ -23,6 +36,7 @@ converse.plugins.add('converse-notification', {
          */
 
         api.settings.extend({
+            update_title: true,
             notify_all_room_messages: false,
             show_desktop_notifications: true,
             show_chat_state_notifications: false,
@@ -297,6 +311,13 @@ converse.plugins.add('converse-notification', {
                 Notification.requestPermission();
             }
         };
+
+        /************************ BEGIN Event Handlers ************************/
+
+        api.listen.on('clearSession', () => (favicon = null)); // Needed for tests
+
+        api.waitUntil('chatBoxesInitialized').then(
+            () => _converse.chatboxes.on('change:num_unread', updateUnreadFavicon));
 
         api.listen.on('pluginsInitialized', function () {
             // We only register event handlers after all plugins are

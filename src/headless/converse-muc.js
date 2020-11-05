@@ -1143,7 +1143,7 @@ converse.plugins.add('converse-muc', {
              */
             getDiscoInfo () {
                 return api.disco.getIdentity('conference', 'text', this.get('jid'))
-                    .then(identity => this.save({'name': identity && identity.get('name')}))
+                    .then(identity => this.save({'name': identity?.get('name')}))
                     .then(() => this.getDiscoInfoFields())
                     .then(() => this.getDiscoInfoFeatures())
                     .catch(e => log.error(e));
@@ -2428,7 +2428,6 @@ converse.plugins.add('converse-muc', {
                         }
                         if (this.isUserMentioned(message)) {
                             settings.num_unread = this.get('num_unread') + 1;
-                            _converse.incrementMsgCounter();
                         }
                         this.save(settings);
                     } else {

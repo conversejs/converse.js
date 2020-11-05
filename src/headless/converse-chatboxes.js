@@ -7,7 +7,6 @@ import "./converse-emoji";
 import { Collection } from "@converse/skeletor/src/collection";
 import { _converse, api, converse } from "./converse-core";
 import log from "./log";
-import Favico from 'favico.js-slevomat';
 
 const { Strophe } = converse.env;
 
@@ -32,44 +31,6 @@ converse.plugins.add('converse-chatboxes', {
             'privateChatsAutoJoined'
         ]);
 
-        api.settings.extend({
-            'update_title': true
-        });
-
-        let msg_counter = 0;
-        const favicon = new Favico({type : 'circle', position: 'up', animation: 'none'});
-
-        _converse.incrementMsgCounter = function () {
-            msg_counter += 1;
-            favicon.badge(msg_counter);
-            if (api.settings.get('update_title')) {
-                const title = document.title;
-                if (!title) {
-                    return;
-                }
-                if (title.search(/^Messages \(\d+\) /) === -1) {
-                    document.title = `Messages (${msg_counter}) ${title}`;
-                } else {
-                    document.title = title.replace(/^Messages \(\d+\) /, `Messages (${msg_counter}) `);
-                }
-            }
-        };
-
-        _converse.clearMsgCounter = function () {
-            msg_counter = 0;
-            favicon.badge(msg_counter);
-            if (api.settings.get('update_title')) {
-                const title = document.title;
-                if (!title) {
-                    return;
-                }
-                if (title.search(/^Messages \(\d+\) /) !== -1) {
-                    document.title = title.replace(/^Messages \(\d+\) /, "");
-                }
-            }
-        };
-
-
         _converse.ChatBoxes = Collection.extend({
             comparator: 'time_opened',
 
@@ -80,12 +41,12 @@ converse.plugins.add('converse-chatboxes', {
             onChatBoxesFetched (collection) {
                 collection.filter(c => !c.isValid()).forEach(c => c.destroy());
                 /**
-                 * Triggered when a message stanza is been received and processed.
+                 * Triggered once all chat boxes have been recreated from the browser cache
                  * @event _converse#chatBoxesFetched
                  * @type { object }
                  * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
                  * @property { XMLElement } stanza
-                 * @example _converse.api.listen.on('message', obj => { ... });
+                 * @example _converse.api.listen.on('chatBoxesFetched', obj => { ... });
                  * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
                  */
                 api.trigger('chatBoxesFetched');
@@ -141,7 +102,6 @@ converse.plugins.add('converse-chatboxes', {
 
         api.listen.on('presencesInitialized', (reconnecting) => _converse.chatboxes.onConnected(reconnecting));
         api.listen.on('reconnected', () => _converse.chatboxes.forEach(m => m.onReconnection()));
-        api.listen.on('windowStateChanged', d => (d.state === 'visible') && _converse.clearMsgCounter());
         /************************ END Event Handlers ************************/
 
 

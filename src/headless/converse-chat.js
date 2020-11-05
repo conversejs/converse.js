@@ -1205,7 +1205,6 @@ converse.plugins.add('converse-chat', {
                             settings['first_unread_id'] = message.get('id');
                         }
                         this.save(settings);
-                        _converse.incrementMsgCounter();
                     } else {
                         this.sendMarkerForMessage(message);
                     }

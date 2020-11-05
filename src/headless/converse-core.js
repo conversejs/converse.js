@@ -979,12 +979,16 @@ function initPersistentStorage () {
     if (api.settings.get('persistent_store') === 'sessionStorage') {
         return;
     } else if (_converse.api.settings.get("persistent_store") === 'BrowserExtLocal') {
-        Storage.localForage.defineDriver(localDriver).then(() => Storage.localForage.setDriver('webExtensionLocalStorage'));
+        Storage.localForage.defineDriver(localDriver).then(
+            () => Storage.localForage.setDriver('webExtensionLocalStorage')
+        );
         _converse.storage['persistent'] = Storage.localForage;
         return;
 
     } else if (_converse.api.settings.get("persistent_store") === 'BrowserExtSync') {
-        Storage.localForage.defineDriver(syncDriver).then(() => Storage.localForage.setDriver('webExtensionSyncStorage'));
+        Storage.localForage.defineDriver(syncDriver).then(
+            () => Storage.localForage.setDriver('webExtensionSyncStorage')
+        );
         _converse.storage['persistent'] = Storage.localForage;
         return;
     }

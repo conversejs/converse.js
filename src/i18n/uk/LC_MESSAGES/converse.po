@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-02-13 23:50+0000\n"
+"PO-Revision-Date: 2020-11-18 18:39+0100\n"
 "Last-Translator: Tymofij Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
 "translations/uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.3.2\n"
 "domain: converse\n"
 "lang: uk\n"
 
@@ -91,8 +91,7 @@ msgstr "На жаль, не вдалося підключитися до хос�
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "Сервер XMPP не пропонує підтримуваний механізм автентифікації"
 
-#: dist/converse-no-dependencies.js:53653
-#, fuzzy
+#: dist/converse-no-dependencies.js:55021
 msgid "Undecryptable OMEMO message"
 msgstr "Нешифроване повідомлення OMEMO"
 
@@ -116,17 +115,15 @@ msgstr ""
 msgid "Sorry, could not succesfully upload your file."
 msgstr "На жаль, не вдалося завантажити файл."
 
-#: dist/converse-no-dependencies.js:53997
-#: dist/converse-no-dependencies.js:59461
-#, fuzzy
+#: dist/converse-no-dependencies.js:55354
+#: dist/converse-no-dependencies.js:60856
 msgid "You're not allowed to retract your message."
-msgstr "Вам не дозволено створювати нові кімнати"
+msgstr "Вам не дозволено відкликати своє повідомлення."
 
-#: dist/converse-no-dependencies.js:53999
-#: dist/converse-no-dependencies.js:59465
-#, fuzzy
+#: dist/converse-no-dependencies.js:55356
+#: dist/converse-no-dependencies.js:60860
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "Клацніть, щоб видалити цей контакт"
+msgstr "На жаль, сталася помилка під час спроби відкликати ваше повідомлення."
 
 #: dist/converse-no-dependencies.js:54004
 #, fuzzy

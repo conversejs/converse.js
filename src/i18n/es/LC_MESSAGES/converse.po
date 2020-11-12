@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-05-18 05:41+0000\n"
+"PO-Revision-Date: 2020-11-18 18:40+0100\n"
 "Last-Translator: sergio <srg.dev@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: es\n"
 "Language-Code: es\n"
@@ -788,7 +788,7 @@ msgstr "Dirección XMPP"
 #: dist/converse-no-dependencies.js:81823
 #: dist/converse-no-dependencies.js:95444
 msgid "Email"
-msgstr "Email"
+msgstr "Correo electrónico"
 
 #: dist/converse-no-dependencies.js:81825
 #: dist/converse-no-dependencies.js:95446

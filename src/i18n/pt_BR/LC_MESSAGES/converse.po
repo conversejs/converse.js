@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-08-20 15:36+0000\n"
+"PO-Revision-Date: 2020-11-18 18:42+0100\n"
 "Last-Translator: aevw <arcanevw@tuta.io>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -92,8 +92,7 @@ msgstr "Desculpe, não conseguimos nos conectar ao host XMPP com domínio: %1$s"
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "O servidor XMPP não ofereceu um mecanismo de autenticação suportado"
 
-#: dist/converse-no-dependencies.js:53653
-#, fuzzy
+#: dist/converse-no-dependencies.js:55021
 msgid "Undecryptable OMEMO message"
 msgstr "Mensagem OMEMO indecifrável"
 
@@ -748,7 +747,7 @@ msgstr "Endereço XMPP"
 #: dist/converse-no-dependencies.js:81823
 #: dist/converse-no-dependencies.js:95444
 msgid "Email"
-msgstr "Email"
+msgstr "E-mail"
 
 #: dist/converse-no-dependencies.js:81825
 #: dist/converse-no-dependencies.js:95446
@@ -1872,10 +1871,9 @@ msgstr "Mensagem de %1$s"
 msgid "%1$s says"
 msgstr "%1$s diz"
 
-#: dist/converse-no-dependencies.js:94073
-#, fuzzy
+#: dist/converse-no-dependencies.js:92298
 msgid "Encrypted message received"
-msgstr "OMEMO Mensagem recebida"
+msgstr "Mensagem criptografada recebida"
 
 #: dist/converse-no-dependencies.js:94115
 msgid "has gone offline"

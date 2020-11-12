@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 6.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-05-02 10:11+0000\n"
+"PO-Revision-Date: 2020-11-18 18:40+0100\n"
 "Last-Translator: Janne E <pyskoovits@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/conversejs/"
 "translations/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
@@ -126,10 +126,9 @@ msgstr "Valitettavasti et saa peruuttaa tätä viestiä."
 msgid "Sorry, an error occurred while trying to retract your message."
 msgstr "Anteeksi, jokin meni pieleen, kun yrität peruuttaa viestisi."
 
-#: dist/converse-no-dependencies.js:54004
-#, fuzzy
+#: dist/converse-no-dependencies.js:55361
 msgid "You're not allowed to send a message."
-msgstr "Et voi lähettää viestejä tässä huoneessa"
+msgstr "Et voi lähettää viestejä tässä huoneessa."
 
 #: dist/converse-no-dependencies.js:54006
 #: dist/converse-no-dependencies.js:59474
@@ -295,10 +294,9 @@ msgid ""
 "Your message was not delivered because you're not present in the groupchat."
 msgstr "Viestiäsi ei toimitettu, koska et ole läsnä ryhmäkeskusteluissa."
 
-#: dist/converse-no-dependencies.js:59717
-#, fuzzy
+#: dist/converse-no-dependencies.js:61112
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Aikakatkaisu yritettäessä peruuttaa viestiä"
+msgstr "Aikakatkaisu yritettäessä peruuttaa viestiä."
 
 #: dist/converse-no-dependencies.js:60888
 msgid "You're not allowed to register yourself in this groupchat."
@@ -1195,10 +1193,9 @@ msgstr "Valvomattomat"
 msgid "conference.example.org"
 msgstr "conference.example.org"
 
-#: dist/converse-no-dependencies.js:89648
-#, fuzzy
+#: dist/converse-no-dependencies.js:87736
 msgid "Groupchats found"
-msgstr "Löytyi ryhmäkeskusteluja:"
+msgstr "Löytyi ryhmäkeskusteluja"
 
 #: dist/converse-no-dependencies.js:89656
 msgid "No groupchats found"
@@ -1688,7 +1685,7 @@ msgstr "Valinnainen syy"
 
 #: dist/converse-no-dependencies.js:91838
 msgid "Sorry, you're not allowed to retract this message"
-msgstr "Valitettavasti et voi peruuttaa tätä viestiä."
+msgstr "Valitettavasti et voi peruuttaa tätä viestiä"
 
 #: dist/converse-no-dependencies.js:91874
 msgid "A timeout occurred while trying to retract the message"
@@ -1814,10 +1811,9 @@ msgstr "Tarkista yksityiskohdat selaimesi kehittäjäkonsolista."
 msgid "Are you sure you want to destroy this groupchat?"
 msgstr "Oletko varma, että haluat jättää ryhmäkeskustelun %1$s?"
 
-#: dist/converse-no-dependencies.js:92529
-#, fuzzy
+#: dist/converse-no-dependencies.js:90793
 msgid "Please enter the XMPP address of this groupchat to confirm"
-msgstr "Ole hyvä ja kirjoita XMPP-palveluntarjoaja rekisteröidäksesi:"
+msgstr "Ole hyvä ja kirjoita XMPP-palveluntarjoaja rekisteröidäksesi"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:92531
@@ -1825,10 +1821,9 @@ msgstr "Ole hyvä ja kirjoita XMPP-palveluntarjoaja rekisteröidäksesi:"
 msgid "name@example.org"
 msgstr "name@example.org"
 
-#: dist/converse-no-dependencies.js:92535
-#, fuzzy
+#: dist/converse-no-dependencies.js:90799
 msgid "Optional reason for destroying this groupchat"
-msgstr "Oletko varma, että haluat jättää ryhmäkeskustelun %1$s?"
+msgstr "Valinnainen syy tämän ryhmäkeskuksen tuhoamiseen"
 
 #: dist/converse-no-dependencies.js:92539
 msgid "Optional XMPP address for a new groupchat that replaces this one"

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-08-20 15:36+0000\n"
+"PO-Revision-Date: 2020-11-18 18:41+0100\n"
 "Last-Translator: random r <epsilin@yopmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "domain: converse\n"
 "lang: it\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -93,8 +93,7 @@ msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
 "Il server XMPP non ha offerto un meccanismo di autenticazione supportato"
 
-#: dist/converse-no-dependencies.js:53653
-#, fuzzy
+#: dist/converse-no-dependencies.js:55021
 msgid "Undecryptable OMEMO message"
 msgstr "Messaggio OMEMO non decifrabile"
 
@@ -1912,10 +1911,9 @@ msgstr "Notifica da %1$s"
 msgid "%1$s says"
 msgstr "%1$s dice"
 
-#: dist/converse-no-dependencies.js:94073
-#, fuzzy
+#: dist/converse-no-dependencies.js:92298
 msgid "Encrypted message received"
-msgstr "Messaggio OMEMO ricevuto"
+msgstr "Messaggio cifrato ricevuto"
 
 #: dist/converse-no-dependencies.js:94115
 msgid "has gone offline"
@@ -2179,14 +2177,13 @@ msgstr ""
 "Spiacente, impossibile decifrare un messaggio OMEMO ricevuto a causa di un "
 "errore."
 
-#: dist/converse-no-dependencies.js:96591
-#, fuzzy
+#: dist/converse-no-dependencies.js:95009
 msgid ""
 "Sorry, could not decrypt a received OMEMO because we don't have the JID for "
 "that user."
 msgstr ""
-"Spiacente, impossibile decifrare un messaggio OMEMO ricevuto a causa di un "
-"errore."
+"Spiacenti, non è stato possibile decifrare un OMEMO ricevuto perché non "
+"abbiamo il JID per quell'utente."
 
 #: dist/converse-no-dependencies.js:97137
 #, javascript-format

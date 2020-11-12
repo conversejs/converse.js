@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-18 11:58+0100\n"
-"PO-Revision-Date: 2020-11-18 18:29+0100\n"
+"PO-Revision-Date: 2020-11-18 18:41+0100\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -303,12 +303,11 @@ msgstr ""
 "Votre message n'a pas été délivré parce que vous n'êtes pas présent dans le "
 "salon."
 
-#: dist/converse-no-dependencies.js:59717
-#, fuzzy
+#: dist/converse-no-dependencies.js:61112
 msgid "A timeout happened while while trying to retract your message."
 msgstr ""
-"Une erreur s'est produite lors du retrait du message, le délai d'attente est "
-"dépassé"
+"Une erreur s'est produite lors du retrait du message ; le délai d'attente "
+"est dépassé."
 
 #: dist/converse-no-dependencies.js:60888
 msgid "You're not allowed to register yourself in this groupchat."
@@ -1326,11 +1325,10 @@ msgstr ""
 "particulier avec ses privilèges et ses responsabilités. Par exemple, les "
 "administrateurs et les propriétaires ont d'office le rôle de modérateur."
 
-#: dist/converse-no-dependencies.js:90351
-#, fuzzy
+#: dist/converse-no-dependencies.js:88439
 msgid "Timeout error while trying to set the affiliation"
 msgstr ""
-"Désolé, un problème est survenu lors de la modification de l'affiliation"
+"Un problème de délai est survenu lors de la modification de l'affiliation"
 
 #: dist/converse-no-dependencies.js:90353
 msgid "Sorry, you're not allowed to make that change"
@@ -2175,14 +2173,13 @@ msgstr ""
 "Désolé, impossible de déchiffrer un message chiffré avec OMEMO à cause d’une "
 "erreur."
 
-#: dist/converse-no-dependencies.js:96591
-#, fuzzy
+#: dist/converse-no-dependencies.js:95009
 msgid ""
 "Sorry, could not decrypt a received OMEMO because we don't have the JID for "
 "that user."
 msgstr ""
-"Désolé, impossible de déchiffrer un message chiffré avec OMEMO à cause d’une "
-"erreur."
+"Désolé, impossible de déchiffrer un message chiffré avec OMEMO parce que "
+"nous n'avons pas le JID pour cet utilisateur."
 
 #: dist/converse-no-dependencies.js:97137
 #, javascript-format

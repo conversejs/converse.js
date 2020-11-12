@@ -12,6 +12,9 @@ export default (o) => html`
                 <div class="bottom-panel"></div>
             </div>
             <div class="disconnect-container hidden"></div>
+            <converse-muc-sidebar class="occupants col-md-3 col-4 ${o.sidebar_hidden ? 'hidden' : ''}"
+                .occupants=${o.occupants}
+                .chatroom=${o.model}></converse-muc-sidebar>
         </div>
     </div>
 `;

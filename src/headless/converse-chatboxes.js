@@ -7,6 +7,7 @@ import "./converse-emoji";
 import { Collection } from "@converse/skeletor/src/collection";
 import { _converse, api, converse } from "./converse-core";
 import log from "./log";
+import Favico from 'favico.js-slevomat';
 
 const { Strophe } = converse.env;
 
@@ -32,9 +33,11 @@ converse.plugins.add('converse-chatboxes', {
         ]);
 
         let msg_counter = 0;
+        const favicon = new Favico({type : 'circle', position: 'up', animation: 'none'});
 
         _converse.incrementMsgCounter = function () {
             msg_counter += 1;
+            favicon.badge(msg_counter);
             const title = document.title;
             if (!title) {
                 return;
@@ -48,6 +51,7 @@ converse.plugins.add('converse-chatboxes', {
 
         _converse.clearMsgCounter = function () {
             msg_counter = 0;
+            favicon.badge(msg_counter);
             const title = document.title;
             if (!title) {
                 return;
@@ -89,7 +93,6 @@ converse.plugins.add('converse-chatboxes', {
             }
         });
 
-
         async function createChatBox (jid, attrs, Model) {
             jid = Strophe.getBareJidFromJid(jid.toLowerCase());
             Object.assign(attrs, {'jid': jid, 'id': jid});
@@ -106,7 +109,6 @@ converse.plugins.add('converse-chatboxes', {
                 return null;
             }
             _converse.chatboxes.add(chatbox);
-            await chatbox.messages.fetched;
             return chatbox;
         }
 

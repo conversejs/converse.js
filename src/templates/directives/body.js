@@ -147,6 +147,12 @@ const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
 
 
 function addReferences (text, model) {
+    if (!model.collection) {
+        // This model doesn't belong to a collection anymore, so it must be
+        // have been removed in the meantime and can be ignored.
+        log.debug('addReferences: ignoring dangling model');
+        return;
+    }
     const nick = model.collection.chatbox.get('nick');
     model.get('references')?.forEach(ref => {
         const mention = text.slice(ref.begin, ref.end);

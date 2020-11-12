@@ -123,6 +123,7 @@ converse.plugins.add('converse-muc', {
             'auto_join_on_invite': false,
             'auto_join_rooms': [],
             'auto_register_muc_nickname': false,
+            'hide_muc_participants': false,
             'locked_muc_domain': false,
             'muc_domain': undefined,
             'muc_fetch_members': true,
@@ -371,6 +372,7 @@ converse.plugins.add('converse-muc', {
                     'bookmarked': false,
                     'chat_state': undefined,
                     'hidden': _converse.isUniView() && !api.settings.get('singleton'),
+                    'hidden_occupants': !!api.settings.get('hide_muc_participants'),
                     'message_type': 'groupchat',
                     'name': '',
                     'num_unread': 0,
@@ -425,8 +427,8 @@ converse.plugins.add('converse-muc', {
                 if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED && (await this.isJoined())) {
                     // We've restored the room from cache and we're still joined.
                     await new Promise(resolve => this.features.fetch({'success': resolve, 'error': resolve}));
-                    await this.fetchOccupants();
-                    await this.fetchMessages();
+                    await this.fetchOccupants().catch(e => log.error(e));
+                    await this.fetchMessages().catch(e => log.error(e));
                     return true;
                 } else {
                     await this.clearCache();
@@ -471,13 +473,6 @@ converse.plugins.add('converse-muc', {
                 this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
                 api.send(stanza);
                 return this;
-            },
-
-            async fetchMessages () {
-                await _converse.ChatBox.prototype.fetchMessages.call(this);
-                const queued_messages = this.message_queue.map(m => this.queueMessage(m));
-                this.message_queue = [];
-                return Promise.all(queued_messages);
             },
 
             async clearCache () {
@@ -529,11 +524,6 @@ converse.plugins.add('converse-muc', {
             rejoin () {
                 this.clearCache();
                 return this.join();
-            },
-
-            initMessages () {
-                this.message_queue = [];
-                _converse.ChatBox.prototype.initMessages.call(this);
             },
 
             async onConnectionStatusChanged () {
@@ -1793,7 +1783,6 @@ converse.plugins.add('converse-muc', {
 
 
             getUpdatedMessageAttributes (message, attrs) {
-                // Overridden in converse-muc and converse-mam
                 const new_attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, attrs);
                 if (this.isOwnMessage(attrs)) {
                     const stanza_id_keys = Object.keys(attrs).filter(k => k.startsWith('stanza_id'));
@@ -1814,18 +1803,18 @@ converse.plugins.add('converse-muc', {
              * @returns {Promise<boolean>}
              */
             async isJoined () {
+                const jid = this.get('jid');
                 const ping = $iq({
-                    'to': `${this.get('jid')}/${this.get('nick')}`,
+                    'to': `${jid}/${this.get('nick')}`,
                     'type': "get"
                 }).c("ping", {'xmlns': Strophe.NS.PING});
                 try {
                     await api.sendIQ(ping);
                 } catch (e) {
                     if (e === null) {
-                        log.error(`Timeout error while checking whether we're joined to MUC: ${this.get('jid')}`);
+                        log.warn(`isJoined: Timeout error while checking whether we're joined to MUC: ${jid}`);
                     } else {
-                        log.error(`Apparently we're no longer connected to MUC: ${this.get('jid')}`);
-                        log.error(e);
+                        log.warn(`isJoined: Apparently we're no longer connected to MUC: ${jid}`);
                     }
                     return false;
                 }
@@ -1932,24 +1921,6 @@ converse.plugins.add('converse-muc', {
                     }
                 }
                 return false;
-            },
-
-            /**
-             * Queue an incoming message stanza meant for this {@link _converse.Chatroom} for processing.
-             * @async
-             * @private
-             * @method _converse.ChatRoom#queueMessage
-             * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
-             */
-            queueMessage (attrs) {
-                if (this.messages?.fetched) {
-                    this.msg_chain = (this.msg_chain || this.messages.fetched);
-                    this.msg_chain = this.msg_chain.then(() => this.onMessage(attrs));
-                    return this.msg_chain;
-                } else {
-                    this.message_queue.push(attrs);
-                    return Promise.resolve();
-                }
             },
 
             /**
@@ -2751,7 +2722,6 @@ converse.plugins.add('converse-muc', {
                             const muc = _converse.chatboxes.get(muc_jid);
                             if (muc) {
                                 await muc.initialized;
-                                await muc.messages.fetched
                                 muc.message_handler.run(stanza);
                             }
                         });

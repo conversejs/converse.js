@@ -24,20 +24,26 @@ const HeadlinesBoxView = ChatBoxView.extend({
         'keypress textarea.chat-textarea': 'onKeyDown'
     },
 
-    initialize () {
+    async initialize () {
         this.initDebounced();
 
         this.model.disable_mam = true; // Don't do MAM queries for this box
-        this.listenTo(this.model.messages, 'add', this.renderChatHistory);
+        this.listenTo(this.model, 'change:hidden', m => m.get('hidden') ? this.hide() : this.show());
+        this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model, 'show', this.show);
-        this.listenTo(this.model, 'destroy', this.hide);
-        this.listenTo(this.model, 'change:minimized', this.onMinimizedChanged);
 
         this.render();
-        this.renderHeading();
-        this.updateAfterMessagesFetched();
-        this.insertIntoDOM().hide();
+
+        // Need to be registered after render has been called.
+        this.listenTo(this.model.messages, 'add', this.onMessageAdded);
+        this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
+        this.listenTo(this.model.messages, 'rendered', this.maybeScrollDown);
+        this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
+
+        await this.model.messages.fetched;
+        this.insertIntoDOM();
         this.model.maybeShow();
+        this.scrollDown();
         /**
          * Triggered once the {@link _converse.HeadlinesBoxView} has been initialized
          * @event _converse#headlinesBoxViewInitialized
@@ -61,6 +67,8 @@ const HeadlinesBoxView = ChatBoxView.extend({
         render(result, this.el);
         this.content = this.el.querySelector('.chat-content');
         this.msgs_container = this.el.querySelector('.chat-content__messages');
+        this.renderChatContent();
+        this.renderHeading();
         return this;
     },
 

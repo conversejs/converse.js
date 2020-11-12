@@ -1,10 +1,10 @@
 import tpl_spinner from './spinner.js';
 import { __ } from '../i18n';
-import { api } from "@converse/headless/converse-core";
+import { _converse, api } from "@converse/headless/converse-core";
 import { html } from "lit-html";
 
 
-const trust_checkbox = (o) => {
+const trust_checkbox = (checked) => {
     const i18n_hint_trusted = __(
         'To improve performance, we cache your data in this browser. '+
         'Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. '+
@@ -13,7 +13,7 @@ const trust_checkbox = (o) => {
     const i18n_trusted = __('This is a trusted device');
     return html`
         <div class="form-group form-check login-trusted">
-            <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ?checked=${o._converse.config.get('trusted')}>
+            <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ?checked=${checked}>
             <label for="converse-login-trusted" class="form-check-label login-trusted__desc">${i18n_trusted}</label>
             <i class="fa fa-info-circle" data-toggle="popover"
                 data-title="Trusted device?"
@@ -43,8 +43,7 @@ const register_link = () => {
     `;
 }
 
-const show_register_link = (o) => {
-    const _converse = o._converse;
+const show_register_link = () => {
     return _converse.allow_registration &&
         !api.settings.get("auto_login") &&
         _converse.pluggable.plugins['converse-register'].enabled(_converse);
@@ -66,11 +65,11 @@ const auth_fields = (o) => {
                 placeholder="${o.placeholder_username}"/>
         </div>
         ${ (o.authentication !== o.EXTERNAL) ? password_input() : '' }
-        ${ o.show_trust_checkbox ? trust_checkbox(o) : '' }
+        ${ o.show_trust_checkbox ? trust_checkbox(o.show_trust_checkbox === 'off' ? false : true) : '' }
         <fieldset class="buttons">
             <input class="btn btn-primary" type="submit" value="${i18n_login}"/>
         </fieldset>
-        ${ show_register_link(o) ? register_link(o) : '' }
+        ${ show_register_link() ? register_link(o) : '' }
     `;
 }
 
@@ -93,6 +92,6 @@ export default (o) => html`
             <p class="feedback-subject">${ o.conn_feedback_subject }</p>
             <p class="feedback-message ${ !o.conn_feedback_message ? 'hidden' : '' }">${o.conn_feedback_message}</p>
         </div>
-        ${ (o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') ? tpl_spinner({'classes': 'hor_centered'}) : form_fields(o) }
+        ${ (_converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') ? tpl_spinner({'classes': 'hor_centered'}) : form_fields(o) }
     </form>
 `;

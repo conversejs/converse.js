@@ -102,6 +102,7 @@ converse.plugins.add('converse-controlbox', {
          */
         api.settings.extend({
             allow_logout: true,
+            allow_user_trust_override: true,
             default_domain: undefined,
             locked_domain: undefined,
             show_controlbox_by_default: false,
@@ -378,7 +379,7 @@ converse.plugins.add('converse-controlbox', {
                         'conn_feedback_message': _converse.connfeedback.get('message'),
                         'placeholder_username': (api.settings.get('locked_domain') || api.settings.get('default_domain')) &&
                                                 __('Username') || __('user@domain'),
-                        'show_trust_checkbox': _converse.trusted !== 'on' && _converse.trusted !== 'off'
+                        'show_trust_checkbox': api.settings.get('allow_user_trust_override')
                     })
                 );
             },
@@ -407,9 +408,11 @@ converse.plugins.add('converse-controlbox', {
                 return true;
             },
 
+            /**
+             * Authenticate the user based on a form submission event.
+             * @param { Event } ev
+             */
             authenticate (ev) {
-                /* Authenticate the user based on a form submission event.
-                 */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (api.settings.get("authentication") === _converse.ANONYMOUS) {
                     return this.connect(_converse.jid, null);
@@ -417,18 +420,7 @@ converse.plugins.add('converse-controlbox', {
                 if (!this.validate()) { return; }
 
                 const form_data = new FormData(ev.target);
-
-                if (_converse.trusted === 'on' || _converse.trusted === 'off') {
-                    _converse.config.save({
-                        'trusted': _converse.trusted === 'on',
-                        'storage': _converse.trusted === 'on' ? 'persistent' : 'session'
-                    });
-                } else {
-                    _converse.config.save({
-                        'trusted': form_data.get('trusted') && true || false,
-                        'storage': form_data.get('trusted') ? 'persistent' : 'session'
-                    });
-                }
+                _converse.config.save({ 'trusted': form_data.get('trusted') && true || false });
 
                 let jid = form_data.get('jid');
                 if (api.settings.get('locked_domain')) {

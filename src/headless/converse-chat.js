@@ -355,6 +355,17 @@ converse.plugins.add('converse-chat', {
 
             initMessages () {
                 this.messages = new this.messagesCollection();
+                this.messages.fetched = u.getResolveablePromise();
+                this.messages.fetched.then(() => {
+                    /**
+                     * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
+                     * `sessionStorage` but **NOT** from the server.
+                     * @event _converse#afterMessagesFetched
+                     * @type {_converse.ChatBoxView | _converse.ChatRoomView}
+                     * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+                     */
+                    api.trigger('afterMessagesFetched', this);
+                });
                 this.messages.chatbox = this;
                 this.messages.browserStorage = _converse.createStore(this.getMessagesCacheKey());
                 this.listenTo(this.messages, 'change:upload', message => {
@@ -380,11 +391,11 @@ converse.plugins.add('converse-chat', {
             },
 
             fetchMessages () {
-                if (this.messages.fetched) {
+                if (this.messages.fetched_flag) {
                     log.info(`Not re-fetching messages for ${this.get('jid')}`);
                     return;
                 }
-                this.messages.fetched = u.getResolveablePromise();
+                this.messages.fetched_flag = true;
                 const resolve = this.messages.fetched.resolve;
                 this.messages.fetch({
                     'add': true,
@@ -439,8 +450,9 @@ converse.plugins.add('converse-chat', {
              * @param { Promise<MessageAttributes> } attrs - A promise which resolves to the message attributes
              */
             queueMessage (attrs) {
-                this.msg_chain = (this.msg_chain || this.messages.fetched);
-                this.msg_chain = this.msg_chain.then(() => this.onMessage(attrs));
+                this.msg_chain = (this.msg_chain || this.messages.fetched)
+                    .then(() => this.onMessage(attrs))
+                    .catch(e => log.error(e));
                 return this.msg_chain;
             },
 
@@ -485,7 +497,8 @@ converse.plugins.add('converse-chat', {
                     log.error(e);
                 } finally {
                     delete this.msg_chain;
-                    delete this.messages.fetched;
+                    delete this.messages.fetched_flag;
+                    this.messages.fetched = u.getResolveablePromise();
                 }
             },
 
@@ -578,11 +591,8 @@ converse.plugins.add('converse-chat', {
             },
 
             updateMessage (message, attrs) {
-                // Overridden in converse-muc and converse-mam
                 const new_attrs = this.getUpdatedMessageAttributes(message, attrs);
-                if (attrs) {
-                    message.save(new_attrs);
-                }
+                new_attrs && message.save(new_attrs);
             },
 
             /**
@@ -744,9 +754,14 @@ converse.plugins.add('converse-chat', {
                     message.save({'older_versions': older_versions});
                 } else {
                     // This is a correction of an earlier message we already received
-                    older_versions[message.get('time')] = message.get('message');
+                    if(Object.keys(older_versions).length) {
+                        older_versions[message.get('edited')] = message.get('message');
+                    }else {
+                        older_versions[message.get('time')] = message.get('message');
+                    }
                     attrs = Object.assign(attrs, {'older_versions': older_versions});
                     delete attrs['id']; // Delete id, otherwise a new cache entry gets created
+                    attrs['time'] = message.get('time');
                     message.save(attrs);
                 }
                 return message;
@@ -1007,12 +1022,19 @@ converse.plugins.add('converse-chat', {
             },
 
             /**
+             * Queue the creation of a message, to make sure that we don't run
+             * into a race condition whereby we're creating a new message
+             * before the collection has been fetched.
              * @async
              * @private
-             * @method _converse.ChatBox#createMessage
+             * @method _converse.ChatRoom#queueMessageCreation
+             * @param { Object } attrs
              */
-            createMessage (attrs, options) {
-                return this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options)).catch(e => log.error(e));
+            async createMessage (attrs, options) {
+                attrs.time = attrs.time || (new Date()).toISOString();
+                await this.messages.fetched;
+                const p = this.messages.create(attrs, Object.assign({'wait': true, 'promise':true}, options));
+                return p;
             },
 
             /**
@@ -1134,7 +1156,17 @@ converse.plugins.add('converse-chat', {
             },
 
             maybeShow (force) {
-                force && u.safeSave(this, {'hidden': false});
+                if (force) {
+                    if (_converse.isUniView()) {
+                        // We only have one chat visible at any one time.
+                        // So before opening a chat, we make sure all other chats are hidden.
+                        const filter = c => !c.get('hidden') &&
+                            c.get('jid') !== this.get('jid') &&
+                            c.get('id') !== 'controlbox';
+                        _converse.chatboxes.filter(filter).forEach(c => u.safeSave(c, {'hidden': true}));
+                    }
+                    u.safeSave(this, {'hidden': false});
+                }
                 if (_converse.isUniView() && this.get('hidden')) {
                     return;
                 } else {
@@ -1315,9 +1347,11 @@ converse.plugins.add('converse-chat', {
         api.listen.on('chatBoxesFetched', autoJoinChats);
         api.listen.on('presencesInitialized', registerMessageHandlers);
 
-        api.listen.on('clearSession', () => {
+        api.listen.on('clearSession', async () => {
             if (_converse.shouldClearCache()) {
-                return Promise.all(_converse.chatboxes.map(c => c.messages && c.messages.clearStore({'silent': true})));
+                await Promise.all(_converse.chatboxes.map(c => c.messages && c.messages.clearStore({'silent': true})));
+                const filter = (o) => (o.get('type') !== _converse.CONTROLBOX_TYPE);
+                _converse.chatboxes.clearStore({'silent': true}, filter);
             }
         });
         /************************ END Event Handlers ************************/

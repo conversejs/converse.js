@@ -1,11 +1,12 @@
 /* global mock, converse */
 
-const Strophe = converse.env.Strophe;
+const { Strophe, u, sizzle, $iq } = converse.env;
 
 
 describe("A chat room", function () {
 
-    it("can be bookmarked", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
+    it("can be bookmarked", mock.initConverse(
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -13,17 +14,18 @@ describe("A chat room", function () {
             ['http://jabber.org/protocol/pubsub#publish-options']
         );
         const { u, $iq } = converse.env;
-        let sent_stanza, IQ_id;
-        const sendIQ = _converse.connection.sendIQ;
-        spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-            sent_stanza = iq;
-            IQ_id = sendIQ.bind(this)(iq, callback, errback);
-        });
         spyOn(_converse.connection, 'getUniqueId').and.callThrough();
 
+        const nick = 'JC';
+        const muc_jid = 'theplay@conference.shakespeare.lit';
         await mock.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
-        const jid = 'theplay@conference.shakespeare.lit';
-        const view = _converse.chatboxviews.get(jid);
+        await mock.getRoomFeatures(_converse, muc_jid, []);
+        await mock.waitForReservedNick(_converse, muc_jid, nick);
+        await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
+        const view = _converse.chatboxviews.get(muc_jid);
+        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        await mock.returnMemberLists(_converse, muc_jid, [], ['member', 'admin', 'owner']);
+
         spyOn(view, 'renderBookmarkForm').and.callThrough();
         spyOn(view, 'closeForm').and.callThrough();
         await u.waitUntil(() => view.el.querySelector('.toggle-bookmark') !== null);
@@ -77,12 +79,13 @@ describe("A chat room", function () {
         form.querySelector('input[name="autojoin"]').checked = 'checked';
         form.querySelector('input[name="nick"]').value = 'JC';
 
-        _converse.connection.IQ_stanzas = [];
-        view.el.querySelector('.btn-primary').click();
+        const IQ_stanzas = _converse.connection.IQ_stanzas;
+        view.el.querySelector('.muc-bookmark-form .btn-primary').click();
 
-        await u.waitUntil(() => sent_stanza);
+        const sent_stanza = await u.waitUntil(
+            () => IQ_stanzas.filter(s => sizzle('iq publish[node="storage:bookmarks"]', s).length).pop());
         expect(Strophe.serialize(sent_stanza)).toBe(
-            `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="set" xmlns="jabber:client">`+
+            `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                 `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                     `<publish node="storage:bookmarks">`+
                         `<item id="current">`+
@@ -110,13 +113,13 @@ describe("A chat room", function () {
             `</iq>`
         );
         /* Server acknowledges successful storage
-            *
-            * <iq to='juliet@capulet.lit/balcony' type='result' id='pip1'/>
-            */
+         *
+         * <iq to='juliet@capulet.lit/balcony' type='result' id='pip1'/>
+         */
         const stanza = $iq({
             'to':_converse.connection.jid,
             'type':'result',
-            'id':IQ_id
+            'id': sent_stanza.getAttribute('id')
         });
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.get('bookmarked'));
@@ -318,52 +321,90 @@ describe("A chat room", function () {
 describe("Bookmarks", function () {
 
     it("can be pushed from the XMPP server", mock.initConverse(
-            ['rosterGroupsFetched', 'connected'], {}, async function (done, _converse) {
+            ['connected', 'rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
 
         const { $msg, u } = converse.env;
         await mock.waitUntilBookmarksReturned(_converse);
 
         /* The stored data is automatically pushed to all of the user's
-            * connected resources.
-            *
-            * Publisher receives event notification
-            * -------------------------------------
-            * <message from='juliet@capulet.lit'
-            *         to='juliet@capulet.lit/balcony'
-            *         type='headline'
-            *         id='rnfoo1'>
-            * <event xmlns='http://jabber.org/protocol/pubsub#event'>
-            *     <items node='storage:bookmarks'>
-            *     <item id='current'>
-            *         <storage xmlns='storage:bookmarks'>
-            *         <conference name='The Play&apos;s the Thing'
-            *                     autojoin='true'
-            *                     jid='theplay@conference.shakespeare.lit'>
-            *             <nick>JC</nick>
-            *         </conference>
-            *         </storage>
-            *     </item>
-            *     </items>
-            * </event>
-            * </message>
-            */
-        const stanza = $msg({
+         * connected resources.
+         *
+         * Publisher receives event notification
+         * -------------------------------------
+         * <message from='juliet@capulet.lit'
+         *         to='juliet@capulet.lit/balcony'
+         *         type='headline'
+         *         id='rnfoo1'>
+         * <event xmlns='http://jabber.org/protocol/pubsub#event'>
+         *     <items node='storage:bookmarks'>
+         *     <item id='current'>
+         *         <storage xmlns='storage:bookmarks'>
+         *         <conference name='The Play&apos;s the Thing'
+         *                     autojoin='true'
+         *                     jid='theplay@conference.shakespeare.lit'>
+         *             <nick>JC</nick>
+         *         </conference>
+         *         </storage>
+         *     </item>
+         *     </items>
+         * </event>
+         * </message>
+         */
+        let stanza = $msg({
             'from': 'romeo@montague.lit',
-            'to': 'romeo@montague.lit/orchard',
+            'to': _converse.jid,
             'type': 'headline',
-            'id': 'rnfoo1'
+            'id': u.getUniqueId()
         }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
             .c('items', {'node': 'storage:bookmarks'})
                 .c('item', {'id': 'current'})
                     .c('storage', {'xmlns': 'storage:bookmarks'})
-                        .c('conference', {'name': 'The Play&apos;s the Thing',
-                                        'autojoin': 'true',
-                                        'jid':'theplay@conference.shakespeare.lit'})
-                            .c('nick').t('JC');
+                        .c('conference', {
+                            'name': 'The Play&apos;s the Thing',
+                            'autojoin': 'true',
+                            'jid':'theplay@conference.shakespeare.lit'
+                        }).c('nick').t('JC').up().up()
+                        .c('conference', {
+                            'name': 'Another bookmark',
+                            'autojoin': 'false',
+                            'jid':'another@conference.shakespeare.lit'
+                        }).c('nick').t('JC');
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.bookmarks.length);
-        expect(_converse.bookmarks.length).toBe(1);
+        expect(_converse.bookmarks.length).toBe(2);
+        expect(_converse.bookmarks.map(b => b.get('name'))).toEqual(['Another bookmark', 'The Play&apos;s the Thing']);
         expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
+
+        stanza = $msg({
+            'from': 'romeo@montague.lit',
+            'to': _converse.jid,
+            'type': 'headline',
+            'id': u.getUniqueId()
+        }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+            .c('items', {'node': 'storage:bookmarks'})
+                .c('item', {'id': 'current'})
+                    .c('storage', {'xmlns': 'storage:bookmarks'})
+                        .c('conference', {
+                            'name': 'The Play&apos;s the Thing',
+                            'autojoin': 'true',
+                            'jid':'theplay@conference.shakespeare.lit'
+                        }).c('nick').t('JC').up().up()
+                        .c('conference', {
+                            'name': 'Second bookmark',
+                            'autojoin': 'false',
+                            'jid':'another@conference.shakespeare.lit'
+                        }).c('nick').t('JC').up().up()
+                        .c('conference', {
+                            'name': 'Yet another bookmark',
+                            'autojoin': 'false',
+                            'jid':'yab@conference.shakespeare.lit'
+                        }).c('nick').t('JC');
+        _converse.connection._dataRecv(mock.createRequest(stanza));
+
+        await u.waitUntil(() => _converse.bookmarks.length === 3);
+        expect(_converse.bookmarks.map(b => b.get('name'))).toEqual(['Second bookmark', 'The Play&apos;s the Thing', 'Yet another bookmark']);
+        expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
+        expect(Object.keys(_converse.chatboxviews.getAll()).length).toBe(2);
         done();
     }));
 
@@ -459,7 +500,6 @@ describe("Bookmarks", function () {
             );
             mock.openControlBox(_converse);
 
-            const { Strophe, u, sizzle, $iq } = converse.env;
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             const sent_stanza = await u.waitUntil(
                 () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
@@ -524,6 +564,54 @@ describe("Bookmarks", function () {
             done();
         }));
 
+        it("can be used to open a MUC from a bookmark", mock.initConverse(
+                ['rosterGroupsFetched'], {'view_mode': 'fullscreen'}, async function (done, _converse) {
+
+            const api = _converse.api;
+            await mock.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
+            await mock.openControlBox(_converse);
+            const view = await _converse.chatboxviews.get('controlbox');
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const sent_stanza = await u.waitUntil(
+                () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
+            const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
+                .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                    .c('items', {'node': 'storage:bookmarks'})
+                        .c('item', {'id': 'current'})
+                            .c('storage', {'xmlns': 'storage:bookmarks'})
+                                .c('conference', {
+                                    'name': 'The Play&apos;s the Thing',
+                                    'autojoin': 'false',
+                                    'jid': 'theplay@conference.shakespeare.lit'
+                                }).c('nick').t('JC').up().up()
+                                .c('conference', {
+                                    'name': '1st Bookmark',
+                                    'autojoin': 'false',
+                                    'jid': 'first@conference.shakespeare.lit'
+                                }).c('nick').t('JC');
+            _converse.connection._dataRecv(mock.createRequest(stanza));
+            await u.waitUntil(() => view.el.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length);
+            expect(view.el.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(2);
+            view.el.querySelector('.bookmarks.rooms-list .open-room').click();
+            await u.waitUntil(() => _converse.chatboxes.length === 2);
+            expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(false);
+
+            await u.waitUntil(() => view.el.querySelectorAll('.list-container--bookmarks .available-chatroom:not(.hidden)').length === 1);
+            view.el.querySelector('.list-container--bookmarks .available-chatroom:not(.hidden) .open-room').click();
+            await u.waitUntil(() => _converse.chatboxes.length === 3);
+            expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(true);
+            expect((await api.rooms.get('theplay@conference.shakespeare.lit')).get('hidden')).toBe(false);
+
+            view.el.querySelector('.list-container--openrooms .open-room:first-child').click();
+            await u.waitUntil(() => view.el.querySelector('.list-item.open').getAttribute('data-room-jid') === 'first@conference.shakespeare.lit');
+            expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(false);
+            expect((await api.rooms.get('theplay@conference.shakespeare.lit')).get('hidden')).toBe(true);
+            done();
+        }));
 
         it("remembers the toggle state of the bookmarks list", mock.initConverse(
                 ['rosterGroupsFetched'], {}, async function (done, _converse) {

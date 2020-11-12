@@ -10,6 +10,8 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';
 import log from '@converse/headless/log';
 import pluggable from 'pluggable.js/src/pluggable';
+import syncDriver from 'localforage-webextensionstorage-driver/sync';
+import localDriver from 'localforage-webextensionstorage-driver/local';
 import sizzle from 'sizzle';
 import stanza_utils from "@converse/headless/utils/stanza";
 import u from '@converse/headless/utils/core';
@@ -95,13 +97,14 @@ const DEFAULT_SETTINGS = {
     auto_login: false, // Currently only used in connection with anonymous login
     auto_reconnect: true,
     blacklisted_plugins: [],
+    clear_cache_on_logout: false,
     connection_options: {},
     credentials_url: null, // URL from where login credentials can be fetched
     discover_connection_methods: true,
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
-    idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     i18n: 'en',
+    idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
     keepalive: true,
     loglevel: 'info',
@@ -118,7 +121,6 @@ const DEFAULT_SETTINGS = {
     sid: undefined,
     singleton: false,
     strict_plugin_dependencies: false,
-    trusted: true,
     view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
     websocket_url: undefined,
     whitelisted_plugins: []
@@ -585,7 +587,7 @@ export const api = _converse.api = {
             /**
              * Get the value of a particular user setting.
              * @method _converse.api.user.settings.get
-             * @param {String} key - hello world
+             * @param {String} key - The setting name
              * @param {*} fallback - An optional fallback value if the user setting is undefined
              * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
              * @example _converse.api.user.settings.get("foo");
@@ -688,6 +690,7 @@ export const api = _converse.api = {
                 return _converse[key];
             }
         },
+
         /**
          * Set one or many configuration settings.
          *
@@ -973,9 +976,23 @@ async function initSessionStorage () {
 
 
 function initPersistentStorage () {
-    if (_converse.config.get('storage') !== 'persistent') {
+    if (api.settings.get('persistent_store') === 'sessionStorage') {
+        return;
+    } else if (_converse.api.settings.get("persistent_store") === 'BrowserExtLocal') {
+        Storage.localForage.defineDriver(localDriver).then(
+            () => Storage.localForage.setDriver('webExtensionLocalStorage')
+        );
+        _converse.storage['persistent'] = Storage.localForage;
+        return;
+
+    } else if (_converse.api.settings.get("persistent_store") === 'BrowserExtSync') {
+        Storage.localForage.defineDriver(syncDriver).then(
+            () => Storage.localForage.setDriver('webExtensionSyncStorage')
+        );
+        _converse.storage['persistent'] = Storage.localForage;
         return;
     }
+
     const config = {
         'name': _converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
         'storeName': _converse.bare_jid
@@ -991,8 +1008,18 @@ function initPersistentStorage () {
 }
 
 
+_converse.getDefaultStore = function () {
+    if (_converse.config.get('trusted')) {
+        const is_non_persistent = api.settings.get('persistent_store') === 'sessionStorage';
+        return is_non_persistent ? 'session': 'persistent';
+    } else {
+        return 'session';
+    }
+}
+
+
 function createStore (id, storage) {
-    const s = _converse.storage[storage ? storage : _converse.config.get('storage')];
+    const s = _converse.storage[storage || _converse.getDefaultStore()];
     return new Storage(id, s);
 }
 
@@ -1049,11 +1076,7 @@ function initClientConfig () {
      * user sessions.
      */
     const id = 'converse.client-config';
-    _converse.config = new Model({
-        'id': id,
-        'trusted': _converse.api.settings.get("trusted") && true || false,
-        'storage': _converse.api.settings.get("trusted") ? 'persistent' : 'session'
-    });
+    _converse.config = new Model({ id, 'trusted': true });
     _converse.config.browserStorage = createStore(id, "session");
     _converse.config.fetch();
     /**
@@ -1141,7 +1164,11 @@ function connect (credentials) {
 }
 
 
-_converse.shouldClearCache = () => (!_converse.config.get('trusted') || _converse.isTestEnv());
+_converse.shouldClearCache = () => (
+    !_converse.config.get('trusted') ||
+    api.settings.get('clear_cache_on_logout') ||
+    _converse.isTestEnv()
+);
 
 
 export function clearSession  () {
@@ -1644,6 +1671,5 @@ Object.assign(converse, {
  * @event converse-loaded
  * @example window.addEventListener('converse-loaded', () => converse.initialize());
  */
-const ev = new CustomEvent('converse-loaded')
-ev.converse = converse;
+const ev = new CustomEvent('converse-loaded', {'detail': { converse }});
 window.dispatchEvent(ev);

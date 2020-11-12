@@ -39,7 +39,7 @@ describe("Emojis", function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
-
+            await u.waitUntil(() => view.el.querySelector('converse-emoji-dropdown'));
             const textarea = view.el.querySelector('textarea.chat-textarea');
             textarea.value = ':gri';
 
@@ -107,7 +107,7 @@ describe("Emojis", function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
-
+            await u.waitUntil(() => view.el.querySelector('converse-emoji-dropdown'));
             const textarea = view.el.querySelector('textarea.chat-textarea');
             textarea.value = ':';
             // Press tab
@@ -157,7 +157,7 @@ describe("Emojis", function () {
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
-
+            await u.waitUntil(() => view.el.querySelector('converse-emoji-dropdown'));
             const textarea = view.el.querySelector('textarea.chat-textarea');
             textarea.value = ':gri';
 
@@ -183,6 +183,7 @@ describe("Emojis", function () {
             textarea.value = ':';
             view.onKeyDown(tab_event);
             await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));
+            await u.waitUntil(() => input.value === ':');
             input.dispatchEvent(new KeyboardEvent('keydown', tab_event));
             await u.waitUntil(() => input.value === ':100:');
             await u.waitUntil(() => sizzle('.emojis-lists__container--search .insert-emoji:not(.hidden)', view.el).length === 1, 1000);
@@ -200,8 +201,8 @@ describe("Emojis", function () {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
-
             const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => view.el.querySelector('converse-emoji-dropdown'));
             const toolbar = view.el.querySelector('converse-chat-toolbar');
             toolbar.querySelector('.toggle-emojis').click();
             await u.waitUntil(() => u.isVisible(view.el.querySelector('.emoji-picker__lists')));

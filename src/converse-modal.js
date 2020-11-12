@@ -86,6 +86,7 @@ export const BootstrapModal = View.extend({
     }
 });
 
+converse.env.BootstrapModal = BootstrapModal; // expose to plugins
 
 export const Confirm = BootstrapModal.extend({
     events: {

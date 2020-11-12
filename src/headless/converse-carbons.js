@@ -13,7 +13,10 @@ import { _converse, api, converse } from "./converse-core";
 /* Ask the XMPP server to enable Message Carbons
  * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
  */
-function enableCarbons () {
+function enableCarbons (reconnecting) {
+    if (reconnecting) {
+        _converse.session?.set({'carbons_enabled': false})
+    }
     if (!api.settings.get("message_carbons") || _converse.session?.get('carbons_enabled')) {
         return;
     }
@@ -28,9 +31,10 @@ function enableCarbons () {
         if (iq.querySelectorAll('error').length > 0) {
             log.warn('An error occurred while trying to enable message carbons.');
         } else {
-            _converse.session.save({'carbons_enabled': true});
+            _converse.session.set({'carbons_enabled': true});
             log.debug('Message carbons have been enabled.');
         }
+        _converse.session.save(); // Gather multiple sets into one save
     }, null, "iq", null, "enablecarbons");
     _converse.connection.send(carbons_iq);
 }
@@ -43,6 +47,6 @@ converse.plugins.add('converse-carbons', {
             message_carbons: true
         });
 
-        api.listen.on('afterResourceBinding', () => enableCarbons());
+        api.listen.on('afterResourceBinding', enableCarbons);
     }
 });

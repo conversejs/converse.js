@@ -51,7 +51,7 @@ function getCorrectionAttributes (stanza, original_stanza) {
 function getEncryptionAttributes (stanza, _converse) {
     const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).pop();
     const attrs = { 'is_encrypted': !!encrypted };
-    if (!encrypted || !_converse.config.get('trusted')) {
+    if (!encrypted || api.settings.get('clear_cache_on_logout')) {
         return attrs;
     }
     const header = encrypted.querySelector('header');

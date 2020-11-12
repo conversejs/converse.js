@@ -111,6 +111,7 @@ describe("Notifications", function () {
                         .c('x', {'xmlns': 'jabber:x:oob'})
                         .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
                     _converse.connection._dataRecv(mock.createRequest(stanza));
+
                     await u.waitUntil(() => _converse.chatboxviews.keys().length);
                     const view = _converse.chatboxviews.get('notify.example.com');
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));

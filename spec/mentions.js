@@ -267,7 +267,6 @@ describe("A sent groupchat message", function () {
             done();
         }));
 
-
         it("properly encodes the URIs in sent out references",
             mock.initConverse(
                 ['rosterGroupsFetched'], {},
@@ -299,7 +298,7 @@ describe("A sent groupchat message", function () {
             spyOn(_converse.connection, 'send');
             view.onKeyDown(enter_event);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            const msg = _converse.connection.send.calls.all()[0].args[0];
+            const msg = _converse.connection.send.calls.all()[1].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
@@ -353,7 +352,7 @@ describe("A sent groupchat message", function () {
                     'hello <span class="mention">z3r0</span> <span class="mention">gibson</span> <span class="mention">mr.robot</span>, how are you?'
             );
 
-            const msg = _converse.connection.send.calls.all()[0].args[0];
+            const msg = _converse.connection.send.calls.all()[1].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+
@@ -397,7 +396,7 @@ describe("A sent groupchat message", function () {
             done();
         }));
 
-        it("includes XEP-0372 references to that person",
+        it("includes a XEP-0372 references to that person",
             mock.initConverse(
                 ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -432,7 +431,7 @@ describe("A sent groupchat message", function () {
             view.onKeyDown(enter_event);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
-            const msg = _converse.connection.send.calls.all()[0].args[0];
+            const msg = _converse.connection.send.calls.all()[1].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
                         `to="lounge@montague.lit" type="groupchat" `+

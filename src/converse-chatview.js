@@ -80,8 +80,10 @@ export const ChatBoxView = View.extend({
         this.listenTo(this.model.notifications, 'change', this.renderNotifications);
         this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
 
-        await this.updateAfterMessagesFetched();
+        await this.model.messages.fetched;
+        this.insertIntoDOM();
         this.model.maybeShow();
+        this.scrollDown();
         /**
          * Triggered once the {@link _converse.ChatBoxView} has been initialized
          * @event _converse#chatBoxViewInitialized
@@ -231,8 +233,7 @@ export const ChatBoxView = View.extend({
 
     showControlBox () {
         // Used in mobile view, to navigate back to the controlbox
-        const view = _converse.chatboxviews.get('controlbox');
-        view.show();
+        _converse.chatboxviews.get('controlbox')?.show();
         this.hide();
     },
 
@@ -338,21 +339,6 @@ export const ChatBoxView = View.extend({
         return {};
     },
 
-    async updateAfterMessagesFetched () {
-        await this.model.messages.fetched;
-        this.renderChatContent();
-        this.insertIntoDOM();
-        this.scrollDown();
-        /**
-         * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
-         * `sessionStorage` but **NOT** from the server.
-         * @event _converse#afterMessagesFetched
-         * @type {_converse.ChatBoxView | _converse.ChatRoomView}
-         * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
-         */
-        api.trigger('afterMessagesFetched', this.model);
-    },
-
     /**
      * Scrolls the chat down, *if* appropriate.
      *
@@ -449,14 +435,6 @@ export const ChatBoxView = View.extend({
             'contact': item.attributes,
             'message': item.get('status')
         });
-    },
-
-    shouldShowOnTextMessage () {
-        if (_converse.isUniView()) {
-            return false;
-        } else {
-            return !u.isVisible(this.el);
-        }
     },
 
     /**
@@ -929,19 +907,14 @@ export const ChatBoxView = View.extend({
     },
 
     show () {
+        if (this.model.get('hidden')) {
+            log.debug(`Not showing chat ${this.model.get('jid')} because it's set as hidden`);
+            return;
+        }
         if (u.isVisible(this.el)) {
             this.maybeFocus();
             return;
         }
-        /**
-         * Triggered just before a {@link _converse.ChatBoxView} or {@link _converse.ChatRoomView}
-         * will be shown.
-         * @event _converse#beforeShowingChatView
-         * @type {object}
-         * @property { _converse.ChatBoxView | _converse.ChatRoomView } view
-         */
-        api.trigger('beforeShowingChatView', this);
-
         if (api.settings.get('animate')) {
             u.fadeIn(this.el, () => this.afterShown());
         } else {

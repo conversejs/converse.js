@@ -363,7 +363,6 @@ describe("Groupchats", function () {
             mock.initConverse(
                 ['rosterGroupsFetched'], {
                     'clear_messages_on_reconnection': true,
-                    'loglevel': 'debug',
                     'enable_smacks': false
                 }, async function (done, _converse) {
 
@@ -879,6 +878,9 @@ describe("Groupchats", function () {
                 .c('status', {code: '110'}).up()
                 .c('status', {code: '100'});
             _converse.connection._dataRecv(mock.createRequest(presence));
+
+            await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+            await mock.returnMemberLists(_converse, muc_jid, [], ['member', 'admin', 'owner']);
 
             const num_info_msgs = await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length);
             expect(num_info_msgs).toBe(1);
@@ -1731,7 +1733,7 @@ describe("Groupchats", function () {
             view.model.rejoin();
             // Test that members aren't removed when we reconnect
             expect(view.model.occupants.length).toBe(8);
-            expect(occupants.querySelectorAll('li').length).toBe(8);
+            await u.waitUntil(() => occupants.querySelectorAll('li').length === 8);
             done();
         }));
 
@@ -1784,8 +1786,8 @@ describe("Groupchats", function () {
                     role: 'none'
                 });
                 _converse.connection._dataRecv(mock.createRequest(presence));
-                expect(occupants.querySelectorAll('li').length).toBe(i+1);
             }
+            await u.waitUntil(() => occupants.querySelectorAll('li').length === 1);
             done();
         }));
 
@@ -1969,6 +1971,9 @@ describe("Groupchats", function () {
                 .c('status').attrs({code:'210'}).nodeTree;
 
             _converse.connection._dataRecv(mock.createRequest(presence));
+
+            await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+            await mock.returnMemberLists(_converse, muc_jid, [], ['member', 'admin', 'owner']);
             await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-info').length);
             const info_text = sizzle('.chat-content .chat-info:first', view.el).pop().textContent.trim();
             expect(info_text).toBe('Your nickname has been automatically set to thirdwitch');

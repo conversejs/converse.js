@@ -4,6 +4,7 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
+import "./components/muc-sidebar";
 import "@converse/headless/utils/muc";
 import "converse-modal";
 import AddMUCModal from 'modals/add-muc.js';
@@ -20,7 +21,6 @@ import tpl_chatroom_head from "templates/chatroom_head.js";
 import tpl_muc_nickname_form from "templates/muc_nickname_form.js";
 import tpl_muc_config_form from "templates/muc_config_form.js";
 import tpl_muc_password_form from "templates/muc_password_form.js";
-import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import tpl_room_panel from "templates/room_panel.js";
 import tpl_spinner from "templates/spinner.js";
 import { ChatBoxView } from "./converse-chatview";
@@ -90,7 +90,7 @@ export const ChatRoomView = ChatBoxView.extend({
         this.listenTo(this.model, 'change', debounce(() => this.renderHeading(), 250));
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
         this.listenTo(this.model, 'change:hidden', m => m.get('hidden') ? this.hide() : this.show());
-        this.listenTo(this.model, 'change:hidden_occupants', this.renderToolbar);
+        this.listenTo(this.model, 'change:hidden_occupants', this.onSidebarToggle);
         this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
         this.listenTo(this.model, 'destroy', this.hide);
         this.listenTo(this.model, 'show', this.show);
@@ -121,16 +121,14 @@ export const ChatRoomView = ChatBoxView.extend({
         this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
         this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
 
-        this.createSidebarView();
-        await this.updateAfterMessagesFetched();
-
+        this.renderChatContent();
+        this.insertIntoDOM();
         // Register later due to await
         const user_settings = await _converse.api.user.settings.getModel();
         this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
-
         this.onConnectionStatusChanged();
         this.model.maybeShow();
-
+        this.scrollDown();
         /**
          * Triggered once a { @link _converse.ChatRoomView } has been opened
          * @event _converse#chatRoomViewInitialized
@@ -141,8 +139,14 @@ export const ChatRoomView = ChatBoxView.extend({
     },
 
     async render () {
+        const sidebar_hidden = !this.shouldShowSidebar();
         this.el.setAttribute('id', this.model.get('box_id'));
         render(tpl_chatroom({
+            sidebar_hidden,
+            'model': this.model,
+            'occupants': this.model.occupants,
+            'show_sidebar': !this.model.get('hidden_occupants') &&
+                this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED,
             'markScrolled': ev => this.markScrolled(ev),
             'muc_show_logs_before_join': api.settings.get('muc_show_logs_before_join'),
             'show_send_button': _converse.show_send_button,
@@ -280,23 +284,13 @@ export const ChatRoomView = ChatBoxView.extend({
         }
     },
 
-    createSidebarView () {
-        this.model.occupants.chatroomview = this;
-        this.sidebar_view = new _converse.MUCSidebar({'model': this.model.occupants});
-        const container_el = this.el.querySelector('.chatroom-body');
-        const occupants_width = this.model.get('occupants_width');
-        if (this.sidebar_view && occupants_width !== undefined) {
-            this.sidebar_view.el.style.flex = "0 0 " + occupants_width + "px";
-        }
-        container_el.insertAdjacentElement('beforeend', this.sidebar_view.el);
-    },
-
     onStartResizeOccupants (ev) {
         this.resizing = true;
         this.el.addEventListener('mousemove', this.onMouseMove);
         this.el.addEventListener('mouseup', this.onMouseUp);
 
-        const style = window.getComputedStyle(this.sidebar_view.el);
+        const sidebar_el = this.el.querySelector('converse-muc-sidebar');
+        const style = window.getComputedStyle(sidebar_el);
         this.width = parseInt(style.width.replace(/px$/, ''), 10);
         this.prev_pageX = ev.pageX;
     },
@@ -316,7 +310,8 @@ export const ChatRoomView = ChatBoxView.extend({
             this.resizing = false;
             this.el.removeEventListener('mousemove', this.onMouseMove);
             this.el.removeEventListener('mouseup', this.onMouseUp);
-            const element_position = this.sidebar_view.el.getBoundingClientRect();
+            const sidebar_el = this.el.querySelector('converse-muc-sidebar');
+            const element_position = sidebar_el.getBoundingClientRect();
             const occupants_width = this.calculateSidebarWidth(element_position, 0);
             const attrs = {occupants_width};
             _converse.connection.connected ? this.model.save(attrs) : this.model.set(attrs);
@@ -324,14 +319,15 @@ export const ChatRoomView = ChatBoxView.extend({
     },
 
     resizeSidebarView (delta, current_mouse_position) {
-        const element_position = this.sidebar_view.el.getBoundingClientRect();
+        const sidebar_el = this.el.querySelector('converse-muc-sidebar');
+        const element_position = sidebar_el.getBoundingClientRect();
         if (this.is_minimum) {
             this.is_minimum = element_position.left < current_mouse_position;
         } else if (this.is_maximum) {
             this.is_maximum = element_position.left > current_mouse_position;
         } else {
             const occupants_width = this.calculateSidebarWidth(element_position, delta);
-            this.sidebar_view.el.style.flex = "0 0 " + occupants_width + "px";
+            sidebar_el.style.flex = "0 0 " + occupants_width + "px";
         }
     },
 
@@ -526,6 +522,16 @@ export const ChatRoomView = ChatBoxView.extend({
             return;
         }
         return _converse.ChatBoxView.prototype.showChatStateNotification.apply(this, arguments);
+    },
+
+    shouldShowSidebar () {
+        return !this.model.get('hidden_occupants') &&
+            this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
+    },
+
+    onSidebarToggle () {
+        this.renderToolbar();
+        this.el.querySelector('.occupants')?.setVisibility();
     },
 
     onOccupantAffiliationChanged (occupant) {
@@ -1293,7 +1299,7 @@ export const ChatRoomView = ChatBoxView.extend({
         } else if (conn_status == converse.ROOMSTATUS.ENTERED) {
             this.hideChatRoomContents();
             u.showElement(this.el.querySelector('.chat-area'));
-            u.showElement(this.el.querySelector('.occupants'));
+            this.el.querySelector('.occupants')?.setVisibility();
             this.scrollDown();
         }
     },
@@ -1542,46 +1548,6 @@ converse.plugins.add('converse-muc-views', {
                 const password = this.el.querySelector('input[type=password]').value;
                 this.chatroomview.model.join(this.chatroomview.model.get('nick'), password);
                 this.model.set('validation_message', null);
-            }
-        });
-
-
-        _converse.MUCSidebar = View.extend({
-            tagName: 'div',
-            className: 'occupants col-md-3 col-4',
-
-            async initialize () {
-                this.chatroomview = this.model.chatroomview;
-                this.listenTo(this.model, 'add', this.render);
-                this.listenTo(this.model, 'remove', this.render);
-                this.listenTo(this.model, 'change', this.render);
-                this.listenTo(this.chatroomview.model.features, 'change', this.render);
-                this.listenTo(this.chatroomview.model, 'change:hidden_occupants', this.setVisibility);
-                this.render();
-                await this.model.fetched;
-            },
-
-            toHTML () {
-                return tpl_muc_sidebar(
-                    Object.assign(this.chatroomview.model.toJSON(), {
-                        _converse,
-                        'features': this.chatroomview.model.features,
-                        'occupants': this.model.models
-                    })
-                );
-            },
-
-            afterRender () {
-                this.setVisibility();
-            },
-
-            setVisibility () {
-                if (this.chatroomview.model.get('hidden_occupants') ||
-                    this.chatroomview.model.session.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
-                    u.hideElement(this.el);
-                } else {
-                    u.showElement(this.el);
-                }
             }
         });
 

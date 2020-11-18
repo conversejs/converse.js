@@ -40,6 +40,53 @@ class IQError extends Error {
     }
 }
 
+
+function parseEncryptedMessage (stanza, attrs) {
+    if (attrs.is_encrypted && attrs.encrypted.key) {
+        // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
+        if (attrs.encrypted.prekey === true) {
+            return decryptPrekeyWhisperMessage(attrs);
+        } else {
+            return decryptWhisperMessage(attrs);
+        }
+    } else {
+        return attrs;
+    }
+}
+
+
+function onChatBoxesInitialized () {
+    _converse.chatboxes.on('add', chatbox => {
+        checkOMEMOSupported(chatbox);
+        if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+            chatbox.occupants.on('add', o => onOccupantAdded(chatbox, o));
+            chatbox.features.on('change', () => checkOMEMOSupported(chatbox));
+        }
+    });
+}
+
+
+function onChatInitialized (view) {
+    view.listenTo(view.model.messages, 'add', (message) => {
+        if (message.get('is_encrypted') && !message.get('is_error')) {
+            view.model.save('omemo_supported', true);
+        }
+    });
+    view.listenTo(view.model, 'change:omemo_supported', () => {
+        if (!view.model.get('omemo_supported') && view.model.get('omemo_active')) {
+            view.model.set('omemo_active', false);
+        } else {
+            // Manually trigger an update, setting omemo_active to
+            // false above will automatically trigger one.
+            view.el.querySelector('converse-chat-toolbar')?.requestUpdate();
+        }
+    });
+    view.listenTo(view.model, 'change:omemo_active', () => {
+        view.el.querySelector('converse-chat-toolbar').requestUpdate();
+    });
+}
+
+
 const omemo = converse.env.omemo = {
 
     async encryptMessage (plaintext) {
@@ -511,6 +558,52 @@ function getOMEMOToolbarButton (toolbar_el, buttons) {
 }
 
 
+/**
+ * Mixin object that contains OMEMO-related methods for
+ * {@link _converse.ChatBox} or {@link _converse.ChatRoom} objects.
+ *
+ * @typedef {Object} OMEMOEnabledChatBox
+ */
+const OMEMOEnabledChatBox = {
+
+    encryptKey (plaintext, device) {
+        return getSessionCipher(device.get('jid'), device.get('id'))
+            .encrypt(plaintext)
+            .then(payload => ({'payload': payload, 'device': device}));
+    },
+
+    handleMessageSendError (e) {
+        if (e.name === 'IQError') {
+            this.save('omemo_supported', false);
+
+            const err_msgs = [];
+            if (sizzle(`presence-subscription-required[xmlns="${Strophe.NS.PUBSUB_ERROR}"]`, e.iq).length) {
+                err_msgs.push(
+                    __("Sorry, we're unable to send an encrypted message because %1$s "+
+                       "requires you to be subscribed to their presence in order to see their OMEMO information",
+                        e.iq.getAttribute('from'))
+                );
+            } else if (sizzle(`remote-server-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]`, e.iq).length) {
+                err_msgs.push(
+                    __("Sorry, we're unable to send an encrypted message because the remote server for %1$s could not be found",
+                        e.iq.getAttribute('from'))
+                );
+            } else {
+                err_msgs.push(__("Unable to send an encrypted message due to an unexpected error."));
+                err_msgs.push(e.iq.outerHTML);
+            }
+            api.alert('error', __('Error'), err_msgs);
+            log.error(e);
+        } else if (e.user_facing) {
+            api.alert('error', __('Error'), [e.message]);
+            log.error(e);
+        } else {
+            throw e;
+        }
+    }
+}
+
+
 converse.plugins.add('converse-omemo', {
 
     enabled (_converse) {
@@ -642,52 +735,10 @@ converse.plugins.add('converse-omemo', {
          */
 
         api.settings.extend({'omemo_default': false});
-
         api.promises.add(['OMEMOInitialized']);
 
         _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
-
-        /**
-         * Mixin object that contains OMEMO-related methods for
-         * {@link _converse.ChatBox} or {@link _converse.ChatRoom} objects.
-         *
-         * @typedef {Object} OMEMOEnabledChatBox
-         */
-        const OMEMOEnabledChatBox = {
-
-            encryptKey (plaintext, device) {
-                return getSessionCipher(device.get('jid'), device.get('id'))
-                    .encrypt(plaintext)
-                    .then(payload => ({'payload': payload, 'device': device}));
-            },
-
-            handleMessageSendError (e) {
-                if (e.name === 'IQError') {
-                    this.save('omemo_supported', false);
-
-                    const err_msgs = [];
-                    if (sizzle(`presence-subscription-required[xmlns="${Strophe.NS.PUBSUB_ERROR}"]`, e.iq).length) {
-                        err_msgs.push(__("Sorry, we're unable to send an encrypted message because %1$s "+
-                                        "requires you to be subscribed to their presence in order to see their OMEMO information",
-                                        e.iq.getAttribute('from')));
-                    } else if (sizzle(`remote-server-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]`, e.iq).length) {
-                        err_msgs.push(__("Sorry, we're unable to send an encrypted message because the remote server for %1$s could not be found",
-                                        e.iq.getAttribute('from')));
-                    } else {
-                        err_msgs.push(__("Unable to send an encrypted message due to an unexpected error."));
-                        err_msgs.push(e.iq.outerHTML);
-                    }
-                    api.alert('error', __('Error'), err_msgs);
-                    log.error(e);
-                } else if (e.user_facing) {
-                    api.alert('error', __('Error'), [e.message]);
-                    log.error(e);
-                } else {
-                    throw e;
-                }
-            }
-        }
         Object.assign(_converse.ChatBox.prototype, OMEMOEnabledChatBox);
 
 
@@ -1235,52 +1286,11 @@ converse.plugins.add('converse-omemo', {
             }
         });
 
-        function parseEncryptedMessage (stanza, attrs) {
-            if (attrs.is_encrypted && attrs.encrypted.key) {
-                // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
-                if (attrs.encrypted.prekey === true) {
-                    return decryptPrekeyWhisperMessage(attrs);
-                } else {
-                    return decryptWhisperMessage(attrs);
-                }
-            } else {
-                return attrs;
-            }
-        }
-
         /******************** Event Handlers ********************/
+        api.waitUntil('chatBoxesInitialized').then(onChatBoxesInitialized);
+
         api.listen.on('parseMessage', parseEncryptedMessage);
         api.listen.on('parseMUCMessage', parseEncryptedMessage);
-
-        api.waitUntil('chatBoxesInitialized').then(() =>
-            _converse.chatboxes.on('add', chatbox => {
-                checkOMEMOSupported(chatbox);
-                if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
-                    chatbox.occupants.on('add', o => onOccupantAdded(chatbox, o));
-                    chatbox.features.on('change', () => checkOMEMOSupported(chatbox));
-                }
-            })
-        );
-
-        const onChatInitialized = view => {
-            view.listenTo(view.model.messages, 'add', (message) => {
-                if (message.get('is_encrypted') && !message.get('is_error')) {
-                    view.model.save('omemo_supported', true);
-                }
-            });
-            view.listenTo(view.model, 'change:omemo_supported', () => {
-                if (!view.model.get('omemo_supported') && view.model.get('omemo_active')) {
-                    view.model.set('omemo_active', false);
-                } else {
-                    // Manually trigger an update, setting omemo_active to
-                    // false above will automatically trigger one.
-                    view.el.querySelector('converse-chat-toolbar')?.requestUpdate();
-                }
-            });
-            view.listenTo(view.model, 'change:omemo_active', () => {
-                view.el.querySelector('converse-chat-toolbar').requestUpdate();
-            });
-        }
 
         api.listen.on('chatBoxViewInitialized', onChatInitialized);
         api.listen.on('chatRoomViewInitialized', onChatInitialized);
@@ -1292,7 +1302,7 @@ converse.plugins.add('converse-omemo', {
         api.listen.on('addClientFeatures',
             () => api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
 
-        api.listen.on('userDetailsModalInitialized', (contact) => {
+        api.listen.on('userDetailsModalInitialized', contact => {
             const jid = contact.get('jid');
             _converse.generateFingerprints(jid).catch(e => log.error(e));
         });
@@ -1312,7 +1322,6 @@ converse.plugins.add('converse-omemo', {
 
 
         /************************ API ************************/
-
         Object.assign(_converse.api, {
             /**
              * The "omemo" namespace groups methods relevant to OMEMO

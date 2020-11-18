@@ -1,6 +1,6 @@
 # Changelog
 
-## 7.0.0 (Unreleased)
+## 7.0.0 (2020-11-18)
 
 *Note for plugin authors:*
 configuration settings should now be accessed via `_converse.api.settings.get` and not directly on the `_converse` object.

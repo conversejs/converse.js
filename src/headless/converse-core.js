@@ -1069,7 +1069,7 @@ function initPlugins () {
 }
 
 
-function initClientConfig () {
+async function initClientConfig () {
     /* The client config refers to configuration of the client which is
      * independent of any particular user.
      * What this means is that config values need to persist across
@@ -1078,7 +1078,7 @@ function initClientConfig () {
     const id = 'converse.client-config';
     _converse.config = new Model({ id, 'trusted': true });
     _converse.config.browserStorage = createStore(id, "session");
-    _converse.config.fetch();
+    await new Promise(r => _converse.config.fetch({'success': r, 'error': r}));
     /**
      * Triggered once the XMPP-client configuration has been initialized.
      * The client configuration is independent of any particular and its values
@@ -1559,7 +1559,7 @@ Object.assign(converse, {
         _converse.send_initial_presence = true;
 
         await initSessionStorage();
-        initClientConfig();
+        await initClientConfig();
         await i18n.initialize();
         initPlugins();
         registerGlobalEventHandlers();

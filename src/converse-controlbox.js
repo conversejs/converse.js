@@ -420,7 +420,7 @@ converse.plugins.add('converse-controlbox', {
                 if (!this.validate()) { return; }
 
                 const form_data = new FormData(ev.target);
-                _converse.config.save({ 'trusted': form_data.get('trusted') && true || false });
+                _converse.config.save({'trusted': form_data.get('trusted') && true || false});
 
                 let jid = form_data.get('jid');
                 if (api.settings.get('locked_domain')) {

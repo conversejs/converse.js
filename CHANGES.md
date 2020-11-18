@@ -1,5 +1,7 @@
 # Changelog
 
+## 7.0.1 (Unreleased)
+
 ## 7.0.0 (2020-11-18)
 
 *Note for plugin authors:*
@@ -37,7 +39,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #2092: fixes room list update loop when having the `locked_muc_domain` truthy or `'hidden'`
 - #2285: Rename config option `muc_hats_from_vcard` to [muc_hats](https://conversejs.org/docs/html/configuration.html#muc-hats). Now accepts a list instead of a boolean and allows for more flexible choices regarding user badges.
 - #2300: Fix message reorder issue after message correction.
-- #2304: Custom emojis (stickers) images not shown 
+- #2304: Custom emojis (stickers) images not shown
 - #2307: BootstrapModal is not accessible to plugins
 - #2308: Allow getHats method to be overriden in the `overrides` object in plugins.
 - #2321: When Converse runs inside a browser extension, enable browser sync and local storage for persistent storage

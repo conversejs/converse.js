@@ -10,8 +10,8 @@
 8. Update https://conversejs.org
     * `cd /home/conversejs/converse.js`
     * `git clone --branch v7.0.0 git@github.com:conversejs/converse.js.git 7.0.0`
-    * `cd 7.0.0 && ASSET_PATH=https://cdn.conversejs.org/7.0.0/dist/ make dist`
-    * `cd .. && git pull && ASSET_PATH=https://cdn.conversejs.org/dist/ make dist`
+    * `cd 7.0.0 && ASSET_PATH=https://cdn.conversejs.org/7.0.0/dist/ make dist && make doc`
+    * `cd .. && git pull && ASSET_PATH=https://cdn.conversejs.org/dist/ make dist && make doc`
 9. Update release page on Github
 11. Run `npm publish && cd src/headless/ && npm publish`
 12. Update the repository on weblate

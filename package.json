@@ -16,6 +16,7 @@
     "src/utils/*.js",
     "src/templates/*.html",
     "src/templates/*.svg",
+    "src/templates/*.js",
     "src/headless/"
   ],
   "scripts": {

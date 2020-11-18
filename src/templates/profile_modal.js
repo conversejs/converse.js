@@ -120,7 +120,7 @@ export default (o) => {
                 </div>
                 <div class="modal-body">
                     <span class="modal-alert"></span>
-                    ${_converse.pluggable.plugins['converse-omemo'].enabled(_converse) && navigation}
+                    ${_converse.pluggable.plugins['converse-omemo'].enabled(_converse) && navigation || ''}
                     <div class="tab-content">
                         <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
                             <form class="converse-form converse-form--modal profile-form" action="#">
@@ -162,7 +162,7 @@ export default (o) => {
                                 </div>
                             </form>
                         </div>
-                        ${ _converse.pluggable.plugins['converse-omemo'].enabled(_converse) && omemo_page(o) }
+                        ${ _converse.pluggable.plugins['converse-omemo'].enabled(_converse) && omemo_page(o) || '' }
                     </div>
                 </div>
             </div>

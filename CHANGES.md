@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.0.2 (Unreleased)
+
+
 ## 7.0.1 (2020-11-19)
 
 - #2328: Honor `use_system_emojis` in emoji-picker

@@ -14,7 +14,7 @@
     * `cd 7.0.1 && ASSET_PATH=https://cdn.conversejs.org/7.0.1/dist/ make dist && make doc`
     * `cd .. && git pull && ASSET_PATH=https://cdn.conversejs.org/dist/ make dist && make doc`
 10. Update release page on Github
-11. Run `npm pack` to generate tarballs and upload them to the Github release page
+11. Run `npm pack && cd src/headless && npm pack` to generate tarballs. Then upload them to the Github release page
 12. Run `npm publish && cd src/headless/ && npm publish`
 13. Update the repository on weblate
 14. Decide on next release number and run `make postrelease VERSION=7.0.2`

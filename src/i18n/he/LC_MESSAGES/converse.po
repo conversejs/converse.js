@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-04-15 16:11+0000\n"
+"PO-Revision-Date: 2020-11-19 11:42+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -90,7 +90,6 @@ msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "שרת ה־XMPP לא הציע מנגנון אימות נתמך"
 
 #: dist/converse-no-dependencies.js:53657
-#, fuzzy
 msgid "Undecryptable OMEMO message"
 msgstr "הודעת OMEMO שלא ניתן להצפין"
 
@@ -116,27 +115,23 @@ msgstr "העלאת הקובץ שלך לא הצליחה, עמך הסליחה."
 # אינך מורשה
 #: dist/converse-no-dependencies.js:54001
 #: dist/converse-no-dependencies.js:59465
-#, fuzzy
 msgid "You're not allowed to retract your message."
-msgstr "אין לך הרשאה ליצור התכתבויות קבוצתיות חדשות."
+msgstr "אין לך הרשאה למשוך את ההודעה שלך."
 
 #: dist/converse-no-dependencies.js:54003
 #: dist/converse-no-dependencies.js:59469
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "אירעה שגיאה במהלך ניסיון הרענון, עמך הסליחה"
+msgstr "אירעה שגיאה במהלך הניסיון למשוך את ההודעה שלך, עמך סליחה."
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:54008
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr "אין לך הרשאה לשלוח הודעות בחדר זה"
+msgstr "אסור לך לשלוח הודעות."
 
 #: dist/converse-no-dependencies.js:54010
 #: dist/converse-no-dependencies.js:59478
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "אירעה שגיאה במהלך הניסיון להסרת ההתקנים, עמך הסליחה."
+msgstr "אירעה שגיאה במהלך הניסיון לשליחת ההודעה שלך, עמך הסליחה."
 
 #: dist/converse-no-dependencies.js:55073
 #: dist/converse-no-dependencies.js:55096
@@ -247,9 +242,8 @@ msgid "You have been banned from this groupchat"
 msgstr "גישתך להתכתבות הקבוצתית הזו נחסמה"
 
 #: dist/converse-no-dependencies.js:58697
-#, fuzzy
 msgid "You have exited this groupchat due to a technical problem"
-msgstr "הוסרת מההתכתבות הקבוצתית הזו עקב שינוי שיוך"
+msgstr "יצאת מההתכתבות הקבוצתית הזאת עקב תקלה טכנית"
 
 #: dist/converse-no-dependencies.js:58698
 msgid "You have been kicked from this groupchat"
@@ -943,9 +937,8 @@ msgid "This is a trusted device"
 msgstr "זה מכשיר מהימן"
 
 #: dist/converse-no-dependencies.js:86122
-#, fuzzy
 msgid "Password"
-msgstr "ססמה:"
+msgstr "ססמה"
 
 #: dist/converse-no-dependencies.js:86128
 msgid "Create an account"
@@ -1199,9 +1192,8 @@ msgid "conference.example.org"
 msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:89658
-#, fuzzy
 msgid "Groupchats found"
-msgstr "התכתבויות קבוצתיות שנמצאו:"
+msgstr "התכתבויות קבוצתיות שנמצאו"
 
 #: dist/converse-no-dependencies.js:89666
 msgid "No groupchats found"

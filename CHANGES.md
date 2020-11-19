@@ -2,9 +2,11 @@
 
 ## 7.0.2 (Unreleased)
 
+- Updated translations: gl, tr
 
 ## 7.0.1 (2020-11-19)
 
+- Updated translations: de, es, fi, fr, gl, hu, nb_NO, oc, pl, pt, pt_BR, ru, tr, uk, zh
 - #2328: Honor `use_system_emojis` in emoji-picker
 - Not all *.js files were included in the 7.0.0 package, causing:
   `Module not found: Error: Can't resolve 'templates/*.js'`

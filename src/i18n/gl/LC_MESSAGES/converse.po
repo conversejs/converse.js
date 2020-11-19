@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-11-18 18:21+0100\n"
+"PO-Revision-Date: 2020-11-19 11:41+0100\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -475,15 +475,13 @@ msgstr ""
 "O servidor non devolveu os teus marcadores no tempo estipulado. Podes "
 "recargar a páxina para solicitalos de novo."
 
-#: dist/converse-no-dependencies.js:65374
-#, fuzzy
+#: dist/converse-no-dependencies.js:65370
 msgid "Timeout while trying to fetch archived messages."
-msgstr "Caducou a solicitude de borrado da mensaxe"
+msgstr "Caducou a solicitude mentras se obtiñan as mensaxes arquivadas."
 
-#: dist/converse-no-dependencies.js:65389
-#, fuzzy
+#: dist/converse-no-dependencies.js:65385
 msgid "An error occurred while querying for archived messages."
-msgstr "Lamentámolo, algo fallou ó intentar enviar a mensaxe."
+msgstr "Algo fallou mentras se obtiñan as mensaxes arquivadas."
 
 #: dist/converse-no-dependencies.js:66535
 msgid "My contacts"
@@ -603,8 +601,8 @@ msgstr "Imaxe: "
 msgid "Download audio file \"%1$s\""
 msgstr "Descargar ficheiro de audio \"%1$s\""
 
-#: dist/converse-no-dependencies.js:73054
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:73050
+#, javascript-format
 msgid "Download image file \"%1$s\""
 msgstr "Descargar imaxe \"%1$s\""
 

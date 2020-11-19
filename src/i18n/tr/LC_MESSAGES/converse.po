@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-11-18 18:25+0100\n"
+"PO-Revision-Date: 2020-11-19 11:41+0100\n"
 "Last-Translator: Ömer Çakmak <faruk.omer.cakmak@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
@@ -357,7 +357,7 @@ msgstr "%1$s üye olmadığı için kaldırıldı"
 #: dist/converse-no-dependencies.js:61771
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "%1$s artık bu toplu konuşmanın yöneticisi değil"
+msgstr "%1$s artık bu grup konuşmasının yöneticisi değil"
 
 #: dist/converse-no-dependencies.js:61776
 #, javascript-format
@@ -473,15 +473,13 @@ msgstr ""
 "Sunucu yer imlerinizi izin verilen süre içinde döndürmedi. Sayfayı tekrar "
 "istemek için yeniden yükleyebilirsiniz."
 
-#: dist/converse-no-dependencies.js:65374
-#, fuzzy
+#: dist/converse-no-dependencies.js:65370
 msgid "Timeout while trying to fetch archived messages."
-msgstr "Maalesef, cihazları kaldırmaya çalışırken bir hata oluştu."
+msgstr "Arşivlenmiş mesajları almaya çalışırken zaman aşımı."
 
-#: dist/converse-no-dependencies.js:65389
-#, fuzzy
+#: dist/converse-no-dependencies.js:65385
 msgid "An error occurred while querying for archived messages."
-msgstr "Maalesef, cihazları kaldırmaya çalışırken bir hata oluştu."
+msgstr "Arşivlenen mesajlar sorgulanırken bir hata oluştu."
 
 #: dist/converse-no-dependencies.js:66535
 msgid "My contacts"
@@ -593,17 +591,17 @@ msgstr "Tamam"
 #. harmony default export
 #: dist/converse-no-dependencies.js:71654
 msgid "Image: "
-msgstr "Görüntü: "
+msgstr "Resim: "
 
 #: dist/converse-no-dependencies.js:73046
 #, javascript-format
 msgid "Download audio file \"%1$s\""
 msgstr "\"%1$s\" ses dosyasını indirin"
 
-#: dist/converse-no-dependencies.js:73054
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:73050
+#, javascript-format
 msgid "Download image file \"%1$s\""
-msgstr "\"%1$s\" resmini indir"
+msgstr "\"%1$s\" resim dosyasını indir"
 
 #: dist/converse-no-dependencies.js:73062
 #, javascript-format

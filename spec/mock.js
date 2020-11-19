@@ -313,9 +313,9 @@ window.addEventListener('converse-loaded', () => {
     };
 
 
-    mock.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[]) {
+    mock.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[], force_open=true) {
         muc_jid = muc_jid.toLowerCase();
-        const room_creation_promise = _converse.api.rooms.open(muc_jid);
+        const room_creation_promise = _converse.api.rooms.open(muc_jid, {}, force_open);
         await mock.getRoomFeatures(_converse, muc_jid, features);
         await mock.waitForReservedNick(_converse, muc_jid, nick);
         // The user has just entered the room (because join was called)

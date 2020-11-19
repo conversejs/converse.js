@@ -2853,7 +2853,7 @@ converse.plugins.add('converse-muc', {
                  *     }
                  * );
                  */
-                async open (jids, attrs, force=false) {
+                async open (jids, attrs={}, force=false) {
                     await api.waitUntil('chatBoxesFetched');
                     if (jids === undefined) {
                         const err_msg = 'rooms.open: You need to provide at least one JID';

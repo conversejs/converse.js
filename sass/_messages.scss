@@ -180,11 +180,6 @@
                 cursor: pointer;
                 padding-right: 0.5em;
             }
-            &.headline {
-                .chat-msg__body {
-                    margin-left: 0;
-                }
-            }
 
             .chat-msg__subject {
                 font-weight: bold;

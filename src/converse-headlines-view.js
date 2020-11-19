@@ -16,7 +16,7 @@ const u = converse.env.utils;
 
 
 const HeadlinesBoxView = ChatBoxView.extend({
-    className: 'chatbox headlines',
+    className: 'chatbox headlines hidden',
 
     events: {
         'click .close-chatbox-button': 'close',

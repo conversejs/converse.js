@@ -3,12 +3,13 @@
 ## 7.0.2 (Unreleased)
 
 - Updated translations: gl, tr
+- Still more necessary files not included in the 7.0.1 NPM package, causing `Module not found` errors.
 
 ## 7.0.1 (2020-11-19)
 
 - Updated translations: de, es, fi, fr, gl, hu, nb_NO, oc, pl, pt, pt_BR, ru, tr, uk, zh
 - #2328: Honor `use_system_emojis` in emoji-picker
-- Not all *.js files were included in the 7.0.0 package, causing:
+- Not all template/*.js files were included in the 7.0.0 NPM package, causing:
   `Module not found: Error: Can't resolve 'templates/*.js'`
 
 ## 7.0.0 (2020-11-18)
@@ -53,6 +54,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #2308: Allow getHats method to be overriden in the `overrides` object in plugins.
 - #2321: When Converse runs inside a browser extension, enable browser sync and local storage for persistent storage
 - #1250: Change favicon color when unread messages
+- Updated translations: de, es, fi, fr, gl, hu, nb_NO, oc, pl, pt, pt_BR, ru, tr, uk, zh
 - The `trusted` configuration setting has been removed in favor of two new settings:
     [allow_user_trust_override](https://conversejs.org/docs/html/configuration.html#allow-user-trust-override)
     [clear_cache_on_logout](https://conversejs.org/docs/html/configuration.html#clear-cache-on-logout)

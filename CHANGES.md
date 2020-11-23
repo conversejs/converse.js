@@ -4,6 +4,7 @@
 
 - Updated translations: de, nb, gl, tr
 - Still more necessary files not included in the 7.0.1 NPM package, causing `Module not found` errors.
+- #2337: Newly opened headline chat isn't hidden by default
 
 ## 7.0.1 (2020-11-19)
 

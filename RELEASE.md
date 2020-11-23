@@ -7,7 +7,7 @@
 5. Do a quick manual test with the `dist` files (via `index.html`)
 6. `git commit -am "Release 7.0.2"`
 7. `git tag -s v7.0.2 -m "Release 7.0.2"`
-8. Run `git push && git push --tags`
+8. Run `git push && git push origin v7.0.2`
 9. Update https://conversejs.org
     * `cd /home/conversejs/converse.js`
     * `git clone --branch v7.0.2 git@github.com:conversejs/converse.js.git 7.0.2`

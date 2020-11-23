@@ -1,8 +1,8 @@
 # Changelog
 
-## 7.0.2 (Unreleased)
+## 7.0.2 (2020-11-23)
 
-- Updated translations: gl, tr
+- Updated translations: de, nb, gl, tr
 - Still more necessary files not included in the 7.0.1 NPM package, causing `Module not found` errors.
 
 ## 7.0.1 (2020-11-19)

@@ -1400,46 +1400,6 @@ describe("Groupchats", function () {
             done();
         }));
 
-        it("supports the /me command",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
-
-            await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
-            await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
-            await mock.waitForRoster(_converse, 'current');
-            await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
-            if (!view.el.querySelectorAll('.chat-area').length) {
-                view.renderChatArea();
-            }
-            let message = '/me is tired';
-            const nick = mock.chatroom_names[0];
-            let msg = $msg({
-                    'from': 'lounge@montague.lit/'+nick,
-                    'id': u.getUniqueId(),
-                    'to': 'romeo@montague.lit',
-                    'type': 'groupchat'
-                }).c('body').t(message).tree();
-            await view.model.handleMessageStanza(msg);
-            await u.waitUntil(() => sizzle('.chat-msg:last .chat-msg__text', view.content).pop());
-            expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Dyon van de Wege')).toBeTruthy();
-            expect(view.el.querySelector('.chat-msg__text').textContent.trim()).toBe('is tired');
-
-            message = '/me is as well';
-            msg = $msg({
-                from: 'lounge@montague.lit/Romeo Montague',
-                id: u.getUniqueId(),
-                to: 'romeo@montague.lit',
-                type: 'groupchat'
-            }).c('body').t(message).tree();
-            await view.model.handleMessageStanza(msg);
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
-            expect(sizzle('.chat-msg__author:last', view.el).pop().textContent.includes('**Romeo Montague')).toBeTruthy();
-            expect(sizzle('.chat-msg__text:last', view.el).pop().textContent.trim()).toBe('is as well');
-            done();
-        }));
-
         it("can be configured if you're its owner",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},

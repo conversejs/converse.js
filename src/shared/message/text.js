@@ -36,14 +36,15 @@ export class MessageText extends String {
     /**
      * Create a new {@link MessageText} instance.
      * @param { String } text - The plain text that was received from the `<message>` stanza.
-     * @param { Message } model
+     * @param { Message } model - The model representing the message to which
+     *  this MessageText instance belongs
      * @param { Integer } offset - The offset of this particular piece of text
      *  from the start of the original message text. This is necessary because
      *  MessageText instances can be nested when templates call directives
      *  which create new MessageText instances (as happens with XEP-393 styling directives).
      * @param { Boolean } show_images - Whether image URLs should be rendered as <img> tags.
-     * @param { Function } onImgLoad
-     * @param { Function } onImgClick
+     * @param { Function } onImgLoad - Callback for when an inline rendered image has been loaded
+     * @param { Function } onImgClick - Callback for when an inline rendered image has been clicked
      */
     constructor (text, model, offset=0, show_images, onImgLoad, onImgClick) {
         super(text);
@@ -176,11 +177,9 @@ export class MessageText extends String {
          * Synchronous event which provides a hook for transforming a chat message's body text
          * before the default transformations have been applied.
          * @event _converse#beforeMessageBodyTransformed
-         * @param { _converse.Message } model - The model representing the message
          * @param { MessageText } text - A {@link MessageText } instance. You
-         * can call {@link MessageText#addTemplateResult } on it in order to
-         * add TemplateResult objects meant to render rich parts of the
-         * message.
+         *  can call {@link MessageText#addTemplateResult } on it in order to
+         *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('beforeMessageBodyTransformed', (view, text) => { ... });
          */
         await api.trigger('beforeMessageBodyTransformed', this, {'Synchronous': true});
@@ -205,11 +204,9 @@ export class MessageText extends String {
          * Synchronous event which provides a hook for transforming a chat message's body text
          * after the default transformations have been applied.
          * @event _converse#afterMessageBodyTransformed
-         * @param { _converse.Message } model - The model representing the message
          * @param { MessageText } text - A {@link MessageText } instance. You
-         * can call {@link MessageText#addTemplateResult} on it in order to
-         * add TemplateResult objects meant to render rich parts of the
-         * message.
+         *  can call {@link MessageText#addTemplateResult} on it in order to
+         *  add TemplateResult objects meant to render rich parts of the message.
          * @example _converse.api.listen.on('afterMessageBodyTransformed', (view, text) => { ... });
          */
         await api.trigger('afterMessageBodyTransformed', this, {'Synchronous': true});

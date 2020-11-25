@@ -233,4 +233,4 @@ doc: node_modules docsdev apidoc
 
 PHONY: apidoc
 apidoc:
-	$(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/templates/directives/*.js src/components/*.js src/*.js src/utils/*.js src/headless/*.js src/headless/utils/*.js
+	$(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/templates/**/*.js src/*.js src/**/*.js src/headless/**/*.js src/shared/**/*.js

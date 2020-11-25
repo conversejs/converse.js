@@ -3,7 +3,11 @@
 ## 8.0.0 (Unreleased)
 
 - #1083: Add support for XEP-0393 Message Styling
-- New configuration setting: [allow_message_styling](https://conversejs.org/docs/html/configuration.html#allow-message-styling) instead.
+- New configuration setting: [](https://conversejs.org/docs/html/configuration.html#trusted) instead.
+
+### Breaking Changes
+
+The [afterMessageBodyTransformed](https://conversejs.org/docs/html/api/-_converse.html#event:afterMessageBodyTransformed) and [beforeMessageBodyTransformed](https://conversejs.org/docs/html/api/-_converse.html#event:beforeMessageBodyTransformed) events now has a different signatures.
 
 ## 7.0.2 (2020-11-23)
 

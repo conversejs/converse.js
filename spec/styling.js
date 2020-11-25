@@ -256,7 +256,7 @@ describe("An incoming chat Message", function () {
         msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
-            '<blockquote> This is quoted text\nThis is also quoted</blockquote>\nThis is not quoted');
+            '<blockquote> This is quoted text\nThis is also quoted</blockquote>This is not quoted');
 
         msg_text = `> This is *quoted* text\n>This is \`also _quoted_\`\nThis is not quoted`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
@@ -266,7 +266,7 @@ describe("An incoming chat Message", function () {
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
             '<blockquote> This is <span class="styling-directive">*</span><b>quoted</b><span class="styling-directive">*</span> text\n'+
-            'This is <span class="styling-directive">`</span><code>also _quoted_</code><span class="styling-directive">`</span></blockquote>\n'+
+            'This is <span class="styling-directive">`</span><code>also _quoted_</code><span class="styling-directive">`</span></blockquote>'+
             'This is not quoted');
 
         msg_text = `> > This is doubly quoted text`;
@@ -298,7 +298,7 @@ describe("An incoming chat Message", function () {
         msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
-            '<blockquote> ```\n (println "Hello, world!")</blockquote>\n\n'+
+            '<blockquote> ```\n (println "Hello, world!")</blockquote>\n'+
             'The entire blockquote is a preformatted text block, but this line is plaintext!');
         done();
     }));

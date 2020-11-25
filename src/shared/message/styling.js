@@ -141,7 +141,7 @@ export const isQuoteDirective = (d) => ['>', '&gt;'].includes(d);
 export function getDirectiveTemplate (d, text, model, offset) {
     const template = styling_templates[styling_map[d].name];
     if (isQuoteDirective(d)) {
-        return template(text.replace(/\n>/g, '\n'), model, offset);
+        return template(text.replace(/\n>/g, '\n').replace(/\n$/, ''), model, offset);
     } else {
         return template(text, model, offset);
     }

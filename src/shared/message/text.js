@@ -140,7 +140,7 @@ export class MessageText extends String {
                 const { d, length } = getDirectiveAndLength(this, i);
                 if (d && length) {
                     const begin = d === '```' ? i+d.length+1 : i+d.length;
-                    const end = i+length;
+                    const end = isQuoteDirective(d) ? i+length+1 : i+length;
                     const slice_end = isQuoteDirective(d) ? end : end-d.length;
                     references.push({
                         'begin': i,

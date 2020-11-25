@@ -1833,6 +1833,14 @@ Adds a button to the chat which can be clicked or tapped in order to send the
 message.
 
 
+show_tab_notifications
+----------------------
+
+* Default: ``true``
+
+Determines whether an unread messages counter is shown in the tab.
+
+
 singleton
 ---------
 
@@ -1959,13 +1967,6 @@ Not all operating systems support (all) emojis. So alternatively you can let
 Converse render the emojis with `Twemoji <https://twemoji.twitter.com/>`_.
 
 See also `emoji_image_path`_.
-
-
-update_title
-------------
-* Default: ``true``
-
-Determines whether to shows unread messages counter in the page title.
 
 
 visible_toolbar_buttons

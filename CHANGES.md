@@ -3,7 +3,7 @@
 ## 8.0.0 (Unreleased)
 
 - #1083: Add support for XEP-0393 Message Styling
-- New configuration setting: [](https://conversejs.org/docs/html/configuration.html#trusted) instead.
+- New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 
 ### Breaking Changes
 

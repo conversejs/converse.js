@@ -228,7 +228,7 @@ describe("Notifications", function () {
 
         it("is incremented when the message is received and the window is not focused",
                 mock.initConverse(
-                    ['rosterGroupsFetched'], {'update_title': false},
+                    ['rosterGroupsFetched'], {'show_tab_notifications': false},
                     async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
@@ -255,7 +255,7 @@ describe("Notifications", function () {
 
             expect(favico.badge.calls.count()).toBe(0);
 
-            _converse.api.settings.set('update_title', true);
+            _converse.api.settings.set('show_tab_notifications', true);
             const msg2 = $msg({
                     from: sender_jid,
                     to: _converse.connection.jid,

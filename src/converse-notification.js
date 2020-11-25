@@ -17,7 +17,7 @@ converse.env.Favico = Favico;
 let favicon;
 
 function updateUnreadFavicon () {
-    if (api.settings.get('update_title')) {
+    if (api.settings.get('show_tab_notifications')) {
         favicon = favicon ?? new converse.env.Favico({type: 'circle', animation: 'pop'});
         const chats = _converse.chatboxes.models;
         const num_unread = chats.reduce((acc, chat) => (acc + (chat.get('num_unread') || 0)), 0);
@@ -36,17 +36,17 @@ converse.plugins.add('converse-notification', {
          */
 
         api.settings.extend({
-            update_title: true,
-            notify_all_room_messages: false,
-            show_desktop_notifications: true,
-            show_chat_state_notifications: false,
-            chatstate_notification_blacklist: [],
             // ^ a list of JIDs to ignore concerning chat state notifications
-            play_sounds: true,
-            sounds_path: api.settings.get("assets_path")+'/sounds/',
-            notification_icon: 'logo/conversejs-filled.svg',
+            chatstate_notification_blacklist: [],
             notification_delay: 5000,
-            notify_nicknames_without_references: false
+            notification_icon: 'logo/conversejs-filled.svg',
+            notify_all_room_messages: false,
+            notify_nicknames_without_references: false,
+            play_sounds: true,
+            show_chat_state_notifications: false,
+            show_desktop_notifications: true,
+            show_tab_notifications: true,
+            sounds_path: api.settings.get("assets_path")+'/sounds/',
         });
 
         /**

@@ -3,6 +3,7 @@
 ## 8.0.0 (Unreleased)
 
 - #1083: Add support for XEP-0393 Message Styling
+- Bugfix: `null` inserted by emoji picker and can't switch between skintones
 - New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 
 ### Breaking Changes

@@ -126,6 +126,7 @@ export function getEmojiMarkup (data, options={unicode_only: false, add_title_wr
                 const path = api.settings.get('emoji_image_path');
                 return html`<img class="emoji"
                     draggable="false"
+                    title="${shortname}"
                     alt="${emoji}"
                     src="${path}/72x72/${data.cp}.png"/>`;
             }

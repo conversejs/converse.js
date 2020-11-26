@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.3 (Unreleased)
+
+- Bugfix: `null` inserted by emoji picker and can't switch between skintones
+
 ## 7.0.2 (2020-11-23)
 
 - Updated translations: de, nb, gl, tr

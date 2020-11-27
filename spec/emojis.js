@@ -5,7 +5,7 @@ const u = converse.env.utils;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 
-fdescribe("Emojis", function () {
+describe("Emojis", function () {
     describe("The emoji picker", function () {
 
         beforeEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000));

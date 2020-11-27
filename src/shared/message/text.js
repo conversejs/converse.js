@@ -57,7 +57,13 @@ export class MessageText extends String {
         this.payload = [];
     }
 
-    addHyperlinks (text) {
+    /**
+     * Look for `http` URIs and return templates that render them as URL links
+     * @param { String } text
+     * @param { Integer } offset - The index of the passed in text relative to
+     *  the start of the message body text.
+     */
+    addHyperlinks (text, offset) {
         const objs = [];
         try {
             const parse_options = { 'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi };
@@ -73,8 +79,8 @@ export class MessageText extends String {
             const url_text = text.slice(url_obj.start, url_obj.end);
             const filtered_url = u.filterQueryParamsFromURL(url_text);
             this.addTemplateResult(
-                url_obj.start,
-                url_obj.end,
+                url_obj.start+offset,
+                url_obj.end+offset,
                 this.show_images && u.isImageURL(url_text) && u.isImageDomainAllowed(url_text) ?
                     u.convertToImageTag(filtered_url, this.onImgLoad, this.onImgClick) :
                     u.convertUrlToHyperlink(filtered_url),
@@ -82,35 +88,54 @@ export class MessageText extends String {
         });
     }
 
-    addMapURLs (text) {
+    /**
+     * Look for `geo` URIs and return templates that render them as URL links
+     * @param { String } text
+     * @param { Integer } offset - The index of the passed in text relative to
+     *  the start of the message body text.
+     */
+    addMapURLs (text, offset) {
         const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
         const matches = text.matchAll(regex);
         for (const m of matches) {
             this.addTemplateResult(
-                m.index,
-                m.index+m.input.length,
+                m.index+offset,
+                m.index+m.input.length+offset,
                 u.convertUrlToHyperlink(m.input.replace(regex, _converse.geouri_replacement))
             );
         }
     }
 
-    async addEmojis (text) {
+    /**
+     * Look for emojis (shortnames or unicode) and add templates for rendering them.
+     * @param { String } text
+     * @param { Integer } offset - The index of the passed in text relative to
+     *  the start of the message body text.
+     */
+    async addEmojis (text, offset) {
         await api.emojis.initialize();
         const references = [...getShortnameReferences(text.toString()), ...getCodePointReferences(text.toString())];
         references.forEach(e => {
             this.addTemplateResult(
-                e.begin,
-                e.end,
+                e.begin+offset,
+                e.end+offset,
                 getEmojiMarkup(e, {'add_title_wrapper': true})
             );
         });
     }
 
-    addMentionReferences (text, offset) {
+    /**
+     * Look for mentions included as XEP-0372 references and add templates for
+     * rendering them.
+     * @param { String } text
+     * @param { Integer } offset - The index of the passed in text relative to
+     *  the start of the message body text.
+     */
+    addMentions (text, offset) {
         if (!this.model.collection) {
             // This model doesn't belong to a collection anymore, so it must be
             // have been removed in the meantime and can be ignored.
-            log.debug('addMentionReferences: ignoring dangling model');
+            log.debug('addMentions: ignoring dangling model');
             return;
         }
         const nick = this.model.collection.chatbox.get('nick');
@@ -129,7 +154,11 @@ export class MessageText extends String {
         });
     }
 
-    addStylingReferences () {
+    /**
+     * Look for XEP-0393 styling directives and add templates for rendering
+     * them.
+     */
+    addStyling () {
         if (this.model.get('is_unstyled') || !api.settings.get('allow_message_styling')) {
             return;
         }
@@ -184,19 +213,20 @@ export class MessageText extends String {
          */
         await api.trigger('beforeMessageBodyTransformed', this, {'Synchronous': true});
 
-        this.addStylingReferences();
+        this.addStyling();
         const payload = this.marshall();
-
-        let offset = this.offset;
+        let idx = 0; // The text index of the element in the payload
         for (const text of payload) {
-            if (isString(text)) {
-                this.addHyperlinks(text);
-                this.addMapURLs(text);
-                await this.addEmojis(text);
-                this.addMentionReferences(text, offset);
-                offset += text.length;
+            if (!text) {
+                continue
+            } else if (isString(text)) {
+                this.addHyperlinks(text, idx);
+                this.addMapURLs(text, idx);
+                await this.addEmojis(text, idx);
+                this.addMentions(text, this.offset+idx);
+                idx += text.length;
             } else {
-                offset += text.begin;
+                idx += text.end;
             }
         }
 

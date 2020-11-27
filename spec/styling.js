@@ -300,6 +300,36 @@ describe("An incoming chat Message", function () {
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
             '<blockquote> ```\n (println "Hello, world!")</blockquote>\n'+
             'The entire blockquote is a preformatted text block, but this line is plaintext!');
+
+        msg_text = '> Also, icons.js is loaded from /dist, instead of dist.\nhttps://conversejs.org/docs/html/configuration.html#assets-path'
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
+        expect(msg_el.innerText).toBe(msg_text);
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
+            '<blockquote> Also, icons.js is loaded from /dist, instead of dist.</blockquote>'+
+            '<a target="_blank" rel="noopener" href="https://conversejs.org/docs/html/configuration.html#assets-path">https://conversejs.org/docs/html/configuration.html#assets-path</a>');
+
+        msg_text = '> Where is it located?\ngeo:37.786971,-122.399677';
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
+        expect(msg_el.innerText).toBe(msg_text);
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
+            '<blockquote> Where is it located?</blockquote>'+
+            '<a target="_blank" rel="noopener" '+
+               'href="https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
+
+        msg_text = '> What do you think of it?\n :poop:';
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
+        expect(msg_el.innerText).toBe(msg_text);
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
+            '<blockquote> What do you think of it?</blockquote> <span title=":poop:">💩</span>');
         done();
     }));
 });

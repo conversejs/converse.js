@@ -9,7 +9,6 @@
 import { Events } from '@converse/skeletor/src/events.js';
 import { converse } from "@converse/headless/converse-core";
 
-converse.MENTION_BOUNDARIES = ['"', '(', '<', '#', '!', '\\', '/', '+', '~', '[', '{', '^', '>'];
 const u = converse.env.utils;
 
 
@@ -96,9 +95,8 @@ const helpers = {
         return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
     },
 
-    isMention (word, ac_triggers, mention_boundaries) {
-        return (ac_triggers.includes(word[0]) ||
-        (mention_boundaries.includes(word[0]) && ac_triggers.includes(word[1])));
+    isMention (word, ac_triggers) {
+        return (ac_triggers.includes(word[0]) || u.isMentionBoundary(word[0]) && ac_triggers.includes(word[1]));
     }
 }
 
@@ -251,7 +249,7 @@ export class AutoComplete {
 
     insertValue (suggestion) {
         if (this.match_current_word) {
-            u.replaceCurrentWord(this.input, suggestion.value, converse.MENTION_BOUNDARIES);
+            u.replaceCurrentWord(this.input, suggestion.value);
         } else {
             this.input.value = suggestion.value;
         }
@@ -371,7 +369,7 @@ export class AutoComplete {
             this.auto_completing = true;
         } else if (ev.key === "Backspace") {
             const word = u.getCurrentWord(ev.target, ev.target.selectionEnd-1);
-            if (helpers.isMention(word, this.ac_triggers, converse.MENTION_BOUNDARIES)) {
+            if (helpers.isMention(word, this.ac_triggers)) {
                 this.auto_completing = true;
             }
         }
@@ -393,11 +391,11 @@ export class AutoComplete {
         }
 
         let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
-        const contains_trigger = helpers.isMention(value, this.ac_triggers, converse.MENTION_BOUNDARIES);
+        const contains_trigger = helpers.isMention(value, this.ac_triggers);
         if (contains_trigger) {
             this.auto_completing = true;
             if (!this.include_triggers.includes(ev.key)) {
-                value = converse.MENTION_BOUNDARIES.includes(value[0])
+                value = u.isMentionBoundary(value[0])
                     ? value.slice('2')
                     : value.slice('1');
             }
@@ -445,5 +443,3 @@ converse.plugins.add("converse-autocomplete", {
         _converse.AutoComplete = AutoComplete;
     }
 });
-
-

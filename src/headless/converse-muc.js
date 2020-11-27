@@ -20,6 +20,7 @@ import p from "./utils/parse-helpers";
 export const ROLES = ['moderator', 'participant', 'visitor'];
 export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 
+
 converse.MUC_TRAFFIC_STATES = ['entered', 'exited'];
 converse.MUC_ROLE_CHANGES = ['op', 'deop', 'voice', 'mute'];
 
@@ -963,9 +964,7 @@ converse.plugins.add('converse-muc', {
             getAllKnownNicknamesRegex () {
                 const longNickString = this.getAllKnownNicknames().join('|');
                 const escapedLongNickString = p.escapeRegexString(longNickString)
-                const mention_boundaries = converse.MENTION_BOUNDARIES.join('|');
-                const escaped_mention_boundaries = p.escapeRegexString(mention_boundaries);
-                return RegExp(`(?:\\s|^)[${escaped_mention_boundaries}]?@(${escapedLongNickString})(?![\\w@-])`, 'ig');
+                return RegExp(`(?:\\p{P}|\\p{Z}|^)@(${escapedLongNickString})(?![\\w@-])`, 'uig');
             },
 
             getOccupantByJID (jid) {
@@ -976,14 +975,18 @@ converse.plugins.add('converse-muc', {
                 return this.occupants.findOccupant({ nick });
             },
 
-            parseTextForReferences (original_message) {
-                if (!original_message) return ['', []];
-                const findRegexInMessage = p.matchRegexInText(original_message);
-                const raw_mentions = findRegexInMessage(p.mention_regex);
-                if (!raw_mentions) return [original_message, []];
+            /**
+             * Given a text message, look for `@` mentions and turn them into
+             * XEP-0372 references
+             * @param { String } text
+             */
+            parseTextForReferences (text) {
+                const mentions_regex = /(\p{P}|\p{Z}|^)([@][\w_-]+(?:\.\w+)*)/ugi;
+                if (!text || !mentions_regex.test(text)) {
+                    return [text, []];
+                }
 
-                const known_nicknames = this.getAllKnownNicknames();
-                const getMatchingNickname = p.findFirstMatchInArray(known_nicknames);
+                const getMatchingNickname = p.findFirstMatchInArray(this.getAllKnownNicknames());
 
                 const uriFromNickname = nickname => {
                     const jid = this.get('jid');
@@ -1002,11 +1005,12 @@ converse.plugins.add('converse-muc', {
                     return { begin, end, value, type, uri }
                 }
 
-                const mentions = [...findRegexInMessage(this.getAllKnownNicknamesRegex())];
+                const regex = this.getAllKnownNicknamesRegex();
+                const mentions = [...text.matchAll(regex)].filter(m => !m[0].startsWith('/'));
                 const references = mentions.map(matchToReference);
 
                 const [updated_message, updated_references] = p.reduceTextFromReferences(
-                    original_message,
+                    text,
                     references
                 );
                 return [updated_message, updated_references];

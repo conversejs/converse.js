@@ -3,7 +3,7 @@
 ## 8.0.0 (Unreleased)
 
 - #1083: Add support for XEP-0393 Message Styling
-- #2275: Allow selected characters to precede a mention
+- #2275: Allow punctuation to immediately precede a mention
 - Bugfix: `null` inserted by emoji picker and can't switch between skintones
 - New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 

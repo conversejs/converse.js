@@ -112,8 +112,7 @@ export class MessageText extends String {
      * @param { Integer } offset - The index of the passed in text relative to
      *  the start of the message body text.
      */
-    async addEmojis (text, offset) {
-        await api.emojis.initialize();
+    addEmojis (text, offset) {
         const references = [...getShortnameReferences(text.toString()), ...getCodePointReferences(text.toString())];
         references.forEach(e => {
             this.addTemplateResult(
@@ -129,9 +128,10 @@ export class MessageText extends String {
      * rendering them.
      * @param { String } text
      * @param { Integer } offset - The index of the passed in text relative to
-     *  the start of the message body text.
+     *  the start of the MessageText.
      */
     addMentions (text, offset) {
+        offset += this.offset;
         if (!this.model.collection) {
             // This model doesn't belong to a collection anymore, so it must be
             // have been removed in the meantime and can be ignored.
@@ -193,6 +193,28 @@ export class MessageText extends String {
         }
     }
 
+
+    /**
+     * Look for plaintext (i.e. non-templated) sections of this MessageText
+     * instance and add references via the passed in function.
+     * @param { Function } func
+     */
+    addReferences (func) {
+        const payload = this.marshall();
+        let idx = 0; // The text index of the element in the payload
+        for (const text of payload) {
+            if (!text) {
+                continue
+            } else if (isString(text)) {
+                func.call(this, text, idx);
+                idx += text.length;
+            } else {
+                idx = text.end;
+            }
+        }
+    }
+
+
     /**
      * Parse the text and add template references for rendering the "rich" parts.
      *
@@ -214,21 +236,12 @@ export class MessageText extends String {
         await api.trigger('beforeMessageBodyTransformed', this, {'Synchronous': true});
 
         this.addStyling();
-        const payload = this.marshall();
-        let idx = 0; // The text index of the element in the payload
-        for (const text of payload) {
-            if (!text) {
-                continue
-            } else if (isString(text)) {
-                this.addHyperlinks(text, idx);
-                this.addMapURLs(text, idx);
-                await this.addEmojis(text, idx);
-                this.addMentions(text, this.offset+idx);
-                idx += text.length;
-            } else {
-                idx += text.end;
-            }
-        }
+        this.addReferences(this.addMentions);
+        this.addReferences(this.addHyperlinks);
+        this.addReferences(this.addMapURLs);
+
+        await api.emojis.initialize();
+        this.addReferences(this.addEmojis);
 
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text

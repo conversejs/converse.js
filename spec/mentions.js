@@ -52,7 +52,7 @@ describe("An incoming groupchat message", function () {
                 }))
             );
         });
-        const msg = $msg({
+        let msg = $msg({
                 from: 'lounge@montague.lit/gibson',
                 id: u.getUniqueId(),
                 to: 'romeo@montague.lit',
@@ -62,7 +62,22 @@ describe("An incoming groupchat message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
         await view.model.handleMessageStanza(msg);
-        const message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
+        let message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
+        expect(message.classList.length).toEqual(1);
+        expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
+            'hello <span class="mention">z3r0</span> '+
+            '<span class="mention mention--self badge badge-info">tom</span> '+
+            '<span class="mention">mr.robot</span>, how are you?');
+
+        msg = $msg({
+                from: 'lounge@montague.lit/sw0rdf1sh',
+                id: u.getUniqueId(),
+                to: 'romeo@montague.lit',
+                type: 'groupchat'
+            }).c('body').t('https://conversejs.org/@gibson').up()
+                .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'23', 'end':'29', 'type':'mention', 'uri':'xmpp:gibson@montague.lit'}).nodeTree;
+        await view.model.handleMessageStanza(msg);
+        message = await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
         expect(message.classList.length).toEqual(1);
         expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
             'hello <span class="mention">z3r0</span> '+
@@ -139,8 +154,7 @@ describe("A sent groupchat message", function () {
                     })));
             });
 
-            // Also check that nicks from received messages, (but for which
-            // we don't have occupant objects) can be mentioned.
+            // Also check that nicks from received messages, (but for which we don't have occupant objects) can be mentioned.
             const stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                         from="${muc_jid}/gh0st"
@@ -200,8 +214,7 @@ describe("A sent groupchat message", function () {
             [text, references] = view.model.parseTextForReferences('https://example.org/@gibson')
             expect(text).toBe('https://example.org/@gibson');
             expect(references.length).toBe(0);
-            expect(references)
-                .toEqual([]);
+            expect(references).toEqual([]);
 
             [text, references] = view.model.parseTextForReferences('mail@gibson.com')
             expect(text).toBe('mail@gibson.com');

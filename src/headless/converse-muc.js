@@ -996,7 +996,10 @@ converse.plugins.add('converse-muc', {
                 };
 
                 const matchToReference = match => {
-                    const at_sign_index = match[0].indexOf('@');
+                    let at_sign_index = match[0].indexOf('@');
+                    if (match[0][at_sign_index+1] === '@') { // edge-case
+                        at_sign_index += 1;
+                    }
                     const begin = match.index + at_sign_index;
                     const end = begin + match[0].length - at_sign_index;
                     const value = getMatchingNickname(match[1]);

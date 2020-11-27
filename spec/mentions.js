@@ -170,6 +170,12 @@ describe("A sent groupchat message", function () {
             expect(references)
                 .toEqual([{"begin":3,"end":8,"value":"robot","type":"mention","uri":"xmpp:robot@montague.lit"}]);
 
+            [text, references] = view.model.parseTextForReferences('@@gh0st')
+            expect(text).toBe('@gh0st');
+            expect(references.length).toBe(1);
+            expect(references)
+                .toEqual([{"begin":1,"end":6,"value":"gh0st","type":"mention","uri":"xmpp:lounge@montague.lit/gh0st"}]);
+
             [text, references] = view.model.parseTextForReferences('hello z3r0')
             expect(references.length).toBe(0);
             expect(text).toBe('hello z3r0');

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-11-19 11:41+0100\n"
+"PO-Revision-Date: 2020-12-01 19:29+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -1394,7 +1394,7 @@ msgstr "Calquera pode unirse a esta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:90653
 msgid "This groupchat requires a password before entry"
-msgstr "Esta conversa en grupo precisa un contrasinal para entrar"
+msgstr "Esta conversa en grupo precisa dun contrasinal para entrar"
 
 #: dist/converse-no-dependencies.js:90655
 msgid "Password protected"
@@ -1463,7 +1463,7 @@ msgstr "Por favor, escolla o seu alcume"
 #. harmony default export
 #: dist/converse-no-dependencies.js:91067
 msgid "This groupchat requires a password"
-msgstr "Esta conversa en grupo precisa de un contrasinal"
+msgstr "Esta conversa en grupo precisa dun contrasinal"
 
 #: dist/converse-no-dependencies.js:91069
 msgid "Password: "

@@ -789,7 +789,6 @@ export const api = _converse.api = {
     listen: {
         /**
          * Lets you listen to an event exactly once.
-         *
          * @method _converse.api.listen.once
          * @param {string} name The event's name
          * @param {function} callback The callback method to be called when the event is emitted.
@@ -800,9 +799,7 @@ export const api = _converse.api = {
 
         /**
          * Lets you subscribe to an event.
-         *
          * Every time the event fires, the callback method specified by `callback` will be called.
-         *
          * @method _converse.api.listen.on
          * @param {string} name The event's name
          * @param {function} callback The callback method to be called when the event is emitted.
@@ -813,9 +810,6 @@ export const api = _converse.api = {
 
         /**
          * To stop listening to an event, you can use the `not` method.
-         *
-         * Every time the event fires, the callback method specified by `callback` will be called.
-         *
          * @method _converse.api.listen.not
          * @param {string} name The event's name
          * @param {function} callback The callback method that is to no longer be called when the event fires

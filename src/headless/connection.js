@@ -53,6 +53,7 @@ export class Connection extends Strophe.Connection {
             api.settings.set("websocket_url", ws_methods.pop());
             api.settings.set('bosh_service_url', bosh_methods.pop());
             this.service = api.settings.get("websocket_url") || api.settings.get('bosh_service_url');
+            this.setProtocol();
         }
     }
 

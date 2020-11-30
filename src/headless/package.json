@@ -43,6 +43,6 @@
     "lodash-es": "^4.17.15",
     "pluggable.js": "2.0.1",
     "sprintf-js": "^1.1.2",
-    "strophe.js": "1.4.0"
+    "strophe.js": "strophe/strophejs#4f9b094ecef4be0d473f92965c5ffb654510a598"
   }
 }

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-04-15 16:11+0000\n"
+"PO-Revision-Date: 2020-11-30 14:49+0100\n"
 "Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/lt/>\n"
@@ -167,7 +167,7 @@ msgstr "Veiklos"
 
 #: dist/converse-no-dependencies.js:57640
 msgid "Travel"
-msgstr "Kelionė"
+msgstr "Kelionės"
 
 #: dist/converse-no-dependencies.js:57641
 msgid "Objects"
@@ -701,7 +701,7 @@ msgstr "Rodyti daugiau"
 
 #: dist/converse-no-dependencies.js:76547
 msgid "No message history available."
-msgstr "Žinučių istorija nepasiekiama."
+msgstr "Žinučių istorijos nėra."
 
 #: dist/converse-no-dependencies.js:77536
 msgid "Search results"

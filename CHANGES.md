@@ -4,6 +4,7 @@
 
 - #1083: Add support for XEP-0393 Message Styling
 - #2275: Allow punctuation to immediately precede a mention
+- Bugfix: Connection protocol not updated based on XEP-0156 connection methods
 - Bugfix: `null` inserted by emoji picker and can't switch between skintones
 - New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 

@@ -100,8 +100,8 @@ export class MessageText extends String {
         for (const m of matches) {
             this.addTemplateResult(
                 m.index+offset,
-                m.index+m.input.length+offset,
-                u.convertUrlToHyperlink(m.input.replace(regex, _converse.geouri_replacement))
+                m.index+m[0].length+offset,
+                u.convertUrlToHyperlink(m[0].replace(regex, _converse.geouri_replacement))
             );
         }
     }
@@ -169,7 +169,7 @@ export class MessageText extends String {
                 const { d, length } = getDirectiveAndLength(this, i);
                 if (d && length) {
                     const begin = d === '```' ? i+d.length+1 : i+d.length;
-                    const end = isQuoteDirective(d) ? i+length+1 : i+length;
+                    const end = i+length;
                     const slice_end = isQuoteDirective(d) ? end : end-d.length;
                     references.push({
                         'begin': i,

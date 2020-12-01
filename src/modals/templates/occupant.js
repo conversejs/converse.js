@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { modal_close_button, modal_header_close_button } from "../../templates/buttons"
+import { modal_close_button, modal_header_close_button } from "./buttons.js"
 import { renderAvatar } from '../../templates/directives/avatar';
 
 

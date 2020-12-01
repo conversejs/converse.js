@@ -1,8 +1,8 @@
+import BootstrapModal from "./base.js";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
-import tpl_moderator_tools_modal from "../templates/moderator_tools_modal.js";
+import tpl_moderator_tools_modal from "./templates/moderator-tools.js";
 import { AFFILIATIONS, ROLES } from "@converse/headless/converse-muc.js";
-import { BootstrapModal } from "../converse-modal.js";
 import { __ } from '../i18n';
 import { api, converse } from "@converse/headless/converse-core";
 
@@ -12,7 +12,7 @@ let _converse;
 
 
 export default BootstrapModal.extend({
-    id: "converse-modtools-modal",
+    persistent: true,
 
     initialize (attrs) {
         _converse  = attrs._converse;

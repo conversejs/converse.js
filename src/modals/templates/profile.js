@@ -1,9 +1,9 @@
-import "../components/image_picker.js";
-import spinner from "./spinner.js";
-import { __ } from '../i18n';
+import "../../components/image_picker.js";
+import spinner from "../../templates/spinner.js";
+import { __ } from '../../i18n';
 import { _converse, converse } from  "@converse/headless/converse-core";
 import { html } from "lit-html";
-import { modal_header_close_button } from "./buttons";
+import { modal_header_close_button } from "./buttons.js";
 
 const u = converse.env.utils;
 

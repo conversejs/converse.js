@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const u = converse.env.utils;
 
@@ -53,6 +53,7 @@ describe("The User Details Modal", function () {
         let remove_contact_button = modal.el.querySelector('button.remove-contact');
         expect(u.isVisible(remove_contact_button)).toBeTruthy();
         remove_contact_button.click();
+
         await u.waitUntil(() => u.isVisible(document.querySelector('.alert-danger')), 2000);
 
         const header = document.querySelector('.alert-danger .modal-title');

@@ -1,5 +1,5 @@
-import { BootstrapModal } from "../converse-modal.js";
-import tpl_user_settings_modal from "templates/user_settings_modal";
+import BootstrapModal from "./base.js";
+import tpl_user_settings_modal from "./templates/user-settings.js";
 
 let _converse;
 
@@ -21,4 +21,3 @@ export default BootstrapModal.extend({
         );
     }
 });
-

@@ -1,5 +1,5 @@
-import { BootstrapModal } from "../converse-modal.js";
-import tpl_image_modal from "../templates/image_modal.js";
+import BootstrapModal from "./base.js";
+import tpl_image_modal from "./templates/image.js";
 
 
 export default BootstrapModal.extend({

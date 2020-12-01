@@ -1,20 +1,19 @@
+import BootstrapModal from "./base.js";
 import tpl_occupant_modal from "./templates/occupant.js";
-import { BootstrapModal } from "../converse-modal.js";
 import { _converse, api } from "@converse/headless/converse-core";
 
 
 const OccupantModal = BootstrapModal.extend({
-    id: "muc-occupant-modal",
 
     initialize () {
         BootstrapModal.prototype.initialize.apply(this, arguments);
         this.listenTo(this.model, 'change', this.render);
         /**
-            * Triggered once the OccupantModal has been initialized
-            * @event _converse#userDetailsModalInitialized
-            * @type { _converse.ChatBox }
-            * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
-            */
+         * Triggered once the OccupantModal has been initialized
+         * @event _converse#userDetailsModalInitialized
+         * @type { _converse.ChatBox }
+         * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
+         */
         api.trigger('occupantModalInitialized', this.model);
     },
 

@@ -1,6 +1,6 @@
-import { BootstrapModal } from "../converse-modal.js";
+import BootstrapModal from "./base.js";
+import tpl_muc_details from "./templates/muc-details.js";
 import { __ } from '../i18n';
-import tpl_chatroom_details_modal from "../templates/chatroom_details_modal.js";
 
 
 export default BootstrapModal.extend({
@@ -15,7 +15,7 @@ export default BootstrapModal.extend({
     },
 
     toHTML () {
-        return tpl_chatroom_details_modal(Object.assign(
+        return tpl_muc_details(Object.assign(
             this.model.toJSON(), {
                 'config': this.model.config.toJSON(),
                 'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),

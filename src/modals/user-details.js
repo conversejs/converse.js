@@ -1,6 +1,6 @@
+import BootstrapModal from "./base.js";
 import log from "@converse/headless/log";
-import tpl_user_details_modal from "../templates/user_details_modal.js";
-import { BootstrapModal } from "../converse-modal.js";
+import tpl_user_details_modal from "./templates/user-details.js";
 import { __ } from '../i18n';
 import { _converse, api, converse } from "@converse/headless/converse-core";
 
@@ -8,7 +8,7 @@ const u = converse.env.utils;
 
 
 const UserDetailsModal = BootstrapModal.extend({
-    id: "user-details-modal",
+    persistent: true,
 
     events: {
         'click button.refresh-contact': 'refreshContact',

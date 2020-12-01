@@ -1,4 +1,4 @@
-import { BootstrapModal } from "../converse-modal.js";
+import BootstrapModal from "./base.js";
 import { __ } from '../i18n';
 import { api, converse } from "@converse/headless/converse-core";
 import log from "@converse/headless/log";

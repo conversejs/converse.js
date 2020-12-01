@@ -1,7 +1,7 @@
-import { html } from "lit-html";
-import { __ } from '../i18n';
 import dayjs from 'dayjs';
-import { modal_close_button, modal_header_close_button } from "./buttons"
+import { __ } from '../../i18n';
+import { html } from "lit-html";
+import { modal_close_button, modal_header_close_button } from "./buttons.js"
 
 
 export default (o) => html`

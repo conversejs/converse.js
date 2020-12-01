@@ -1,6 +1,6 @@
-import { __ } from '../i18n';
+import { __ } from '../../i18n';
 import { html } from "lit-html";
-import { modal_close_button, modal_header_close_button } from "./buttons"
+import { modal_close_button, modal_header_close_button } from "./buttons.js"
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import xss from "xss/dist/xss";
 

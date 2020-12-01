@@ -3,24 +3,23 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "./components/chat_content.js";
-import "./components/help_messages.js";
-import "./components/toolbar.js";
-import "converse-chatboxviews";
-import "converse-modal";
-import log from "@converse/headless/log";
-import tpl_chatbox from "templates/chatbox.js";
-import tpl_chatbox_head from "templates/chatbox_head.js";
-import tpl_chatbox_message_form from "templates/chatbox_message_form.js";
-import tpl_spinner from "templates/spinner.js";
-import tpl_toolbar from "templates/toolbar.js";
-import tpl_user_details_modal from "templates/user_details_modal.js";
-import { BootstrapModal } from "./converse-modal.js";
+import './components/chat_content.js';
+import './components/help_messages.js';
+import './components/toolbar.js';
+import 'converse-chatboxviews';
+import 'converse-modal';
+import log from '@converse/headless/log';
+import tpl_chatbox from 'templates/chatbox.js';
+import tpl_chatbox_head from 'templates/chatbox_head.js';
+import tpl_chatbox_message_form from 'templates/chatbox_message_form.js';
+import tpl_spinner from 'templates/spinner.js';
+import tpl_toolbar from 'templates/toolbar.js';
+import UserDetailsModal from 'modals/user-details.js';
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from './i18n';
-import { _converse, api, converse } from "@converse/headless/converse-core";
-import { debounce } from "lodash-es";
-import { html, render } from "lit-html";
+import { _converse, api, converse } from '@converse/headless/converse-core';
+import { debounce } from 'lodash-es';
+import { html, render } from 'lit-html';
 
 
 const { Strophe, dayjs } = converse.env;
@@ -240,7 +239,7 @@ export const ChatBoxView = View.extend({
     showUserDetailsModal (ev) {
         ev.preventDefault();
         if (this.user_details_modal === undefined) {
-            this.user_details_modal = new _converse.UserDetailsModal({model: this.model});
+            this.user_details_modal = new UserDetailsModal({model: this.model});
         }
         this.user_details_modal.show(ev);
     },
@@ -283,17 +282,24 @@ export const ChatBoxView = View.extend({
     async generateHeadingTemplate () {
         const vcard = this.model?.vcard;
         const vcard_json = vcard ? vcard.toJSON() : {};
+        const i18n_profile = __('The User\'s Profile Image');
+        const avatar_data = Object.assign({
+            'alt_text': i18n_profile,
+            'extra_classes': '',
+            'height': 40,
+            'width': 40,
+        }, vcard_json);
         const heading_btns = await this.getHeadingButtons();
         const standalone_btns = heading_btns.filter(b => b.standalone);
         const dropdown_btns = heading_btns.filter(b => !b.standalone);
         return tpl_chatbox_head(
             Object.assign(
-                vcard_json,
                 this.model.toJSON(), {
-                    '_converse': _converse,
+                    avatar_data,
+                    'display_name': this.model.getDisplayName(),
                     'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
+                    'showUserDetailsModal': ev => this.showUserDetailsModal(ev),
                     'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
-                    'display_name': this.model.getDisplayName()
                 }
             )
         );
@@ -1052,96 +1058,6 @@ converse.plugins.add('converse-chatview', {
         });
 
         _converse.ChatBoxView = ChatBoxView;
-
-
-        _converse.UserDetailsModal = BootstrapModal.extend({
-            id: "user-details-modal",
-
-            events: {
-                'click button.refresh-contact': 'refreshContact',
-                'click .fingerprint-trust .btn input': 'toggleDeviceTrust'
-            },
-
-            initialize () {
-                BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.model.rosterContactAdded.then(() => this.registerContactEventHandlers());
-                this.listenTo(this.model, 'change', this.render);
-                this.registerContactEventHandlers();
-                /**
-                 * Triggered once the _converse.UserDetailsModal has been initialized
-                 * @event _converse#userDetailsModalInitialized
-                 * @type { _converse.ChatBox }
-                 * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
-                 */
-                api.trigger('userDetailsModalInitialized', this.model);
-            },
-
-            toHTML () {
-                const vcard = this.model?.vcard;
-                const vcard_json = vcard ? vcard.toJSON() : {};
-                return tpl_user_details_modal(Object.assign(
-                    this.model.toJSON(),
-                    vcard_json, {
-                    '_converse': _converse,
-                    'allow_contact_removal': api.settings.get('allow_contact_removal'),
-                    'display_name': this.model.getDisplayName(),
-                    'is_roster_contact': this.model.contact !== undefined,
-                    'removeContact': ev => this.removeContact(ev),
-                    'view': this,
-                    'utils': u
-                }));
-            },
-
-            registerContactEventHandlers () {
-                if (this.model.contact !== undefined) {
-                    this.listenTo(this.model.contact, 'change', this.render);
-                    this.listenTo(this.model.contact.vcard, 'change', this.render);
-                    this.model.contact.on('destroy', () => {
-                        delete this.model.contact;
-                        this.render();
-                    });
-                }
-            },
-
-            async refreshContact (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const refresh_icon = this.el.querySelector('.fa-refresh');
-                u.addClass('fa-spin', refresh_icon);
-                try {
-                    await api.vcard.update(this.model.contact.vcard, true);
-                } catch (e) {
-                    log.fatal(e);
-                    this.alert(__('Sorry, something went wrong while trying to refresh'), 'danger');
-                }
-                u.removeClass('fa-spin', refresh_icon);
-            },
-
-            removeContact (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (!api.settings.get('allow_contact_removal')) { return; }
-                const result = confirm(__("Are you sure you want to remove this contact?"));
-                if (result === true) {
-                    this.modal.hide();
-                    // XXX: This is annoying but necessary to get tests to pass.
-                    // The `dismissHandler` in bootstrap.native tries to
-                    // reference the remove button after it's been cleared from
-                    // the DOM, so we delay removing the contact to give it time.
-                    setTimeout(() => {
-                        this.model.contact.removeFromRoster(
-                            () => this.model.contact.destroy(),
-                            (err) => {
-                                log.error(err);
-                                api.alert('error', __('Error'), [
-                                    __('Sorry, there was an error while trying to remove %1$s as a contact.',
-                                    this.model.contact.getDisplayName())
-                                ]);
-                            }
-                        );
-                    }, 1);
-                }
-            },
-        });
-
 
         api.listen.on('chatBoxViewsInitialized', () => {
             const views = _converse.chatboxviews;

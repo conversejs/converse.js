@@ -9,6 +9,10 @@
         }
     }
     .message {
+        .show-msg-author-modal {
+            color: var(--text-color) !important;
+        }
+
         blockquote {
             margin-left: 0.5em;
             margin-bottom: 0.25em;

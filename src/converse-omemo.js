@@ -6,6 +6,7 @@
 /* global libsignal */
 
 import "converse-profile";
+import 'modals/user-details.js';
 import log from "@converse/headless/log";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';

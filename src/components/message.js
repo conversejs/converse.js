@@ -268,6 +268,16 @@ export default class Message extends CustomElement {
         `;
     }
 
+    showUserModal (ev) {
+        if (this.model.get('sender') === 'me') {
+            _converse.xmppstatusview.showProfileModal(ev);
+        } else if (this.message_type === 'groupchat') {
+            this.chatview.showOccupantDetailsModal(ev, this.model);
+        } else {
+            this.chatview.showUserDetailsModal(ev, this.model);
+        }
+    }
+
     showMessageVersionsModal (ev) {
         ev.preventDefault();
         if (this.message_versions_modal === undefined) {

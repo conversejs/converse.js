@@ -11,6 +11,7 @@ import AddMUCModal from 'modals/add-muc.js';
 import MUCInviteModal from 'modals/muc-invite.js';
 import MUCListModal from 'modals/muc-list.js';
 import ModeratorToolsModal from "./modals/moderator-tools.js";
+import OccupantModal from 'modals/occupant.js';
 import RoomDetailsModal from 'modals/muc-details.js';
 import log from "@converse/headless/log";
 import tpl_chatroom from "templates/chatroom.js";
@@ -515,6 +516,14 @@ export const ChatRoomView = ChatBoxView.extend({
             this.model.room_details_modal = new RoomDetailsModal({'model': this.model});
         }
         this.model.room_details_modal.show(ev);
+    },
+
+    showOccupantDetailsModal (ev, message) {
+        ev.preventDefault();
+        if (this.model.occupant_modal === undefined) {
+            this.model.occupant_modal = new OccupantModal({'model': message.occupant});
+        }
+        this.model.occupant_modal.show(ev);
     },
 
     showChatStateNotification (message) {

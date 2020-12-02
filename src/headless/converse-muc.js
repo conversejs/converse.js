@@ -20,11 +20,29 @@ import p from "./utils/parse-helpers";
 export const ROLES = ['moderator', 'participant', 'visitor'];
 export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
 
-
-converse.MUC_TRAFFIC_STATES = ['entered', 'exited'];
-converse.MUC_ROLE_CHANGES = ['op', 'deop', 'voice', 'mute'];
+converse.AFFILIATION_CHANGES = {
+    OWNER: 'owner', ADMIN: 'admin', MEMBER: 'member', EXADMIN: 'exadmin',
+    EXOWNER: 'exowner', EXOUTCAST: 'exoutcast', EXMEMBER: 'exmember'
+}
+converse.AFFILIATION_CHANGES_LIST = Object.values(converse.AFFILIATION_CHANGES);
+converse.MUC_TRAFFIC_STATES = { ENTERED: 'entered', EXITED: 'exited' };
+converse.MUC_TRAFFIC_STATES_LIST = Object.values(converse.MUC_TRAFFIC_STATES);
+converse.MUC_ROLE_CHANGES = {OP: 'op', DEOP: 'deop', VOICE: 'voice', MUTE: 'mute'}
+converse.MUC_ROLE_CHANGES_LIST = Object.values(converse.MUC_ROLE_CHANGES);
 
 const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
+
+converse.MUC_INFO_CODES = {
+    'visibility_changes': ['100', '102', '103', '172', '173', '174'],
+    'self': ['110'],
+    'non_privacy_changes': ['104', '201'],
+    'muc_logging_changes': ['170', '171'],
+    'nickname_changes': ['210', '303'],
+    'disconnect_messages': ['301', '307', '321', '322', '332', '333'],
+    'affiliation_changes': [...converse.AFFILIATION_CHANGES_LIST],
+    'join_leave_events': [...converse.MUC_TRAFFIC_STATES_LIST],
+    'role_changes': [...converse.MUC_ROLE_CHANGES_LIST],
+};
 
 const MUC_ROLE_WEIGHTS = {
     'moderator':    1,
@@ -132,8 +150,18 @@ converse.plugins.add('converse-muc', {
             'muc_instant_rooms': true,
             'muc_nickname_from_jid': false,
             'muc_send_probes': false,
-            'muc_show_join_leave': true,
-            'muc_show_logs_before_join': false
+            'muc_show_info_messages': [
+                ...converse.MUC_INFO_CODES.visibility_changes,
+                ...converse.MUC_INFO_CODES.self,
+                ...converse.MUC_INFO_CODES.non_privacy_changes,
+                ...converse.MUC_INFO_CODES.muc_logging_changes,
+                ...converse.MUC_INFO_CODES.nickname_changes,
+                ...converse.MUC_INFO_CODES.disconnect_messages,
+                ...converse.MUC_INFO_CODES.affiliation_changes,
+                ...converse.MUC_INFO_CODES.join_leave_events,
+                ...converse.MUC_INFO_CODES.role_changes,
+            ],
+            'muc_show_logs_before_join': false,
         });
         api.promises.add(['roomsAutoJoined']);
 
@@ -196,6 +224,19 @@ converse.plugins.add('converse-muc', {
 
         }
 
+        /**
+         * Determines info message visibility based on
+         * muc_show_info_messages configuration setting
+         * @param {*} code 
+         * @memberOf _converse
+         */
+        _converse.isInfoVisible = function (code) {
+            const info_messages = api.settings.get('muc_show_info_messages');
+            if (info_messages.includes(code)) {
+                return true;
+            }
+            return false;
+        }
 
         async function openRoom (jid) {
             if (!u.isValidMUCJID(jid)) {
@@ -491,29 +532,31 @@ converse.plugins.add('converse-muc', {
             },
 
             onOccupantAdded (occupant) {
-                if (api.settings.get('muc_show_join_leave') &&
+                if (_converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED) &&
                         this.session.get('connection_status') ===  converse.ROOMSTATUS.ENTERED &&
                         occupant.get('show') === 'online') {
-                    this.updateNotifications(occupant.get('nick'), 'entered');
+                    this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.ENTERED);
                 }
             },
 
             onOccupantRemoved (occupant) {
-                if (api.settings.get('muc_show_join_leave') &&
+                if (_converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED) &&
                         this.session.get('connection_status') ===  converse.ROOMSTATUS.ENTERED &&
                         occupant.get('show') === 'online') {
-                    this.updateNotifications(occupant.get('nick'), 'exited');
+                    this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.EXITED);
                 }
             },
 
             onOccupantShowChanged (occupant) {
-                if (occupant.get('states').includes('303') || !api.settings.get('muc_show_join_leave')) {
+                if (occupant.get('states').includes('303')) {
                     return;
                 }
-                if (occupant.get('show') === 'offline') {
-                    this.updateNotifications(occupant.get('nick'), 'exited');
-                } else if (occupant.get('show') === 'online') {
-                    this.updateNotifications(occupant.get('nick'), 'entered');
+                if (occupant.get('show') === 'offline' &&
+                _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED)) {
+                    this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.EXITED);
+                } else if (occupant.get('show') === 'online' &&
+                _converse.isInfoVisible(converse.MUC_TRAFFIC_STATES.ENTERED)) {
+                    this.updateNotifications(occupant.get('nick'), converse.MUC_TRAFFIC_STATES.ENTERED);
                 }
             },
 
@@ -1975,8 +2018,8 @@ converse.plugins.add('converse-muc', {
                     return out;
                 };
                 const actors_per_chat_state = converse.CHAT_STATES.reduce(reducer, {});
-                const actors_per_traffic_state = converse.MUC_TRAFFIC_STATES.reduce(reducer, {});
-                const actors_per_role_change = converse.MUC_ROLE_CHANGES.reduce(reducer, {});
+                const actors_per_traffic_state = converse.MUC_TRAFFIC_STATES_LIST.reduce(reducer, {});
+                const actors_per_role_change = converse.MUC_ROLE_CHANGES_LIST.reduce(reducer, {});
                 this.notifications.set(Object.assign(
                     actors_per_chat_state,
                     actors_per_traffic_state,
@@ -2093,36 +2136,42 @@ converse.plugins.add('converse-muc', {
                 }
 
                 const current_affiliation = occupant.get('affiliation');
-                if (previous_affiliation === 'admin') {
+                if (previous_affiliation === 'admin' &&
+                    _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXADMIN)) {
                     this.createMessage({
                         'type': 'info',
                         'message': __("%1$s is no longer an admin of this groupchat", occupant.get('nick'))
                     });
-                } else if (previous_affiliation === 'owner') {
+                } else if (previous_affiliation === 'owner' &&
+                    _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXOWNER)) {
                     this.createMessage({
                         'type': 'info',
                         'message': __("%1$s is no longer an owner of this groupchat", occupant.get('nick'))
                     });
-                } else if (previous_affiliation === 'outcast') {
+                } else if (previous_affiliation === 'outcast' &&
+                    _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXOUTCAST)) {
                     this.createMessage({
                         'type': 'info',
                         'message': __("%1$s is no longer banned from this groupchat", occupant.get('nick'))
                     });
                 }
 
-                if (current_affiliation === 'none' && previous_affiliation === 'member') {
+                if (current_affiliation === 'none' && previous_affiliation === 'member' &&
+                    _converse.isInfoVisible(converse.AFFILIATION_CHANGES.EXMEMBER)) {
                     this.createMessage({
                         'type': 'info',
                         'message': __("%1$s is no longer a member of this groupchat", occupant.get('nick'))
                     });
                 }
 
-                if (current_affiliation === 'member') {
+                if (current_affiliation === 'member' &&
+                    _converse.isInfoVisible(converse.AFFILIATION_CHANGES.MEMBER)) {
                     this.createMessage({
                         'type': 'info',
                         'message': __("%1$s is now a member of this groupchat", occupant.get('nick'))
                     });
-                } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
+                } else if ((current_affiliation === 'admin' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.ADMIN))
+                || (current_affiliation == 'owner' && _converse.isInfoVisible(converse.AFFILIATION_CHANGES.OWNER))) {
                     // For example: AppleJack is now an (admin|owner) of this groupchat
                     this.createMessage({
                         'type': 'info',
@@ -2141,18 +2190,18 @@ converse.plugins.add('converse-muc', {
                     return;
                 }
                 const previous_role = occupant._previousAttributes.role;
-                if (previous_role === 'moderator') {
-                    this.updateNotifications(occupant.get('nick'), 'deop');
-                } else if (previous_role === 'visitor') {
-                    this.updateNotifications(occupant.get('nick'), 'voice');
+                if (previous_role === 'moderator' && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.DEOP)) {
+                    this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.DEOP);
+                } else if (previous_role === 'visitor' && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.VOICE)) {
+                    this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.VOICE);
                 }
-                if (occupant.get('role') === 'visitor') {
-                    this.updateNotifications(occupant.get('nick'), 'mute');
+                if (occupant.get('role') === 'visitor'  && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.MUTE)) {
+                    this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.MUTE);
                 } else if (occupant.get('role') === 'moderator') {
-                    if (!['owner', 'admin'].includes(occupant.get('affiliation'))) {
+                    if (!['owner', 'admin'].includes(occupant.get('affiliation')) && _converse.isInfoVisible(converse.MUC_ROLE_CHANGES.OP)) {
                         // Oly show this message if the user isn't already
                         // an admin or owner, otherwise this isn't new information.
-                        this.updateNotifications(occupant.get('nick'), 'op');
+                        this.updateNotifications(occupant.get('nick'), converse.MUC_ROLE_CHANGES.OP);
                     }
                 }
             },
@@ -2167,8 +2216,10 @@ converse.plugins.add('converse-muc', {
              * @param { Boolean } is_self - Whether this stanza refers to our own presence
              */
             createInfoMessage (code, stanza, is_self) {
-                const data = { 'type': 'info', };
-
+                const data = { 'type': 'info' };
+                if (!_converse.isInfoVisible(code)){
+                    return;
+                }
                 if (code === '110' || (code === '100' && !is_self)) {
                     return;
                 } else if (code in _converse.muc.info_messages) {
@@ -2176,26 +2227,32 @@ converse.plugins.add('converse-muc', {
                 } else if (!is_self && ACTION_INFO_CODES.includes(code)) {
                     const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                     const item = stanza.querySelector(`x[xmlns="${Strophe.NS.MUC_USER}"] item`);
-                    data.actor = item ? item.querySelector('actor')?.getAttribute('nick') : undefined;
+                    data.actor = item
+                        ? item.querySelector('actor')?.getAttribute('nick')
+                        : undefined;
                     data.reason = item ? item.querySelector('reason')?.textContent : undefined;
                     data.message = this.getActionInfoMessage(code, nick, data.actor);
-                } else if (is_self && (code in _converse.muc.new_nickname_messages)) {
+                } else if (is_self && code in _converse.muc.new_nickname_messages) {
                     // XXX: Side-effect of setting the nick. Should ideally be refactored out of this method
                     let nick;
-                    if (is_self && code === "210") {
+                    if (is_self && code === '210') {
                         nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-                    } else if (is_self && code === "303") {
-                        nick = stanza.querySelector(`x[xmlns="${Strophe.NS.MUC_USER}"] item`).getAttribute('nick');
+                    } else if (is_self && code === '303') {
+                        nick = stanza
+                            .querySelector(`x[xmlns="${Strophe.NS.MUC_USER}"] item`)
+                            .getAttribute('nick');
                     }
                     this.save('nick', nick);
                     data.message = __(_converse.muc.new_nickname_messages[code], nick);
                 }
                 if (data.message) {
-                    if (code === "201" && this.messages.findWhere(data)) {
+                    if (code === '201' && this.messages.findWhere(data)) {
                         return;
-                    } else if (code in _converse.muc.info_messages &&
-                            this.messages.length &&
-                            this.messages.pop().get('message') === data.message) {
+                    } else if (
+                        code in _converse.muc.info_messages &&
+                        this.messages.length &&
+                        this.messages.pop().get('message') === data.message
+                    ) {
                         // XXX: very naive duplication checking
                         return;
                     }

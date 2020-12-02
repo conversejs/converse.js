@@ -1379,13 +1379,53 @@ Example:
 
     muc_roomid_policy_hint: '<br><b>Policy for groupchat id:</b><br>- between 5 and 40 characters,<br>- lowercase from a to z (no special characters) or<br>- digits or<br>- dots (.) or<br>- underlines (_) or<br>- hyphens (-),<br>- no spaces<br>',
 
-muc_show_join_leave
--------------------
+muc_show_info_messages
+----------------------
 
-* Default; ``true``
+* Default: List composed of MUC status codes, role changes, join and leave events
+and affiliation changes. The values of converse.MUC_INFO_CODES below are joined to 
+build the default list:
 
-Determines whether Converse will show info messages inside a chatroom
-whenever a user joins or leaves it.
+.. code-block:: javascript
+    converse.MUC_AFFILIATION_CHANGES_LIST = ['owner', 'admin', 'member', 'exowner', 'exadmin', 'exmember', 'exoutcast']
+    converse.MUC_ROLE_CHANGES_LIST = ['op', 'deop', 'voice', 'mute'];
+    converse.MUC_TRAFFIC_STATES_LIST = ['entered', 'exited'];
+
+    converse.MUC_INFO_CODES = {
+        'visibility_changes': ['100', '102', '103', '172', '173', '174'],
+        'self': ['110'],
+        'non_privacy_changes': ['104', '201'],
+        'muc_logging_changes': ['170', '171'],
+        'nickname_changes': ['210', '303'],
+        'disconnect_messages': ['301', '307', '321', '322', '332', '333'],
+        'affiliation_changes': [...converse.AFFILIATION_CHANGES_LIST],
+        'join_leave_events': [...converse.MUC_TRAFFIC_STATES_LIST],
+        'role_changes': [...converse.MUC_ROLE_CHANGES_LIST],
+    };
+
+This setting determines which info messages will Converse show inside a chatroom.
+It is recommended to use the aforementioned Converse object in the following fashion
+to build the list of desired info messages that will be shown:
+
+.. code-block:: javascript
+    muc_show_info_messages: [
+        ...converse.MUC_INFO_CODES.visibility_changes,
+        ...converse.MUC_INFO_CODES.self,
+        ...converse.MUC_INFO_CODES.non_privacy_changes,
+        ...converse.MUC_INFO_CODES.muc_logging_changes,
+        ...converse.MUC_INFO_CODES.nickname_changes,
+        ...converse.MUC_INFO_CODES.disconnect_messages,
+        ...converse.MUC_INFO_CODES.affiliation_changes,
+        ...converse.MUC_INFO_CODES.join_leave_events,
+        ...converse.MUC_INFO_CODES.role_changes,
+    ]
+
+By default all info messages are shown.
+
+The behaviour of this setting is whitelisting, so if it is overriden all the desired
+events must be specified.
+
+If an empty list is provided, no info message will be displayed at all.
 
 muc_show_logs_before_join
 -------------------------

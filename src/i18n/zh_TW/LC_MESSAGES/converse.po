@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-11-18 18:39+0100\n"
-"Last-Translator: zilliu <zilliu@disroot.org>\n"
+"PO-Revision-Date: 2020-12-03 10:29+0000\n"
+"Last-Translator: Zijian Liu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -202,7 +202,7 @@ msgstr "聊天室配置已變更"
 
 #: dist/converse-no-dependencies.js:58683
 msgid "Groupchat logging is now enabled"
-msgstr "現已啟用聊天室聊天紀錄"
+msgstr "現已啓用聊天室聊天紀錄"
 
 #: dist/converse-no-dependencies.js:58684
 msgid "Groupchat logging is now disabled"
@@ -517,7 +517,7 @@ msgstr "將聊天室移出書籤"
 #: dist/converse-no-dependencies.js:89487
 #: dist/converse-no-dependencies.js:99715
 msgid "Click to open this groupchat"
-msgstr "按一下開啟聊天室對話"
+msgstr "按一下開啓聊天室對話"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:70286
@@ -537,7 +537,7 @@ msgstr "將聊天室加入書籤"
 
 #: dist/converse-no-dependencies.js:70324
 msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr "您希望在啟動時自動加入這間聊天室嗎？"
+msgstr "您希望在啓動時自動加入這間聊天室嗎？"
 
 #: dist/converse-no-dependencies.js:70328
 msgid "The name for this bookmark:"
@@ -710,7 +710,7 @@ msgstr "OMEMO 指紋"
 
 #: dist/converse-no-dependencies.js:81814
 msgid "No OMEMO-enabled devices found"
-msgstr "没有找到啟用了 OMEMO 的裝置"
+msgstr "找不到啓用了 OMEMO 的裝置"
 
 #: dist/converse-no-dependencies.js:81825
 msgid "Remove as contact"
@@ -898,10 +898,8 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
-"爲了提升效能，我們會在瀏覽器內部諸存您的資料。如果這是一臺公共電腦或者您希望"
-"您的資料在您登出帳號後被清除，請取消勾選。如果您在關閉瀏覽器前没有手動登出帳"
-"號，可能會留下部分資料没被刪除。注意，OMEMO 加密通訊無法在不信任的裝置上啟"
-"用。"
+"爲了提升效能，我們會在瀏覽器內部諸存您的資料。如果這是一臺公共電腦或者您希望您的資料在您登出帳號後被清除，請取消勾選。如果您在關閉瀏覽器前没有手動登出帳號"
+"，可能會留下部分資料没被刪除。注意，OMEMO 加密通訊無法在不信任的裝置上啓用。"
 
 #: dist/converse-no-dependencies.js:86116
 msgid "This is a trusted device"
@@ -1569,7 +1567,7 @@ msgstr "升級成員爲會員"
 
 #: dist/converse-no-dependencies.js:91539
 msgid "Opens up the moderator tools GUI"
-msgstr "開啟主持人工具界面"
+msgstr "開啓主持人工具界面"
 
 #: dist/converse-no-dependencies.js:91539
 msgid "Remove user's ability to post messages"
@@ -1949,7 +1947,7 @@ msgstr "揀選下列裝置的勾選框"
 
 #: dist/converse-no-dependencies.js:95427
 msgid "Other OMEMO-enabled devices"
-msgstr "其它啟用了 OMEMO 加密的裝置"
+msgstr "其它啓用了 OMEMO 加密的裝置"
 
 #: dist/converse-no-dependencies.js:95429
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
@@ -2221,11 +2219,11 @@ msgstr "離開這間聊天室"
 #. harmony default export
 #: dist/converse-no-dependencies.js:99719
 msgid "Click to toggle the list of open groupchats"
-msgstr "按一下開關已開啟的聊天室清單"
+msgstr "按一下開關已開啓的聊天室清單"
 
 #: dist/converse-no-dependencies.js:99721
 msgid "Open Groupchats"
-msgstr "已開啟的聊天室"
+msgstr "已開啓的聊天室"
 
 #: dist/converse-no-dependencies.js:99925
 #, javascript-format

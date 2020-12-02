@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse */
 
 const _ = converse.env._;
 const $iq = converse.env.$iq;
@@ -8,13 +8,13 @@ const Strophe = converse.env.Strophe;
 const u = converse.env.utils;
 
 
-async function openModtools (view) {
+async function openModtools (_converse, view) {
     const textarea = view.el.querySelector('.chat-textarea');
     textarea.value = '/modtools';
     const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
     view.onKeyDown(enter);
     await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
-    const modal = view.modtools_modal;
+    const modal = _converse.api.modal.get('converse-modtools-modal');
     await u.waitUntil(() => u.isVisible(modal.el), 1000);
     return modal;
 }
@@ -40,7 +40,7 @@ describe("The groupchat moderator tool", function () {
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 5), 1000);
 
-        const modal = await openModtools(view);
+        const modal = await openModtools(_converse, view);
         let tab = modal.el.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
@@ -163,7 +163,7 @@ describe("The groupchat moderator tool", function () {
 
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
-        const modal = await openModtools(view);
+        const modal = await openModtools(_converse, view);
         const select = modal.el.querySelector('.select-affiliation');
         expect(select.value).toBe('owner');
         select.value = 'member';
@@ -270,7 +270,7 @@ describe("The groupchat moderator tool", function () {
         view.onKeyDown(enter);
         await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
 
-        const modal = view.modtools_modal;
+        const modal = _converse.api.modal.get('converse-modtools-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
 
         const tab = modal.el.querySelector('#roles-tab');
@@ -326,7 +326,7 @@ describe("The groupchat moderator tool", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 5));
-        const modal = await openModtools(view);
+        const modal = await openModtools(_converse, view);
         const tab = modal.el.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
@@ -375,7 +375,7 @@ describe("The groupchat moderator tool", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 2));
-        const modal = await openModtools(view);
+        const modal = await openModtools(_converse, view);
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
 
@@ -443,7 +443,7 @@ describe("The groupchat moderator tool", function () {
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
         await u.waitUntil(() => (view.model.occupants.length === 3));
-        const modal = await openModtools(view);
+        const modal = await openModtools(_converse, view);
         const tab = modal.el.querySelector('#affiliations-tab');
         // Clear so that we don't match older stanzas
         _converse.connection.IQ_stanzas = [];
@@ -481,7 +481,7 @@ describe("The groupchat moderator tool", function () {
         view.onKeyDown(enter);
         await u.waitUntil(() => view.showModeratorToolsModal.calls.count());
 
-        const modal = view.modtools_modal;
+        const modal = _converse.api.modal.get('converse-modtools-modal');
         const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
 
         expect(modal.getAssignableAffiliations(occupant)).toEqual(['owner', 'admin', 'member', 'outcast', 'none']);

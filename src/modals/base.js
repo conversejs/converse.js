@@ -2,7 +2,7 @@ import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
 import tpl_alert_component from "templates/alert.js";
 import { View } from '@converse/skeletor/src/view.js';
-import { _converse, converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 import { render } from 'lit-html';
 
 const { sizzle } = converse.env;
@@ -16,8 +16,14 @@ const BaseModal = View.extend({
         'click  .nav-item .nav-link': 'switchTab'
     },
 
-    initialize () {
+    initialize (options) {
+        if (!this.id) {
+            throw new Error("Each modal class must have a unique id attribute");
+        }
         this.render()
+
+        // Allow properties to be set via passed in options
+        Object.assign(this, options);
 
         this.el.setAttribute('tabindex', '-1');
         this.el.setAttribute('role', 'dialog');
@@ -36,7 +42,7 @@ const BaseModal = View.extend({
 
     onHide () {
         u.removeClass('selected', this.trigger_el);
-        !this.persistent && this.remove();
+        !this.persistent && api.modal.remove(this);
     },
 
     insertIntoDOM () {

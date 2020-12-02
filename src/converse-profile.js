@@ -61,26 +61,17 @@ converse.plugins.add('converse-profile', {
 
             showProfileModal (ev) {
                 ev.preventDefault();
-                if (this.profile_modal === undefined) {
-                    this.profile_modal = new _converse.ProfileModal({model: this.model});
-                }
-                this.profile_modal.show(ev);
+                api.modal.show(_converse.ProfileModal, {model: this.model}, ev);
             },
 
             showStatusChangeModal (ev) {
                 ev.preventDefault();
-                if (this.status_modal === undefined) {
-                    this.status_modal = new _converse.ChatStatusModal({model: this.model});
-                }
-                this.status_modal.show(ev);
+                api.modal.show(_converse.ChatStatusModal, {model: this.model}, ev);
             },
 
             showUserSettingsModal(ev) {
                 ev.preventDefault();
-                if (this.user_settings_modal === undefined) {
-                    this.user_settings_modal = new UserSettingsModal({model: this.model, _converse});
-                }
-                this.user_settings_modal.show(ev);
+                api.modal.show(UserSettingsModal, {model: this.model, _converse}, ev);
             },
 
             logOut (ev) {

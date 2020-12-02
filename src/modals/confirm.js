@@ -6,6 +6,7 @@ const u = converse.env.utils;
 
 
 const Confirm = BootstrapModal.extend({
+    id: 'confirm-modal',
     events: {
         'submit .confirm': 'onConfimation'
     },

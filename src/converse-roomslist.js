@@ -109,10 +109,7 @@ converse.plugins.add('converse-roomslist', {
                 const jid = ev.target.getAttribute('data-room-jid');
                 const room = _converse.chatboxes.get(jid);
                 ev.preventDefault();
-                if (room.room_details_modal === undefined) {
-                    room.room_details_modal = new RoomDetailsModal({'model': room});
-                }
-                room.room_details_modal.show(ev);
+                api.modal.show(RoomDetailsModal, {'model': room}, ev);
             },
 
             async openRoom (ev) {
@@ -183,4 +180,3 @@ converse.plugins.add('converse-roomslist', {
         api.listen.on('reconnected', initRoomsListView);
     }
 });
-

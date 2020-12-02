@@ -501,29 +501,24 @@ export const ChatRoomView = ChatBoxView.extend({
         if (!this.verifyRoles(['moderator'])) {
             return;
         }
-        if (typeof this.model.modtools_modal === 'undefined') {
-            const model = new Model({'affiliation': affiliation});
-            this.modtools_modal = new ModeratorToolsModal({model, _converse, 'chatroomview': this});
+        let modal = api.modal.get(ModeratorToolsModal.id);
+        if (modal) {
+            modal.model.set('affiliation', affiliation);
         } else {
-            this.modtools_modal.set('affiliation', affiliation);
+            const model = new Model({'affiliation': affiliation});
+            modal = api.modal.create(ModeratorToolsModal, {model, _converse, 'chatroomview': this});
         }
-        this.modtools_modal.show();
+        modal.show();
     },
 
     showRoomDetailsModal (ev) {
         ev.preventDefault();
-        if (this.model.room_details_modal === undefined) {
-            this.model.room_details_modal = new RoomDetailsModal({'model': this.model});
-        }
-        this.model.room_details_modal.show(ev);
+        api.modal.show(RoomDetailsModal, {'model': this.model}, ev);
     },
 
     showOccupantDetailsModal (ev, message) {
         ev.preventDefault();
-        if (this.model.occupant_modal === undefined) {
-            this.model.occupant_modal = new OccupantModal({'model': message.occupant});
-        }
-        this.model.occupant_modal.show(ev);
+        api.modal.show(OccupantModal, {'model': message.occupant}, ev);
     },
 
     showChatStateNotification (message) {
@@ -679,12 +674,7 @@ export const ChatRoomView = ChatBoxView.extend({
 
     showInviteModal (ev) {
         ev.preventDefault();
-        if (this.muc_invite_modal === undefined) {
-            this.muc_invite_modal = new MUCInviteModal({'model': new Model()});
-            // TODO: remove once we have API for sending direct invite
-            this.muc_invite_modal.chatroomview = this;
-        }
-        this.muc_invite_modal.show(ev);
+        api.modal.show(MUCInviteModal, {'model': new Model(), 'chatroomview': this}, ev);
     },
 
 
@@ -1365,17 +1355,11 @@ export const RoomsPanel = View.extend({
     },
 
     showAddRoomModal (ev) {
-        if (this.add_room_modal === undefined) {
-            this.add_room_modal = new AddMUCModal({'model': this.model});
-        }
-        this.add_room_modal.show(ev);
+        api.modal.show(AddMUCModal, {'model': this.model}, ev);
     },
 
     showMUCListModal(ev) {
-        if (this.muc_list_modal === undefined) {
-            this.muc_list_modal = new MUCListModal({'model': this.model});
-        }
-        this.muc_list_modal.show(ev);
+        api.modal.show(MUCListModal, {'model': this.model}, ev);
     }
 });
 

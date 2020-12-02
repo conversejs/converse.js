@@ -152,7 +152,7 @@ window.addEventListener('converse-loaded', () => {
         const roomspanel = view.roomspanel;
         roomspanel.el.querySelector('.show-add-muc-modal').click();
         mock.closeControlBox(_converse);
-        const modal = roomspanel.add_room_modal;
+        const modal = _converse.api.modal.get('add-chatroom-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1500)
         modal.el.querySelector('input[name="chatroom"]').value = jid;
         if (nick) {

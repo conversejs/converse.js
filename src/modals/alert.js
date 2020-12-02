@@ -4,6 +4,7 @@ import { __ } from '../i18n';
 
 
 const Alert = BootstrapModal.extend({
+    id: 'alert-modal',
 
     initialize () {
         BootstrapModal.prototype.initialize.apply(this, arguments);

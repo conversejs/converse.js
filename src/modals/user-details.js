@@ -7,7 +7,22 @@ import { _converse, api, converse } from "@converse/headless/converse-core";
 const u = converse.env.utils;
 
 
+function removeContact (contact) {
+    contact.removeFromRoster(
+        () => contact.destroy(),
+        (e) => {
+            e && log.error(e);
+            api.alert('error', __('Error'), [
+                __('Sorry, there was an error while trying to remove %1$s as a contact.',
+                contact.getDisplayName())
+            ]);
+        }
+    );
+}
+
+
 const UserDetailsModal = BootstrapModal.extend({
+    id: 'user-details-modal',
     persistent: true,
 
     events: {
@@ -74,23 +89,11 @@ const UserDetailsModal = BootstrapModal.extend({
         if (!api.settings.get('allow_contact_removal')) { return; }
         const result = confirm(__("Are you sure you want to remove this contact?"));
         if (result === true) {
-            this.modal.hide();
-            // XXX: This is annoying but necessary to get tests to pass.
-            // The `dismissHandler` in bootstrap.native tries to
+            // XXX: The `dismissHandler` in bootstrap.native tries to
             // reference the remove button after it's been cleared from
             // the DOM, so we delay removing the contact to give it time.
-            setTimeout(() => {
-                this.model.contact.removeFromRoster(
-                    () => this.model.contact.destroy(),
-                    (err) => {
-                        log.error(err);
-                        api.alert('error', __('Error'), [
-                            __('Sorry, there was an error while trying to remove %1$s as a contact.',
-                            this.model.contact.getDisplayName())
-                        ]);
-                    }
-                );
-            }, 1);
+            setTimeout(() => removeContact(this.model.contact), 1);
+            this.modal.hide();
         }
     },
 });

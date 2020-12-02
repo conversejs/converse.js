@@ -154,8 +154,7 @@ describe("The Controlbox", function () {
             await mock.openControlBox(_converse);
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.change-status').click()
-            var modal = _converse.xmppstatusview.status_modal;
-
+            const modal = _converse.api.modal.get('modal-status-change');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const view = _converse.xmppstatusview;
             modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
@@ -183,7 +182,7 @@ describe("The Controlbox", function () {
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.change-status').click()
-            const modal = _converse.xmppstatusview.status_modal;
+            const modal = _converse.api.modal.get('modal-status-change');
 
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const view = _converse.xmppstatusview;
@@ -219,7 +218,7 @@ describe("The 'Add Contact' widget", function () {
 
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.el.querySelector('.add-contact').click()
-        const modal = _converse.rosterview.add_contact_modal;
+        const modal = _converse.api.modal.get('add-contact-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         expect(modal.el.querySelector('form.add-xmpp-contact')).not.toBe(null);
 
@@ -252,7 +251,7 @@ describe("The 'Add Contact' widget", function () {
         mock.openControlBox(_converse);
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.el.querySelector('.add-contact').click()
-        const modal = _converse.rosterview.add_contact_modal;
+        const modal = _converse.api.modal.get('add-contact-modal');
         expect(modal.jid_auto_complete).toBe(undefined);
         expect(modal.name_auto_complete).toBe(undefined);
 
@@ -299,7 +298,7 @@ describe("The 'Add Contact' widget", function () {
 
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.el.querySelector('.add-contact').click()
-        const modal = _converse.rosterview.add_contact_modal;
+        const modal = _converse.api.modal.get('add-contact-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
 
         // We only have autocomplete for the name input
@@ -369,7 +368,7 @@ describe("The 'Add Contact' widget", function () {
 
         const cbview = _converse.chatboxviews.get('controlbox');
         cbview.el.querySelector('.add-contact').click()
-        modal = _converse.rosterview.add_contact_modal;
+        modal = _converse.api.modal.get('add-contact-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
 
         expect(modal.jid_auto_complete).toBe(undefined);

@@ -238,10 +238,7 @@ export const ChatBoxView = View.extend({
 
     showUserDetailsModal (ev) {
         ev.preventDefault();
-        if (this.user_details_modal === undefined) {
-            this.user_details_modal = new UserDetailsModal({model: this.model});
-        }
-        this.user_details_modal.show(ev);
+        api.modal.show(UserDetailsModal, {model: this.model}, ev);
     },
 
     onDragOver (evt) {

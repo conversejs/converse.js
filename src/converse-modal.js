@@ -7,15 +7,77 @@ import Alert from './modals/alert.js';
 import BootstrapModal from './modals/base.js';
 import Confirm from './modals/confirm.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { _converse, converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/converse-core";
 
 
 converse.env.BootstrapModal = BootstrapModal; // expose to plugins
 
 
-let alert;
+let modals = [];
+
 
 const modal_api = {
+
+    /**
+     * API namespace for methods relating to modals
+     * @namespace _converse.api.modal
+     * @memberOf _converse.api
+     */
+    modal: {
+        /**
+         * Shows a modal of type `ModalClass` to the user.
+         * Will create a new instance of that class if an existing one isn't
+         * found.
+         * @param { Class } ModalClass
+         * @param { [Object] } properties - Optional properties that will be
+         *  set on a newly created modal instance (if no pre-existing modal was
+         *  found).
+         * @param { [Event] } event - The DOM event that causes the modal to be shown.
+         */
+        show (ModalClass, properties, ev) {
+            const modal = this.get(ModalClass.id) || this.create(ModalClass, properties);
+            modal.show(ev);
+            return modal;
+        },
+
+        /**
+         * Return a modal with the passed-in identifier, if it exists.
+         * @param { String } id
+         */
+        get (id) {
+            return modals.filter(m => m.id == id).pop();
+        },
+
+        /**
+         * Create a modal of the passed-in type.
+         * @param { Class } ModalClass
+         * @param { [Object] } properties - Optional properties that will be
+         *  set on the modal instance.
+         */
+        create (ModalClass, properties) {
+            const modal = new ModalClass(properties);
+            modals.push(modal);
+            return modal;
+        },
+
+        /**
+         * Remove a particular modal
+         * @param { View } modal
+         */
+        remove (modal) {
+            modals = modals.filter(m => m !== modal);
+            modal.remove();
+        },
+
+        /**
+         * Remove all modals
+         */
+        removeAll () {
+            modals.forEach(m => m.remove());
+            modals = [];
+        }
+    },
+
     /**
      * Show a confirm modal to the user.
      * @method _converse.api.confirm
@@ -101,22 +163,13 @@ const modal_api = {
             level = 'alert-warning';
         }
 
-        if (alert === undefined) {
-            const model = new Model({
-                'title': title,
-                'messages': messages,
-                'level': level,
-                'type': 'alert'
-            })
-            alert = new Alert({model});
-        } else {
-            alert.model.set({
-                'title': title,
-                'messages': messages,
-                'level': level
-            });
-        }
-        alert.show();
+        const model = new Model({
+            'title': title,
+            'messages': messages,
+            'level': level,
+            'type': 'alert'
+        })
+        api.modal.show(Alert, {model});
     }
 }
 
@@ -124,12 +177,15 @@ const modal_api = {
 converse.plugins.add('converse-modal', {
 
     initialize () {
-        _converse.api.listen.on('disconnect', () => {
+        api.listen.on('disconnect', () => {
             const container = document.querySelector("#converse-modals");
             if (container) {
                 container.innerHTML = '';
             }
         });
+
+        api.listen.on('clearSession', () => api.modal.removeAll());
+
         Object.assign(_converse.api, modal_api);
     }
 });

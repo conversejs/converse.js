@@ -629,10 +629,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             showAddContactModal (ev) {
-                if (this.add_contact_modal === undefined) {
-                    this.add_contact_modal = new _converse.AddContactModal({'model': new Model()});
-                }
-                this.add_contact_modal.show(ev);
+                api.modal.show(_converse.AddContactModal, {'model': new Model()}, ev);
             },
 
             createRosterFilter () {

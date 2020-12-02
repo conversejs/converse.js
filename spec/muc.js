@@ -1973,7 +1973,7 @@ describe("Groupchats", function () {
             await u.waitUntil(() => view.el.querySelector('.open-invite-modal'));
 
             view.el.querySelector('.open-invite-modal').click();
-            const modal = view.muc_invite_modal;
+            const modal = _converse.api.modal.get('muc-invite-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000)
 
             expect(modal.el.querySelectorAll('#invitee_jids').length).toBe(1);
@@ -2456,7 +2456,7 @@ describe("Groupchats", function () {
 
             const info_el = view.el.querySelector(".show-room-details-modal");
             info_el.click();
-            const  modal = view.model.room_details_modal;
+            const modal = _converse.api.modal.get('room-details-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
 
             let features_list = modal.el.querySelector('.features-list');
@@ -4629,7 +4629,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.add_room_modal;
+            const modal = _converse.api.modal.get('add-chatroom-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000)
 
             let label_name = modal.el.querySelector('label[for="chatroom"]');
@@ -4670,7 +4670,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.add_room_modal;
+            const modal = _converse.api.modal.get('add-chatroom-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000)
             const name_input = modal.el.querySelector('input[name="chatroom"]');
             name_input.value = 'lounge@montague.lit';
@@ -4693,7 +4693,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.add_room_modal;
+            const modal = _converse.api.modal.get('add-chatroom-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000)
             const label_nick = modal.el.querySelector('label[for="nickname"]');
             expect(label_nick.textContent.trim()).toBe('Nickname:');
@@ -4712,7 +4712,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-add-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.add_room_modal;
+            const modal = _converse.api.modal.get('add-chatroom-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000)
             const label_nick = modal.el.querySelector('label[for="nickname"]');
             expect(label_nick.textContent.trim()).toBe('Nickname:');
@@ -4729,7 +4729,7 @@ describe("Groupchats", function () {
             await mock.openControlBox(_converse);
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-add-muc-modal').click();
-            const modal = roomspanel.add_room_modal;
+            const modal = _converse.api.modal.get('add-chatroom-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000)
             expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
@@ -4769,7 +4769,7 @@ describe("Groupchats", function () {
             await mock.openControlBox(_converse);
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-add-muc-modal').click();
-            const modal = roomspanel.add_room_modal;
+            const modal = _converse.api.modal.get('add-chatroom-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000)
             expect(modal.el.querySelector('.modal-title').textContent.trim()).toBe('Enter a new Groupchat');
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
@@ -4812,7 +4812,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.muc_list_modal;
+            const modal = _converse.api.modal.get('list-chatrooms-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
             roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -4889,7 +4889,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.muc_list_modal;
+            const modal = _converse.api.modal.get('list-chatrooms-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const server_input = modal.el.querySelector('input[name="server"]');
             expect(server_input.value).toBe('muc.example.org');
@@ -4906,7 +4906,7 @@ describe("Groupchats", function () {
             const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
             roomspanel.el.querySelector('.show-list-muc-modal').click();
             mock.closeControlBox(_converse);
-            const modal = roomspanel.muc_list_modal;
+            const modal = _converse.api.modal.get('list-chatrooms-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(_converse.ChatRoom.prototype, 'getDiscoInfo').and.callFake(() => Promise.resolve());
             roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called

@@ -18,7 +18,7 @@ describe("The User Details Modal", function () {
         const view = _converse.chatboxviews.get(contact_jid);
         let show_modal_button = view.el.querySelector('.show-user-details-modal');
         show_modal_button.click();
-        const modal = view.user_details_modal;
+        const modal = _converse.api.modal.get('user-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         spyOn(window, 'confirm').and.returnValue(true);
         spyOn(view.model.contact, 'removeFromRoster').and.callFake(callback => callback());
@@ -45,7 +45,7 @@ describe("The User Details Modal", function () {
         const view = _converse.chatboxviews.get(contact_jid);
         let show_modal_button = view.el.querySelector('.show-user-details-modal');
         show_modal_button.click();
-        const modal = view.user_details_modal;
+        let modal = _converse.api.modal.get('user-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 2000);
         spyOn(window, 'confirm').and.returnValue(true);
 
@@ -53,7 +53,7 @@ describe("The User Details Modal", function () {
         let remove_contact_button = modal.el.querySelector('button.remove-contact');
         expect(u.isVisible(remove_contact_button)).toBeTruthy();
         remove_contact_button.click();
-
+        await u.waitUntil(() => !u.isVisible(modal.el))
         await u.waitUntil(() => u.isVisible(document.querySelector('.alert-danger')), 2000);
 
         const header = document.querySelector('.alert-danger .modal-title');
@@ -63,6 +63,7 @@ describe("The User Details Modal", function () {
         document.querySelector('.alert-danger  button.close').click();
         show_modal_button = view.el.querySelector('.show-user-details-modal');
         show_modal_button.click();
+        modal = _converse.api.modal.get('user-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 2000)
 
         show_modal_button = view.el.querySelector('.show-user-details-modal');

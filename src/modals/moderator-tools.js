@@ -12,6 +12,7 @@ let _converse;
 
 
 export default BootstrapModal.extend({
+    id: "converse-modtools-modal",
     persistent: true,
 
     initialize (attrs) {

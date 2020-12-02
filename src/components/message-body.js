@@ -15,14 +15,9 @@ export default class MessageBody extends CustomElement {
         }
     }
 
-    showImageModal (ev) {
+    showImageModal (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
-        if (this.image_modal === undefined) {
-            this.image_modal = new ImageModal();
-        }
-        this.image_modal.src = ev.target.src;
-        this.image_modal.render();
-        this.image_modal.show(ev);
+        api.modal.create(ImageModal, {'src': ev.target.src}, ev).show(ev);
     }
 
     render () {

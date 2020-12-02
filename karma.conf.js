@@ -24,6 +24,7 @@ module.exports = function(config) {
       { pattern: "node_modules/sinon/pkg/sinon.js", type: 'module' },
       { pattern: "spec/mock.js", type: 'module' },
 
+      { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "spec/spoilers.js", type: 'module' },
       { pattern: "spec/emojis.js", type: 'module' },
       { pattern: "spec/muclist.js", type: 'module' },
@@ -44,7 +45,6 @@ module.exports = function(config) {
       { pattern: "spec/controlbox.js", type: 'module' },
       { pattern: "spec/roster.js", type: 'module' },
       { pattern: "spec/chatbox.js", type: 'module' },
-      { pattern: "spec/user-details-modal.js", type: 'module' },
       { pattern: "spec/messages.js", type: 'module' },
       { pattern: "spec/corrections.js", type: 'module' },
       { pattern: "spec/styling.js", type: 'module' },

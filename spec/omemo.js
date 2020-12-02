@@ -1463,7 +1463,7 @@ describe("The OMEMO module", function() {
         const view = _converse.chatboxviews.get(contact_jid);
         const show_modal_button = view.el.querySelector('.show-user-details-modal');
         show_modal_button.click();
-        const modal = view.user_details_modal;
+        const modal = _converse.api.modal.get('user-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         let iq_stanza = await u.waitUntil(() => deviceListFetched(_converse, contact_jid));
         expect(Strophe.serialize(iq_stanza)).toBe(

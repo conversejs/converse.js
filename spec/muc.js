@@ -1302,9 +1302,9 @@ describe("Groupchats", function () {
             done();
         }));
 
-        it("doesn't show the disconnection messages when muc_show_join_leave is false",
+        it("doesn't show the disconnection messages when join_leave_events is not in muc_show_info_messages setting",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_show_join_leave': false},
+                ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_show_info_messages': []},
                 async function (done, _converse) {
 
             spyOn(_converse.ChatRoom.prototype, 'onOccupantAdded').and.callThrough();

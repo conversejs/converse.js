@@ -172,9 +172,14 @@ export const ChatRoomView = ChatBoxView.extend({
 
     getNotifications () {
         const actors_per_state = this.model.notifications.toJSON();
-        const states = api.settings.get('muc_show_join_leave') ?
-            [...converse.CHAT_STATES, ...converse.MUC_TRAFFIC_STATES, ...converse.MUC_ROLE_CHANGES] :
-            converse.CHAT_STATES;
+
+        const role_changes = api.settings.get('muc_show_info_messages')
+            .filter(role_change => converse.MUC_ROLE_CHANGES_LIST.includes(role_change));
+
+        const join_leave_events = api.settings.get('muc_show_info_messages')
+            .filter(join_leave_event => converse.MUC_TRAFFIC_STATES_LIST.includes(join_leave_event));
+
+        const states = [...converse.CHAT_STATES, ...join_leave_events, ...role_changes];
 
         return states.reduce((result, state) => {
             const existing_actors = actors_per_state[state];

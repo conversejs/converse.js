@@ -61,6 +61,7 @@ Soon we'll deprecate the latter, so prepare now.
 - #2213: added CustomElement to converse.env
 - #2220: fix rendering of emojis in case `use_system_emojis == false` (again).
 - #2092: fixes room list update loop when having the `locked_muc_domain` truthy or `'hidden'`
+- #2259: Rename configuration setting `muc_show_join_leave` to `muc_show_info_messages`. Now accepts a list of events to show instead of a boolean.
 - #2285: Rename config option `muc_hats_from_vcard` to [muc_hats](https://conversejs.org/docs/html/configuration.html#muc-hats). Now accepts a list instead of a boolean and allows for more flexible choices regarding user badges.
 - #2300: Fix message reorder issue after message correction.
 - #2304: Custom emojis (stickers) images not shown

@@ -44,7 +44,7 @@ class MessageActions extends CustomElement {
         this.chatview.onMessageRetractButtonClicked(this.model);
     }
 
-    async renderActions () {
+    async getActionButtons () {
         const buttons = [];
         if (this.editable) {
             buttons.push({
@@ -66,6 +66,26 @@ class MessageActions extends CustomElement {
                 'name': 'retract'
             });
         }
+        /**
+         * *Hook* which allows plugins to add more message action buttons
+         * @event _converse#getMessageActionButtons
+         * @example
+            api.listen.on('getMessageActionButtons', (el, buttons) => {
+                buttons.push({
+                    'i18n_text': 'Foo',
+                    'handler': ev => alert('Foo!'),
+                    'button_class': 'chat-msg__action-foo',
+                    'icon_class': 'fa fa-check',
+                    'name': 'foo'
+                });
+                return buttons;
+            });
+         */
+        return api.hook('getMessageActionButtons', this, buttons);
+    }
+
+    async renderActions () {
+        const buttons = await this.getActionButtons();
         const items = buttons.map(b => MessageActions.getActionsDropdownItem(b));
         if (items.length) {
             return html`<converse-dropdown class="chat-msg__actions" .items=${ items }></converse-dropdown>`;

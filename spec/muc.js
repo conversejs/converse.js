@@ -841,7 +841,7 @@ describe("Groupchats", function () {
             await u.waitUntil(()  => view.el.querySelector('.chat-msg__text a'));
             view.el.querySelector('.chat-msg__text a').click();
             await u.waitUntil(() => _converse.chatboxes.length === 3)
-            expect(_.includes(_converse.chatboxes.pluck('id'), 'coven@chat.shakespeare.lit')).toBe(true);
+            expect(_converse.chatboxes.pluck('id').includes('coven@chat.shakespeare.lit')).toBe(true);
             done()
         }));
 

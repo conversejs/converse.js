@@ -323,6 +323,12 @@ u.convertToImageTag = function (url, onLoad, onClick) {
     return tpl_image({url, onClick, onLoad});
 };
 
+
+function onClickXMPPURI (ev) {
+    ev.preventDefault();
+    api.rooms.open(ev.target.href);
+}
+
 u.convertURIoHyperlink = function (uri, urlAsTyped) {
     let normalized_url = uri.normalize()._string;
     const pretty_url = uri._parts.urn ? normalized_url : uri.readable();
@@ -334,7 +340,7 @@ u.convertURIoHyperlink = function (uri, urlAsTyped) {
         return html`
             <a target="_blank"
                rel="noopener"
-               @click=${ev => api.rooms.open(ev.target.href)}
+               @click=${onClickXMPPURI}
                href="${normalized_url}">${visible_url}</a>`;
     }
     return html`<a target="_blank" rel="noopener" href="${normalized_url}">${visible_url}</a>`;

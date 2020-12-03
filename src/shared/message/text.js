@@ -1,10 +1,9 @@
 import URI from 'urijs';
 import log from '@converse/headless/log';
-import { _converse, api, converse } from '@converse/headless/converse-core';
-import { convertASCII2Emoji } from '@converse/headless/converse-emoji.js';
-import { html } from 'lit-html';
+import { _converse, api, converse } from '@converse/headless/core';
 import { containsDirectives, getDirectiveAndLength, getDirectiveTemplate, isQuoteDirective } from './styling.js';
-import { getCodePointReferences, getEmojiMarkup, getShortnameReferences } from '../../headless/converse-emoji.js';
+import { convertASCII2Emoji, getCodePointReferences, getEmojiMarkup, getShortnameReferences } from '@converse/headless/plugins/emoji/index.js';
+import { html } from 'lit-html';
 
 const u = converse.env.utils;
 

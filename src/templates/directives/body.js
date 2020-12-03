@@ -1,5 +1,5 @@
 import { MessageText } from '../../shared/message/text.js';
-import { api, converse } from  "@converse/headless/converse-core";
+import { api, converse } from  "@converse/headless/core";
 import { directive, html } from "lit-html";
 import { until } from 'lit-html/directives/until.js';
 

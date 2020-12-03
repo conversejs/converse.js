@@ -1,7 +1,7 @@
-import "./autocomplete.js"
+import "../plugins/autocomplete.js"
 import tpl_muc_sidebar from "templates/muc_sidebar.js";
 import { CustomElement } from './element.js';
-import { api, converse } from "@converse/headless/converse-core";
+import { api, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
 

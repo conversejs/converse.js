@@ -1,5 +1,5 @@
 import { __ } from '../i18n';
-import { _converse, converse, api } from "@converse/headless/converse-core";
+import { _converse, converse, api } from "@converse/headless/core";
 import { html } from "lit-html";
 
 const u = converse.env.utils;

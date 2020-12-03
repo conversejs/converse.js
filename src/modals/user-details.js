@@ -2,7 +2,7 @@ import BootstrapModal from "./base.js";
 import log from "@converse/headless/log";
 import tpl_user_details_modal from "./templates/user-details.js";
 import { __ } from '../i18n';
-import { _converse, api, converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
 

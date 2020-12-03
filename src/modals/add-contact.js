@@ -1,7 +1,7 @@
 import BootstrapModal from "./base.js";
 import tpl_add_contact_modal from "./templates/add-contact.js";
 import { __ } from '../i18n';
-import { _converse, api, converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/core";
 import { compact, debounce } from "lodash-es";
 
 const { Strophe } = converse.env;

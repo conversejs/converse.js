@@ -2,7 +2,7 @@ import bootstrap from "bootstrap.native";
 import log from "@converse/headless/log";
 import tpl_alert_component from "templates/alert.js";
 import { View } from '@converse/skeletor/src/view.js';
-import { _converse, api, converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/core";
 import { render } from 'lit-html';
 
 const { sizzle } = converse.env;

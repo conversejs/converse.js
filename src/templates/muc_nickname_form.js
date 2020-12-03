@@ -1,5 +1,5 @@
 import { __ } from '../i18n';
-import { api } from "@converse/headless/converse-core";
+import { api } from "@converse/headless/core";
 import { html } from "lit-html";
 
 

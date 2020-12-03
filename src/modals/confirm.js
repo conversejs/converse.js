@@ -1,6 +1,6 @@
 import BootstrapModal from './base.js';
 import tpl_prompt from "./templates/prompt.js";
-import { converse } from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
 

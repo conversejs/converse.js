@@ -1,6 +1,6 @@
 import BootstrapModal from "./base.js";
 import tpl_muc_invite_modal from "./templates/muc-invite.js";
-import { _converse, converse } from "@converse/headless/converse-core";
+import { _converse, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
 

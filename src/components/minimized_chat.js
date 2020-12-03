@@ -1,6 +1,6 @@
 import { CustomElement } from './element.js';
 import tpl_trimmed_chat from "templates/trimmed_chat.js";
-import { api, _converse } from "@converse/headless/converse-core";
+import { api, _converse } from "@converse/headless/core";
 
 
 export default class MinimizedChat extends CustomElement {

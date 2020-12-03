@@ -1,4 +1,4 @@
-import { api, converse } from "@converse/headless/converse-core";
+import { api, converse } from "@converse/headless/core";
 
 
 /**

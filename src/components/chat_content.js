@@ -3,7 +3,7 @@ import xss from "xss/dist/xss";
 import { CustomElement } from './element.js';
 import { html } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { api } from "@converse/headless/converse-core";
+import { api } from "@converse/headless/core";
 
 export default class ChatContent extends CustomElement {
 

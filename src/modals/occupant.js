@@ -1,6 +1,6 @@
 import BootstrapModal from "./base.js";
 import tpl_occupant_modal from "./templates/occupant.js";
-import { _converse, api } from "@converse/headless/converse-core";
+import { _converse, api } from "@converse/headless/core";
 
 
 const OccupantModal = BootstrapModal.extend({

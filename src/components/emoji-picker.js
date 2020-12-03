@@ -1,9 +1,9 @@
 import "./emoji-picker-content.js";
-import DOMNavigator from "../dom-navigator";
+import DOMNavigator from "../shared/dom-navigator";
 import { BaseDropdown } from "./dropdown.js";
 import { CustomElement } from './element.js';
 import { __ } from '../i18n';
-import { _converse, api, converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/core";
 import { debounce } from "lodash-es";
 import { html } from "lit-element";
 import { tpl_emoji_picker } from "../templates/emoji_picker.js";

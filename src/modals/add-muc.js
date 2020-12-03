@@ -2,7 +2,7 @@ import tpl_add_muc from "./templates/add-muc.js";
 import BootstrapModal from "./base.js";
 import { Strophe } from 'strophe.js/src/strophe';
 import { __ } from '../i18n';
-import { _converse, api, converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
 

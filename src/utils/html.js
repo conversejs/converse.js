@@ -19,7 +19,7 @@ import tpl_image from "../templates/image.js";
 import tpl_select_option from "../templates/select_option.html";
 import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
-import { api } from  "@converse/headless/converse-core";
+import { api } from  "@converse/headless/core";
 import { html, render } from "lit-html";
 import { isFunction } from "lodash-es";
 

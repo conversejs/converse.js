@@ -2,9 +2,9 @@ import BootstrapModal from "./base.js";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
 import tpl_moderator_tools_modal from "./templates/moderator-tools.js";
-import { AFFILIATIONS, ROLES } from "@converse/headless/converse-muc.js";
+import { AFFILIATIONS, ROLES } from "@converse/headless/plugins/muc.js";
 import { __ } from '../i18n';
-import { api, converse } from "@converse/headless/converse-core";
+import { api, converse } from "@converse/headless/core";
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;

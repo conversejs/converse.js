@@ -1,4 +1,4 @@
-import { api } from "@converse/headless/converse-core";
+import { api } from "@converse/headless/core";
 import { component } from 'haunted';
 import { html } from 'lit-html';
 

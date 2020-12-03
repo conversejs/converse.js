@@ -1,7 +1,7 @@
 import { AutoComplete, FILTER_CONTAINS, FILTER_STARTSWITH } from "../converse-autocomplete.js";
 import { CustomElement } from './element.js';
 import { html } from 'lit-element';
-import { api } from "@converse/headless/converse-core";
+import { api } from "@converse/headless/core";
 
 export default class AutoCompleteComponent extends CustomElement {
 

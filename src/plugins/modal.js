@@ -29,10 +29,10 @@ const modal_api = {
          * Will create a new instance of that class if an existing one isn't
          * found.
          * @param { Class } ModalClass
-         * @param { [Object] } properties - Optional properties that will be
+         * @param { Object } [properties] - Optional properties that will be
          *  set on a newly created modal instance (if no pre-existing modal was
          *  found).
-         * @param { [Event] } event - The DOM event that causes the modal to be shown.
+         * @param { Event } [event] - The DOM event that causes the modal to be shown.
          */
         show (ModalClass, properties, ev) {
             const modal = this.get(ModalClass.id) || this.create(ModalClass, properties);
@@ -51,7 +51,7 @@ const modal_api = {
         /**
          * Create a modal of the passed-in type.
          * @param { Class } ModalClass
-         * @param { [Object] } properties - Optional properties that will be
+         * @param { Object } [properties] - Optional properties that will be
          *  set on the modal instance.
          */
         create (ModalClass, properties) {

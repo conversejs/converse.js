@@ -333,6 +333,18 @@ export const ChatBoxView = View.extend({
         /**
          * *Hook* which allows plugins to add more buttons to a chat's heading.
          * @event _converse#getHeadingButtons
+         * @example
+         *  api.listen.on('getHeadingButtons', (view, buttons) => {
+         *      buttons.push({
+         *          'i18n_title': __('Foo'),
+         *          'i18n_text': __('Foo Bar'),
+         *          'handler': ev => alert('Foo!'),
+         *          'a_class': 'toggle-foo',
+         *          'icon_class': 'fa-foo',
+         *          'name': 'foo'
+         *      });
+         *      return buttons;
+         *  });
          */
         return _converse.api.hook('getHeadingButtons', this, buttons);
     },

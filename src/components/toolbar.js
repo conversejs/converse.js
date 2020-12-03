@@ -79,6 +79,13 @@ export class ChatToolbar extends CustomElement {
         /**
          * *Hook* which allows plugins to add more buttons to a chat's toolbar
          * @event _converse#getToolbarButtons
+         * @example
+         *  api.listen.on('getToolbarButtons', (toolbar_el, buttons) {
+         *      buttons.push(html`
+         *          <button @click=${() => alert('Foo!')}>Foo</button>`
+         *      );
+         *      return buttons;
+         *  }
          */
         return _converse.api.hook('getToolbarButtons', this, buttons);
     }

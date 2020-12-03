@@ -562,7 +562,7 @@ export const ChatRoomView = ChatBoxView.extend({
             'i18n_text': __('Details'),
             'i18n_title': __('Show more information about this groupchat'),
             'handler': ev => this.showRoomDetailsModal(ev),
-            'a_class': 'show-room-details-modal',
+            'a_class': 'show-muc-details-modal',
             'icon_class': 'fa-info-circle',
             'name': 'details'
         });

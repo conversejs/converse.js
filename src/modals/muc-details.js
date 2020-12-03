@@ -4,7 +4,7 @@ import { __ } from '../i18n';
 
 
 export default BootstrapModal.extend({
-    id: "room-details-modal",
+    id: "muc-details-modal",
 
     initialize () {
         BootstrapModal.prototype.initialize.apply(this, arguments);

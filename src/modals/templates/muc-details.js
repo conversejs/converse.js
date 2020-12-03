@@ -50,7 +50,7 @@ export default (o) => {
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="room-details-modal-label">${o.display_name}</h5>
+                    <h5 class="modal-title" id="muc-details-modal-label">${o.display_name}</h5>
                     ${modal_header_close_button}
                 </div>
                 <div class="modal-body">

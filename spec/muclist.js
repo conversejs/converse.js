@@ -204,7 +204,7 @@ describe("A groupchat shown in the groupchats list", function () {
         const info_el = _converse.rooms_list_view.el.querySelector(".room-info");
         info_el.click();
 
-        const modal = _converse.api.modal.get('room-details-modal');
+        const modal = _converse.api.modal.get('muc-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         let els = modal.el.querySelectorAll('p.room-info');
         expect(els[0].textContent).toBe("Name: A Dark Cave")

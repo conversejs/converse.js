@@ -56,7 +56,7 @@ export default (o) => {
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="list-chatrooms-modal-label">${i18n_list_chatrooms}</h5>
+                    <h5 class="modal-title" id="muc-list-modal-label">${i18n_list_chatrooms}</h5>
                     ${modal_header_close_button}
                 </div>
                 <div class="modal-body d-flex flex-column">

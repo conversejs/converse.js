@@ -82,7 +82,7 @@ function toggleRoomInfo (ev) {
 
 
 export default BootstrapModal.extend({
-    id: "list-chatrooms-modal",
+    id: "muc-list-modal",
     persistent: true,
 
     initialize () {

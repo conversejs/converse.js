@@ -80,7 +80,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
 
         // Test that pressing the down arrow cancels message correction
-        expect(textarea.value).toBe('');
+        await u.waitUntil(() => textarea.value === '')
         view.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow

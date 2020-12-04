@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  * @description Implements the non-view logic for XEP-0045 Multi-User Chat
  */
-import "./chat";
+import "./chat/index.js";
 import "./disco";
 import "./emoji/index.js";
 import { Collection } from "@converse/skeletor/src/collection";
@@ -398,7 +398,6 @@ converse.plugins.add('converse-muc', {
          * @memberOf _converse
          */
         _converse.ChatRoom = _converse.ChatBox.extend({
-            messagesCollection: _converse.ChatRoomMessages,
 
             defaults () {
                 return {
@@ -593,6 +592,10 @@ converse.plugins.add('converse-muc', {
                 this.registerHandlers();
                 await this.rejoin();
                 this.announceReconnection();
+            },
+
+            getMessagesCollection () {
+                return new _converse.ChatRoomMessages();
             },
 
             restoreSession () {

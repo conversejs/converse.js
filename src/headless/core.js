@@ -998,7 +998,7 @@ function initPersistentStorage () {
     } else if (_converse.api.settings.get("persistent_store") === 'IndexedDB') {
         config['description'] = 'indexedDB instance';
         config['driver'] = [Storage.localForage.INDEXEDDB];
-    } else if (_converse.api.settings.get("persistent_store") === 'in_memory') {
+    } else if (_converse.api.settings.get("persistent_store") === 'none') {
         config['description'] = 'in-memory instance';
         config['driver'] = [Storage.IN_MEMORY];
     }

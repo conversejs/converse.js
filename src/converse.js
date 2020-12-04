@@ -15,21 +15,21 @@ import "shared/registry.js";
  * Any of the following components may be removed if they're not needed.
  */
 import "./plugins/autocomplete.js";
-import "./plugins/bookmark-views.js";  // Views for XEP-0048 Bookmarks
-import "./plugins/chatview.js";        // Renders standalone chat boxes for single user chat
-import "./plugins/controlbox.js";      // The control box
-import "./plugins/dragresize.js";      // Allows chat boxes to be resized by dragging them
+import "./plugins/bookmark-views.js";       // Views for XEP-0048 Bookmarks
+import "./plugins/chatview.js";             // Renders standalone chat boxes for single user chat
+import "./plugins/controlbox/index.js";     // The control box
+import "./plugins/dragresize.js";           // Allows chat boxes to be resized by dragging them
 import "./plugins/fullscreen.js";
 import "./plugins/mam-views.js";
-import "./plugins/minimize.js";        // Allows chat boxes to be minimized
-import "./plugins/muc-views.js";       // Views related to MUC
+import "./plugins/minimize.js";             // Allows chat boxes to be minimized
+import "./plugins/muc-views.js";            // Views related to MUC
 import "./plugins/headlines-view.js";
-import "./plugins/notifications.js";   // HTML5 Notifications
+import "./plugins/notifications.js";
 import "./plugins/omemo.js";
 import "./plugins/profile.js";
-import "./plugins/push.js";            // XEP-0357 Push Notifications
-import "./plugins/register.js";        // XEP-0077 In-band registration
-import "./plugins/roomslist.js";       // Show currently open chat rooms
+import "./plugins/push.js";                 // XEP-0357 Push Notifications
+import "./plugins/register.js";             // XEP-0077 In-band registration
+import "./plugins/roomslist.js";            // Show currently open chat rooms
 import "./plugins/rosterview.js";
 import "./plugins/singleton.js";
 /* END: Removable components */

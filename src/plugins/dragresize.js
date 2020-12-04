@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "./chatview.js";
-import "./controlbox.js";
+import "./controlbox/index.js";
 import { debounce } from "lodash-es";
 import { _converse, api, converse } from "@converse/headless/core";
 import tpl_dragresize from "../templates/dragresize.html";

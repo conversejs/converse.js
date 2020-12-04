@@ -6,7 +6,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "./controlbox.js";
+import "./controlbox/index.js";
 import log from "@converse/headless/log";
 import tpl_form_input from "../templates/form_input.html";
 import tpl_form_username from "../templates/form_username.html";

@@ -1657,7 +1657,7 @@ BrowserExtLocal represents the local storage area.
 Items in local storage are local to the machine the extension was installed on
 
 When using ``persistent_store: 'none'`` Converse will store data in-memory thus clearing all data across page reloads.
-It is usefull if memory storage limitations are beinig reached and refetching data anew after a reload is acceptable.
+It is useful if memory storage limitations are beinig reached and refetching data anew after a reload is acceptable.
 
 push_app_servers
 ----------------

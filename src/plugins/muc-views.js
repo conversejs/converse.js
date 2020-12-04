@@ -5,6 +5,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "../components/muc-sidebar";
+import "./chatview/index.js";
 import "./modal.js";
 import "@converse/headless/utils/muc";
 import AddMUCModal from '../modals/add-muc.js';
@@ -24,7 +25,6 @@ import tpl_muc_nickname_form from "../templates/muc_nickname_form.js";
 import tpl_muc_password_form from "../templates/muc_password_form.js";
 import tpl_room_panel from "../templates/room_panel.js";
 import tpl_spinner from "../templates/spinner.js";
-import { ChatBoxView } from "./chatview.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from '../i18n';
@@ -63,7 +63,7 @@ const COMMAND_TO_AFFILIATION = {
  * @namespace _converse.ChatRoomView
  * @memberOf _converse
  */
-export const ChatRoomView = ChatBoxView.extend({
+export const ChatRoomView = _converse.ChatBoxView.extend({
     length: 300,
     tagName: 'div',
     className: 'chatbox chatroom hidden',

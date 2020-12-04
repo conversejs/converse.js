@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import '../components/minimized_chat.js';
-import './chatview.js';
+import './chatview/index.js';
 import tpl_chats_panel from '../templates/chats_panel.js';
 import { Model } from '@converse/skeletor/src/model.js';
 import { View } from '@converse/skeletor/src/view';

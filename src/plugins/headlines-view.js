@@ -3,9 +3,9 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import "./chatview/index.js";
 import tpl_chatbox from "../templates/chatbox.js";
 import tpl_headline_panel from "../templates/headline_panel.js";
-import { ChatBoxView } from "./chatview";
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from '../i18n';
 import { _converse, api, converse } from "@converse/headless/core";
@@ -14,7 +14,7 @@ import { render } from "lit-html";
 const u = converse.env.utils;
 
 
-const HeadlinesBoxView = ChatBoxView.extend({
+const HeadlinesBoxViewMixin = {
     className: 'chatbox headlines hidden',
 
     events: {
@@ -100,10 +100,10 @@ const HeadlinesBoxView = ChatBoxView.extend({
         return _converse.api.hook('getHeadingButtons', this, buttons);
     },
 
-    // Override to avoid the methods in converse-chatview.js
+    // Override to avoid the methods in converse-chatview
     'renderMessageForm': function renderMessageForm () {},
     'afterShown': function afterShown () {}
-});
+};
 
 
 /**
@@ -210,7 +210,7 @@ converse.plugins.add('converse-headlines-view', {
             Object.assign(_converse.ControlBoxView.prototype, viewWithHeadlinesPanel);
         }
 
-        _converse.HeadlinesBoxView = HeadlinesBoxView;
+        _converse.HeadlinesBoxView = _converse.ChatBoxView.extend(HeadlinesBoxViewMixin);
         _converse.HeadlinesPanel = HeadlinesPanel;
 
 

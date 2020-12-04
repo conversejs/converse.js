@@ -3,7 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  * @copyright 2020, the Converse.js contributors
  */
-import "./chatview.js";
+import "./chatview/index.js";
 import "./controlbox/index.js";
 import "./singleton.js";
 import "@converse/headless/plugins/muc";

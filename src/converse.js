@@ -16,7 +16,7 @@ import "shared/registry.js";
  */
 import "./plugins/autocomplete.js";
 import "./plugins/bookmark-views.js";       // Views for XEP-0048 Bookmarks
-import "./plugins/chatview.js";             // Renders standalone chat boxes for single user chat
+import "./plugins/chatview/index.js";             // Renders standalone chat boxes for single user chat
 import "./plugins/controlbox/index.js";     // The control box
 import "./plugins/dragresize.js";           // Allows chat boxes to be resized by dragging them
 import "./plugins/fullscreen.js";

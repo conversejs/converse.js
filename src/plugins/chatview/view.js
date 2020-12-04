@@ -1,30 +1,18 @@
-/**
- * @module converse-chatview
- * @copyright 2020, the Converse.js contributors
- * @license Mozilla Public License (MPLv2)
- */
-import '../components/chat_content.js';
-import '../components/help_messages.js';
-import '../components/toolbar.js';
-import './chatboxviews/index.js';
-import './modal.js';
+import UserDetailsModal from 'modals/user-details.js';
 import log from '@converse/headless/log';
 import tpl_chatbox from 'templates/chatbox.js';
 import tpl_chatbox_head from 'templates/chatbox_head.js';
 import tpl_chatbox_message_form from 'templates/chatbox_message_form.js';
 import tpl_spinner from 'templates/spinner.js';
 import tpl_toolbar from 'templates/toolbar.js';
-import UserDetailsModal from 'modals/user-details.js';
 import { View } from '@converse/skeletor/src/view.js';
-import { __ } from '../i18n';
+import { __ } from '../../i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 import { debounce } from 'lodash-es';
 import { html, render } from 'lit-html';
 
-
-const { Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
-
+const { dayjs } = converse.env;
 
 /**
  * The View of an open/ongoing chat conversation.
@@ -32,10 +20,10 @@ const u = converse.env.utils;
  * @namespace _converse.ChatBoxView
  * @memberOf _converse
  */
-export const ChatBoxView = View.extend({
+const ChatBoxView = View.extend({
     length: 200,
     className: 'chatbox hidden',
-    is_chatroom: false,  // Leaky abstraction from MUC
+    is_chatroom: false, // Leaky abstraction from MUC
 
     events: {
         'click .chatbox-navback': 'showControlBox',
@@ -45,14 +33,14 @@ export const ChatBoxView = View.extend({
         'input .chat-textarea': 'inputChanged',
         'keydown .chat-textarea': 'onKeyDown',
         'keyup .chat-textarea': 'onKeyUp',
-        'paste .chat-textarea': 'onPaste',
+        'paste .chat-textarea': 'onPaste'
     },
 
     async initialize () {
         this.initDebounced();
 
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
-        this.listenTo(this.model, 'change:hidden', m => m.get('hidden') ? this.hide() : this.show());
+        this.listenTo(this.model, 'change:hidden', m => (m.get('hidden') ? this.hide() : this.show()));
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model, 'show', this.show);
@@ -108,9 +96,7 @@ export const ChatBoxView = View.extend({
     },
 
     render () {
-        const result = tpl_chatbox(
-            Object.assign(this.model.toJSON(), {'markScrolled': ev => this.markScrolled(ev)})
-        );
+        const result = tpl_chatbox(Object.assign(this.model.toJSON(), { 'markScrolled': ev => this.markScrolled(ev) }));
         render(result, this.el);
         this.content = this.el.querySelector('.chat-content');
         this.notifications = this.el.querySelector('.chat-content__notifications');
@@ -161,41 +147,40 @@ export const ChatBoxView = View.extend({
 
     renderHelpMessages () {
         render(
-            html`<converse-chat-help
-                .model=${this.model}
-                .messages=${this.getHelpMessages()}
-                ?hidden=${!this.model.get('show_help_messages')}
-                type="info"
-                chat_type="${this.model.get('type')}"></converse-chat-help>`,
+            html`
+                <converse-chat-help
+                    .model=${this.model}
+                    .messages=${this.getHelpMessages()}
+                    ?hidden=${!this.model.get('show_help_messages')}
+                    type="info"
+                    chat_type="${this.model.get('type')}"
+                ></converse-chat-help>
+            `,
 
             this.help_container
         );
     },
 
-    renderChatContent (msgs_by_ref=false) {
+    renderChatContent (msgs_by_ref = false) {
         if (!this.tpl_chat_content) {
-            this.tpl_chat_content = (o) => {
+            this.tpl_chat_content = o => {
                 return html`
-                    <converse-chat-content
-                        .chatview=${this}
-                        .messages=${o.messages}
-                        notifications=${o.notifications}>
-                    </converse-chat-content>`
+                    <converse-chat-content .chatview=${this} .messages=${o.messages} notifications=${o.notifications}>
+                    </converse-chat-content>
+                `;
             };
         }
         const msg_models = this.model.messages.models;
         const messages = msgs_by_ref ? msg_models : Array.from(msg_models);
-        render(
-            this.tpl_chat_content({ messages, 'notifications': this.getNotifications() }),
-            this.msgs_container
-        );
+        render(this.tpl_chat_content({ messages, 'notifications': this.getNotifications() }), this.msgs_container);
     },
 
     renderToolbar () {
         if (!api.settings.get('show_toolbar')) {
             return this;
         }
-        const options = Object.assign({
+        const options = Object.assign(
+            {
                 'model': this.model,
                 'chatview': this
             },
@@ -215,16 +200,20 @@ export const ChatBoxView = View.extend({
 
     renderMessageForm () {
         const form_container = this.el.querySelector('.message-form-container');
-        render(tpl_chatbox_message_form(
-            Object.assign(this.model.toJSON(), {
-                'hint_value': this.el.querySelector('.spoiler-hint')?.value,
-                'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
-                'label_spoiler_hint': __('Optional hint'),
-                'message_value': this.el.querySelector('.chat-textarea')?.value,
-                'show_send_button': api.settings.get('show_send_button'),
-                'show_toolbar': api.settings.get('show_toolbar'),
-                'unread_msgs': __('You have unread messages')
-            })), form_container);
+        render(
+            tpl_chatbox_message_form(
+                Object.assign(this.model.toJSON(), {
+                    'hint_value': this.el.querySelector('.spoiler-hint')?.value,
+                    'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
+                    'label_spoiler_hint': __('Optional hint'),
+                    'message_value': this.el.querySelector('.chat-textarea')?.value,
+                    'show_send_button': api.settings.get('show_send_button'),
+                    'show_toolbar': api.settings.get('show_toolbar'),
+                    'unread_msgs': __('You have unread messages')
+                })
+            ),
+            form_container
+        );
         this.el.addEventListener('focusin', ev => this.emitFocused(ev));
         this.el.addEventListener('focusout', ev => this.emitBlurred(ev));
         this.renderToolbar();
@@ -238,7 +227,7 @@ export const ChatBoxView = View.extend({
 
     showUserDetailsModal (ev) {
         ev.preventDefault();
-        api.modal.show(UserDetailsModal, {model: this.model}, ev);
+        api.modal.show(UserDetailsModal, { model: this.model }, ev);
     },
 
     onDragOver (evt) {
@@ -262,43 +251,49 @@ export const ChatBoxView = View.extend({
 
     async getHeadingStandaloneButton (promise_or_data) {
         const data = await promise_or_data;
-        return html`<a href="#"
-            class="chatbox-btn ${data.a_class} fa ${data.icon_class}"
-            @click=${data.handler}
-            title="${data.i18n_title}"></a>`;
+        return html`
+            <a
+                href="#"
+                class="chatbox-btn ${data.a_class} fa ${data.icon_class}"
+                @click=${data.handler}
+                title="${data.i18n_title}"
+            ></a>
+        `;
     },
 
     async getHeadingDropdownItem (promise_or_data) {
         const data = await promise_or_data;
-        return html`<a href="#"
-            class="dropdown-item ${data.a_class}"
-            @click=${data.handler}
-            title="${data.i18n_title}"><i class="fa ${data.icon_class}"></i>${data.i18n_text}</a>`;
+        return html`
+            <a href="#" class="dropdown-item ${data.a_class}" @click=${data.handler} title="${data.i18n_title}"
+                ><i class="fa ${data.icon_class}"></i>${data.i18n_text}</a
+            >
+        `;
     },
 
     async generateHeadingTemplate () {
         const vcard = this.model?.vcard;
         const vcard_json = vcard ? vcard.toJSON() : {};
-        const i18n_profile = __('The User\'s Profile Image');
-        const avatar_data = Object.assign({
-            'alt_text': i18n_profile,
-            'extra_classes': '',
-            'height': 40,
-            'width': 40,
-        }, vcard_json);
+        const i18n_profile = __("The User's Profile Image");
+        const avatar_data = Object.assign(
+            {
+                'alt_text': i18n_profile,
+                'extra_classes': '',
+                'height': 40,
+                'width': 40
+            },
+            vcard_json
+        );
         const heading_btns = await this.getHeadingButtons();
         const standalone_btns = heading_btns.filter(b => b.standalone);
         const dropdown_btns = heading_btns.filter(b => !b.standalone);
         return tpl_chatbox_head(
-            Object.assign(
-                this.model.toJSON(), {
-                    avatar_data,
-                    'display_name': this.model.getDisplayName(),
-                    'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
-                    'showUserDetailsModal': ev => this.showUserDetailsModal(ev),
-                    'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
-                }
-            )
+            Object.assign(this.model.toJSON(), {
+                avatar_data,
+                'display_name': this.model.getDisplayName(),
+                'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
+                'showUserDetailsModal': ev => this.showUserDetailsModal(ev),
+                'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b))
+            })
         );
     },
 
@@ -310,16 +305,18 @@ export const ChatBoxView = View.extend({
      * @method _converse.ChatBoxView#getHeadingButtons
      */
     getHeadingButtons () {
-        const buttons = [{
-            'a_class': 'show-user-details-modal',
-            'handler': ev => this.showUserDetailsModal(ev),
-            'i18n_text': __('Details'),
-            'i18n_title': __('See more information about this person'),
-            'icon_class': 'fa-id-card',
-            'name': 'details',
-            'standalone': api.settings.get("view_mode") === 'overlayed',
-        }];
-        if (!api.settings.get("singleton")) {
+        const buttons = [
+            {
+                'a_class': 'show-user-details-modal',
+                'handler': ev => this.showUserDetailsModal(ev),
+                'i18n_text': __('Details'),
+                'i18n_title': __('See more information about this person'),
+                'icon_class': 'fa-id-card',
+                'name': 'details',
+                'standalone': api.settings.get('view_mode') === 'overlayed'
+            }
+        ];
+        if (!api.settings.get('singleton')) {
             buttons.push({
                 'a_class': 'close-chatbox-button',
                 'handler': ev => this.close(ev),
@@ -327,7 +324,7 @@ export const ChatBoxView = View.extend({
                 'i18n_title': __('Close and end this conversation'),
                 'icon_class': 'fa-times',
                 'name': 'close',
-                'standalone': api.settings.get("view_mode") === 'overlayed',
+                'standalone': api.settings.get('view_mode') === 'overlayed'
             });
         }
         /**
@@ -364,7 +361,7 @@ export const ChatBoxView = View.extend({
      *  - An optional message that serves as the cause for needing to scroll down.
      */
     maybeScrollDown (message) {
-        const new_own_msg = !(message?.get('is_archived')) && message?.get('sender') === 'me';
+        const new_own_msg = !message?.get('is_archived') && message?.get('sender') === 'me';
         if ((new_own_msg || !this.model.get('scrolled')) && !this.model.isHidden()) {
             this.debouncedScrollDown();
         }
@@ -383,12 +380,12 @@ export const ChatBoxView = View.extend({
         if (this.model.get('scrolled')) {
             u.safeSave(this.model, {
                 'scrolled': false,
-                'scrollTop': null,
+                'scrollTop': null
             });
         }
         if (this.msgs_container.scrollTo) {
             const behavior = this.msgs_container.scrollTop ? 'smooth' : 'auto';
-            this.msgs_container.scrollTo({'top': this.msgs_container.scrollHeight, behavior});
+            this.msgs_container.scrollTo({ 'top': this.msgs_container.scrollHeight, behavior });
         } else {
             this.msgs_container.scrollTop = this.msgs_container.scrollHeight;
         }
@@ -420,7 +417,7 @@ export const ChatBoxView = View.extend({
         return this;
     },
 
-    addSpinner (append=false) {
+    addSpinner (append = false) {
         if (this.el.querySelector('.spinner') === null) {
             const el = u.getElementFromTemplateResult(tpl_spinner());
             if (append) {
@@ -472,19 +469,28 @@ export const ChatBoxView = View.extend({
         const date = dayjs(el.getAttribute('data-isodate'));
         const next_el = el.nextElementSibling;
 
-        if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) &&
-                !u.hasClass('chat-info', el) && !u.hasClass('chat-info', previous_el) &&
-                previous_el.getAttribute('data-from') === from &&
-                date.isBefore(dayjs(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
-                el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
+        if (
+            !u.hasClass('chat-msg--action', el) &&
+            !u.hasClass('chat-msg--action', previous_el) &&
+            !u.hasClass('chat-info', el) &&
+            !u.hasClass('chat-info', previous_el) &&
+            previous_el.getAttribute('data-from') === from &&
+            date.isBefore(dayjs(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
+            el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')
+        ) {
             u.addClass('chat-msg--followup', el);
         }
-        if (!next_el) { return; }
+        if (!next_el) {
+            return;
+        }
 
-        if (!u.hasClass('chat-msg--action', el) && u.hasClass('chat-info', el) &&
-                next_el.getAttribute('data-from') === from &&
-                dayjs(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
-                el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
+        if (
+            !u.hasClass('chat-msg--action', el) &&
+            u.hasClass('chat-info', el) &&
+            next_el.getAttribute('data-from') === from &&
+            dayjs(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
+            el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')
+        ) {
             u.addClass('chat-msg--followup', next_el);
         } else {
             u.removeClass('chat-msg--followup', next_el);
@@ -492,16 +498,16 @@ export const ChatBoxView = View.extend({
     },
 
     parseMessageForCommands (text) {
-        const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
+        const match = text.replace(/^\s*/, '').match(/^\/(.*)\s*$/);
         if (match) {
-            if (match[1] === "clear") {
+            if (match[1] === 'clear') {
                 this.clearMessages();
                 return true;
-            } else if (match[1] === "close") {
+            } else if (match[1] === 'close') {
                 this.close();
                 return true;
-            } else if (match[1] === "help") {
-                this.model.set({'show_help_messages': true});
+            } else if (match[1] === 'help') {
+                this.model.set({ 'show_help_messages': true });
                 return true;
             }
         }
@@ -511,8 +517,10 @@ export const ChatBoxView = View.extend({
         ev.preventDefault();
         const textarea = this.el.querySelector('.chat-textarea');
         const message_text = textarea.value.trim();
-        if (api.settings.get('message_limit') && message_text.length > api.settings.get('message_limit') ||
-                !message_text.replace(/\s/g, '').length) {
+        if (
+            (api.settings.get('message_limit') && message_text.length > api.settings.get('message_limit')) ||
+            !message_text.replace(/\s/g, '').length
+        ) {
             return;
         }
         if (!_converse.connection.authenticated) {
@@ -521,7 +529,8 @@ export const ChatBoxView = View.extend({
             api.connection.reconnect();
             return;
         }
-        let spoiler_hint, hint_el = {};
+        let spoiler_hint,
+            hint_el = {};
         if (this.model.get('composing_spoiler')) {
             hint_el = this.el.querySelector('form.sendXMPPMessage input.spoiler-hint');
             spoiler_hint = hint_el.value;
@@ -548,7 +557,7 @@ export const ChatBoxView = View.extend({
              */
             api.trigger('messageSend', message);
         }
-        if (api.settings.get("view_mode") === 'overlayed') {
+        if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround. The .chat-content area
             // doesn't resize when the textarea is resized to its original size.
             this.msgs_container.parentElement.style.display = 'none';
@@ -556,13 +565,13 @@ export const ChatBoxView = View.extend({
         textarea.removeAttribute('disabled');
         u.removeClass('disabled', textarea);
 
-        if (api.settings.get("view_mode") === 'overlayed') {
+        if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround.
             this.msgs_container.parentElement.style.display = '';
         }
         // Suppress events, otherwise superfluous CSN gets set
         // immediately after the message, causing rate-limiting issues.
-        this.model.setChatState(_converse.ACTIVE, {'silent': true});
+        this.model.setChatState(_converse.ACTIVE, { 'silent': true });
         textarea.focus();
     },
 
@@ -652,17 +661,23 @@ export const ChatBoxView = View.extend({
                 if (!textarea.value || u.hasClass('correcting', textarea)) {
                     return this.editEarlierMessage();
                 }
-            } else if (ev.keyCode === converse.keycodes.DOWN_ARROW &&
-                    ev.target.selectionEnd === ev.target.value.length &&
-                    u.hasClass('correcting', this.el.querySelector('.chat-textarea'))) {
+            } else if (
+                ev.keyCode === converse.keycodes.DOWN_ARROW &&
+                ev.target.selectionEnd === ev.target.value.length &&
+                u.hasClass('correcting', this.el.querySelector('.chat-textarea'))
+            ) {
                 return this.editLaterMessage();
             }
         }
-        if ([converse.keycodes.SHIFT,
+        if (
+            [
+                converse.keycodes.SHIFT,
                 converse.keycodes.META,
                 converse.keycodes.META_RIGHT,
                 converse.keycodes.ESCAPE,
-                converse.keycodes.ALT].includes(ev.keyCode)) {
+                converse.keycodes.ALT
+            ].includes(ev.keyCode)
+        ) {
             return;
         }
         if (this.model.get('chat_state') !== _converse.COMPOSING) {
@@ -673,7 +688,7 @@ export const ChatBoxView = View.extend({
     },
 
     getOwnMessages () {
-        return this.model.messages.filter({'sender': 'me'});
+        return this.model.messages.filter({ 'sender': 'me' });
     },
 
     onEnterPressed (ev) {
@@ -683,7 +698,7 @@ export const ChatBoxView = View.extend({
     onEscapePressed (ev) {
         ev.preventDefault();
         const idx = this.model.messages.findLastIndex('correcting');
-        const message = idx >=0 ? this.model.messages.at(idx) : null;
+        const message = idx >= 0 ? this.model.messages.at(idx) : null;
         if (message) {
             message.save('correcting', false);
         }
@@ -694,10 +709,11 @@ export const ChatBoxView = View.extend({
         if (message.get('sender') !== 'me') {
             return log.error("onMessageRetractButtonClicked called for someone else's message!");
         }
-        const retraction_warning =
-            __("Be aware that other XMPP/Jabber clients (and servers) may "+
-                "not yet support retractions and that this message may not "+
-                "be removed everywhere.");
+        const retraction_warning = __(
+            'Be aware that other XMPP/Jabber clients (and servers) may ' +
+                'not yet support retractions and that this message may not ' +
+                'be removed everywhere.'
+        );
 
         const messages = [__('Are you sure you want to retract this message?')];
         if (api.settings.get('show_retraction_warning')) {
@@ -713,7 +729,7 @@ export const ChatBoxView = View.extend({
         const currently_correcting = this.model.messages.findWhere('correcting');
         const unsent_text = this.el.querySelector('.chat-textarea')?.value;
         if (unsent_text && (!currently_correcting || currently_correcting.get('message') !== unsent_text)) {
-            if (! confirm(__("You have an unsent message which will be lost if you continue. Are you sure?"))) {
+            if (!confirm(__('You have an unsent message which will be lost if you continue. Are you sure?'))) {
                 return;
             }
         }
@@ -733,7 +749,7 @@ export const ChatBoxView = View.extend({
         let idx = this.model.messages.findLastIndex('correcting');
         if (idx >= 0) {
             this.model.messages.at(idx).save('correcting', false);
-            while (idx < this.model.messages.length-1) {
+            while (idx < this.model.messages.length - 1) {
                 idx += 1;
                 const candidate = this.model.messages.at(idx);
                 if (candidate.get('editable')) {
@@ -764,7 +780,11 @@ export const ChatBoxView = View.extend({
                 }
             }
         }
-        message = message || this.getOwnMessages().reverse().find(m => m.get('editable'));
+        message =
+            message ||
+            this.getOwnMessages()
+                .reverse()
+                .find(m => m.get('editable'));
         if (message) {
             this.insertIntoTextArea(u.prefixMentions(message), true, true);
             message.save('correcting', true);
@@ -780,8 +800,10 @@ export const ChatBoxView = View.extend({
     },
 
     async clearMessages (ev) {
-        if (ev && ev.preventDefault) { ev.preventDefault(); }
-        const result = confirm(__("Are you sure you want to clear the messages from this conversation?"));
+        if (ev && ev.preventDefault) {
+            ev.preventDefault();
+        }
+        const result = confirm(__('Are you sure you want to clear the messages from this conversation?'));
         if (result === true) {
             await this.model.clearMessages();
         }
@@ -800,7 +822,7 @@ export const ChatBoxView = View.extend({
      * @param {integer} [position] - The end index of the string to be
      * replaced with the new value.
      */
-    insertIntoTextArea (value, replace=false, correcting=false, position) {
+    insertIntoTextArea (value, replace = false, correcting = false, position) {
         const textarea = this.el.querySelector('.chat-textarea');
         if (correcting) {
             u.addClass('correcting', textarea);
@@ -809,19 +831,18 @@ export const ChatBoxView = View.extend({
         }
         if (replace) {
             if (position && typeof replace == 'string') {
-                textarea.value = textarea.value.replace(
-                    new RegExp(replace, 'g'),
-                    (match, offset) => (offset == position-replace.length ? value+' ' : match)
+                textarea.value = textarea.value.replace(new RegExp(replace, 'g'), (match, offset) =>
+                    offset == position - replace.length ? value + ' ' : match
                 );
             } else {
                 textarea.value = value;
             }
         } else {
             let existing = textarea.value;
-            if (existing && (existing[existing.length-1] !== ' ')) {
+            if (existing && existing[existing.length - 1] !== ' ') {
                 existing = existing + ' ';
             }
-            textarea.value = existing+value+' ';
+            textarea.value = existing + value + ' ';
         }
         this.updateCharCounter(textarea.value);
         u.placeCaretAtEnd(textarea);
@@ -837,18 +858,20 @@ export const ChatBoxView = View.extend({
                 text = __('%1$s has gone offline', fullname);
             } else if (show === 'away') {
                 text = __('%1$s has gone away', fullname);
-            } else if ((show === 'dnd')) {
+            } else if (show === 'dnd') {
                 text = __('%1$s is busy', fullname);
             } else if (show === 'online') {
                 text = __('%1$s is online', fullname);
             }
-            text && this.model.createMessage({'message': text, 'type': 'info'});
+            text && this.model.createMessage({ 'message': text, 'type': 'info' });
         }
     },
 
     async close (ev) {
-        if (ev && ev.preventDefault) { ev.preventDefault(); }
-        if (_converse.router.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
+        if (ev && ev.preventDefault) {
+            ev.preventDefault();
+        }
+        if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }
         if (api.connection.connected()) {
@@ -963,8 +986,7 @@ export const ChatBoxView = View.extend({
         let scrolled = true;
         let scrollTop = null;
         const is_at_bottom =
-            (this.msgs_container.scrollTop + this.msgs_container.clientHeight) >=
-                this.msgs_container.scrollHeight - 62; // sigh...
+            this.msgs_container.scrollTop + this.msgs_container.clientHeight >= this.msgs_container.scrollHeight - 62; // sigh...
 
         if (is_at_bottom) {
             scrolled = false;
@@ -984,7 +1006,7 @@ export const ChatBoxView = View.extend({
     },
 
     viewUnreadMessages () {
-        this.model.save({'scrolled': false, 'scrollTop': null});
+        this.model.save({ 'scrolled': false, 'scrollTop': null });
         this.scrollDown();
     },
 
@@ -1003,7 +1025,7 @@ export const ChatBoxView = View.extend({
          * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
          * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
          */
-        api.trigger('chatBoxScrolledDown', {'chatbox': this.model}); // TODO: clean up
+        api.trigger('chatBoxScrolledDown', { 'chatbox': this.model }); // TODO: clean up
     },
 
     onWindowStateChanged (state) {
@@ -1015,118 +1037,10 @@ export const ChatBoxView = View.extend({
                 }
             }
         } else if (state === 'hidden') {
-            this.model.setChatState(_converse.INACTIVE, {'silent': true});
+            this.model.setChatState(_converse.INACTIVE, { 'silent': true });
             this.model.sendChatState();
         }
     }
 });
 
-
-converse.plugins.add('converse-chatview', {
-    /* Plugin dependencies are other plugins which might be
-     * overridden or relied upon, and therefore need to be loaded before
-     * this plugin.
-     *
-     * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found. By default it's
-     * false, which means these plugins are only loaded opportunistically.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
-     */
-    dependencies: [
-        "converse-chatboxviews",
-        "converse-chat",
-        "converse-disco",
-        "converse-modal"
-    ],
-
-    initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by converse.js's plugin machinery.
-         */
-        api.settings.extend({
-            'auto_focus': true,
-            'debounced_content_rendering': true,
-            'filter_url_query_params': null,
-            'image_urls_regex': null,
-            'message_limit': 0,
-            'muc_hats': ['xep317'],
-            'show_images_inline': true,
-            'show_message_avatar': true,
-            'show_retraction_warning': true,
-            'show_send_button': true,
-            'show_toolbar': true,
-            'time_format': 'HH:mm',
-            'use_system_emojis': true,
-            'visible_toolbar_buttons': {
-                'call': false,
-                'clear': true,
-                'emoji': true,
-                'spoiler': true
-            },
-        });
-
-        _converse.ChatBoxView = ChatBoxView;
-
-        api.listen.on('chatBoxViewsInitialized', () => {
-            const views = _converse.chatboxviews;
-            _converse.chatboxes.on('add', async item => {
-                if (!views.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
-                    await item.initialized;
-                    views.add(item.get('id'), new _converse.ChatBoxView({model: item}));
-                }
-            });
-        });
-
-
-        /************************ BEGIN Event Handlers ************************/
-        function onWindowStateChanged (data) {
-            if (_converse.chatboxviews) {
-                _converse.chatboxviews.forEach(view => {
-                    if (view.model.get('id') !== 'controlbox') {
-                        view.onWindowStateChanged(data.state);
-                    }
-                });
-            }
-        }
-        api.listen.on('windowStateChanged', onWindowStateChanged);
-        api.listen.on('connected', () => api.disco.own.features.add(Strophe.NS.SPOILER));
-        /************************ END Event Handlers ************************/
-
-
-        /************************ BEGIN API ************************/
-        Object.assign(api, {
-            /**
-             * The "chatview" namespace groups methods pertaining to views
-             * for one-on-one chats.
-             *
-             * @namespace _converse.api.chatviews
-             * @memberOf _converse.api
-             */
-            chatviews: {
-                 /**
-                  * Get the view of an already open chat.
-                  * @method _converse.api.chatviews.get
-                  * @param { Array.string | string } jids
-                  * @returns { _converse.ChatBoxView|undefined }  The chat should already be open, otherwise `undefined` will be returned.
-                  * @example
-                  * // To return a single view, provide the JID of the contact:
-                  * _converse.api.chatviews.get('buddy@example.com')
-                  * @example
-                  * // To return an array of views, provide an array of JIDs:
-                  * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
-                  */
-                get (jids) {
-                    if (jids === undefined) {
-                        return Object.values(_converse.chatboxviews.getAll());
-                    }
-                    if (typeof jids === 'string') {
-                        return _converse.chatboxviews.get(jids);
-                    }
-                    return jids.map(jid => _converse.chatboxviews.get(jid));
-                }
-            }
-        });
-        /************************ END API ************************/
-    }
-});
+export default ChatBoxView;

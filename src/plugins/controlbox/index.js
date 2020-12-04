@@ -4,7 +4,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "../../components/brand-heading";
-import "../chatview";
+import "../chatview/index.js";
 import ControlBoxMixin from './model.js';
 import ControlBoxPane from './pane.js';
 import ControlBoxToggle from './toggle.js';

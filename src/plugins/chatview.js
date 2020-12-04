@@ -6,7 +6,7 @@
 import '../components/chat_content.js';
 import '../components/help_messages.js';
 import '../components/toolbar.js';
-import './chatboxviews';
+import './chatboxviews/index.js';
 import './modal.js';
 import log from '@converse/headless/log';
 import tpl_chatbox from 'templates/chatbox.js';

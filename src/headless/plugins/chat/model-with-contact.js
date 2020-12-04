@@ -1,4 +1,4 @@
-import {  converse } from "../../core.js";
+import { api, converse } from "../../core.js";
 import { Model } from '@converse/skeletor/src/model.js';
 
 const u = converse.env.utils;

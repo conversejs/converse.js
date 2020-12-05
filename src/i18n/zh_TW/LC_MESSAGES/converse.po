@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-12-03 10:29+0000\n"
-"Last-Translator: Zijian Liu <zilliu@disroot.org>\n"
+"PO-Revision-Date: 2020-12-06 15:29+0000\n"
+"Last-Translator: zilliu <zilliu@disroot.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -81,7 +81,7 @@ msgstr "您的 XMPP 地址或密碼錯誤。請重試。"
 #: dist/converse-no-dependencies.js:44869
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "抱歉，我們無法使用域名「%1$s」來連線 XMPP 主機"
+msgstr "抱歉，我們無法連線至域名爲「%1$s」的 XMPP 主機"
 
 #. Strophe
 #. Strophe
@@ -96,11 +96,11 @@ msgstr "無法加密的 OMEMO 訊息"
 
 #: dist/converse-no-dependencies.js:53716
 msgid "Sorry, could not determine upload URL."
-msgstr "抱歉，無法確定上傳 URL。"
+msgstr "抱歉，無法確定上傳網址。"
 
 #: dist/converse-no-dependencies.js:53739
 msgid "Sorry, could not determine file upload URL."
-msgstr "抱歉，無法確定檔案上傳 URL。"
+msgstr "抱歉，無法確定檔案上傳網址。"
 
 #: dist/converse-no-dependencies.js:53782
 #, javascript-format
@@ -463,9 +463,8 @@ msgid ""
 msgstr "伺服器未在響應時間內返回書籤。您可以嘗試重新載入本頁面。"
 
 #: dist/converse-no-dependencies.js:65374
-#, fuzzy
 msgid "Timeout while trying to fetch archived messages."
-msgstr "收回訊息逾時"
+msgstr "存取已封存訊息逾時。"
 
 #: dist/converse-no-dependencies.js:65389
 #, fuzzy
@@ -590,9 +589,9 @@ msgid "Download audio file \"%1$s\""
 msgstr "下載音訊檔案「%1$s」"
 
 #: dist/converse-no-dependencies.js:73054
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download image file \"%1$s\""
-msgstr "下載影像「%1$s」"
+msgstr "下載影像檔案「%1$s」"
 
 #: dist/converse-no-dependencies.js:73062
 #, javascript-format
@@ -664,7 +663,7 @@ msgstr "送出訊息"
 
 #: dist/converse-no-dependencies.js:78909
 msgid "Start a call"
-msgstr "開始通話"
+msgstr "開始語音通話"
 
 #: dist/converse-no-dependencies.js:78914
 msgid "Message characters remaining"
@@ -757,7 +756,7 @@ msgstr "角色"
 #: dist/converse-no-dependencies.js:81845
 #: dist/converse-no-dependencies.js:95468
 msgid "URL"
-msgstr "URL"
+msgstr "網址"
 
 #: dist/converse-no-dependencies.js:82135
 #: dist/converse-no-dependencies.js:91482

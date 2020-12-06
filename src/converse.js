@@ -22,7 +22,7 @@ import "./plugins/dragresize.js";           // Allows chat boxes to be resized b
 import "./plugins/fullscreen.js";
 import "./plugins/mam-views.js";
 import "./plugins/minimize.js";             // Allows chat boxes to be minimized
-import "./plugins/muc-views.js";            // Views related to MUC
+import "./plugins/muc-views/index.js";            // Views related to MUC
 import "./plugins/headlines-view.js";
 import "./plugins/notifications.js";
 import "./plugins/omemo.js";

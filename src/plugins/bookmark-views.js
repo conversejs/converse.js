@@ -4,7 +4,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "@converse/headless/plugins/muc";
+import "@converse/headless/plugins/muc/index.js";
 import { _converse, api, converse } from "@converse/headless/core";
 import tpl_bookmarks_list from "../templates/bookmarks_list.js"
 import tpl_muc_bookmark_form from "../templates/muc_bookmark_form.js";

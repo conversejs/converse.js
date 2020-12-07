@@ -6,7 +6,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "@converse/headless/plugins/muc";
+import "@converse/headless/plugins/muc/index.js";
 import RoomDetailsModal from 'modals/muc-details.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import tpl_rooms_list from "../templates/rooms_list.js";

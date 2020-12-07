@@ -5,7 +5,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "@converse/headless/plugins/muc";
+import "@converse/headless/plugins/muc/index.js";
 import log from "../log.js";
 import { Collection } from "@converse/skeletor/src/collection";
 import { Model } from '@converse/skeletor/src/model.js';

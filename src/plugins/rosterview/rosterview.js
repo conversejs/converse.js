@@ -91,12 +91,12 @@ const RosterView = OrderedListView.extend({
      * contact fetched from browser storage.
      */
     updateFilter: debounce(function () {
-        this.filter_view = this.el.querySelector('converse-roster-filter');
-        const type = this.filter_view.model.get('filter_type');
+        const filter = new _converse.RosterFilter();
+        const type = filter.get('filter_type');
         if (type === 'state') {
-            this.filter(this.filter_view.model.get('chat_state'), type);
+            this.filter(filter.get('chat_state'), type);
         } else {
-            this.filter(this.filter_view.model.get('filter_text'), type);
+            this.filter(filter.get('filter_text'), type);
         }
     }, 100),
 

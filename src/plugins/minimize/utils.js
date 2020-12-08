@@ -6,28 +6,24 @@ const u = converse.env.utils;
 
 function getChatBoxWidth (view) {
     if (view.model.get('id') === 'controlbox') {
-        const controlbox = view.model;
         // We return the width of the controlbox or its toggle,
         // depending on which is visible.
-        if (u.isVisible(controlbox.el)) {
-            return u.getOuterWidth(controlbox.el, true);
+        if (u.isVisible(view)) {
+            return u.getOuterWidth(view, true);
         } else {
             return u.getOuterWidth(_converse.controlboxtoggle.el, true);
         }
-    } else if (!view.model.get('minimized') && u.isVisible(view.el)) {
-        return u.getOuterWidth(view.el, true);
+    } else if (!view.model.get('minimized') && u.isVisible(view)) {
+        return u.getOuterWidth(view, true);
     }
     return 0;
 }
 
 function getShownChats () {
-    return _converse.chatboxviews.filter((view) =>
+    return _converse.chatboxviews.filter(el =>
         // The controlbox can take a while to close,
-        // so we need to check its state. That's why we checked
-        // the 'closed' state.
-        !view.model.get('minimized') &&
-            !view.model.get('closed') &&
-            u.isVisible(view.el)
+        // so we need to check its state. That's why we checked the 'closed' state.
+        !el.model.get('minimized') && !el.model.get('closed') && u.isVisible(el)
     );
 }
 

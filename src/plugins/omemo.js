@@ -67,23 +67,23 @@ function onChatBoxesInitialized () {
 }
 
 
-function onChatInitialized (view) {
-    view.listenTo(view.model.messages, 'add', (message) => {
+function onChatInitialized (el) {
+    el.listenTo(el.model.messages, 'add', (message) => {
         if (message.get('is_encrypted') && !message.get('is_error')) {
-            view.model.save('omemo_supported', true);
+            el.model.save('omemo_supported', true);
         }
     });
-    view.listenTo(view.model, 'change:omemo_supported', () => {
-        if (!view.model.get('omemo_supported') && view.model.get('omemo_active')) {
-            view.model.set('omemo_active', false);
+    el.listenTo(el.model, 'change:omemo_supported', () => {
+        if (!el.model.get('omemo_supported') && el.model.get('omemo_active')) {
+            el.model.set('omemo_active', false);
         } else {
             // Manually trigger an update, setting omemo_active to
             // false above will automatically trigger one.
-            view.el.querySelector('converse-chat-toolbar')?.requestUpdate();
+            el.querySelector('converse-chat-toolbar')?.requestUpdate();
         }
     });
-    view.listenTo(view.model, 'change:omemo_active', () => {
-        view.el.querySelector('converse-chat-toolbar').requestUpdate();
+    el.listenTo(el.model, 'change:omemo_active', () => {
+        el.querySelector('converse-chat-toolbar').requestUpdate();
     });
 }
 

@@ -15,7 +15,7 @@ describe("A Chat Message", function () {
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid)
         const view = _converse.api.chatviews.get(contact_jid);
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
         expect(textarea.value).toBe('');
         view.onKeyDown({
             target: textarea,
@@ -30,8 +30,8 @@ describe("A Chat Message", function () {
             keyCode: 13 // Enter
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelector('.chat-msg__text').textContent)
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelector('.chat-msg__text').textContent)
             .toBe('But soft, what light through yonder airlock breaks?');
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
@@ -42,8 +42,8 @@ describe("A Chat Message", function () {
         });
         expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
 
         spyOn(_converse.connection, 'send');
         textarea.value = 'But soft, what light through yonder window breaks?';
@@ -76,8 +76,8 @@ describe("A Chat Message", function () {
         expect(keys.length).toBe(1);
         expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
 
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        await u.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => (u.hasClass('correcting', view.querySelector('.chat-msg')) === false), 500);
 
         // Test that pressing the down arrow cancels message correction
         await u.waitUntil(() => textarea.value === '')
@@ -87,8 +87,8 @@ describe("A Chat Message", function () {
         });
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
         view.onKeyDown({
             target: textarea,
@@ -96,8 +96,8 @@ describe("A Chat Message", function () {
         });
         expect(textarea.value).toBe('');
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        await u.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => (u.hasClass('correcting', view.querySelector('.chat-msg')) === false), 500);
 
         textarea.value = 'It is the east, and Juliet is the one.';
         view.onKeyDown({
@@ -106,7 +106,7 @@ describe("A Chat Message", function () {
             keyCode: 13 // Enter
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(2);
 
         textarea.value =  'Arise, fair sun, and kill the envious moon';
         view.onKeyDown({
@@ -115,7 +115,7 @@ describe("A Chat Message", function () {
             keyCode: 13 // Enter
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(3);
 
         view.onKeyDown({
             target: textarea,
@@ -147,7 +147,7 @@ describe("A Chat Message", function () {
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         await u.waitUntil(() => textarea.value === '');
-        const messages = view.el.querySelectorAll('.chat-msg');
+        const messages = view.querySelectorAll('.chat-msg');
         expect(messages.length).toBe(3);
         expect(messages[0].querySelector('.chat-msg__text').textContent)
             .toBe('But soft, what light through yonder window breaks?');
@@ -173,7 +173,7 @@ describe("A Chat Message", function () {
         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
 
         textarea.value = 'But soft, what light through yonder airlock breaks?';
         view.onKeyDown({
@@ -183,14 +183,14 @@ describe("A Chat Message", function () {
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelector('.chat-msg__text').textContent)
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelector('.chat-msg__text').textContent)
             .toBe('But soft, what light through yonder airlock breaks?');
         expect(textarea.value).toBe('');
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg .chat-msg__action').length === 2);
-        let action = view.el.querySelector('.chat-msg .chat-msg__action');
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg .chat-msg__action').length === 2);
+        let action = view.querySelector('.chat-msg .chat-msg__action');
         expect(action.textContent.trim()).toBe('Edit');
 
         action.style.opacity = 1;
@@ -198,8 +198,8 @@ describe("A Chat Message", function () {
 
         expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')));
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
 
         spyOn(_converse.connection, 'send');
         textarea.value = 'But soft, what light through yonder window breaks?';
@@ -231,26 +231,26 @@ describe("A Chat Message", function () {
         expect(keys.length).toBe(1);
         expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
 
-        await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')) === false);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
 
         // Test that clicking the pencil icon a second time cancels editing.
-        action = view.el.querySelector('.chat-msg .chat-msg__action');
+        action = view.querySelector('.chat-msg .chat-msg__action');
         action.style.opacity = 1;
         action.click();
 
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')) === true);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')) === true);
 
-        action = view.el.querySelector('.chat-msg .chat-msg__action');
+        action = view.querySelector('.chat-msg .chat-msg__action');
         action.style.opacity = 1;
         action.click();
         expect(textarea.value).toBe('');
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        await u.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => (u.hasClass('correcting', view.querySelector('.chat-msg')) === false), 500);
 
         // Test that messages from other users don't have the pencil icon
         _converse.handleMessageStanza(
@@ -263,12 +263,12 @@ describe("A Chat Message", function () {
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
         );
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(2);
 
         // Test confirmation dialog
         spyOn(window, 'confirm').and.returnValue(true);
         textarea.value = 'But soft, what light through yonder airlock breaks?';
-        action = view.el.querySelector('.chat-msg .chat-msg__action');
+        action = view.querySelector('.chat-msg .chat-msg__action');
         action.style.opacity = 1;
         action.click();
         expect(window.confirm).toHaveBeenCalledWith(
@@ -307,8 +307,8 @@ describe("A Chat Message", function () {
                     'id': msg_id,
                 }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            expect(view.el.querySelector('.chat-msg__text').textContent)
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder airlock breaks?');
 
             _converse.handleMessageStanza($msg({
@@ -320,10 +320,10 @@ describe("A Chat Message", function () {
                 .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
-            expect(view.el.querySelector('.chat-msg__text').textContent)
+            expect(view.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder chimney breaks?');
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
             expect(view.model.messages.models.length).toBe(1);
 
             _converse.handleMessageStanza($msg({
@@ -335,11 +335,11 @@ describe("A Chat Message", function () {
                 .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
-            expect(view.el.querySelector('.chat-msg__text').textContent)
+            expect(view.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder window breaks?');
-            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
-            view.el.querySelector('.chat-msg__content .fa-edit').click();
+            expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
+            view.querySelector('.chat-msg__content .fa-edit').click();
 
             const modal = _converse.api.modal.get('message-versions-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -382,9 +382,9 @@ describe("A Groupchat Message", function () {
                 'id': msg_id,
             }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
 
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelector('.chat-msg__text').textContent)
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelector('.chat-msg__text').textContent)
             .toBe('But soft, what light through yonder airlock breaks?');
 
         await view.model.handleMessageStanza($msg({
@@ -394,10 +394,10 @@ describe("A Groupchat Message", function () {
                 'id': u.getUniqueId(),
             }).c('body').t('But soft, what light through yonder chimney breaks?').up()
                 .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
-        await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
             'But soft, what light through yonder chimney breaks?', 500);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => view.querySelector('.chat-msg__content .fa-edit'));
 
         await view.model.handleMessageStanza($msg({
                 'from': 'lounge@montague.lit/newguy',
@@ -407,11 +407,11 @@ describe("A Groupchat Message", function () {
             }).c('body').t('But soft, what light through yonder window breaks?').up()
                 .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
 
-        await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
             'But soft, what light through yonder window breaks?', 500);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
-        const edit = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
+        const edit = await u.waitUntil(() => view.querySelector('.chat-msg__content .fa-edit'));
         edit.click();
         const modal = _converse.api.modal.get('message-versions-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -461,11 +461,11 @@ describe("A Groupchat Message", function () {
             'id': msg_id,
         }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
 
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-        expect(view.el.querySelectorAll('.chat-msg__text')[0].textContent)
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg__text')[0].textContent)
             .toBe('But soft, what light through yonder airlock breaks?');
-        expect(view.el.querySelectorAll('.chat-msg__text')[1].textContent)
+        expect(view.querySelectorAll('.chat-msg__text')[1].textContent)
         .toBe('But soft, what light through yonder airlock breaks?');
 
         // First message correction
@@ -477,10 +477,10 @@ describe("A Groupchat Message", function () {
             }).c('body').t('But soft, what light through yonder chimney breaks?').up()
                 .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
 
-        await u.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent ===
             'But soft, what light through yonder chimney breaks?', 500);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-        await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
+        expect(view.querySelectorAll('.chat-msg').length).toBe(2);
+        await u.waitUntil(() => view.querySelector('.chat-msg__content .fa-edit'));
 
         // Second message correction
         await view.model.handleMessageStanza($msg({
@@ -499,15 +499,15 @@ describe("A Groupchat Message", function () {
             'id': u.getUniqueId(),
         }).c('body').t('But soft, what light through yonder window breaks?').tree());
 
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__text')[0].textContent ===
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text')[0].textContent ===
             'But soft, what light through yonder window breaks?', 500);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__text').length === 3);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg__text')[2].textContent ===
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text')[2].textContent ===
             'But soft, what light through yonder window breaks?', 500);
 
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
-        expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
-        const edit = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
+        expect(view.querySelectorAll('.chat-msg').length).toBe(3);
+        expect(view.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
+        const edit = await u.waitUntil(() => view.querySelector('.chat-msg__content .fa-edit'));
         edit.click();
         const modal = _converse.api.modal.get('message-versions-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -528,7 +528,7 @@ describe("A Groupchat Message", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.api.chatviews.get(muc_jid);
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
         expect(textarea.value).toBe('');
         view.onKeyDown({
             target: textarea,
@@ -542,8 +542,8 @@ describe("A Groupchat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
-        expect(view.el.querySelector('.chat-msg__text').textContent)
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
+        expect(view.querySelector('.chat-msg__text').textContent)
             .toBe('But soft, what light through yonder airlock breaks?');
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
@@ -554,8 +554,8 @@ describe("A Groupchat Message", function () {
         });
         expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')));
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
 
         spyOn(_converse.connection, 'send');
         textarea.value = 'But soft, what light through yonder window breaks?';
@@ -588,8 +588,8 @@ describe("A Groupchat Message", function () {
         expect(keys.length).toBe(1);
         expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
 
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(u.hasClass('correcting', view.querySelector('.chat-msg'))).toBe(false);
 
         // Check that messages from other users are skipped
         await view.model.handleMessageStanza($msg({
@@ -599,7 +599,7 @@ describe("A Groupchat Message", function () {
             'type': 'groupchat'
         }).c('body').t('Hello world').tree());
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(2);
 
         // Test that pressing the down arrow cancels message correction
         expect(textarea.value).toBe('');
@@ -609,8 +609,8 @@ describe("A Groupchat Message", function () {
         });
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
         expect(view.model.messages.at(0).get('correcting')).toBe(true);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-        await u.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(2);
+        await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
         expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
         view.onKeyDown({
             target: textarea,
@@ -618,8 +618,8 @@ describe("A Groupchat Message", function () {
         });
         expect(textarea.value).toBe('');
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-        await u.waitUntil(() => !u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(2);
+        await u.waitUntil(() => !u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
         done();
     }));
 });

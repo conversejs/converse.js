@@ -62,7 +62,7 @@ describe("A headlines box", function () {
         await u.waitUntil(() => _converse.chatboxviews.keys().includes('notify.example.com'));
         const view = _converse.chatboxviews.get('notify.example.com');
         expect(view.model.get('show_avatar')).toBeFalsy();
-        expect(view.el.querySelector('img.avatar')).toBe(null);
+        expect(view.querySelector('img.avatar')).toBe(null);
         done();
     }));
 
@@ -96,9 +96,9 @@ describe("A headlines box", function () {
 
         _converse.connection._dataRecv(mock.createRequest(stanza));
         const view = _converse.chatboxviews.get('controlbox');
-        await u.waitUntil(() => view.el.querySelectorAll(".open-headline").length);
-        expect(view.el.querySelectorAll('.open-headline').length).toBe(1);
-        expect(view.el.querySelector('.open-headline').text).toBe('notify.example.com');
+        await u.waitUntil(() => view.querySelectorAll(".open-headline").length);
+        expect(view.querySelectorAll('.open-headline').length).toBe(1);
+        expect(view.querySelector('.open-headline').text).toBe('notify.example.com');
         done();
     }));
 
@@ -133,13 +133,13 @@ describe("A headlines box", function () {
 
         _converse.connection._dataRecv(mock.createRequest(stanza));
         const cbview = _converse.chatboxviews.get('controlbox');
-        await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length);
+        await u.waitUntil(() => cbview.querySelectorAll(".open-headline").length);
         const hlview = _converse.chatboxviews.get('notify.example.com');
-        await u.isVisible(hlview.el);
-        const close_el = await u.waitUntil(() => hlview.el.querySelector('.close-chatbox-button'));
+        await u.isVisible(hlview);
+        const close_el = await u.waitUntil(() => hlview.querySelector('.close-chatbox-button'));
         close_el.click();
-        await u.waitUntil(() => cbview.el.querySelectorAll(".open-headline").length === 0);
-        expect(cbview.el.querySelectorAll('.open-headline').length).toBe(0);
+        await u.waitUntil(() => cbview.querySelectorAll(".open-headline").length === 0);
+        expect(cbview.querySelectorAll('.open-headline').length).toBe(0);
         done();
     }));
 

@@ -396,8 +396,8 @@
 
 /* ******************* Overlay and embedded styles *************************** */
 
-#conversejs.converse-embedded,
-#conversejs.converse-overlayed {
+converse-chats.converse-embedded,
+converse-chats.converse-overlayed {
     .controlbox-head {
         padding: 0.5em;
     }
@@ -416,7 +416,7 @@
     }
 }
 
-#conversejs.converse-overlayed  {
+converse-chats.converse-overlayed  {
 
     .chat-head, .box-flyout {
         border-top-left-radius: var(--chatbox-border-radius);
@@ -467,7 +467,7 @@
 }
 
 @include media-breakpoint-down(sm) {
-    #conversejs.converse-overlayed {
+    converse-chats.converse-overlayed {
         > .row {
             flex-direction: column;
             &.no-gutters {
@@ -478,8 +478,8 @@
 }
 
 
-#conversejs.converse-embedded,
-#conversejs.converse-fullscreen  {
+converse-chats.converse-embedded,
+converse-chats.converse-fullscreen  {
     .flyout {
         border-radius: 0;
         border:none;
@@ -527,7 +527,7 @@
     }
 }
 
-#conversejs.converse-embedded {
+converse-chats.converse-embedded {
     .chat-head {
         font-size: var(--font-size-huge);
     }
@@ -558,7 +558,7 @@
 
 /* ******************* Fullpage styles *************************** */
 
-#conversejs.converse-fullscreen  {
+converse-chats.converse-fullscreen  {
     .chatbox-btn {
         font-size: var(--fullpage-chatbox-button-size);
         margin: 0 0.3em;
@@ -595,7 +595,7 @@
 }
 
 @include media-breakpoint-down(sm) {
-    #conversejs:not(.converse-embedded)  {
+    converse-chats:not(.converse-embedded)  {
         > .row {
             flex-direction: row-reverse;
         }
@@ -617,9 +617,9 @@
         }
     }
 
-    #conversejs.converse-mobile,
-    #conversejs.converse-overlayed,
-    #conversejs.converse-fullscreen {
+    converse-chats.converse-mobile,
+    converse-chats.converse-overlayed,
+    converse-chats.converse-fullscreen {
         .chatbox {
             .box-flyout {
                 .chatbox-navback {

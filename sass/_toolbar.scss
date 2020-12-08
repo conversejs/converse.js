@@ -187,21 +187,23 @@
             }
         }
     }
-}
 
-#conversejs.converse-overlayed  {
-    .chat-toolbar {
-        li {
-            .toolbar-menu {
-                min-width: 235px;
+    converse-chats {
+        .converse-overlayed  {
+            .chat-toolbar {
+                li {
+                    .toolbar-menu {
+                        min-width: 235px;
+                    }
+                }
             }
-        }
-    }
-    .chatroom {
-        .chat-toolbar {
-            li {
-                .toolbar-menu {
-                    min-width: 280px;
+            .chatroom {
+                .chat-toolbar {
+                    li {
+                        .toolbar-menu {
+                            min-width: 280px;
+                        }
+                    }
                 }
             }
         }

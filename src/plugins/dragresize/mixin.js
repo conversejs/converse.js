@@ -11,7 +11,7 @@ const DragResizableMixin = {
 
         // Determine and store the default box size.
         // We need this information for the drag-resizing feature.
-        const flyout = this.el.querySelector('.box-flyout');
+        const flyout = this.querySelector('.box-flyout');
         const style = window.getComputedStyle(flyout);
 
         if (this.model.get('height') === undefined) {
@@ -66,7 +66,7 @@ const DragResizableMixin = {
         // If a custom width is applied (due to drag-resizing),
         // then we need to set the width of the .chatbox element as well.
         if (this.model.get('width')) {
-            this.el.style.width = this.model.get('width');
+            this.style.width = this.model.get('width');
         }
     },
 
@@ -83,7 +83,7 @@ const DragResizableMixin = {
         } else {
             height = '';
         }
-        const flyout_el = this.el.querySelector('.box-flyout');
+        const flyout_el = this.querySelector('.box-flyout');
         if (flyout_el !== null) {
             flyout_el.style.height = height;
         }
@@ -95,8 +95,8 @@ const DragResizableMixin = {
         } else {
             width = '';
         }
-        this.el.style.width = width;
-        const flyout_el = this.el.querySelector('.box-flyout');
+        this.style.width = width;
+        const flyout_el = this.querySelector('.box-flyout');
         if (flyout_el !== null) {
             flyout_el.style.width = width;
         }
@@ -124,7 +124,7 @@ const DragResizableMixin = {
         }
         ev.preventDefault();
         // Record element attributes for mouseMove().
-        const flyout = this.el.querySelector('.box-flyout'),
+        const flyout = this.querySelector('.box-flyout'),
             style = window.getComputedStyle(flyout);
         this.height = parseInt(style.height.replace(/px$/, ''), 10);
         _converse.resizing = {
@@ -147,8 +147,8 @@ const DragResizableMixin = {
             return true;
         }
         ev.preventDefault();
-        const flyout = this.el.querySelector('.box-flyout'),
-            style = window.getComputedStyle(flyout);
+        const flyout = this.querySelector('.box-flyout');
+        const style = window.getComputedStyle(flyout);
         this.width = parseInt(style.width.replace(/px$/, ''), 10);
         _converse.resizing = {
             'chatbox': this,

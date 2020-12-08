@@ -114,7 +114,7 @@ describe("The OMEMO module", function() {
         const view = _converse.chatboxviews.get(contact_jid);
         view.model.set('omemo_active', true);
 
-        const textarea = view.el.querySelector('.chat-textarea');
+        const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be encrypted';
         view.onKeyDown({
             target: textarea,
@@ -198,7 +198,7 @@ describe("The OMEMO module", function() {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.length).toBe(2);
-        expect(view.el.querySelectorAll('.chat-msg__body')[1].textContent.trim())
+        expect(view.querySelectorAll('.chat-msg__body')[1].textContent.trim())
             .toBe('This is an encrypted message from the contact');
 
         // #1193 Check for a received message without <body> tag
@@ -218,7 +218,7 @@ describe("The OMEMO module", function() {
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         await u.waitUntil(() => view.model.messages.length > 1);
         expect(view.model.messages.length).toBe(3);
-        expect(view.el.querySelectorAll('.chat-msg__body')[2].textContent.trim())
+        expect(view.querySelectorAll('.chat-msg__body')[2].textContent.trim())
             .toBe('Another received encrypted message without fallback');
         done();
     }));
@@ -244,7 +244,7 @@ describe("The OMEMO module", function() {
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => initializedOMEMO(_converse));
 
-        const toolbar = view.el.querySelector('.chat-toolbar');
+        const toolbar = view.querySelector('.chat-toolbar');
         const el = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
         el.click();
         expect(view.model.get('omemo_active')).toBe(true);
@@ -297,7 +297,7 @@ describe("The OMEMO module", function() {
         expect(u.hasClass('fa-unlock', icon)).toBe(false);
         expect(u.hasClass('fa-lock', icon)).toBe(true);
 
-        const textarea = view.el.querySelector('.chat-textarea');
+        const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be encrypted';
         view.onKeyDown({
             target: textarea,
@@ -451,7 +451,7 @@ describe("The OMEMO module", function() {
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.model.messages.length).toBe(1);
 
-        expect(view.el.querySelector('.chat-msg__text').textContent.trim())
+        expect(view.querySelector('.chat-msg__text').textContent.trim())
             .toBe('This is an encrypted carbon message from another device of mine');
 
         expect(contact_devicelist.devices.length).toBe(1);
@@ -463,7 +463,7 @@ describe("The OMEMO module", function() {
         expect(my_devicelist.devices.at(2).get('id')).toBe('988349631');
         expect(my_devicelist.devices.get('988349631').get('active')).toBe(true);
 
-        const textarea = view.el.querySelector('.chat-textarea');
+        const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This is an encrypted message from this device';
         view.onKeyDown({
             target: textarea,
@@ -514,13 +514,13 @@ describe("The OMEMO module", function() {
             }).tree();
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        const toolbar = view.el.querySelector('.chat-toolbar');
+        const toolbar = view.querySelector('.chat-toolbar');
         const toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
         toggle.click();
         expect(view.model.get('omemo_active')).toBe(true);
         expect(view.model.get('omemo_supported')).toBe(true);
 
-        const textarea = view.el.querySelector('.chat-textarea');
+        const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be encrypted';
         view.onKeyDown({
             target: textarea,
@@ -605,7 +605,7 @@ describe("The OMEMO module", function() {
                   "to be subscribed to their presence in order to see their OMEMO information");
 
         expect(view.model.get('omemo_supported')).toBe(false);
-        expect(view.el.querySelector('.chat-textarea').value).toBe('This message will be encrypted');
+        expect(view.querySelector('.chat-textarea').value).toBe('This message will be encrypted');
         done();
     }));
 
@@ -1232,7 +1232,7 @@ describe("The OMEMO module", function() {
         expect(devicelist.devices.at(3).get('id')).toBe('ae890ac52d0df67ed7cfdf51b644e901');
         await u.waitUntil(() => _converse.chatboxviews.get(contact_jid).el.querySelector('.chat-toolbar'));
         const view = _converse.chatboxviews.get(contact_jid);
-        const toolbar = view.el.querySelector('.chat-toolbar');
+        const toolbar = view.querySelector('.chat-toolbar');
         expect(view.model.get('omemo_active')).toBe(undefined);
         const toggle = toolbar.querySelector('.toggle-omemo');
         expect(toggle === null).toBe(false);
@@ -1248,7 +1248,7 @@ describe("The OMEMO module", function() {
         expect(u.hasClass('fa-unlock', icon)).toBe(false);
         expect(u.hasClass('fa-lock', icon)).toBe(true);
 
-        const textarea = view.el.querySelector('.chat-textarea');
+        const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This message will be sent encrypted';
         view.onKeyDown({
             target: textarea,
@@ -1296,7 +1296,7 @@ describe("The OMEMO module", function() {
         const view = _converse.chatboxviews.get('lounge@montague.lit');
         await u.waitUntil(() => initializedOMEMO(_converse));
 
-        const toolbar = view.el.querySelector('.chat-toolbar');
+        const toolbar = view.querySelector('.chat-toolbar');
         let toggle = await u.waitUntil(() => toolbar.querySelector('.toggle-omemo'));
         expect(view.model.get('omemo_active')).toBe(undefined);
         expect(view.model.get('omemo_supported')).toBe(true);
@@ -1370,31 +1370,31 @@ describe("The OMEMO module", function() {
         // anonymous or semi-anonymous
         view.model.features.save({'nonanonymous': false, 'semianonymous': true});
         await u.waitUntil(() => !view.model.get('omemo_supported'));
-        await u.waitUntil(() => view.el.querySelector('.toggle-omemo').disabled);
+        await u.waitUntil(() => view.querySelector('.toggle-omemo').disabled);
 
         view.model.features.save({'nonanonymous': true, 'semianonymous': false});
         await u.waitUntil(() => view.model.get('omemo_supported'));
-        await u.waitUntil(() => view.el.querySelector('.toggle-omemo') !== null);
+        await u.waitUntil(() => view.querySelector('.toggle-omemo') !== null);
         expect(u.hasClass('fa-unlock', toolbar.querySelector('.toggle-omemo converse-icon'))).toBe(true);
         expect(u.hasClass('fa-lock', toolbar.querySelector('.toggle-omemo converse-icon'))).toBe(false);
-        expect(!!view.el.querySelector('.toggle-omemo').disabled).toBe(false);
+        expect(!!view.querySelector('.toggle-omemo').disabled).toBe(false);
 
         // Test that the button gets disabled when the room becomes open
         view.model.features.save({'membersonly': false, 'open': true});
         await u.waitUntil(() => !view.model.get('omemo_supported'));
-        await u.waitUntil(() => view.el.querySelector('.toggle-omemo').disabled);
+        await u.waitUntil(() => view.querySelector('.toggle-omemo').disabled);
 
         view.model.features.save({'membersonly': true, 'open': false});
         await u.waitUntil(() => view.model.get('omemo_supported'));
-        await u.waitUntil(() => !view.el.querySelector('.toggle-omemo').disabled);
+        await u.waitUntil(() => !view.querySelector('.toggle-omemo').disabled);
 
-        expect(u.hasClass('fa-unlock', view.el.querySelector('.toggle-omemo converse-icon'))).toBe(true);
-        expect(u.hasClass('fa-lock', view.el.querySelector('.toggle-omemo converse-icon'))).toBe(false);
+        expect(u.hasClass('fa-unlock', view.querySelector('.toggle-omemo converse-icon'))).toBe(true);
+        expect(u.hasClass('fa-lock', view.querySelector('.toggle-omemo converse-icon'))).toBe(false);
 
         expect(view.model.get('omemo_supported')).toBe(true);
         expect(view.model.get('omemo_active')).toBe(false);
 
-        view.el.querySelector('.toggle-omemo').click();
+        view.querySelector('.toggle-omemo').click();
         expect(view.model.get('omemo_active')).toBe(true);
 
         // Someone enters the room who doesn't have OMEMO support, while we
@@ -1429,13 +1429,13 @@ describe("The OMEMO module", function() {
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
         await u.waitUntil(() => !view.model.get('omemo_supported'));
-        await u.waitUntil(() => view.el.querySelector('.chat-error .chat-info__message')?.textContent.trim() ===
+        await u.waitUntil(() => view.querySelector('.chat-error .chat-info__message')?.textContent.trim() ===
             "oldguy doesn't appear to have a client that supports OMEMO. "+
             "Encrypted chat will no longer be possible in this grouchat."
         );
 
         await u.waitUntil(() => toolbar.querySelector('.toggle-omemo').disabled);
-        icon =  view.el.querySelector('.toggle-omemo converse-icon');
+        icon =  view.querySelector('.toggle-omemo converse-icon');
         expect(u.hasClass('fa-unlock', icon)).toBe(true);
         expect(u.hasClass('fa-lock', icon)).toBe(false);
         expect(toolbar.querySelector('.toggle-omemo').title).toBe('This groupchat needs to be members-only and non-anonymous in order to support OMEMO encrypted messages');
@@ -1461,7 +1461,7 @@ describe("The OMEMO module", function() {
         _converse.api.trigger('OMEMOInitialized');
 
         const view = _converse.chatboxviews.get(contact_jid);
-        const show_modal_button = view.el.querySelector('.show-user-details-modal');
+        const show_modal_button = view.querySelector('.show-user-details-modal');
         show_modal_button.click();
         const modal = _converse.api.modal.get('user-details-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);

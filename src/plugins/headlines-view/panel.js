@@ -1,5 +1,5 @@
 import tpl_headline_panel from './templates/panel.js';
-import { View } from '@converse/skeletor/src/view.js';
+import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 
@@ -11,22 +11,20 @@ const u = converse.env.utils;
  * @namespace _converse.HeadlinesPanel
  * @memberOf _converse
  */
-export const HeadlinesPanelView = View.extend({
-    tagName: 'div',
-    className: 'controlbox-section',
-    id: 'headline',
-
-    events: {
+export class HeadlinesPanel extends ElementView {
+    tagName = 'div'
+    className = 'controlbox-section'
+    id = 'headline'
+    events = {
         'click .open-headline': 'openHeadline'
-    },
+    }
 
     initialize () {
         this.listenTo(this.model, 'add', this.renderIfHeadline);
         this.listenTo(this.model, 'remove', this.renderIfHeadline);
         this.listenTo(this.model, 'destroy', this.renderIfHeadline);
         this.render();
-        this.insertIntoDOM();
-    },
+    }
 
     toHTML () {
         return tpl_headline_panel({
@@ -34,24 +32,21 @@ export const HeadlinesPanelView = View.extend({
             'headlineboxes': this.model.filter(m => m.get('type') === _converse.HEADLINES_TYPE),
             'open_title': __('Click to open this server message')
         });
-    },
+    }
 
     renderIfHeadline (model) {
         return model && model.get('type') === _converse.HEADLINES_TYPE && this.render();
-    },
+    }
 
-    openHeadline (ev) {
+    openHeadline (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
         const jid = ev.target.getAttribute('data-headline-jid');
         const chat = _converse.chatboxes.get(jid);
         chat.maybeShow(true);
-    },
-
-    insertIntoDOM () {
-        const view = _converse.chatboxviews.get('controlbox');
-        view && view.el.querySelector('.controlbox-pane').insertAdjacentElement('beforeEnd', this.el);
     }
-});
+}
+
+api.elements.define('converse-headlines-panel', HeadlinesPanel);
 
 /**
  * Mixin for the {@link _converse.ControlBoxView } which add support for

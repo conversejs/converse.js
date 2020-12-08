@@ -24,6 +24,9 @@ The [afterMessageBodyTransformed](https://conversejs.org/docs/html/api/-_convers
 When leaving a MUC, the message history is deleted. This means that decrypted
 OMEMO messages are gone and cannot be recovered on that device. See [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave).
 
+Removed events:
+* `chatBoxInsertedIntoDOM`
+
 ## 7.0.2 (2020-11-23)
 
 - Updated translations: de, nb, gl, tr

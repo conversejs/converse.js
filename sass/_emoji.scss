@@ -185,73 +185,74 @@
     }
 }
 
-
-#conversejs.converse-overlayed  {
-    converse-emoji-dropdown {
-        .dropdown-menu {
-            min-width: 18em;
-        }
-    }
-    .chatbox {
-        .emoji-picker__header {
-            .emoji-category {
-                img {
-                    height: var(--font-size) !important;
-                    width: var(--font-size) !important;
-                }
+converse-chats {
+    .converse-overlayed  {
+        converse-emoji-dropdown {
+            .dropdown-menu {
+                min-width: 18em;
             }
         }
-        converse-emoji-picker {
-            .emoji-picker {
-                .insert-emoji {
-                    a {
-                        font-size: var(--font-size);
-                        line-height: calc(var(--font-size) * 1.5);
-                        padding: 0;
-                        height: calc(var(--font-size) * 1.5);
-                        width: calc(var(--font-size) * 1.5);
-                    }
-                    img {
-                        height: var(--font-size);
-                        width: var(--font-size);
-                    }
-                }
-            }
-            .emoji-skintone-picker {
-                font-size: var(--font-size-small);
-            }
+        .chatbox {
             .emoji-picker__header {
                 .emoji-category {
-                    font-size: var(--font-size-small);
+                    img {
+                        height: var(--font-size) !important;
+                        width: var(--font-size) !important;
+                    }
                 }
             }
-            .emoji-picker__lists {
-                height: 7em;
+            converse-emoji-picker {
+                .emoji-picker {
+                    .insert-emoji {
+                        a {
+                            font-size: var(--font-size);
+                            line-height: calc(var(--font-size) * 1.5);
+                            padding: 0;
+                            height: calc(var(--font-size) * 1.5);
+                            width: calc(var(--font-size) * 1.5);
+                        }
+                        img {
+                            height: var(--font-size);
+                            width: var(--font-size);
+                        }
+                    }
+                }
+                .emoji-skintone-picker {
+                    font-size: var(--font-size-small);
+                }
+                .emoji-picker__header {
+                    .emoji-category {
+                        font-size: var(--font-size-small);
+                    }
+                }
+                .emoji-picker__lists {
+                    height: 7em;
+                }
             }
         }
     }
-}
 
-#conversejs.converse-embedded {
-    converse-emoji-dropdown {
-        .dropdown-menu {
-            min-width: 20em;
+    .converse-embedded {
+        converse-emoji-dropdown {
+            .dropdown-menu {
+                min-width: 20em;
+            }
         }
     }
-}
 
-#conversejs.converse-fullscreen {
-    converse-emoji-dropdown {
-        .dropdown-menu {
-            min-width: 22em;
+    .converse-fullscreen {
+        converse-emoji-dropdown {
+            .dropdown-menu {
+                min-width: 22em;
+            }
         }
-    }
-    .chatbox {
-        .toggle-smiley {
-        }
-        converse-emoji-picker {
-            .emoji-picker__lists {
-                height: 12em;
+        .chatbox {
+            .toggle-smiley {
+            }
+            converse-emoji-picker {
+                .emoji-picker__lists {
+                    height: 12em;
+                }
             }
         }
     }
@@ -266,4 +267,3 @@
         }
     }
 }
-

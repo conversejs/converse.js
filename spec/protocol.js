@@ -65,7 +65,7 @@ describe("The Protocol", function () {
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
 
-            cbview.el.querySelector('.add-contact').click()
+            cbview.querySelector('.add-contact').click()
             const modal = _converse.api.modal.get('add-contact-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(modal, "addContactFromForm").and.callThrough();

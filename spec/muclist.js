@@ -17,19 +17,19 @@ describe("A list of open groupchats", function () {
         await mock.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
 
         const lview = _converse.rooms_list_view
-        await u.waitUntil(() => lview.el.querySelectorAll(".open-room").length);
-        let room_els = lview.el.querySelectorAll(".open-room");
+        await u.waitUntil(() => lview.querySelectorAll(".open-room").length);
+        let room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
         expect(room_els[0].innerText).toBe('room@conference.shakespeare.lit');
 
         await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
-        await u.waitUntil(() => lview.el.querySelectorAll(".open-room").length > 1);
-        room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+        await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 1);
+        room_els = _converse.rooms_list_view.querySelectorAll(".open-room");
         expect(room_els.length).toBe(2);
 
         let view = _converse.chatboxviews.get('room@conference.shakespeare.lit');
         await view.close();
-        room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+        room_els = _converse.rooms_list_view.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
         expect(room_els[0].innerText).toBe('lounge@montague.lit');
         list = controlbox.el.querySelector('.list-container--openrooms');
@@ -37,7 +37,7 @@ describe("A list of open groupchats", function () {
 
         view = _converse.chatboxviews.get('lounge@montague.lit');
         await view.close();
-        room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+        room_els = _converse.rooms_list_view.querySelectorAll(".open-room");
         expect(room_els.length).toBe(0);
 
         list = controlbox.el.querySelector('.list-container--openrooms');
@@ -119,8 +119,8 @@ describe("A groupchat shown in the groupchats list", function () {
         const muc_jid = 'coven@chat.shakespeare.lit';
         await _converse.api.rooms.open(muc_jid, {'nick': 'some1'}, true);
         const lview = _converse.rooms_list_view
-        await u.waitUntil(() => lview.el.querySelectorAll(".open-room").length);
-        let room_els = lview.el.querySelectorAll(".available-chatroom");
+        await u.waitUntil(() => lview.querySelectorAll(".open-room").length);
+        let room_els = lview.querySelectorAll(".available-chatroom");
         expect(room_els.length).toBe(1);
 
         let item = room_els[0];
@@ -128,11 +128,11 @@ describe("A groupchat shown in the groupchats list", function () {
         await u.waitUntil(() => u.hasClass('open', item), 1000);
         expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
         await _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'}, true);
-        await u.waitUntil(() => lview.el.querySelectorAll(".open-room").length > 1);
-        room_els = lview.el.querySelectorAll(".open-room");
+        await u.waitUntil(() => lview.querySelectorAll(".open-room").length > 1);
+        room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(2);
 
-        room_els = lview.el.querySelectorAll(".available-chatroom.open");
+        room_els = lview.querySelectorAll(".available-chatroom.open");
         expect(room_els.length).toBe(1);
         item = room_els[0];
         expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
@@ -198,10 +198,11 @@ describe("A groupchat shown in the groupchats list", function () {
             .c('status').attrs({code:'110'});
         _converse.connection._dataRecv(mock.createRequest(presence));
 
-        await u.waitUntil(() => _converse.rooms_list_view.el.querySelectorAll(".open-room").length, 500);
-        const room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+        const rooms_list = document.querySelector('converse-rooms-list');
+        await u.waitUntil(() => rooms_list.querySelectorAll(".open-room").length, 500);
+        const room_els = rooms_list.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
-        const info_el = _converse.rooms_list_view.el.querySelector(".room-info");
+        const info_el = rooms_list.querySelector(".room-info");
         info_el.click();
 
         const modal = _converse.api.modal.get('muc-details-modal');
@@ -259,16 +260,17 @@ describe("A groupchat shown in the groupchats list", function () {
         await mock.openChatRoom(_converse, 'lounge', 'conference.shakespeare.lit', 'JC');
         expect(_converse.chatboxes.length).toBe(2);
         const lview = _converse.rooms_list_view
-        await u.waitUntil(() => lview.el.querySelectorAll(".open-room").length);
-        let room_els = lview.el.querySelectorAll(".open-room");
+        await u.waitUntil(() => lview.querySelectorAll(".open-room").length);
+        let room_els = lview.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
-        const close_el = _converse.rooms_list_view.el.querySelector(".close-room");
+        const rooms_list = document.querySelector('converse-rooms-list');
+        const close_el = rooms_list.querySelector(".close-room");
         close_el.click();
         expect(window.confirm).toHaveBeenCalledWith(
             'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
 
         await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
-        room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+        room_els = rooms_list.querySelectorAll(".open-room");
         expect(room_els.length).toBe(0);
         expect(_converse.chatboxes.length).toBe(1);
         done();
@@ -284,7 +286,8 @@ describe("A groupchat shown in the groupchats list", function () {
         const u = converse.env.utils;
         await mock.openControlBox(_converse);
         const room_jid = 'kitchen@conference.shakespeare.lit';
-        await u.waitUntil(() => _converse.rooms_list_view !== undefined, 500);
+        const rooms_list = document.querySelector('converse-rooms-list');
+        await u.waitUntil(() => rooms_list !== undefined, 500);
         await mock.openAndEnterChatRoom(_converse, room_jid, 'romeo');
         const view = _converse.chatboxviews.get(room_jid);
         view.model.set({'minimized': true});
@@ -299,7 +302,7 @@ describe("A groupchat shown in the groupchats list", function () {
 
         // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
         const lview = _converse.rooms_list_view
-        let room_el = await u.waitUntil(() => lview.el.querySelector(".available-chatroom"));
+        let room_el = await u.waitUntil(() => lview.querySelector(".available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
 
         // If the user is mentioned, the counter also gets updated
@@ -312,7 +315,7 @@ describe("A groupchat shown in the groupchats list", function () {
             }).c('body').t('romeo: Your attention is required').tree()
         );
 
-        let indicator_el = await u.waitUntil(() => lview.el.querySelector(".msgs-indicator"));
+        let indicator_el = await u.waitUntil(() => lview.querySelector(".msgs-indicator"));
         expect(indicator_el.textContent).toBe('1');
 
         spyOn(view.model, 'handleUnreadMessage').and.callThrough();
@@ -325,13 +328,13 @@ describe("A groupchat shown in the groupchats list", function () {
             }).c('body').t('romeo: and another thing...').tree()
         );
         await u.waitUntil(() => view.model.handleUnreadMessage.calls.count());
-        await u.waitUntil(() => lview.el.querySelector(".msgs-indicator").textContent === '2', 1000);
+        await u.waitUntil(() => lview.querySelector(".msgs-indicator").textContent === '2', 1000);
 
         // When the chat gets maximized again, the unread indicators are removed
         view.model.set({'minimized': false});
-        indicator_el = lview.el.querySelector(".msgs-indicator");
+        indicator_el = lview.querySelector(".msgs-indicator");
         expect(indicator_el === null);
-        room_el = lview.el.querySelector(".available-chatroom");
+        room_el = lview.querySelector(".available-chatroom");
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
         done();
     }));

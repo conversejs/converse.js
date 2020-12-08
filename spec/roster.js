@@ -153,13 +153,13 @@ describe("The Contacts Roster", function () {
                 ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            const filter = _converse.rosterview.el.querySelector('.roster-filter');
+            const filter = _converse.rosterview.querySelector('.roster-filter');
             expect(filter === null).toBe(false);
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
 
             const view = _converse.chatboxviews.get('controlbox');
-            const flyout = view.el.querySelector('.box-flyout');
+            const flyout = view.querySelector('.box-flyout');
             const panel = flyout.querySelector('.controlbox-pane');
             function hasScrollBar (el) {
                 return el.isConnected && flyout.offsetHeight < panel.scrollHeight;
@@ -176,7 +176,7 @@ describe("The Contacts Roster", function () {
 
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
-            let filter = _converse.rosterview.el.querySelector('.roster-filter');
+            let filter = _converse.rosterview.querySelector('.roster-filter');
             const roster = _converse.rosterview.roster_el;
             _converse.rosterview.filter_view.delegateEvents();
 
@@ -194,7 +194,7 @@ describe("The Contacts Roster", function () {
             const visible_group = sizzle('.roster-group', roster).filter(u.isVisible).pop();
             expect(visible_group.querySelector('a.group-toggle').textContent.trim()).toBe('friends & acquaintences');
 
-            filter = _converse.rosterview.el.querySelector('.roster-filter');
+            filter = _converse.rosterview.querySelector('.roster-filter');
             filter.value = "j";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 2), 700);
@@ -207,14 +207,14 @@ describe("The Contacts Roster", function () {
             expect(visible_groups[0].textContent.trim()).toBe('friends & acquaintences');
             expect(visible_groups[1].textContent.trim()).toBe('Ungrouped');
 
-            filter = _converse.rosterview.el.querySelector('.roster-filter');
+            filter = _converse.rosterview.querySelector('.roster-filter');
             filter.value = "xxx";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 0), 600);
             visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
             expect(visible_groups.length).toBe(0);
 
-            filter = _converse.rosterview.el.querySelector('.roster-filter');
+            filter = _converse.rosterview.querySelector('.roster-filter');
             filter.value = "";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 17), 600);
@@ -230,7 +230,7 @@ describe("The Contacts Roster", function () {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
 
-            const filter = _converse.rosterview.el.querySelector('.roster-filter');
+            const filter = _converse.rosterview.querySelector('.roster-filter');
             const roster = _converse.rosterview.roster_el;
             _converse.rosterview.filter_view.delegateEvents();
 
@@ -278,13 +278,13 @@ describe("The Contacts Roster", function () {
             _converse.rosterview.filter_view.delegateEvents();
             var roster = _converse.rosterview.roster_el;
 
-            var button = _converse.rosterview.el.querySelector('span[data-type="groups"]');
+            var button = _converse.rosterview.querySelector('span[data-type="groups"]');
             button.click();
 
             await u.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 17), 600);
             expect(sizzle('.roster-group', roster).filter(u.isVisible).length).toBe(5);
 
-            var filter = _converse.rosterview.el.querySelector('.roster-filter');
+            var filter = _converse.rosterview.querySelector('.roster-filter');
             filter.value = "colleagues";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
 
@@ -294,14 +294,14 @@ describe("The Contacts Roster", function () {
             // Check that all contacts under the group are shown
             expect(sizzle('div.roster-group:not(.collapsed) li', roster).filter(l => !u.isVisible(l)).length).toBe(0);
 
-            filter = _converse.rosterview.el.querySelector('.roster-filter');
+            filter = _converse.rosterview.querySelector('.roster-filter');
             filter.value = "xxx";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
 
             await u.waitUntil(() => (roster.querySelectorAll('div.roster-group.collapsed').length === 5), 700);
             expect(roster.querySelectorAll('div.roster-group:not(.collapsed) a').length).toBe(0);
 
-            filter = _converse.rosterview.el.querySelector('.roster-filter');
+            filter = _converse.rosterview.querySelector('.roster-filter');
             filter.value = ""; // Check that groups are shown again, when the filter string is cleared.
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             await u.waitUntil(() => (roster.querySelectorAll('div.roster-group.collapsed').length === 0), 700);
@@ -318,15 +318,15 @@ describe("The Contacts Roster", function () {
             await mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current');
 
-            const filter = _converse.rosterview.el.querySelector('.roster-filter');
+            const filter = _converse.rosterview.querySelector('.roster-filter');
             filter.value = "xxx";
             u.triggerEvent(filter, "keydown", "KeyboardEvent");
             expect(_.includes(filter.classList, "x")).toBeFalsy();
-            expect(u.hasClass('hidden', _converse.rosterview.el.querySelector('.roster-filter-form .clear-input'))).toBeTruthy();
+            expect(u.hasClass('hidden', _converse.rosterview.querySelector('.roster-filter-form .clear-input'))).toBeTruthy();
 
             const isHidden = _.partial(u.hasClass, 'hidden');
-            await u.waitUntil(() => !isHidden(_converse.rosterview.el.querySelector('.roster-filter-form .clear-input')), 900);
-            _converse.rosterview.el.querySelector('.clear-input').click();
+            await u.waitUntil(() => !isHidden(_converse.rosterview.querySelector('.roster-filter-form .clear-input')), 900);
+            _converse.rosterview.querySelector('.clear-input').click();
             expect(document.querySelector('.roster-filter').value).toBe("");
             done();
         }));
@@ -344,11 +344,11 @@ describe("The Contacts Roster", function () {
             jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             _converse.roster.get(jid).presence.set('show', 'dnd');
             mock.openControlBox(_converse);
-            const button = _converse.rosterview.el.querySelector('span[data-type="state"]');
+            const button = _converse.rosterview.querySelector('span[data-type="state"]');
             button.click();
             const roster = _converse.rosterview.roster_el;
             await u.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 15, 900);
-            const filter = _converse.rosterview.el.querySelector('.state-type');
+            const filter = _converse.rosterview.querySelector('.state-type');
             expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
             filter.value = "online";
             u.triggerEvent(filter, 'change');
@@ -565,7 +565,7 @@ describe("The Contacts Roster", function () {
                 }
             });
             const view = _converse.rosterview.get('Colleagues');
-            const toggle = view.el.querySelector('a.group-toggle');
+            const toggle = view.querySelector('a.group-toggle');
             expect(view.model.get('state')).toBe('opened');
             toggle.click();
             await u.waitUntil(() => view.model.get('state') === 'closed');
@@ -736,7 +736,7 @@ describe("The Contacts Roster", function () {
             await u.waitUntil(() => sizzle('li', _converse.rosterview.get('Pending contacts').el).filter(u.isVisible).length, 900);
             // Check that they are sorted alphabetically
             const view = _converse.rosterview.get('Pending contacts');
-            const spans = view.el.querySelectorAll('.pending-xmpp-contact span');
+            const spans = view.querySelectorAll('.pending-xmpp-contact span');
             const t = _.reduce(spans, (result, value) => result + _.trim(value.textContent), '');
             expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
             done();
@@ -757,7 +757,7 @@ describe("The Contacts Roster", function () {
 
             await _addContacts(_converse);
             await u.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500);
-            await checkHeaderToggling.apply(_converse, [_converse.rosterview.el.querySelector('.roster-group')]);
+            await checkHeaderToggling.apply(_converse, [_converse.rosterview.querySelector('.roster-group')]);
             done();
         }));
 
@@ -769,7 +769,7 @@ describe("The Contacts Roster", function () {
             _converse.roster_groups = false;
             await _addContacts(_converse);
             await u.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500);
-            _converse.rosterview.el.querySelector('.roster-group a.group-toggle').click();
+            _converse.rosterview.querySelector('.roster-group a.group-toggle').click();
             const name = "Romeo Montague";
             const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             _converse.roster.create({
@@ -814,7 +814,7 @@ describe("The Contacts Roster", function () {
                 async function (done, _converse) {
 
             await _addContacts(_converse);
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('li').length);
+            await u.waitUntil(() => _converse.rosterview.querySelectorAll('li').length);
             const name = mock.cur_names[0];
             const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(jid);
@@ -857,12 +857,12 @@ describe("The Contacts Roster", function () {
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
                 if (typeof callback === "function") { return callback(); }
             });
-            expect(u.isVisible(_converse.rosterview.el.querySelector('.roster-group'))).toBe(true);
+            expect(u.isVisible(_converse.rosterview.querySelector('.roster-group'))).toBe(true);
             sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
             expect(window.confirm).toHaveBeenCalled();
             expect(_converse.connection.sendIQ).toHaveBeenCalled();
             expect(contact.removeFromRoster).toHaveBeenCalled();
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length === 0);
+            await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group').length === 0);
             done();
         }));
 
@@ -872,7 +872,7 @@ describe("The Contacts Roster", function () {
                 async function (done, _converse) {
 
             await _addContacts(_converse);
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700);
+            await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group li').length, 700);
             const roster = _converse.rosterview.el;
             const groups = roster.querySelectorAll('.roster-group');
             const groupnames = Array.from(groups).map(g => g.getAttribute('data-group'));
@@ -1025,7 +1025,7 @@ describe("The Contacts Roster", function () {
                 _converse.roster.get(jid).presence.set('show', 'unavailable');
             }
 
-            await u.waitUntil(() => u.isVisible(_converse.rosterview.el.querySelector('li:first-child')), 900);
+            await u.waitUntil(() => u.isVisible(_converse.rosterview.querySelector('li:first-child')), 900);
             const roster = _converse.rosterview.el;
             const groups = roster.querySelectorAll('.roster-group');
             const groupnames = Array.from(groups).map(g => g.getAttribute('data-group'));
@@ -1165,7 +1165,7 @@ describe("The Contacts Roster", function () {
             const jid =  name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(jid);
             spyOn(contact, 'authorize').and.callFake(() => contact);
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length)
+            await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group li').length)
             // TODO: Testing can be more thorough here, the user is
             // actually not accepted/authorized because of
             // mock_connection.

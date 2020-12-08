@@ -32,7 +32,7 @@ describe("MUC Mention Notfications", function () {
         await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
 
         const lview = _converse.rooms_list_view
-        const room_el = await u.waitUntil(() => lview.el.querySelector(".available-chatroom"));
+        const room_el = await u.waitUntil(() => lview.querySelector(".available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 
         const base_time = new Date();

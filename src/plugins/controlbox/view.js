@@ -1,38 +1,27 @@
 import tpl_controlbox from './templates/controlbox.js';
-import { render } from 'lit-html';
+import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
+import { render } from 'lit-html';
 
 const u = converse.env.utils;
 
 /**
- * Mixin which turns a ChatBoxView into a ControlBoxView.
- *
  * The ControlBox is the section of the chat that contains the open groupchats,
  * bookmarks and roster.
  *
  * In `overlayed` `view_mode` it's a box like the chat boxes, in `fullscreen`
  * `view_mode` it's a left-aligned sidebar.
- * @mixin
  */
-const ControlBoxViewMixin = {
-    tagName: 'div',
-    className: 'chatbox',
-    id: 'controlbox',
-    events: {
+class ControlBoxView extends ElementView {
+    events = {
         'click a.close-chatbox-button': 'close'
-    },
+    }
 
     initialize () {
-        if (_converse.controlboxtoggle === undefined) {
-            _converse.controlboxtoggle = new _converse.ControlBoxToggle();
-        }
-        _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
-
+        this.model = _converse.chatboxes.get(this.getAttribute('id'));
         this.listenTo(this.model, 'change:connected', this.onConnected);
-        this.listenTo(this.model, 'destroy', this.hide);
-        this.listenTo(this.model, 'hide', this.hide);
+        // this.listenTo(this.model, 'hide', this.hide);
         this.listenTo(this.model, 'show', this.show);
-        this.listenTo(this.model, 'change:closed', this.ensureClosedState);
         this.render();
         /**
          * Triggered when the _converse.ControlBoxView has been initialized and therefore
@@ -43,9 +32,11 @@ const ControlBoxViewMixin = {
          * @example _converse.api.listen.on('controlBoxInitialized', view => { ... });
          */
         api.trigger('controlBoxInitialized', this);
-    },
+    }
 
     render () {
+        _converse.chatboxviews.add('controlbox', this);
+
         if (this.model.get('connected')) {
             if (this.model.get('closed') === undefined) {
                 this.model.set('closed', !api.settings.get('show_controlbox_by_default'));
@@ -56,13 +47,7 @@ const ControlBoxViewMixin = {
             'sticky_controlbox': api.settings.get('sticky_controlbox'),
             ...this.model.toJSON()
         });
-        render(tpl_result, this.el);
-
-        if (!this.model.get('closed')) {
-            this.show();
-        } else {
-            this.hide();
-        }
+        render(tpl_result, this);
 
         const connection = _converse?.connection || {};
         if (!connection.connected || !connection.authenticated || connection.disconnecting) {
@@ -71,29 +56,29 @@ const ControlBoxViewMixin = {
             this.renderControlBoxPane();
         }
         return this;
-    },
+    }
 
     onConnected () {
         if (this.model.get('connected')) {
             this.render();
         }
-    },
+    }
 
     renderLoginPanel () {
-        this.el.classList.add('logged-out');
+        this.classList.add('logged-out');
         if (this.loginpanel) {
             this.loginpanel.render();
         } else {
             this.loginpanel = new _converse.LoginPanel({
                 'model': new _converse.LoginPanelModel()
             });
-            const panes = this.el.querySelector('.controlbox-panes');
+            const panes = this.querySelector('.controlbox-panes');
             panes.innerHTML = '';
             panes.appendChild(this.loginpanel.render().el);
         }
         this.loginpanel.initPopovers();
         return this;
-    },
+    }
 
     /**
      * Renders the "Contacts" panel of the controlbox.
@@ -109,12 +94,12 @@ const ControlBoxViewMixin = {
         if (this.controlbox_pane && u.isVisible(this.controlbox_pane.el)) {
             return;
         }
-        this.el.classList.remove('logged-out');
+        this.classList.remove('logged-out');
         this.controlbox_pane = new _converse.ControlBoxPane();
-        this.el
+        this
             .querySelector('.controlbox-panes')
             .insertAdjacentElement('afterBegin', this.controlbox_pane.el);
-    },
+    }
 
     async close (ev) {
         if (ev && ev.preventDefault) {
@@ -143,48 +128,42 @@ const ControlBoxViewMixin = {
         }
         api.trigger('controlBoxClosed', this);
         return this;
-    },
-
-    ensureClosedState () {
-        if (this.model.get('closed')) {
-            this.hide();
-        } else {
-            this.show();
-        }
-    },
+    }
 
     hide (callback) {
         if (api.settings.get('sticky_controlbox')) {
             return;
         }
-        u.addClass('hidden', this.el);
+        u.addClass('hidden', this);
         api.trigger('chatBoxClosed', this);
         if (!api.connection.connected()) {
             _converse.controlboxtoggle.render();
         }
         _converse.controlboxtoggle.show(callback);
         return this;
-    },
+    }
 
     onControlBoxToggleHidden () {
         this.model.set('closed', false);
-        this.el.classList.remove('hidden');
+        this.classList.remove('hidden');
         /**
          * Triggered once the controlbox has been opened
          * @event _converse#controlBoxOpened
          * @type {_converse.ControlBox}
          */
         api.trigger('controlBoxOpened', this);
-    },
+    }
 
     show () {
         _converse.controlboxtoggle.hide(() => this.onControlBoxToggleHidden());
         return this;
-    },
+    }
 
-    showHelpMessages () {
+    showHelpMessages () { // eslint-disable-line class-methods-use-this
         return;
     }
-};
+}
 
-export default ControlBoxViewMixin;
+api.elements.define('converse-controlbox', ControlBoxView);
+
+export default ControlBoxView;

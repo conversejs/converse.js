@@ -8,7 +8,7 @@ const u = converse.env.utils;
 
 
 async function openModtools (_converse, view) {
-    const textarea = view.el.querySelector('.chat-textarea');
+    const textarea = view.querySelector('.chat-textarea');
     textarea.value = '/modtools';
     const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
     view.onKeyDown(enter);
@@ -263,7 +263,7 @@ describe("The groupchat moderator tool", function () {
         ));
         await u.waitUntil(() => (view.model.occupants.length === 7), 1000);
 
-        const textarea = view.el.querySelector('.chat-textarea');
+        const textarea = view.querySelector('.chat-textarea');
         textarea.value = '/modtools';
         const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
         view.onKeyDown(enter);
@@ -474,7 +474,7 @@ describe("The groupchat moderator tool", function () {
         const members = [{'jid': 'romeo@montague.lit', 'nick': 'romeo', 'affiliation': 'owner'}];
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo', [], members);
         const view = _converse.chatboxviews.get(muc_jid);
-        const textarea = view.el.querySelector('.chat-textarea');
+        const textarea = view.querySelector('.chat-textarea');
         textarea.value = '/modtools';
         const enter = { 'target': textarea, 'preventDefault': function preventDefault () {}, 'keyCode': 13 };
         view.onKeyDown(enter);

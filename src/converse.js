@@ -17,16 +17,17 @@ import "./plugins/chatview/index.js";       // Renders standalone chat boxes for
 import "./plugins/controlbox/index.js";     // The control box
 import "./plugins/dragresize/index.js";     // Allows chat boxes to be resized by dragging them
 import "./plugins/fullscreen.js";
+import "./plugins/headlines-view/index.js";
 import "./plugins/mam-views.js";
 import "./plugins/minimize/index.js";             // Allows chat boxes to be minimized
 import "./plugins/muc-views/index.js";      // Views related to MUC
-import "./plugins/headlines-view/index.js";
 import "./plugins/notifications/index.js";
 import "./plugins/omemo.js";
 import "./plugins/profile/index.js";
 import "./plugins/push.js";                 // XEP-0357 Push Notifications
 import "./plugins/register/index.js";       // XEP-0077 In-band registration
 import "./plugins/roomslist/index.js";      // Show currently open chat rooms
+import "./plugins/rootview/index.js";
 import "./plugins/rosterview/index.js";
 import "./plugins/singleton.js";
 /* END: Removable components */
@@ -43,17 +44,18 @@ const WHITELISTED_PLUGINS = [
     'converse-controlbox',
     'converse-dragresize',
     'converse-fullscreen',
+    'converse-headlines-view',
     'converse-mam-views',
     'converse-minimize',
     'converse-modal',
     'converse-muc-views',
-    'converse-headlines-view',
     'converse-notification',
     'converse-omemo',
     'converse-profile',
     'converse-push',
     'converse-register',
     'converse-roomslist',
+    'converse-rootview',
     'converse-rosterview',
     'converse-singleton'
 ];

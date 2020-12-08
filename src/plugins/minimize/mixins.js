@@ -66,7 +66,6 @@ export const minimizableChatBoxView = {
             this.model.set({ 'scroll': this.content.scrollTop });
         }
         this.model.setChatState(_converse.INACTIVE);
-        this.hide();
         /**
          * Triggered when a previously maximized chat gets Minimized
          * @event _converse#chatBoxMinimized

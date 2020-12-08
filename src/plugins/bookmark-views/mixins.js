@@ -28,7 +28,7 @@ export const bookmarkableChatRoomView = {
                 'model': this.model,
                 'chatroomview': this
             });
-            const container_el = this.el.querySelector('.chatroom-body');
+            const container_el = this.querySelector('.chatroom-body');
             container_el.insertAdjacentElement('beforeend', this.bookmark_form.el);
         }
         u.showElement(this.bookmark_form.el);

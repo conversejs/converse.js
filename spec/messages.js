@@ -15,7 +15,7 @@ describe("A Chat Message", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         const view = _converse.api.chatviews.get(contact_jid);
         await _converse.handleMessageStanza(mock.createChatMessage(_converse, contact_jid, 'This message will be read'));
-        const msg_el = await u.waitUntil(() => view.el.querySelector('converse-chat-message'));
+        const msg_el = await u.waitUntil(() => view.querySelector('converse-chat-message'));
         expect(msg_el.querySelector('.chat-msg__text').textContent).toBe('This message will be read');
         expect(view.model.get('num_unread')).toBe(0);
 
@@ -26,8 +26,8 @@ describe("A Chat Message", function () {
         expect(view.model.get('num_unread')).toBe(1);
         expect(view.model.get('first_unread_id')).toBe(view.model.messages.last().get('id'));
 
-        await u.waitUntil(() => view.el.querySelectorAll('converse-chat-message').length === 2);
-        const last_msg_el = view.el.querySelector('converse-chat-message:last-child');
+        await u.waitUntil(() => view.querySelectorAll('converse-chat-message').length === 2);
+        const last_msg_el = view.querySelector('converse-chat-message:last-child');
         expect(last_msg_el.firstElementChild?.textContent).toBe('New messages');
         done();
     }));
@@ -87,7 +87,7 @@ describe("A Chat Message", function () {
         await mock.openControlBox(_converse);
 
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
+        await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group').length)
         _converse.filter_by_resource = true;
 
         let msg = $msg({
@@ -174,7 +174,7 @@ describe("A Chat Message", function () {
             .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
             .tree();
         _converse.handleMessageStanza(msg);
-        const csntext = await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent);
+        const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
         expect(csntext.trim()).toEqual('Mercutio is typing');
 
         msg = $msg({
@@ -365,7 +365,7 @@ describe("A Chat Message", function () {
         expect(msg_obj.get('sender')).toEqual('me');
         expect(msg_obj.get('is_delayed')).toEqual(false);
         // Now check that the message appears inside the chatbox in the DOM
-        const msg_el = await u.waitUntil(() => view.el.querySelector('.chat-content .chat-msg .chat-msg__text'));
+        const msg_el = await u.waitUntil(() => view.querySelector('.chat-content .chat-msg .chat-msg__text'));
         expect(msg_el.textContent).toEqual(msgtext);
         done();
     }));
@@ -428,7 +428,7 @@ describe("A Chat Message", function () {
         const contact_name = mock.cur_names[1];
         const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
-        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+        await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group').length);
         await mock.openChatBoxFor(_converse, contact_jid);
 
         const one_day_ago = dayjs().subtract(1, 'day');
@@ -646,7 +646,7 @@ describe("A Chat Message", function () {
         const view = _converse.api.chatviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         mock.sendMessage(view, message);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
         expect(view.model.sendMessage).toHaveBeenCalled();
         let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!---->/g, '').trim()).toEqual(
@@ -656,7 +656,7 @@ describe("A Chat Message", function () {
 
         message += "?param1=val1&param2=val2";
         mock.sendMessage(view, message);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
         expect(view.model.sendMessage).toHaveBeenCalled();
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.innerHTML.replace(/<!---->/g, '').trim()).toEqual(
@@ -667,7 +667,7 @@ describe("A Chat Message", function () {
         // Test now with two images in one message
         message += ' hello world '+base_url+"/logo/conversejs-filled.svg";
         mock.sendMessage(view, message);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
         expect(view.model.sendMessage).toHaveBeenCalled();
         msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         expect(msg.textContent.trim()).toEqual('hello world');
@@ -677,11 +677,11 @@ describe("A Chat Message", function () {
         _converse.api.settings.set('image_urls_regex', /^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i);
         message = 'https://imgur.com/oxymPax';
         mock.sendMessage(view, message);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 5, 1000);
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 5, 1000);
         expect(view.content.querySelectorAll('.chat-content .chat-image').length).toBe(5);
 
         // Check that the Imgur URL gets a .png attached to make it render
-        await u.waitUntil(() => Array.from(view.el.querySelectorAll('.chat-content .chat-image')).pop().src.endsWith('png'), 1000);
+        await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-content .chat-image')).pop().src.endsWith('png'), 1000);
         done();
     }));
 
@@ -698,12 +698,12 @@ describe("A Chat Message", function () {
         const view = _converse.api.chatviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         mock.sendMessage(view, message);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length === 1);
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 1);
 
         message = base_url+"/logo/conversejs-filled.svg";
         mock.sendMessage(view, message);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length === 2, 1000);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 1, 1000)
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length === 2, 1000);
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length === 1, 1000)
         expect(view.content.querySelectorAll('.chat-content .chat-image').length).toBe(1);
 
         done();
@@ -722,7 +722,7 @@ describe("A Chat Message", function () {
         const view = _converse.api.chatviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         mock.sendMessage(view, message);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000)
         expect(view.model.sendMessage).toHaveBeenCalled();
         const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
         await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '').trim() ==
@@ -770,10 +770,10 @@ describe("A Chat Message", function () {
         expect(chatbox.messages.models.length, 1);
         const msg_object = chatbox.messages.models[0];
 
-        const msg_author = view.el.querySelector('.chat-content .chat-msg:last-child .chat-msg__author');
+        const msg_author = view.querySelector('.chat-content .chat-msg:last-child .chat-msg__author');
         expect(msg_author.textContent.trim()).toBe('Romeo Montague');
 
-        const msg_time = view.el.querySelector('.chat-content .chat-msg:last-child .chat-msg__time');
+        const msg_time = view.querySelector('.chat-content .chat-msg:last-child .chat-msg__time');
         const time = dayjs(msg_object.get('time')).format(_converse.time_format);
         expect(msg_time.textContent).toBe(time);
         done();
@@ -790,7 +790,7 @@ describe("A Chat Message", function () {
         const base_time = new Date();
         const ONE_MINUTE_LATER = 60000;
 
-        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
+        await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group').length, 300);
         const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
         _converse.filter_by_resource = true;
 
@@ -992,7 +992,7 @@ describe("A Chat Message", function () {
             const include_nick = false;
             await mock.waitForRoster(_converse, 'current', 1, include_nick);
             await mock.openControlBox(_converse);
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
+            await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group').length, 300);
             spyOn(_converse.api, "trigger").and.callThrough();
             const message = 'This is a received message';
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -1036,7 +1036,7 @@ describe("A Chat Message", function () {
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1, false);
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
+            await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group').length, 300);
             const message = '\n\n        This is a received message         \n\n';
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await _converse.handleMessageStanza(
@@ -1100,13 +1100,13 @@ describe("A Chat Message", function () {
                 const chatbox = await _converse.api.chats.get(sender_jid);
                 expect(chatbox.get('fullname') === sender_jid);
 
-                await u.waitUntil(() => view.el.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
-                let author_el = view.el.querySelector('.chat-msg__author');
+                await u.waitUntil(() => view.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
+                let author_el = view.querySelector('.chat-msg__author');
                 expect( _.includes(author_el.textContent.trim(), 'Mercutio')).toBeTruthy();
                 await u.waitUntil(() => vcard_fetched, 100);
                 expect(_converse.api.vcard.get).toHaveBeenCalled();
                 await u.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
-                author_el = view.el.querySelector('.chat-msg__author');
+                author_el = view.querySelector('.chat-msg__author');
                 expect( _.includes(author_el.textContent.trim(), 'Mercutio')).toBeTruthy();
                 done();
             }));
@@ -1159,7 +1159,7 @@ describe("A Chat Message", function () {
                 expect(msg_obj.get('sender')).toEqual('them');
                 expect(msg_obj.get('is_delayed')).toEqual(false);
 
-                await u.waitUntil(() => view.el.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
+                await u.waitUntil(() => view.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
                 // Now check that the message appears inside the chatbox in the DOM
                 expect(view.content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
                 expect(view.content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
@@ -1363,7 +1363,7 @@ describe("A Chat Message", function () {
             }
             await Promise.all(promises);
 
-            const indicator_el = view.el.querySelector('.new-msgs-indicator');
+            const indicator_el = view.querySelector('.new-msgs-indicator');
             expect(u.isVisible(indicator_el)).toBeTruthy();
 
             expect(view.model.get('scrolled')).toBe(true);
@@ -1380,7 +1380,7 @@ describe("A Chat Message", function () {
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
+            await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group').length)
             // Send a message from a different resource
             spyOn(converse.env.log, 'error');
             spyOn(_converse.api.chatboxes, 'create').and.callThrough();
@@ -1444,12 +1444,12 @@ describe("A Chat Message", function () {
                 </message>`)
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
-            let msg = view.el.querySelector('.chat-msg .chat-msg__text');
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
+            let msg = view.querySelector('.chat-msg .chat-msg__text');
             expect(msg.classList.length).toEqual(1);
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you heard this funny audio?');
-            let media = view.el.querySelector('.chat-msg .chat-msg__media');
+            let media = view.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
                 `<audio controls="" src="https://montague.lit/audio.mp3"></audio>    `+
                 `<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3">Download audio file "audio.mp3"</a>`);
@@ -1464,9 +1464,9 @@ describe("A Chat Message", function () {
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            msg = view.el.querySelector('.chat-msg:last-child .chat-msg__text');
+            msg = view.querySelector('.chat-msg:last-child .chat-msg__text');
             expect(msg.innerHTML.replace(/<!---->/g, '')).toEqual('Have you heard this funny audio?'); // Emtpy
-            media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
+            media = view.querySelector('.chat-msg:last-child .chat-msg__media');
             expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "").trim()).toEqual(
                 `<audio controls="" src="https://montague.lit/audio.mp3"></audio>    `+
                 `<a target="_blank" rel="noopener" href="https://montague.lit/audio.mp3">`+
@@ -1493,11 +1493,11 @@ describe("A Chat Message", function () {
                     <x xmlns="jabber:x:oob"><url>https://montague.lit/video.mp4</url></x>
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg video').length, 2000)
-            let msg = view.el.querySelector('.chat-msg .chat-msg__text');
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg video').length, 2000)
+            let msg = view.querySelector('.chat-msg .chat-msg__text');
             expect(msg.classList.length).toBe(1);
             expect(msg.textContent).toEqual('Have you seen this funny video?');
-            let media = view.el.querySelector('.chat-msg .chat-msg__media');
+            let media = view.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                 `<!----><video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video><!---->`);
 
@@ -1512,9 +1512,9 @@ describe("A Chat Message", function () {
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            msg = view.el.querySelector('.chat-msg:last-child .chat-msg__text');
+            msg = view.querySelector('.chat-msg:last-child .chat-msg__text');
             expect(msg.innerHTML.replace(/<!---->/g, '')).toEqual('Have you seen this funny video?');
-            media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
+            media = view.querySelector('.chat-msg:last-child .chat-msg__media');
             expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                 `<!----><video controls="" preload="metadata" style="max-height: 50vh" src="https://montague.lit/video.mp4"></video><!---->`);
             done();
@@ -1539,11 +1539,11 @@ describe("A Chat Message", function () {
                 </message>`);
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg a').length, 1000);
-            const msg = view.el.querySelector('.chat-msg .chat-msg__text');
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg a').length, 1000);
+            const msg = view.querySelector('.chat-msg .chat-msg__text');
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you downloaded this funny file?');
-            const media = view.el.querySelector('.chat-msg .chat-msg__media');
+            const media = view.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                 `<!----><a target="_blank" rel="noopener" href="https://montague.lit/funny.pdf"><!---->Download file "funny.pdf"<!----></a><!---->`);
             done();
@@ -1572,11 +1572,11 @@ describe("A Chat Message", function () {
             _converse.connection._dataRecv(mock.createRequest(stanza));
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg a').length, 1000);
-            const msg = view.el.querySelector('.chat-msg .chat-msg__text');
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg a').length, 1000);
+            const msg = view.querySelector('.chat-msg .chat-msg__text');
             expect(u.hasClass('chat-msg__text', msg)).toBe(true);
             expect(msg.textContent).toEqual('Have you seen this funny image?');
-            const media = view.el.querySelector('.chat-msg .chat-msg__media');
+            const media = view.querySelector('.chat-msg .chat-msg__media');
             expect(media.innerHTML.replace(/<!---->/g, '').replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                 `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                 `Download image file "conversejs-filled.svg"</a>`);

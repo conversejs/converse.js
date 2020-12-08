@@ -23,8 +23,8 @@ export function applyDragResistance (value, default_value) {
     return value;
 }
 
-export function renderDragResizeHandles (_converse, view) {
-    const flyout = view.el.querySelector('.box-flyout');
+export function renderDragResizeHandles (_converse, el) {
+    const flyout = el.querySelector('.box-flyout');
     const div = document.createElement('div');
     render(tpl_dragresize(), div);
     flyout.insertBefore(div, flyout.firstChild);

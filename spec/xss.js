@@ -294,8 +294,8 @@ describe("XSS", function () {
 
             _converse.connection._dataRecv(mock.createRequest(presence));
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            await u.waitUntil(() => view.el.querySelectorAll('li .occupant-nick').length, 500);
-            const occupants = view.el.querySelector('.occupant-list').querySelectorAll('li .occupant-nick');
+            await u.waitUntil(() => view.querySelectorAll('li .occupant-nick').length, 500);
+            const occupants = view.querySelector('.occupant-list').querySelectorAll('li .occupant-nick');
             expect(occupants.length).toBe(2);
             expect(occupants[0].textContent.trim()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
             done();
@@ -314,7 +314,7 @@ describe("XSS", function () {
                 'text': subject,
                 'author': 'ralphm'
             }});
-            const text = await u.waitUntil(() => view.el.querySelector('.chat-head__desc')?.textContent.trim());
+            const text = await u.waitUntil(() => view.querySelector('.chat-head__desc')?.textContent.trim());
             expect(text).toBe(subject);
             done();
         }));

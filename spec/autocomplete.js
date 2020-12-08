@@ -41,7 +41,7 @@ describe("The nickname autocomplete feature", function () {
         await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
         // Test that pressing @ brings up all options
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
         const at_event = {
             'target': textarea,
             'preventDefault': function preventDefault () {},
@@ -53,11 +53,11 @@ describe("The nickname autocomplete feature", function () {
         textarea.value = '@';
         view.onKeyUp(at_event);
 
-        await u.waitUntil(() => view.el.querySelectorAll('.suggestion-box__results li').length === 4);
-        expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
-        expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
-        expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
-        expect(view.el.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
+        await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
+        expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
         done();
     }));
 
@@ -95,7 +95,7 @@ describe("The nickname autocomplete feature", function () {
         await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
         // Test that pressing @ brings up all options
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
         const at_event = {
             'target': textarea,
             'preventDefault': function preventDefault () {},
@@ -108,11 +108,11 @@ describe("The nickname autocomplete feature", function () {
         textarea.value = '\n@';
         view.onKeyUp(at_event);
 
-        await u.waitUntil(() => view.el.querySelectorAll('.suggestion-box__results li').length === 4);
-        expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
-        expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
-        expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
-        expect(view.el.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
+        await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
+        expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
         done();
     }));
 
@@ -150,7 +150,7 @@ describe("The nickname autocomplete feature", function () {
         await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
         // Test that pressing @ brings up all options
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
         const at_event = {
             'target': textarea,
             'preventDefault': function preventDefault () {},
@@ -163,11 +163,11 @@ describe("The nickname autocomplete feature", function () {
         textarea.value = '(@';
         view.onKeyUp(at_event);
 
-        await u.waitUntil(() => view.el.querySelectorAll('.suggestion-box__results li').length === 4);
-        expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
-        expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
-        expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
-        expect(view.el.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
+        await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 4);
+        expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('jane');
+        expect(view.querySelector('.suggestion-box__results li:nth-child(4)').textContent).toBe('tom');
         done();
     }));
 
@@ -191,7 +191,7 @@ describe("The nickname autocomplete feature", function () {
                         })));
             });
 
-            const textarea = view.el.querySelector('textarea.chat-textarea');
+            const textarea = view.querySelector('textarea.chat-textarea');
             const at_event = {
                 'target': textarea,
                 'preventDefault': function preventDefault() { },
@@ -204,17 +204,17 @@ describe("The nickname autocomplete feature", function () {
             view.onKeyDown(at_event);
             textarea.value = '@ber';
             view.onKeyUp(at_event);
-            await u.waitUntil(() => view.el.querySelectorAll('.suggestion-box__results li').length === 3);
-            expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('bernard');
-            expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('naber');
-            expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('helberlo');
+            await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 3);
+            expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('bernard');
+            expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('naber');
+            expect(view.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('helberlo');
 
             // Test that when the query index is equal, results should be sorted by length
             textarea.value = '@jo';
             view.onKeyUp(at_event);
-            await u.waitUntil(() => view.el.querySelectorAll('.suggestion-box__results li').length === 2);
-            expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('john');
-            expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('jones');
+            await u.waitUntil(() => view.querySelectorAll('.suggestion-box__results li').length === 2);
+            expect(view.querySelector('.suggestion-box__results li:first-child').textContent).toBe('john');
+            expect(view.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('jones');
             done();
     }));
 
@@ -239,7 +239,7 @@ describe("The nickname autocomplete feature", function () {
         _converse.connection._dataRecv(mock.createRequest(presence));
         expect(view.model.occupants.length).toBe(2);
 
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
         textarea.value = "hello som";
 
         // Press tab
@@ -252,9 +252,9 @@ describe("The nickname autocomplete feature", function () {
         }
         view.onKeyDown(tab_event);
         view.onKeyUp(tab_event);
-        await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === false);
-        expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(1);
-        expect(view.el.querySelector('.suggestion-box__results li').textContent).toBe('some1');
+        await u.waitUntil(() => view.querySelector('.suggestion-box__results').hidden === false);
+        expect(view.querySelectorAll('.suggestion-box__results li').length).toBe(1);
+        expect(view.querySelector('.suggestion-box__results li').textContent).toBe('some1');
 
         const backspace_event = {
             'target': textarea,
@@ -267,7 +267,7 @@ describe("The nickname autocomplete feature", function () {
             textarea.value = textarea.value.slice(0, textarea.value.length-1)
             view.onKeyUp(backspace_event);
         }
-        await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === true);
+        await u.waitUntil(() => view.querySelector('.suggestion-box__results').hidden === true);
 
         presence = $pres({
                 'to': 'romeo@montague.lit/orchard',
@@ -284,8 +284,8 @@ describe("The nickname autocomplete feature", function () {
         textarea.value = "hello s s";
         view.onKeyDown(tab_event);
         view.onKeyUp(tab_event);
-        await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === false);
-        expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
+        await u.waitUntil(() => view.querySelector('.suggestion-box__results').hidden === false);
+        expect(view.querySelectorAll('.suggestion-box__results li').length).toBe(2);
 
         const up_arrow_event = {
             'target': textarea,
@@ -295,9 +295,9 @@ describe("The nickname autocomplete feature", function () {
         }
         view.onKeyDown(up_arrow_event);
         view.onKeyUp(up_arrow_event);
-        expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
-        expect(view.el.querySelector('.suggestion-box__results li[aria-selected="false"]').textContent).toBe('some1');
-        expect(view.el.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('some2');
+        expect(view.querySelectorAll('.suggestion-box__results li').length).toBe(2);
+        expect(view.querySelector('.suggestion-box__results li[aria-selected="false"]').textContent).toBe('some1');
+        expect(view.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('some2');
 
         view.onKeyDown({
             'target': textarea,
@@ -322,7 +322,7 @@ describe("The nickname autocomplete feature", function () {
         textarea.value = "hello z";
         view.onKeyDown(tab_event);
         view.onKeyUp(tab_event);
-        await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === false);
+        await u.waitUntil(() => view.querySelector('.suggestion-box__results').hidden === false);
 
         view.onKeyDown(tab_event);
         view.onKeyUp(tab_event);
@@ -351,7 +351,7 @@ describe("The nickname autocomplete feature", function () {
         _converse.connection._dataRecv(mock.createRequest(presence));
         expect(view.model.occupants.length).toBe(2);
 
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
         textarea.value = "hello @some1 ";
 
         // Press backspace
@@ -365,9 +365,9 @@ describe("The nickname autocomplete feature", function () {
         view.onKeyDown(backspace_event);
         textarea.value = "hello @some1"; // Mimic backspace
         view.onKeyUp(backspace_event);
-        await u.waitUntil(() => view.el.querySelector('.suggestion-box__results').hidden === false);
-        expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(1);
-        expect(view.el.querySelector('.suggestion-box__results li').textContent).toBe('some1');
+        await u.waitUntil(() => view.querySelector('.suggestion-box__results').hidden === false);
+        expect(view.querySelectorAll('.suggestion-box__results li').length).toBe(1);
+        expect(view.querySelector('.suggestion-box__results li').textContent).toBe('some1');
         done();
     }));
 });

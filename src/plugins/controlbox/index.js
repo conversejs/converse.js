@@ -8,7 +8,7 @@ import "../chatview/index.js";
 import ControlBoxMixin from './model.js';
 import ControlBoxPane from './pane.js';
 import ControlBoxToggle from './toggle.js';
-import ControlBoxViewMixin from './view.js';
+import ControlBoxView from './view.js';
 import log from '@converse/headless/log';
 import { LoginPanelModel, LoginPanel } from './loginpanel.js';
 import { _converse, api, converse } from '@converse/headless/core';
@@ -17,20 +17,6 @@ import controlbox_api from './api.js';
 
 const u = converse.env.utils;
 
-function onChatBoxViewsInitialized () {
-    _converse.chatboxes.on('add', item => {
-        if (item.get('type') === _converse.CONTROLBOX_TYPE) {
-            const views = _converse.chatboxviews;
-            const view = views.get(item.get('id'));
-            if (view) {
-                view.model = item;
-                view.initialize();
-            } else {
-                views.add(item.get('id'), new _converse.ControlBoxView({ model: item }));
-            }
-        }
-    });
-}
 
 function disconnect () {
     /* Upon disconnection, set connected to `false`, so that if
@@ -96,9 +82,6 @@ converse.plugins.add('converse-controlbox', {
     },
 
     initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by converse.js's plugin machinery.
-         */
         api.settings.extend({
             allow_logout: true,
             allow_user_trust_override: true,
@@ -111,15 +94,14 @@ converse.plugins.add('converse-controlbox', {
         api.promises.add('controlBoxInitialized');
         Object.assign(api, controlbox_api);
 
+        _converse.ControlBoxView = ControlBoxView;
         _converse.ControlBox = _converse.ChatBox.extend(ControlBoxMixin);
-        _converse.ControlBoxView = _converse.ChatBoxView.extend(ControlBoxViewMixin);
         _converse.LoginPanelModel = LoginPanelModel;
         _converse.LoginPanel = LoginPanel;
         _converse.ControlBoxPane = ControlBoxPane;
         _converse.ControlBoxToggle = ControlBoxToggle;
 
         /******************** Event Handlers ********************/
-        api.listen.on('chatBoxViewsInitialized', onChatBoxViewsInitialized);
         api.listen.on('chatBoxesFetched', onChatBoxesFetched);
         api.listen.on('cleanup', () => delete _converse.controlboxtoggle);
         api.listen.on('clearSession', clearSession);

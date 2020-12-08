@@ -158,7 +158,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items');
                 const view = _converse.chatboxviews.get(contact_jid);
-                expect(view.el.querySelector('.chat-toolbar .fileupload')).toBe(null);
+                expect(view.querySelector('.chat-toolbar .fileupload')).toBe(null);
                 done();
             }));
 
@@ -174,7 +174,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                await u.waitUntil(() => view.el.querySelector('.chat-toolbar .fileupload') === null);
+                await u.waitUntil(() => view.querySelector('.chat-toolbar .fileupload') === null);
                 expect(1).toBe(1);
                 done();
             }));
@@ -198,7 +198,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                 const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
-                const el = await u.waitUntil(() => view.el.querySelector('.chat-toolbar .fileupload'));
+                const el = await u.waitUntil(() => view.querySelector('.chat-toolbar .fileupload'));
                 expect(el).not.toEqual(null);
                 done();
             }));
@@ -217,7 +217,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').el.querySelector('.fileupload'));
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                expect(view.el.querySelector('.chat-toolbar .fileupload')).not.toBe(null);
+                expect(view.querySelector('.chat-toolbar .fileupload')).not.toBe(null);
                 done();
             }));
 
@@ -283,12 +283,12 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                     spyOn(XMLHttpRequest.prototype, 'send').and.callFake(function () {
                         const message = view.model.messages.at(0);
-                        expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
+                        expect(view.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
                         message.set('progress', 0.5);
-                        u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
+                        u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5')
                         .then(() => {
                             message.set('progress', 1);
-                            u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1')
+                            u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '1')
                         }).then(() => {
                             message.save({
                                 'upload': _converse.SUCCESS,
@@ -317,13 +317,13 @@ describe("XEP-0363: HTTP File Upload", function () {
                                 `</x>`+
                                 `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
-                    const img_link_el = await u.waitUntil(() => view.el.querySelector('converse-chat-message-body .chat-image__link'), 1000);
+                    const img_link_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders
                     expect(img_link_el.outerHTML.replace(/<!---->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
 
-                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
                         `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `Download image file "conversejs-filled.svg"</a>`);
                     XMLHttpRequest.prototype.send = send_backup;
@@ -391,12 +391,12 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                     spyOn(XMLHttpRequest.prototype, 'send').and.callFake(function () {
                         const message = view.model.messages.at(0);
-                        expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
+                        expect(view.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
                         message.set('progress', 0.5);
-                        u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5')
+                        u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5')
                         .then(() => {
                             message.set('progress', 1);
-                            u.waitUntil(() => view.el.querySelector('.chat-content progress')?.getAttribute('value') === '1')
+                            u.waitUntil(() => view.querySelector('.chat-content progress')?.getAttribute('value') === '1')
                         }).then(() => {
                             message.save({
                                 'upload': _converse.SUCCESS,
@@ -425,13 +425,13 @@ describe("XEP-0363: HTTP File Upload", function () {
                                 `</x>`+
                                 `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
-                    const img_link_el = await u.waitUntil(() => view.el.querySelector('converse-chat-message-body .chat-image__link'), 1000);
+                    const img_link_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body .chat-image__link'), 1000);
                     // Check that the image renders
                     expect(img_link_el.outerHTML.replace(/<!---->/g, '').trim()).toEqual(
                         `<a class="chat-image__link" target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg"></a>`);
 
-                    expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
+                    expect(view.querySelector('.chat-msg .chat-msg__media').innerHTML.replace(/<!---->/g, '').trim()).toEqual(
                         `<a target="_blank" rel="noopener" href="${base_url}/logo/conversejs-filled.svg">`+
                         `Download image file "conversejs-filled.svg"</a>`);
 
@@ -548,8 +548,8 @@ describe("XEP-0363: HTTP File Upload", function () {
                         'name': "my-juliet.jpg"
                     };
                     view.model.sendFiles([file]);
-                    await u.waitUntil(() => view.el.querySelectorAll('.message').length)
-                    const messages = view.el.querySelectorAll('.message.chat-error');
+                    await u.waitUntil(() => view.querySelectorAll('.message').length)
+                    const messages = view.querySelectorAll('.message.chat-error');
                     expect(messages.length).toBe(1);
                     expect(messages[0].textContent.trim()).toBe(
                         'The size of your file, my-juliet.jpg, exceeds the maximum allowed by your server, which is 5 MB.');
@@ -618,12 +618,12 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                 spyOn(XMLHttpRequest.prototype, 'send').and.callFake(async () => {
                     const message = view.model.messages.at(0);
-                    expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
+                    expect(view.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
                     message.set('progress', 0.5);
-                    await u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '0.5');
+                    await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5');
                     message.set('progress', 1);
-                    await u.waitUntil(() => view.el.querySelector('.chat-content progress').getAttribute('value') === '1');
-                    expect(view.el.querySelector('.chat-content .chat-msg__text').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
+                    await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '1');
+                    expect(view.querySelector('.chat-content .chat-msg__text').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
                     done();
                 });
                 _converse.connection._dataRecv(mock.createRequest(stanza));

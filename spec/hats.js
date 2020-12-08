@@ -25,7 +25,7 @@ describe("A XEP-0317 MUC Hat", function () {
                 </hats>
             </presence>
         `)));
-        await u.waitUntil(() => view.el.querySelector('.chat-content__notifications').textContent.trim() ===
+        await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
             "romeo and Terry have entered the groupchat");
 
         let hats = view.model.getOccupant("Terry").get('hats');
@@ -38,7 +38,7 @@ describe("A XEP-0317 MUC Hat", function () {
             </message>
         `)));
 
-        const msg_el = await u.waitUntil(() => view.el.querySelector('.chat-msg'));
+        const msg_el = await u.waitUntil(() => view.querySelector('.chat-msg'));
         let badges = Array.from(msg_el.querySelectorAll('.badge'));
         expect(badges.length).toBe(2);
         expect(badges.map(b => b.textContent.trim()).join(' ' )).toBe("Teacher's Assistant Dark Mage");
@@ -60,8 +60,8 @@ describe("A XEP-0317 MUC Hat", function () {
         await u.waitUntil(() => view.model.getOccupant("Terry").get('hats').length === 3);
         hats = view.model.getOccupant("Terry").get('hats');
         expect(hats.map(h => h.title).join(' ')).toBe("Teacher's Assistant Dark Mage Mad hatter");
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg .badge').length === 3, 1000);
-        badges = Array.from(view.el.querySelectorAll('.chat-msg .badge'));
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg .badge').length === 3, 1000);
+        badges = Array.from(view.querySelectorAll('.chat-msg .badge'));
         expect(badges.map(b => b.textContent.trim()).join(' ' )).toBe("Teacher's Assistant Dark Mage Mad hatter");
 
         _converse.connection._dataRecv(mock.createRequest(u.toStanza(`
@@ -72,7 +72,7 @@ describe("A XEP-0317 MUC Hat", function () {
             </presence>
         `)));
         await u.waitUntil(() => view.model.getOccupant("Terry").get('hats').length === 0);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg .badge').length === 0);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg .badge').length === 0);
         done();
     }));
 })

@@ -75,7 +75,7 @@ describe("A sent presence stanza", function () {
         spyOn(_converse.connection, 'send').and.callThrough();
 
         const cbview = _converse.chatboxviews.get('controlbox');
-        const change_status_el = await u.waitUntil(() => cbview.el.querySelector('.change-status'));
+        const change_status_el = await u.waitUntil(() => cbview.querySelector('.change-status'));
         change_status_el.click()
         let modal = _converse.api.modal.get('modal-status-change');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -94,7 +94,7 @@ describe("A sent presence stanza", function () {
         await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
         await u.waitUntil(() => !u.isVisible(modal.el));
 
-        cbview.el.querySelector('.change-status').click()
+        cbview.querySelector('.change-status').click()
         modal = _converse.api.modal.get('modal-status-change');
         await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "false", 1000);
         modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"

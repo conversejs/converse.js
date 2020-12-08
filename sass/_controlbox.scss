@@ -384,192 +384,218 @@
     }
 }
 
-
-#conversejs.converse-overlayed {
-    .toggle-controlbox {
-        order: -1;
-        text-align: center;
-        background-color: var(--link-color);
-        border-top-left-radius: var(--button-border-radius);
-        border-top-right-radius: var(--button-border-radius);
-        color: #0a0a0a;
-        float: right;
-        height: 100%;
-        margin: 0 var(--chat-gutter);
-        padding: 1em;
-        span {
-            color: var(--inverse-link-color);
+converse-chats {
+    .converse-overlayed {
+        .toggle-controlbox {
+            order: -1;
+            text-align: center;
+            background-color: var(--link-color);
+            border-top-left-radius: var(--button-border-radius);
+            border-top-right-radius: var(--button-border-radius);
+            color: #0a0a0a;
+            float: right;
+            height: 100%;
+            margin: 0 var(--chat-gutter);
+            padding: 1em;
+            span {
+                color: var(--inverse-link-color);
+            }
         }
-    }
 
-    #controlbox {
-        min-width: var(--controlbox-width) !important;
-        width: var(--controlbox-width);
-        .box-flyout {
+        #controlbox {
             min-width: var(--controlbox-width) !important;
             width: var(--controlbox-width);
-        }
+            .box-flyout {
+                min-width: var(--controlbox-width) !important;
+                width: var(--controlbox-width);
+            }
 
-        .login-trusted {
-            white-space: nowrap;
-            font-size: 90%;
-        }
+            .login-trusted {
+                white-space: nowrap;
+                font-size: 90%;
+            }
 
-        #converse-login-trusted {
-            margin-top: 0.5em;
-        }
-        &:not(.logged-out) {
+            #converse-login-trusted {
+                margin-top: 0.5em;
+            }
+            &:not(.logged-out) {
+                .controlbox-head {
+                    height: 15px;
+                }
+            }
+
             .controlbox-head {
-                height: 15px;
-            }
-        }
+                display: flex;
+                flex-direction: row-reverse;
+                flex-wrap: nowrap;
+                justify-content: space-between;
+                min-height: 0;
 
-        .controlbox-head {
-            display: flex;
-            flex-direction: row-reverse;
-            flex-wrap: nowrap;
-            justify-content: space-between;
-            min-height: 0;
-
-            .brand-heading {
-                color: var(--controlbox-text-color);
-                font-size: 2em;
-            }
-            .chatbox-btn {
-                color: var(--controlbox-head-color);
-                margin: 0;
-            }
-        }
-
-        #converse-register, #converse-login {
-            @include make-col(12);
-            padding-bottom: 0;
-        }
-
-        #converse-register {
-            .button-cancel {
-                font-size: 90%;
-            }
-        }
-
-        .controlbox-panes {
-            border-radius: var(--chatbox-border-radius);
-        }
-    }
-}
-
-#conversejs.converse-embedded,
-#conversejs.converse-fullscreen{
-    .toggle-controlbox {
-        display: none;
-    }
-}
-
-#conversejs.converse-embedded,
-#conversejs.converse-fullscreen,
-#conversejs.converse-mobile {
-    #controlbox {
-        @include make-col-ready();
-
-        @include media-breakpoint-up(md) {
-            @include make-col(4);
-        }
-        @include media-breakpoint-up(lg) {
-            @include make-col(3);
-        }
-        @include media-breakpoint-up(xl) {
-            @include make-col(2);
-        }
-
-        &.logged-out {
-            @include make-col(12);
-        }
-
-        margin: 0;
-
-        .controlbox-pane {
-            border-radius: 0;
-        }
-
-        .flyout {
-            border-radius: 0;
-        }
-
-        #converse-login-panel {
-            border-radius: 0;
-            .converse-form {
-                padding: 3em 2em 3em;
-            }
-        }
-
-        .toggle-register-login {
-            line-height: var(--line-height-huge);
-        }
-
-        converse-brand-logo {
-            @include make-col(12);
-            margin-top: 5em;
-            margin-bottom: 1em;
-            .brand-heading {
-                width: 100%;
-                font-size: 500%;
-                padding: 0.7em 0 0 0;
-                opacity: 0.8;
-                color: var(--brand-heading-color);
-            }
-            .brand-subtitle {
-                font-size: 90%;
-                padding: 0.5em;
-            }
-            @media screen and (max-width: $mobile-portrait-length) {
                 .brand-heading {
-                    font-size: 300%;
+                    color: var(--controlbox-text-color);
+                    font-size: 2em;
+                }
+                .chatbox-btn {
+                    color: var(--controlbox-head-color);
+                    margin: 0;
+                }
+            }
+
+            #converse-register, #converse-login {
+                @include make-col(12);
+                padding-bottom: 0;
+            }
+
+            #converse-register {
+                .button-cancel {
+                    font-size: 90%;
+                }
+            }
+
+            .controlbox-panes {
+                border-radius: var(--chatbox-border-radius);
+            }
+        }
+    }
+
+    .converse-embedded,
+    .converse-fullscreen{
+        .toggle-controlbox {
+            display: none;
+        }
+    }
+
+    .converse-embedded,
+    .converse-fullscreen,
+    .converse-mobile {
+        #controlbox {
+            @include make-col-ready();
+
+            @include media-breakpoint-up(md) {
+                @include make-col(4);
+            }
+            @include media-breakpoint-up(lg) {
+                @include make-col(3);
+            }
+            @include media-breakpoint-up(xl) {
+                @include make-col(2);
+            }
+
+            &.logged-out {
+                @include make-col(12);
+            }
+
+            margin: 0;
+
+            .controlbox-pane {
+                border-radius: 0;
+            }
+
+            .flyout {
+                border-radius: 0;
+            }
+
+            #converse-login-panel {
+                border-radius: 0;
+                .converse-form {
+                    padding: 3em 2em 3em;
+                }
+            }
+
+            .toggle-register-login {
+                line-height: var(--line-height-huge);
+            }
+
+            converse-brand-logo {
+                @include make-col(12);
+                margin-top: 5em;
+                margin-bottom: 1em;
+                .brand-heading {
+                    width: 100%;
+                    font-size: 500%;
+                    padding: 0.7em 0 0 0;
+                    opacity: 0.8;
+                    color: var(--brand-heading-color);
+                }
+                .brand-subtitle {
+                    font-size: 90%;
+                    padding: 0.5em;
+                }
+                @media screen and (max-width: $mobile-portrait-length) {
+                    .brand-heading {
+                        font-size: 300%;
+                    }
+                }
+            }
+
+            &.logged-out {
+                @include make-col(12);
+                @include fade-in;
+                width: 100%;
+                .box-flyout {
+                    width: 100%;
+                }
+            }
+            .box-flyout {
+                border: 0;
+                width: 100%;
+                z-index: 1;
+                background-color: var(--controlbox-head-color);
+
+                .controlbox-head {
+                    display: none;
+                }
+            }
+
+            #converse-register, #converse-login {
+                @include make-col-ready();
+                @include make-col(8);
+                @include make-col-offset(2);
+
+                @include media-breakpoint-up(sm) {
+                    @include make-col(8);
+                    @include make-col-offset(2);
+                }
+                @include media-breakpoint-up(md) {
+                    @include make-col(8);
+                    @include make-col-offset(2);
+                }
+                @include media-breakpoint-up(lg) {
+                    @include make-col(6);
+                    @include make-col-offset(3);
+                }
+                .title, .instructions {
+                    margin: 1em 0;
+                }
+                input[type=submit],
+                input[type=button] {
+                    width: auto;
                 }
             }
         }
+    }
 
-        &.logged-out {
-            @include make-col(12);
-            @include fade-in;
-            width: 100%;
-            .box-flyout {
-                width: 100%;
-            }
+    .converse-fullscreen {
+        .controlbox-panes {
+            padding-top: 1em;
         }
-        .box-flyout {
-            border: 0;
+    }
+
+    .converse-overlayed {
+        .brand-heading {
+            padding-top: 0.8rem;
+            padding-left: 0.8rem;
             width: 100%;
-            z-index: 1;
-            background-color: var(--controlbox-head-color);
-
-            .controlbox-head {
-                display: none;
-            }
         }
-
-        #converse-register, #converse-login {
-            @include make-col-ready();
-            @include make-col(8);
-            @include make-col-offset(2);
-
-            @include media-breakpoint-up(sm) {
-                @include make-col(8);
-                @include make-col-offset(2);
+        .converse-svg-logo {
+            height: 1em;
+        }
+        #controlbox {
+            #converse-login-panel {
+                height: 100%;
             }
-            @include media-breakpoint-up(md) {
-                @include make-col(8);
-                @include make-col-offset(2);
-            }
-            @include media-breakpoint-up(lg) {
-                @include make-col(6);
-                @include make-col-offset(3);
-            }
-            .title, .instructions {
-                margin: 1em 0;
-            }
-            input[type=submit],
-            input[type=button] {
-                width: auto;
+            .controlbox-panes {
+                margin-top: 0.5em;
             }
         }
     }
@@ -625,31 +651,6 @@
                     }
                 }
             }
-        }
-    }
-}
-
-#conversejs.converse-fullscreen {
-    .controlbox-panes {
-        padding-top: 1em;
-    }
-}
-
-#conversejs.converse-overlayed {
-    .brand-heading {
-        padding-top: 0.8rem;
-        padding-left: 0.8rem;
-        width: 100%;
-    }
-    .converse-svg-logo {
-        height: 1em;
-    }
-    #controlbox {
-        #converse-login-panel {
-            height: 100%;
-        }
-        .controlbox-panes {
-            margin-top: 0.5em;
         }
     }
 }

@@ -18,7 +18,7 @@ describe("Chatrooms", function () {
             const muc_jid = 'coven@chat.shakespeare.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo')
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = view.el.querySelector('.chat-textarea')
+            const textarea = view.querySelector('.chat-textarea')
             textarea.value = '/register';
             view.onKeyDown({
                 target: textarea,

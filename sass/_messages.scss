@@ -383,22 +383,25 @@
             border-bottom: var(--chatroom-separator-border-bottom);
         }
     }
-}
 
-#conversejs.converse-overlayed {
-    .message {
-        &.chat-msg {
-            &.chat-msg--followup {
-                .chat-msg__content {
-                    margin-left: 0;
+    converse-chats {
+        .converse-overlayed {
+            .message {
+                &.chat-msg {
+                    &.chat-msg--followup {
+                        .chat-msg__content {
+                            margin-left: 0;
+                        }
+                    }
                 }
             }
         }
     }
 }
 
+
 @media screen and (max-width: 767px) {
-    #conversejs:not(.converse-embedded)  {
+    converse-chats:not(.converse-embedded)  {
         .message {
             &.chat-msg {
                 .chat-msg__author {

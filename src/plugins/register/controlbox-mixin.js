@@ -1,6 +1,7 @@
 import { _converse, api } from '@converse/headless/core';
 
 const ControlBoxRegistrationMixin = {
+
     showLoginOrRegisterForm () {
         if (!this.registerpanel) {
             return;
@@ -21,7 +22,7 @@ const ControlBoxRegistrationMixin = {
             });
             this.registerpanel.render();
             this.registerpanel.el.classList.add('hidden');
-            const login_panel = this.el.querySelector('#converse-login-panel');
+            const login_panel = this.querySelector('#converse-login-panel');
             if (login_panel) {
                 login_panel.insertAdjacentElement('afterend', this.registerpanel.el);
             }

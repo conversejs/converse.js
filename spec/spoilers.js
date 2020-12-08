@@ -39,10 +39,10 @@ describe("A spoiler message", function () {
         const view = _converse.chatboxviews.get(sender_jid);
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
-        expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Mercutio');
-        const message_content = view.el.querySelector('.chat-msg__text');
+        expect(view.querySelector('.chat-msg__author').textContent.trim()).toBe('Mercutio');
+        const message_content = view.querySelector('.chat-msg__text');
         await u.waitUntil(() => message_content.textContent === spoiler);
-        const spoiler_hint_el = view.el.querySelector('.spoiler-hint');
+        const spoiler_hint_el = view.querySelector('.spoiler-hint');
         expect(spoiler_hint_el.textContent).toBe(spoiler_hint);
         done();
     }));
@@ -75,13 +75,13 @@ describe("A spoiler message", function () {
         await new Promise(resolve => _converse.api.listen.once('chatBoxViewInitialized', resolve));
         const view = _converse.chatboxviews.get(sender_jid);
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        await u.waitUntil(() => u.isVisible(view.el));
+        await u.waitUntil(() => u.isVisible(view));
         await u.waitUntil(() => view.model.vcard.get('fullname') === 'Mercutio')
-        await u.waitUntil(() => u.isVisible(view.el.querySelector('.chat-msg__author')));
-        expect(view.el.querySelector('.chat-msg__author').textContent.includes('Mercutio')).toBeTruthy();
-        const message_content = view.el.querySelector('.chat-msg__text');
+        await u.waitUntil(() => u.isVisible(view.querySelector('.chat-msg__author')));
+        expect(view.querySelector('.chat-msg__author').textContent.includes('Mercutio')).toBeTruthy();
+        const message_content = view.querySelector('.chat-msg__text');
         await u.waitUntil(() => message_content.textContent === spoiler);
-        const spoiler_hint_el = view.el.querySelector('.spoiler-hint');
+        const spoiler_hint_el = view.querySelector('.spoiler-hint');
         expect(spoiler_hint_el.textContent).toBe('');
         done();
     }));
@@ -112,11 +112,11 @@ describe("A spoiler message", function () {
         const view = _converse.api.chatviews.get(contact_jid);
         spyOn(_converse.connection, 'send');
 
-        await u.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
-        let spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+        await u.waitUntil(() => view.querySelector('.toggle-compose-spoiler'));
+        let spoiler_toggle = view.querySelector('.toggle-compose-spoiler');
         spoiler_toggle.click();
 
-        const textarea = view.el.querySelector('.chat-textarea');
+        const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This is the spoiler';
         view.onKeyDown({
             target: textarea,
@@ -147,15 +147,15 @@ describe("A spoiler message", function () {
         expect(body_el.textContent).toBe(spoiler);
 
         /* Test the HTML spoiler message */
-        expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
+        expect(view.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
 
-        const message_content = view.el.querySelector('.chat-msg__text');
+        const message_content = view.querySelector('.chat-msg__text');
         await u.waitUntil(() => message_content.textContent === spoiler);
 
-        const spoiler_msg_el = view.el.querySelector('.chat-msg__text.spoiler');
+        const spoiler_msg_el = view.querySelector('.chat-msg__text.spoiler');
         expect(Array.from(spoiler_msg_el.classList).includes('hidden')).toBeTruthy();
 
-        spoiler_toggle = view.el.querySelector('.spoiler-toggle');
+        spoiler_toggle = view.querySelector('.spoiler-toggle');
         expect(spoiler_toggle.textContent.trim()).toBe('Show more');
         spoiler_toggle.click();
         await u.waitUntil(() => !Array.from(spoiler_msg_el.classList).includes('hidden'));
@@ -190,15 +190,15 @@ describe("A spoiler message", function () {
         await mock.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
         const view = _converse.api.chatviews.get(contact_jid);
 
-        await u.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
-        let spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+        await u.waitUntil(() => view.querySelector('.toggle-compose-spoiler'));
+        let spoiler_toggle = view.querySelector('.toggle-compose-spoiler');
         spoiler_toggle.click();
 
         spyOn(_converse.connection, 'send');
 
-        const textarea = view.el.querySelector('.chat-textarea');
+        const textarea = view.querySelector('.chat-textarea');
         textarea.value = 'This is the spoiler';
-        const hint_input = view.el.querySelector('.spoiler-hint');
+        const hint_input = view.querySelector('.spoiler-hint');
         hint_input.value = 'This is the hint';
 
         view.onKeyDown({
@@ -229,15 +229,15 @@ describe("A spoiler message", function () {
         const body_el = stanza.querySelector('body');
         expect(body_el.textContent).toBe(spoiler);
 
-        expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
+        expect(view.querySelector('.chat-msg__author').textContent.trim()).toBe('Romeo Montague');
 
-        const message_content = view.el.querySelector('.chat-msg__text');
+        const message_content = view.querySelector('.chat-msg__text');
         await u.waitUntil(() => message_content.textContent === spoiler);
 
-        const spoiler_msg_el = view.el.querySelector('.chat-msg__text.spoiler');
+        const spoiler_msg_el = view.querySelector('.chat-msg__text.spoiler');
         expect(Array.from(spoiler_msg_el.classList).includes('hidden')).toBeTruthy();
 
-        spoiler_toggle = view.el.querySelector('.spoiler-toggle');
+        spoiler_toggle = view.querySelector('.spoiler-toggle');
         expect(spoiler_toggle.textContent.trim()).toBe('Show more');
         spoiler_toggle.click();
         await u.waitUntil(() => !Array.from(spoiler_msg_el.classList).includes('hidden'));

@@ -442,9 +442,9 @@ window.addEventListener('converse-loaded', () => {
 
     mock.sendMessage = function (view, message) {
         const promise = new Promise(resolve => view.model.messages.once('rendered', resolve));
-        view.el.querySelector('.chat-textarea').value = message;
+        view.querySelector('.chat-textarea').value = message;
         view.onKeyDown({
-            target: view.el.querySelector('textarea.chat-textarea'),
+            target: view.querySelector('textarea.chat-textarea'),
             preventDefault: () => {},
             keyCode: 13
         });
@@ -641,7 +641,7 @@ window.addEventListener('converse-loaded', () => {
             'view_mode': mock.view_mode
         }, settings || {}));
 
-        _converse.ChatBoxViews.prototype.trimChat = function () {};
+        _converse.minimize.trimChat = function () {};
 
         _converse.api.vcard.get = function (model, force) {
             let jid;

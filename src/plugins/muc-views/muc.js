@@ -1,6 +1,7 @@
 import './config-form.js';
 import './password-form.js';
 import 'shared/autocomplete/index.js';
+import BaseChatView from 'shared/chatview.js';
 import MUCInviteModal from 'modals/muc-invite.js';
 import ModeratorToolsModal from 'modals/moderator-tools.js';
 import OccupantModal from 'modals/occupant.js';
@@ -11,9 +12,9 @@ import tpl_chatroom_head from 'templates/chatroom_head.js';
 import tpl_muc_bottom_panel from 'templates/muc_bottom_panel.js';
 import tpl_muc_destroyed from 'templates/muc_destroyed.js';
 import tpl_muc_disconnect from 'templates/muc_disconnect.js';
-import { $pres, Strophe } from 'strophe.js/src/strophe';
 import tpl_muc_nickname_form from 'templates/muc_nickname_form.js';
 import tpl_spinner from 'templates/spinner.js';
+import { $pres, Strophe } from 'strophe.js/src/strophe';
 import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
@@ -49,12 +50,12 @@ const COMMAND_TO_AFFILIATION = {
  * @namespace _converse.ChatRoomView
  * @memberOf _converse
  */
-const ChatRoomViewMixin = {
-    length: 300,
-    tagName: 'div',
-    className: 'chatbox chatroom hidden',
-    is_chatroom: true,
-    events: {
+export default class MUCView extends BaseChatView {
+    length = 300
+    tagName = 'div'
+    className = 'chatbox chatroom hidden'
+    is_chatroom = true
+    events = {
         'click .chatbox-navback': 'showControlBox',
         'click .hide-occupants': 'hideOccupants',
         'click .new-msgs-indicator': 'viewUnreadMessages',
@@ -71,10 +72,16 @@ const ChatRoomViewMixin = {
         'mousedown .dragresize-occupants-left': 'onStartResizeOccupants',
         'paste .chat-textarea': 'onPaste',
         'submit .muc-nickname-form': 'submitNickname'
-    },
+    }
 
     async initialize () {
+        const jid = this.getAttribute('jid');
+        _converse.chatboxviews.add(jid, this);
+
+        this.model = _converse.chatboxes.get(jid);
         this.initDebounced();
+
+        api.listen.on('windowStateChanged', this.onWindowStateChanged);
 
         this.listenTo(
             this.model,
@@ -82,10 +89,8 @@ const ChatRoomViewMixin = {
             debounce(() => this.renderHeading(), 250)
         );
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
-        this.listenTo(this.model, 'change:hidden', m => (m.get('hidden') ? this.hide() : this.show()));
         this.listenTo(this.model, 'change:hidden_occupants', this.onSidebarToggle);
         this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
-        this.listenTo(this.model, 'destroy', this.hide);
         this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
         this.listenTo(this.model.features, 'change:open', this.renderHeading);
@@ -115,7 +120,6 @@ const ChatRoomViewMixin = {
         this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
 
         this.renderChatContent();
-        this.insertIntoDOM();
         // Register later due to await
         const user_settings = await _converse.api.user.settings.getModel();
         this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
@@ -129,11 +133,11 @@ const ChatRoomViewMixin = {
          * @example _converse.api.listen.on('chatRoomViewInitialized', view => { ... });
          */
         api.trigger('chatRoomViewInitialized', this);
-    },
+    }
 
     async render () {
         const sidebar_hidden = !this.shouldShowSidebar();
-        this.el.setAttribute('id', this.model.get('box_id'));
+        this.setAttribute('id', this.model.get('box_id'));
         render(
             tpl_chatroom({
                 sidebar_hidden,
@@ -146,13 +150,13 @@ const ChatRoomViewMixin = {
                 'muc_show_logs_before_join': api.settings.get('muc_show_logs_before_join'),
                 'show_send_button': _converse.show_send_button
             }),
-            this.el
+            this
         );
 
-        this.notifications = this.el.querySelector('.chat-content__notifications');
-        this.content = this.el.querySelector('.chat-content');
-        this.msgs_container = this.el.querySelector('.chat-content__messages');
-        this.help_container = this.el.querySelector('.chat-content__help');
+        this.notifications = this.querySelector('.chat-content__notifications');
+        this.content = this.querySelector('.chat-content');
+        this.msgs_container = this.querySelector('.chat-content__messages');
+        this.help_container = this.querySelector('.chat-content__help');
 
         this.renderBottomPanel();
         if (
@@ -166,7 +170,7 @@ const ChatRoomViewMixin = {
         // Otherwise e.g. this.notifications is not yet defined when accessed elsewhere.
         await this.renderHeading();
         !this.model.get('hidden') && this.show();
-    },
+    }
 
     getNotifications () {
         const actors_per_state = this.model.notifications.toJSON();
@@ -240,7 +244,7 @@ const ChatRoomViewMixin = {
             }
             return result;
         }, '');
-    },
+    }
 
     getHelpMessages () {
         const setting = api.settings.get('muc_disable_slash_commands');
@@ -269,7 +273,7 @@ const ChatRoomViewMixin = {
         ]
             .filter(line => disabled_commands.every(c => !line.startsWith(c + '<', 9)))
             .filter(line => this.getAllowedCommands().some(c => line.startsWith(c + '<', 9)));
-    },
+    }
 
     /**
      * Renders the MUC heading if any relevant attributes have changed.
@@ -279,11 +283,11 @@ const ChatRoomViewMixin = {
      */
     async renderHeading () {
         const tpl = await this.generateHeadingTemplate();
-        render(tpl, this.el.querySelector('.chat-head-chatroom'));
-    },
+        render(tpl, this.querySelector('.chat-head-chatroom'));
+    }
 
     renderBottomPanel () {
-        const container = this.el.querySelector('.bottom-panel');
+        const container = this.querySelector('.bottom-panel');
         const entered = this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
         const can_edit = entered && !(this.model.features.get('moderated') && this.model.getOwnRole() === 'visitor');
         render(tpl_muc_bottom_panel({ can_edit, entered }), container);
@@ -291,18 +295,18 @@ const ChatRoomViewMixin = {
             this.renderMessageForm();
             this.initMentionAutoComplete();
         }
-    },
+    }
 
     onStartResizeOccupants (ev) {
         this.resizing = true;
-        this.el.addEventListener('mousemove', this.onMouseMove);
-        this.el.addEventListener('mouseup', this.onMouseUp);
+        this.addEventListener('mousemove', this.onMouseMove);
+        this.addEventListener('mouseup', this.onMouseUp);
 
-        const sidebar_el = this.el.querySelector('converse-muc-sidebar');
+        const sidebar_el = this.querySelector('converse-muc-sidebar');
         const style = window.getComputedStyle(sidebar_el);
         this.width = parseInt(style.width.replace(/px$/, ''), 10);
         this.prev_pageX = ev.pageX;
-    },
+    }
 
     onMouseMove (ev) {
         if (this.resizing) {
@@ -311,24 +315,24 @@ const ChatRoomViewMixin = {
             this.resizeSidebarView(delta, ev.pageX);
             this.prev_pageX = ev.pageX;
         }
-    },
+    }
 
     onMouseUp (ev) {
         if (this.resizing) {
             ev.preventDefault();
             this.resizing = false;
-            this.el.removeEventListener('mousemove', this.onMouseMove);
-            this.el.removeEventListener('mouseup', this.onMouseUp);
-            const sidebar_el = this.el.querySelector('converse-muc-sidebar');
+            this.removeEventListener('mousemove', this.onMouseMove);
+            this.removeEventListener('mouseup', this.onMouseUp);
+            const sidebar_el = this.querySelector('converse-muc-sidebar');
             const element_position = sidebar_el.getBoundingClientRect();
             const occupants_width = this.calculateSidebarWidth(element_position, 0);
             const attrs = { occupants_width };
             _converse.connection.connected ? this.model.save(attrs) : this.model.set(attrs);
         }
-    },
+    }
 
     resizeSidebarView (delta, current_mouse_position) {
-        const sidebar_el = this.el.querySelector('converse-muc-sidebar');
+        const sidebar_el = this.querySelector('converse-muc-sidebar');
         const element_position = sidebar_el.getBoundingClientRect();
         if (this.is_minimum) {
             this.is_minimum = element_position.left < current_mouse_position;
@@ -338,11 +342,11 @@ const ChatRoomViewMixin = {
             const occupants_width = this.calculateSidebarWidth(element_position, delta);
             sidebar_el.style.flex = '0 0 ' + occupants_width + 'px';
         }
-    },
+    }
 
     calculateSidebarWidth (element_position, delta) {
         let occupants_width = element_position.width + delta;
-        const room_width = this.el.clientWidth;
+        const room_width = this.clientWidth;
         // keeping display in boundaries
         if (occupants_width < room_width * 0.2) {
             // set pixel to 20% width
@@ -361,13 +365,13 @@ const ChatRoomViewMixin = {
             this.is_minimum = false;
         }
         return occupants_width;
-    },
+    }
 
     getAutoCompleteList () {
         return this.model.getAllKnownNicknames().map(nick => ({ 'label': nick, 'value': `@${nick}` }));
-    },
+    }
 
-    getAutoCompleteListItem (text, input) {
+    getAutoCompleteListItem (text, input) { // eslint-disable-line class-methods-use-this
         input = input.trim();
         const element = document.createElement('li');
         element.setAttribute('aria-selected', 'false');
@@ -401,10 +405,10 @@ const ChatRoomViewMixin = {
         });
 
         return element;
-    },
+    }
 
     initMentionAutoComplete () {
-        this.mention_auto_complete = new _converse.AutoComplete(this.el, {
+        this.mention_auto_complete = new _converse.AutoComplete(this, {
             'auto_first': true,
             'auto_evaluate': false,
             'min_chars': api.settings.get('muc_mention_autocomplete_min_chars'),
@@ -419,7 +423,7 @@ const ChatRoomViewMixin = {
             'item': this.getAutoCompleteListItem
         });
         this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
-    },
+    }
 
     /**
      * Get the nickname value from the form and then join the groupchat with it.
@@ -431,19 +435,19 @@ const ChatRoomViewMixin = {
         ev.preventDefault();
         const nick = ev.target.nick.value.trim();
         nick && this.model.join(nick);
-    },
+    }
 
     onKeyDown (ev) {
         if (this.mention_auto_complete.onKeyDown(ev)) {
             return;
         }
         return _converse.ChatBoxView.prototype.onKeyDown.call(this, ev);
-    },
+    }
 
     onKeyUp (ev) {
         this.mention_auto_complete.evaluate(ev);
         return _converse.ChatBoxView.prototype.onKeyUp.call(this, ev);
-    },
+    }
 
     async onMessageRetractButtonClicked (message) {
         const retraction_warning = __(
@@ -480,7 +484,7 @@ const ChatRoomViewMixin = {
             const err_msg = __(`Sorry, you're not allowed to retract this message`);
             api.alert('error', __('Error'), err_msg);
         }
-    },
+    }
 
     /**
      * Retract someone else's message in this groupchat.
@@ -501,7 +505,7 @@ const ChatRoomViewMixin = {
             log(err_msg, Strophe.LogLevel.WARN);
             log(result, Strophe.LogLevel.WARN);
         }
-    },
+    }
 
     showModeratorToolsModal (affiliation) {
         if (!this.verifyRoles(['moderator'])) {
@@ -515,48 +519,48 @@ const ChatRoomViewMixin = {
             modal = api.modal.create(ModeratorToolsModal, { model, _converse, 'chatroomview': this });
         }
         modal.show();
-    },
+    }
 
     showRoomDetailsModal (ev) {
         ev.preventDefault();
         api.modal.show(RoomDetailsModal, { 'model': this.model }, ev);
-    },
+    }
 
-    showOccupantDetailsModal (ev, message) {
+    showOccupantDetailsModal (ev, message) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
         api.modal.show(OccupantModal, { 'model': message.occupant }, ev);
-    },
+    }
 
     showChatStateNotification (message) {
         if (message.get('sender') === 'me') {
             return;
         }
         return _converse.ChatBoxView.prototype.showChatStateNotification.apply(this, arguments);
-    },
+    }
 
     shouldShowSidebar () {
         return (
             !this.model.get('hidden_occupants') &&
             this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED
         );
-    },
+    }
 
     onSidebarToggle () {
         this.renderToolbar();
-        this.el.querySelector('.occupants')?.setVisibility();
-    },
+        this.querySelector('.occupants')?.setVisibility();
+    }
 
     onOccupantAffiliationChanged (occupant) {
         if (occupant.get('jid') === _converse.bare_jid) {
             this.renderHeading();
         }
-    },
+    }
 
     onOccupantRoleChanged (occupant) {
         if (occupant.get('jid') === _converse.bare_jid) {
             this.renderBottomPanel();
         }
-    },
+    }
 
     /**
      * Returns a list of objects which represent buttons for the groupchat header.
@@ -653,7 +657,7 @@ const ChatRoomViewMixin = {
             });
         }
         return _converse.api.hook('getHeadingButtons', this, buttons);
-    },
+    }
 
     /**
      * Returns the groupchat heading TemplateResult to be rendered.
@@ -674,16 +678,16 @@ const ChatRoomViewMixin = {
                 'title': this.model.getDisplayName()
             })
         );
-    },
+    }
 
     toggleTopic () {
         this.model.toggleSubjectHiddenState();
-    },
+    }
 
     showInviteModal (ev) {
         ev.preventDefault();
         api.modal.show(MUCInviteModal, { 'model': new Model(), 'chatroomview': this }, ev);
-    },
+    }
 
     /**
      * Callback method that gets called after the chat has become visible.
@@ -696,7 +700,7 @@ const ChatRoomViewMixin = {
         // This is instead done in `onConnectionStatusChanged` below.
         this.model.clearUnreadMsgCounter();
         this.scrollDown();
-    },
+    }
 
     onConnectionStatusChanged () {
         const conn_status = this.model.session.get('connection_status');
@@ -715,7 +719,7 @@ const ChatRoomViewMixin = {
         } else if (conn_status === converse.ROOMSTATUS.DESTROYED) {
             this.showDestroyedMessage();
         }
-    },
+    }
 
     getToolbarOptions () {
         return Object.assign(_converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments), {
@@ -723,7 +727,7 @@ const ChatRoomViewMixin = {
             'label_hide_occupants': __('Hide the list of participants'),
             'show_occupants_toggle': _converse.visible_toolbar_buttons.toggle_occupants
         });
-    },
+    }
 
     /**
      * Closes this chat box, which implies leaving the groupchat as well.
@@ -731,12 +735,11 @@ const ChatRoomViewMixin = {
      * @method _converse.ChatRoomView#close
      */
     close () {
-        this.hide();
         if (_converse.router.history.getFragment() === 'converse/room?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }
         return _converse.ChatBoxView.prototype.close.apply(this, arguments);
-    },
+    }
 
     /**
      * Hide the right sidebar containing the chat occupants.
@@ -750,7 +753,7 @@ const ChatRoomViewMixin = {
         }
         this.model.save({ 'hidden_occupants': true });
         this.scrollDown();
-    },
+    }
 
     verifyRoles (roles, occupant, show_error = true) {
         if (!Array.isArray(roles)) {
@@ -771,7 +774,7 @@ const ChatRoomViewMixin = {
             this.model.createMessage({ message, 'type': 'error' });
         }
         return false;
-    },
+    }
 
     verifyAffiliations (affiliations, occupant, show_error = true) {
         if (!Array.isArray(affiliations)) {
@@ -792,7 +795,7 @@ const ChatRoomViewMixin = {
             this.model.createMessage({ message, 'type': 'error' });
         }
         return false;
-    },
+    }
 
     validateRoleOrAffiliationChangeArgs (command, args) {
         if (!args) {
@@ -804,7 +807,7 @@ const ChatRoomViewMixin = {
             return false;
         }
         return true;
-    },
+    }
 
     getNickOrJIDFromCommandArgs (args) {
         if (u.isValidJID(args.trim())) {
@@ -832,7 +835,7 @@ const ChatRoomViewMixin = {
             return;
         }
         return nick_or_jid;
-    },
+    }
 
     setAffiliation (command, args, required_affiliations) {
         const affiliation = COMMAND_TO_AFFILIATION[command];
@@ -874,11 +877,11 @@ const ChatRoomViewMixin = {
             .setAffiliation(affiliation, [attrs])
             .then(() => this.model.occupants.fetchMembers())
             .catch(err => this.onCommandError(err));
-    },
+    }
 
-    getReason (args) {
+    getReason (args) { // eslint-disable-line class-methods-use-this
         return args.includes(',') ? args.slice(args.indexOf(',') + 1).trim() : null;
-    },
+    }
 
     setRole (command, args, required_affiliations = [], required_roles = []) {
         /* Check that a command to change a groupchat user's role or
@@ -903,7 +906,7 @@ const ChatRoomViewMixin = {
         const occupant = this.model.getOccupant(nick_or_jid);
         this.model.setRole(occupant, role, reason, undefined, this.onCommandError.bind(this));
         return true;
-    },
+    }
 
     onCommandError (err) {
         log.fatal(err);
@@ -912,7 +915,7 @@ const ChatRoomViewMixin = {
             ' ' +
             __("Check your browser's developer console for details.");
         this.model.createMessage({ message, 'type': 'error' });
-    },
+    }
 
     getAllowedCommands () {
         let allowed_commands = ['clear', 'help', 'me', 'nick', 'register'];
@@ -937,7 +940,7 @@ const ChatRoomViewMixin = {
         } else {
             return allowed_commands;
         }
-    },
+    }
 
     async destroy () {
         const messages = [__('Are you sure you want to destroy this groupchat?')];
@@ -968,7 +971,7 @@ const ChatRoomViewMixin = {
         } catch (e) {
             log.error(e);
         }
-    },
+    }
 
     parseMessageForCommands (text) {
         if (
@@ -1088,7 +1091,7 @@ const ChatRoomViewMixin = {
                 return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
         }
         return true;
-    },
+    }
 
     /**
      * Renders a form given an IQ stanza containing the current
@@ -1107,11 +1110,11 @@ const ChatRoomViewMixin = {
                 'model': this.model,
                 'chatroomview': this
             });
-            const container_el = this.el.querySelector('.chatroom-body');
+            const container_el = this.querySelector('.chatroom-body');
             container_el.insertAdjacentElement('beforeend', this.config_form.el);
         }
         u.showElement(this.config_form.el);
-    },
+    }
 
     /**
      * Renders a form which allows the user to choose theirnickname.
@@ -1122,24 +1125,24 @@ const ChatRoomViewMixin = {
         const tpl_result = tpl_muc_nickname_form(this.model.toJSON());
         if (api.settings.get('muc_show_logs_before_join')) {
             this.hideSpinner();
-            u.showElement(this.el.querySelector('.chat-area'));
-            const container = this.el.querySelector('.muc-bottom-panel');
+            u.showElement(this.querySelector('.chat-area'));
+            const container = this.querySelector('.muc-bottom-panel');
             render(tpl_result, container);
             u.addClass('muc-bottom-panel--nickname', container);
         } else {
-            const form = this.el.querySelector('.muc-nickname-form');
+            const form = this.querySelector('.muc-nickname-form');
             const form_el = u.getElementFromTemplateResult(tpl_result);
             if (form) {
-                sizzle('.spinner', this.el).forEach(u.removeElement);
+                sizzle('.spinner', this).forEach(u.removeElement);
                 form.outerHTML = form_el.outerHTML;
             } else {
                 this.hideChatRoomContents();
-                const container = this.el.querySelector('.chatroom-body');
+                const container = this.querySelector('.chatroom-body');
                 container.insertAdjacentElement('beforeend', form_el);
             }
         }
         u.safeSave(this.model.session, { 'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED });
-    },
+    }
 
     /**
      * Remove the configuration form without submitting and return to the chat view.
@@ -1147,9 +1150,9 @@ const ChatRoomViewMixin = {
      * @method _converse.ChatRoomView#closeForm
      */
     closeForm () {
-        sizzle('.chatroom-form-container', this.el).forEach(e => u.addClass('hidden', e));
+        sizzle('.chatroom-form-container', this).forEach(e => u.addClass('hidden', e));
         this.renderAfterTransition();
-    },
+    }
 
     /**
      * Start the process of configuring a groupchat, either by
@@ -1175,14 +1178,14 @@ const ChatRoomViewMixin = {
         } else {
             this.closeForm();
         }
-    },
+    }
 
     hideChatRoomContents () {
-        const container_el = this.el.querySelector('.chatroom-body');
+        const container_el = this.querySelector('.chatroom-body');
         if (container_el !== null) {
             [].forEach.call(container_el.children, child => child.classList.add('hidden'));
         }
-    },
+    }
 
     renderPasswordForm () {
         this.hideChatRoomContents();
@@ -1196,19 +1199,19 @@ const ChatRoomViewMixin = {
                 }),
                 'chatroomview': this
             });
-            const container_el = this.el.querySelector('.chatroom-body');
+            const container_el = this.querySelector('.chatroom-body');
             container_el.insertAdjacentElement('beforeend', this.password_form.el);
         } else {
             this.password_form.model.set('validation_message', message);
         }
         u.showElement(this.password_form.el);
         this.model.session.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
-    },
+    }
 
     showDestroyedMessage () {
-        u.hideElement(this.el.querySelector('.chat-area'));
-        u.hideElement(this.el.querySelector('.occupants'));
-        sizzle('.spinner', this.el).forEach(u.removeElement);
+        u.hideElement(this.querySelector('.chat-area'));
+        u.hideElement(this.querySelector('.occupants'));
+        sizzle('.spinner', this).forEach(u.removeElement);
 
         const reason = this.model.get('destroyed_reason');
         const moved_jid = this.model.get('moved_jid');
@@ -1216,7 +1219,7 @@ const ChatRoomViewMixin = {
             'destroyed_reason': undefined,
             'moved_jid': undefined
         });
-        const container = this.el.querySelector('.disconnect-container');
+        const container = this.querySelector('.disconnect-container');
         render(tpl_muc_destroyed(moved_jid, reason), container);
         const switch_el = container.querySelector('a.switch-chat');
         if (switch_el) {
@@ -1228,16 +1231,16 @@ const ChatRoomViewMixin = {
             });
         }
         u.showElement(container);
-    },
+    }
 
     showDisconnectMessage () {
         const message = this.model.get('disconnection_message');
         if (!message) {
             return;
         }
-        u.hideElement(this.el.querySelector('.chat-area'));
-        u.hideElement(this.el.querySelector('.occupants'));
-        sizzle('.spinner', this.el).forEach(u.removeElement);
+        u.hideElement(this.querySelector('.chat-area'));
+        u.hideElement(this.querySelector('.occupants'));
+        sizzle('.spinner', this).forEach(u.removeElement);
 
         const messages = [message];
         const actor = this.model.get('disconnection_actor');
@@ -1253,17 +1256,17 @@ const ChatRoomViewMixin = {
             'disconnection_reason': undefined,
             'disconnection_actor': undefined
         });
-        const container = this.el.querySelector('.disconnect-container');
+        const container = this.querySelector('.disconnect-container');
         render(tpl_muc_disconnect(messages), container);
         u.showElement(container);
-    },
+    }
 
     onOccupantAdded (occupant) {
         if (occupant.get('jid') === _converse.bare_jid) {
             this.renderHeading();
             this.renderBottomPanel();
         }
-    },
+    }
 
     /**
      * Working backwards, get today's most recent join/leave notification
@@ -1273,7 +1276,7 @@ const ChatRoomViewMixin = {
      * @param {HTMLElement} el
      * @param {string} nick
      */
-    getPreviousJoinOrLeaveNotification (el, nick) {
+    getPreviousJoinOrLeaveNotification (el, nick) { // eslint-disable-line class-methods-use-this
         const today = new Date().toISOString().split('T')[0];
         while (el !== null) {
             if (!el.classList.contains('chat-info')) {
@@ -1291,7 +1294,7 @@ const ChatRoomViewMixin = {
             }
             el = el.previousElementSibling;
         }
-    },
+    }
 
     /**
      * Rerender the groupchat after some kind of transition. For
@@ -1308,18 +1311,18 @@ const ChatRoomViewMixin = {
             this.renderPasswordForm();
         } else if (conn_status == converse.ROOMSTATUS.ENTERED) {
             this.hideChatRoomContents();
-            u.showElement(this.el.querySelector('.chat-area'));
-            this.el.querySelector('.occupants')?.setVisibility();
+            u.showElement(this.querySelector('.chat-area'));
+            this.querySelector('.occupants')?.setVisibility();
             this.scrollDown();
         }
-    },
+    }
 
     showSpinner () {
-        sizzle('.spinner', this.el).forEach(u.removeElement);
+        sizzle('.spinner', this).forEach(u.removeElement);
         this.hideChatRoomContents();
-        const container_el = this.el.querySelector('.chatroom-body');
+        const container_el = this.querySelector('.chatroom-body');
         container_el.insertAdjacentElement('afterbegin', u.getElementFromTemplateResult(tpl_spinner()));
-    },
+    }
 
     /**
      * Check if the spinner is being shown and if so, hide it.
@@ -1329,13 +1332,13 @@ const ChatRoomViewMixin = {
      * @method _converse.ChatRoomView#hideSpinner
      */
     hideSpinner () {
-        const spinner = this.el.querySelector('.spinner');
+        const spinner = this.querySelector('.spinner');
         if (spinner !== null) {
             u.removeElement(spinner);
             this.renderAfterTransition();
         }
         return this;
     }
-};
+}
 
-export default ChatRoomViewMixin;
+api.elements.define('converse-muc', MUCView);

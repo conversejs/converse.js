@@ -114,32 +114,32 @@ body.converse-fullscreen {
       overflow-y: none;
     }
 
-    &.converse-overlayed {
-        > .row {
-            flex-direction: row-reverse;
-        }
-    }
+    converse-chats {
+      .converse-overlayed {
+          height: 3em;
+          > .row {
+              flex-direction: row-reverse;
+          }
+      }
 
-    &.converse-fullscreen,
-    &.converse-mobile {
-        .converse-chatboxes {
-            width: 100vw;
-            left: -15px; // Hack due to padding added by bootstrap
-        }
-    }
-    &.converse-overlayed {
-        height: 3em;
-    }
-    &.converse-embedded {
-        box-sizing: border-box;
-        *, *:before, *:after {
-            box-sizing: border-box;
-        }
-        bottom: auto;
-        height: 100%; // When embedded, it fills the containing element
-        position: relative;
-        right: auto;
-        width: 100%;
+      .converse-fullscreen,
+      .converse-mobile {
+          .converse-chatboxes {
+              width: 100vw;
+              left: -15px; // Hack due to padding added by bootstrap
+          }
+      }
+      .converse-embedded {
+          box-sizing: border-box;
+          *, *:before, *:after {
+              box-sizing: border-box;
+          }
+          bottom: auto;
+          height: 100%; // When embedded, it fills the containing element
+          position: relative;
+          right: auto;
+          width: 100%;
+      }
     }
 
     converse-brand-heading {

@@ -21,12 +21,12 @@ describe("A chat message", function () {
         await mock.openControlBox(_converse);
         spyOn(_converse.api, "trigger").and.callThrough();
 
-        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+        await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group').length);
         await mock.openChatBoxFor(_converse, contact_jid);
         const chatview = _converse.api.chatviews.get(contact_jid);
-        expect(u.isVisible(chatview.el)).toBeTruthy();
+        expect(u.isVisible(chatview)).toBeTruthy();
         expect(chatview.model.get('minimized')).toBeFalsy();
-        chatview.el.querySelector('.toggle-chatbox-button').click();
+        chatview.querySelector('.toggle-chatbox-button').click();
         expect(chatview.model.get('minimized')).toBeTruthy();
         var message = 'This message is sent to a minimized chatbox';
         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -44,7 +44,7 @@ describe("A chat message", function () {
         expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
         const trimmed_chatboxes = _converse.minimized_chats;
         let count = trimmed_chatboxes.el.querySelector('converse-minimized-chat .message-count');
-        expect(u.isVisible(chatview.el)).toBeFalsy();
+        expect(u.isVisible(chatview)).toBeFalsy();
         expect(chatview.model.get('minimized')).toBeTruthy();
 
         expect(u.isVisible(count)).toBeTruthy();
@@ -60,7 +60,7 @@ describe("A chat message", function () {
         );
 
         await u.waitUntil(() => (chatview.model.messages.length > 1));
-        expect(u.isVisible(chatview.el)).toBeFalsy();
+        expect(u.isVisible(chatview)).toBeFalsy();
         expect(chatview.model.get('minimized')).toBeTruthy();
         count = trimmed_chatboxes.el.querySelector('converse-minimized-chat .message-count');
         expect(u.isVisible(count)).toBeTruthy();
@@ -85,12 +85,12 @@ describe("A Groupcaht", function () {
         spyOn(view, 'onMaximized').and.callThrough();
         spyOn(_converse.api, "trigger").and.callThrough();
         view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-        const button = await u.waitUntil(() => view.el.querySelector('.toggle-chatbox-button'));
+        const button = await u.waitUntil(() => view.querySelector('.toggle-chatbox-button'));
         button.click();
 
         expect(view.onMinimized).toHaveBeenCalled();
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
-        expect(u.isVisible(view.el)).toBeFalsy();
+        expect(u.isVisible(view)).toBeFalsy();
         expect(view.model.get('minimized')).toBeTruthy();
         expect(view.onMinimized).toHaveBeenCalled();
         const el = await u.waitUntil(() => _converse.minimized_chats.el.querySelector("a.restore-chat"));
@@ -115,21 +115,21 @@ describe("A Chatbox", function () {
         await mock.openControlBox(_converse);
 
         const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+        await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group').length);
         await mock.openChatBoxFor(_converse, contact_jid);
         const chatview = _converse.chatboxviews.get(contact_jid);
         spyOn(chatview, 'minimize').and.callThrough();
         spyOn(_converse.api, "trigger").and.callThrough();
         // We need to rebind all events otherwise our spy won't be called
         chatview.delegateEvents();
-        chatview.el.querySelector('.toggle-chatbox-button').click();
+        chatview.querySelector('.toggle-chatbox-button').click();
 
         expect(chatview.minimize).toHaveBeenCalled();
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
         expect(_converse.api.trigger.calls.count(), 2);
-        expect(u.isVisible(chatview.el)).toBeFalsy();
+        expect(u.isVisible(chatview)).toBeFalsy();
         expect(chatview.model.get('minimized')).toBeTruthy();
-        chatview.el.querySelector('.toggle-chatbox-button').click();
+        chatview.querySelector('.toggle-chatbox-button').click();
 
         await u.waitUntil(() => _converse.chatboxviews.keys().length);
         _converse.minimized_chats.el.querySelector("a.restore-chat").click();
@@ -150,7 +150,7 @@ describe("A Chatbox", function () {
         await _converse.api.chats.create(sender_jid, {'minimized': true});
         await u.waitUntil(() => _converse.chatboxes.length > 1);
         const chatBoxView = _converse.chatboxviews.get(sender_jid);
-        expect(u.isVisible(chatBoxView.el)).toBeFalsy();
+        expect(u.isVisible(chatBoxview)).toBeFalsy();
         expect(u.isVisible(_converse.minimized_chats.el.firstElementChild)).toBe(true);
         expect(_converse.minimized_chats.el.firstElementChild.querySelectorAll('converse-minimized-chat').length).toBe(1);
         expect(_converse.chatboxes.filter('minimized').length).toBe(1);
@@ -175,9 +175,9 @@ describe("A Chatbox", function () {
         expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
         _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attached.
-        await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length);
+        await u.waitUntil(() => _converse.rosterview.querySelectorAll('.roster-group li').length);
         // Test that they can be maximized again
-        const online_contacts = _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact a.open-chat');
+        const online_contacts = _converse.rosterview.querySelectorAll('.roster-group .current-xmpp-contact a.open-chat');
         expect(online_contacts.length).toBe(17);
         let i;
         for (i=0; i<online_contacts.length; i++) {
@@ -265,9 +265,9 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         const view = _converse.chatboxviews.get(contact_jid);
         spyOn(view.model, 'sendMessage').and.callThrough();
         mock.sendMessage(view, message);
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length, 1000);
+        await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-msg').length, 1000);
         expect(view.model.sendMessage).toHaveBeenCalled();
-        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+        const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view).pop();
         await u.waitUntil(() => msg.innerHTML.replace(/\<!----\>/g, '') ===
             '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
             'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
@@ -292,7 +292,7 @@ describe("The Minimized Chats Widget", function () {
         let chatview = _converse.chatboxviews.get(contact_jid);
         expect(chatview.model.get('minimized')).toBeFalsy();
         expect(u.isVisible(_converse.minimized_chats.el.firstElementChild)).toBe(false);
-        chatview.el.querySelector('.toggle-chatbox-button').click();
+        chatview.querySelector('.toggle-chatbox-button').click();
         expect(chatview.model.get('minimized')).toBeTruthy();
         expect(u.isVisible(_converse.minimized_chats.el)).toBe(true);
         expect(_converse.chatboxes.filter('minimized').length).toBe(1);
@@ -302,7 +302,7 @@ describe("The Minimized Chats Widget", function () {
         await mock.openChatBoxFor(_converse, contact_jid);
         chatview = _converse.chatboxviews.get(contact_jid);
         expect(chatview.model.get('minimized')).toBeFalsy();
-        chatview.el.querySelector('.toggle-chatbox-button').click();
+        chatview.querySelector('.toggle-chatbox-button').click();
         expect(chatview.model.get('minimized')).toBeTruthy();
         expect(u.isVisible(_converse.minimized_chats.el)).toBe(true);
         expect(_converse.chatboxes.filter('minimized').length).toBe(2);

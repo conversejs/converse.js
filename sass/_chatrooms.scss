@@ -396,126 +396,128 @@
 
 /* ******************* Overlay  styles *************************** */
 
-#conversejs.converse-overlayed {
-    .chatbox {
-        &.chatroom {
-            min-width: var(--chatroom-width) !important;
-            width: var(--chatroom-width);
-            .box-flyout {
+converse-chats {
+    .converse-overlayed {
+        .chatbox {
+            &.chatroom {
                 min-width: var(--chatroom-width) !important;
                 width: var(--chatroom-width);
-            }
-            .chatbox-title__text {
-                @include make-col(7);
-            }
-            .chatbox-title__buttons {
-                @include make-col(5);
-            }
+                .box-flyout {
+                    min-width: var(--chatroom-width) !important;
+                    width: var(--chatroom-width);
+                }
+                .chatbox-title__text {
+                    @include make-col(7);
+                }
+                .chatbox-title__buttons {
+                    @include make-col(5);
+                }
 
-            .chat-head__desc {
-                font-size: 80%;
-                margin-bottom: 1em;
-            }
-            .chatroom-body {
-                .occupants {
-                    .occupants-heading {
-                        padding: 0;
-                    }
-                    .occupant-list {
-                        border-bottom: none;
-                    }
-                    ul {
-                        .occupant {
-                            .occupant-nick-badge {
-                                .occupant-badges {
-                                    display: none;
+                .chat-head__desc {
+                    font-size: 80%;
+                    margin-bottom: 1em;
+                }
+                .chatroom-body {
+                    .occupants {
+                        .occupants-heading {
+                            padding: 0;
+                        }
+                        .occupant-list {
+                            border-bottom: none;
+                        }
+                        ul {
+                            .occupant {
+                                .occupant-nick-badge {
+                                    .occupant-badges {
+                                        display: none;
+                                    }
+                                }
+                                .occupant-status {
+                                    margin-top: 6px;
                                 }
                             }
-                            .occupant-status {
-                                margin-top: 6px;
-                            }
                         }
                     }
-                }
-                .chat-area {
-                    min-width: var(--overlayed-chat-width);
+                    .chat-area {
+                        min-width: var(--overlayed-chat-width);
+                    }
                 }
             }
         }
     }
-}
 
-#conversejs.converse-embedded,
-#conversejs.converse-fullscreen,
-#conversejs.converse-mobile {
+    .converse-embedded,
+    .converse-fullscreen,
+    .converse-mobile {
 
-    .chatroom {
-        .box-flyout {
-            width: 100%;
+        .chatroom {
+            .box-flyout {
+                width: 100%;
 
-            .chatroom-body {
-                .chat-area {
-                    &.full {
-                        .new-msgs-indicator {
-                            max-width: 100%;
+                .chatroom-body {
+                    .chat-area {
+                        &.full {
+                            .new-msgs-indicator {
+                                max-width: 100%;
+                            }
                         }
+                    }
+                    .occupants {
+                        padding: var(--occupants-padding);
+                        .occupants-heading {
+                            font-size: var(--font-size-large);
+                        }
+                        ul {
+                            &.occupant-list {
+                                li {
+                                    font-size: var(--font-size-small);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .room-invite {
+                span {
+                    .invited-contact {
+                        margin: 0 0 0.5em -1px;
+                    }
+                }
+            }
+        }
+    }
+
+    .converse-embedded {
+        .chatroom {
+            margin: 0;
+            width: 100%;
+            .box-flyout {
+                .occupants-heading {
+                    font-size: 120%;
+                }
+                .chat-content {
+                    .chat-message {
+                        margin: 0.5em;
+                        font-size: 120%;
+                    }
+                }
+                .sendXMPPMessage {
+                    .chat-textarea {
+                        padding: 0.5em;
+                        font-size: 110%;
+                    }
+                }
+                .chatroom-body {
+                    height: 100%;
+                    .chatroom-form-container {
+                        height: 100%;
+                        position: relative;
                     }
                 }
                 .occupants {
-                    padding: var(--occupants-padding);
-                    .occupants-heading {
-                        font-size: var(--font-size-large);
+                    .occupant-list {
+                        padding-left: 0.3em;
                     }
-                    ul {
-                        &.occupant-list {
-                            li {
-                                font-size: var(--font-size-small);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        .room-invite {
-            span {
-                .invited-contact {
-                    margin: 0 0 0.5em -1px;
-                }
-            }
-        }
-    }
-}
-
-#conversejs.converse-embedded {
-    .chatroom {
-        margin: 0;
-        width: 100%;
-        .box-flyout {
-            .occupants-heading {
-                font-size: 120%;
-            }
-            .chat-content {
-                .chat-message {
-                    margin: 0.5em;
-                    font-size: 120%;
-                }
-            }
-            .sendXMPPMessage {
-                .chat-textarea {
-                    padding: 0.5em;
-                    font-size: 110%;
-                }
-            }
-            .chatroom-body {
-                height: 100%;
-                .chatroom-form-container {
-                    height: 100%;
-                    position: relative;
-                }
-            }
-            .occupants {
-                .occupant-list {
-                    padding-left: 0.3em;
                 }
             }
         }
@@ -524,9 +526,9 @@
 
 
 @include media-breakpoint-down(sm) {
-    #conversejs.converse-mobile,
-    #conversejs.converse-overlayed,
-    #conversejs.converse-fullscreen {
+    converse-chats.converse-mobile,
+    converse-chats.converse-overlayed,
+    converse-chats.converse-fullscreen {
         .chatbox {
             .box-flyout {
                 .chat-head-chatroom {

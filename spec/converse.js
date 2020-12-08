@@ -292,7 +292,7 @@ describe("Converse", function() {
             expect(chat.get('box_id')).toBe(`box-${jid}`);
 
             const view = _converse.chatboxviews.get(jid);
-            await u.waitUntil(() => u.isVisible(view.el));
+            await u.waitUntil(() => u.isVisible(view));
             // Test for multiple JIDs
             mock.openChatBoxFor(_converse, jid2);
             await u.waitUntil(() => _converse.chatboxes.length == 3);
@@ -325,7 +325,7 @@ describe("Converse", function() {
                 ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
             );
             const view = _converse.chatboxviews.get(jid);
-            await u.waitUntil(() => u.isVisible(view.el));
+            await u.waitUntil(() => u.isVisible(view));
             // Test for multiple JIDs
             const list = await _converse.api.chats.open([jid, jid2]);
             expect(Array.isArray(list)).toBeTruthy();

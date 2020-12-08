@@ -45,7 +45,7 @@ describe("The Controlbox", function () {
         // We need to rebind all events otherwise our spy won't be called
         controlview.delegateEvents();
 
-        controlview.el.querySelector('.close-chatbox-button').click();
+        controlview.querySelector('.close-chatbox-button').click();
         expect(controlview.close).toHaveBeenCalled();
         await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
         expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
@@ -76,9 +76,9 @@ describe("The Controlbox", function () {
                 ask: 'subscribe',
                 fullname: mock.pend_names[0]
             });
-            await u.waitUntil(() => _.filter(_converse.rosterview.el.querySelectorAll('.roster-group li'), u.isVisible).length, 700);
+            await u.waitUntil(() => _.filter(_converse.rosterview.querySelectorAll('.roster-group li'), u.isVisible).length, 700);
             // Checking that only one entry is created because both JID is same (Case sensitive check)
-            expect(_.filter(_converse.rosterview.el.querySelectorAll('li'), u.isVisible).length).toBe(1);
+            expect(_.filter(_converse.rosterview.querySelectorAll('li'), u.isVisible).length).toBe(1);
             expect(_converse.rosterview.update).toHaveBeenCalled();
             done();
         }));
@@ -98,7 +98,7 @@ describe("The Controlbox", function () {
             chatview.model.set({'minimized': true});
 
             expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count') === null).toBeTruthy();
-            expect(_converse.rosterview.el.querySelector('.msgs-indicator') === null).toBeTruthy();
+            expect(_converse.rosterview.querySelector('.msgs-indicator') === null).toBeTruthy();
 
             let msg = $msg({
                     from: sender_jid,
@@ -108,10 +108,10 @@ describe("The Controlbox", function () {
                 }).c('body').t('hello').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
             _converse.handleMessageStanza(msg);
-            await u.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator").length);
+            await u.waitUntil(() => _converse.rosterview.querySelectorAll(".msgs-indicator").length);
             spyOn(chatview.model, 'handleUnreadMessage').and.callThrough();
             await u.waitUntil(() => _converse.chatboxviews.el.querySelector('.restore-chat .message-count')?.textContent === '1');
-            expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('1');
+            expect(_converse.rosterview.querySelector('.msgs-indicator').textContent).toBe('1');
 
             msg = $msg({
                     from: sender_jid,
@@ -123,10 +123,10 @@ describe("The Controlbox", function () {
             _converse.handleMessageStanza(msg);
             await u.waitUntil(() => chatview.model.handleUnreadMessage.calls.count());
             await u.waitUntil(() => _converse.chatboxviews.el.querySelector('.restore-chat .message-count')?.textContent === '2');
-            expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');
+            expect(_converse.rosterview.querySelector('.msgs-indicator').textContent).toBe('2');
             chatview.model.set({'minimized': false});
             expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count')).toBe(null);
-            await u.waitUntil(() => _converse.rosterview.el.querySelector('.msgs-indicator') === null);
+            await u.waitUntil(() => _converse.rosterview.querySelector('.msgs-indicator') === null);
             done();
         }));
     });
@@ -140,8 +140,8 @@ describe("The Controlbox", function () {
 
             mock.openControlBox(_converse);
             var view = _converse.xmppstatusview;
-            expect(u.hasClass('online', view.el.querySelector('.xmpp-status span:first-child'))).toBe(true);
-            expect(view.el.querySelector('.xmpp-status span.online').textContent.trim()).toBe('I am online');
+            expect(u.hasClass('online', view.querySelector('.xmpp-status span:first-child'))).toBe(true);
+            expect(view.querySelector('.xmpp-status span.online').textContent.trim()).toBe('I am online');
             done();
         }));
 
@@ -152,7 +152,7 @@ describe("The Controlbox", function () {
 
             await mock.openControlBox(_converse);
             var cbview = _converse.chatboxviews.get('controlbox');
-            cbview.el.querySelector('.change-status').click()
+            cbview.querySelector('.change-status').click()
             const modal = _converse.api.modal.get('modal-status-change');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const view = _converse.xmppstatusview;
@@ -166,10 +166,10 @@ describe("The Controlbox", function () {
                     `<priority>0</priority>`+
                     `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
-            const first_child = view.el.querySelector('.xmpp-status span:first-child');
+            const first_child = view.querySelector('.xmpp-status span:first-child');
             expect(u.hasClass('online', first_child)).toBe(false);
             expect(u.hasClass('dnd', first_child)).toBe(true);
-            expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe('I am busy');
+            expect(view.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe('I am busy');
             done();
         }));
 
@@ -180,7 +180,7 @@ describe("The Controlbox", function () {
 
             await mock.openControlBox(_converse);
             const cbview = _converse.chatboxviews.get('controlbox');
-            cbview.el.querySelector('.change-status').click()
+            cbview.querySelector('.change-status').click()
             const modal = _converse.api.modal.get('modal-status-change');
 
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
@@ -197,9 +197,9 @@ describe("The Controlbox", function () {
                     `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `</presence>`);
 
-            const first_child = view.el.querySelector('.xmpp-status span:first-child');
+            const first_child = view.querySelector('.xmpp-status span:first-child');
             expect(u.hasClass('online', first_child)).toBe(true);
-            expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe(msg);
+            expect(view.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe(msg);
             done();
         }));
     });
@@ -216,7 +216,7 @@ describe("The 'Add Contact' widget", function () {
         await mock.openControlBox(_converse);
 
         const cbview = _converse.chatboxviews.get('controlbox');
-        cbview.el.querySelector('.add-contact').click()
+        cbview.querySelector('.add-contact').click()
         const modal = _converse.api.modal.get('add-contact-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         expect(modal.el.querySelector('form.add-xmpp-contact')).not.toBe(null);
@@ -249,7 +249,7 @@ describe("The 'Add Contact' widget", function () {
         await mock.waitForRoster(_converse, 'all', 0);
         mock.openControlBox(_converse);
         const cbview = _converse.chatboxviews.get('controlbox');
-        cbview.el.querySelector('.add-contact').click()
+        cbview.querySelector('.add-contact').click()
         const modal = _converse.api.modal.get('add-contact-modal');
         expect(modal.jid_auto_complete).toBe(undefined);
         expect(modal.name_auto_complete).toBe(undefined);
@@ -296,7 +296,7 @@ describe("The 'Add Contact' widget", function () {
         XMLHttpRequest.and.callFake(() => xhr);
 
         const cbview = _converse.chatboxviews.get('controlbox');
-        cbview.el.querySelector('.add-contact').click()
+        cbview.querySelector('.add-contact').click()
         const modal = _converse.api.modal.get('add-contact-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
 
@@ -366,7 +366,7 @@ describe("The 'Add Contact' widget", function () {
         XMLHttpRequest.and.callFake(() => xhr);
 
         const cbview = _converse.chatboxviews.get('controlbox');
-        cbview.el.querySelector('.add-contact').click()
+        cbview.querySelector('.add-contact').click()
         modal = _converse.api.modal.get('add-contact-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
 

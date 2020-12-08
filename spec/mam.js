@@ -1175,7 +1175,7 @@ describe("Chatboxes", function () {
             expect(view.model.messages.at(0).get('type')).toBe('error');
             expect(view.model.messages.at(0).get('message')).toBe('Timeout while trying to fetch archived messages.');
 
-            let err_message = await u.waitUntil(() => view.el.querySelector('.message.chat-error'));
+            let err_message = await u.waitUntil(() => view.querySelector('.message.chat-error'));
             err_message.querySelector('.retry').click();
 
             while (_converse.connection.IQ_stanzas.length) {
@@ -1226,7 +1226,7 @@ describe("Chatboxes", function () {
                         .c('count').t('2');
             _converse.connection._dataRecv(mock.createRequest(stanza));
             await u.waitUntil(() => view.model.messages.length === 2, 500);
-            err_message = view.el.querySelector('.message.chat-error');
+            err_message = view.querySelector('.message.chat-error');
             expect(err_message).toBe(null);
             done();
         }));

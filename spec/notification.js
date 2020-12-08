@@ -39,7 +39,7 @@ describe("Notifications", function () {
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                     const view = _converse.api.chatviews.get('lounge@montague.lit');
-                    if (!view.el.querySelectorAll('.chat-area').length) {
+                    if (!view.querySelectorAll('.chat-area').length) {
                         view.renderChatArea();
                     }
 
@@ -163,7 +163,7 @@ describe("Notifications", function () {
                 spyOn(window, 'Audio').and.returnValue(stub);
 
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                if (!view.el.querySelectorAll('.chat-area').length) {
+                if (!view.querySelectorAll('.chat-area').length) {
                     view.renderChatArea();
                 }
                 let text = 'This message will play a sound because it mentions romeo';
@@ -327,7 +327,7 @@ describe("Notifications", function () {
 
             // come back to converse-chat page
             _converse.saveWindowState({'type': 'focus'});
-            await u.waitUntil(() => u.isVisible(view.el));
+            await u.waitUntil(() => u.isVisible(view));
             await u.waitUntil(() => favico.badge.calls.count() === 2);
             expect(favico.badge.calls.mostRecent().args.pop()).toBe(0);
 
@@ -338,7 +338,7 @@ describe("Notifications", function () {
             // check that msg_counter is incremented from zero again
             await _converse.handleMessageStanza(msgFactory());
             view = _converse.chatboxviews.get(sender_jid);
-            await u.waitUntil(() => u.isVisible(view.el));
+            await u.waitUntil(() => u.isVisible(view));
             await u.waitUntil(() => favico.badge.calls.count() === 3);
             expect(favico.badge.calls.mostRecent().args.pop()).toBe(1);
             done();

@@ -13,7 +13,13 @@ const HeadlinesBoxViewMixin = {
     },
 
     async initialize () {
+        const jid = this.getAttribute('jid');
+        _converse.chatboxviews.add(jid, this);
+
+        this.model = _converse.chatboxes.get(jid);
         this.initDebounced();
+
+        api.listen.on('windowStateChanged', this.onWindowStateChanged);
 
         this.model.disable_mam = true; // Don't do MAM queries for this box
         this.listenTo(this.model, 'change:hidden', m => (m.get('hidden') ? this.hide() : this.show()));

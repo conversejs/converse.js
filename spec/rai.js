@@ -97,7 +97,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(view.model.get('has_activity')).toBe(false);
 
         const lview = _converse.rooms_list_view
-        const room_el = await u.waitUntil(() => lview.el.querySelector(".available-chatroom"));
+        const room_el = await u.waitUntil(() => lview.querySelector(".available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 
         const activity_stanza = u.toStanza(`
@@ -161,7 +161,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(view.model.get('has_activity')).toBe(false);
 
         const lview = _converse.rooms_list_view
-        const room_el = await u.waitUntil(() => lview.el.querySelector(".available-chatroom"));
+        const room_el = await u.waitUntil(() => lview.querySelector(".available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 
         const activity_stanza = u.toStanza(`

@@ -1,6 +1,5 @@
-import log from "@converse/headless/log";
 import tpl_controlbox_toggle from "./templates/toggle.js";
-import { View } from "@converse/skeletor/src/view";
+import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from "@converse/headless/core";
 import { addControlBox } from './utils.js';
 import { render } from 'lit-html';
@@ -8,47 +7,39 @@ import { render } from 'lit-html';
 const u = converse.env.utils;
 
 
-const ControlBoxToggle = View.extend({
-    tagName: 'a',
-    className: 'toggle-controlbox hidden',
-    id: 'toggle-controlbox',
-    events: {
+class ControlBoxToggle extends ElementView {
+    events = {
         'click': 'onClick'
-    },
-    attributes: {
-        'href': "#"
-    },
+    }
 
-    initialize () {
-        _converse.chatboxviews.insertRowColumn(this.render().el);
-        api.waitUntil('initialized')
-            .then(this.render.bind(this))
-            .catch(e => log.fatal(e));
-    },
+    async initialize () {
+        await api.waitUntil('initialized');
+        this.render();
+    }
 
     render () {
         // We let the render method of ControlBoxView decide whether
         // the ControlBox or the Toggle must be shown. This prevents
         // artifacts (i.e. on page load the toggle is shown only to then
         // seconds later be hidden in favor of the controlbox).
-        render(tpl_controlbox_toggle(), this.el);
+        render(tpl_controlbox_toggle(), this);
         return this;
-    },
+    }
 
     hide (callback) {
-        if (u.isVisible(this.el)) {
-            u.hideElement(this.el);
+        if (u.isVisible(this)) {
+            u.hideElement(this);
             callback();
         }
-    },
+    }
 
     show (callback) {
-        if (!u.isVisible(this.el)) {
-            u.fadeIn(this.el, callback);
+        if (!u.isVisible(this)) {
+            u.fadeIn(this, callback);
         }
-    },
+    }
 
-    showControlBox () {
+    showControlBox () { // eslint-disable-line class-methods-use-this
         let controlbox = _converse.chatboxes.get('controlbox');
         if (!controlbox) {
             controlbox = addControlBox();
@@ -58,7 +49,7 @@ const ControlBoxToggle = View.extend({
         } else {
             controlbox.trigger('show');
         }
-    },
+    }
 
     onClick (e) {
         e.preventDefault();
@@ -73,6 +64,8 @@ const ControlBoxToggle = View.extend({
             this.showControlBox();
         }
     }
-});
+}
+
+api.elements.define('converse-controlbox-toggle', ControlBoxToggle);
 
 export default ControlBoxToggle;

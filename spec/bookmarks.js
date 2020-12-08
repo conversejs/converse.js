@@ -28,13 +28,13 @@ describe("A chat room", function () {
 
         spyOn(view, 'renderBookmarkForm').and.callThrough();
         spyOn(view, 'closeForm').and.callThrough();
-        await u.waitUntil(() => view.el.querySelector('.toggle-bookmark') !== null);
-        const toggle = view.el.querySelector('.toggle-bookmark');
+        await u.waitUntil(() => view.querySelector('.toggle-bookmark') !== null);
+        const toggle = view.querySelector('.toggle-bookmark');
         expect(toggle.title).toBe('Bookmark this groupchat');
         toggle.click();
         expect(view.renderBookmarkForm).toHaveBeenCalled();
 
-        view.el.querySelector('.button-cancel').click();
+        view.querySelector('.button-cancel').click();
         expect(view.closeForm).toHaveBeenCalled();
         expect(u.hasClass('on-button', toggle), false);
         expect(toggle.title).toBe('Bookmark this groupchat');
@@ -74,13 +74,13 @@ describe("A chat room", function () {
          *  </iq>
          */
         expect(view.model.get('bookmarked')).toBeFalsy();
-        const form = view.el.querySelector('.chatroom-form');
+        const form = view.querySelector('.chatroom-form');
         form.querySelector('input[name="name"]').value = 'Play&apos;s the Thing';
         form.querySelector('input[name="autojoin"]').checked = 'checked';
         form.querySelector('input[name="nick"]').value = 'JC';
 
         const IQ_stanzas = _converse.connection.IQ_stanzas;
-        view.el.querySelector('.muc-bookmark-form .btn-primary').click();
+        view.querySelector('.muc-bookmark-form .btn-primary').click();
 
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('iq publish[node="storage:bookmarks"]', s).length).pop());
@@ -124,8 +124,8 @@ describe("A chat room", function () {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => view.model.get('bookmarked'));
         expect(view.model.get('bookmarked')).toBeTruthy();
-        await u.waitUntil(() => view.el.querySelector('.toggle-bookmark')?.title === 'Unbookmark this groupchat');
-        expect(u.hasClass('on-button', view.el.querySelector('.toggle-bookmark')), true);
+        await u.waitUntil(() => view.querySelector('.toggle-bookmark')?.title === 'Unbookmark this groupchat');
+        expect(u.hasClass('on-button', view.querySelector('.toggle-bookmark')), true);
         // We ignore this IQ stanza... (unless it's an error stanza), so
         // nothing to test for here.
         done();
@@ -211,7 +211,7 @@ describe("A chat room", function () {
             );
             await _converse.api.rooms.open(`lounge@montague.lit`);
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            expect(view.el.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
+            expect(view.querySelector('.chatbox-title__text .fa-bookmark')).toBe(null);
             _converse.bookmarks.create({
                 'jid': view.model.get('jid'),
                 'autojoin': false,
@@ -219,9 +219,9 @@ describe("A chat room", function () {
                 'nick': ' some1'
             });
             view.model.set('bookmarked', true);
-            await u.waitUntil(() => view.el.querySelector('.chatbox-title__text .fa-bookmark') !== null);
+            await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') !== null);
             view.model.set('bookmarked', false);
-            await u.waitUntil(() => view.el.querySelector('.chatbox-title__text .fa-bookmark') === null);
+            await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') === null);
             done();
         }));
 
@@ -233,7 +233,7 @@ describe("A chat room", function () {
             const muc_jid = 'theplay@conference.shakespeare.lit';
             await _converse.api.rooms.open(muc_jid);
             const view = _converse.chatboxviews.get(muc_jid);
-            await u.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
+            await u.waitUntil(() => view.querySelector('.toggle-bookmark'));
 
             spyOn(view, 'toggleBookmark').and.callThrough();
             spyOn(_converse.bookmarks, 'sendBookmarkStanza').and.callThrough();
@@ -249,12 +249,12 @@ describe("A chat room", function () {
             expect(_converse.bookmarks.length).toBe(1);
             await u.waitUntil(() => _converse.chatboxes.length >= 1);
             expect(view.model.get('bookmarked')).toBeTruthy();
-            await u.waitUntil(() => view.el.querySelector('.chatbox-title__text .fa-bookmark') !== null);
+            await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') !== null);
             spyOn(_converse.connection, 'getUniqueId').and.callThrough();
-            const bookmark_icon = view.el.querySelector('.toggle-bookmark');
+            const bookmark_icon = view.querySelector('.toggle-bookmark');
             bookmark_icon.click();
             expect(view.toggleBookmark).toHaveBeenCalled();
-            await u.waitUntil(() => view.el.querySelector('.chatbox-title__text .fa-bookmark') === null);
+            await u.waitUntil(() => view.querySelector('.chatbox-title__text .fa-bookmark') === null);
             expect(_converse.bookmarks.length).toBe(0);
 
             // Check that an IQ stanza is sent out, containing no
@@ -594,20 +594,20 @@ describe("Bookmarks", function () {
                                     'jid': 'first@conference.shakespeare.lit'
                                 }).c('nick').t('JC');
             _converse.connection._dataRecv(mock.createRequest(stanza));
-            await u.waitUntil(() => view.el.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length);
-            expect(view.el.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(2);
-            view.el.querySelector('.bookmarks.rooms-list .open-room').click();
+            await u.waitUntil(() => view.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length);
+            expect(view.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(2);
+            view.querySelector('.bookmarks.rooms-list .open-room').click();
             await u.waitUntil(() => _converse.chatboxes.length === 2);
             expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(false);
 
-            await u.waitUntil(() => view.el.querySelectorAll('.list-container--bookmarks .available-chatroom:not(.hidden)').length === 1);
-            view.el.querySelector('.list-container--bookmarks .available-chatroom:not(.hidden) .open-room').click();
+            await u.waitUntil(() => view.querySelectorAll('.list-container--bookmarks .available-chatroom:not(.hidden)').length === 1);
+            view.querySelector('.list-container--bookmarks .available-chatroom:not(.hidden) .open-room').click();
             await u.waitUntil(() => _converse.chatboxes.length === 3);
             expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(true);
             expect((await api.rooms.get('theplay@conference.shakespeare.lit')).get('hidden')).toBe(false);
 
-            view.el.querySelector('.list-container--openrooms .open-room:first-child').click();
-            await u.waitUntil(() => view.el.querySelector('.list-item.open').getAttribute('data-room-jid') === 'first@conference.shakespeare.lit');
+            view.querySelector('.list-container--openrooms .open-room:first-child').click();
+            await u.waitUntil(() => view.querySelector('.list-item.open').getAttribute('data-room-jid') === 'first@conference.shakespeare.lit');
             expect((await api.rooms.get('first@conference.shakespeare.lit')).get('hidden')).toBe(false);
             expect((await api.rooms.get('theplay@conference.shakespeare.lit')).get('hidden')).toBe(true);
             done();
@@ -689,19 +689,19 @@ describe("When hide_open_bookmarks is true and a bookmarked room is opened", fun
 
         const u = converse.env.utils;
         const bmarks_view = _converse.bookmarksview;
-        await u.waitUntil(() => bmarks_view.el.querySelectorAll(".open-room").length, 500);
-        const room_els = bmarks_view.el.querySelectorAll(".open-room");
+        await u.waitUntil(() => bmarks_view.querySelectorAll(".open-room").length, 500);
+        const room_els = bmarks_view.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
 
-        const bookmark = _converse.bookmarksview.el.querySelector(".open-room");
+        const bookmark = _converse.bookmarksview.querySelector(".open-room");
         bookmark.click();
         await u.waitUntil(() => _converse.chatboxviews.get(jid));
 
-        expect(u.hasClass('hidden', _converse.bookmarksview.el.querySelector(".available-chatroom"))).toBeTruthy();
+        expect(u.hasClass('hidden', _converse.bookmarksview.querySelector(".available-chatroom"))).toBeTruthy();
         // Check that it reappears once the room is closed
         const view = _converse.chatboxviews.get(jid);
         view.close();
-        await u.waitUntil(() => !u.hasClass('hidden', _converse.bookmarksview.el.querySelector(".available-chatroom")));
+        await u.waitUntil(() => !u.hasClass('hidden', _converse.bookmarksview.querySelector(".available-chatroom")));
         done();
     }));
 });

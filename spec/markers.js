@@ -98,7 +98,7 @@ describe("A XEP-0333 Chat Marker", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.model.messages.length).toBe(1);
 
         stanza = u.toStanza(
@@ -116,7 +116,7 @@ describe("A XEP-0333 Chat Marker", function () {
         spyOn(_converse.api, "trigger").and.callThrough();
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await u.waitUntil(() => _converse.api.trigger.calls.count(), 500);
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.model.messages.length).toBe(1);
         done();
     }));
@@ -131,7 +131,7 @@ describe("A XEP-0333 Chat Marker", function () {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.api.chatviews.get(muc_jid);
-        const textarea = view.el.querySelector('textarea.chat-textarea');
+        const textarea = view.querySelector('textarea.chat-textarea');
         textarea.value = 'But soft, what light through yonder airlock breaks?';
         view.onKeyDown({
             target: textarea,
@@ -139,8 +139,8 @@ describe("A XEP-0333 Chat Marker", function () {
             keyCode: 13 // Enter
         });
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelector('.chat-msg .chat-msg__body').textContent.trim())
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelector('.chat-msg .chat-msg__body').textContent.trim())
             .toBe("But soft, what light through yonder airlock breaks?");
 
         const msg_obj = view.model.messages.at(0);
@@ -150,8 +150,8 @@ describe("A XEP-0333 Chat Marker", function () {
                 <received xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 1);
-        expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
+        expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
         stanza = u.toStanza(`
             <message xml:lang="en" to="romeo@montague.lit/orchard"
@@ -159,8 +159,8 @@ describe("A XEP-0333 Chat Marker", function () {
                 <displayed xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
         stanza = u.toStanza(`
             <message xml:lang="en" to="romeo@montague.lit/orchard"
@@ -169,8 +169,8 @@ describe("A XEP-0333 Chat Marker", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
 
-        expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+        expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
 
         stanza = u.toStanza(`
             <message xml:lang="en" to="romeo@montague.lit/orchard"
@@ -179,8 +179,8 @@ describe("A XEP-0333 Chat Marker", function () {
                 <markable xmlns="urn:xmpp:chat-markers:0"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await u.waitUntil(() => view.el.querySelectorAll('.chat-msg').length === 2);
-        expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
+        expect(view.querySelectorAll('.chat-msg__receipt').length).toBe(0);
         done();
     }));
 });

@@ -5,7 +5,7 @@
  */
 import '../chatview/index.js';
 import HeadlinesBoxViewMixin from './view.js';
-import { HeadlinesPanelMixin, HeadlinesPanelView } from './panel.js';
+import { HeadlinesPanelMixin, HeadlinesPanel} from './panel.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
 function onChatBoxViewsInitialized () {
@@ -45,7 +45,7 @@ converse.plugins.add('converse-headlines-view', {
          */
         _converse.ControlBoxView && Object.assign(_converse.ControlBoxView.prototype, HeadlinesPanelMixin);
         _converse.HeadlinesBoxView = _converse.ChatBoxView.extend(HeadlinesBoxViewMixin);
-        _converse.HeadlinesPanel = HeadlinesPanelView;
+        _converse.HeadlinesPanel = HeadlinesPanel;
 
         api.listen.on('chatBoxViewsInitialized', onChatBoxViewsInitialized);
     }

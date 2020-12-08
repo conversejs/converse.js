@@ -57,7 +57,7 @@ export const RoomsPanelViewMixin = {
             }))()
         });
         this.roomspanel.model.fetch();
-        this.el.querySelector('.controlbox-pane').insertAdjacentElement('beforeEnd', this.roomspanel.render().el);
+        this.querySelector('.controlbox-pane').insertAdjacentElement('beforeEnd', this.roomspanel.render().el);
 
         /**
          * Triggered once the section of the { @link _converse.ControlBoxView }

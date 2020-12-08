@@ -251,10 +251,19 @@ converse.plugins.add('converse-status', {
                  * @param { String } type
                  * @param { String } to
                  * @param { String } [status] - An optional status message
+                 * @param { Array[Element]|Array[Strophe.Builder]|Element|Strophe.Builder } [child_nodes]
+                 *  Nodes(s) to be added as child nodes of the `presence` XML element.
                  */
-                async send (type, to, status) {
+                async send (type, to, status, child_nodes) {
                     await api.waitUntil('statusInitialized');
-                    api.send(_converse.xmppstatus.constructPresence(type, to, status));
+                    const presence = _converse.xmppstatus.constructPresence(type, to, status);
+                    if (child_nodes) {
+                        if (!Array.isArray(child_nodes)) {
+                            child_nodes = [child_nodes];
+                        }
+                        child_nodes.forEach(c => presence.c(c).up());
+                    }
+                    api.send(presence);
                 }
             },
 

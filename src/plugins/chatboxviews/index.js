@@ -3,104 +3,12 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import '../../components/converse.js';
 import '@converse/headless/plugins/chatboxes';
-import tpl_avatar from '../../templates/avatar.js';
-import tpl_background_logo from '../../templates/background_logo.js';
-import tpl_converse from '../../templates/converse.js';
-import { Overview } from '@converse/skeletor/src/overview';
+import 'components/converse.js';
+import AvatarMixin from 'shared/avatar.js';
+import ChatBoxViews from './view.js';
 import { View } from '@converse/skeletor/src/view';
 import { _converse, api, converse } from '@converse/headless/core';
-import { render } from 'lit-html';
-import { result } from 'lodash-es';
-
-const u = converse.env.utils;
-
-const AvatarMixin = {
-    renderAvatar (el) {
-        el = el || this.el;
-        const avatar_el = el.querySelector('canvas.avatar, svg.avatar');
-        if (avatar_el === null) {
-            return;
-        }
-        if (this.model.vcard) {
-            const data = {
-                'classes': avatar_el.getAttribute('class'),
-                'width': avatar_el.getAttribute('width'),
-                'height': avatar_el.getAttribute('height'),
-                'image_type': this.model.vcard.get('image_type'),
-                'image': this.model.vcard.get('image')
-            };
-            avatar_el.outerHTML = u.getElementFromTemplateResult(tpl_avatar(data)).outerHTML;
-        }
-    }
-};
-
-const ViewWithAvatar = View.extend(AvatarMixin);
-
-const ChatBoxViews = Overview.extend({
-    _ensureElement () {
-        /* Override method from backbone.js
-         * If the #conversejs element doesn't exist, create it.
-         */
-        if (this.el) {
-            this.setElement(result(this, 'el'), false);
-        } else {
-            let el = _converse.root.querySelector('#conversejs');
-            if (el === null) {
-                el = document.createElement('div');
-                el.setAttribute('id', 'conversejs');
-                u.addClass(`theme-${api.settings.get('theme')}`, el);
-                const body = _converse.root.querySelector('body');
-                if (body) {
-                    body.appendChild(el);
-                } else {
-                    // Perhaps inside a web component?
-                    _converse.root.appendChild(el);
-                }
-            }
-            this.setElement(el, false);
-        }
-    },
-
-    initialize () {
-        this.listenTo(this.model, 'destroy', this.removeChat);
-        const bg = document.getElementById('conversejs-bg');
-        if (bg && !bg.innerHTML.trim()) {
-            render(tpl_background_logo(), bg);
-        }
-        const body = document.querySelector('body');
-        body.classList.add(`converse-${api.settings.get('view_mode')}`);
-        this.el.classList.add(`converse-${api.settings.get('view_mode')}`);
-        if (api.settings.get('singleton')) {
-            this.el.classList.add(`converse-singleton`);
-        }
-        this.render();
-    },
-
-    render () {
-        this._ensureElement();
-        render(tpl_converse(), this.el);
-        this.row_el = this.el.querySelector('.row');
-    },
-
-    /**
-     * Add a new DOM element (likely a chat box) into the
-     * the row managed by this overview.
-     * @param { HTMLElement } el
-     */
-    insertRowColumn (el) {
-        this.row_el.insertAdjacentElement('afterBegin', el);
-    },
-
-    removeChat (item) {
-        this.remove(item.get('id'));
-    },
-
-    closeAllChatBoxes () {
-        return Promise.all(this.map(v => v.close({ 'name': 'closeAllChatBoxes' })));
-    }
-});
 
 function onChatBoxViewsInitialized () {
     _converse.chatboxviews = new _converse.ChatBoxViews({
@@ -139,7 +47,7 @@ converse.plugins.add('converse-chatboxviews', {
             'theme': 'default'
         });
 
-        _converse.ViewWithAvatar = ViewWithAvatar;
+        _converse.ViewWithAvatar = View.extend(AvatarMixin);
         _converse.ChatBoxViews = ChatBoxViews;
 
         /************************ BEGIN Event Handlers ************************/

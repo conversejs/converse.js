@@ -23,7 +23,7 @@ import "./plugins/fullscreen.js";
 import "./plugins/mam-views.js";
 import "./plugins/minimize.js";             // Allows chat boxes to be minimized
 import "./plugins/muc-views/index.js";            // Views related to MUC
-import "./plugins/headlines-view.js";
+import "./plugins/headlines-view/index.js";
 import "./plugins/notifications.js";
 import "./plugins/omemo.js";
 import "./plugins/profile.js";

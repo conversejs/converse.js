@@ -580,13 +580,41 @@ const ChatBox = ModelWithContact.extend({
         return _converse.connection.send(msg);
     },
 
-    sendMarkerForMessage (msg) {
-        if (msg?.get('is_markable')) {
+
+    /**
+     * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
+     * @param { Boolean } force - Whether a marker should be sent for the
+     *  message, even if it didn't include a `markable` element.
+     */
+    sendMarkerForLastMessage (force=false) {
+        const msgs = Array.from(this.messages.models);
+        msgs.reverse();
+        const msg = msgs.find(m => m.get('sender') === 'them' && (force || m.get('is_markable')));
+        msg && this.sendMarkerForMessage(msg);
+    },
+
+    /**
+     * Given the passed in message object, send a XEP-0333 chat marker.
+     * @param { _converse.Message } msg
+     * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
+     * @param { Boolean } force - Whether a marker should be sent for the
+     *  message, even if it didn't include a `markable` element.
+     */
+    sendMarkerForMessage (msg, type='displayed', force=false) {
+        if (!msg) return;
+        if (msg?.get('is_markable') || force) {
             const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
-            this.sendMarker(from_jid, msg.get('msgid'), 'displayed', msg.get('type'));
+            this.sendMarker(from_jid, msg.get('msgid'), type, msg.get('type'));
         }
     },
 
+    /**
+     * Send out a XEP-0333 chat marker
+     * @param { String } to_jid
+     * @param { String } id - The id of the message being marked
+     * @param { String } type - The marker type
+     * @param { String } msg_type
+     */
     sendMarker (to_jid, id, type, msg_type) {
         const stanza = $msg({
             'from': _converse.connection.jid,

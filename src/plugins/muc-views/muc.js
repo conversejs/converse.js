@@ -11,6 +11,7 @@ import tpl_chatroom_head from 'templates/chatroom_head.js';
 import tpl_muc_bottom_panel from 'templates/muc_bottom_panel.js';
 import tpl_muc_destroyed from 'templates/muc_destroyed.js';
 import tpl_muc_disconnect from 'templates/muc_disconnect.js';
+import { $build, $pres, Strophe } from 'strophe.js/src/strophe';
 import tpl_muc_nickname_form from 'templates/muc_nickname_form.js';
 import tpl_spinner from 'templates/spinner.js';
 import { Model } from '@converse/skeletor/src/model.js';
@@ -19,7 +20,7 @@ import { _converse, api, converse } from '@converse/headless/core';
 import { debounce } from 'lodash-es';
 import { render } from 'lit-html';
 
-const { Strophe, sizzle, $pres } = converse.env;
+const { sizzle } = converse.env;
 const u = converse.env.utils;
 
 const OWNER_COMMANDS = ['owner'];

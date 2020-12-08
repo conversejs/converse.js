@@ -44,6 +44,7 @@ Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
 Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');
 Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+Strophe.addNamespace('RAI', 'urn:xmpp:rai:0');
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 Strophe.addNamespace('RETRACT', 'urn:xmpp:message-retract:0');
 Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');

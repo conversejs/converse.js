@@ -1,6 +1,6 @@
 {
   "arrowParens": "avoid",
-  "printWidth": 100,
+  "printWidth": 120,
   "quoteProps": "preserve",
   "singleQuote": true,
   "spaceBeforeFunctionParen": true,

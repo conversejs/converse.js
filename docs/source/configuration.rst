@@ -1447,6 +1447,18 @@ a nickname configured for it), you'll see the message history (if the
 server supports [XEP-0313 Message Archive Management](https://xmpp.org/extensions/xep-0313.html))
 and the nickname form at the bottom.
 
+muc_subscribe_to_rai
+--------------------
+
+* Default: ``false``
+
+This option enables support for XEP-0437 Room Activity Indicators.
+
+When a MUC is no longer visible (the ``hidden`` flag becomes ``true``), then
+Converse will make sure that its subscribed to activity indicators on the MUC
+host.
+
+
 .. _`nickname`:
 
 nickname

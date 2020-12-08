@@ -106,6 +106,17 @@ converse.ROOMSTATUS = {
 };
 
 
+function registerDirectInvitationHandler () {
+    _converse.connection.addHandler(
+        message => {
+            _converse.onDirectMUCInvitation(message);
+            return true;
+        },
+        'jabber:x:conference',
+        'message'
+    );
+}
+
 function disconnectChatRooms () {
     /* When disconnecting, mark all groupchats as
      * disconnected, so that they will be properly entered again
@@ -241,7 +252,8 @@ converse.plugins.add('converse-muc', {
                 ...converse.MUC_INFO_CODES.join_leave_events,
                 ...converse.MUC_INFO_CODES.role_changes
             ],
-            'muc_show_logs_before_join': false
+            'muc_show_logs_before_join': false,
+            'muc_subscribe_to_rai': false,
         });
         api.promises.add(['roomsAutoJoined']);
 
@@ -413,22 +425,15 @@ converse.plugins.add('converse-muc', {
             }
         };
 
+        /************************ BEGIN Event Handlers ************************/
+
         if (api.settings.get('allow_muc_invitations')) {
-            const registerDirectInvitationHandler = function () {
-                _converse.connection.addHandler(
-                    message => {
-                        _converse.onDirectMUCInvitation(message);
-                        return true;
-                    },
-                    'jabber:x:conference',
-                    'message'
-                );
-            };
             api.listen.on('connected', registerDirectInvitationHandler);
             api.listen.on('reconnected', registerDirectInvitationHandler);
         }
 
-        /************************ BEGIN Event Handlers ************************/
+        api.listen.on('reconnected', () => _converse.session.save('rai_enabled_domains', ''));
+
         api.listen.on('beforeTearDown', () => {
             const groupchats = _converse.chatboxes.where({ 'type': _converse.CHATROOMS_TYPE });
             groupchats.forEach(muc =>

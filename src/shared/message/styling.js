@@ -34,7 +34,6 @@ const styling_templates = {
 
 /**
  * Checks whether a given character "d" at index "i" of "text" is a valid opening or closing directive.
- * It's valid if it's not part of a word.
  * @param { String } d - The potential directive
  * @param { String } text - The text in which  the directive appears
  * @param { Number } i - The directive index
@@ -46,6 +45,14 @@ function isValidDirective (d, text, i, opening) {
     if (opening) {
         const regex = RegExp(dont_escape.includes(d) ? `^(\\p{L}|\\p{N})${d}` : `^(\\p{L}|\\p{N})\\${d}`, 'u');
         if (i > 1 && regex.test(text.slice(i-1))) {
+            return false;
+        }
+        const is_quote = isQuoteDirective(d);
+        if (is_quote && i > 0 && text[i-1] !== '\n') {
+            // Quote directives must be on newlines
+            return false;
+        } else if (!is_quote && d === text[i+1]) {
+            // Immediately followed by another directive of the same type
             return false;
         }
     } else {
@@ -68,7 +75,7 @@ function getDirective (text, i, opening=true) {
     let d;
     if ((/(^```\s*\n|^```\s*$)/).test(text.slice(i)) && (i === 0 || text[i-1] === '\n' || text[i-1] === '>')) {
         d = text.slice(i, i+3);
-    } else if (styling_directives.includes(text.slice(i, i+1)) && text[i] !== text[i+1]) {
+    } else if (styling_directives.includes(text.slice(i, i+1))) {
         d = text.slice(i, i+1);
         if (!isValidDirective(d, text, i, opening)) return null;
     } else {

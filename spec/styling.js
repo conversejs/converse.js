@@ -269,13 +269,21 @@ describe("An incoming chat Message", function () {
             'This is <span class="styling-directive">`</span><code>also _quoted_</code><span class="styling-directive">`</span></blockquote>\n'+
             'This is not quoted');
 
-        msg_text = `> > This is doubly quoted text`;
+        msg_text = `> > This is NOT doubly quoted text`;
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
         await _converse.handleMessageStanza(msg);
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerText).toBe(msg_text);
-                await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') === "<blockquote> <blockquote> This is doubly quoted text</blockquote></blockquote>");
+                await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') === "<blockquote> &gt; This is NOT doubly quoted text</blockquote>");
+
+        msg_text = `>> This is doubly quoted text`;
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
+        expect(msg_el.innerText).toBe(msg_text);
+                await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') === "<blockquote><blockquote> This is doubly quoted text</blockquote></blockquote>");
 
         msg_text = ">```\n>ignored\n> <span></span> (println \"Hello, world!\")\n>```\n> This should show up as monospace, preformatted text ^";
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
@@ -320,7 +328,7 @@ describe("An incoming chat Message", function () {
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
             '<blockquote> Where is it located?</blockquote>\n'+
             '<a target="_blank" rel="noopener" '+
-               'href="https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
+                'href="https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.786971&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
 
         msg_text = '> What do you think of it?\n :poop:';
         msg = mock.createChatMessage(_converse, contact_jid, msg_text)
@@ -339,6 +347,14 @@ describe("An incoming chat Message", function () {
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
             '<blockquote> What do you think of it?</blockquote>\n<span class="styling-directive">~</span><del>hello</del><span class="styling-directive">~</span>');
+
+        msg_text = 'hello world > this is not a quote';
+        msg = mock.createChatMessage(_converse, contact_jid, msg_text)
+        await _converse.handleMessageStanza(msg);
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
+        expect(msg_el.innerText).toBe(msg_text);
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') === 'hello world &gt; this is not a quote');
         done();
     }));
 });

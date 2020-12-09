@@ -126,11 +126,12 @@ export class MessageText extends String {
      * Look for mentions included as XEP-0372 references and add templates for
      * rendering them.
      * @param { String } text
-     * @param { Integer } offset - The index of the passed in text relative to
-     *  the start of the MessageText.
+     * @param { Integer } local_offset - The index of the passed in text relative to
+     *  the start of this MessageText instance (which is not necessarily the same as the
+     *  offset from the start of the original message stanza's body text).
      */
-    addMentions (text, offset) {
-        offset += this.offset;
+    addMentions (text, local_offset) {
+        const full_offset = local_offset+this.offset;
         if (!this.model.collection) {
             // This model doesn't belong to a collection anymore, so it must be
             // have been removed in the meantime and can be ignored.
@@ -139,16 +140,24 @@ export class MessageText extends String {
         }
         const nick = this.model.collection.chatbox.get('nick');
         this.model.get('references')?.forEach(ref => {
-            const begin = Number(ref.begin)-offset;
-            if (begin < 0 || begin >= offset+text.length) {
+            const begin = Number(ref.begin)-full_offset;
+            if (begin < 0 || begin >= full_offset+text.length) {
                 return;
             }
-            const end = Number(ref.end)-offset;
+            const end = Number(ref.end)-full_offset;
             const mention = text.slice(begin, end);
             if (mention === nick) {
-                this.addTemplateResult(begin+offset, end+offset, tpl_mention_with_nick({mention}));
+                this.addTemplateResult(
+                    begin+local_offset,
+                    end+local_offset,
+                    tpl_mention_with_nick({mention})
+                );
             } else {
-                this.addTemplateResult(begin+offset, end+offset, tpl_mention({mention}));
+                this.addTemplateResult(
+                    begin+local_offset,
+                    end+local_offset,
+                    tpl_mention({mention})
+                );
             }
         });
     }

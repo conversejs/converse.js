@@ -150,8 +150,7 @@ export function getDirectiveTemplate (d, text, model, offset) {
     if (isQuoteDirective(d)) {
         const newtext = text
             .replace(/\n>/g, '\n') // Don't show the directive itself
-            .replace(/\n$/, '') // Trim line-break at the end
-            .replace(/^ /, ''); // Trim leading space inside codeblock
+            .replace(/\n$/, ''); // Trim line-break at the end
         return template(newtext, model, offset);
     } else {
         return template(text, model, offset);

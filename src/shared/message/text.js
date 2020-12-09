@@ -34,7 +34,7 @@ export class MessageText extends String {
 
     /**
      * Create a new {@link MessageText} instance.
-     * @param { String } text - The plain text that was received from the `<message>` stanza.
+     * @param { String } text - The text to be annotated
      * @param { Message } model - The model representing the message to which
      *  this MessageText instance belongs
      * @param { Integer } offset - The offset of this particular piece of text
@@ -140,15 +140,15 @@ export class MessageText extends String {
         const nick = this.model.collection.chatbox.get('nick');
         this.model.get('references')?.forEach(ref => {
             const begin = Number(ref.begin)-offset;
-            if (begin >= text.length) {
+            if (begin < 0 || begin >= offset+text.length) {
                 return;
             }
             const end = Number(ref.end)-offset;
             const mention = text.slice(begin, end);
             if (mention === nick) {
-                this.addTemplateResult(begin, end, tpl_mention_with_nick({mention}));
+                this.addTemplateResult(begin+offset, end+offset, tpl_mention_with_nick({mention}));
             } else {
-                this.addTemplateResult(begin, end, tpl_mention({mention}));
+                this.addTemplateResult(begin+offset, end+offset, tpl_mention({mention}));
             }
         });
     }
@@ -167,12 +167,19 @@ export class MessageText extends String {
             while (i < this.length) {
                 const { d, length } = getDirectiveAndLength(this, i);
                 if (d && length) {
-                    const begin = d === '```' ? i+d.length+1 : i+d.length;
+                    const is_quote = isQuoteDirective(d);
                     const end = i+length;
-                    const slice_end = isQuoteDirective(d) ? end : end-d.length;
+                    const slice_end = is_quote ? end : end-d.length;
+                    let slice_begin = d === '```' ? i+d.length+1 : i+d.length;
+                    if (is_quote && this[slice_begin] === ' ') {
+                        // Trim leading space inside codeblock
+                        slice_begin += 1;
+                    }
+                    const offset = slice_begin;
+                    const text = this.slice(slice_begin, slice_end);
                     references.push({
                         'begin': i,
-                        'template': getDirectiveTemplate(d, this.slice(begin, slice_end), this.model, i+d.length),
+                        'template': getDirectiveTemplate(d, text, this.model, offset),
                         end,
                     });
                     i = end;
@@ -198,7 +205,7 @@ export class MessageText extends String {
      * instance and add references via the passed in function.
      * @param { Function } func
      */
-    addReferences (func) {
+    addAnnotations (func) {
         const payload = this.marshall();
         let idx = 0; // The text index of the element in the payload
         for (const text of payload) {
@@ -235,12 +242,12 @@ export class MessageText extends String {
         await api.trigger('beforeMessageBodyTransformed', this, {'Synchronous': true});
 
         this.addStyling();
-        this.addReferences(this.addMentions);
-        this.addReferences(this.addHyperlinks);
-        this.addReferences(this.addMapURLs);
+        this.addAnnotations(this.addMentions);
+        this.addAnnotations(this.addHyperlinks);
+        this.addAnnotations(this.addMapURLs);
 
         await api.emojis.initialize();
-        this.addReferences(this.addEmojis);
+        this.addAnnotations(this.addEmojis);
 
         /**
          * Synchronous event which provides a hook for transforming a chat message's body text
@@ -288,6 +295,11 @@ export class MessageText extends String {
         return convertASCII2Emoji(text.replace(/\n\n+/g, '\n\n'));
     }
 
+    /**
+     * Take the annotations and return an array of text and TemplateResult
+     * instances to be rendered to the DOM.
+     * @method MessageText#marshall
+     */
     marshall () {
         let list = [this.toString()];
         this.references

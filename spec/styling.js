@@ -355,6 +355,35 @@ describe("An incoming chat Message", function () {
         msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
         expect(msg_el.innerText).toBe(msg_text);
         await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') === 'hello world &gt; this is not a quote');
+
+        msg_text = '> What do you think of it romeo?\n Did you see this romeo?';
+        msg = $msg({
+                    from: contact_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: (new Date()).getTime()
+                }).c('body').t(msg_text).up()
+                    .c('reference', {
+                        'xmlns':'urn:xmpp:reference:0',
+                        'begin':'26',
+                        'end':'31',
+                        'type':'mention',
+                        'uri': _converse.bare_jid
+                    })
+                    .c('reference', {
+                        'xmlns':'urn:xmpp:reference:0',
+                        'begin':'51',
+                        'end':'56',
+                        'type':'mention',
+                        'uri': _converse.bare_jid
+                    }).nodeTree;
+        await _converse.handleMessageStanza(msg);
+
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        msg_el = Array.from(view.el.querySelectorAll('converse-chat-message-body')).pop();
+        expect(msg_el.innerText).toBe(msg_text);
+        await u.waitUntil(() => msg_el.innerHTML.replace(/<!---->/g, '') ===
+            `<blockquote>What do you think of it <span class="mention">romeo</span>?</blockquote>\n Did you see this <span class="mention">romeo</span>?`);
         done();
     }));
 });

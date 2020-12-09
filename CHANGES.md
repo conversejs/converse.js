@@ -1,5 +1,12 @@
 # Changelog
 
+## 7.0.4 (2020-12-09)
+
+Bugfix: Set protocol after discovering connection methods
+
+Otherwise if an endpoint was passed in with `converse.initialize`, then
+that endpoint's protocol is (potentially wrongly) used.
+
 ## 7.0.3 (2020-12-02)
 
 - Bugfix: `null` inserted by emoji picker and can't switch between skintones

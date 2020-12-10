@@ -280,10 +280,7 @@ export default class Message extends CustomElement {
 
     showMessageVersionsModal (ev) {
         ev.preventDefault();
-        if (this.message_versions_modal === undefined) {
-            this.message_versions_modal = new MessageVersionsModal({'model': this.model});
-        }
-        this.message_versions_modal.show(ev);
+        api.modal.show(MessageVersionsModal, {'model': this.model}, ev);
     }
 
     toggleSpoilerMessage (ev) {

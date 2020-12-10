@@ -5,7 +5,6 @@
  */
 import URI from "urijs";
 import log from '@converse/headless/log';
-import sizzle from "sizzle";
 import tpl_audio from  "../templates/audio.js";
 import tpl_file from "../templates/file.js";
 import tpl_form_captcha from "../templates/form_captcha.html";
@@ -19,9 +18,11 @@ import tpl_image from "../templates/image.js";
 import tpl_select_option from "../templates/select_option.html";
 import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
-import { api } from  "@converse/headless/core";
+import { api, converse } from  "@converse/headless/core";
 import { html, render } from "lit-html";
 import { isFunction } from "lodash-es";
+
+const { sizzle } = converse.env;
 
 const APPROVED_URL_PROTOCOLS = ['http', 'https', 'xmpp', 'mailto'];
 

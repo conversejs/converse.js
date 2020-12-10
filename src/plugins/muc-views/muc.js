@@ -1,5 +1,6 @@
 import './config-form.js';
 import './password-form.js';
+import 'shared/autocomplete/index.js';
 import MUCInviteModal from 'modals/muc-invite.js';
 import ModeratorToolsModal from 'modals/moderator-tools.js';
 import OccupantModal from 'modals/occupant.js';

@@ -1,10 +1,10 @@
-import { AutoComplete, FILTER_CONTAINS, FILTER_STARTSWITH } from "../converse-autocomplete.js";
-import { CustomElement } from './element.js';
+import AutoComplete from './autocomplete.js';
+import { CustomElement } from 'components/element.js';
+import { FILTER_CONTAINS, FILTER_STARTSWITH } from './utils.js';
+import { api } from '@converse/headless/core';
 import { html } from 'lit-element';
-import { api } from "@converse/headless/core";
 
 export default class AutoCompleteComponent extends CustomElement {
-
     static get properties () {
         return {
             'getAutoCompleteList': { type: Function },
@@ -15,8 +15,8 @@ export default class AutoCompleteComponent extends CustomElement {
             'min_chars': { type: Number },
             'name': { type: String },
             'placeholder': { type: String },
-            'triggers': { type: String },
-        }
+            'triggers': { type: String }
+        };
     }
 
     constructor () {
@@ -35,13 +35,21 @@ export default class AutoCompleteComponent extends CustomElement {
         return html`
             <div class="suggestion-box suggestion-box__name">
                 <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
-                <input type="text" name="${this.name}"
-                       autocomplete="off"
-                       @keydown=${this.onKeyDown}
-                       @keyup=${this.onKeyUp}
-                       class="form-control suggestion-box__input"
-                       placeholder="${this.placeholder}"/>
-                <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>
+                <input
+                    type="text"
+                    name="${this.name}"
+                    autocomplete="off"
+                    @keydown=${this.onKeyDown}
+                    @keyup=${this.onKeyUp}
+                    class="form-control suggestion-box__input"
+                    placeholder="${this.placeholder}"
+                />
+                <span
+                    class="suggestion-box__additions visually-hidden"
+                    role="status"
+                    aria-live="assertive"
+                    aria-relevant="additions"
+                ></span>
             </div>
         `;
     }
@@ -56,9 +64,12 @@ export default class AutoCompleteComponent extends CustomElement {
             'list': () => this.getAutoCompleteList(),
             'match_current_word': true,
             'max_items': this.max_items,
-            'min_chars': this.min_chars,
+            'min_chars': this.min_chars
         });
-        this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
+        this.auto_complete.on(
+            'suggestion-box-selectcomplete',
+            () => (this.auto_completing = false)
+        );
     }
 
     onKeyDown (ev) {

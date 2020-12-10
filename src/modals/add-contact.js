@@ -1,3 +1,4 @@
+import 'shared/autocomplete/index.js';
 import BootstrapModal from "./base.js";
 import tpl_add_contact_modal from "./templates/add-contact.js";
 import { __ } from '../i18n';

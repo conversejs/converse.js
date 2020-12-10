@@ -1,139 +1,17 @@
 /**
- * @module converse-autocomplete
  * @copyright Lea Verou and the Converse.js contributors
  * @description
- *  Converse.js plugin which started as a fork of Lea Verou's Awesomplete
+ *  Started as a fork of Lea Verou's "Awesomplete"
  *  https://leaverou.github.io/awesomplete/
  * @license Mozilla Public License (MPLv2)
  */
+
 import { Events } from '@converse/skeletor/src/events.js';
+import { helpers, FILTER_CONTAINS, ITEM, SORT_BY_QUERY_POSITION } from './utils.js';
+import Suggestion from './suggestion.js';
 import { converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
-
-
-export const FILTER_CONTAINS = function (text, input) {
-    return RegExp(helpers.regExpEscape(input.trim()), "i").test(text);
-};
-
-
-export const FILTER_STARTSWITH = function (text, input) {
-    return RegExp("^" + helpers.regExpEscape(input.trim()), "i").test(text);
-};
-
-
-const SORT_BY_LENGTH = function (a, b) {
-    if (a.length !== b.length) {
-        return a.length - b.length;
-    }
-    return a < b? -1 : 1;
-};
-
-const SORT_BY_QUERY_POSITION = function (a, b) {
-    const query = a.query.toLowerCase();
-    const x = a.label.toLowerCase().indexOf(query);
-    const y = b.label.toLowerCase().indexOf(query);
-
-    if (x === y) {
-        return SORT_BY_LENGTH(a, b);
-    }
-    return (x === -1 ? Infinity : x) < (y === -1 ? Infinity : y) ? -1 : 1
-}
-
-
-const ITEM = (text, input) => {
-    input = input.trim();
-    const element = document.createElement("li");
-    element.setAttribute("aria-selected", "false");
-
-    const regex = new RegExp("("+input+")", "ig");
-    const parts = input ? text.split(regex) : [text];
-    parts.forEach((txt) => {
-        if (input && txt.match(regex)) {
-            const match = document.createElement("mark");
-            match.textContent = txt;
-            element.appendChild(match);
-        } else {
-            element.appendChild(document.createTextNode(txt));
-        }
-    });
-    return element;
-};
-
-
-const helpers = {
-
-    getElement (expr, el) {
-        return typeof expr === "string"? (el || document).querySelector(expr) : expr || null;
-    },
-
-    bind (element, o) {
-        if (element) {
-            for (var event in o) {
-                if (!Object.prototype.hasOwnProperty.call(o, event)) {
-                    continue;
-                }
-                const callback = o[event];
-                event.split(/\s+/).forEach(event => element.addEventListener(event, callback));
-            }
-        }
-    },
-
-    unbind (element, o) {
-        if (element) {
-            for (var event in o) {
-                if (!Object.prototype.hasOwnProperty.call(o, event)) {
-                    continue;
-                }
-                const callback = o[event];
-                event.split(/\s+/).forEach(event => element.removeEventListener(event, callback));
-            }
-        }
-    },
-
-    regExpEscape (s) {
-        return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
-    },
-
-    isMention (word, ac_triggers) {
-        return (ac_triggers.includes(word[0]) || u.isMentionBoundary(word[0]) && ac_triggers.includes(word[1]));
-    }
-}
-
-
-/**
- * An autocomplete suggestion
- */
-class Suggestion extends String {
-
-    /**
-     * @param { Any } data - The auto-complete data. Ideally an object e.g. { label, value },
-     *      which specifies the value and human-presentable label of the suggestion.
-     * @param { string } query - The query string being auto-completed
-     */
-    constructor (data, query) {
-        super();
-        const o = Array.isArray(data)
-            ? { label: data[0], value: data[1] }
-            : typeof data === "object" && "label" in data && "value" in data ? data : { label: data, value: data };
-
-        this.label = o.label || o.value;
-        this.value = o.value;
-        this.query = query;
-    }
-
-    get lenth () {
-        return this.label.length;
-    }
-
-    toString () {
-        return "" + this.label;
-    }
-
-    valueOf () {
-        return this.toString();
-    }
-}
 
 
 export class AutoComplete {
@@ -433,13 +311,4 @@ export class AutoComplete {
 // Make it an event emitter
 Object.assign(AutoComplete.prototype, Events);
 
-
-converse.plugins.add("converse-autocomplete", {
-
-    initialize () {
-        const _converse = this._converse;
-        _converse.FILTER_CONTAINS = FILTER_CONTAINS;
-        _converse.FILTER_STARTSWITH = FILTER_STARTSWITH;
-        _converse.AutoComplete = AutoComplete;
-    }
-});
+export default AutoComplete;

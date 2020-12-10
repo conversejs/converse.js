@@ -1,4 +1,4 @@
-import "../plugins/autocomplete.js"
+import 'shared/autocomplete/index.js';
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
 import { CustomElement } from './element.js';

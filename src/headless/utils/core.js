@@ -3,13 +3,11 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the core utilities module.
  */
-import * as strophe from 'strophe.js/src/core';
+import { Strophe } from 'strophe.js/src/strophe';
 import { Model } from '@converse/skeletor/src/model.js';
 import { compact, last, isElement, isObject } from "lodash-es";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
-
-const Strophe = strophe.default.Strophe;
 
 /**
  * The utils object

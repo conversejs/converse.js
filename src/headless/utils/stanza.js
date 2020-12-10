@@ -1,12 +1,10 @@
-import * as strophe from 'strophe.js/src/core';
+import { Strophe, $msg } from 'strophe.js/src/strophe';
 import dayjs from 'dayjs';
 import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
 import log from "../log";
 import { _converse, api } from "@converse/headless/core";
 
-const Strophe = strophe.default.Strophe;
-const $msg = strophe.default.$msg;
 const { NS } = Strophe;
 
 

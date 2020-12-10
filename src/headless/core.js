@@ -4,7 +4,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import './polyfill';
-import 'strophe.js/src/websocket';
 import Storage from '@converse/skeletor/src/storage.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from 'dayjs';

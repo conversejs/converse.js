@@ -1072,7 +1072,7 @@ VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
 If no nickame value is found, then an error will be raised.
 
 muc_hats
--------------------
+--------
 
 * Default: ``['xep317']``
 
@@ -1195,6 +1195,16 @@ modtools_disable_query
 This setting allows you to disable which affiliations or roles may be queried in the moderator tools modal.
 If all roles or all affiliations are disabled, then the relevant tab won't be
 showed at all.
+
+
+muc_clear_messages_on_leave
+---------------------------
+
+* Default: ``true``
+
+Starting with Converse 8.0.0, when leaving a MUC, all cached messages in the history is cleared.
+
+Note: This means that you lose your history of decrypted OMEMO messages and cannot recover it.
 
 
 muc_disable_slash_commands
@@ -1383,7 +1393,7 @@ muc_show_info_messages
 ----------------------
 
 * Default: List composed of MUC status codes, role changes, join and leave events
-and affiliation changes. The values of converse.MUC_INFO_CODES below are joined to 
+and affiliation changes. The values of converse.MUC_INFO_CODES below are joined to
 build the default list:
 
 .. code-block:: javascript

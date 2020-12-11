@@ -223,6 +223,7 @@ converse.plugins.add('converse-muc', {
             'auto_register_muc_nickname': false,
             'hide_muc_participants': false,
             'locked_muc_domain': false,
+            'muc_clear_messages_on_leave': true,
             'muc_domain': undefined,
             'muc_fetch_members': true,
             'muc_history_max_stanzas': undefined,

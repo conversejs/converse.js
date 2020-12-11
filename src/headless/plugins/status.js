@@ -261,7 +261,7 @@ converse.plugins.add('converse-status', {
                         if (!Array.isArray(child_nodes)) {
                             child_nodes = [child_nodes];
                         }
-                        child_nodes.forEach(c => presence.c(c).up());
+                        child_nodes.map(c => c?.tree() ?? c).forEach(c => presence.cnode(c).up());
                     }
                     api.send(presence);
                 }

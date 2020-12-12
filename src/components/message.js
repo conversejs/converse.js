@@ -1,7 +1,7 @@
-import './message-body.js';
-import '../converse-registry';
+import '../shared/registry';
 import './dropdown.js';
 import './message-actions.js';
+import './message-body.js';
 import { getDerivedMessageProps } from './message-history';
 import MessageVersionsModal from '../modals/message-versions.js';
 import dayjs from 'dayjs';
@@ -10,7 +10,7 @@ import tpl_chat_message from '../templates/chat_message.js';
 import tpl_spinner from '../templates/spinner.js';
 import { CustomElement } from './element.js';
 import { __ } from '../i18n';
-import { _converse, api, converse } from  '@converse/headless/converse-core';
+import { _converse, api, converse } from  '@converse/headless/core';
 import { html } from 'lit-element';
 import { renderAvatar } from './../templates/directives/avatar';
 
@@ -268,12 +268,19 @@ export default class Message extends CustomElement {
         `;
     }
 
+    showUserModal (ev) {
+        if (this.model.get('sender') === 'me') {
+            _converse.xmppstatusview.showProfileModal(ev);
+        } else if (this.message_type === 'groupchat') {
+            this.chatview.showOccupantDetailsModal(ev, this.model);
+        } else {
+            this.chatview.showUserDetailsModal(ev, this.model);
+        }
+    }
+
     showMessageVersionsModal (ev) {
         ev.preventDefault();
-        if (this.message_versions_modal === undefined) {
-            this.message_versions_modal = new MessageVersionsModal({'model': this.model});
-        }
-        this.message_versions_modal.show(ev);
+        api.modal.show(MessageVersionsModal, {'model': this.model}, ev);
     }
 
     toggleSpoilerMessage (ev) {

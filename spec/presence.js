@@ -1,4 +1,5 @@
-/*global mock */
+/*global mock, converse */
+
 // See: https://xmpp.org/rfcs/rfc3921.html
 
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -76,7 +77,7 @@ describe("A sent presence stanza", function () {
         const cbview = _converse.chatboxviews.get('controlbox');
         const change_status_el = await u.waitUntil(() => cbview.el.querySelector('.change-status'));
         change_status_el.click()
-        const modal = _converse.xmppstatusview.status_modal;
+        let modal = _converse.api.modal.get('modal-status-change');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         const msg = 'My custom status';
         modal.el.querySelector('input[name="status_message"]').value = msg;
@@ -90,10 +91,11 @@ describe("A sent presence stanza", function () {
                     `<priority>0</priority>`+
                     `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
                     `</presence>`)
-
         await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
         await u.waitUntil(() => !u.isVisible(modal.el));
+
         cbview.el.querySelector('.change-status').click()
+        modal = _converse.api.modal.get('modal-status-change');
         await u.waitUntil(() => modal.el.getAttribute('aria-hidden') === "false", 1000);
         modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
         modal.el.querySelector('[type="submit"]').click();

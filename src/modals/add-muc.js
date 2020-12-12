@@ -1,13 +1,14 @@
-import tpl_add_chatroom_modal from "templates/add_chatroom_modal.js";
-import { BootstrapModal } from "../converse-modal.js";
-import { Strophe } from 'strophe.js/src/strophe';
+import tpl_add_muc from "./templates/add-muc.js";
+import BootstrapModal from "./base.js";
 import { __ } from '../i18n';
-import { _converse, api, converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
+const { Strophe } = converse.env;
 
 
 export default BootstrapModal.extend({
+    persistent: true,
     id: 'add-chatroom-modal',
 
     events: {
@@ -28,7 +29,7 @@ export default BootstrapModal.extend({
             const muc_domain = this.model.get('muc_domain') || api.settings.get('muc_domain');
             placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
         }
-        return tpl_add_chatroom_modal(Object.assign(this.model.toJSON(), {
+        return tpl_add_muc(Object.assign(this.model.toJSON(), {
             '_converse': _converse,
             'label_room_address': api.settings.get('muc_domain') ? __('Groupchat name') :  __('Groupchat address'),
             'chatroom_placeholder': placeholder,

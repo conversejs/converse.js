@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const _ = converse.env._;
+const { Strophe, _ } = converse.env;
 const $msg = converse.env.$msg;
 const u = converse.env.utils;
 
@@ -222,4 +222,146 @@ describe("Notifications", function () {
             }));
         });
     });
+
+
+    describe("A Favicon Message Counter", function () {
+
+        it("is incremented when the message is received and the window is not focused",
+                mock.initConverse(
+                    ['rosterGroupsFetched'], {'show_tab_notifications': false},
+                    async function (done, _converse) {
+
+            await mock.waitForRoster(_converse, 'current');
+            await mock.openControlBox(_converse);
+
+            const favico = jasmine.createSpyObj('favico', ['badge']);
+            spyOn(converse.env, 'Favico').and.returnValue(favico);
+
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const previous_state = _converse.windowState;
+            const msg = $msg({
+                    from: sender_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: u.getUniqueId()
+                }).c('body').t('This message will increment the message counter').up()
+                  .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+            _converse.windowState = 'hidden';
+
+            spyOn(_converse.api, "trigger").and.callThrough();
+
+            await _converse.handleMessageStanza(msg);
+            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+            expect(favico.badge.calls.count()).toBe(0);
+
+            _converse.api.settings.set('show_tab_notifications', true);
+            const msg2 = $msg({
+                    from: sender_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: u.getUniqueId()
+                }).c('body').t('This message increment the message counter AND update the page title').up()
+                  .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+
+            await _converse.handleMessageStanza(msg2);
+            await u.waitUntil(() => favico.badge.calls.count() === 1);
+            expect(favico.badge.calls.mostRecent().args.pop()).toBe(2);
+
+            const view = _converse.chatboxviews.get(sender_jid);
+            expect(view.model.get('num_unread')).toBe(2);
+
+            // Check that it's cleared when the window is focused
+            _converse.windowState = 'hidden';
+            _converse.saveWindowState({'type': 'focus'});
+            await u.waitUntil(() => favico.badge.calls.count() === 2);
+            expect(favico.badge.calls.mostRecent().args.pop()).toBe(0);
+
+            expect(view.model.get('num_unread')).toBe(0);
+            _converse.windowSate = previous_state;
+            done();
+        }));
+
+        it("is not incremented when the message is received and the window is focused",
+            mock.initConverse(
+                ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            await mock.waitForRoster(_converse, 'current');
+            await mock.openControlBox(_converse);
+
+            const favico = jasmine.createSpyObj('favico', ['badge']);
+            spyOn(converse.env, 'Favico').and.returnValue(favico);
+
+            _converse.saveWindowState({'type': 'focus'});
+            const message = 'This message will not increment the message counter';
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
+                msg = $msg({
+                    from: sender_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: u.getUniqueId()
+                }).c('body').t(message).up()
+                  .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+            await _converse.handleMessageStanza(msg);
+
+            setTimeout(() => {
+                const view = _converse.chatboxviews.get(sender_jid);
+                expect(view.model.get('num_unread')).toBe(0);
+                expect(favico.badge.calls.count()).toBe(0);
+                done();
+            }, 500);
+        }));
+
+        it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",
+            mock.initConverse(
+                ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            await mock.waitForRoster(_converse, 'current');
+
+            const favico = jasmine.createSpyObj('favico', ['badge']);
+            spyOn(converse.env, 'Favico').and.returnValue(favico);
+
+            const message = 'This message will always increment the message counter from zero';
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const msgFactory = function () {
+                    return $msg({
+                        from: sender_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: u.getUniqueId()
+                    })
+                    .c('body').t(message).up()
+                    .c('active', {'xmlns': Strophe.NS.CHATSTATES})
+                    .tree();
+             };
+
+            // leave converse-chat page
+            _converse.windowState = 'hidden';
+            await _converse.handleMessageStanza(msgFactory());
+            let view = _converse.chatboxviews.get(sender_jid);
+            await u.waitUntil(() => favico.badge.calls.count() === 1, 1000);
+            expect(favico.badge.calls.mostRecent().args.pop()).toBe(1);
+
+            // come back to converse-chat page
+            _converse.saveWindowState({'type': 'focus'});
+            await u.waitUntil(() => u.isVisible(view.el));
+            await u.waitUntil(() => favico.badge.calls.count() === 2);
+            expect(favico.badge.calls.mostRecent().args.pop()).toBe(0);
+
+            // close chatbox and leave converse-chat page again
+            view.close();
+            _converse.windowState = 'hidden';
+
+            // check that msg_counter is incremented from zero again
+            await _converse.handleMessageStanza(msgFactory());
+            view = _converse.chatboxviews.get(sender_jid);
+            await u.waitUntil(() => u.isVisible(view.el));
+            await u.waitUntil(() => favico.badge.calls.count() === 3);
+            expect(favico.badge.calls.mostRecent().args.pop()).toBe(1);
+            done();
+        }));
+    });
+
 });

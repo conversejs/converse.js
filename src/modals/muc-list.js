@@ -1,15 +1,14 @@
+import BootstrapModal from "./base.js";
 import log from "@converse/headless/log";
-import sizzle from 'sizzle';
 import st from "@converse/headless/utils/stanza";
-import tpl_list_chatrooms_modal from "templates/list_chatrooms_modal.js";
+import tpl_list_chatrooms_modal from "./templates/muc-list.js";
 import tpl_room_description from "templates/room_description.html";
 import tpl_spinner from "templates/spinner.js";
-import { BootstrapModal } from "../converse-modal.js";
-import { Strophe, $iq } from 'strophe.js/src/strophe';
 import { __ } from '../i18n';
-import { _converse, api, converse } from "@converse/headless/converse-core";
+import { _converse, api, converse } from "@converse/headless/core";
 import { head } from "lodash-es";
 
+const { Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -82,7 +81,8 @@ function toggleRoomInfo (ev) {
 
 
 export default BootstrapModal.extend({
-    id: "list-chatrooms-modal",
+    id: "muc-list-modal",
+    persistent: true,
 
     initialize () {
         this.items = [];

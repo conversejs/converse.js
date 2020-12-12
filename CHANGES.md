@@ -1,11 +1,43 @@
 # Changelog
 
-## 7.0.0 (Unreleased)
+## 8.0.0 (Unreleased)
+
+- #1083: Add support for XEP-0393 Message Styling
+- #2275: Allow punctuation to immediately precede a mention
+- Bugfix: Connection protocol not updated based on XEP-0156 connection methods
+- Bugfix: `null` inserted by emoji picker and can't switch between skintones
+- New hook: [getMessageActionButtons](https://conversejs.org/docs/html/api/-_converse.html#event:getMessageActionButtons)
+- File structure reordering: All plugins are now in `./plugins` folders.
+- New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
+- New configuration setting: [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave)
+
+### Breaking Changes
+
+The [afterMessageBodyTransformed](https://conversejs.org/docs/html/api/-_converse.html#event:afterMessageBodyTransformed) and [beforeMessageBodyTransformed](https://conversejs.org/docs/html/api/-_converse.html#event:beforeMessageBodyTransformed) events now has a different signatures.
+When leaving a MUC, the message history is deleted. This means that decrypted
+OMEMO messages are gone and cannot be recovered on that device. See [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave).
+
+## 7.0.2 (2020-11-23)
+
+- Updated translations: de, nb, gl, tr
+- Still more necessary files not included in the 7.0.1 NPM package, causing `Module not found` errors.
+- #2337: Newly opened headline chat isn't hidden by default
+
+## 7.0.1 (2020-11-19)
+
+- Updated translations: de, es, fi, fr, gl, hu, nb_NO, oc, pl, pt, pt_BR, ru, tr, uk, zh
+- #2328: Honor `use_system_emojis` in emoji-picker
+- Not all template/*.js files were included in the 7.0.0 NPM package, causing:
+  `Module not found: Error: Can't resolve 'templates/*.js'`
+
+## 7.0.0 (2020-11-18)
 
 *Note for plugin authors:*
 configuration settings should now be accessed via `_converse.api.settings.get` and not directly on the `_converse` object.
 Soon we'll deprecate the latter, so prepare now.
 
+- #515 Add support for XEP-0050 Ad-Hoc commands
+- #1083 Add support for XEP-0393 Message Styling
 - #2231: add sort_by_query and remove sort_by_length
 - #1313: Stylistic improvements to the send button
 - #1481: MUC OMEMO: Error No record for device
@@ -15,7 +47,6 @@ Soon we'll deprecate the latter, so prepare now.
 - #1793: Send button doesn't appear in Firefox in 1:1 chats
 - #1820: Set focus on jid field after controlbox is loaded
 - #1822: Don't log error if user has no bookmarks
-- #515 Add support for XEP-0050 Ad-Hoc commands
 - #1823: New config options [muc_roomid_policy](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy)
     and [muc_roomid_policy_hint](https://conversejs.org/docs/html/configuration.html#muc-roomid-policy-hint)
 - #1826: A user can now add himself as a contact
@@ -35,13 +66,15 @@ Soon we'll deprecate the latter, so prepare now.
 - #2213: added CustomElement to converse.env
 - #2220: fix rendering of emojis in case `use_system_emojis == false` (again).
 - #2092: fixes room list update loop when having the `locked_muc_domain` truthy or `'hidden'`
+- #2259: Rename configuration setting `muc_show_join_leave` to `muc_show_info_messages`. Now accepts a list of events to show instead of a boolean.
 - #2285: Rename config option `muc_hats_from_vcard` to [muc_hats](https://conversejs.org/docs/html/configuration.html#muc-hats). Now accepts a list instead of a boolean and allows for more flexible choices regarding user badges.
 - #2300: Fix message reorder issue after message correction.
-- #2304: Custom emojis (stickers) images not shown 
+- #2304: Custom emojis (stickers) images not shown
 - #2307: BootstrapModal is not accessible to plugins
 - #2308: Allow getHats method to be overriden in the `overrides` object in plugins.
 - #2321: When Converse runs inside a browser extension, enable browser sync and local storage for persistent storage
 - #1250: Change favicon color when unread messages
+- Updated translations: de, es, fi, fr, gl, hu, nb_NO, oc, pl, pt, pt_BR, ru, tr, uk, zh
 - The `trusted` configuration setting has been removed in favor of two new settings:
     [allow_user_trust_override](https://conversejs.org/docs/html/configuration.html#allow-user-trust-override)
     [clear_cache_on_logout](https://conversejs.org/docs/html/configuration.html#clear-cache-on-logout)

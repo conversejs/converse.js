@@ -1,5 +1,5 @@
 import { html } from "lit-html";
-import { api } from '@converse/headless/converse-core.js';
+import { api } from '@converse/headless/core.js';
 
 export default (o) => {
     const message_limit = api.settings.get('message_limit');

@@ -1,6 +1,6 @@
 {
   "name": "@converse/headless",
-  "version": "6.0.0",
+  "version": "7.0.2",
   "description": "Converse.js Headless build",
   "author": "cmrd Senya <senya@riseup.net>",
   "homepage": "https://conversejs.org",
@@ -42,7 +42,8 @@
     "localforage-webextensionstorage-driver": "^2.0.0",
     "lodash-es": "^4.17.15",
     "pluggable.js": "2.0.1",
+    "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
-    "strophe.js": "1.4.0"
+    "strophe.js": "1.4.1"
   }
 }

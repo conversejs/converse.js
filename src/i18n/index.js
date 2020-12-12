@@ -7,7 +7,7 @@
 import Jed from 'jed';
 import dayjs from 'dayjs';
 import log from "@converse/headless/log";
-import { _converse, api, i18n } from '@converse/headless/converse-core';
+import { _converse, api, i18n } from '@converse/headless/core';
 
 
 function detectLocale (library_check) {

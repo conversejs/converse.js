@@ -16,12 +16,12 @@ export default (o) => {
             <!-- Anchor to allow us to scroll the message into view -->
             <a id="${o.msgid}"></a>
 
-            ${ o.shouldShowAvatar() ? renderAvatar(o.getAvatarData()) : '' }
+            <a class="show-msg-author-modal" @click=${o.showUserModal}>${ o.shouldShowAvatar() ? renderAvatar(o.getAvatarData()) : '' }</a>
             <div class="chat-msg__content chat-msg__content--${o.sender} ${o.is_me_message ? 'chat-msg__content--action' : ''}">
 
                 ${ !o.is_me_message ? html`
                     <span class="chat-msg__heading">
-                        <span class="chat-msg__author">${o.username}</span>
+                        <span class="chat-msg__author"><a class="show-msg-author-modal" @click=${o.showUserModal}>${o.username}</a></span>
                         ${ o.renderAvatarByline() }
                         ${ o.is_encrypted ? html`<span class="fa fa-lock"></span>` : '' }
                     </span>` : '' }

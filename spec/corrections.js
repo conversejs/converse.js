@@ -80,7 +80,7 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
 
         // Test that pressing the down arrow cancels message correction
-        expect(textarea.value).toBe('');
+        await u.waitUntil(() => textarea.value === '')
         view.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
@@ -340,7 +340,8 @@ describe("A Chat Message", function () {
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
             view.el.querySelector('.chat-msg__content .fa-edit').click();
-            const modal = await u.waitUntil(() => view.el.querySelector('converse-chat-message').message_versions_modal);
+
+            const modal = _converse.api.modal.get('message-versions-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             const older_msgs = modal.el.querySelectorAll('.older-msg');
             expect(older_msgs.length).toBe(2);
@@ -412,7 +413,7 @@ describe("A Groupchat Message", function () {
         expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
         const edit = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
         edit.click();
-        const modal = await u.waitUntil(() => view.el.querySelector('converse-chat-message').message_versions_modal);
+        const modal = _converse.api.modal.get('message-versions-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         const older_msgs = modal.el.querySelectorAll('.older-msg');
         expect(older_msgs.length).toBe(2);
@@ -508,7 +509,7 @@ describe("A Groupchat Message", function () {
         expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
         const edit = await u.waitUntil(() => view.el.querySelector('.chat-msg__content .fa-edit'));
         edit.click();
-        const modal = await u.waitUntil(() => view.el.querySelectorAll('converse-chat-message')[0].message_versions_modal);
+        const modal = _converse.api.modal.get('message-versions-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1000);
         const older_msgs = modal.el.querySelectorAll('.older-msg');
         expect(older_msgs.length).toBe(2);

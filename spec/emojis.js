@@ -347,18 +347,19 @@ describe("Emojis", function () {
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
-            const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            const contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             _converse.handleMessageStanza($msg({
-                    'from': sender_jid,
+                    'from': contact_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
                     'id': _converse.connection.getUniqueId()
                 }).c('body').t('😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
-            const view = _converse.api.chatviews.get(sender_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
             await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.content.querySelector('.chat-msg__text')));
+            await u.waitUntil(() => view.content.querySelector('.chat-msg__text').innerHTML.replace(/<!---->/g, '') ===
+                '<img class="emoji" draggable="false" title=":innocent:" alt="😇" src="https://twemoji.maxcdn.com/v/12.1.6//72x72/1f607.png">');
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
             let message = view.content.querySelector(last_msg_sel);
@@ -381,6 +382,10 @@ describe("Emojis", function () {
             expect(imgs.length).toBe(2);
             expect(imgs[0].src).toBe(_converse.api.settings.get('emoji_image_path')+'/72x72/1f4a9.png');
             expect(imgs[1].src).toBe(_converse.api.settings.get('emoji_image_path')+'/72x72/1f607.png');
+
+            const sent_stanzas = _converse.connection.sent_stanzas;
+            const sent_stanza = sent_stanzas.filter(s => s.nodeName === 'message').pop();
+            expect(sent_stanza.querySelector('body').innerHTML).toBe('💩 😇');
             done()
         }));
 

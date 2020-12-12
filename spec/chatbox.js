@@ -72,57 +72,6 @@ describe("Chatboxes", function () {
         }));
 
 
-        it("supports the /me command", mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
-            await mock.waitForRoster(_converse, 'current');
-            await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
-            await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
-            await mock.openControlBox(_converse);
-            expect(_converse.chatboxes.length).toEqual(1);
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            let message = '/me is tired';
-            const msg = $msg({
-                    from: sender_jid,
-                    to: _converse.connection.jid,
-                    type: 'chat',
-                    id: u.getUniqueId()
-                }).c('body').t(message).up()
-                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-
-            await _converse.handleMessageStanza(msg);
-            const view = _converse.chatboxviews.get(sender_jid);
-            await u.waitUntil(() => view.el.querySelector('.chat-msg__text'));
-            expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
-            expect(view.el.querySelector('.chat-msg__author').textContent.includes('**Mercutio')).toBeTruthy();
-            expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
-
-            message = '/me is as well';
-            await mock.sendMessage(view, message);
-            expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
-            await u.waitUntil(() => sizzle('.chat-msg__author:last', view.el).pop().textContent.trim() === '**Romeo Montague');
-            const last_el = sizzle('.chat-msg__text:last', view.el).pop();
-            await u.waitUntil(() => last_el.textContent === 'is as well');
-            expect(u.hasClass('chat-msg--followup', last_el)).toBe(false);
-
-            // Check that /me messages after a normal message don't
-            // get the 'chat-msg--followup' class.
-            message = 'This a normal message';
-            await mock.sendMessage(view, message);
-            const msg_txt_sel = 'converse-chat-message:last-child .chat-msg__text';
-            await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === message);
-            let el = view.el.querySelector('converse-chat-message:last-child .chat-msg__body');
-            expect(u.hasClass('chat-msg--followup', el)).toBeFalsy();
-
-            message = '/me wrote a 3rd person message';
-            await mock.sendMessage(view, message);
-            await u.waitUntil(() => view.el.querySelector(msg_txt_sel).textContent.trim() === message.replace('/me ', ''));
-            el = view.el.querySelector('converse-chat-message:last-child .chat-msg__body');
-            expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
-
-            expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('wrote a 3rd person message');
-            expect(u.isVisible(sizzle('.chat-msg__author:last', view.el).pop())).toBeTruthy();
-            done();
-        }));
-
         it("is created when you click on a roster item", mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
@@ -1047,130 +996,6 @@ describe("Chatboxes", function () {
         }));
     });
 
-    describe("A Message Counter", function () {
-
-        it("is incremented when the message is received and the window is not focused",
-                mock.initConverse(
-                    ['rosterGroupsFetched'], {},
-                    async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current');
-            await mock.openControlBox(_converse);
-
-            expect(document.title).toBe('Converse Tests');
-
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-            const previous_state = _converse.windowState;
-            const message = 'This message will increment the message counter';
-            const msg = $msg({
-                    from: sender_jid,
-                    to: _converse.connection.jid,
-                    type: 'chat',
-                    id: u.getUniqueId()
-                }).c('body').t(message).up()
-                  .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-            _converse.windowState = 'hidden';
-
-            spyOn(_converse.api, "trigger").and.callThrough();
-            spyOn(_converse, 'incrementMsgCounter').and.callThrough();
-            spyOn(_converse, 'clearMsgCounter').and.callThrough();
-
-            await _converse.handleMessageStanza(msg);
-            expect(_converse.incrementMsgCounter).toHaveBeenCalled();
-            expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
-            expect(document.title).toBe('Messages (1) Converse Tests');
-            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-            _converse.windowSate = previous_state;
-            done();
-        }));
-
-        it("is cleared when the window is focused",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current');
-            await mock.openControlBox(_converse);
-            _converse.windowState = 'hidden';
-            spyOn(_converse, 'clearMsgCounter').and.callThrough();
-            _converse.saveWindowState(null, 'focus');
-            _converse.saveWindowState(null, 'blur');
-            expect(_converse.clearMsgCounter).toHaveBeenCalled();
-            done();
-        }));
-
-        it("is not incremented when the message is received and the window is focused",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current');
-            await mock.openControlBox(_converse);
-
-            expect(document.title).toBe('Converse Tests');
-            spyOn(_converse, 'incrementMsgCounter').and.callThrough();
-            _converse.saveWindowState(null, 'focus');
-            const message = 'This message will not increment the message counter';
-            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                msg = $msg({
-                    from: sender_jid,
-                    to: _converse.connection.jid,
-                    type: 'chat',
-                    id: u.getUniqueId()
-                }).c('body').t(message).up()
-                  .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-            await _converse.handleMessageStanza(msg);
-            expect(_converse.incrementMsgCounter).not.toHaveBeenCalled();
-            expect(document.title).toBe('Converse Tests');
-            done();
-        }));
-
-        it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",
-            mock.initConverse(
-                ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
-
-            await mock.waitForRoster(_converse, 'current');
-            // initial state
-            expect(document.title).toBe('Converse Tests');
-            const message = 'This message will always increment the message counter from zero',
-                sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
-                msgFactory = function () {
-                    return $msg({
-                        from: sender_jid,
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: u.getUniqueId()
-                    })
-                    .c('body').t(message).up()
-                    .c('active', {'xmlns': Strophe.NS.CHATSTATES})
-                    .tree();
-             };
-
-            // leave converse-chat page
-            _converse.windowState = 'hidden';
-            await _converse.handleMessageStanza(msgFactory());
-            let view = _converse.chatboxviews.get(sender_jid);
-            expect(document.title).toBe('Messages (1) Converse Tests');
-
-            // come back to converse-chat page
-            _converse.saveWindowState(null, 'focus');
-            await u.waitUntil(() => u.isVisible(view.el));
-            expect(document.title).toBe('Converse Tests');
-
-            // close chatbox and leave converse-chat page again
-            view.close();
-            _converse.windowState = 'hidden';
-
-            // check that msg_counter is incremented from zero again
-            await _converse.handleMessageStanza(msgFactory());
-            view = _converse.chatboxviews.get(sender_jid);
-            await u.waitUntil(() => u.isVisible(view.el));
-            expect(document.title).toBe('Messages (1) Converse Tests');
-            done();
-        }));
-    });
-
     describe("A ChatBox's Unread Message Count", function () {
 
         it("is incremented when the message is received and ChatBoxView is scrolled up",
@@ -1294,7 +1119,7 @@ describe("Chatboxes", function () {
             expect(chatbox.get('first_unread_id')).toBe(msgid);
             await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
             expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
-            _converse.saveWindowState(null, 'focus');
+            _converse.saveWindowState({'type': 'focus'});
             expect(chatbox.get('num_unread')).toBe(0);
             await u.waitUntil(() => chatbox.sendMarker.calls.count() === 2);
             expect(sent_stanzas[1].nodeTree.querySelector('displayed')).toBeDefined();
@@ -1324,7 +1149,7 @@ describe("Chatboxes", function () {
             expect(chatbox.get('first_unread_id')).toBe(msgid);
             await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);
             expect(sent_stanzas[0].nodeTree.querySelector('received')).toBeDefined();
-            _converse.saveWindowState(null, 'focus');
+            _converse.saveWindowState({'type': 'focus'});
             await u.waitUntil(() => chatbox.get('num_unread') === 1);
             expect(chatbox.get('first_unread_id')).toBe(msgid);
             await u.waitUntil(() => chatbox.sendMarker.calls.count() === 1);

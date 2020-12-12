@@ -3,13 +3,11 @@
  * @license Mozilla Public License (MPLv2)
  * @description This is the core utilities module.
  */
-import * as strophe from 'strophe.js/src/core';
+import { Strophe } from 'strophe.js/src/strophe';
 import { Model } from '@converse/skeletor/src/model.js';
 import { compact, last, isElement, isObject } from "lodash-es";
 import log from "@converse/headless/log";
 import sizzle from "sizzle";
-
-const Strophe = strophe.default.Strophe;
 
 /**
  * The utils object
@@ -425,12 +423,16 @@ u.getCurrentWord = function (input, index, delineator) {
     return word;
 };
 
+u.isMentionBoundary = (s) => s !== '@' && RegExp(`(\\p{Z}|\\p{P})`, 'u').test(s);
+
 u.replaceCurrentWord = function (input, new_value) {
-    const caret = input.selectionEnd || undefined,
-          current_word = last(input.value.slice(0, caret).split(' ')),
-          value = input.value;
-    input.value = value.slice(0, caret - current_word.length) + `${new_value} ` + value.slice(caret);
-    input.selectionEnd = caret - current_word.length + new_value.length + 1;
+    const caret = input.selectionEnd || undefined;
+    const current_word = last(input.value.slice(0, caret).split(/\s/));
+    const value = input.value;
+    const mention_boundary = u.isMentionBoundary(current_word[0]) ? current_word[0] : '';
+    input.value = value.slice(0, caret - current_word.length) + mention_boundary + `${new_value} ` + value.slice(caret);
+    const selection_end = caret - current_word.length + new_value.length + 1;
+    input.selectionEnd = mention_boundary ? selection_end + 1 : selection_end;
 };
 
 u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true) {

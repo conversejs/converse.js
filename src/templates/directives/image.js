@@ -1,4 +1,4 @@
-import { converse } from "@converse/headless/converse-core";
+import { converse } from "@converse/headless/core";
 import { directive, html } from "lit-html";
 
 

@@ -66,7 +66,7 @@ describe("The Protocol", function () {
             });
 
             cbview.el.querySelector('.add-contact').click()
-            const modal = _converse.rosterview.add_contact_modal;
+            const modal = _converse.api.modal.get('add-contact-modal');
             await u.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(modal, "addContactFromForm").and.callThrough();
             modal.delegateEvents();

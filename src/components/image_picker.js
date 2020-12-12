@@ -2,7 +2,7 @@ import { CustomElement } from './element.js';
 import { __ } from '../i18n';
 import { html } from 'lit-element';
 import { renderAvatar } from "../templates/directives/avatar.js";
-import { api } from "@converse/headless/converse-core";
+import { api } from "@converse/headless/core";
 
 const i18n_alt_avatar = __('Your avatar image');
 

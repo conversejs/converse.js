@@ -83,7 +83,11 @@ describe("Message Archive Management", function () {
         }));
 
         it("is queried when the user enters a new MUC",
-                mock.initConverse(['discoInitialized'], {'archived_messages_page_size': 2}, async function (done, _converse) {
+            mock.initConverse(['discoInitialized'],
+                {
+                    'archived_messages_page_size': 2,
+                    'muc_clear_messages_on_leave': false,
+                }, async function (done, _converse) {
 
             const sent_IQs = _converse.connection.IQ_stanzas;
             const muc_jid = 'orchard@chat.shakespeare.lit';

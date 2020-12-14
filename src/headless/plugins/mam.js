@@ -5,11 +5,12 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "./disco";
-import { _converse, api, converse } from "@converse/headless/core";
-import log from "../log.js";
+import log from '@converse/headless/log';
 import sizzle from "sizzle";
-import st from "../utils/stanza";
+import { parseMessage } from '@converse/headless/plugins/chat/parsers';
+import { parseMUCMessage } from '@converse/headless/plugins/muc/parsers';
 import { RSM } from '@converse/headless/shared/rsm';
+import { _converse, api, converse } from "@converse/headless/core";
 
 const { Strophe, $iq, dayjs } = converse.env;
 const { NS } = Strophe;
@@ -49,7 +50,7 @@ const MAMEnabledChat = {
         await api.emojis.initialize();
         const is_muc = this.get('type') === _converse.CHATROOMS_TYPE;
         result.messages = result.messages.map(
-            s => (is_muc ? st.parseMUCMessage(s, this, _converse) : st.parseMessage(s, _converse))
+            s => (is_muc ? parseMUCMessage(s, this, _converse) : parseMessage(s, _converse))
         );
 
         /**

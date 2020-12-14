@@ -4,7 +4,8 @@
  * @description XEP-0045 Multi-User Chat Views
  */
 import { _converse, api, converse } from "@converse/headless/core";
-import st from "../utils/stanza";
+import { isHeadline, isServerMessage } from '@converse/headless/shared/parsers';
+import { parseMessage } from '@converse/headless/plugins/chat/parsers';
 
 
 converse.plugins.add('converse-headlines', {
@@ -79,7 +80,7 @@ converse.plugins.add('converse-headlines', {
 
         async function onHeadlineMessage (stanza) {
             // Handler method for all incoming messages of type "headline".
-            if (st.isHeadline(stanza) || st.isServerMessage(stanza)) {
+            if (isHeadline(stanza) || isServerMessage(stanza)) {
                 const from_jid = stanza.getAttribute('from');
                 if (from_jid.includes('@') &&
                         !_converse.roster.get(from_jid) &&
@@ -96,7 +97,7 @@ converse.plugins.add('converse-headlines', {
                     'type': _converse.HEADLINES_TYPE,
                     'from': from_jid
                 });
-                const attrs = await st.parseMessage(stanza, _converse);
+                const attrs = await parseMessage(stanza, _converse);
                 await chatbox.createMessage(attrs);
                 api.trigger('message', {chatbox, stanza, attrs});
             }

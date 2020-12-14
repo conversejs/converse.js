@@ -1,7 +1,7 @@
 import { converse } from "../core.js";
 import log from "@converse/headless/log";
 import sizzle from 'sizzle';
-import st from "../utils/stanza";
+import { getAttributes } from '@converse/headless/shared/parsers';
 
 const { Strophe } = converse.env;
 let _converse, api;
@@ -11,7 +11,7 @@ Strophe.addNamespace('ADHOC', 'http://jabber.org/protocol/commands');
 
 function parseForCommands (stanza) {
     const items = sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"][node="${Strophe.NS.ADHOC}"] item`, stanza);
-    return items.map(st.getAttributes)
+    return items.map(getAttributes)
 }
 
 

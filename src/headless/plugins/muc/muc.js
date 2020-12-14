@@ -1,13 +1,15 @@
 import log from '../../log';
-import { Model } from '@converse/skeletor/src/model.js';
-import muc_utils from '../../utils/muc';
+import muc_utils from './utils.js';
 import p from '../../utils/parse-helpers';
 import sizzle from 'sizzle';
-import st from '../../utils/stanza';
 import u from '../../utils/form';
+import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { debounce, intersection, invoke, isElement, pick, zipObject } from 'lodash-es';
+import { isArchived } from '@converse/headless/shared/parsers';
+import { parseMemberListIQ, parseMUCMessage, parseMUCPresence } from './parsers.js';
+import { sendMarker } from '@converse/headless/shared/actions';
 
 const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
 
@@ -194,7 +196,7 @@ const ChatRoomMixin = {
                 return;
             }
             const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
-            this.sendMarker(from_jid, id, type, msg.get('type'));
+            sendMarker(from_jid, id, type, msg.get('type'));
         }
     },
 
@@ -365,7 +367,7 @@ const ChatRoomMixin = {
 
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
-        const attrs = await st.parseMUCMessage(stanza, this, _converse);
+        const attrs = await parseMUCMessage(stanza, this, _converse);
         if (!(await this.shouldShowErrorMessage(attrs))) {
             return;
         }
@@ -414,7 +416,7 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     async handleMessageStanza (stanza) {
-        if (st.isArchived(stanza)) {
+        if (isArchived(stanza)) {
             // MAM messages are handled in converse-mam.
             // We shouldn't get MAM messages here because
             // they shouldn't have a `type` attribute.
@@ -431,7 +433,7 @@ const ChatRoomMixin = {
          * @property { MUCMessageAttributes } attrs
          * @property { ChatRoom } chatbox
          */
-        const attrs = await st.parseMUCMessage(stanza, this, _converse);
+        const attrs = await parseMUCMessage(stanza, this, _converse);
         const data = { stanza, attrs, 'chatbox': this };
         /**
          * Triggered when a groupchat message stanza has been received and parsed.
@@ -1305,8 +1307,7 @@ const ChatRoomMixin = {
             log.warn(result);
             return err;
         }
-        return muc_utils
-            .parseMemberListIQ(result)
+        return parseMemberListIQ(result)
             .filter(p => p)
             .sort((a, b) => (a.nick < b.nick ? -1 : a.nick > b.nick ? 1 : 0));
     },
@@ -1438,7 +1439,7 @@ const ChatRoomMixin = {
      * @param { XMLElement } pres - The presence stanza
      */
     updateOccupantsOnPresence (pres) {
-        const data = st.parseMUCPresence(pres);
+        const data = parseMUCPresence(pres);
         if (data.type === 'error' || (!data.jid && !data.nick)) {
             return true;
         }
@@ -1538,7 +1539,7 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#handleSubjectChange
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMUCMessage}
+     *  message, as returned by {@link parseMUCMessage}
      */
     async handleSubjectChange (attrs) {
         const __ = _converse.__;
@@ -1692,7 +1693,7 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#findDanglingModeration
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMUCMessage}
+     *  message, as returned by {@link parseMUCMessage}
      * @returns { _converse.ChatRoomMessage }
      */
     findDanglingModeration (attrs) {
@@ -1723,7 +1724,7 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#handleModeration
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMUCMessage}
+     *  message, as returned by {@link parseMUCMessage}
      * @returns { Boolean } Returns `true` or `false` depending on
      *  whether a message was moderated or not.
      */

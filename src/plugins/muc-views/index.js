@@ -7,7 +7,6 @@
 import '../../components/muc-sidebar';
 import '../chatview/index.js';
 import '../modal.js';
-import '@converse/headless/utils/muc';
 import ChatRoomViewMixin from './muc.js';
 import MUCConfigForm from './config-form.js';
 import MUCPasswordForm from './password-form.js';

@@ -13,7 +13,7 @@ import ChatRoomOccupant from './occupant.js';
 import ChatRoomOccupants from './occupants.js';
 import log from '../../log';
 import muc_api from './api.js';
-import muc_utils from '../../utils/muc';
+import muc_utils from './utils.js';
 import u from '../../utils/form';
 import { Collection } from '@converse/skeletor/src/collection';
 import { Model } from '@converse/skeletor/src/model.js';

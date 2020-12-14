@@ -49,6 +49,7 @@ module.exports = function(config) {
       { pattern: "spec/corrections.js", type: 'module' },
       { pattern: "spec/styling.js", type: 'module' },
       { pattern: "spec/receipts.js", type: 'module' },
+      { pattern: "spec/markers.js", type: 'module' },
       { pattern: "spec/muc_messages.js", type: 'module' },
       { pattern: "spec/me-messages.js", type: 'module' },
       { pattern: "spec/mentions.js", type: 'module' },

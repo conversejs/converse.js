@@ -8,9 +8,10 @@ import MessageMixin from './message.js';
 import ModelWithContact from './model-with-contact.js';
 import chat_api from './api.js';
 import log from '../../log.js';
-import st from '../../utils/stanza';
 import { Collection } from "@converse/skeletor/src/collection";
 import { _converse, api, converse } from '../../core.js';
+import { isServerMessage, } from '@converse/headless/shared/parsers';
+import { parseMessage } from './parsers.js';
 
 const { Strophe, sizzle, utils } = converse.env;
 const u = converse.env.utils;
@@ -74,12 +75,12 @@ converse.plugins.add('converse-chat', {
          * @param { MessageAttributes } attrs - The message attributes
          */
         _converse.handleMessageStanza = async function (stanza) {
-            if (st.isServerMessage(stanza)) {
+            if (isServerMessage(stanza)) {
                 // Prosody sends headline messages with type `chat`, so we need to filter them out here.
                 const from = stanza.getAttribute('from');
                 return log.info(`handleMessageStanza: Ignoring incoming server message from JID: ${from}`);
             }
-            const attrs = await st.parseMessage(stanza, _converse);
+            const attrs = await parseMessage(stanza, _converse);
             if (u.isErrorObject(attrs)) {
                 attrs.stanza && log.error(attrs.stanza);
                 return log.error(attrs.message);

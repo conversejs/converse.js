@@ -12,7 +12,6 @@ import pluggable from 'pluggable.js/src/pluggable';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import localDriver from 'localforage-webextensionstorage-driver/local';
 import sizzle from 'sizzle';
-import stanza_utils from "@converse/headless/utils/stanza";
 import u from '@converse/headless/utils/core';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
@@ -1654,7 +1653,6 @@ Object.assign(converse, {
         log,
         sizzle,
         sprintf,
-        stanza_utils,
         u,
     }
 });

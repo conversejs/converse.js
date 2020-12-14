@@ -179,6 +179,26 @@ const ChatRoomMixin = {
     },
 
     /**
+     * Given the passed in MUC message, send a XEP-0333 chat marker.
+     * @param { _converse.MUCMessage } msg
+     * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
+     * @param { Boolean } force - Whether a marker should be sent for the
+     *  message, even if it didn't include a `markable` element.
+     */
+    sendMarkerForMessage (msg, type='displayed', force=false) {
+        if (!msg) return;
+        if (msg?.get('is_markable') || force) {
+            const id = msg.get(`stanza_id ${this.get('jid')}`);
+            if (!id) {
+                log.error(`Can't send marker for message without stanza ID: ${msg}`);
+                return;
+            }
+            const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
+            this.sendMarker(from_jid, id, type, msg.get('type'));
+        }
+    },
+
+    /**
      * Handler that gets called when the 'hidden' flag is toggled.
      * @private
      * @method _converse.ChatRoomView#onHiddenChange

@@ -207,7 +207,7 @@ const ChatRoomMixin = {
      */
     async onHiddenChange () {
         if (this.get('hidden') && api.settings.get('muc_subscribe_to_rai')) {
-            this.sendMarkerForLastMessage(true);
+            this.sendMarkerForLastMessage('received', true);
             if (this.session.get('connection_status') !== converse.ROOMSTATUS.DISCONNECTED) {
                 await this.leave();
             }

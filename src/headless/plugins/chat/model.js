@@ -584,14 +584,15 @@ const ChatBox = ModelWithContact.extend({
 
     /**
      * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
+     * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
      * @param { Boolean } force - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
      */
-    sendMarkerForLastMessage (force=false) {
+    sendMarkerForLastMessage (type='displayed', force=false) {
         const msgs = Array.from(this.messages.models);
         msgs.reverse();
         const msg = msgs.find(m => m.get('sender') === 'them' && (force || m.get('is_markable')));
-        msg && this.sendMarkerForMessage(msg);
+        msg && this.sendMarkerForMessage(msg, type, force);
     },
 
     /**

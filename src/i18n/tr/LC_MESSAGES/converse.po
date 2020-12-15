@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-11-19 11:41+0100\n"
-"Last-Translator: Ömer Çakmak <faruk.omer.cakmak@gmail.com>\n"
+"PO-Revision-Date: 2020-12-16 10:29+0000\n"
+"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
 "translations/tr/>\n"
 "Language: tr\n"
@@ -21,11 +21,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
-msgstr "Hesabını oluştur"
+msgstr "Hesabınızı oluşturun"
 
 #: dist/converse-no-dependencies.js:21776
 msgid "Please enter the XMPP provider to register with:"
-msgstr "Lütfen kayıt yaptırmak için XMPP sağlayıcısını girin:"
+msgstr "Lütfen kaydolmak için XMPP sağlayıcısını girin:"
 
 #: dist/converse-no-dependencies.js:21794
 #: dist/converse-no-dependencies.js:21828
@@ -35,15 +35,15 @@ msgstr "Zaten bir sohbet hesabınız var mı?"
 #: dist/converse-no-dependencies.js:21796
 #: dist/converse-no-dependencies.js:21830
 msgid "Log in here"
-msgstr "Giriş yapın"
+msgstr "Oturum aç"
 
 #: dist/converse-no-dependencies.js:21812
 msgid "Account Registration:"
-msgstr "Hesap kaydı:"
+msgstr "Hesap Kaydı:"
 
 #: dist/converse-no-dependencies.js:21820
 msgid "Register"
-msgstr "Kayıt ol"
+msgstr "Kaydol"
 
 #: dist/converse-no-dependencies.js:21824
 msgid "Choose a different provider"
@@ -78,7 +78,7 @@ msgstr "XMPP adresiniz ve/veya parolanız yanlış. Lütfen tekrar deneyin."
 #: dist/converse-no-dependencies.js:44869
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "ÜZgünüz, bu XMPP hostuna bu domainle bağlanamadık :%1$s"
+msgstr "Üzgünüm, şu etki alanına sahip XMPP sunucusuna bağlanamadık: %1$s"
 
 #. Strophe
 #. Strophe
@@ -93,23 +93,22 @@ msgstr "Şifresi çözülemeyen OMEMO mesajı"
 
 #: dist/converse-no-dependencies.js:53716
 msgid "Sorry, could not determine upload URL."
-msgstr "Maalesef, yükleme URL’si belirlenemedi."
+msgstr "Üzgünüm, yükleme URL’si belirlenemedi."
 
 #: dist/converse-no-dependencies.js:53739
 msgid "Sorry, could not determine file upload URL."
-msgstr "Maalesef, dosya yükleme URL’si belirlenemedi."
+msgstr "Üzgünüm, dosya yükleme URL’si belirlenemedi."
 
 #: dist/converse-no-dependencies.js:53782
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
-msgstr ""
-"Maalesef, dosyanızı başarıyla yükleyemedi. Sunucunuzun yanıtı: \"%1$s\""
+msgstr "Üzgünüm, dosyanız başarıyla yüklenemedi. Sunucunuzun yanıtı: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:53784
 msgid "Sorry, could not succesfully upload your file."
-msgstr "Maalesef, dosyanızı başarıyla yükleyemedi."
+msgstr "Üzgünüm, dosyanız başarıyla yüklenemedi."
 
 #: dist/converse-no-dependencies.js:54001
 #: dist/converse-no-dependencies.js:59465
@@ -134,7 +133,7 @@ msgstr "Üzgünüm, mesajınızı göndermeye çalışırken bir hata oluştu."
 #: dist/converse-no-dependencies.js:55096
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
-"Maalesef, dosya yükleme sunucunuz tarafından desteklenmiyor gibi görünüyor."
+"Üzgünüm, dosya yükleme sunucunuz tarafından desteklenmiyor gibi görünüyor."
 
 #: dist/converse-no-dependencies.js:55117
 #, javascript-format
@@ -155,7 +154,7 @@ msgstr "İnsanlar"
 
 #: dist/converse-no-dependencies.js:57639
 msgid "Activities"
-msgstr "Faaliyetler"
+msgstr "Etkinlikler"
 
 #: dist/converse-no-dependencies.js:57640
 msgid "Travel"
@@ -312,7 +311,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:61142
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr "Konu %1$s tarafından ayarlandı"
+msgstr "Konu %1$s tarafından belirlendi"
 
 #: dist/converse-no-dependencies.js:61142
 #, javascript-format
@@ -397,7 +396,7 @@ msgstr "Yanlış parola"
 
 #: dist/converse-no-dependencies.js:61962
 msgid "You are not on the member list of this groupchat."
-msgstr "Bu grup sohbetinin üye listesinde değilsin."
+msgstr "Bu grup sohbetinin üye listesinde değilsiniz."
 
 #: dist/converse-no-dependencies.js:61966
 msgid "You have been banned from this groupchat."
@@ -506,7 +505,7 @@ msgstr "Yeni mesajlar"
 #: dist/converse-no-dependencies.js:67203
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr "Maalesef, %1$s kişiyi kişi olarak eklemeye çalışırken bir hata oluştu."
+msgstr "Üzgünüm, %1$s kişiyi kişi olarak eklemeye çalışırken bir hata oluştu."
 
 #: dist/converse-no-dependencies.js:67495
 msgid "This client does not allow presence subscriptions"
@@ -719,7 +718,7 @@ msgstr "OMEMO Parmak İzleri"
 
 #: dist/converse-no-dependencies.js:81814
 msgid "No OMEMO-enabled devices found"
-msgstr "OMEMO etkinleştirilmiş cihaz bulunamadı"
+msgstr "OMEMO etkinleştirilmiş aygıt bulunamadı"
 
 #: dist/converse-no-dependencies.js:81825
 msgid "Remove as contact"
@@ -900,7 +899,7 @@ msgstr "Bu kişiyi kaldırmak istediğinize emin misiniz?"
 #: dist/converse-no-dependencies.js:100719
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "Üzgünüz, %1$s kişisini kaldırmaya çalışırken bir hata oluştu."
+msgstr "Üzgünüm, %1$s kişisini kaldırmaya çalışırken bir hata oluştu."
 
 #: dist/converse-no-dependencies.js:86114
 msgid ""
@@ -910,16 +909,16 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
-"Performansı arttırmak amacı ile tarayıcınızda veri depoluyoruz. İnternet "
-"kafe gibi bilgisayarın genel kullanıldiği bir ortamda iseniz ve çıkış "
-"yaptığınıza bilgilerinizin silinmesini istiyorsanız bu kutuyu işaretlemeyin. "
-"Düzgün bir şekilde çıkış yapmanız tüm verinin silinmesi için önemlidir. "
-"Unutmayın ki, güvenilmeyen bir cihaz kullanırken OMEMO şifrelemesi "
-"çalışmayacaktır."
+"Performansı artırmak için verilerinizi bu tarayıcıda önbelleğe alıyoruz. Bu "
+"halka açık bir bilgisayarsa veya oturumu kapattığınızda verilerinizin "
+"silinmesini istiyorsanız bu kutunun işaretini kaldırın. Açıkça çıkış "
+"yapmanız önemlidir, aksi takdirde önbelleğe alınmış tüm veriler "
+"silinmeyebilir. Güvenilmeyen bir aygıt kullanırken, OMEMO şifrelemesinin "
+"KULLANILAMADIĞINI lütfen unutmayın."
 
 #: dist/converse-no-dependencies.js:86116
 msgid "This is a trusted device"
-msgstr "Bu cihaz güvenilir"
+msgstr "Bu güvenilir bir aygıt"
 
 #: dist/converse-no-dependencies.js:86122
 msgid "Password"
@@ -1295,7 +1294,7 @@ msgstr "Üzgünüm, bu değişikliği yapmanıza izin verilmiyor"
 
 #: dist/converse-no-dependencies.js:90365
 msgid "Sorry, something went wrong while trying to set the affiliation"
-msgstr "Maalesef üyeliği ayarlamaya çalışırken bir sorun oluştu"
+msgstr "Üzgünüm, üyeliği ayarlamaya çalışırken bir sorun oluştu"
 
 #: dist/converse-no-dependencies.js:90372
 msgid "Affiliation changed"
@@ -1311,7 +1310,7 @@ msgstr "Bu değişikliği yapmanıza izin verilmiyor"
 
 #: dist/converse-no-dependencies.js:90422
 msgid "Sorry, something went wrong while trying to set the role"
-msgstr "Maalesef, rolü belirlemeye çalışırken bir şeyler ters gitti"
+msgstr "Üzgünüm, rolü belirlemeye çalışırken bir şeyler ters gitti"
 
 #: dist/converse-no-dependencies.js:90601
 msgid "Topic"
@@ -1981,23 +1980,23 @@ msgstr "Aşağıdaki parmak izini seçmek için onay kutusu"
 
 #: dist/converse-no-dependencies.js:95415
 msgid "Device without a fingerprint"
-msgstr "Parmak izi olmayan cihaz"
+msgstr "Parmak izi olmayan aygıt"
 
 #: dist/converse-no-dependencies.js:95417
 msgid "Checkbox for selecting the following device"
-msgstr "Sonraki cihazı seçmek için onay kutusu"
+msgstr "Sonraki aygıtı seçmek için onay kutusu"
 
 #: dist/converse-no-dependencies.js:95427
 msgid "Other OMEMO-enabled devices"
-msgstr "Diğer OMEMO özellikli cihazlar"
+msgstr "Diğer OMEMO özellikli aygıtlar"
 
 #: dist/converse-no-dependencies.js:95429
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
-msgstr "Diğer tüm OMEMO cihazlarının parmak izlerini seçmek için onay kutusu"
+msgstr "Diğer tüm OMEMO aygıtlarının parmak izlerini seçmek için onay kutusu"
 
 #: dist/converse-no-dependencies.js:95431
 msgid "Remove checked devices and close"
-msgstr "Kontrol edilen cihazları çıkarın ve kapatın"
+msgstr "Denetlenen aygıtları kaldır ve kapat"
 
 #: dist/converse-no-dependencies.js:95433
 msgid "Select all"
@@ -2005,7 +2004,7 @@ msgstr "Tümünü seç"
 
 #: dist/converse-no-dependencies.js:95444
 msgid "This device's OMEMO fingerprint"
-msgstr "Bu cihazın OMEMO parmak izi"
+msgstr "Bu aygıtın OMEMO parmak izi"
 
 #: dist/converse-no-dependencies.js:95446
 msgid "Generate new keys and fingerprint"
@@ -2042,7 +2041,7 @@ msgstr "Profil"
 
 #: dist/converse-no-dependencies.js:95602
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr "Maalesef, profil verilerinizi kaydetmeye çalışırken bir hata oluştu."
+msgstr "Üzgünüm, profil verilerinizi kaydetmeye çalışırken bir hata oluştu."
 
 #: dist/converse-no-dependencies.js:95602
 msgid "You can check your browser's developer console for any error output."
@@ -2176,7 +2175,7 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
-"Üzgünüz, şifreli bir mesaj gönderemiyoruz, çünkü %1$s OMEMO bilgilerini "
+"Üzgünüm, şifreli bir mesaj gönderemiyoruz, çünkü %1$s OMEMO bilgilerini "
 "görmek için varlıklarına abone olmanızı istiyor"
 
 #: dist/converse-no-dependencies.js:97286
@@ -2185,7 +2184,7 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
-"Maalesef, %1$s için uzak sunucu bulunamadığı için şifreli bir mesaj "
+"Üzgünüm, %1$s için uzak sunucu bulunamadığı için şifreli bir mesaj "
 "gönderemiyoruz"
 
 #: dist/converse-no-dependencies.js:97288
@@ -2194,7 +2193,7 @@ msgstr "Beklenmeyen bir hata nedeniyle şifreli bir mesaj gönderilemiyor."
 
 #: dist/converse-no-dependencies.js:97357
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "Maalesef, cihazları kaldırmaya çalışırken bir hata oluştu."
+msgstr "Üzgünüm, aygıtları kaldırmaya çalışırken bir hata oluştu."
 
 #: dist/converse-no-dependencies.js:97363
 msgid ""
@@ -2202,14 +2201,14 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
-"Yeni OMEMO anahtarları oluşturmak istediğinize emin misiniz? Bu, eski "
-"anahtarlarınızı kaldırır ve önceden şifrelenen tüm mesajlar bu cihazda artık "
-"şifresi çözülemez."
+"Yeni OMEMO anahtarları oluşturmak istediğinizden emin misiniz? Bu, eski "
+"anahtarlarınızı kaldıracak ve daha önce şifrelenmiş tüm mesajların şifresi "
+"artık bu aygıtta çözülemeyecek."
 
 #: dist/converse-no-dependencies.js:97534
 msgid ""
 "Sorry, no devices found to which we can send an OMEMO encrypted message."
-msgstr "Üzgünüz, OMEMO şifreli mesaj gönderebileceğimiz cihaz bulunamadı."
+msgstr "Üzgünüm, OMEMO şifreli mesaj gönderebileceğimiz aygıt bulunamadı."
 
 #: dist/converse-no-dependencies.js:97637
 msgid ""
@@ -2237,14 +2236,14 @@ msgstr "burada"
 
 #: dist/converse-no-dependencies.js:99099
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr "Üzgünüz, seçtiğiniz sağlayıcıya bağlanamıyoruz."
+msgstr "Üzgünüm, seçtiğiniz sağlayıcıya bağlanamıyoruz."
 
 #: dist/converse-no-dependencies.js:99115
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
-"Maalesef, verilen sağlayıcı bant kaydı hesabı desteklemiyor. Lütfen farklı "
+"Üzgünüm, verilen sağlayıcı bant hesap kaydını desteklemiyor. Lütfen farklı "
 "bir sağlayıcı ile deneyin."
 
 #: dist/converse-no-dependencies.js:99141
@@ -2332,7 +2331,7 @@ msgstr "İsteğe bağlı takma ad"
 
 #: dist/converse-no-dependencies.js:100321
 msgid "Sorry, could not find a contact with that name"
-msgstr "Maalesef, bu isimde bir kişi bulunamadı"
+msgstr "Üzgünüm, bu isimde bir kişi bulunamadı"
 
 #: dist/converse-no-dependencies.js:100346
 msgid "This contact has already been added"

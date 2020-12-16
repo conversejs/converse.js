@@ -1030,11 +1030,8 @@ const ChatBoxView = View.extend({
 
     onWindowStateChanged (state) {
         if (state === 'visible') {
-            if (!this.model.isHidden()) {
-                // this.model.setChatState(_converse.ACTIVE);
-                if (this.model.get('num_unread', 0)) {
-                    this.model.clearUnreadMsgCounter();
-                }
+            if (!this.model.isHidden() && this.model.get('num_unread', 0)) {
+                this.model.clearUnreadMsgCounter();
             }
         } else if (state === 'hidden') {
             this.model.setChatState(_converse.INACTIVE, { 'silent': true });

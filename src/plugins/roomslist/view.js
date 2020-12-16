@@ -30,7 +30,7 @@ const RoomsListView = View.extend({
     },
 
     renderIfRelevantChange (model) {
-        const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general'];
+        const attrs = ['bookmarked', 'hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity'];
         const changed = model.changed || {};
         if (u.isChatRoom(model) && Object.keys(changed).filter(m => attrs.includes(m)).length) {
             this.render();

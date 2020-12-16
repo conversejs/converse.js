@@ -23,31 +23,36 @@ const bookmark = (o) => {
 }
 
 
+const unread_indicator = (o) => html`<span class="list-item-badge badge badge--muc msgs-indicator">${ o.room.get('num_unread') }</span>`;
+const activity_indicator = () => html`<span class="list-item-badge badge badge--muc msgs-indicator"></span>`;
+
+
 const room_item = (o) => {
     const i18n_leave_room = __('Leave this groupchat');
-    const unread_indicator = (o) => html`<span class="list-item-badge badge badge--muc msgs-indicator">${ o.room.get('num_unread') }</span>`;
+    const has_unread_msgs = o.room.get('num_unread_general') || o.room.get('has_activity');
     return html`
-        <div class="list-item controlbox-padded available-chatroom d-flex flex-row ${ o.currently_open(o.room) ? 'open' : '' } ${ o.room.get('num_unread_general') ? 'unread-msgs' : '' }"
+        <div class="list-item controlbox-padded available-chatroom d-flex flex-row ${ o.currently_open(o.room) ? 'open' : '' } ${ has_unread_msgs ? 'unread-msgs' : '' }"
             data-room-jid="${o.room.get('jid')}">
 
-            ${ o.room.get('num_unread') ? unread_indicator(o) : '' }
+            ${ o.room.get('num_unread') ? unread_indicator(o) : (o.room.get('has_activity') ? activity_indicator(o) : '') }
+
             <a class="list-item-link open-room available-room w-100"
-            data-room-jid="${o.room.get('jid')}"
-            title="${__('Click to open this groupchat')}"
-            @click=${o.openRoom}>${o.room.getDisplayName()}</a>
+                data-room-jid="${o.room.get('jid')}"
+                title="${__('Click to open this groupchat')}"
+                @click=${o.openRoom}>${o.room.getDisplayName()}</a>
 
             ${ o.allow_bookmarks ? bookmark(o) : '' }
 
             <a class="list-item-action room-info fa fa-info-circle"
-            data-room-jid="${o.room.get('jid')}"
-            title="${__('Show more information on this groupchat')}"
-            @click=${o.showRoomDetailsModal}></a>
+                data-room-jid="${o.room.get('jid')}"
+                title="${__('Show more information on this groupchat')}"
+                @click=${o.showRoomDetailsModal}></a>
 
             <a class="list-item-action fa fa-sign-out-alt close-room"
-            data-room-jid="${o.room.get('jid')}"
-            data-room-name="${o.room.getDisplayName()}"
-            title="${i18n_leave_room}"
-            @click=${o.closeRoom}></a>
+                data-room-jid="${o.room.get('jid')}"
+                data-room-name="${o.room.getDisplayName()}"
+                title="${i18n_leave_room}"
+                @click=${o.closeRoom}></a>
         </div>`;
 }
 

@@ -2367,10 +2367,11 @@ describe("Groupchats", function () {
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
+            const nick = "some1";
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             const muc_jid = 'coven@chat.shakespeare.lit';
 
-            await _converse.api.rooms.open(muc_jid, {'nick': 'some1'});
+            await _converse.api.rooms.open(muc_jid, { nick });
             const stanza = await u.waitUntil(() => _.filter(
                 IQ_stanzas,
                 iq => iq.querySelector(
@@ -2423,7 +2424,9 @@ describe("Groupchats", function () {
                     .c('feature', {'var': 'muc_nonanonymous'});
             _converse.connection._dataRecv(mock.createRequest(features_stanza));
             let view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-            await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+
+            const sent_stanzas = _converse.connection.sent_stanzas;
+            await u.waitUntil(() => sent_stanzas.filter(s => s.matches(`presence[to="${muc_jid}/${nick}"]`)).pop());
             view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
             expect(view.model.features.get('fetched')).toBeTruthy();
             expect(view.model.features.get('passwordprotected')).toBe(true);
@@ -4412,8 +4415,8 @@ describe("Groupchats", function () {
             spyOn(_converse.ChatRoomOccupants.prototype, 'fetchMembers').and.callThrough();
             const sent_IQs = _converse.connection.IQ_stanzas;
             const muc_jid = 'coven@chat.shakespeare.lit';
-
-            const room_creation_promise = _converse.api.rooms.open(muc_jid, {'nick': 'romeo'});
+            const nick = 'romeo';
+            const room_creation_promise = _converse.api.rooms.open(muc_jid, {nick});
 
             // Check that the groupchat queried for the features.
             let stanza = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq[to="${muc_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`)).pop());
@@ -4441,11 +4444,11 @@ describe("Groupchats", function () {
                     .c('feature', {'var': 'muc_temporary'}).up()
                     .c('feature', {'var': 'muc_membersonly'}).up();
             _converse.connection._dataRecv(mock.createRequest(features_stanza));
-            await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
+            const sent_stanzas = _converse.connection.sent_stanzas;
+            await u.waitUntil(() => sent_stanzas.filter(s => s.matches(`presence[to="${muc_jid}/${nick}"]`)).pop());
             expect(view.model.features.get('membersonly')).toBeTruthy();
 
             await room_creation_promise;
-
             await mock.createContacts(_converse, 'current');
 
             let sent_stanza, sent_id;

@@ -4,6 +4,7 @@
 
 - #1083: Add support for XEP-0393 Message Styling
 - #2275: Allow punctuation to immediately precede a mention
+- Add support for XEP-0437 Room Activity Indicators see [muc-subscribe-to-rai](https://conversejs.org/docs/html/configuration.html#muc-subscribe-to-rai)
 - Bugfix: Connection protocol not updated based on XEP-0156 connection methods
 - Bugfix: `null` inserted by emoji picker and can't switch between skintones
 - New hook: [getMessageActionButtons](https://conversejs.org/docs/html/api/-_converse.html#event:getMessageActionButtons)

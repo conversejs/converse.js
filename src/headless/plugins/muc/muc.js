@@ -66,6 +66,7 @@ const ChatRoomMixin = {
 
         this.on('change:chat_state', this.sendChatState, this);
         this.on('change:hidden', this.onHiddenChange, this);
+        this.on('destroy', this.removeHandlers, this);
 
         await this.restoreSession();
         this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
@@ -110,20 +111,6 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Handles incoming message stanzas from the service that hosts this MUC
-     * @private
-     * @method _converse.ChatRoom#onPresence
-     * @param { XMLElement } stanza
-     */
-    handleMessageFromMUCService (stanza) {
-        const rai = stanza.querySelector(`rai[xmlns="${Strophe.NS.RAI}"]`);
-        const active_mucs = Array.from(rai?.querySelectorAll('activity') || []).map(m => m.getAttribute('xmlns'));
-        if (active_mucs.includes(this.get('jid'))) {
-            this.save({ 'has_activity': true });
-        }
-    },
-
-    /**
      * Join the MUC
      * @private
      * @method _converse.ChatRoom#join
@@ -138,6 +125,8 @@ const ChatRoomMixin = {
             // so we don't send out a presence stanza again.
             return this;
         }
+        // Set this early, so we don't rejoin in onHiddenChange
+        this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
         await this.refreshDiscoInfo();
         nick = await this.getAndPersistNickname(nick);
         if (!nick) {
@@ -161,7 +150,6 @@ const ChatRoomMixin = {
         if (password) {
             stanza.cnode(Strophe.xmlElement('password', [], password));
         }
-        this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
         api.send(stanza);
         return this;
     },
@@ -200,13 +188,8 @@ const ChatRoomMixin = {
         }
     },
 
-    /**
-     * Handler that gets called when the 'hidden' flag is toggled.
-     * @private
-     * @method _converse.ChatRoomView#onHiddenChange
-     */
-    async onHiddenChange () {
-        if (this.get('hidden') && api.settings.get('muc_subscribe_to_rai')) {
+    async enableRAI () {
+        if (api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
             this.sendMarkerForLastMessage('received', true);
             if (this.session.get('connection_status') !== converse.ROOMSTATUS.DISCONNECTED) {
                 await this.leave();
@@ -217,8 +200,19 @@ const ChatRoomMixin = {
                 api.user.presence.send(null, muc_domain, null, $build('rai', { 'xmlns': Strophe.NS.RAI }));
                 _converse.session.save({ 'rai_enabled_domains': `${rai_enabled} ${muc_domain}` });
             }
+        }
+    },
+
+    /**
+     * Handler that gets called when the 'hidden' flag is toggled.
+     * @private
+     * @method _converse.ChatRoomView#onHiddenChange
+     */
+    onHiddenChange () {
+        if (this.get('hidden')) {
+            this.enableRAI();
         } else if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
-            this.onReconnection();
+            this.rejoin();
         }
     },
 
@@ -259,6 +253,7 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#rejoin
      */
     rejoin () {
+        this.registerHandlers();
         this.clearCache();
         return this.join();
     },
@@ -285,7 +280,6 @@ const ChatRoomMixin = {
     },
 
     async onReconnection () {
-        this.registerHandlers();
         await this.rejoin();
         this.announceReconnection();
     },
@@ -409,6 +403,24 @@ const ChatRoomMixin = {
         }
     },
 
+
+    /**
+     * Handles incoming message stanzas from the service that hosts this MUC
+     * @private
+     * @method _converse.ChatRoom#handleMessageFromMUCHost
+     * @param { XMLElement } stanza
+     */
+    handleMessageFromMUCHost (stanza) {
+        const rai = sizzle(`rai[xmlns="${Strophe.NS.RAI}"]`, stanza).pop();
+        const active_mucs = Array.from(rai?.querySelectorAll('activity') || []).map(m => m.textContent);
+        if (active_mucs.includes(this.get('jid'))) {
+            this.save({
+                'has_activity': true,
+                'num_unread_general': 0 // Either/or between activity and unreads
+            });
+        }
+    },
+
     /**
      * Parses an incoming message stanza and queues it for processing.
      * @private
@@ -452,6 +464,7 @@ const ChatRoomMixin = {
      */
     registerHandlers () {
         const muc_jid = this.get('jid');
+        const muc_domain = Strophe.getDomainFromJid(muc_jid);
         this.removeHandlers();
         this.presence_handler = _converse.connection.addHandler(
             stanza => this.onPresence(stanza) || true,
@@ -463,11 +476,10 @@ const ChatRoomMixin = {
             { 'ignoreNamespaceFragment': true, 'matchBareFromJid': true }
         );
 
-        const muc_domain = Strophe.getDomainFromJid(muc_jid);
         this.domain_presence_handler = _converse.connection.addHandler(
-            stanza => this.handleMessageFromMUCService(stanza) || true,
+            stanza => this.onPresenceFromMUCHost(stanza) || true,
             null,
-            'message',
+            'presence',
             null,
             null,
             muc_domain
@@ -481,6 +493,15 @@ const ChatRoomMixin = {
             null,
             muc_jid,
             { 'matchBareFromJid': true }
+        );
+
+        this.domain_message_handler = _converse.connection.addHandler(
+            stanza => this.handleMessageFromMUCHost(stanza) || true,
+            null,
+            'message',
+            null,
+            null,
+            muc_domain
         );
 
         this.affiliation_message_handler = _converse.connection.addHandler(
@@ -500,9 +521,17 @@ const ChatRoomMixin = {
             _converse.connection && _converse.connection.deleteHandler(this.message_handler);
             delete this.message_handler;
         }
+        if (this.domain_message_handler) {
+            _converse.connection && _converse.connection.deleteHandler(this.domain_message_handler);
+            delete this.domain_message_handler;
+        }
         if (this.presence_handler) {
             _converse.connection && _converse.connection.deleteHandler(this.presence_handler);
             delete this.presence_handler;
+        }
+        if (this.domain_presence_handler) {
+            _converse.connection && _converse.connection.deleteHandler(this.domain_presence_handler);
+            delete this.domain_presence_handler;
         }
         if (this.affiliation_message_handler) {
             _converse.connection && _converse.connection.deleteHandler(this.affiliation_message_handler);
@@ -717,7 +746,6 @@ const ChatRoomMixin = {
             api.user.presence.send('unavailable', this.getRoomJIDAndNick(), exit_msg);
         }
         u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
-        this.removeHandlers();
     },
 
     async close () {
@@ -1131,7 +1159,7 @@ const ChatRoomMixin = {
      * @returns { ('none'|'outcast'|'member'|'admin'|'owner') }
      */
     getOwnAffiliation () {
-        return this.getOwnOccupant()?.attributes?.affiliation;
+        return this.getOwnOccupant()?.attributes?.affiliation || 'none';
     },
 
     /**
@@ -2143,6 +2171,32 @@ const ChatRoomMixin = {
     },
 
     /**
+     * Listens for incoming presence stanzas from the service that hosts this MUC
+     * @private
+     * @method _converse.ChatRoom#onPresenceFromMUCHost
+     * @param { XMLElement } stanza - The presence stanza
+     */
+    onPresenceFromMUCHost (stanza) {
+        if (stanza.getAttribute('type') === 'error') {
+            const error = stanza.querySelector('error');
+            if (error?.getAttribute('type') === 'wait' && error?.querySelector('resource-constraint')) {
+                // If we get a <resource-constraint> error, we assume it's in context of XEP-0437 RAI.
+                // We remove this MUC's host from the list of enabled domains and rejoin the MUC.
+                const rai_enabled = _converse.session.get('rai_enabled_domains') || '';
+                const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
+                if (rai_enabled.includes(muc_domain)) {
+                    const regex = new RegExp(muc_domain, 'g');
+                    _converse.session.save({ 'rai_enabled_domains': rai_enabled.replace(regex, '') });
+
+                    if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
+                        this.rejoin();
+                    }
+                }
+            }
+        }
+    },
+
+    /**
      * Handles incoming presence stanzas coming from the MUC
      * @private
      * @method _converse.ChatRoom#onPresence
@@ -2284,7 +2338,7 @@ const ChatRoomMixin = {
     },
 
     clearUnreadMsgCounter () {
-        if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0) {
+        if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0 || this.get('has_activity')) {
             this.sendMarkerForMessage(this.messages.last());
         }
         u.safeSave(this, {

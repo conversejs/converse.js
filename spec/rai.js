@@ -5,11 +5,14 @@ const u = converse.env.utils;
 // See: https://xmpp.org/rfcs/rfc3921.html
 
 
-fdescribe("XEP-0437 Room Activity Indicators", function () {
+describe("XEP-0437 Room Activity Indicators", function () {
 
     it("will be activated for a MUC that becomes hidden",
         mock.initConverse(
-            ['rosterGroupsFetched'], {'muc_subscribe_to_rai': true, 'view_mode': 'fullscreen'},
+            ['rosterGroupsFetched'], {
+                'allow_bookmarks': false, // Hack to get the rooms list to render
+                'muc_subscribe_to_rai': true,
+                'view_mode': 'fullscreen'},
             async function (done, _converse) {
 
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
@@ -79,18 +82,86 @@ fdescribe("XEP-0437 Room Activity Indicators", function () {
         expect(Strophe.serialize(sent_stanzas[1])).toBe(
             `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
             `</presence>`
         );
         expect(Strophe.serialize(sent_stanzas[2])).toBe(
             `<presence to="montague.lit" xmlns="jabber:client">`+
                 `<priority>0</priority>`+
-                `<c hash="sha-1" node="https://conversejs.org" ver="PxXfr6uz8ClMWIga0OB/MhKNH/M=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
                 `<rai xmlns="urn:xmpp:rai:0"/>`+
             `</presence>`
         );
 
-        view.model.save({'hidden': false});
+        await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
+        expect(view.model.get('has_activity')).toBe(false);
+
+        const lview = _converse.rooms_list_view
+        const room_el = await u.waitUntil(() => lview.el.querySelector(".available-chatroom"));
+        expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
+
+        const activity_stanza = u.toStanza(`
+            <message from="${Strophe.getDomainFromJid(muc_jid)}">
+                <rai xmlns="urn:xmpp:rai:0">
+                    <activity>${muc_jid}</activity>
+                </rai>
+            </message>
+        `);
+        _converse.connection._dataRecv(mock.createRequest(activity_stanza));
+
+        await u.waitUntil(() => view.model.get('has_activity'));
+        expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
+        done();
+    }));
+
+
+    it("may not be activated due to server resource constraints",
+        mock.initConverse(
+            ['rosterGroupsFetched'], {
+                'allow_bookmarks': false, // Hack to get the rooms list to render
+                'muc_subscribe_to_rai': true,
+                'view_mode': 'fullscreen'},
+            async function (done, _converse) {
+
+        expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
+
+        const muc_jid = 'lounge@montague.lit';
+        const muc_domain = Strophe.getDomainFromJid(muc_jid);
+        await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
+        const view = _converse.api.chatviews.get(muc_jid);
+        expect(view.model.get('hidden')).toBe(false);
+        const sent_stanzas = [];
+        spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s?.nodeTree ?? s));
+        view.model.save({'hidden': true});
+        await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'presence').length === 2);
+
+        expect(Strophe.serialize(sent_stanzas[0])).toBe(
+            `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
+                `<priority>0</priority>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+            `</presence>`
+        );
+        expect(Strophe.serialize(sent_stanzas[1])).toBe(
+            `<presence to="montague.lit" xmlns="jabber:client">`+
+                `<priority>0</priority>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<rai xmlns="urn:xmpp:rai:0"/>`+
+            `</presence>`
+        );
+        expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.DISCONNECTED);
+                expect(_converse.session.get('rai_enabled_domains')).toBe(` ${muc_domain}`);
+
+        // If an error presence with "resource-constraint" is returned, we rejoin
+        const activity_stanza = u.toStanza(`
+            <presence type="error" from="${Strophe.getDomainFromJid(muc_jid)}">
+                <error type="wait"><resource-constraint xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+            </presence>
+        `);
+        _converse.connection._dataRecv(mock.createRequest(activity_stanza));
+
+        await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+
+        expect(_converse.session.get('rai_enabled_domains')).toBe(' ');
         done();
     }));
 

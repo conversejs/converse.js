@@ -11,7 +11,7 @@ import tpl_chatroom_head from 'templates/chatroom_head.js';
 import tpl_muc_bottom_panel from 'templates/muc_bottom_panel.js';
 import tpl_muc_destroyed from 'templates/muc_destroyed.js';
 import tpl_muc_disconnect from 'templates/muc_disconnect.js';
-import { $build, $pres, Strophe } from 'strophe.js/src/strophe';
+import { $pres, Strophe } from 'strophe.js/src/strophe';
 import tpl_muc_nickname_form from 'templates/muc_nickname_form.js';
 import tpl_spinner from 'templates/spinner.js';
 import { Model } from '@converse/skeletor/src/model.js';
@@ -694,9 +694,7 @@ const ChatRoomViewMixin = {
         // Override from converse-chatview, specifically to avoid
         // the 'active' chat state from being sent out prematurely.
         // This is instead done in `onConnectionStatusChanged` below.
-        if (u.isPersistableModel(this.model)) {
-            this.model.clearUnreadMsgCounter();
-        }
+        this.model.clearUnreadMsgCounter();
         this.scrollDown();
     },
 

@@ -1444,7 +1444,7 @@ muc_show_logs_before_join
 
 If set to ``true``, when opening a MUC for the first time (or if you don't have
 a nickname configured for it), you'll see the message history (if the
-server supports [XEP-0313 Message Archive Management](https://xmpp.org/extensions/xep-0313.html))
+server supports `XEP-0313 Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_)
 and the nickname form at the bottom.
 
 muc_subscribe_to_rai
@@ -1452,11 +1452,12 @@ muc_subscribe_to_rai
 
 * Default: ``false``
 
-This option enables support for XEP-0437 Room Activity Indicators.
+This option enables support for `XEP-0437 Room Activity Indicators <https://xmpp.org/extensions/xep-0313.html>`_.
 
-When a MUC is no longer visible (the ``hidden`` flag becomes ``true``), then
-Converse will make sure that its subscribed to activity indicators on the MUC
-host.
+When a MUC is no longer visible (specifically, when the ``hidden`` flag becomes ``true``),
+then Converse will exit the MUC and subscribe to activity indicators on the MUC host.
+
+When the MUC becomes visible again (``hidden`` gets set to ``false``), the MUC will be rejoined.
 
 
 .. _`nickname`:

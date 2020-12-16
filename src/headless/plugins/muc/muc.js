@@ -2254,6 +2254,7 @@ const ChatRoomMixin = {
 
         if (stanza.getAttribute('type') === 'unavailable') {
             this.handleDisconnection(stanza);
+            return;
         } else {
             const locked_room = stanza.querySelector("status[code='201']");
             if (locked_room) {

@@ -2713,7 +2713,10 @@ describe("Groupchats", function () {
              *  </presence>
              */
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-            var presence = $pres().attrs({
+            const view = _converse.chatboxviews.get('lounge@montague.lit');
+            expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
+
+            const presence = $pres().attrs({
                     from:'lounge@montague.lit/romeo',
                     to:'romeo@montague.lit/pda',
                     type:'unavailable'
@@ -2732,7 +2735,6 @@ describe("Groupchats", function () {
 
             _converse.connection._dataRecv(mock.createRequest(presence));
 
-            const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(u.isVisible(view.el.querySelector('.chat-area'))).toBeFalsy();
             expect(u.isVisible(view.el.querySelector('.occupants'))).toBeFalsy();
             const chat_body = view.el.querySelector('.chatroom-body');
@@ -2743,6 +2745,8 @@ describe("Groupchats", function () {
                 'This action was done by Fluellen.');
             expect(chat_body.querySelector('.disconnect-msg:nth-child(3)').textContent.trim()).toBe(
                 'The reason given is: "Avaunt, you cullion!".');
+
+            expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.DISCONNECTED);
             done();
         }));
 

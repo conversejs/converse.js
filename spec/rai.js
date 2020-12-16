@@ -1,4 +1,3 @@
-
 /*global mock, converse */
 
 const { Strophe } = converse.env;
@@ -10,7 +9,7 @@ fdescribe("XEP-0437 Room Activity Indicators", function () {
 
     it("will be activated for a MUC that becomes hidden",
         mock.initConverse(
-            ['rosterGroupsFetched'], {'muc_subscribe_to_rai': true},
+            ['rosterGroupsFetched'], {'muc_subscribe_to_rai': true, 'view_mode': 'fullscreen'},
             async function (done, _converse) {
 
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
@@ -90,6 +89,8 @@ fdescribe("XEP-0437 Room Activity Indicators", function () {
                 `<rai xmlns="urn:xmpp:rai:0"/>`+
             `</presence>`
         );
+
+        view.model.save({'hidden': false});
         done();
     }));
 

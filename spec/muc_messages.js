@@ -260,7 +260,7 @@ describe("A Groupchat Message", function () {
             </message>`);
 
         spyOn(view.model, 'updateMessage');
-        view.model.handleMAMResult({ 'messages': [stanza] });
+        _converse.handleMAMResult(view.model, { 'messages': [stanza] });
         await u.waitUntil(() => view.model.getDuplicateMessage.calls.count() === 2);
         result = await view.model.getDuplicateMessage.calls.all()[1].returnValue;
         expect(result instanceof _converse.Message).toBe(true);
@@ -366,7 +366,7 @@ describe("A Groupchat Message", function () {
             }).c('body').t('I am groot').tree();
         const view = _converse.api.chatviews.get(muc_jid);
         spyOn(converse.env.log, 'error');
-        await view.model.handleMAMResult({ 'messages': [msg] });
+        await _converse.handleMAMResult(view.model, { 'messages': [msg] });
         await u.waitUntil(() => converse.env.log.error.calls.count());
         expect(converse.env.log.error).toHaveBeenCalledWith(
             'Invalid Stanza: MUC messages SHOULD NOT be XEP-0280 carbon copied'

@@ -87,7 +87,7 @@ describe("A delivery receipt", function () {
             </message>`);
 
         spyOn(view.model, 'getDuplicateMessage').and.callThrough();
-        view.model.handleMAMResult({ 'messages': [stanza] });
+        _converse.handleMAMResult(view.model, { 'messages': [stanza] });
         let message_attrs;
         _converse.api.listen.on('MAMResult', async data => {
             message_attrs = await data.messages[0];

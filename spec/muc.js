@@ -789,8 +789,40 @@ describe("Groupchats", function () {
             }));
         });
 
+        it("restores cached messages when it reconnects and clear_messages_on_reconnection and muc_clear_messages_on_leave are false",
+            mock.initConverse(
+                ['rosterGroupsFetched'],
+                {
+                    'clear_messages_on_reconnection': false,
+                    'muc_clear_messages_on_leave': false
+                },
+                async function (done, _converse) {
 
-        it("clears cached messages when it gets closed and clear_messages_on_reconnection is true",
+            const muc_jid = 'lounge@montague.lit';
+            await mock.openAndEnterChatRoom(_converse, muc_jid , 'romeo');
+            const view = _converse.chatboxviews.get(muc_jid);
+            const message = 'Hello world',
+                    nick = mock.chatroom_names[0],
+                    msg = $msg({
+                    'from': 'lounge@montague.lit/'+nick,
+                    'id': u.getUniqueId(),
+                    'to': 'romeo@montague.lit',
+                    'type': 'groupchat'
+                }).c('body').t(message).tree();
+
+            await view.model.handleMessageStanza(msg);
+            await view.model.close();
+
+            _converse.connection.IQ_stanzas = [];
+            await mock.openAndEnterChatRoom(_converse, muc_jid , 'romeo');
+            await u.waitUntil(() => view.el.querySelector('converse-chat-message'));
+            expect(view.model.messages.length).toBe(1);
+            expect(view.el.querySelectorAll('converse-chat-message').length).toBe(1);
+            done()
+        }));
+
+
+        it("clears cached messages when it reconnects and clear_messages_on_reconnection is true",
             mock.initConverse(
                 ['rosterGroupsFetched'], {'clear_messages_on_reconnection': true},
                 async function (done, _converse) {
@@ -808,9 +840,10 @@ describe("Groupchats", function () {
                 }).c('body').t(message).tree();
 
             await view.model.handleMessageStanza(msg);
-            spyOn(view.model, 'clearMessages').and.callThrough();
             await view.model.close();
-            await u.waitUntil(() => view.model.clearMessages.calls.count());
+
+            _converse.connection.IQ_stanzas = [];
+            await mock.openAndEnterChatRoom(_converse, muc_jid , 'romeo');
             expect(view.model.messages.length).toBe(0);
             expect(view.el.querySelector('converse-chat-history')).toBe(null);
             done()

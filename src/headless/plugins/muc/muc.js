@@ -105,7 +105,7 @@ const ChatRoomMixin = {
             await this.fetchMessages().catch(e => log.error(e));
             return true;
         } else {
-            await this.clearCache();
+            this.clearCache();
             return false;
         }
     },
@@ -154,7 +154,7 @@ const ChatRoomMixin = {
         return this;
     },
 
-    async clearCache () {
+    clearCache () {
         this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
         if (this.occupants.length) {
             // Remove non-members when reconnecting
@@ -162,9 +162,6 @@ const ChatRoomMixin = {
         } else {
             // Looks like we haven't restored occupants from cache, so we clear it.
             this.occupants.clearStore();
-        }
-        if (api.settings.get('clear_messages_on_reconnection')) {
-            await this.clearMessages();
         }
     },
 
@@ -261,7 +258,17 @@ const ChatRoomMixin = {
     async onConnectionStatusChanged () {
         if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
             await this.occupants.fetchMembers();
-            await this.fetchMessages();
+
+            if (api.settings.get('clear_messages_on_reconnection')) {
+                // Don't call this.clearMessages because we don't want to
+                // recreate promises, since that will cause some existing
+                // awaiters to never proceed.
+                await this.messages.clearStore();
+                // A bit hacky. No need to fetch messages after clearing
+                this.messages.fetched.resolve();
+            } else {
+                await this.fetchMessages();
+            }
             /**
              * Triggered when the user has entered a new MUC
              * @event _converse#enteredNewRoom

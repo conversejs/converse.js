@@ -86,7 +86,7 @@ converse.plugins.add('converse-muc-views', {
      * If the setting "strict_plugin_dependencies" is set to true,
      * an error will be raised if the plugin is not found.
      */
-    dependencies: ['converse-autocomplete', 'converse-modal', 'converse-controlbox', 'converse-chatview'],
+    dependencies: ['converse-modal', 'converse-controlbox', 'converse-chatview'],
 
     overrides: {
         ControlBoxView: {

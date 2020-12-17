@@ -730,12 +730,11 @@ const ChatRoomViewMixin = {
      * @private
      * @method _converse.ChatRoomView#close
      */
-    async close () {
+    close () {
         this.hide();
         if (_converse.router.history.getFragment() === 'converse/room?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }
-        await this.model.leave();
         return _converse.ChatBoxView.prototype.close.apply(this, arguments);
     },
 

@@ -880,7 +880,7 @@ const ChatBoxView = View.extend({
             this.model.setChatState(_converse.INACTIVE);
             this.model.sendChatState();
         }
-        await this.model.close();
+        await this.model.close(ev);
         this.remove();
         /**
          * Triggered once a chatbox has been closed.

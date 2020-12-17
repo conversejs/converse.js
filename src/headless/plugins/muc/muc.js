@@ -736,7 +736,6 @@ const ChatRoomMixin = {
     async leave (exit_msg) {
         this.features.destroy();
         this.occupants.clearStore();
-        api.settings.get('muc_clear_messages_on_leave') && this.clearMessages();
 
         const disco_entity = _converse.disco_entities?.get(this.get('jid'));
         if (disco_entity) {
@@ -748,7 +747,12 @@ const ChatRoomMixin = {
         u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
     },
 
-    async close () {
+    async close (ev) {
+        await this.leave();
+        if (ev?.name !== 'closeAllChatBoxes' && api.settings.get('muc_clear_messages_on_leave')) {
+            this.clearMessages();
+        }
+
         // Delete the session model
         await new Promise(resolve =>
             this.session.destroy({

@@ -1452,7 +1452,7 @@ muc_subscribe_to_rai
 
 * Default: ``false``
 
-This option enables support for `XEP-0437 Room Activity Indicators <https://xmpp.org/extensions/xep-0313.html>`_.
+This option enables support for `XEP-0437 Room Activity Indicators <https://xmpp.org/extensions/xep-0437.html>`_.
 
 When a MUC is no longer visible (specifically, when the ``hidden`` flag becomes ``true``),
 then Converse will exit the MUC and subscribe to activity indicators on the MUC host.

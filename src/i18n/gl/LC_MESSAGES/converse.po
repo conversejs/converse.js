@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-12-01 19:29+0000\n"
+"PO-Revision-Date: 2020-12-19 10:29+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -21,21 +21,21 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
-msgstr "Cree a súa conta"
+msgstr "Crea a túa conta"
 
 #: dist/converse-no-dependencies.js:21776
 msgid "Please enter the XMPP provider to register with:"
-msgstr "Por favor, introduza o provedor XMPP no que rexistrarse:"
+msgstr "Por favor, escribe o provedor XMPP no que rexistrarse:"
 
 #: dist/converse-no-dependencies.js:21794
 #: dist/converse-no-dependencies.js:21828
 msgid "Already have a chat account?"
-msgstr "Xa ten unha conta?"
+msgstr "Xa tes unha conta?"
 
 #: dist/converse-no-dependencies.js:21796
 #: dist/converse-no-dependencies.js:21830
 msgid "Log in here"
-msgstr "Conéctese aquí"
+msgstr "Conéctate aquí"
 
 #: dist/converse-no-dependencies.js:21812
 msgid "Account Registration:"
@@ -51,7 +51,7 @@ msgstr "Escoller un provedor diferente"
 
 #: dist/converse-no-dependencies.js:21844
 msgid "Hold tight, we're fetching the registration form…"
-msgstr "Agarde, estamos solicitando o formulario de rexistro…"
+msgstr "Agarda, estamos solicitando o formulario de rexistro…"
 
 #: dist/converse-no-dependencies.js:21848
 #: dist/converse-no-dependencies.js:70326
@@ -94,11 +94,11 @@ msgstr "Mensaxe OMEMO non descifrable"
 
 #: dist/converse-no-dependencies.js:53716
 msgid "Sorry, could not determine upload URL."
-msgstr "Lamentámolo, non se puido determinar a URL de subida."
+msgstr "Lamentámolo, non se puido determinar o URL de subida."
 
 #: dist/converse-no-dependencies.js:53739
 msgid "Sorry, could not determine file upload URL."
-msgstr "Lamentámolo, non se determinou a URL de subida do ficheiro."
+msgstr "Lamentámolo, non se determinou o URL de subida do ficheiro."
 
 #: dist/converse-no-dependencies.js:53782
 #, javascript-format
@@ -109,7 +109,7 @@ msgstr "Lamentámolo, non se subeu o ficheiro. A resposta do servidor: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:53784
 msgid "Sorry, could not succesfully upload your file."
-msgstr "Lamentámolo, non se subeu o seu ficheiro."
+msgstr "Lamentámolo, non se subeu o ficheiro."
 
 #: dist/converse-no-dependencies.js:54001
 #: dist/converse-no-dependencies.js:59465
@@ -150,7 +150,7 @@ msgstr "Sorrisos e emocións"
 
 #: dist/converse-no-dependencies.js:57638
 msgid "People"
-msgstr "Xente"
+msgstr "Persoas"
 
 #: dist/converse-no-dependencies.js:57639
 msgid "Activities"
@@ -182,7 +182,7 @@ msgstr "Bandeiras"
 
 #: dist/converse-no-dependencies.js:57646
 msgid "Stickers"
-msgstr "Pegatinas"
+msgstr "Adhesivos"
 
 #: dist/converse-no-dependencies.js:58679
 msgid "This groupchat is not anonymous"
@@ -228,12 +228,12 @@ msgstr "Creouse unha nova conversa en grupo"
 #: dist/converse-no-dependencies.js:58692
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr "O seu alcume estableceuse automáticamente como %1$s"
+msgstr "O teu alcume estableceuse automáticamente como %1$s"
 
 #: dist/converse-no-dependencies.js:58693
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr "O seu alcume foi cambiado a %1$s"
+msgstr "O teu alcume foi cambiado a %1$s"
 
 #: dist/converse-no-dependencies.js:58696
 msgid "You have been banned from this groupchat"
@@ -281,7 +281,7 @@ msgstr "Non se enviou a mensaxe porque non tes permiso para enviala."
 #: dist/converse-no-dependencies.js:59476
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr "Non se entregou a mensaxe porque non está presente en este grupo."
+msgstr "Non se entregou a mensaxe porque non estás presente neste grupo."
 
 #: dist/converse-no-dependencies.js:59721
 msgid "A timeout happened while while trying to retract your message."
@@ -295,21 +295,20 @@ msgstr "Non podes rexistrarte a ti mesmo nesta conversa en grupo."
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr ""
-"Non ten permiso para rexistrarse na conversa en grupo porque é só para "
+"Non tes permiso para rexistrarte na conversa en grupo porque é só para "
 "membros."
 
 #: dist/converse-no-dependencies.js:60939
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
-msgstr ""
-"Non pode rexistrar o seu usuario en este grupo, non soporta o rexistro."
+msgstr "Non podes rexistrar o teu usuario neste grupo, non soporta o rexistro."
 
 #: dist/converse-no-dependencies.js:60941
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
-"Non pode rexistrar o seu usuario na conversa, os datos proporcionados non "
+"Non podes rexistrar o teu alcume na conversa, os datos proporcionados non "
 "son válidos."
 
 #: dist/converse-no-dependencies.js:61142
@@ -360,22 +359,22 @@ msgstr "%1$s foi eliminado por non ser membro"
 #: dist/converse-no-dependencies.js:61771
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "%1$s xa non é admin de esta conversa en grupo"
+msgstr "%1$s xa non é admin desta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:61776
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr "%1$s xa non é dono de esta conversa en grupo"
+msgstr "%1$s xa non é dona desta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:61781
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "%1$s xa non está excluída de esta conversa en grupo"
+msgstr "%1$s xa non está excluída desta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:61788
 #, javascript-format
 msgid "%1$s is no longer a member of this groupchat"
-msgstr "%1$s xa non é membro de este grupo"
+msgstr "%1$s xa non é membro deste grupo"
 
 #: dist/converse-no-dependencies.js:61795
 #, javascript-format
@@ -385,7 +384,7 @@ msgstr "%1$s é un membro de este grupo"
 #: dist/converse-no-dependencies.js:61801
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s é o %2$s de esta conversa en grupo"
+msgstr "%1$s é a %2$s desta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:61927
 msgid ""
@@ -399,7 +398,7 @@ msgstr "Contrasinal incorrecto"
 
 #: dist/converse-no-dependencies.js:61962
 msgid "You are not on the member list of this groupchat."
-msgstr "Non es membro de esta conversa en grupo."
+msgstr "Non es membro desta conversa en grupo."
 
 #: dist/converse-no-dependencies.js:61966
 msgid "You have been banned from this groupchat."
@@ -411,7 +410,7 @@ msgstr "Non te permiso para crear novas conversas en grupo."
 
 #: dist/converse-no-dependencies.js:61976
 msgid "Your nickname doesn't conform to this groupchat's policies."
-msgstr "O seu alcume non segue as normas de esta conversa en grupo."
+msgstr "O teu alcume non segue as normas desta conversa en grupo."
 
 #: dist/converse-no-dependencies.js:61993
 msgid "This groupchat does not (yet) exist."
@@ -871,7 +870,7 @@ msgstr "Ten unha mensaxe sen enviar que perderá se segue adiante. Está seguro?
 
 #: dist/converse-no-dependencies.js:82943
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "Seguro que desexa eliminar as mensaxes de esta conversa?"
+msgstr "Seguro que desexas eliminar as mensaxes desta conversa?"
 
 #: dist/converse-no-dependencies.js:83017
 #, javascript-format
@@ -1608,7 +1607,7 @@ msgstr "Conceder rol de moderador a usuaria"
 
 #: dist/converse-no-dependencies.js:91539
 msgid "Grant ownership of this groupchat"
-msgstr "Conceder a propiedade de esta conversa en grupo"
+msgstr "Conceder a propiedade desta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:91539
 msgid "Register your nickname"

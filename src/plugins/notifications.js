@@ -60,9 +60,9 @@ converse.plugins.add('converse-notification', {
                 return false;
             }
             const jid = attrs.from;
-            const room_jid = attrs.from_muc;
+            const muc_jid = attrs.from_muc;
             const notify_all = api.settings.get('notify_all_room_messages');
-            const room = _converse.chatboxes.get(room_jid);
+            const room = _converse.chatboxes.get(muc_jid);
             const resource = Strophe.getResourceFromJid(jid);
             const sender = resource && Strophe.unescapeNode(resource) || '';
             let is_mentioned = false;
@@ -72,10 +72,14 @@ converse.plugins.add('converse-notification', {
                 is_mentioned = (new RegExp(`\\b${nick}\\b`)).test(attrs.body);
             }
 
-            const is_referenced = attrs.references.map(r => r.value).includes(nick);
+            const references_me = (r) => {
+                const jid =  r.uri.replace(/^xmpp:/, '');
+                return jid == _converse.bare_jid || jid === `${muc_jid}/${nick}`;
+            }
+            const is_referenced = attrs.references.reduce((acc, r) => acc || references_me(r), false);
             const is_not_mine = sender !== nick;
             const should_notify_user = notify_all === true
-                || (Array.isArray(notify_all) && notify_all.includes(room_jid))
+                || (Array.isArray(notify_all) && notify_all.includes(muc_jid))
                 || is_referenced
                 || is_mentioned;
             return is_not_mine && !!should_notify_user;

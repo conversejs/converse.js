@@ -184,7 +184,7 @@ const ChatRoomMixin = {
      * @param { Boolean } force - Whether a marker should be sent for the
      *  message, even if it didn't include a `markable` element.
      */
-    sendMarkerForMessage (msg, type='displayed', force=false) {
+    sendMarkerForMessage (msg, type = 'displayed', force = false) {
         if (!msg) return;
         if (msg?.get('is_markable') || force) {
             const id = msg.get(`stanza_id ${this.get('jid')}`);
@@ -431,7 +431,6 @@ const ChatRoomMixin = {
         }
     },
 
-
     /**
      * Handles incoming message stanzas from the service that hosts this MUC
      * @private
@@ -445,6 +444,24 @@ const ChatRoomMixin = {
             this.save({
                 'has_activity': true,
                 'num_unread_general': 0 // Either/or between activity and unreads
+            });
+        }
+
+        const msgs = sizzle(
+            `mentions[xmlns="${Strophe.NS.MENTIONS}"] forwarded[xmlns="${Strophe.NS.FORWARD}"] message[type="groupchat"]`,
+            stanza
+        );
+        const muc_jid = this.get('jid');
+        const mentions = msgs.filter(m => Strophe.getBareJidFromJid(m.getAttribute('from')) === muc_jid);
+        if (mentions.length) {
+            this.save({
+                'has_activity': true,
+                'num_unread': this.get('num_unread') + mentions.length
+            });
+            mentions.forEach(async stanza => {
+                const attrs = await parseMUCMessage(stanza, this, _converse);
+                const data = { stanza, attrs, 'chatbox': this };
+                api.trigger('message', data);
             });
         }
     },

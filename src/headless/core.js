@@ -38,6 +38,7 @@ Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
 Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
 Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
 Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+Strophe.addNamespace('MENTIONS', 'urn:xmpp:mmn:0');
 Strophe.addNamespace('MODERATE', 'urn:xmpp:message-moderate:0');
 Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
 Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');

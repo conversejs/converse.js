@@ -250,6 +250,9 @@ export function isHeadline (stanza) {
 }
 
 export function isServerMessage (stanza) {
+    if (sizzle(`mentions[xmlns="${Strophe.NS.MENTIONS}"]`, stanza).pop()) {
+        return false;
+    }
     const from_jid = stanza.getAttribute('from');
     if (stanza.getAttribute('type') !== 'error' && from_jid && !from_jid.includes('@')) {
         // Some servers (e.g. Prosody) don't set the stanza

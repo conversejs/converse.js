@@ -114,6 +114,70 @@ describe("XEP-0437 Room Activity Indicators", function () {
         done();
     }));
 
+    it("will be activated for a MUC that starts out hidden",
+        mock.initConverse(
+            ['rosterGroupsFetched'], {
+                'allow_bookmarks': false, // Hack to get the rooms list to render
+                'muc_subscribe_to_rai': true,
+                'view_mode': 'fullscreen'},
+            async function (done, _converse) {
+
+        const { api } = _converse;
+        expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
+
+        const muc_jid = 'lounge@montague.lit';
+        const nick = 'romeo';
+        const sent_stanzas = _converse.connection.sent_stanzas;
+
+        const muc_creation_promise = await api.rooms.open(muc_jid, {nick, 'hidden': true}, false);
+        await mock.getRoomFeatures(_converse, muc_jid, []);
+        await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
+        await muc_creation_promise;
+
+        const view = api.chatviews.get(muc_jid);
+        await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        expect(view.model.get('hidden')).toBe(true);
+
+
+        const getSentPresences = () => sent_stanzas.filter(s => s.nodeName === 'presence');
+        await u.waitUntil(() => getSentPresences().length === 3, 500);
+        const sent_presences = getSentPresences();
+
+        expect(Strophe.serialize(sent_presences[1])).toBe(
+            `<presence to="${muc_jid}/romeo" type="unavailable" xmlns="jabber:client">`+
+                `<priority>0</priority>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+            `</presence>`
+        );
+        expect(Strophe.serialize(sent_presences[2])).toBe(
+            `<presence to="montague.lit" xmlns="jabber:client">`+
+                `<priority>0</priority>`+
+                `<c hash="sha-1" node="https://conversejs.org" ver="Hxbsr5fazs62i+O0GxIXf2OEDNs=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `<rai xmlns="urn:xmpp:rai:0"/>`+
+            `</presence>`
+        );
+
+        await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
+        expect(view.model.get('has_activity')).toBe(false);
+
+        const lview = _converse.rooms_list_view
+        const room_el = await u.waitUntil(() => lview.el.querySelector(".available-chatroom"));
+        expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
+
+        const activity_stanza = u.toStanza(`
+            <message from="${Strophe.getDomainFromJid(muc_jid)}">
+                <rai xmlns="urn:xmpp:rai:0">
+                    <activity>${muc_jid}</activity>
+                </rai>
+            </message>
+        `);
+        _converse.connection._dataRecv(mock.createRequest(activity_stanza));
+
+        await u.waitUntil(() => view.model.get('has_activity'));
+        expect(Array.from(room_el.classList).includes('unread-msgs')).toBeTruthy();
+        done();
+    }));
+
 
     it("may not be activated due to server resource constraints",
         mock.initConverse(

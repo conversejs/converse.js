@@ -125,6 +125,7 @@ const ChatRoomMixin = {
             // so we don't send out a presence stanza again.
             return this;
         }
+
         // Set this early, so we don't rejoin in onHiddenChange
         this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
         await this.refreshDiscoInfo();
@@ -152,6 +153,17 @@ const ChatRoomMixin = {
         }
         api.send(stanza);
         return this;
+    },
+
+    /**
+     * Clear stale cache and re-join a MUC we've been in before.
+     * @private
+     * @method _converse.ChatRoom#rejoin
+     */
+    rejoin () {
+        this.registerHandlers();
+        this.clearCache();
+        return this.join();
     },
 
     clearCache () {
@@ -185,12 +197,18 @@ const ChatRoomMixin = {
         }
     },
 
-    async enableRAI () {
-        if (api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
-            this.sendMarkerForLastMessage('received', true);
-            if (this.session.get('connection_status') !== converse.ROOMSTATUS.DISCONNECTED) {
-                await this.leave();
-            }
+    /**
+     * Ensures that the user is subscribed to XEP-0437 Room Activity Indicators
+     * if `muc_subscribe_to_rai` is set to `true`.
+     * Only affiliated users can subscribe to RAI, but this method doesn't
+     * check whether the current user is affiliated because it's intended to be
+     * called after the MUC has been left and we don't have that information
+     * anymore.
+     * @private
+     * @method _converse.ChatRoom#enableRAI
+     */
+    enableRAI () {
+        if (api.settings.get('muc_subscribe_to_rai')) {
             const rai_enabled = _converse.session.get('rai_enabled_domains') || '';
             const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
             if (!rai_enabled.includes(muc_domain)) {
@@ -203,12 +221,19 @@ const ChatRoomMixin = {
     /**
      * Handler that gets called when the 'hidden' flag is toggled.
      * @private
-     * @method _converse.ChatRoomView#onHiddenChange
+     * @method _converse.ChatRoom#onHiddenChange
      */
-    onHiddenChange () {
-        if (this.get('hidden')) {
-            this.enableRAI();
-        } else if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
+    async onHiddenChange () {
+        const conn_status = this.session.get('connection_status');
+        if (this.get('hidden') && conn_status === converse.ROOMSTATUS.ENTERED) {
+            if (api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
+                if (conn_status !== converse.ROOMSTATUS.DISCONNECTED) {
+                    this.sendMarkerForLastMessage('received', true);
+                    await this.leave();
+                }
+                this.enableRAI();
+            }
+        } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
             this.rejoin();
         }
     },
@@ -244,44 +269,40 @@ const ChatRoomMixin = {
         }
     },
 
-    /**
-     * Clear stale cache and re-join a MUC we've been in before.
-     * @private
-     * @method _converse.ChatRoom#rejoin
-     */
-    rejoin () {
-        this.registerHandlers();
-        this.clearCache();
-        return this.join();
+    async onRoomEntered () {
+        await this.occupants.fetchMembers();
+        if (api.settings.get('clear_messages_on_reconnection')) {
+            // Don't call this.clearMessages because we don't want to
+            // recreate promises, since that will cause some existing
+            // awaiters to never proceed.
+            await this.messages.clearStore();
+            // A bit hacky. No need to fetch messages after clearing
+            this.messages.fetched.resolve();
+        } else {
+            await this.fetchMessages();
+        }
+        /**
+         * Triggered when the user has entered a new MUC
+         * @event _converse#enteredNewRoom
+         * @type { _converse.ChatRoom}
+         * @example _converse.api.listen.on('enteredNewRoom', model => { ... });
+         */
+        api.trigger('enteredNewRoom', this);
+        if (
+            api.settings.get('auto_register_muc_nickname') &&
+            (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
+        ) {
+            this.registerNickname();
+        }
     },
 
     async onConnectionStatusChanged () {
         if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-            await this.occupants.fetchMembers();
-
-            if (api.settings.get('clear_messages_on_reconnection')) {
-                // Don't call this.clearMessages because we don't want to
-                // recreate promises, since that will cause some existing
-                // awaiters to never proceed.
-                await this.messages.clearStore();
-                // A bit hacky. No need to fetch messages after clearing
-                this.messages.fetched.resolve();
+            if (this.get('hidden') && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
+                await this.leave();
+                this.enableRAI();
             } else {
-                await this.fetchMessages();
-            }
-            /**
-             * Triggered when the user has entered a new MUC
-             * @event _converse#enteredNewRoom
-             * @type { _converse.ChatRoom}
-             * @example _converse.api.listen.on('enteredNewRoom', model => { ... });
-             */
-            api.trigger('enteredNewRoom', this);
-
-            if (
-                api.settings.get('auto_register_muc_nickname') &&
-                (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
-            ) {
-                this.registerNickname();
+                await this.onRoomEntered();
             }
         }
     },

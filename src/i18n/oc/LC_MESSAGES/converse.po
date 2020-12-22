@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-11-18 18:26+0100\n"
-"Last-Translator: Vincent L <vincent.laporte+weblate@mailbox.org>\n"
+"PO-Revision-Date: 2020-12-23 21:29+0000\n"
+"Last-Translator: Quentin PAGÈS <quentinantonin@free.fr>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/conversejs/"
 "translations/oc/>\n"
 "Language: oc\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.2\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
@@ -1550,9 +1550,9 @@ msgid "%1$s has been muted"
 msgstr "%1$s pòt pas mai parlar"
 
 #: dist/converse-no-dependencies.js:91507
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s and %2$s"
-msgstr "%1$s ditz"
+msgstr "%1$s e %2$s"
 
 #: dist/converse-no-dependencies.js:91511
 #, fuzzy, javascript-format
@@ -1998,13 +1998,12 @@ msgid "The specified entity doesn't support ad-hoc commands"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:94886
-#, fuzzy
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
 msgstr ""
-"Una error s’es producha en executant la comanda. Verificatz  la consòla de "
-"desvolopament del navegador per mai de detalhs."
+"Una error s’es producha en executant la comanda. Verificatz la consòla de "
+"desvolopament del navegador per mai de detalhs"
 
 #: dist/converse-no-dependencies.js:94963
 msgid "About"
@@ -2329,8 +2328,8 @@ msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
-"O planhèm, lo provesidor es pas compatibla amb l’enregistrament  de compte "
-"en linha. Mercés d’ensajar amb un autre provesidor."
+"O planhèm, lo provesidor es pas compatibla amb l’enregistrament de compte en "
+"linha. Mercés d’ensajar amb un autre provesidor."
 
 #: dist/converse-no-dependencies.js:99141
 #, javascript-format

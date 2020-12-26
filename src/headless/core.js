@@ -12,7 +12,6 @@ import pluggable from 'pluggable.js/src/pluggable';
 import syncDriver from 'localforage-webextensionstorage-driver/sync';
 import localDriver from 'localforage-webextensionstorage-driver/local';
 import sizzle from 'sizzle';
-import stanza_utils from "@converse/headless/utils/stanza";
 import u from '@converse/headless/utils/core';
 import { Collection } from "@converse/skeletor/src/collection";
 import { Connection, MockConnection } from '@converse/headless/shared/connection.js';
@@ -39,11 +38,13 @@ Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
 Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
 Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
 Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+Strophe.addNamespace('MENTIONS', 'urn:xmpp:mmn:0');
 Strophe.addNamespace('MODERATE', 'urn:xmpp:message-moderate:0');
 Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
 Strophe.addNamespace('OMEMO', 'eu.siacs.conversations.axolotl');
 Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+Strophe.addNamespace('RAI', 'urn:xmpp:rai:0');
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 Strophe.addNamespace('RETRACT', 'urn:xmpp:message-retract:0');
 Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
@@ -1653,7 +1654,6 @@ Object.assign(converse, {
         log,
         sizzle,
         sprintf,
-        stanza_utils,
         u,
     }
 });

@@ -4,12 +4,14 @@
 
 - #1083: Add support for XEP-0393 Message Styling
 - #2275: Allow punctuation to immediately precede a mention
+- Add support for XEP-0437 Room Activity Indicators see [muc-subscribe-to-rai](https://conversejs.org/docs/html/configuration.html#muc-subscribe-to-rai)
 - Bugfix: Connection protocol not updated based on XEP-0156 connection methods
 - Bugfix: `null` inserted by emoji picker and can't switch between skintones
 - New hook: [getMessageActionButtons](https://conversejs.org/docs/html/api/-_converse.html#event:getMessageActionButtons)
 - File structure reordering: All plugins are now in `./plugins` folders.
 - New configuration setting: [show_tab_notifications](https://conversejs.org/docs/html/configuration.html#show-tab-notifications)
 - New configuration setting: [muc_clear_messages_on_leave](https://conversejs.org/docs/html/configuration.html#muc-clear-messages-on-leave)
+- Use the MUC stanza id when sending XEP-0333 markers
 
 ### Breaking Changes
 

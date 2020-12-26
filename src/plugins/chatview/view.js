@@ -880,7 +880,7 @@ const ChatBoxView = View.extend({
             this.model.setChatState(_converse.INACTIVE);
             this.model.sendChatState();
         }
-        await this.model.close();
+        await this.model.close(ev);
         this.remove();
         /**
          * Triggered once a chatbox has been closed.
@@ -1030,11 +1030,8 @@ const ChatBoxView = View.extend({
 
     onWindowStateChanged (state) {
         if (state === 'visible') {
-            if (!this.model.isHidden()) {
-                // this.model.setChatState(_converse.ACTIVE);
-                if (this.model.get('num_unread', 0)) {
-                    this.model.clearUnreadMsgCounter();
-                }
+            if (!this.model.isHidden() && this.model.get('num_unread', 0)) {
+                this.model.clearUnreadMsgCounter();
             }
         } else if (state === 'hidden') {
             this.model.setChatState(_converse.INACTIVE, { 'silent': true });

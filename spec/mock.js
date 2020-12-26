@@ -313,9 +313,10 @@ window.addEventListener('converse-loaded', () => {
     };
 
 
-    mock.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[], force_open=true) {
+    mock.openAndEnterChatRoom = async function (_converse, muc_jid, nick, features=[], members=[], force_open=true, settings={}) {
+        const { api } = _converse;
         muc_jid = muc_jid.toLowerCase();
-        const room_creation_promise = _converse.api.rooms.open(muc_jid, {}, force_open);
+        const room_creation_promise = api.rooms.open(muc_jid, settings, force_open);
         await mock.getRoomFeatures(_converse, muc_jid, features);
         await mock.waitForReservedNick(_converse, muc_jid, nick);
         // The user has just entered the room (because join was called)
@@ -330,7 +331,7 @@ window.addEventListener('converse-loaded', () => {
         const affs = _converse.muc_fetch_members;
         const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
         await mock.returnMemberLists(_converse, muc_jid, members, all_affiliations);
-        await view.model.messages.fetched;
+        return view.model.messages.fetched;
     };
 
     mock.createContact = async function (_converse, name, ask, requesting, subscription) {

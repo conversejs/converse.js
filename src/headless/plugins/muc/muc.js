@@ -1,13 +1,15 @@
 import log from '../../log';
-import { Model } from '@converse/skeletor/src/model.js';
-import muc_utils from '../../utils/muc';
+import muc_utils from './utils.js';
 import p from '../../utils/parse-helpers';
 import sizzle from 'sizzle';
-import st from '../../utils/stanza';
 import u from '../../utils/form';
+import { Model } from '@converse/skeletor/src/model.js';
 import { Strophe, $build, $iq, $msg, $pres } from 'strophe.js/src/strophe';
 import { _converse, api, converse } from '../../core.js';
 import { debounce, intersection, invoke, isElement, pick, zipObject } from 'lodash-es';
+import { isArchived } from '@converse/headless/shared/parsers';
+import { parseMemberListIQ, parseMUCMessage, parseMUCPresence } from './parsers.js';
+import { sendMarker } from '@converse/headless/shared/actions';
 
 const ACTION_INFO_CODES = ['301', '303', '333', '307', '321', '322'];
 
@@ -28,6 +30,13 @@ const MUCSession = Model.extend({
 const ChatRoomMixin = {
     defaults () {
         return {
+            'bookmarked': false,
+            'chat_state': undefined,
+            'has_activity': false, // XEP-437
+            'hidden': _converse.isUniView() && !api.settings.get('singleton'),
+            'hidden_occupants': !!api.settings.get('hide_muc_participants'),
+            'message_type': 'groupchat',
+            'name': '',
             // For group chats, we distinguish between generally unread
             // messages and those ones that specifically mention the
             // user.
@@ -37,12 +46,6 @@ const ChatRoomMixin = {
             // mention the user and `num_unread_general` to indicate
             // generally unread messages (which *includes* mentions!).
             'num_unread_general': 0,
-            'bookmarked': false,
-            'chat_state': undefined,
-            'hidden': _converse.isUniView() && !api.settings.get('singleton'),
-            'hidden_occupants': !!api.settings.get('hide_muc_participants'),
-            'message_type': 'groupchat',
-            'name': '',
             'num_unread': 0,
             'roomconfig': {},
             'time_opened': this.get('time_opened') || new Date().getTime(),
@@ -62,6 +65,9 @@ const ChatRoomMixin = {
         this.registerHandlers();
 
         this.on('change:chat_state', this.sendChatState, this);
+        this.on('change:hidden', this.onHiddenChange, this);
+        this.on('destroy', this.removeHandlers, this);
+
         await this.restoreSession();
         this.session.on('change:connection_status', this.onConnectionStatusChanged, this);
 
@@ -99,7 +105,7 @@ const ChatRoomMixin = {
             await this.fetchMessages().catch(e => log.error(e));
             return true;
         } else {
-            await this.clearCache();
+            this.clearCache();
             return false;
         }
     },
@@ -119,6 +125,9 @@ const ChatRoomMixin = {
             // so we don't send out a presence stanza again.
             return this;
         }
+
+        // Set this early, so we don't rejoin in onHiddenChange
+        this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
         await this.refreshDiscoInfo();
         nick = await this.getAndPersistNickname(nick);
         if (!nick) {
@@ -142,12 +151,22 @@ const ChatRoomMixin = {
         if (password) {
             stanza.cnode(Strophe.xmlElement('password', [], password));
         }
-        this.session.save('connection_status', converse.ROOMSTATUS.CONNECTING);
         api.send(stanza);
         return this;
     },
 
-    async clearCache () {
+    /**
+     * Clear stale cache and re-join a MUC we've been in before.
+     * @private
+     * @method _converse.ChatRoom#rejoin
+     */
+    rejoin () {
+        this.registerHandlers();
+        this.clearCache();
+        return this.join();
+    },
+
+    clearCache () {
         this.session.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
         if (this.occupants.length) {
             // Remove non-members when reconnecting
@@ -156,8 +175,66 @@ const ChatRoomMixin = {
             // Looks like we haven't restored occupants from cache, so we clear it.
             this.occupants.clearStore();
         }
-        if (api.settings.get('clear_messages_on_reconnection')) {
-            await this.clearMessages();
+    },
+
+    /**
+     * Given the passed in MUC message, send a XEP-0333 chat marker.
+     * @param { _converse.MUCMessage } msg
+     * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
+     * @param { Boolean } force - Whether a marker should be sent for the
+     *  message, even if it didn't include a `markable` element.
+     */
+    sendMarkerForMessage (msg, type = 'displayed', force = false) {
+        if (!msg) return;
+        if (msg?.get('is_markable') || force) {
+            const id = msg.get(`stanza_id ${this.get('jid')}`);
+            if (!id) {
+                log.error(`Can't send marker for message without stanza ID: ${msg}`);
+                return;
+            }
+            const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
+            sendMarker(from_jid, id, type, msg.get('type'));
+        }
+    },
+
+    /**
+     * Ensures that the user is subscribed to XEP-0437 Room Activity Indicators
+     * if `muc_subscribe_to_rai` is set to `true`.
+     * Only affiliated users can subscribe to RAI, but this method doesn't
+     * check whether the current user is affiliated because it's intended to be
+     * called after the MUC has been left and we don't have that information
+     * anymore.
+     * @private
+     * @method _converse.ChatRoom#enableRAI
+     */
+    enableRAI () {
+        if (api.settings.get('muc_subscribe_to_rai')) {
+            const rai_enabled = _converse.session.get('rai_enabled_domains') || '';
+            const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
+            if (!rai_enabled.includes(muc_domain)) {
+                api.user.presence.send(null, muc_domain, null, $build('rai', { 'xmlns': Strophe.NS.RAI }));
+                _converse.session.save({ 'rai_enabled_domains': `${rai_enabled} ${muc_domain}` });
+            }
+        }
+    },
+
+    /**
+     * Handler that gets called when the 'hidden' flag is toggled.
+     * @private
+     * @method _converse.ChatRoom#onHiddenChange
+     */
+    async onHiddenChange () {
+        const conn_status = this.session.get('connection_status');
+        if (this.get('hidden') && conn_status === converse.ROOMSTATUS.ENTERED) {
+            if (api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
+                if (conn_status !== converse.ROOMSTATUS.DISCONNECTED) {
+                    this.sendMarkerForLastMessage('received', true);
+                    await this.leave();
+                }
+                this.enableRAI();
+            }
+        } else if (conn_status === converse.ROOMSTATUS.DISCONNECTED) {
+            this.rejoin();
         }
     },
 
@@ -192,39 +269,45 @@ const ChatRoomMixin = {
         }
     },
 
-    /**
-     * Clear stale cache and re-join a MUC we've been in before.
-     * @private
-     * @method _converse.ChatRoom#rejoin
-     */
-    rejoin () {
-        this.clearCache();
-        return this.join();
+    async onRoomEntered () {
+        await this.occupants.fetchMembers();
+        if (api.settings.get('clear_messages_on_reconnection')) {
+            // Don't call this.clearMessages because we don't want to
+            // recreate promises, since that will cause some existing
+            // awaiters to never proceed.
+            await this.messages.clearStore();
+            // A bit hacky. No need to fetch messages after clearing
+            this.messages.fetched.resolve();
+        } else {
+            await this.fetchMessages();
+        }
+        /**
+         * Triggered when the user has entered a new MUC
+         * @event _converse#enteredNewRoom
+         * @type { _converse.ChatRoom}
+         * @example _converse.api.listen.on('enteredNewRoom', model => { ... });
+         */
+        api.trigger('enteredNewRoom', this);
+        if (
+            api.settings.get('auto_register_muc_nickname') &&
+            (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
+        ) {
+            this.registerNickname();
+        }
     },
 
     async onConnectionStatusChanged () {
         if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-            await this.occupants.fetchMembers();
-            await this.fetchMessages();
-            /**
-             * Triggered when the user has entered a new MUC
-             * @event _converse#enteredNewRoom
-             * @type { _converse.ChatRoom}
-             * @example _converse.api.listen.on('enteredNewRoom', model => { ... });
-             */
-            api.trigger('enteredNewRoom', this);
-
-            if (
-                api.settings.get('auto_register_muc_nickname') &&
-                (await api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid')))
-            ) {
-                this.registerNickname();
+            if (this.get('hidden') && api.settings.get('muc_subscribe_to_rai') && this.getOwnAffiliation() !== 'none') {
+                await this.leave();
+                this.enableRAI();
+            } else {
+                await this.onRoomEntered();
             }
         }
     },
 
     async onReconnection () {
-        this.registerHandlers();
         await this.rejoin();
         this.announceReconnection();
     },
@@ -306,7 +389,7 @@ const ChatRoomMixin = {
 
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
-        const attrs = await st.parseMUCMessage(stanza, this, _converse);
+        const attrs = await parseMUCMessage(stanza, this, _converse);
         if (!(await this.shouldShowErrorMessage(attrs))) {
             return;
         }
@@ -349,13 +432,48 @@ const ChatRoomMixin = {
     },
 
     /**
+     * Handles incoming message stanzas from the service that hosts this MUC
+     * @private
+     * @method _converse.ChatRoom#handleMessageFromMUCHost
+     * @param { XMLElement } stanza
+     */
+    handleMessageFromMUCHost (stanza) {
+        const rai = sizzle(`rai[xmlns="${Strophe.NS.RAI}"]`, stanza).pop();
+        const active_mucs = Array.from(rai?.querySelectorAll('activity') || []).map(m => m.textContent);
+        if (active_mucs.includes(this.get('jid'))) {
+            this.save({
+                'has_activity': true,
+                'num_unread_general': 0 // Either/or between activity and unreads
+            });
+        }
+
+        const msgs = sizzle(
+            `mentions[xmlns="${Strophe.NS.MENTIONS}"] forwarded[xmlns="${Strophe.NS.FORWARD}"] message[type="groupchat"]`,
+            stanza
+        );
+        const muc_jid = this.get('jid');
+        const mentions = msgs.filter(m => Strophe.getBareJidFromJid(m.getAttribute('from')) === muc_jid);
+        if (mentions.length) {
+            this.save({
+                'has_activity': true,
+                'num_unread': this.get('num_unread') + mentions.length
+            });
+            mentions.forEach(async stanza => {
+                const attrs = await parseMUCMessage(stanza, this, _converse);
+                const data = { stanza, attrs, 'chatbox': this };
+                api.trigger('message', data);
+            });
+        }
+    },
+
+    /**
      * Parses an incoming message stanza and queues it for processing.
      * @private
      * @method _converse.ChatRoom#handleMessageStanza
      * @param { XMLElement } stanza
      */
     async handleMessageStanza (stanza) {
-        if (st.isArchived(stanza)) {
+        if (isArchived(stanza)) {
             // MAM messages are handled in converse-mam.
             // We shouldn't get MAM messages here because
             // they shouldn't have a `type` attribute.
@@ -372,7 +490,7 @@ const ChatRoomMixin = {
          * @property { MUCMessageAttributes } attrs
          * @property { ChatRoom } chatbox
          */
-        const attrs = await st.parseMUCMessage(stanza, this, _converse);
+        const attrs = await parseMUCMessage(stanza, this, _converse);
         const data = { stanza, attrs, 'chatbox': this };
         /**
          * Triggered when a groupchat message stanza has been received and parsed.
@@ -384,9 +502,14 @@ const ChatRoomMixin = {
         return attrs && this.queueMessage(attrs);
     },
 
+    /**
+     * Register presence and message handlers relevant to this groupchat
+     * @private
+     * @method _converse.ChatRoom#registerHandlers
+     */
     registerHandlers () {
-        // Register presence and message handlers for this groupchat
-        const room_jid = this.get('jid');
+        const muc_jid = this.get('jid');
+        const muc_domain = Strophe.getDomainFromJid(muc_jid);
         this.removeHandlers();
         this.presence_handler = _converse.connection.addHandler(
             stanza => this.onPresence(stanza) || true,
@@ -394,8 +517,17 @@ const ChatRoomMixin = {
             'presence',
             null,
             null,
-            room_jid,
+            muc_jid,
             { 'ignoreNamespaceFragment': true, 'matchBareFromJid': true }
+        );
+
+        this.domain_presence_handler = _converse.connection.addHandler(
+            stanza => this.onPresenceFromMUCHost(stanza) || true,
+            null,
+            'presence',
+            null,
+            null,
+            muc_domain
         );
 
         this.message_handler = _converse.connection.addHandler(
@@ -404,8 +536,17 @@ const ChatRoomMixin = {
             'message',
             'groupchat',
             null,
-            room_jid,
+            muc_jid,
             { 'matchBareFromJid': true }
+        );
+
+        this.domain_message_handler = _converse.connection.addHandler(
+            stanza => this.handleMessageFromMUCHost(stanza) || true,
+            null,
+            'message',
+            null,
+            null,
+            muc_domain
         );
 
         this.affiliation_message_handler = _converse.connection.addHandler(
@@ -414,7 +555,7 @@ const ChatRoomMixin = {
             'message',
             null,
             null,
-            room_jid
+            muc_jid
         );
     },
 
@@ -425,9 +566,17 @@ const ChatRoomMixin = {
             _converse.connection && _converse.connection.deleteHandler(this.message_handler);
             delete this.message_handler;
         }
+        if (this.domain_message_handler) {
+            _converse.connection && _converse.connection.deleteHandler(this.domain_message_handler);
+            delete this.domain_message_handler;
+        }
         if (this.presence_handler) {
             _converse.connection && _converse.connection.deleteHandler(this.presence_handler);
             delete this.presence_handler;
+        }
+        if (this.domain_presence_handler) {
+            _converse.connection && _converse.connection.deleteHandler(this.domain_presence_handler);
+            delete this.domain_presence_handler;
         }
         if (this.affiliation_message_handler) {
             _converse.connection && _converse.connection.deleteHandler(this.affiliation_message_handler);
@@ -632,22 +781,23 @@ const ChatRoomMixin = {
     async leave (exit_msg) {
         this.features.destroy();
         this.occupants.clearStore();
-        api.settings.get('muc_clear_messages_on_leave') && this.messages.clearStore();
 
-        if (_converse.disco_entities) {
-            const disco_entity = _converse.disco_entities.get(this.get('jid'));
-            if (disco_entity) {
-                await new Promise((success, error) => disco_entity.destroy({ success, error }));
-            }
+        const disco_entity = _converse.disco_entities?.get(this.get('jid'));
+        if (disco_entity) {
+            await new Promise((success, error) => disco_entity.destroy({ success, error }));
         }
         if (api.connection.connected()) {
             api.user.presence.send('unavailable', this.getRoomJIDAndNick(), exit_msg);
         }
         u.safeSave(this.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
-        this.removeHandlers();
     },
 
-    async close () {
+    async close (ev) {
+        await this.leave();
+        if (ev?.name !== 'closeAllChatBoxes' && api.settings.get('muc_clear_messages_on_leave')) {
+            this.clearMessages();
+        }
+
         // Delete the session model
         await new Promise(resolve =>
             this.session.destroy({
@@ -1058,7 +1208,7 @@ const ChatRoomMixin = {
      * @returns { ('none'|'outcast'|'member'|'admin'|'owner') }
      */
     getOwnAffiliation () {
-        return this.getOwnOccupant()?.attributes?.affiliation;
+        return this.getOwnOccupant()?.attributes?.affiliation || 'none';
     },
 
     /**
@@ -1234,8 +1384,7 @@ const ChatRoomMixin = {
             log.warn(result);
             return err;
         }
-        return muc_utils
-            .parseMemberListIQ(result)
+        return parseMemberListIQ(result)
             .filter(p => p)
             .sort((a, b) => (a.nick < b.nick ? -1 : a.nick > b.nick ? 1 : 0));
     },
@@ -1367,7 +1516,7 @@ const ChatRoomMixin = {
      * @param { XMLElement } pres - The presence stanza
      */
     updateOccupantsOnPresence (pres) {
-        const data = st.parseMUCPresence(pres);
+        const data = parseMUCPresence(pres);
         if (data.type === 'error' || (!data.jid && !data.nick)) {
             return true;
         }
@@ -1467,7 +1616,7 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#handleSubjectChange
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMUCMessage}
+     *  message, as returned by {@link parseMUCMessage}
      */
     async handleSubjectChange (attrs) {
         const __ = _converse.__;
@@ -1621,7 +1770,7 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#findDanglingModeration
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMUCMessage}
+     *  message, as returned by {@link parseMUCMessage}
      * @returns { _converse.ChatRoomMessage }
      */
     findDanglingModeration (attrs) {
@@ -1652,7 +1801,7 @@ const ChatRoomMixin = {
      * @private
      * @method _converse.ChatRoom#handleModeration
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMUCMessage}
+     *  message, as returned by {@link parseMUCMessage}
      * @returns { Boolean } Returns `true` or `false` depending on
      *  whether a message was moderated or not.
      */
@@ -2071,7 +2220,33 @@ const ChatRoomMixin = {
     },
 
     /**
-     * Handles all MUC presence stanzas.
+     * Listens for incoming presence stanzas from the service that hosts this MUC
+     * @private
+     * @method _converse.ChatRoom#onPresenceFromMUCHost
+     * @param { XMLElement } stanza - The presence stanza
+     */
+    onPresenceFromMUCHost (stanza) {
+        if (stanza.getAttribute('type') === 'error') {
+            const error = stanza.querySelector('error');
+            if (error?.getAttribute('type') === 'wait' && error?.querySelector('resource-constraint')) {
+                // If we get a <resource-constraint> error, we assume it's in context of XEP-0437 RAI.
+                // We remove this MUC's host from the list of enabled domains and rejoin the MUC.
+                const rai_enabled = _converse.session.get('rai_enabled_domains') || '';
+                const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
+                if (rai_enabled.includes(muc_domain)) {
+                    const regex = new RegExp(muc_domain, 'g');
+                    _converse.session.save({ 'rai_enabled_domains': rai_enabled.replace(regex, '') });
+
+                    if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
+                        this.rejoin();
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * Handles incoming presence stanzas coming from the MUC
      * @private
      * @method _converse.ChatRoom#onPresence
      * @param { XMLElement } stanza
@@ -2128,6 +2303,7 @@ const ChatRoomMixin = {
 
         if (stanza.getAttribute('type') === 'unavailable') {
             this.handleDisconnection(stanza);
+            return;
         } else {
             const locked_room = stanza.querySelector("status[code='201']");
             if (locked_room) {
@@ -2212,10 +2388,11 @@ const ChatRoomMixin = {
     },
 
     clearUnreadMsgCounter () {
-        if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0) {
+        if (this.get('num_unread_general') > 0 || this.get('num_unread') > 0 || this.get('has_activity')) {
             this.sendMarkerForMessage(this.messages.last());
         }
         u.safeSave(this, {
+            'has_activity': false,
             'num_unread': 0,
             'num_unread_general': 0
         });

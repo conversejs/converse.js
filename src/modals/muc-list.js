@@ -1,11 +1,11 @@
 import BootstrapModal from "./base.js";
 import log from "@converse/headless/log";
-import st from "@converse/headless/utils/stanza";
 import tpl_list_chatrooms_modal from "./templates/muc-list.js";
 import tpl_room_description from "templates/room_description.html";
 import tpl_spinner from "templates/spinner.js";
 import { __ } from '../i18n';
 import { _converse, api, converse } from "@converse/headless/core";
+import { getAttributes } from '@converse/headless/shared/parsers';
 import { head } from "lodash-es";
 
 const { Strophe, $iq, sizzle } = converse.env;
@@ -144,7 +144,7 @@ export default BootstrapModal.extend({
         const rooms = iq ? sizzle('query item', iq) : [];
         if (rooms.length) {
             this.model.set({'feedback_text': __('Groupchats found')}, {'silent': true});
-            this.items = rooms.map(st.getAttributes);
+            this.items = rooms.map(getAttributes);
         } else {
             this.items = [];
             this.model.set({'feedback_text': __('No groupchats found')}, {'silent': true});

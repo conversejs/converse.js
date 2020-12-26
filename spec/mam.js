@@ -422,7 +422,7 @@ describe("Message Archive Management", function () {
                     </message>`);
                 spyOn(view.model, 'getDuplicateMessage').and.callThrough();
                 spyOn(view.model, 'updateMessage').and.callThrough();
-                view.model.handleMAMResult({ 'messages': [stanza] });
+                _converse.handleMAMResult(view.model, { 'messages': [stanza] });
                 await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                 const result = view.model.getDuplicateMessage.calls.all()[0].returnValue
@@ -466,7 +466,7 @@ describe("Message Archive Management", function () {
                         </result>
                     </message>`);
                 spyOn(view.model, 'getDuplicateMessage').and.callThrough();
-                view.model.handleMAMResult({ 'messages': [stanza] });
+                _converse.handleMAMResult(view.model, { 'messages': [stanza] });
                 await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                 const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue
@@ -496,7 +496,7 @@ describe("Message Archive Management", function () {
                             </forwarded>
                         </result>
                     </message>`);
-                view.model.handleMAMResult({ 'messages': [stanza] });
+                _converse.handleMAMResult(view.model, { 'messages': [stanza] });
                 await u.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
                 expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
@@ -516,7 +516,7 @@ describe("Message Archive Management", function () {
                     </message>`);
 
                 spyOn(view.model, 'getDuplicateMessage').and.callThrough();
-                view.model.handleMAMResult({ 'messages': [stanza] });
+                _converse.handleMAMResult(view.model, { 'messages': [stanza] });
                 await u.waitUntil(() => view.model.getDuplicateMessage.calls.count());
                 expect(view.model.getDuplicateMessage.calls.count()).toBe(1);
                 const result = await view.model.getDuplicateMessage.calls.all()[0].returnValue

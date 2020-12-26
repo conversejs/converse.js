@@ -13,7 +13,7 @@ import ChatRoomOccupant from './occupant.js';
 import ChatRoomOccupants from './occupants.js';
 import log from '../../log';
 import muc_api from './api.js';
-import muc_utils from '../../utils/muc';
+import muc_utils from './utils.js';
 import u from '../../utils/form';
 import { Collection } from '@converse/skeletor/src/collection';
 import { Model } from '@converse/skeletor/src/model.js';
@@ -105,6 +105,17 @@ converse.ROOMSTATUS = {
     DESTROYED: 6
 };
 
+
+function registerDirectInvitationHandler () {
+    _converse.connection.addHandler(
+        message => {
+            _converse.onDirectMUCInvitation(message);
+            return true;
+        },
+        'jabber:x:conference',
+        'message'
+    );
+}
 
 function disconnectChatRooms () {
     /* When disconnecting, mark all groupchats as
@@ -241,7 +252,8 @@ converse.plugins.add('converse-muc', {
                 ...converse.MUC_INFO_CODES.join_leave_events,
                 ...converse.MUC_INFO_CODES.role_changes
             ],
-            'muc_show_logs_before_join': false
+            'muc_show_logs_before_join': false,
+            'muc_subscribe_to_rai': false,
         });
         api.promises.add(['roomsAutoJoined']);
 
@@ -413,22 +425,15 @@ converse.plugins.add('converse-muc', {
             }
         };
 
+        /************************ BEGIN Event Handlers ************************/
+
         if (api.settings.get('allow_muc_invitations')) {
-            const registerDirectInvitationHandler = function () {
-                _converse.connection.addHandler(
-                    message => {
-                        _converse.onDirectMUCInvitation(message);
-                        return true;
-                    },
-                    'jabber:x:conference',
-                    'message'
-                );
-            };
             api.listen.on('connected', registerDirectInvitationHandler);
             api.listen.on('reconnected', registerDirectInvitationHandler);
         }
 
-        /************************ BEGIN Event Handlers ************************/
+        api.listen.on('reconnected', () => _converse.session.save('rai_enabled_domains', ''));
+
         api.listen.on('beforeTearDown', () => {
             const groupchats = _converse.chatboxes.where({ 'type': _converse.CHATROOMS_TYPE });
             groupchats.forEach(muc =>

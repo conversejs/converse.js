@@ -1,10 +1,11 @@
 import ModelWithContact from './model-with-contact.js';
 import filesize from "filesize";
-import log from "../../log.js";
-import st from "../../utils/stanza";
+import log from '@converse/headless/log';
 import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from "../../core.js";
 import { find, isMatch, isObject, pick } from "lodash-es";
+import { parseMessage } from './parsers.js';
+import { sendMarker } from '@converse/headless/shared/actions';
 
 const { Strophe, $msg } = converse.env;
 
@@ -130,7 +131,7 @@ const ChatBox = ModelWithContact.extend({
 
     async handleErrorMessageStanza (stanza) {
         const { __ } = _converse;
-        const attrs = await st.parseMessage(stanza, _converse);
+        const attrs = await parseMessage(stanza, _converse);
         if (!await this.shouldShowErrorMessage(attrs)) {
             return;
         }
@@ -392,7 +393,7 @@ const ChatBox = ModelWithContact.extend({
      * @private
      * @method _converse.ChatBox#findDanglingRetraction
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMessage}
+     *  message, as returned by {@link parseMessage}
      * @returns { _converse.Message }
      */
     findDanglingRetraction (attrs) {
@@ -419,7 +420,7 @@ const ChatBox = ModelWithContact.extend({
      * @private
      * @method _converse.ChatBox#handleRetraction
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMessage}
+     *  message, as returned by {@link parseMessage}
      * @returns { Boolean } Returns `true` or `false` depending on
      *  whether a message was retracted or not.
      */
@@ -459,7 +460,7 @@ const ChatBox = ModelWithContact.extend({
      * @private
      * @method _converse.ChatBox#handleCorrection
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMessage}
+     *  message, as returned by {@link parseMessage}
      * @returns { _converse.Message|undefined } Returns the corrected
      *  message or `undefined` if not applicable.
      */
@@ -497,7 +498,7 @@ const ChatBox = ModelWithContact.extend({
      * @private
      * @method _converse.ChatBox#getDuplicateMessage
      * @param { object } attrs - Attributes representing a received
-     *  message, as returned by {@link st.parseMessage}
+     *  message, as returned by {@link parseMessage}
      * @returns {Promise<_converse.Message>}
      */
     getDuplicateMessage (attrs) {
@@ -580,21 +581,33 @@ const ChatBox = ModelWithContact.extend({
         return _converse.connection.send(msg);
     },
 
-    sendMarkerForMessage (msg) {
-        if (msg?.get('is_markable')) {
-            const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
-            this.sendMarker(from_jid, msg.get('msgid'), 'displayed', msg.get('type'));
-        }
+
+    /**
+     * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
+     * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
+     * @param { Boolean } force - Whether a marker should be sent for the
+     *  message, even if it didn't include a `markable` element.
+     */
+    sendMarkerForLastMessage (type='displayed', force=false) {
+        const msgs = Array.from(this.messages.models);
+        msgs.reverse();
+        const msg = msgs.find(m => m.get('sender') === 'them' && (force || m.get('is_markable')));
+        msg && this.sendMarkerForMessage(msg, type, force);
     },
 
-    sendMarker (to_jid, id, type, msg_type) {
-        const stanza = $msg({
-            'from': _converse.connection.jid,
-            'id': u.getUniqueId(),
-            'to': to_jid,
-            'type': msg_type ? msg_type : 'chat'
-        }).c(type, {'xmlns': Strophe.NS.MARKERS, 'id': id});
-        api.send(stanza);
+    /**
+     * Given the passed in message object, send a XEP-0333 chat marker.
+     * @param { _converse.Message } msg
+     * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
+     * @param { Boolean } force - Whether a marker should be sent for the
+     *  message, even if it didn't include a `markable` element.
+     */
+    sendMarkerForMessage (msg, type='displayed', force=false) {
+        if (!msg) return;
+        if (msg?.get('is_markable') || force) {
+            const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
+            sendMarker(from_jid, msg.get('msgid'), type, msg.get('type'));
+        }
     },
 
     handleChatMarker (attrs) {
@@ -604,7 +617,7 @@ const ChatBox = ModelWithContact.extend({
         }
         if (attrs.is_markable) {
             if (this.contact && !attrs.is_archived && !attrs.is_carbon) {
-                this.sendMarker(attrs.from, attrs.msgid, 'received');
+                sendMarker(attrs.from, attrs.msgid, 'received');
             }
             return false;
         } else if (attrs.marker_id) {

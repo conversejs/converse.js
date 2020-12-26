@@ -4,10 +4,6 @@
  * @description This is the MUC utilities module.
  */
 import { difference, indexOf } from "lodash-es";
-import { converse } from "@converse/headless/core";
-import u from "./core";
-
-const { Strophe, sizzle } = converse.env;
 
 /**
  * The MUC utils object. Contains utility functions related to multi-user chat.
@@ -58,49 +54,7 @@ const muc_utils = {
             delta = delta.concat(difference(old_jids, new_jids).map(jid => ({'jid': jid, 'affiliation': 'none'})));
         }
         return delta;
-    },
-
-    /**
-     * Given an IQ stanza with a member list, create an array of objects containing
-     * known member data (e.g. jid, nick, role, affiliation).
-     * @private
-     * @method muc_utils#parseMemberListIQ
-     * @returns { MemberListItem[] }
-     */
-    parseMemberListIQ (iq) {
-        return sizzle(`query[xmlns="${Strophe.NS.MUC_ADMIN}"] item`, iq).map(
-            (item) => {
-                /**
-                 * @typedef {Object} MemberListItem
-                 * Either the JID or the nickname (or both) will be available.
-                 * @property {string} affiliation
-                 * @property {string} [role]
-                 * @property {string} [jid]
-                 * @property {string} [nick]
-                 */
-                const data = {
-                    'affiliation': item.getAttribute('affiliation'),
-                }
-                const jid = item.getAttribute('jid');
-                if (u.isValidJID(jid)) {
-                    data['jid'] = jid;
-                } else {
-                    // XXX: Prosody sends nick for the jid attribute value
-                    // Perhaps for anonymous room?
-                    data['nick'] = jid;
-                }
-                const nick = item.getAttribute('nick');
-                if (nick) {
-                    data['nick'] = nick;
-                }
-                const role = item.getAttribute('role');
-                if (role) {
-                    data['role'] = nick;
-                }
-                return data;
-            }
-        );
-    },
+    }
 }
 
 export default muc_utils;

@@ -48,7 +48,7 @@ converse.plugins.add('converse-caps', {
         XMPPStatus: {
             constructPresence () {
                 const presence = this.__super__.constructPresence.apply(this, arguments);
-                presence.root().cnode(createCapsNode(this.__super__._converse));
+                presence.root().cnode(createCapsNode(this.__super__._converse)).up();
                 return presence;
             }
         }

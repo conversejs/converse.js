@@ -29,7 +29,7 @@ import "./plugins/profile.js";
 import "./plugins/push.js";                 // XEP-0357 Push Notifications
 import "./plugins/register.js";             // XEP-0077 In-band registration
 import "./plugins/roomslist/index.js";      // Show currently open chat rooms
-import "./plugins/rosterview.js";
+import "./plugins/rosterview/index.js";
 import "./plugins/singleton.js";
 /* END: Removable components */
 

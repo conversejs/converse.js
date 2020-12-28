@@ -1,9 +1,9 @@
 import tpl_roster_filter from "./templates/roster_filter.js";
+import { ElementView } from '@converse/skeletor/src/element.js';
 import { Model } from '@converse/skeletor/src/model.js';
-import { View } from '@converse/skeletor/src/view.js';
-import { __ } from 'i18n';
-import { _converse } from "@converse/headless/core";
+import { _converse, api } from "@converse/headless/core";
 import { debounce } from "lodash-es";
+import { render } from 'lit-html';
 
 
 export const RosterFilter = Model.extend({
@@ -17,42 +17,49 @@ export const RosterFilter = Model.extend({
 });
 
 
-export const RosterFilterView = View.extend({
-    tagName: 'span',
+export class RosterFilterView extends ElementView {
+    tagName = 'span';
 
     initialize () {
+        const model = new _converse.RosterFilter();
+        model.id = `_converse.rosterfilter-${_converse.bare_jid}`;
+        model.browserStorage = _converse.createStore(model.id);
+        this.model = model;
+
+        this.liveFilter = debounce(() => {
+            this.model.save({'filter_text': this.querySelector('.roster-filter').value});
+        }, 250);
+
         this.listenTo(this.model, 'change:filter_type', this.render);
         this.listenTo(this.model, 'change:filter_text', this.render);
-    },
 
-    toHTML () {
-        return tpl_roster_filter(
+        this.listenTo(_converse.roster, "add", this.render);
+        this.listenTo(_converse.roster, "destroy", this.render);
+        this.listenTo(_converse.roster, "remove", this.render);
+        _converse.presences.on('change:show', this.render, this);
+        api.listen.on('rosterContactsFetchedAndProcessed', () => this.render());
+
+        this.model.fetch();
+        this.render();
+    }
+
+    render () {
+        render(tpl_roster_filter(
             Object.assign(this.model.toJSON(), {
                 visible: this.shouldBeVisible(),
-                placeholder: __('Filter'),
-                title_contact_filter: __('Filter by contact name'),
-                title_group_filter: __('Filter by group name'),
-                title_status_filter: __('Filter by status'),
-                label_any: __('Any'),
-                label_unread_messages: __('Unread'),
-                label_online: __('Online'),
-                label_chatty: __('Chatty'),
-                label_busy: __('Busy'),
-                label_away: __('Away'),
-                label_xa: __('Extended Away'),
-                label_offline: __('Offline'),
                 changeChatStateFilter: ev => this.changeChatStateFilter(ev),
                 changeTypeFilter: ev => this.changeTypeFilter(ev),
                 clearFilter: ev => this.clearFilter(ev),
                 liveFilter: ev => this.liveFilter(ev),
                 submitFilter: ev => this.submitFilter(ev),
-            }));
-    },
+            })), this);
+        return this;
+    }
 
     changeChatStateFilter (ev) {
         ev && ev.preventDefault();
-        this.model.save({'chat_state': this.el.querySelector('.state-type').value});
-    },
+        this.model.save({'chat_state': this.querySelector('.state-type').value});
+    }
 
     changeTypeFilter (ev) {
         ev && ev.preventDefault();
@@ -60,24 +67,20 @@ export const RosterFilterView = View.extend({
         if (type === 'state') {
             this.model.save({
                 'filter_type': type,
-                'chat_state': this.el.querySelector('.state-type').value
+                'chat_state': this.querySelector('.state-type').value
             });
         } else {
             this.model.save({
                 'filter_type': type,
-                'filter_text': this.el.querySelector('.roster-filter').value
+                'filter_text': this.querySelector('.roster-filter').value
             });
         }
-    },
-
-    liveFilter: debounce(function () {
-        this.model.save({'filter_text': this.el.querySelector('.roster-filter').value});
-    }, 250),
+    }
 
     submitFilter (ev) {
         ev && ev.preventDefault();
         this.liveFilter();
-    },
+    }
 
     /**
      * Returns true if the filter is enabled (i.e. if the user
@@ -87,14 +90,17 @@ export const RosterFilterView = View.extend({
      */
     isActive () {
         return (this.model.get('filter_type') === 'state' || this.model.get('filter_text'));
-    },
+    }
 
     shouldBeVisible () {
         return _converse.roster && _converse.roster.length >= 5 || this.isActive();
-    },
+    }
 
     clearFilter (ev) {
         ev && ev.preventDefault();
         this.model.save({'filter_text': ''});
     }
-});
+}
+
+
+api.elements.define('converse-roster-filter', RosterFilterView);

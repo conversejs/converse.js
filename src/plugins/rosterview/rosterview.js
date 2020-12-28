@@ -1,11 +1,12 @@
 import RosterGroupView from './groupview.js';
 import log from "@converse/headless/log";
-import tpl_roster from "./templates/roster.html";
+import tpl_roster from "./templates/roster.js";
 import { Model } from '@converse/skeletor/src/model.js';
 import { OrderedListView } from "@converse/skeletor/src/overview";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { debounce, has } from "lodash-es";
+import { render } from 'lit-html';
 
 const u = converse.env.utils;
 
@@ -57,20 +58,18 @@ const RosterView = OrderedListView.extend({
             _converse.roster.each(contact => this.addRosterContact(contact, {'silent': true}));
             this.update();
             this.updateFilter();
-            this.trigger('rosterContactsFetchedAndProcessed');
+            api.trigger('rosterContactsFetchedAndProcessed');
         });
-        this.createRosterFilter();
+        this.render();
+        this.listenToRosterFilter();
     },
 
     render () {
-        this.el.innerHTML = tpl_roster({
-            'allow_contact_requests': _converse.allow_contact_requests,
+        render(tpl_roster({
             'heading_contacts': __('Contacts'),
             'title_add_contact': __('Add a contact'),
             'title_sync_contacts': __('Re-sync your contacts')
-        });
-        const form = this.el.querySelector('.roster-filter-form');
-        this.el.replaceChild(this.filter_view.render().el, form);
+        }), this.el);
         this.roster_el = this.el.querySelector('.roster-contacts');
         return this;
     },
@@ -79,14 +78,9 @@ const RosterView = OrderedListView.extend({
         api.modal.show(_converse.AddContactModal, {'model': new Model()}, ev);
     },
 
-    createRosterFilter () {
-        // Create a model on which we can store filter properties
-        const model = new _converse.RosterFilter();
-        model.id = `_converse.rosterfilter-${_converse.bare_jid}`;
-        model.browserStorage = _converse.createStore(model.id);
-        this.filter_view = new _converse.RosterFilterView({model});
+    listenToRosterFilter () {
+        this.filter_view = this.el.querySelector('converse-roster-filter');
         this.listenTo(this.filter_view.model, 'change', this.updateFilter);
-        this.filter_view.model.fetch();
     },
 
     /**
@@ -109,7 +103,7 @@ const RosterView = OrderedListView.extend({
         if (!u.isVisible(this.roster_el)) {
             u.showElement(this.roster_el);
         }
-        this.filter_view.render();
+        // this.filter_view.render();
         return this;
     },
 
@@ -217,7 +211,7 @@ const RosterView = OrderedListView.extend({
         if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to' || this.isSelf(jid)) {
             this.addExistingContact(contact, options);
         } else {
-            if (!_converse.allow_contact_requests) {
+            if (!api.settings.get('allow_contact_requests')) {
                 log.debug(
                     `Not adding requesting or pending contact ${jid} `+
                     `because allow_contact_requests is false`

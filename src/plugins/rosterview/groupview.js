@@ -1,7 +1,7 @@
 import RosterContactView from './contactview.js';
 import tpl_group_header from "./templates/group_header.html";
 import { OrderedListView } from "@converse/skeletor/src/overview";
-import { _converse, converse } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core";
 
 const u = converse.env.utils;
 
@@ -49,10 +49,7 @@ const RosterGroupView = OrderedListView.extend({
         // just this group's) have been fetched from browser
         // storage or the XMPP server and once they've been
         // assigned to their various groups.
-        _converse.rosterview.on(
-            'rosterContactsFetchedAndProcessed',
-            () => this.sortAndPositionAllItems()
-        );
+        api.listen.on('rosterContactsFetchedAndProcessed', () => this.sortAndPositionAllItems());
     },
 
     render () {

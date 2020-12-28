@@ -1,11 +1,12 @@
 import ViewWithAvatar from 'shared/avatar.js';
 import log from "@converse/headless/log";
-import tpl_pending_contact from "./templates/pending_contact.html";
-import tpl_requesting_contact from "./templates/requesting_contact.html";
-import tpl_roster_item from "./templates/roster_item.html";
+import tpl_pending_contact from "./templates/pending_contact.js";
+import tpl_requesting_contact from "./templates/requesting_contact.js";
+import tpl_roster_item from "./templates/roster_item.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { debounce, without } from "lodash-es";
+import { render } from 'lit-html';
 
 const u = converse.env.utils;
 
@@ -89,24 +90,19 @@ const RosterContactView = ViewWithAvatar.extend({
              */
             const display_name = this.model.getDisplayName();
             this.el.classList.add('pending-xmpp-contact');
-            this.el.innerHTML = tpl_pending_contact(
-                Object.assign(this.model.toJSON(), {
-                    display_name,
-                    'desc_remove': __('Click to remove %1$s as a contact', display_name),
-                    'allow_chat_pending_contacts': api.settings.get('allow_chat_pending_contacts')
-                })
-            );
+            render(tpl_pending_contact(Object.assign(this.model.toJSON(), { display_name })), this.el);
+
         } else if (requesting === true) {
             const display_name = this.model.getDisplayName();
             this.el.classList.add('requesting-xmpp-contact');
-            this.el.innerHTML = tpl_requesting_contact(
+            render(tpl_requesting_contact(
                 Object.assign(this.model.toJSON(), {
                     display_name,
                     'desc_accept': __("Click to accept the contact request from %1$s", display_name),
                     'desc_decline': __("Click to decline the contact request from %1$s", display_name),
                     'allow_chat_pending_contacts': api.settings.get('allow_chat_pending_contacts')
                 })
-            );
+            ), this.el);
         } else if (subscription === 'both' || subscription === 'to' || _converse.rosterview.isSelf(jid)) {
             this.el.classList.add('current-xmpp-contact');
             this.el.classList.remove(without(['both', 'to'], subscription)[0]);
@@ -147,19 +143,16 @@ const RosterContactView = ViewWithAvatar.extend({
             status_icon = 'fa fa-times-circle chat-status chat-status--offline';
         }
         const display_name = item.getDisplayName();
-        this.el.innerHTML = tpl_roster_item(
+        render(tpl_roster_item(
             Object.assign(item.toJSON(), {
                 show,
                 display_name,
                 status_icon,
                 'desc_status': STATUSES[show],
-                'desc_chat': __('Click to chat with %1$s (XMPP address: %2$s)', display_name, item.get('jid')),
-                'desc_remove': __('Click to remove %1$s as a contact', display_name),
-                'allow_contact_removal': api.settings.get('allow_contact_removal'),
                 'num_unread': item.get('num_unread') || 0,
                 classes: ''
             })
-        );
+        ), this.el);
         this.renderAvatar();
         return this;
     },

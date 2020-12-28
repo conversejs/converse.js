@@ -1,7 +1,8 @@
 import RosterContactView from './contactview.js';
-import tpl_group_header from "./templates/group_header.html";
+import tpl_group_header from "./templates/group_header.js";
 import { OrderedListView } from "@converse/skeletor/src/overview";
 import { _converse, api, converse } from "@converse/headless/core";
+import { render } from 'lit-html';
 
 const u = converse.env.utils;
 
@@ -54,12 +55,11 @@ const RosterGroupView = OrderedListView.extend({
 
     render () {
         this.el.setAttribute('data-group', this.model.get('name'));
-        this.el.innerHTML = tpl_group_header({
+        render(tpl_group_header({
             'label_group': this.model.get('name'),
             'desc_group_toggle': this.model.get('description'),
-            'toggle_state': this.model.get('state'),
-            '_converse': _converse
-        });
+            'toggle_state': this.model.get('state')
+        }), this.el);
         this.contacts_el = this.el.querySelector('.roster-group-contacts');
         return this;
     },

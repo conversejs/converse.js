@@ -1,6 +1,5 @@
 import { html } from "lit-html";
-import { __ } from '../i18n';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { __ } from 'i18n';
 
 export default (o) => {
     const i18n_save = __('Save');
@@ -10,8 +9,7 @@ export default (o) => {
             <fieldset class="form-group">
                 <legend>${o.title}</legend>
                 ${ (o.title !== o.instructions) ? html`<p class="form-help">${o.instructions}</p>` : '' }
-                <!-- Fields are generated internally, with xForm2webForm -->
-                ${ o.fields.map(field =>  unsafeHTML(field)) }
+                ${ o.fields }
             </fieldset>
             <fieldset>
                 <input type="submit" class="btn btn-primary" value="${i18n_save}">

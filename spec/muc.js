@@ -1614,12 +1614,9 @@ describe("Groupchats", function () {
                         .c('value').t('cauldronburn');
             _converse.connection._dataRecv(mock.createRequest(config_stanza));
 
-            const form = await u.waitUntil(() => view.el.querySelector('.muc-config-form'));
-            expect(form.querySelectorAll('fieldset').length).toBe(2);
-            const membersonly = view.el.querySelectorAll('input[name="muc#roomconfig_membersonly"]');
-            expect(membersonly.length).toBe(1);
-            expect(membersonly[0].getAttribute('type')).toBe('checkbox');
-            membersonly[0].checked = true;
+            const membersonly = await u.waitUntil(() => view.el.querySelector('input[name="muc#roomconfig_membersonly"]'));
+            expect(membersonly.getAttribute('type')).toBe('checkbox');
+            membersonly.checked = true;
 
             const moderated = view.el.querySelectorAll('input[name="muc#roomconfig_moderatedroom"]');
             expect(moderated.length).toBe(1);

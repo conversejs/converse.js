@@ -8,15 +8,16 @@
  */
 import "./controlbox/index.js";
 import log from "@converse/headless/log";
-import tpl_form_input from "../templates/form_input.html";
-import tpl_form_username from "../templates/form_username.html";
+import tpl_form_input from "../templates/form_input.js";
+import tpl_form_url from "../templates/form_url.js";
+import tpl_form_username from "../templates/form_username.js";
 import tpl_register_panel from "../templates/register_panel.html";
-import tpl_registration_form from "../templates/registration_form.html";
+import tpl_registration_form from "../templates/registration_form.js";
 import tpl_registration_request from "../templates/registration_request.html";
 import tpl_spinner from "../templates/spinner.js";
 import utils from "@converse/headless/utils/form";
 import { View } from "@converse/skeletor/src/view";
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { pick } from "lodash-es";
 import { render } from 'lit-html';
@@ -403,39 +404,40 @@ converse.plugins.add('converse-register', {
                 }
             },
 
-            renderLegacyRegistrationForm (form) {
-                Object.keys(this.fields).forEach(key => {
+            getLegacyFormFields () {
+                const input_fields = Object.keys(this.fields).map(key => {
                     if (key === "username") {
-                        form.insertAdjacentHTML(
-                            'beforeend',
-                            tpl_form_username({
-                                'domain': ` @${this.domain}`,
-                                'name': key,
-                                'type': "text",
-                                'label': key,
-                                'value': '',
-                                'required': true
-                            })
-                        );
+                        return tpl_form_username({
+                            'domain': ` @${this.domain}`,
+                            'name': key,
+                            'type': "text",
+                            'label': key,
+                            'value': '',
+                            'required': true
+                        });
                     } else {
-                        form.insertAdjacentHTML(
-                            'beforeend',
-                            tpl_form_input({
-                                'label': key,
-                                'name': key,
-                                'placeholder': key,
-                                'required': true,
-                                'type': (key === 'password' || key === 'email') ? key : "text",
-                                'value': ''
-                            })
-                        );
+                        return tpl_form_input({
+                            'label': key,
+                            'name': key,
+                            'placeholder': key,
+                            'required': true,
+                            'type': (key === 'password' || key === 'email') ? key : "text",
+                            'value': ''
+                        })
                     }
                 });
-                // Show urls
-                this.urls.forEach(u => form.insertAdjacentHTML(
-                    'afterend',
-                    '<a target="blank" rel="noopener" href="'+u+'">'+u+'</a>'
-                ));
+                const urls = this.urls.map(u => tpl_form_url({'label': '', 'value': u}));
+                return [...input_fields, ...urls];
+            },
+
+            getFormFields (stanza) {
+                if (this.form_type === 'xform') {
+                    return Array.from(stanza.querySelectorAll('field')).map(field =>
+                        utils.xForm2TemplateResult(field, stanza, {'domain': this.domain})
+                    );
+                } else {
+                    return this.getLegacyFormFields();
+                }
             },
 
             /**
@@ -447,28 +449,14 @@ converse.plugins.add('converse-register', {
              */
             renderRegistrationForm (stanza) {
                 const form = this.el.querySelector('form');
-                form.innerHTML = tpl_registration_form({
-                    '__': __,
+                const tpl = tpl_registration_form({
                     'domain': this.domain,
                     'title': this.title,
                     'instructions': this.instructions,
-                    'registration_domain': api.settings.get('registration_domain')
+                    'fields': this.fields,
+                    'form_fields': this.getFormFields(stanza)
                 });
-
-                const buttons = form.querySelector('fieldset.buttons');
-                if (this.form_type === 'xform') {
-                    stanza.querySelectorAll('field').forEach(field => {
-                        buttons.insertAdjacentHTML(
-                            'beforebegin',
-                            utils.xForm2webForm(field, stanza, {'domain': this.domain})
-                        );
-                    });
-                } else {
-                    this.renderLegacyRegistrationForm(form);
-                }
-                if (!this.fields) {
-                    form.querySelector('.button-primary').classList.add('hidden');
-                }
+                render(tpl, form);
                 form.classList.remove('hidden');
                 this.model.set('registration_form_rendered', true);
             },

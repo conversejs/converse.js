@@ -353,7 +353,7 @@ describe("The Registration Panel", function () {
             </iq>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         expect(registerview.form_type).toBe('xform');
-        expect(registerview.el.querySelectorAll('#converse-register input[required="required"]').length).toBe(3);
+        expect(registerview.el.querySelectorAll('#converse-register input[required]').length).toBe(3);
         // Hide the controlbox so that we can see whether the test
         // passed or failed
         u.addClass('hidden', _converse.chatboxviews.get('controlbox').el);

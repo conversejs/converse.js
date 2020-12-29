@@ -1,9 +1,10 @@
+import debounce from 'lodash/debounce';
+import isElement from 'lodash/isElement';
 import log from "../log.js";
 import sizzle from 'sizzle';
 import u from '@converse/headless/utils/core';
 import { Strophe } from 'strophe.js/src/core';
 import { _converse, api, clearSession, tearDown } from "../core.js";
-import { debounce, isElement } from 'lodash';
 
 
 const BOSH_WAIT = 59;

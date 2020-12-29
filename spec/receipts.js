@@ -1,6 +1,6 @@
-/*global mock, converse */
+/*global mock, converse, _ */
 
-const { Promise, Strophe, $msg, sizzle, _ } = converse.env;
+const { Promise, Strophe, $msg, sizzle } = converse.env;
 const u = converse.env.utils;
 
 

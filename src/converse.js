@@ -4,8 +4,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import _ from './lodash.noconflict';
-
 import "@converse/headless/headless";
 import "i18n";
 import "shared/registry.js";
@@ -59,20 +57,6 @@ const WHITELISTED_PLUGINS = [
     'converse-rosterview',
     'converse-singleton'
 ];
-
-// Use Mustache style syntax for variable interpolation
-/* Configuration of Lodash templates (this config is distinct to the
- * config of requirejs-tpl in main.js). This one is for normal inline templates.
- */
-_.templateSettings = {
-    'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
-    'evaluate': /\{\[([\s\S]+?)\]\}/g,
-    'interpolate': /\{\{([\s\S]+?)\}\}/g,
-    'imports': { '_': _ }
-};
-
-converse.env._ = _;
-
 
 const initialize = converse.initialize;
 

@@ -1,6 +1,5 @@
-/*global mock, converse */
+/*global mock, converse, _ */
 
-const _ = converse.env._;
 const $pres = converse.env.$pres;
 const $iq = converse.env.$iq;
 const $msg = converse.env.$msg;

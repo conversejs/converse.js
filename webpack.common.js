@@ -1,5 +1,6 @@
 /* global __dirname, module, process */
 const path = require('path');
+
 let bootstrap_ignore_modules = ['carousel', 'scrollspy'];
 
 const BOOTSTRAP_IGNORE_MODULES = (process.env.BOOTSTRAP_IGNORE_MODULES || '').replace(/ /g, '').trim();
@@ -101,6 +102,7 @@ module.exports = {
                         }]
                     ],
                     plugins: [
+                        'lodash',
                         '@babel/plugin-proposal-class-properties',
                         '@babel/plugin-proposal-nullish-coalescing-operator',
                         '@babel/plugin-proposal-optional-chaining',

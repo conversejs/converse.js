@@ -1,0 +1,82 @@
+/**
+ * @module converse-register
+ * @description
+ * This is a Converse.js plugin which add support for in-band registration
+ * as specified in XEP-0077.
+ * @copyright 2020, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ */
+import '../controlbox/index.js';
+import ControlBoxRegistrationMixin from './controlbox-mixin.js';
+import RegisterPanel from './panel.js';
+import log from '@converse/headless/log';
+import { __ } from 'i18n';
+import { _converse, api, converse } from '@converse/headless/core';
+
+// Strophe methods for building stanzas
+const { Strophe } = converse.env;
+
+// Add Strophe Namespaces
+Strophe.addNamespace('REGISTER', 'jabber:iq:register');
+
+// Add Strophe Statuses
+const i = Object.keys(Strophe.Status).reduce((max, k) => Math.max(max, Strophe.Status[k]), 0);
+Strophe.Status.REGIFAIL = i + 1;
+Strophe.Status.REGISTERED = i + 2;
+Strophe.Status.CONFLICT = i + 3;
+Strophe.Status.NOTACCEPTABLE = i + 5;
+
+converse.plugins.add('converse-register', {
+    enabled () {
+        return true;
+    },
+
+    overrides: {
+        // Overrides mentioned here will be picked up by converse.js's
+        // plugin architecture they will replace existing methods on the
+        // relevant objects or classes.
+
+        ControlBoxView: {
+            renderLoginPanel () {
+                // Also render a registration panel, when rendering the login panel.
+                this.__super__.renderLoginPanel.apply(this, arguments);
+                this.renderRegistrationPanel();
+                return this;
+            }
+        }
+    },
+
+    initialize () {
+        _converse.CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
+        _converse.CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
+        _converse.CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
+        _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
+
+        api.settings.extend({
+            'allow_registration': true,
+            'domain_placeholder': __(' e.g. conversejs.org'), // Placeholder text shown in the domain input on the registration form
+            'providers_link': 'https://compliance.conversations.im/', // Link to XMPP providers shown on registration page
+            'registration_domain': ''
+        });
+
+        Object.assign(_converse.ControlBoxView.prototype, ControlBoxRegistrationMixin);
+
+        _converse.RegisterPanel = RegisterPanel;
+
+        function setActiveForm (value) {
+            api.waitUntil('controlBoxInitialized')
+                .then(() => {
+                    const controlbox = _converse.chatboxes.get('controlbox');
+                    controlbox.set({ 'active-form': value });
+                })
+                .catch(e => log.fatal(e));
+        }
+        _converse.router.route('converse/login', () => setActiveForm('login'));
+        _converse.router.route('converse/register', () => setActiveForm('register'));
+
+
+        api.listen.on('controlBoxInitialized', view => {
+            view.model.on('change:active-form', view.showLoginOrRegisterForm, view);
+        });
+    }
+});

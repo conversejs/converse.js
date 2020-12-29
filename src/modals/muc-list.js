@@ -1,9 +1,9 @@
 import BootstrapModal from "./base.js";
 import log from "@converse/headless/log";
 import tpl_list_chatrooms_modal from "./templates/muc-list.js";
-import tpl_room_description from "templates/room_description.html";
+import tpl_room_description from "templates/room_description.js";
 import tpl_spinner from "templates/spinner.js";
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { getAttributes } from '@converse/headless/shared/parsers';
 import { head } from "lodash-es";
@@ -23,7 +23,7 @@ function insertRoomInfo (el, stanza) {
     el.querySelector('a.room-info').classList.add('selected');
     el.insertAdjacentHTML(
         'beforeEnd',
-        tpl_room_description({
+        u.getElementFromTemplateResult(tpl_room_description({
             'jid': stanza.getAttribute('from'),
             'desc': head(sizzle('field[var="muc#roominfo_description"] value', stanza))?.textContent,
             'occ': head(sizzle('field[var="muc#roominfo_occupants"] value', stanza))?.textContent,
@@ -37,23 +37,8 @@ function insertRoomInfo (el, stanza) {
             'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
             'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
             'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
-            'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
-            'label_desc': __('Description:'),
-            'label_jid': __('Groupchat Address (JID):'),
-            'label_occ': __('Participants:'),
-            'label_features': __('Features:'),
-            'label_requires_auth': __('Requires authentication'),
-            'label_hidden': __('Hidden'),
-            'label_requires_invite': __('Requires an invitation'),
-            'label_moderated': __('Moderated'),
-            'label_non_anon': __('Non-anonymous'),
-            'label_open_room': __('Open'),
-            'label_permanent_room': __('Permanent'),
-            'label_public': __('Public'),
-            'label_semi_anon':  __('Semi-anonymous'),
-            'label_temp_room':  __('Temporary'),
-            'label_unmoderated': __('Unmoderated')
-        }));
+            'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length
+        })));
 }
 
 

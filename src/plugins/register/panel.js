@@ -2,9 +2,7 @@ import log from "@converse/headless/log";
 import tpl_form_input from "templates/form_input.js";
 import tpl_form_url from "templates/form_url.js";
 import tpl_form_username from "templates/form_username.js";
-import tpl_register_panel from "./templates/register_panel.html";
-import tpl_registration_form from "./templates/registration_form.js";
-import tpl_registration_request from "./templates/registration_request.html";
+import tpl_register_panel from "./templates/register_panel.js";
 import tpl_spinner from "templates/spinner.js";
 import utils from "@converse/headless/utils/form";
 import { View } from "@converse/skeletor/src/view";
@@ -16,6 +14,11 @@ import { render } from 'lit-html';
 // Strophe methods for building stanzas
 const { Strophe, sizzle, $iq } = converse.env;
 const u = converse.env.utils;
+
+
+const CHOOSE_PROVIDER = 0;
+const FETCHING_FORM = 1;
+const REGISTRATION_FORM = 2;
 
 
 /**
@@ -35,29 +38,33 @@ const RegisterPanel = View.extend({
     initialize () {
         this.reset();
         api.listen.on('connectionInitialized', () => this.registerHooks());
+        this.listenTo(this.model, 'change:registration_status', this.render);
+
+        const domain = api.settings.get('registration_domain');
+        if (domain) {
+            this.fetchRegistrationForm(domain);
+        } else {
+            this.model.set('registration_status', CHOOSE_PROVIDER);
+        }
     },
 
     render () {
-        this.model.set('registration_form_rendered', false);
-        this.el.innerHTML = tpl_register_panel({
-            '__': __,
-            'default_domain': api.settings.get('registration_domain'),
-            'label_register': __('Fetch registration form'),
-            'help_providers': __('Tip: A list of public XMPP providers is available'),
-            'help_providers_link': __('here'),
-            'href_providers': api.settings.get('providers_link'),
-            'domain_placeholder': api.settings.get('domain_placeholder')
-        });
-        if (api.settings.get('registration_domain')) {
-            this.fetchRegistrationForm(api.settings.get('registration_domain'));
-        }
+        render(tpl_register_panel({
+            'domain': this.domain,
+            'fields': this.fields,
+            'form_fields': this.form_fields,
+            'instructions': this.instructions,
+            'model': this.model,
+            'title': this.title,
+        }), this.el);
         return this;
     },
 
+    /**
+     * Hook into Strophe's _connect_cb, so that we can send an IQ
+     * requesting the registration fields.
+     */
     registerHooks () {
-        /* Hook into Strophe's _connect_cb, so that we can send an IQ
-         * requesting the registration fields.
-         */
         const conn = _converse.connection;
         const connect_cb = conn._connect_cb.bind(conn);
         conn._connect_cb = (req, callback, raw) => {
@@ -136,7 +143,7 @@ const RegisterPanel = View.extend({
             return false;
         }
         this.setFields(stanza);
-        if (!this.model.get('registration_form_rendered')) {
+        if (this.model.get('registration_status') === FETCHING_FORM) {
             this.renderRegistrationForm(stanza);
         }
         return false;
@@ -200,9 +207,7 @@ const RegisterPanel = View.extend({
      * @param { String } domain_name - XMPP server domain
      */
     async fetchRegistrationForm (domain_name) {
-        if (!this.model.get('registration_form_rendered')) {
-            this.renderRegistrationRequest();
-        }
+        this.model.set('registration_status', FETCHING_FORM);
         this.reset({
             'domain': Strophe.getDomainFromJid(domain_name),
             '_registering': true
@@ -212,21 +217,6 @@ const RegisterPanel = View.extend({
         // above finishes. So we use optional chaining here
         _converse.connection?.connect(this.domain, "", status => this.onConnectStatusChanged(status));
         return false;
-    },
-
-    /**
-     * Clear the form and inform the user that the registration
-     * form is being fetched.
-     * @private
-     */
-    renderRegistrationRequest () {
-        this.clearRegistrationForm().insertAdjacentHTML(
-            'beforeend',
-            tpl_registration_request({
-                '__': _converse.__,
-                'cancel': api.settings.get('registration_domain'),
-            })
-        );
     },
 
     giveFeedback (message, klass) {
@@ -243,17 +233,9 @@ const RegisterPanel = View.extend({
         }
     },
 
-    clearRegistrationForm () {
-        const form = this.el.querySelector('form');
-        form.innerHTML = '';
-        this.model.set('registration_form_rendered', false);
-        return form;
-    },
-
     showSpinner () {
         const form = this.el.querySelector('form');
         render(tpl_spinner(), form);
-        this.model.set('registration_form_rendered', false);
         return this;
     },
 
@@ -346,17 +328,8 @@ const RegisterPanel = View.extend({
      * @param { XMLElement } stanza - The IQ stanza received from the XMPP server.
      */
     renderRegistrationForm (stanza) {
-        const form = this.el.querySelector('form');
-        const tpl = tpl_registration_form({
-            'domain': this.domain,
-            'title': this.title,
-            'instructions': this.instructions,
-            'fields': this.fields,
-            'form_fields': this.getFormFields(stanza)
-        });
-        render(tpl, form);
-        form.classList.remove('hidden');
-        this.model.set('registration_form_rendered', true);
+        this.form_fields = this.getFormFields(stanza);
+        this.model.set('registration_status', REGISTRATION_FORM);
     },
 
     showValidationError (message) {
@@ -408,11 +381,9 @@ const RegisterPanel = View.extend({
     abortRegistration () {
         _converse.connection._proto._abortAllRequests();
         _converse.connection.reset();
-        if (this.model.get('registration_form_rendered')) {
-            if (api.settings.get('registration_domain') && this.model.get('registration_form_rendered')) {
-                this.fetchRegistrationForm(
-                    api.settings.get('registration_domain')
-                );
+        if ([FETCHING_FORM, REGISTRATION_FORM].includes(this.model.get('registration_status'))) {
+            if (api.settings.get('registration_domain')) {
+                this.fetchRegistrationForm(api.settings.get('registration_domain'));
             }
         } else {
             this.render();

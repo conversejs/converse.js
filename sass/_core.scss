@@ -109,6 +109,11 @@ body.converse-fullscreen {
         padding: 0 !important;
     }
 
+    .no-scrolling {
+      overflow-x: none;
+      overflow-y: none;
+    }
+
     &.converse-overlayed {
         > .row {
             flex-direction: row-reverse;

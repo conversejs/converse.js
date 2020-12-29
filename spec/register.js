@@ -5,7 +5,7 @@ const $iq = converse.env.$iq;
 const { _, sizzle}  = converse.env;
 const u = converse.env.utils;
 
-describe("The Registration Panel", function () {
+fdescribe("The Registration Panel", function () {
 
     it("is not available unless allow_registration=true",
         mock.initConverse(

@@ -1,5 +1,6 @@
-import tpl_dragresize from './templates/dragresize.html';
+import tpl_dragresize from './templates/dragresize.js';
 import { _converse, api } from '@converse/headless/core';
+import { render } from 'lit-html';
 
 /**
  * Applies some resistance to `value` around the `default_value`.
@@ -25,7 +26,7 @@ export function applyDragResistance (value, default_value) {
 export function renderDragResizeHandles (_converse, view) {
     const flyout = view.el.querySelector('.box-flyout');
     const div = document.createElement('div');
-    div.innerHTML = tpl_dragresize();
+    render(tpl_dragresize(), div);
     flyout.insertBefore(div, flyout.firstChild);
 }
 

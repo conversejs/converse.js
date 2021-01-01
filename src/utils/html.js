@@ -7,15 +7,15 @@ import URI from "urijs";
 import log from '@converse/headless/log';
 import tpl_audio from  "../templates/audio.js";
 import tpl_file from "../templates/file.js";
-import tpl_form_captcha from "../templates/form_captcha.html";
-import tpl_form_checkbox from "../templates/form_checkbox.html";
-import tpl_form_input from "../templates/form_input.html";
-import tpl_form_select from "../templates/form_select.html";
-import tpl_form_textarea from "../templates/form_textarea.html";
-import tpl_form_url from "../templates/form_url.html";
-import tpl_form_username from "../templates/form_username.html";
+import tpl_form_captcha from "../templates/form_captcha.js";
+import tpl_form_checkbox from "../templates/form_checkbox.js";
+import tpl_form_help from "../templates/form_help.js";
+import tpl_form_input from "../templates/form_input.js";
+import tpl_form_select from "../templates/form_select.js";
+import tpl_form_textarea from "../templates/form_textarea.js";
+import tpl_form_url from "../templates/form_url.js";
+import tpl_form_username from "../templates/form_username.js";
 import tpl_image from "../templates/image.js";
-import tpl_select_option from "../templates/select_option.html";
 import tpl_video from "../templates/video.js";
 import u from "../headless/utils/core";
 import { api, converse } from  "@converse/headless/core";
@@ -153,30 +153,6 @@ u.getOOBURLMarkup = function (_converse, url) {
         return renderFileURL(_converse, uri);
     }
 }
-
-
-/**
- * Applies some resistance to `value` around the `default_value`.
- * If value is close enough to `default_value`, then it is returned, otherwise
- * `value` is returned.
- * @method u#applyDragResistance
- * @param { Integer } value
- * @param { Integer } default_value
- * @returns { Integer }
- */
-u.applyDragResistance = function (value, default_value) {
-    if (value === undefined) {
-        return undefined;
-    } else if (default_value === undefined) {
-        return value;
-    }
-    const resistance = 10;
-    if ((value !== default_value) &&
-        (Math.abs(value- default_value) < resistance)) {
-        return default_value;
-    }
-    return value;
-};
 
 
 /**
@@ -583,38 +559,38 @@ u.fadeIn = function (el, callback) {
 
 
 /**
- * Takes a field in XMPP XForm (XEP-004: Data Forms) format
- * and turns it into an HTML field.
- * Returns either text or a DOM element (which is not ideal, but fine for now).
- * @private
- * @method u#xForm2webForm
+ * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
+ * [TemplateResult](https://lit-html.polymer-project.org/api/classes/_lit_html_.templateresult.html).
+ * @method u#xForm2TemplateResult
  * @param { XMLElement } field - the field to convert
+ * @param { XMLElement } stanza - the containing stanza
+ * @param { Object } options
+ * @returns { TemplateResult }
  */
-u.xForm2webForm = function (field, stanza, options) {
+u.xForm2TemplateResult = function (field, stanza, options) {
     if (field.getAttribute('type') === 'list-single' ||
         field.getAttribute('type') === 'list-multi') {
-
         const values = u.queryChildren(field, 'value').map(el => el?.textContent);
         const options = u.queryChildren(field, 'option').map(option => {
             const value = option.querySelector('value')?.textContent;
-            return tpl_select_option({
+            return {
                 'value': value,
                 'label': option.getAttribute('label'),
                 'selected': values.includes(value),
                 'required': !!field.querySelector('required')
-            });
+            };
         });
         return tpl_form_select({
+            options,
             'id': u.getUniqueId(),
-            'name': field.getAttribute('var'),
             'label': field.getAttribute('label'),
-            'options': options.join(''),
             'multiple': (field.getAttribute('type') === 'list-multi'),
+            'name': field.getAttribute('var'),
             'required': !!field.querySelector('required')
         });
     } else if (field.getAttribute('type') === 'fixed') {
         const text = field.querySelector('value')?.textContent;
-        return '<p class="form-help">'+text+'</p>';
+        return tpl_form_help({text});
     } else if (field.getAttribute('type') === 'jid-multi') {
         return tpl_form_textarea({
             'name': field.getAttribute('var'),
@@ -670,4 +646,5 @@ u.xForm2webForm = function (field, stanza, options) {
         });
     }
 }
+
 export default u;

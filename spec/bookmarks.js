@@ -1,4 +1,4 @@
-/* global mock, converse */
+/* global mock, converse, _ */
 
 const { Strophe, u, sizzle, $iq } = converse.env;
 
@@ -136,7 +136,7 @@ describe("A chat room", function () {
             ['rosterGroupsFetched'], {},
             async function (done, _converse) {
 
-        const { u, _ } = converse.env;
+        const { u } = converse.env;
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],

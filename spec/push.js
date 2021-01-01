@@ -1,8 +1,7 @@
-/*global mock */
+/*global mock, converse, _ */
 
 const $iq = converse.env.$iq;
 const Strophe = converse.env.Strophe;
-const _ = converse.env._;
 const sizzle = converse.env.sizzle;
 const u = converse.env.utils;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;

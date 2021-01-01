@@ -1,6 +1,6 @@
-/*global mock, converse */
+/*global mock, converse, _ */
 
-const { $iq, $pres, $msg, _, omemo, Strophe } = converse.env;
+const { $iq, $pres, $msg, omemo, Strophe } = converse.env;
 const u = converse.env.utils;
 
 async function deviceListFetched (_converse, jid) {

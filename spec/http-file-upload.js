@@ -1,8 +1,7 @@
-/*global mock, converse */
+/*global mock, converse, _ */
 
 const Strophe = converse.env.Strophe;
 const $iq = converse.env.$iq;
-const _ = converse.env._;
 const sizzle = converse.env.sizzle;
 const u = converse.env.utils;
 

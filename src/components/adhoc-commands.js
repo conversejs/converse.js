@@ -4,7 +4,6 @@ import { CustomElement } from './element.js';
 import { __ } from '../i18n';
 import { api, converse } from "@converse/headless/core";
 import { html } from "lit-html";
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 const { Strophe, $iq, sizzle } = converse.env;
 const u = converse.env.utils;
@@ -21,8 +20,7 @@ const tpl_command_form = (o, command) => {
                 <input type="hidden" name="command_jid" value="${command.jid}"/>
 
                 <p class="form-help">${command.instructions}</p>
-                <!-- Fields are generated internally, with xForm2webForm -->
-                ${ command.fields.map(field =>  unsafeHTML(field)) }
+                ${ command.fields }
             </fieldset>
             <fieldset>
                 <input type="submit" class="btn btn-primary" value="${i18n_run}">

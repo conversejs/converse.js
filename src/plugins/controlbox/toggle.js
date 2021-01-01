@@ -1,9 +1,9 @@
 import log from "@converse/headless/log";
-import tpl_controlbox_toggle from "./templates/toggle.html";
+import tpl_controlbox_toggle from "./templates/toggle.js";
 import { View } from "@converse/skeletor/src/view";
-import { __ } from '../../i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { addControlBox } from './utils.js';
+import { render } from 'lit-html';
 
 const u = converse.env.utils;
 
@@ -31,9 +31,7 @@ const ControlBoxToggle = View.extend({
         // the ControlBox or the Toggle must be shown. This prevents
         // artifacts (i.e. on page load the toggle is shown only to then
         // seconds later be hidden in favor of the controlbox).
-        this.el.innerHTML = tpl_controlbox_toggle({
-            'label_toggle': api.connection.connected() ? __('Chat Contacts') : __('Toggle chat')
-        })
+        render(tpl_controlbox_toggle(), this.el);
         return this;
     },
 

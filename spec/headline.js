@@ -1,4 +1,4 @@
-/*global mock */
+/*global mock, converse, _ */
 
 describe("A headlines box", function () {
 
@@ -147,7 +147,7 @@ describe("A headlines box", function () {
         mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
 
-        const { $msg, _ } = converse.env;
+        const { $msg } = converse.env;
         _converse.allow_non_roster_messaging = false;
         const stanza = $msg({
                 'type': 'headline',

@@ -57,7 +57,7 @@ export default BootstrapModal.extend({
         command.fields;
         try {
             const iq = await api.sendIQ(stanza);
-            command.fields = sizzle('field', iq).map(f => u.xForm2webForm(f, iq))
+            command.fields = sizzle('field', iq).map(f => u.xForm2TemplateResult(f, iq))
         } catch (e) {
             if (e === null) {
                 log.error(`Error: timeout while trying to execute command for ${jid}`);
@@ -83,7 +83,5 @@ export default BootstrapModal.extend({
             </command>
         </iq>
         */
-
-
     }
 });

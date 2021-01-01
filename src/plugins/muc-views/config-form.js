@@ -32,7 +32,7 @@ const MUCConfigForm = View.extend({
         };
         return tpl_muc_config_form({
             'closeConfigForm': ev => this.closeConfigForm(ev),
-            'fields': fields.map(f => u.xForm2webForm(f, stanza, options)),
+            'fields': fields.map(f => u.xForm2TemplateResult(f, stanza, options)),
             'instructions': stanza.querySelector('instructions')?.textContent,
             'submitConfigForm': ev => this.submitConfigForm(ev),
             'title': stanza.querySelector('title')?.textContent

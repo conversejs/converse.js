@@ -4,8 +4,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 
-import _ from './lodash.noconflict';
-
 import "@converse/headless/headless";
 import "i18n";
 import "shared/registry.js";
@@ -17,7 +15,7 @@ import "shared/registry.js";
 import "./plugins/bookmark-views.js";       // Views for XEP-0048 Bookmarks
 import "./plugins/chatview/index.js";       // Renders standalone chat boxes for single user chat
 import "./plugins/controlbox/index.js";     // The control box
-import "./plugins/dragresize.js";           // Allows chat boxes to be resized by dragging them
+import "./plugins/dragresize/index.js";     // Allows chat boxes to be resized by dragging them
 import "./plugins/fullscreen.js";
 import "./plugins/mam-views.js";
 import "./plugins/minimize.js";             // Allows chat boxes to be minimized
@@ -27,9 +25,9 @@ import "./plugins/notifications.js";
 import "./plugins/omemo.js";
 import "./plugins/profile.js";
 import "./plugins/push.js";                 // XEP-0357 Push Notifications
-import "./plugins/register.js";             // XEP-0077 In-band registration
+import "./plugins/register/index.js";       // XEP-0077 In-band registration
 import "./plugins/roomslist/index.js";      // Show currently open chat rooms
-import "./plugins/rosterview.js";
+import "./plugins/rosterview/index.js";
 import "./plugins/singleton.js";
 /* END: Removable components */
 
@@ -59,20 +57,6 @@ const WHITELISTED_PLUGINS = [
     'converse-rosterview',
     'converse-singleton'
 ];
-
-// Use Mustache style syntax for variable interpolation
-/* Configuration of Lodash templates (this config is distinct to the
- * config of requirejs-tpl in main.js). This one is for normal inline templates.
- */
-_.templateSettings = {
-    'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
-    'evaluate': /\{\[([\s\S]+?)\]\}/g,
-    'interpolate': /\{\{([\s\S]+?)\}\}/g,
-    'imports': { '_': _ }
-};
-
-converse.env._ = _;
-
 
 const initialize = converse.initialize;
 

@@ -5,9 +5,8 @@
  */
 import '@converse/headless/plugins/chatboxes';
 import 'components/converse.js';
-import AvatarMixin from 'shared/avatar.js';
+import ViewWithAvatar from 'shared/avatar.js';
 import ChatBoxViews from './view.js';
-import { View } from '@converse/skeletor/src/view';
 import { _converse, api, converse } from '@converse/headless/core';
 
 function onChatBoxViewsInitialized () {
@@ -47,7 +46,7 @@ converse.plugins.add('converse-chatboxviews', {
             'theme': 'default'
         });
 
-        _converse.ViewWithAvatar = View.extend(AvatarMixin);
+        _converse.ViewWithAvatar = ViewWithAvatar;
         _converse.ChatBoxViews = ChatBoxViews;
 
         /************************ BEGIN Event Handlers ************************/

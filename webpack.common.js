@@ -1,5 +1,6 @@
 /* global __dirname, module, process */
 const path = require('path');
+
 let bootstrap_ignore_modules = ['carousel', 'scrollspy'];
 
 const BOOTSTRAP_IGNORE_MODULES = (process.env.BOOTSTRAP_IGNORE_MODULES || '').replace(/ /g, '').trim();
@@ -24,25 +25,6 @@ module.exports = {
         {
             test: path.resolve(__dirname, "node_modules/xss/dist/xss"),
             use: "exports-loader?filterXSS,filterCSS"
-        },
-        {
-            test: /\.(html|svg)$/,
-            exclude: /node_modules/,
-            use: [{
-                loader: 'lodash-template-webpack-loader',
-                options: {
-                    "escape": /\{\{\{([\s\S]+?)\}\}\}/g,
-                    "evaluate": /\{\[([\s\S]+?)\]\}/g,
-                    "interpolate": /\{\{([\s\S]+?)\}\}/g,
-                    // By default, template places the values from your data in the
-                    // local scope via the with statement. However, you can specify
-                    // a single variable name with the variable setting. This can
-                    // significantly improve the speed at which a template is able
-                    // to render.
-                    "variable": 'o',
-                    "prependFilenameComment": __dirname
-                }
-            }]
         }, {
             test: /LC_MESSAGES\/converse.po$/,
             type: "json",
@@ -101,6 +83,8 @@ module.exports = {
                         }]
                     ],
                     plugins: [
+                        'lodash',
+                        '@babel/plugin-proposal-class-properties',
                         '@babel/plugin-proposal-nullish-coalescing-operator',
                         '@babel/plugin-proposal-optional-chaining',
                         '@babel/plugin-syntax-dynamic-import'

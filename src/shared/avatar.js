@@ -1,9 +1,10 @@
 import tpl_avatar from 'templates/avatar.js';
+import { View } from '@converse/skeletor/src/view';
 import { converse } from '@converse/headless/core';
 
 const u = converse.env.utils;
 
-const AvatarMixin = {
+const ViewWithAvatar = View.extend({
     renderAvatar (el) {
         el = el || this.el;
         const avatar_el = el.querySelector('canvas.avatar, svg.avatar');
@@ -21,6 +22,6 @@ const AvatarMixin = {
             avatar_el.outerHTML = u.getElementFromTemplateResult(tpl_avatar(data)).outerHTML;
         }
     }
-};
+});
 
-export default AvatarMixin;
+export default ViewWithAvatar;

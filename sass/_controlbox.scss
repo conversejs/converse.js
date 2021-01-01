@@ -69,6 +69,11 @@
         order: -1;
         color: var(--controlbox-text-color);
 
+        converse-brand-logo {
+            width: 100%;
+            display: block;
+        }
+
         converse-brand-heading {
             width: 100%;
             display: block;
@@ -501,11 +506,12 @@
             line-height: var(--line-height-huge);
         }
 
-        converse-brand-heading {
+        converse-brand-logo {
             @include make-col(12);
             margin-top: 5em;
             margin-bottom: 1em;
             .brand-heading {
+                width: 100%;
                 font-size: 500%;
                 padding: 0.7em 0 0 0;
                 opacity: 0.8;

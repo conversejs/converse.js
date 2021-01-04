@@ -868,7 +868,7 @@ const ChatRoomMixin = {
         const uriFromNickname = nickname => {
             const jid = this.get('jid');
             const occupant = this.getOccupant(nickname) || this.getOccupant(jid);
-            const uri = (occupant && occupant.get('jid')) || `${jid}/${nickname}`;
+            const uri = (this.features.get('nonanonymous') && occupant?.get('jid')) || `${jid}/${nickname}`;
             return encodeURI(`xmpp:${uri}`);
         };
 

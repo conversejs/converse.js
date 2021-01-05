@@ -138,7 +138,21 @@ describe("A sent groupchat message", function () {
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+
+            // Making the MUC non-anonymous so that real JIDs are included
+            const features = [
+                'http://jabber.org/protocol/muc',
+                'jabber:iq:register',
+                Strophe.NS.SID,
+                Strophe.NS.MAM,
+                'muc_passwordprotected',
+                'muc_hidden',
+                'muc_temporary',
+                'muc_open',
+                'muc_unmoderated',
+                'muc_nonanonymous'
+            ];
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', features);
             const view = _converse.api.chatviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve', 'robot'].forEach((nick) => {
                 _converse.connection._dataRecv(mock.createRequest(
@@ -334,7 +348,21 @@ describe("A sent groupchat message", function () {
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
-            await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
+
+            // Making the MUC non-anonymous so that real JIDs are included
+            const features = [
+                'http://jabber.org/protocol/muc',
+                'jabber:iq:register',
+                Strophe.NS.SID,
+                Strophe.NS.MAM,
+                'muc_passwordprotected',
+                'muc_hidden',
+                'muc_temporary',
+                'muc_open',
+                'muc_unmoderated',
+                'muc_nonanonymous'
+            ];
+            await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom', features);
             const view = _converse.api.chatviews.get(muc_jid);
             ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                 _converse.connection._dataRecv(mock.createRequest(
@@ -455,9 +483,9 @@ describe("A sent groupchat message", function () {
                         `xmlns="jabber:client">`+
                             `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                             `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                            `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
-                            `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@montague.lit" xmlns="urn:xmpp:reference:0"/>`+
+                            `<reference begin="6" end="10" type="mention" uri="xmpp:${muc_jid}/z3r0" xmlns="urn:xmpp:reference:0"/>`+
+                            `<reference begin="11" end="17" type="mention" uri="xmpp:${muc_jid}/gibson" xmlns="urn:xmpp:reference:0"/>`+
+                            `<reference begin="18" end="26" type="mention" uri="xmpp:${muc_jid}/mr.robot" xmlns="urn:xmpp:reference:0"/>`+
                             `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                         `</message>`);
             done();

@@ -1,4 +1,4 @@
-import tpl_headline_panel from 'templates/headline_panel.js';
+import tpl_headline_panel from './templates/panel.js';
 import { View } from '@converse/skeletor/src/view.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';

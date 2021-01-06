@@ -20,10 +20,10 @@ const BaseModal = View.extend({
         if (!this.id) {
             throw new Error("Each modal class must have a unique id attribute");
         }
-        this.render()
-
         // Allow properties to be set via passed in options
         Object.assign(this, options);
+
+        this.render()
 
         this.el.setAttribute('tabindex', '-1');
         this.el.setAttribute('role', 'dialog');

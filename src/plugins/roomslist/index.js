@@ -6,20 +6,9 @@
  * @license Mozilla Public License (MPLv2)
  */
 import "@converse/headless/plugins/muc/index.js";
+import './view.js';
 import RoomsList from './model.js';
-import RoomsListView from './view.js';
 import { _converse, api, converse } from "@converse/headless/core";
-
-
-const initRoomsListView = function () {
-    _converse.rooms_list_view = new _converse.RoomsListView({'model': _converse.chatboxes});
-    /**
-     * Triggered once the _converse.RoomsListView has been created and initialized.
-     * @event _converse#roomsListInitialized
-     * @example _converse.api.listen.on('roomsListInitialized', status => { ... });
-     */
-    api.trigger('roomsListInitialized');
-};
 
 
 converse.plugins.add('converse-roomslist', {
@@ -38,11 +27,7 @@ converse.plugins.add('converse-roomslist', {
     dependencies: ["converse-singleton", "converse-controlbox", "converse-muc", "converse-bookmarks"],
 
     initialize () {
-        // Promises exposed by this plugin
-        api.promises.add('roomsListInitialized');
-
         _converse.RoomsList= RoomsList;
-        _converse.RoomsListView = RoomsListView;
 
         // Event handlers
         api.listen.on('connected', async () =>  {
@@ -54,9 +39,6 @@ converse.plugins.add('converse-roomslist', {
                     api.waitUntil('roomsPanelRendered')
                 ]);
             }
-            initRoomsListView();
         });
-
-        api.listen.on('reconnected', initRoomsListView);
     }
 });

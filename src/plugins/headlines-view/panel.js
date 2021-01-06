@@ -1,9 +1,7 @@
 import tpl_headline_panel from './templates/panel.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { __ } from 'i18n';
-import { _converse, api, converse } from '@converse/headless/core';
-
-const u = converse.env.utils;
+import { _converse, api } from '@converse/headless/core';
 
 /**
  * View which renders headlines section of the control box.
@@ -12,14 +10,12 @@ const u = converse.env.utils;
  * @memberOf _converse
  */
 export class HeadlinesPanel extends ElementView {
-    tagName = 'div'
-    className = 'controlbox-section'
-    id = 'headline'
     events = {
         'click .open-headline': 'openHeadline'
     }
 
     initialize () {
+        this.model = _converse.chatboxes;
         this.listenTo(this.model, 'add', this.renderIfHeadline);
         this.listenTo(this.model, 'remove', this.renderIfHeadline);
         this.listenTo(this.model, 'destroy', this.renderIfHeadline);
@@ -47,25 +43,3 @@ export class HeadlinesPanel extends ElementView {
 }
 
 api.elements.define('converse-headlines-panel', HeadlinesPanel);
-
-/**
- * Mixin for the {@link _converse.ControlBoxView } which add support for
- * rendering a list of headline chats.
- * @mixin
- */
-export const HeadlinesPanelMixin = {
-    renderHeadlinesPanel () {
-        if (this.headlinepanel && u.isInDOM(this.headlinepanel.el)) {
-            return this.headlinepanel;
-        }
-        this.headlinepanel = new _converse.HeadlinesPanel({ 'model': _converse.chatboxes });
-        /**
-         * Triggered once the section of the { @link _converse.ControlBoxView }
-         * which shows announcements has been rendered.
-         * @event _converse#headlinesPanelRendered
-         * @example _converse.api.listen.on('headlinesPanelRendered', () => { ... });
-         */
-        api.trigger('headlinesPanelRendered');
-        return this.headlinepanel;
-    }
-};

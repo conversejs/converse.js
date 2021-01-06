@@ -90,8 +90,13 @@ const RoomsListView = View.extend({
         }
     },
 
-    removeBookmark: _converse.removeBookmarkViaEvent,
-    addBookmark: _converse.addBookmarkViaEvent,
+    removeBookmark (ev) {
+        _converse.removeBookmarkViaEvent(ev);
+    },
+
+    addBookmark (ev) {
+        _converse.addBookmarkViaEvent(ev);
+    },
 
     toggleRoomsList (ev) {
         if (ev && ev.preventDefault) { ev.preventDefault(); }

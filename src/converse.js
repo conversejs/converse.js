@@ -12,7 +12,7 @@ import "shared/registry.js";
  * --------------------
  * Any of the following components may be removed if they're not needed.
  */
-import "./plugins/bookmark-views.js";       // Views for XEP-0048 Bookmarks
+import "./plugins/bookmark-views/index.js";       // Views for XEP-0048 Bookmarks
 import "./plugins/chatview/index.js";       // Renders standalone chat boxes for single user chat
 import "./plugins/controlbox/index.js";     // The control box
 import "./plugins/dragresize/index.js";     // Allows chat boxes to be resized by dragging them

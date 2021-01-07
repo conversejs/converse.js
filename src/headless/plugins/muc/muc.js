@@ -780,7 +780,6 @@ const ChatRoomMixin = {
      */
     async leave (exit_msg) {
         this.features.destroy();
-        this.occupants.clearStore();
 
         const disco_entity = _converse.disco_entities?.get(this.get('jid'));
         if (disco_entity) {
@@ -794,6 +793,8 @@ const ChatRoomMixin = {
 
     async close (ev) {
         await this.leave();
+        this.occupants.clearStore();
+
         if (ev?.name !== 'closeAllChatBoxes' && api.settings.get('muc_clear_messages_on_leave')) {
             this.clearMessages();
         }

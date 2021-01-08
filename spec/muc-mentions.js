@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Strophe, dayjs } = converse.env;
+const { dayjs } = converse.env;
 const u = converse.env.utils;
 // See: https://xmpp.org/rfcs/rfc3921.html
 
@@ -37,7 +37,7 @@ describe("MUC Mention Notfications", function () {
 
         const base_time = new Date();
         let message = u.toStanza(`
-            <message from="${Strophe.getDomainFromJid(muc_jid)}">
+            <message from="${muc_jid}">
                 <mentions xmlns='urn:xmpp:mmn:0'>
                     <forwarded xmlns='urn:xmpp:forward:0'>
                         <delay xmlns='urn:xmpp:delay' stamp='${dayjs(base_time).subtract(5, 'minutes').toISOString()}'/>
@@ -61,7 +61,7 @@ describe("MUC Mention Notfications", function () {
         expect(room_el.querySelector('.msgs-indicator')?.textContent.trim()).toBe('1');
 
         message = u.toStanza(`
-            <message from="${Strophe.getDomainFromJid(muc_jid)}">
+            <message from="${muc_jid}">
                 <mentions xmlns='urn:xmpp:mmn:0'>
                     <forwarded xmlns='urn:xmpp:forward:0'>
                         <delay xmlns='urn:xmpp:delay' stamp='${dayjs(base_time).subtract(4, 'minutes').toISOString()}'/>

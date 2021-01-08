@@ -519,6 +519,7 @@ describe("A Groupchat Message", function () {
                 type: 'groupchat'
             }).c('body').t('I wrote this message!').tree();
         await view.model.handleMessageStanza(msg);
+        await u.waitUntil(() => view.model.messages.last()?.get('received'));
         expect(view.model.messages.last().get('sender')).toBe('me');
         done();
     }));

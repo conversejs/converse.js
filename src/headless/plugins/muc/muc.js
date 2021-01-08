@@ -440,12 +440,9 @@ const ChatRoomMixin = {
     handleMessageFromMUCHost (stanza) {
         const conn_status = this.session.get('connection_status');
         if (conn_status === converse.ROOMSTATUS.ENTERED) {
-            // We're not interested in activity indicators or forwarded
-            // mentions when already joined to the room.
-            // Also prevents forwarded mentions from being counted twice.
+            // We're not interested in activity indicators when already joined to the room
             return;
         }
-
         const rai = sizzle(`rai[xmlns="${Strophe.NS.RAI}"]`, stanza).pop();
         const active_mucs = Array.from(rai?.querySelectorAll('activity') || []).map(m => m.textContent);
         if (active_mucs.includes(this.get('jid'))) {
@@ -454,7 +451,13 @@ const ChatRoomMixin = {
                 'num_unread_general': 0 // Either/or between activity and unreads
             });
         }
+    },
 
+    handleForwardedMentions (stanza) {
+        if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+            // Avoid counting mentions twice
+            return;
+        }
         const msgs = sizzle(
             `mentions[xmlns="${Strophe.NS.MENTIONS}"] forwarded[xmlns="${Strophe.NS.FORWARD}"] message[type="groupchat"]`,
             stanza
@@ -481,6 +484,11 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     async handleMessageStanza (stanza) {
+        if (stanza.getAttribute('type') !== 'groupchat') {
+            this.handleForwardedMentions(stanza);
+            return;
+        }
+
         if (isArchived(stanza)) {
             // MAM messages are handled in converse-mam.
             // We shouldn't get MAM messages here because
@@ -542,7 +550,7 @@ const ChatRoomMixin = {
             stanza => !!this.handleMessageStanza(stanza) || true,
             null,
             'message',
-            'groupchat',
+            null,
             null,
             muc_jid,
             { 'matchBareFromJid': true }

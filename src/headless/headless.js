@@ -3,7 +3,7 @@
  * Any of the following components may be removed if they're not needed.
  */
 import "./plugins/adhoc.js";       // XEP-0050 Ad Hoc Commands
-import "./plugins/bookmarks.js";   // XEP-0199 XMPP Ping
+import "./plugins/bookmarks/index.js";   // XEP-0199 XMPP Ping
 import "./plugins/bosh.js";        // XEP-0206 BOSH
 import "./plugins/caps.js";        // XEP-0115 Entity Capabilities
 import "./plugins/carbons.js";     // XEP-0280 Message Carbons

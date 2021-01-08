@@ -10,6 +10,7 @@ import BookmarksView from './bookmarks-list.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 import { bookmarkableChatRoomView, eventMethods } from './mixins.js';
+import { checkBookmarksSupport } from '@converse/headless/plugins/bookmarks/utils';
 
 const initBookmarkViews = async function () {
     await api.waitUntil('roomsPanelRendered');
@@ -65,7 +66,7 @@ converse.plugins.add('converse-bookmark-views', {
                 };
                 const names = buttons.map(t => t.name);
                 const idx = names.indexOf('details');
-                const data_promise = _converse.checkBookmarksSupport().then(s => (s ? data : ''));
+                const data_promise = checkBookmarksSupport().then(s => (s ? data : ''));
                 return idx > -1
                     ? [...buttons.slice(0, idx), data_promise, ...buttons.slice(idx)]
                     : [data_promise, ...buttons];

@@ -1,14 +1,16 @@
 import tpl_bookmarks_list from './templates/list.js';
-import { View } from '@converse/skeletor/src/view.js';
+import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
 
-const BookmarksView = View.extend({
-    tagName: 'span',
+export default class BookmarksView extends ElementView {
 
-    initialize () {
+    async initialize () {
+        await api.waitUntil('bookmarksInitialized');
+        this.model = _converse.bookmarks;
+
         this.listenTo(this.model, 'add', this.render);
         this.listenTo(this.model, 'remove', this.render);
 
@@ -24,7 +26,7 @@ const BookmarksView = View.extend({
             this.insertIntoControlBox();
         };
         this.list_model.fetch({ 'success': render, 'error': render });
-    },
+    }
 
     toHTML () {
         const is_hidden = b => !!(api.settings.get('hide_open_bookmarks') && _converse.chatboxes.get(b.get('jid')));
@@ -38,7 +40,7 @@ const BookmarksView = View.extend({
             'toggleBookmarksList': ev => this.toggleBookmarksList(ev),
             'toggle_state': this.list_model.get('toggle-state')
         });
-    },
+    }
 
     insertIntoControlBox () {
         const controlboxview = _converse.chatboxviews.get('controlbox');
@@ -46,9 +48,9 @@ const BookmarksView = View.extend({
             const el = controlboxview.el.querySelector('.list-container--bookmarks');
             el && el.parentNode.replaceChild(this.el, el);
         }
-    },
+    }
 
-    openRoom (ev) {
+    openRoom (ev) { // eslint-disable-line class-methods-use-this
         ev.preventDefault();
         const name = ev.target.textContent;
         const jid = ev.target.getAttribute('data-room-jid');
@@ -56,11 +58,11 @@ const BookmarksView = View.extend({
             'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
         };
         api.rooms.open(jid, data, true);
-    },
+    }
 
-    removeBookmark (ev) {
+    removeBookmark (ev) { // eslint-disable-line class-methods-use-this
         _converse.removeBookmarkViaEvent(ev);
-    },
+    }
 
     toggleBookmarksList (ev) {
         if (ev && ev.preventDefault) {
@@ -79,6 +81,6 @@ const BookmarksView = View.extend({
             this.list_model.save({ 'toggle-state': _converse.OPENED });
         }
     }
-});
+}
 
-export default BookmarksView;
+api.elements.define('converse-bookmarks', BookmarksView);

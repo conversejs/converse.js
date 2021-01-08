@@ -12,17 +12,6 @@ import { _converse, api, converse } from '@converse/headless/core';
 import { bookmarkableChatRoomView, eventMethods } from './mixins.js';
 import { checkBookmarksSupport } from '@converse/headless/plugins/bookmarks/utils';
 
-const initBookmarkViews = async function () {
-    await api.waitUntil('roomsPanelRendered');
-    _converse.bookmarksview = new _converse.BookmarksView({ 'model': _converse.bookmarks });
-    /**
-     * Triggered once the _converse.Bookmarks collection and _converse.BookmarksView view
-     * has been created and cached bookmarks have been fetched.
-     * @event _converse#bookmarkViewsInitialized
-     * @example _converse.api.listen.on('bookmarkViewsInitialized', () => { ... });
-     */
-    api.trigger('bookmarkViewsInitialized');
-};
 
 converse.plugins.add('converse-bookmark-views', {
     /* Plugin dependencies are other plugins which might be
@@ -74,8 +63,6 @@ converse.plugins.add('converse-bookmark-views', {
             return buttons;
         });
 
-        api.listen.on('bookmarksInitialized', initBookmarkViews);
         api.listen.on('chatRoomViewInitialized', view => view.setBookmarkState());
-        /************************ END Event Handlers ************************/
     }
 });

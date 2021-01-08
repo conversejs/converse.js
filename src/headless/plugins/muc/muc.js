@@ -438,6 +438,14 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     handleMessageFromMUCHost (stanza) {
+        const conn_status = this.session.get('connection_status');
+        if (conn_status === converse.ROOMSTATUS.ENTERED) {
+            // We're not interested in activity indicators or forwarded
+            // mentions when already joined to the room.
+            // Also prevents forwarded mentions from being counted twice.
+            return;
+        }
+
         const rai = sizzle(`rai[xmlns="${Strophe.NS.RAI}"]`, stanza).pop();
         const active_mucs = Array.from(rai?.querySelectorAll('activity') || []).map(m => m.textContent);
         if (active_mucs.includes(this.get('jid'))) {

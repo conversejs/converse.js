@@ -102,7 +102,7 @@ converse.plugins.add('converse-bookmarks', {
 
         api.promises.add('bookmarksInitialized');
 
-        _converse.Bookmark = Model.extend(Bookmark);
+        _converse.Bookmark = Bookmark;
         _converse.Bookmarks = Collection.extend(Bookmarks);
 
         _converse.BookmarksList = Model.extend({

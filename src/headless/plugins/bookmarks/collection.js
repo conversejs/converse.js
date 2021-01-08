@@ -1,4 +1,5 @@
 import "@converse/headless/plugins/muc/index.js";
+import Bookmark from './model.js';
 import log from "@converse/headless/log.js";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
@@ -9,6 +10,7 @@ const u = converse.env.utils;
 
 const Bookmarks = {
 
+    model: Bookmark,
     comparator: (item) => item.get('name').toLowerCase(),
 
     initialize () {
@@ -23,10 +25,6 @@ const Bookmarks = {
         const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
         this.fetched_flag = cache_key+'fetched';
         this.browserStorage = _converse.createStore(cache_key);
-    },
-
-    model (attrs, options) {
-        return new _converse.Bookmark(attrs, options);
     },
 
     async openBookmarkedRoom (bookmark) {

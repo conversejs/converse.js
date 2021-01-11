@@ -108,7 +108,7 @@ async function fetchCommandForm (command) {
         command.sessionid = cmd_el.getAttribute('sessionid');
         command.instructions = sizzle('x[type="form"][xmlns="jabber:x:data"] instructions', cmd_el).pop()?.textContent;
         command.fields = sizzle('x[type="form"][xmlns="jabber:x:data"] field', cmd_el)
-            .map(f => u.xForm2webForm(f, cmd_el));
+            .map(f => u.xForm2TemplateResult(f, cmd_el));
 
     } catch (e) {
         if (e === null) {
@@ -206,6 +206,9 @@ export default class AdHocCommands extends CustomElement {
         const node = form_data.get('command_node').trim();
 
         const cmd = this.commands.filter(c => c.node === node)[0];
+        cmd.alert = null;
+        this.nonce = u.getUniqueId();
+
         const inputs = sizzle(':input:not([type=button]):not([type=submit])', ev.target);
         const config_array = inputs
             .filter(i => !['command_jid', 'command_node'].includes(i.getAttribute('name')))

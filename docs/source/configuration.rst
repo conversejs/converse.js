@@ -1071,6 +1071,30 @@ VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
 
 If no nickame value is found, then an error will be raised.
 
+mam_request_all_pages
+---------------------
+
+* Default: ``true``
+
+When requesting messages from the archive, Converse will ask only for messages
+newer than the most recent cached message.
+
+When there are many archived messages since that one, the returned results will
+be broken up in to pages, set by `archived_messages_page_size`_.
+
+By default Converse will request all the pages until all messages have been
+fetched, however for large archives this can slow things down dramatically.
+
+This setting turns the paging off, and Converse will only fetch the latest
+page.
+
+.. note::
+
+  If paging is turned off, there will appear gaps in the message history.
+  Converse currently doesn't yet have a way to inform the user of these gaps or
+  to let them be filled.
+
+
 muc_hats
 --------
 

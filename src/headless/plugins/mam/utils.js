@@ -73,7 +73,7 @@ export function preMUCJoinMAMFetch (muc) {
     muc.save({ 'prejoin_mam_fetched': true });
 }
 
-export async function handleMAMResult (model, result, query, options, page_direction) {
+export async function handleMAMResult (model, result, query, options, should_page) {
     await api.emojis.initialize();
     const is_muc = model.get('type') === _converse.CHATROOMS_TYPE;
     result.messages = result.messages.map(s =>
@@ -91,7 +91,7 @@ export async function handleMAMResult (model, result, query, options, page_direc
     result.messages.forEach(m => model.queueMessage(m));
     if (result.error) {
         const event_id = (result.error.retry_event_id = u.getUniqueId());
-        api.listen.once(event_id, () => fetchArchivedMessages(model, options, page_direction));
+        api.listen.once(event_id, () => fetchArchivedMessages(model, options, should_page));
         model.createMessageFromError(result.error);
     }
 }
@@ -112,10 +112,10 @@ export async function handleMAMResult (model, result, query, options, page_direc
  * @param { string } [options.with] - The JID of the entity with
  *  which messages were exchanged.
  * @param { boolean } [options.groupchat] - True if archive in groupchat.
- * @param { ('forwards'|'backwards')} [page_direction] - Determines whether this function should
+ * @param { ('forwards'|'backwards'|null)} [should_page=null] - Determines whether this function should
  *  recursively page through the entire result set if a limited number of results were returned.
  */
-export async function fetchArchivedMessages (model, options = {}, page_direction) {
+export async function fetchArchivedMessages (model, options = {}, should_page=null) {
     if (model.disable_mam) {
         return;
     }
@@ -135,19 +135,21 @@ export async function fetchArchivedMessages (model, options = {}, page_direction
     );
 
     const result = await api.archive.query(query);
-    await handleMAMResult(model, result, query, options, page_direction);
+    await handleMAMResult(model, result, query, options, should_page);
 
-    if (page_direction && result.rsm && !result.complete) {
-        if (page_direction === 'forwards') {
-            options = result.rsm.next(max, options.before).query;
-        } else if (page_direction === 'backwards') {
-            options = result.rsm.previous(max, options.after).query;
+    if (result.rsm && !result.complete) {
+        if (should_page) {
+            if (should_page === 'forwards') {
+                options = result.rsm.next(max, options.before).query;
+            } else if (should_page === 'backwards') {
+                options = result.rsm.previous(max, options.after).query;
+            }
+            return fetchArchivedMessages(model, options, should_page);
+        } else {
+            // TODO: Add a special kind of message which will
+            // render as a link to fetch further messages, either
+            // to fetch older messages or to fill in a gap.
         }
-        return fetchArchivedMessages(model, options, page_direction);
-    } else {
-        // TODO: Add a special kind of message which will
-        // render as a link to fetch further messages, either
-        // to fetch older messages or to fill in a gap.
     }
 }
 
@@ -159,16 +161,18 @@ export function fetchNewestMessages (model) {
     if (model.disable_mam) {
         return;
     }
+
     const most_recent_msg = model.getMostRecentMessage();
     // if clear_messages_on_reconnection is true, than any recent messages
     // must have been received *after* connection and we instead must query
     // for earlier messages
     if (most_recent_msg && !api.settings.get('clear_messages_on_reconnection')) {
+        const should_page = api.settings.get('mam_request_all_pages');
         const stanza_id = most_recent_msg.get(`stanza_id ${model.get('jid')}`);
         if (stanza_id) {
-            fetchArchivedMessages(model, { 'after': stanza_id }, 'forwards');
+            fetchArchivedMessages(model, { 'after': stanza_id }, should_page ? 'forwards' : null);
         } else {
-            fetchArchivedMessages(model, { 'start': most_recent_msg.get('time') }, 'forwards');
+            fetchArchivedMessages(model, { 'start': most_recent_msg.get('time') }, should_page ? 'forwards' : null);
         }
     } else {
         fetchArchivedMessages(model, { 'before': '' });

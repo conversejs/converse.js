@@ -168,11 +168,15 @@ export function fetchNewestMessages (model) {
     // for earlier messages
     if (most_recent_msg && !api.settings.get('clear_messages_on_reconnection')) {
         const should_page = api.settings.get('mam_request_all_pages');
-        const stanza_id = most_recent_msg.get(`stanza_id ${model.get('jid')}`);
-        if (stanza_id) {
-            fetchArchivedMessages(model, { 'after': stanza_id }, should_page ? 'forwards' : null);
+        if (should_page) {
+            const stanza_id = most_recent_msg.get(`stanza_id ${model.get('jid')}`);
+            if (stanza_id) {
+                fetchArchivedMessages(model, { 'after': stanza_id }, 'forwards');
+            } else {
+                fetchArchivedMessages(model, { 'start': most_recent_msg.get('time') }, 'forwards');
+            }
         } else {
-            fetchArchivedMessages(model, { 'start': most_recent_msg.get('time') }, should_page ? 'forwards' : null);
+            fetchArchivedMessages(model, { 'before': '', 'start': most_recent_msg.get('time') });
         }
     } else {
         fetchArchivedMessages(model, { 'before': '' });

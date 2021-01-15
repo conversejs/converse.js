@@ -211,12 +211,8 @@ const ChatRoomMixin = {
      */
     enableRAI () {
         if (api.settings.get('muc_subscribe_to_rai')) {
-            const rai_enabled = _converse.session.get('rai_enabled_domains') || '';
             const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
-            if (!rai_enabled.includes(muc_domain)) {
-                api.user.presence.send(null, muc_domain, null, $build('rai', { 'xmlns': Strophe.NS.RAI }));
-                _converse.session.save({ 'rai_enabled_domains': `${rai_enabled} ${muc_domain}` });
-            }
+            api.user.presence.send(null, muc_domain, null, $build('rai', { 'xmlns': Strophe.NS.RAI }));
         }
     },
 
@@ -2250,15 +2246,9 @@ const ChatRoomMixin = {
             if (error?.getAttribute('type') === 'wait' && error?.querySelector('resource-constraint')) {
                 // If we get a <resource-constraint> error, we assume it's in context of XEP-0437 RAI.
                 // We remove this MUC's host from the list of enabled domains and rejoin the MUC.
-                const rai_enabled = _converse.session.get('rai_enabled_domains') || '';
                 const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
-                if (rai_enabled.includes(muc_domain)) {
-                    const regex = new RegExp(muc_domain, 'g');
-                    _converse.session.save({ 'rai_enabled_domains': rai_enabled.replace(regex, '') });
-
-                    if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
-                        this.rejoin();
-                    }
+                if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
+                    this.rejoin();
                 }
             }
         }

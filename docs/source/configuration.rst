@@ -1802,6 +1802,7 @@ send_chat_state_notifications
 -----------------------------
 
 * Default: ``true``
+* Allowed values: ``'active', 'composing', 'gone' 'inactive', 'paused'``
 
 Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_) should be sent out or not.
 
@@ -1815,7 +1816,17 @@ For example:
             'send_chat_state_notifications':  ['composing']
         });
 
-Valid values are ``'active', 'composing', 'gone' 'inactive', 'paused'``
+
+send_chat_markers
+-----------------
+
+* Default: ``['received', 'displayed', 'acknowledged']``
+
+Determines which (if any) of the `XEP-0333 <https://xmpp.org/extensions/xep-0333.html>`_ chat markers will be sent out.
+
+It's still up to Converse to decide when to send out the relevant markers, the
+purpose of this setting is merely to turn on or off the sending of the
+individual markers.
 
 
 show_chat_state_notifications

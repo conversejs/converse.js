@@ -603,7 +603,9 @@ const ChatBox = ModelWithContact.extend({
      *  message, even if it didn't include a `markable` element.
      */
     sendMarkerForMessage (msg, type='displayed', force=false) {
-        if (!msg) return;
+        if (!msg || !api.settings.get('send_chat_markers').includes(type)) {
+            return;
+        }
         if (msg?.get('is_markable') || force) {
             const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
             sendMarker(from_jid, msg.get('msgid'), type, msg.get('type'));

@@ -58,7 +58,8 @@ converse.plugins.add('converse-chat', {
             'auto_join_private_chats': [],
             'clear_messages_on_reconnection': false,
             'filter_by_resource': false,
-            'send_chat_state_notifications': true
+            'send_chat_markers': ["received", "displayed", "acknowledged"],
+            'send_chat_state_notifications': true,
         });
 
         _converse.Message = ModelWithContact.extend(MessageMixin);

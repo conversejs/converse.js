@@ -185,7 +185,9 @@ const ChatRoomMixin = {
      *  message, even if it didn't include a `markable` element.
      */
     sendMarkerForMessage (msg, type = 'displayed', force = false) {
-        if (!msg) return;
+        if (!msg || !api.settings.get('send_chat_markers').includes(type)) {
+            return;
+        }
         if (msg?.get('is_markable') || force) {
             const id = msg.get(`stanza_id ${this.get('jid')}`);
             if (!id) {

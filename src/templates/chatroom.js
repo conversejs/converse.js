@@ -2,6 +2,7 @@ import { html } from "lit-html";
 
 export default (o) => html`
     <div class="flyout box-flyout">
+        <converse-dragresize></converse-dragresize>
         <div class="chat-head chat-head-chatroom row no-gutters"></div>
         <div class="chat-body chatroom-body row no-gutters">
             <div class="chat-area col">

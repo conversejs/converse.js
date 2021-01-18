@@ -3,9 +3,10 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import './components/dragresize.js';
 import 'plugins/chatview/index.js';
 import 'plugins/controlbox/index.js';
-import { applyDragResistance, onMouseUp, onMouseMove, renderDragResizeHandles } from './utils.js';
+import { applyDragResistance, onMouseUp, onMouseMove } from './utils.js';
 import DragResizableMixin from './mixin.js';
 import { _converse, api, converse } from '@converse/headless/core';
 
@@ -33,8 +34,8 @@ converse.plugins.add('converse-dragresize', {
         ChatBox: {
             initialize () {
                 const result = this.__super__.initialize.apply(this, arguments);
-                const height = this.get('height'),
-                    width = this.get('width');
+                const height = this.get('height');
+                const width = this.get('width');
                 const save = this.get('id') === 'controlbox' ? a => this.set(a) : a => this.save(a);
                 save({
                     'height': applyDragResistance(height, this.get('default_height')),
@@ -44,50 +45,7 @@ converse.plugins.add('converse-dragresize', {
             }
         },
 
-        ChatBoxView: {
-            events: {
-                'mousedown .dragresize-top': 'onStartVerticalResize',
-                'mousedown .dragresize-left': 'onStartHorizontalResize',
-                'mousedown .dragresize-topleft': 'onStartDiagonalResize'
-            },
-
-            render () {
-                const result = this.__super__.render.apply(this, arguments);
-                renderDragResizeHandles(this.__super__._converse, this);
-                this.setWidth();
-                return result;
-            }
-        },
-
-        HeadlinesBoxView: {
-            events: {
-                'mousedown .dragresize-top': 'onStartVerticalResize',
-                'mousedown .dragresize-left': 'onStartHorizontalResize',
-                'mousedown .dragresize-topleft': 'onStartDiagonalResize'
-            },
-
-            render () {
-                const result = this.__super__.render.apply(this, arguments);
-                renderDragResizeHandles(this.__super__._converse, this);
-                this.setWidth();
-                return result;
-            }
-        },
-
         ControlBoxView: {
-            events: {
-                'mousedown .dragresize-top': 'onStartVerticalResize',
-                'mousedown .dragresize-left': 'onStartHorizontalResize',
-                'mousedown .dragresize-topleft': 'onStartDiagonalResize'
-            },
-
-            render () {
-                const result = this.__super__.render.apply(this, arguments);
-                renderDragResizeHandles(this.__super__._converse, this);
-                this.setWidth();
-                return result;
-            },
-
             renderLoginPanel () {
                 const result = this.__super__.renderLoginPanel.apply(this, arguments);
                 this.initDragResize().setDimensions();
@@ -97,21 +55,6 @@ converse.plugins.add('converse-dragresize', {
             renderControlBoxPane () {
                 const result = this.__super__.renderControlBoxPane.apply(this, arguments);
                 this.initDragResize().setDimensions();
-                return result;
-            }
-        },
-
-        ChatRoomView: {
-            events: {
-                'mousedown .dragresize-top': 'onStartVerticalResize',
-                'mousedown .dragresize-left': 'onStartHorizontalResize',
-                'mousedown .dragresize-topleft': 'onStartDiagonalResize'
-            },
-
-            render () {
-                const result = this.__super__.render.apply(this, arguments);
-                renderDragResizeHandles(this.__super__._converse, this);
-                this.setWidth();
                 return result;
             }
         }

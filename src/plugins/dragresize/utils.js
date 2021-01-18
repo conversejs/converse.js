@@ -1,6 +1,68 @@
-import tpl_dragresize from './templates/dragresize.js';
-import { _converse, api } from '@converse/headless/core';
-import { render } from 'lit-html';
+import { _converse, api, converse } from '@converse/headless/core';
+
+const { u } = converse.env;
+
+
+export function onStartVerticalResize (ev, trigger = true) {
+    if (!api.settings.get('allow_dragresize')) {
+        return true;
+    }
+    ev.preventDefault();
+    // Record element attributes for mouseMove().
+    const flyout = u.ancestor(ev.target, '.box-flyout');
+    const style = window.getComputedStyle(flyout);
+    const chatbox_el = flyout.parentElement;
+    chatbox_el.height = parseInt(style.height.replace(/px$/, ''), 10);
+    _converse.resizing = {
+        'chatbox': chatbox_el,
+        'direction': 'top'
+    };
+    chatbox_el.prev_pageY = ev.pageY;
+    if (trigger) {
+        /**
+         * Triggered once the user starts to vertically resize a {@link _converse.ChatBoxView}
+         * @event _converse#startVerticalResize
+         * @example _converse.api.listen.on('startVerticalResize', (view) => { ... });
+         */
+        api.trigger('startVerticalResize', chatbox_el);
+    }
+}
+
+export function onStartHorizontalResize (ev, trigger = true) {
+    if (!api.settings.get('allow_dragresize')) {
+        return true;
+    }
+    ev.preventDefault();
+    const flyout = u.ancestor(ev.target, '.box-flyout');
+    const style = window.getComputedStyle(flyout);
+    const chatbox_el = flyout.parentElement;
+    chatbox_el.width = parseInt(style.width.replace(/px$/, ''), 10);
+    _converse.resizing = {
+        'chatbox': chatbox_el,
+        'direction': 'left'
+    };
+    chatbox_el.prev_pageX = ev.pageX;
+    if (trigger) {
+        /**
+         * Triggered once the user starts to horizontally resize a {@link _converse.ChatBoxView}
+         * @event _converse#startHorizontalResize
+         * @example _converse.api.listen.on('startHorizontalResize', (view) => { ... });
+         */
+        api.trigger('startHorizontalResize', chatbox_el);
+    }
+}
+
+export function onStartDiagonalResize (ev) {
+    onStartHorizontalResize(ev, false);
+    onStartVerticalResize(ev, false);
+    _converse.resizing.direction = 'topleft';
+    /**
+     * Triggered once the user starts to diagonally resize a {@link _converse.ChatBoxView}
+     * @event _converse#startDiagonalResize
+     * @example _converse.api.listen.on('startDiagonalResize', (view) => { ... });
+     */
+    api.trigger('startDiagonalResize', this);
+}
 
 /**
  * Applies some resistance to `value` around the `default_value`.
@@ -21,13 +83,6 @@ export function applyDragResistance (value, default_value) {
         return default_value;
     }
     return value;
-}
-
-export function renderDragResizeHandles (_converse, el) {
-    const flyout = el.querySelector('.box-flyout');
-    const div = document.createElement('div');
-    render(tpl_dragresize(), div);
-    flyout.insertBefore(div, flyout.firstChild);
 }
 
 export function onMouseMove (ev) {

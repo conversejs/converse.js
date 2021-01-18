@@ -1,4 +1,4 @@
-import { _converse, api } from '@converse/headless/core';
+import { _converse } from '@converse/headless/core';
 import { applyDragResistance } from './utils.js';
 import { debounce } from 'lodash-es';
 
@@ -62,14 +62,6 @@ const DragResizableMixin = {
         }
     },
 
-    setWidth () {
-        // If a custom width is applied (due to drag-resizing),
-        // then we need to set the width of the .chatbox element as well.
-        if (this.model.get('width')) {
-            this.style.width = this.model.get('width');
-        }
-    },
-
     setDimensions () {
         // Make sure the chat box has the right height and width.
         this.adjustToViewport();
@@ -116,65 +108,6 @@ const DragResizableMixin = {
         } else if (viewport_height <= this.model.get('height')) {
             this.model.set('height', undefined);
         }
-    },
-
-    onStartVerticalResize (ev, trigger = true) {
-        if (!api.settings.get('allow_dragresize')) {
-            return true;
-        }
-        ev.preventDefault();
-        // Record element attributes for mouseMove().
-        const flyout = this.querySelector('.box-flyout'),
-            style = window.getComputedStyle(flyout);
-        this.height = parseInt(style.height.replace(/px$/, ''), 10);
-        _converse.resizing = {
-            'chatbox': this,
-            'direction': 'top'
-        };
-        this.prev_pageY = ev.pageY;
-        if (trigger) {
-            /**
-             * Triggered once the user starts to vertically resize a {@link _converse.ChatBoxView}
-             * @event _converse#startVerticalResize
-             * @example _converse.api.listen.on('startVerticalResize', (view) => { ... });
-             */
-            api.trigger('startVerticalResize', this);
-        }
-    },
-
-    onStartHorizontalResize (ev, trigger = true) {
-        if (!api.settings.get('allow_dragresize')) {
-            return true;
-        }
-        ev.preventDefault();
-        const flyout = this.querySelector('.box-flyout');
-        const style = window.getComputedStyle(flyout);
-        this.width = parseInt(style.width.replace(/px$/, ''), 10);
-        _converse.resizing = {
-            'chatbox': this,
-            'direction': 'left'
-        };
-        this.prev_pageX = ev.pageX;
-        if (trigger) {
-            /**
-             * Triggered once the user starts to horizontally resize a {@link _converse.ChatBoxView}
-             * @event _converse#startHorizontalResize
-             * @example _converse.api.listen.on('startHorizontalResize', (view) => { ... });
-             */
-            api.trigger('startHorizontalResize', this);
-        }
-    },
-
-    onStartDiagonalResize (ev) {
-        this.onStartHorizontalResize(ev, false);
-        this.onStartVerticalResize(ev, false);
-        _converse.resizing.direction = 'topleft';
-        /**
-         * Triggered once the user starts to diagonally resize a {@link _converse.ChatBoxView}
-         * @event _converse#startDiagonalResize
-         * @example _converse.api.listen.on('startDiagonalResize', (view) => { ... });
-         */
-        api.trigger('startDiagonalResize', this);
     }
 };
 

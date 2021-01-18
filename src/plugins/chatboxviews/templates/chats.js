@@ -9,7 +9,10 @@ export default () => {
             if (m.get('type') === CONTROLBOX_TYPE) {
                 return html`
                     <converse-controlbox-toggle class="${!m.get('closed') ? 'hidden' : ''}"></converse-controlbox-toggle>
-                    <converse-controlbox id="controlbox" class="chatbox ${m.get('closed') ? 'hidden' : ''}"></converse-controlbox>
+                    <converse-controlbox
+                        id="controlbox"
+                        class="chatbox ${m.get('closed') ? 'hidden' : ''}"
+                        style="${m.get('width') ? `width: ${m.get('width')}` : ''}"></converse-controlbox>
                 `;
             } else if (m.get('type') === CHATROOMS_TYPE) {
                 return html`

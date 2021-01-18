@@ -626,7 +626,10 @@ describe("A Chat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '')).toBe('Hey\nHave you heard\n\n\nthe news?\nhttps://conversejs.org');
+        await u.waitUntil(() => {
+            const text = view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '');
+            return text === 'Hey\nHave you heard\n\u200B\nthe news?\n<a target="_blank" rel="noopener" href="https://conversejs.org/">https://conversejs.org</a>';
+        });
         done();
     }));
 

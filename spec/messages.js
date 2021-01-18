@@ -607,7 +607,7 @@ describe("A Chat Message", function () {
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        await u.waitUntil(() => view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '') === 'Hey\n\nHave you heard the news?');
+        await u.waitUntil(() => view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '') === 'Hey\n\n\nHave you heard the news?');
         stanza = u.toStanza(`
             <message from="${contact_jid}"
                      type="chat"
@@ -617,6 +617,16 @@ describe("A Chat Message", function () {
         _converse.connection._dataRecv(mock.createRequest(stanza));
         await new Promise(resolve => view.model.messages.once('rendered', resolve));
         expect(view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '')).toBe('Hey\nHave you heard\nthe news?');
+
+        stanza = u.toStanza(`
+            <message from="${contact_jid}"
+                     type="chat"
+                     to="romeo@montague.lit/orchard">
+                <body>Hey\nHave you heard\n\n\nthe news?\nhttps://conversejs.org</body>
+            </message>`);
+        _converse.connection._dataRecv(mock.createRequest(stanza));
+        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        expect(view.content.querySelector('converse-chat-message:last-child .chat-msg__text').innerHTML.replace(/<!---->/g, '')).toBe('Hey\nHave you heard\n\n\nthe news?\nhttps://conversejs.org');
         done();
     }));
 

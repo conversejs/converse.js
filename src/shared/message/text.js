@@ -8,7 +8,6 @@ import { html } from 'lit-html';
 const u = converse.env.utils;
 
 const isString = (s) => typeof s === 'string';
-
 const tpl_mention_with_nick = (o) => html`<span class="mention mention--self badge badge-info">${o.mention}</span>`;
 const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
 
@@ -300,10 +299,6 @@ export class MessageText extends String {
         return text.startsWith('/me ');
     }
 
-    static replaceText (text) {
-        return convertASCII2Emoji(text.replace(/\n\n+/g, '\n\n'));
-    }
-
     /**
      * Take the annotations and return an array of text and TemplateResult
      * instances to be rendered to the DOM.
@@ -322,6 +317,6 @@ export class MessageText extends String {
                     ...list
                 ];
             });
-        return list.reduce((acc, i) => isString(i) ? [...acc, MessageText.replaceText(i)] : [...acc, i], []);
+        return list.reduce((acc, i) => isString(i) ? [...acc, convertASCII2Emoji(i)] : [...acc, i], []);
     }
 }

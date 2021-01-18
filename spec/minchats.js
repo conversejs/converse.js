@@ -162,11 +162,11 @@ describe("A Chatbox", function () {
         mock.initConverse(['rosterGroupsFetched'], {},
         async function (done, _converse) {
 
-        spyOn(_converse.chatboxviews, 'trimChats');
+        spyOn(_converse.minimize, 'trimChats');
 
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
-        expect(_converse.chatboxviews.trimChats.calls.count()).toBe(1);
+        expect(_converse.minimize.trimChats.calls.count()).toBe(1);
 
         let jid, chatboxview;
         // openControlBox was called earlier, so the controlbox is
@@ -185,7 +185,7 @@ describe("A Chatbox", function () {
             el.click();
         }
         await u.waitUntil(() => _converse.chatboxes.length == 16);
-        expect(_converse.chatboxviews.trimChats.calls.count()).toBe(16);
+        expect(_converse.minimize.trimChats.calls.count()).toBe(16);
 
         _converse.api.chatviews.get().forEach(v => spyOn(v, 'onMinimized').and.callThrough());
         for (i=0; i<online_contacts.length; i++) {
@@ -202,7 +202,7 @@ describe("A Chatbox", function () {
         _converse.minimized_chats.el.querySelector("a.restore-chat").click();
 
         expect(chatbox.maximize).toHaveBeenCalled();
-        expect(_converse.chatboxviews.trimChats.calls.count()).toBe(17);
+        expect(_converse.minimize.trimChats.calls.count()).toBe(17);
         done();
     }));
 });

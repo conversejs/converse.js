@@ -81,7 +81,7 @@ describe("Chatboxes", function () {
             // openControlBox was called earlier, so the controlbox is
             // visible, but no other chat boxes have been created.
             expect(_converse.chatboxes.length).toEqual(1);
-            spyOn(_converse.chatboxviews, 'trimChats');
+            spyOn(_converse.minimize, 'trimChats');
             expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700);
@@ -90,11 +90,11 @@ describe("Chatboxes", function () {
             let el = online_contacts[0];
             el.click();
             await u.waitUntil(() => document.querySelectorAll("#conversejs .chatbox").length == 2);
-            expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
+            expect(_converse.minimize.trimChats).toHaveBeenCalled();
             online_contacts[1].click();
             await u.waitUntil(() => _converse.chatboxes.length == 3);
             el = online_contacts[1];
-            expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
+            expect(_converse.minimize.trimChats).toHaveBeenCalled();
             // Check that new chat boxes are created to the left of the
             // controlbox (but to the right of all existing chat boxes)
             expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(3);
@@ -171,7 +171,7 @@ describe("Chatboxes", function () {
                 ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            spyOn(_converse.ChatBoxViews.prototype, 'trimChats');
+            spyOn(_converse.minimize, 'trimChats');
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
 
@@ -179,7 +179,7 @@ describe("Chatboxes", function () {
 
             mock.openChatBoxes(_converse, 6);
             await u.waitUntil(() => _converse.chatboxes.length == 7);
-            expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
+            expect(_converse.minimize.trimChats).toHaveBeenCalled();
             // We instantiate a new ChatBoxes collection, which by default
             // will be empty.
             const newchatboxes = new _converse.ChatBoxes();
@@ -228,7 +228,7 @@ describe("Chatboxes", function () {
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            spyOn(_converse.ChatBoxViews.prototype, 'trimChats');
+            spyOn(_converse.minimize, 'trimChats');
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
             await u.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -241,7 +241,7 @@ describe("Chatboxes", function () {
             expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
             mock.openChatBoxes(_converse, 6);
             await u.waitUntil(() => _converse.chatboxes.length == 7)
-            expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
+            expect(_converse.minimize.trimChats).toHaveBeenCalled();
             expect(_converse.chatboxes.length).toEqual(7);
             expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxViewInitialized', jasmine.any(Object));
             await mock.closeAllChatBoxes(_converse);

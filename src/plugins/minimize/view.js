@@ -1,13 +1,13 @@
 import tpl_chats_panel from './templates/chats-panel.js';
-import { View } from '@converse/skeletor/src/view';
+import { ElementView } from '@converse/skeletor/src/element.js';
+import { _converse, api } from '@converse/headless/core';
 import { render } from 'lit-html';
-import { _converse } from '@converse/headless/core';
 
 
-const MinimizedChats = View.extend({
-    tagName: 'span',
+class MinimizedChats extends ElementView {
 
     async initialize () {
+        this.model = _converse.chatboxes;
         await this.initToggle();
         this.render();
         this.listenTo(this.minchats, 'change:collapsed', this.render)
@@ -18,7 +18,7 @@ const MinimizedChats = View.extend({
         this.listenTo(this.model, 'change:name', this.render)
         this.listenTo(this.model, 'change:num_unread', this.render)
         this.listenTo(this.model, 'remove', this.render)
-    },
+    }
 
     render () {
         const chats = this.model.where({'minimized': true});
@@ -27,24 +27,20 @@ const MinimizedChats = View.extend({
         const collapsed = this.minchats.get('collapsed');
         const data = { chats, num_unread, num_minimized, collapsed };
         data.toggle = ev => this.toggle(ev);
-        render(tpl_chats_panel(data), this.el);
-
-        if (!this.el.parentElement) {
-            _converse.chatboxviews.insertRowColumn(this.el);
-        }
-    },
+        render(tpl_chats_panel(data), this);
+    }
 
     async initToggle () {
         const id = `converse.minchatstoggle-${_converse.bare_jid}`;
         this.minchats = new _converse.MinimizedChatsToggle({id});
         this.minchats.browserStorage = _converse.createStore(id);
         await new Promise(resolve => this.minchats.fetch({'success': resolve, 'error': resolve}));
-    },
+    }
 
     toggle (ev) {
         ev?.preventDefault();
         this.minchats.save({'collapsed': !this.minchats.get('collapsed')});
     }
-});
+}
 
-export default MinimizedChats;
+api.elements.define('converse-minimized-chats', MinimizedChats);

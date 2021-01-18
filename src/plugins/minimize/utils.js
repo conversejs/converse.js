@@ -101,17 +101,6 @@ function getOldestMaximizedChat (exclude_ids) {
     return model;
 }
 
-export function initMinimizedChats () {
-    _converse.minimized_chats?.remove();
-    _converse.minimized_chats = new _converse.MinimizedChats({model: _converse.chatboxes});
-    /**
-     * Triggered once the _converse.MinimizedChats instance has been initialized
-     * @event _converse#minimizedChatsInitialized
-     * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
-     */
-    api.trigger('minimizedChatsInitialized');
-}
-
 export function addMinimizeButtonToChat (view, buttons) {
     const data = {
         'a_class': 'toggle-chatbox-button',

@@ -8,7 +8,7 @@ import 'plugins/chatview/index.js';
 import MinimizedChats from './view.js';
 import MinimizedChatsToggle from './toggle.js';
 import { _converse, api, converse } from '@converse/headless/core';
-import { addMinimizeButtonToChat, addMinimizeButtonToMUC, initMinimizedChats, trimChats } from './utils.js';
+import { addMinimizeButtonToChat, addMinimizeButtonToMUC, trimChats } from './utils.js';
 import { debounce } from 'lodash-es';
 import { minimizableChatBox, minimizableChatBoxView } from './mixins.js';
 
@@ -127,7 +127,6 @@ converse.plugins.add('converse-minimize', {
         /************************ BEGIN Event Handlers ************************/
         api.listen.on('chatBoxViewInitialized', view => _converse.minimize.trimChats(view));
         api.listen.on('chatRoomViewInitialized', view => _converse.minimize.trimChats(view));
-        api.listen.on('connected', () => initMinimizedChats());
         api.listen.on('controlBoxOpened', view => _converse.minimize.trimChats(view));
         api.listen.on('chatBoxViewInitialized', v => v.listenTo(v.model, 'change:minimized', v.onMinimizedChanged));
 

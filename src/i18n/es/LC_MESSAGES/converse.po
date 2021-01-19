@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-11-18 18:40+0100\n"
-"Last-Translator: sergio <srg.dev@posteo.net>\n"
+"PO-Revision-Date: 2021-01-20 09:32+0000\n"
+"Last-Translator: Juanro49 <juanrobertogarciasanchez@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
 "Language: es\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: es\n"
 "Language-Code: es\n"
@@ -99,7 +99,6 @@ msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "El servidor XMPP no ofreció un mecanismo de autenticación soportado"
 
 #: dist/converse-no-dependencies.js:53657
-#, fuzzy
 msgid "Undecryptable OMEMO message"
 msgstr "Mensaje OMEMO no descifrable"
 
@@ -638,7 +637,7 @@ msgstr "OK"
 #. harmony default export
 #: dist/converse-no-dependencies.js:71654
 msgid "Image: "
-msgstr ""
+msgstr "Imagen: "
 
 #: dist/converse-no-dependencies.js:73046
 #, javascript-format
@@ -662,11 +661,11 @@ msgstr "Cambiar ajustes"
 
 #: dist/converse-no-dependencies.js:74781
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: dist/converse-no-dependencies.js:74810
 msgid "Retract"
-msgstr ""
+msgstr "Retirar"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:74921
@@ -675,7 +674,7 @@ msgstr "Versiones del mensaje"
 
 #: dist/converse-no-dependencies.js:75512
 msgid "Retry"
-msgstr ""
+msgstr "Reintentar"
 
 #: dist/converse-no-dependencies.js:75519
 msgid "Uploading file:"
@@ -887,6 +886,7 @@ msgstr "Cerrar y terminar esta conversación"
 #: dist/converse-no-dependencies.js:82598
 msgid "Sorry, the connection has been lost, and your message could not be sent"
 msgstr ""
+"Lo sentimos, se ha perdido la conexión, y su mensaje no puede ser enviado"
 
 #: dist/converse-no-dependencies.js:82824
 #: dist/converse-no-dependencies.js:91761
@@ -1862,6 +1862,7 @@ msgstr "¿Confirmas que quieres destruir esta conversación en grupo?"
 #: dist/converse-no-dependencies.js:92549
 msgid "Optional XMPP address for a new groupchat that replaces this one"
 msgstr ""
+"Dirección XMPP opcional para un nuevo chat de grupo que reemplace la actual"
 
 #: dist/converse-no-dependencies.js:92550
 #, fuzzy
@@ -1959,21 +1960,23 @@ msgstr "quiere añadirte a su lista de contactos"
 
 #: dist/converse-no-dependencies.js:94514
 msgid "Hide"
-msgstr ""
+msgstr "Ocultar"
 
 #: dist/converse-no-dependencies.js:94516
 msgid "Execute"
-msgstr ""
+msgstr "Ejecutar"
 
 #: dist/converse-no-dependencies.js:94570
 msgid "On which entity do you want to run commands?"
-msgstr ""
+msgstr "¿En qué instancia quiere ejecutar los comandos?"
 
 #: dist/converse-no-dependencies.js:94572
 msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
 msgstr ""
+"Ciertos servicios e instancias de XMPP permiten a los usuarios privilegiados "
+"ejecutar comandos ad-hoc sobre ellos."
 
 #: dist/converse-no-dependencies.js:94574
 #, fuzzy
@@ -1982,7 +1985,7 @@ msgstr "Salas encontradas"
 
 #: dist/converse-no-dependencies.js:94576
 msgid "List available commands"
-msgstr ""
+msgstr "Lista de comandos disponibles"
 
 #: dist/converse-no-dependencies.js:94580
 #, fuzzy
@@ -1996,7 +1999,7 @@ msgstr "Lo sentimos, ocurrió un error mientras se eliminaban los dispositivos."
 
 #: dist/converse-no-dependencies.js:94773
 msgid "The specified entity doesn't support ad-hoc commands"
-msgstr ""
+msgstr "La instancia especificada no soporta comandos ad-hoc"
 
 #: dist/converse-no-dependencies.js:94886
 #, fuzzy
@@ -2013,7 +2016,7 @@ msgstr "Acerca de"
 
 #: dist/converse-no-dependencies.js:94965
 msgid "Commands"
-msgstr ""
+msgstr "Comandos"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:94971
@@ -2253,6 +2256,8 @@ msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
 msgstr ""
+"Este chat grupal tiene que ser sólo para miembros y no anónima para poder "
+"soportar los mensajes encriptados con OMEMO"
 
 #: dist/converse-no-dependencies.js:97284
 #, javascript-format

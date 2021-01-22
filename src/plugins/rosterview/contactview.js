@@ -1,8 +1,8 @@
-import ViewWithAvatar from 'shared/avatar.js';
 import log from "@converse/headless/log";
 import tpl_pending_contact from "./templates/pending_contact.js";
 import tpl_requesting_contact from "./templates/requesting_contact.js";
 import tpl_roster_item from "./templates/roster_item.js";
+import { ViewWithAvatar } from 'shared/avatar.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { debounce, without } from "lodash-es";

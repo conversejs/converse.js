@@ -10,6 +10,7 @@ export default (o) => html`
             ${ o.connected
                 ? html`
                     <div class="controlbox-pane">
+                        <converse-user-profile></converse-user-profile>
                         <converse-headlines-panel></converse-headlines-panel>
                         <converse-rooms-list></converse-rooms-list>
                         <converse-bookmarks></converse-bookmarks>

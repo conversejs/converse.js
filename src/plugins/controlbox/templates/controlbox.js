@@ -9,13 +9,15 @@ export default (o) => html`
         <div class="controlbox-panes">
             ${ o.connected
                 ? html`
-                    <converse-headlines-panel></converse-headlines-panel>
-                    <converse-rooms-list></converse-rooms-list>
-                    <converse-bookmarks></converse-bookmarks>`
+                    <div class="controlbox-pane">
+                        <converse-headlines-panel></converse-headlines-panel>
+                        <converse-rooms-list></converse-rooms-list>
+                        <converse-bookmarks></converse-bookmarks>
+                    </div>`
                 : (
                     o['active-form'] === 'register'
-                    ? html`<converse-login-panel></converse-login-panel>`
-                    : html`<converse-register-panel></converse-headlines-panel>`
+                        ? html`<converse-login-panel></converse-login-panel>`
+                        : html`<converse-register-panel></converse-headlines-panel>`
                   )
             }
         </div>

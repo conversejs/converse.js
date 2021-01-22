@@ -48,34 +48,11 @@ class ControlBoxView extends ElementView {
         const connection = _converse?.connection;
         if (!connection?.connected || !connection?.authenticated || connection?.disconnecting) {
             this.classList.add('logged-out');
-        } else if (this.model.get('connected')) {
-            this.renderControlBoxPane();
         }
     }
 
     onConnected () {
         this.model.get('connected') && this.render();
-    }
-
-    /**
-     * Renders the "Contacts" panel of the controlbox.
-     * This will only be called after the user has already been logged in.
-     * @private
-     * @method _converse.ControlBoxView.renderControlBoxPane
-     */
-    renderControlBoxPane () {
-        if (this.loginpanel) {
-            this.loginpanel.remove();
-            delete this.loginpanel;
-        }
-        if (this.controlbox_pane && u.isVisible(this.controlbox_pane.el)) {
-            return;
-        }
-        this.classList.remove('logged-out');
-        this.controlbox_pane = new _converse.ControlBoxPane();
-        this
-            .querySelector('.controlbox-panes')
-            .insertAdjacentElement('afterBegin', this.controlbox_pane.el);
     }
 
     async close (ev) {

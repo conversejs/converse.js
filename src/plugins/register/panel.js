@@ -5,7 +5,7 @@ import tpl_form_username from "templates/form_username.js";
 import tpl_register_panel from "./templates/register_panel.js";
 import tpl_spinner from "templates/spinner.js";
 import utils from "@converse/headless/utils/form";
-import { View } from "@converse/skeletor/src/view";
+import { ElementView } from "@converse/skeletor/src/element";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 import { pick } from "lodash-es";
@@ -26,17 +26,17 @@ const REGISTRATION_FORM = 2;
  * @namespace _converse.RegisterPanel
  * @memberOf _converse
  */
-const RegisterPanel = View.extend({
-    tagName: 'div',
-    id: "converse-register-panel",
-    className: 'controlbox-pane fade-in',
-    events: {
+class RegisterPanel extends ElementView {
+    id = "converse-register-panel"
+    className = 'controlbox-pane fade-in'
+    events = {
         'submit form#converse-register': 'onFormSubmission',
         'click .button-cancel': 'renderProviderChoiceForm',
-    },
+    }
 
     initialize () {
         this.reset();
+        this.model = _converse.controlbox;
         api.listen.on('connectionInitialized', () => this.registerHooks());
         this.listenTo(this.model, 'change:registration_status', this.render);
 
@@ -46,7 +46,9 @@ const RegisterPanel = View.extend({
         } else {
             this.model.set('registration_status', CHOOSE_PROVIDER);
         }
-    },
+
+        this.initPopovers();
+    }
 
     render () {
         render(tpl_register_panel({
@@ -56,9 +58,9 @@ const RegisterPanel = View.extend({
             'instructions': this.instructions,
             'model': this.model,
             'title': this.title,
-        }), this.el);
+        }), this);
         return this;
-    },
+    }
 
     /**
      * Hook into Strophe's _connect_cb, so that we can send an IQ
@@ -76,7 +78,7 @@ const RegisterPanel = View.extend({
                 }
             }
         };
-    },
+    }
 
     /**
      * Send an IQ stanza to the XMPP server asking for the registration fields.
@@ -118,7 +120,7 @@ const RegisterPanel = View.extend({
         conn.send(stanza);
         conn.connected = false;
         return true;
-    },
+    }
 
     /**
      * Handler for {@link _converse.RegisterPanel#getRegistrationFields}
@@ -147,7 +149,7 @@ const RegisterPanel = View.extend({
             this.renderRegistrationForm(stanza);
         }
         return false;
-    },
+    }
 
     reset (settings) {
         const defaults = {
@@ -164,7 +166,7 @@ const RegisterPanel = View.extend({
         if (settings) {
             Object.assign(this, pick(settings, Object.keys(defaults)));
         }
-    },
+    }
 
     /**
      * Event handler when the #converse-register form is submitted.
@@ -180,7 +182,7 @@ const RegisterPanel = View.extend({
             this.onProviderChosen(ev.target);
         }
 
-    },
+    }
 
     /**
      * Callback method that gets called when the user has chosen an XMPP provider
@@ -198,7 +200,7 @@ const RegisterPanel = View.extend({
         }
         form.querySelector('input[type=submit]').classList.add('hidden');
         this.fetchRegistrationForm(domain.trim());
-    },
+    }
 
     /**
      * Fetch a registration form from the requested domain
@@ -217,27 +219,27 @@ const RegisterPanel = View.extend({
         // above finishes. So we use optional chaining here
         _converse.connection?.connect(this.domain, "", status => this.onConnectStatusChanged(status));
         return false;
-    },
+    }
 
     giveFeedback (message, klass) {
-        let feedback = this.el.querySelector('.reg-feedback');
+        let feedback = this.querySelector('.reg-feedback');
         if (feedback !== null) {
             feedback.parentNode.removeChild(feedback);
         }
-        const form = this.el.querySelector('form');
+        const form = this.querySelector('form');
         form.insertAdjacentHTML('afterbegin', '<span class="reg-feedback"></span>');
         feedback = form.querySelector('.reg-feedback');
         feedback.textContent = message;
         if (klass) {
             feedback.classList.add(klass);
         }
-    },
+    }
 
     showSpinner () {
-        const form = this.el.querySelector('form');
+        const form = this.querySelector('form');
         render(tpl_spinner(), form);
         return this;
-    },
+    }
 
     /**
      * Callback function called by Strophe whenever the connection status changes.
@@ -282,7 +284,7 @@ const RegisterPanel = View.extend({
             }
             this.reset();
         }
-    },
+    }
 
     getLegacyFormFields () {
         const input_fields = Object.keys(this.fields).map(key => {
@@ -308,7 +310,7 @@ const RegisterPanel = View.extend({
         });
         const urls = this.urls.map(u => tpl_form_url({'label': '', 'value': u}));
         return [...input_fields, ...urls];
-    },
+    }
 
     getFormFields (stanza) {
         if (this.form_type === 'xform') {
@@ -318,7 +320,7 @@ const RegisterPanel = View.extend({
         } else {
             return this.getLegacyFormFields();
         }
-    },
+    }
 
     /**
      * Renders the registration form based on the XForm fields
@@ -330,10 +332,10 @@ const RegisterPanel = View.extend({
     renderRegistrationForm (stanza) {
         this.form_fields = this.getFormFields(stanza);
         this.model.set('registration_status', REGISTRATION_FORM);
-    },
+    }
 
     showValidationError (message) {
-        const form = this.el.querySelector('form');
+        const form = this.querySelector('form');
         let flash = form.querySelector('.form-errors');
         if (flash === null) {
             flash = '<div class="form-errors hidden"></div>';
@@ -352,7 +354,7 @@ const RegisterPanel = View.extend({
             '<p class="form-help error">'+message+'</p>'
         );
         flash.classList.remove('hidden');
-    },
+    }
 
     /**
      * Report back to the user any error messages received from the
@@ -369,14 +371,14 @@ const RegisterPanel = View.extend({
                 'Please check the values you entered for correctness.');
             this.showValidationError(message);
         }
-    },
+    }
 
     renderProviderChoiceForm (ev) {
         if (ev && ev.preventDefault) { ev.preventDefault(); }
         _converse.connection._proto._abortAllRequests();
         _converse.connection.reset();
         this.render();
-    },
+    }
 
     abortRegistration () {
         _converse.connection._proto._abortAllRequests();
@@ -388,7 +390,7 @@ const RegisterPanel = View.extend({
         } else {
             this.render();
         }
-    },
+    }
 
     /**
      * Handler, when the user submits the registration form.
@@ -398,7 +400,7 @@ const RegisterPanel = View.extend({
      * @param { HTMLElement } form - The HTML form that was submitted
      */
     submitRegistrationForm (form) {
-        const has_empty_inputs = Array.from(this.el.querySelectorAll('input.required'))
+        const has_empty_inputs = Array.from(this.querySelectorAll('input.required'))
             .reduce((result, input) => {
                 if (input.value === '') {
                     input.classList.add('error');
@@ -423,7 +425,7 @@ const RegisterPanel = View.extend({
         _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
         _converse.connection.send(iq);
         this.setFields(iq.tree());
-    },
+    }
 
     /* Stores the values that will be sent to the XMPP server during attempted registration.
      * @private
@@ -438,7 +440,7 @@ const RegisterPanel = View.extend({
         } else {
             this._setFieldsFromLegacy(query);
         }
-    },
+    }
 
     _setFieldsFromLegacy (query) {
         [].forEach.call(query.children, field => {
@@ -454,7 +456,7 @@ const RegisterPanel = View.extend({
             this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
         });
         this.form_type = 'legacy';
-    },
+    }
 
     _setFieldsFromXForm (xform) {
         this.title = xform.querySelector('title')?.textContent;
@@ -469,7 +471,7 @@ const RegisterPanel = View.extend({
             }
         });
         this.form_type = 'xform';
-    },
+    }
 
     /**
      * Callback method that gets called when a return IQ stanza
@@ -502,6 +504,6 @@ const RegisterPanel = View.extend({
         }
         return false;
     }
-});
+}
 
-export default RegisterPanel;
+api.elements.define('converse-register-panel', RegisterPanel);

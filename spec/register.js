@@ -7,7 +7,7 @@ const u = converse.env.utils;
 
 describe("The Registration Panel", function () {
 
-    it("is not available unless allow_registration=true",
+    fit("is not available unless allow_registration=true",
         mock.initConverse(
             ['chatBoxesInitialized'],
             { auto_login: false,

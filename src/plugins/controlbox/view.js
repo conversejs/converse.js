@@ -23,6 +23,7 @@ class ControlBoxView extends ElementView {
         // this.listenTo(this.model, 'hide', this.hide);
         this.listenTo(this.model, 'show', this.show);
         this.render();
+        _converse.chatboxviews.add('controlbox', this);
         /**
          * Triggered when the _converse.ControlBoxView has been initialized and therefore
          * exists. The controlbox contains the login and register forms when the user is
@@ -35,49 +36,25 @@ class ControlBoxView extends ElementView {
     }
 
     render () {
-        _converse.chatboxviews.add('controlbox', this);
-
-        if (this.model.get('connected')) {
-            if (this.model.get('closed') === undefined) {
-                this.model.set('closed', !api.settings.get('show_controlbox_by_default'));
-            }
+        if (this.model.get('connected') && this.model.get('closed') === undefined) {
+            this.model.set('closed', !api.settings.get('show_controlbox_by_default'));
         }
 
-        const tpl_result = tpl_controlbox({
+        render(tpl_controlbox({
             'sticky_controlbox': api.settings.get('sticky_controlbox'),
             ...this.model.toJSON()
-        });
-        render(tpl_result, this);
+        }), this);
 
-        const connection = _converse?.connection || {};
-        if (!connection.connected || !connection.authenticated || connection.disconnecting) {
-            this.renderLoginPanel();
+        const connection = _converse?.connection;
+        if (!connection?.connected || !connection?.authenticated || connection?.disconnecting) {
+            this.classList.add('logged-out');
         } else if (this.model.get('connected')) {
             this.renderControlBoxPane();
         }
-        return this;
     }
 
     onConnected () {
-        if (this.model.get('connected')) {
-            this.render();
-        }
-    }
-
-    renderLoginPanel () {
-        this.classList.add('logged-out');
-        if (this.loginpanel) {
-            this.loginpanel.render();
-        } else {
-            this.loginpanel = new _converse.LoginPanel({
-                'model': new _converse.LoginPanelModel()
-            });
-            const panes = this.querySelector('.controlbox-panes');
-            panes.innerHTML = '';
-            panes.appendChild(this.loginpanel.render().el);
-        }
-        this.loginpanel.initPopovers();
-        return this;
+        this.model.get('connected') && this.render();
     }
 
     /**

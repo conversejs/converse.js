@@ -1,9 +1,10 @@
 import bootstrap from "bootstrap.native";
 import tpl_login_panel from "./templates/loginpanel.js";
+import { ElementView } from "@converse/skeletor/src/element";
 import { Model } from '@converse/skeletor/src/model.js';
-import { View } from "@converse/skeletor/src/view";
-import { __ } from '../../i18n';
+import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
+import { render } from 'lit-html';
 
 const u = converse.env.utils;
 const { Strophe } = converse.env;
@@ -47,38 +48,38 @@ const CONNECTION_STATUS_CSS_CLASS = {
 };
 
 
-export const LoginPanelModel = Model.extend({
+const LoginPanelModel = Model.extend({
    defaults: {
-         // Passed-by-reference. Fine in this case because there's
-         // only one such model.
+         // Passed-by-reference. Fine in this case because there's only one such model.
          'errors': [],
    }
 });
 
 
-export const LoginPanel = View.extend({
-   tagName: 'div',
-   id: "converse-login-panel",
-   className: 'controlbox-pane fade-in row no-gutters',
-   events: {
+class LoginPanel extends ElementView {
+   id = "converse-login-panel"
+   className = 'controlbox-pane fade-in row no-gutters'
+   events = {
          'submit form#converse-login': 'authenticate',
          'change input': 'validate'
-   },
+   }
 
    initialize () {
+         this.model = new LoginPanelModel();
          this.listenTo(this.model, 'change', this.render)
          this.listenTo(_converse.connfeedback, 'change', this.render);
          this.render();
-   },
+         this.initPopovers();
+   }
 
-   toHTML () {
+   render () {
          const connection_status = _converse.connfeedback.get('connection_status');
          let feedback_class, pretty_status;
          if (REPORTABLE_STATUSES.includes(connection_status)) {
             pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
             feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
          }
-         return tpl_login_panel(
+         render(tpl_login_panel(
             Object.assign(this.model.toJSON(), {
                '_converse': _converse,
                'ANONYMOUS': _converse.ANONYMOUS,
@@ -95,21 +96,21 @@ export const LoginPanel = View.extend({
                                        __('Username') || __('user@domain'),
                'show_trust_checkbox': api.settings.get('allow_user_trust_override')
             })
-         );
-   },
+         ), this);
+   }
 
    initPopovers () {
-         Array.from(this.el.querySelectorAll('[data-title]')).forEach(el => {
+         Array.from(this.querySelectorAll('[data-title]')).forEach(el => {
             new bootstrap.Popover(el, {
                'trigger': api.settings.get("view_mode") === 'mobile' && 'click' || 'hover',
                'dismissible': api.settings.get("view_mode") === 'mobile' && true || false,
-               'container': this.el.parentElement.parentElement.parentElement
+               'container': this.parentElement.parentElement.parentElement
             })
          });
-   },
+   }
 
    validate () {
-         const form = this.el.querySelector('form');
+         const form = this.querySelector('form');
          const jid_element = form.querySelector('input[name=jid]');
          if (jid_element.value &&
                !api.settings.get('locked_domain') &&
@@ -120,14 +121,14 @@ export const LoginPanel = View.extend({
          }
          jid_element.setCustomValidity('');
          return true;
-   },
+   }
 
    /**
-      * Authenticate the user based on a form submission event.
-      * @param { Event } ev
-      */
+    * Authenticate the user based on a form submission event.
+    * @param { Event } ev
+    */
    authenticate (ev) {
-         if (ev && ev.preventDefault) { ev.preventDefault(); }
+         ev?.preventDefault();
          if (api.settings.get("authentication") === _converse.ANONYMOUS) {
             return this.connect(_converse.jid, null);
          }
@@ -147,13 +148,15 @@ export const LoginPanel = View.extend({
             jid = jid + '@' + api.settings.get('default_domain');
          }
       this.connect(jid, form_data.get('password'));
-   },
+   }
 
-   connect (jid, password) {
+   connect (jid, password) { // eslint-disable-line class-methods-use-this
          if (["converse/login", "converse/register"].includes(_converse.router.history.getFragment())) {
             _converse.router.navigate('', {'replace': true});
          }
          _converse.connection && _converse.connection.reset();
          api.user.login(jid, password);
    }
-});
+}
+
+api.elements.define('converse-login-panel', LoginPanel);

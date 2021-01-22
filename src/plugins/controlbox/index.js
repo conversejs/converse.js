@@ -5,15 +5,15 @@
  */
 import "../../components/brand-heading";
 import "../chatview/index.js";
+import './loginpanel.js';
 import ControlBoxMixin from './model.js';
 import ControlBoxPane from './pane.js';
 import ControlBoxToggle from './toggle.js';
 import ControlBoxView from './view.js';
+import controlbox_api from './api.js';
 import log from '@converse/headless/log';
-import { LoginPanelModel, LoginPanel } from './loginpanel.js';
 import { _converse, api, converse } from '@converse/headless/core';
 import { addControlBox } from './utils.js';
-import controlbox_api from './api.js';
 
 const u = converse.env.utils;
 
@@ -96,8 +96,6 @@ converse.plugins.add('converse-controlbox', {
 
         _converse.ControlBoxView = ControlBoxView;
         _converse.ControlBox = _converse.ChatBox.extend(ControlBoxMixin);
-        _converse.LoginPanelModel = LoginPanelModel;
-        _converse.LoginPanel = LoginPanel;
         _converse.ControlBoxPane = ControlBoxPane;
         _converse.ControlBoxToggle = ControlBoxToggle;
 

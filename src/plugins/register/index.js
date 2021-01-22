@@ -7,8 +7,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import '../controlbox/index.js';
-import ControlBoxRegistrationMixin from './controlbox-mixin.js';
-import RegisterPanel from './panel.js';
 import log from '@converse/headless/log';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
@@ -31,21 +29,6 @@ converse.plugins.add('converse-register', {
         return true;
     },
 
-    overrides: {
-        // Overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-
-        ControlBoxView: {
-            renderLoginPanel () {
-                // Also render a registration panel, when rendering the login panel.
-                this.__super__.renderLoginPanel.apply(this, arguments);
-                this.renderRegistrationPanel();
-                return this;
-            }
-        }
-    },
-
     initialize () {
         _converse.CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
         _converse.CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
@@ -58,10 +41,6 @@ converse.plugins.add('converse-register', {
             'providers_link': 'https://compliance.conversations.im/', // Link to XMPP providers shown on registration page
             'registration_domain': ''
         });
-
-        Object.assign(_converse.ControlBoxView.prototype, ControlBoxRegistrationMixin);
-
-        _converse.RegisterPanel = RegisterPanel;
 
         function setActiveForm (value) {
             api.waitUntil('controlBoxInitialized')

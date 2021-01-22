@@ -20,7 +20,6 @@ class ControlBoxView extends ElementView {
     initialize () {
         this.model = _converse.chatboxes.get(this.getAttribute('id'));
         this.listenTo(this.model, 'change:connected', this.onConnected);
-        // this.listenTo(this.model, 'hide', this.hide);
         this.listenTo(this.model, 'show', this.show);
         this.render();
         _converse.chatboxviews.add('controlbox', this);
@@ -84,20 +83,16 @@ class ControlBoxView extends ElementView {
         return this;
     }
 
-    hide (callback) {
+    hide () {
         if (api.settings.get('sticky_controlbox')) {
             return;
         }
         u.addClass('hidden', this);
         api.trigger('chatBoxClosed', this);
-        if (!api.connection.connected()) {
-            _converse.controlboxtoggle.render();
-        }
-        _converse.controlboxtoggle.show(callback);
         return this;
     }
 
-    onControlBoxToggleHidden () {
+    show () {
         this.model.set('closed', false);
         this.classList.remove('hidden');
         /**
@@ -106,10 +101,6 @@ class ControlBoxView extends ElementView {
          * @type {_converse.ControlBox}
          */
         api.trigger('controlBoxOpened', this);
-    }
-
-    show () {
-        _converse.controlboxtoggle.hide(() => this.onControlBoxToggleHidden());
         return this;
     }
 

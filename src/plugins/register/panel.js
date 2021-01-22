@@ -36,7 +36,8 @@ class RegisterPanel extends ElementView {
 
     initialize () {
         this.reset();
-        this.model = _converse.controlbox;
+        const controlbox = _converse.chatboxes.get('controlbox');
+        this.model = controlbox;
         api.listen.on('connectionInitialized', () => this.registerHooks());
         this.listenTo(this.model, 'change:registration_status', this.render);
 
@@ -46,8 +47,6 @@ class RegisterPanel extends ElementView {
         } else {
             this.model.set('registration_status', CHOOSE_PROVIDER);
         }
-
-        this.initPopovers();
     }
 
     render () {

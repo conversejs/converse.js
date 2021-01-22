@@ -8,9 +8,6 @@ const u = converse.env.utils;
 
 
 class ControlBoxToggle extends ElementView {
-    events = {
-        'click': 'onClick'
-    }
 
     async initialize () {
         await api.waitUntil('initialized');
@@ -18,25 +15,11 @@ class ControlBoxToggle extends ElementView {
     }
 
     render () {
-        // We let the render method of ControlBoxView decide whether
-        // the ControlBox or the Toggle must be shown. This prevents
-        // artifacts (i.e. on page load the toggle is shown only to then
-        // seconds later be hidden in favor of the controlbox).
-        render(tpl_controlbox_toggle(), this);
-        return this;
-    }
-
-    hide (callback) {
-        if (u.isVisible(this)) {
-            u.hideElement(this);
-            callback();
-        }
-    }
-
-    show (callback) {
-        if (!u.isVisible(this)) {
-            u.fadeIn(this, callback);
-        }
+        const controlbox = _converse.chatboxes.get('controlbox');
+        render(tpl_controlbox_toggle({
+            'onClick': (ev) => this.onClick(ev),
+            'hide': !controlbox.get('closed')
+        }), this);
     }
 
     showControlBox () { // eslint-disable-line class-methods-use-this

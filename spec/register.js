@@ -5,9 +5,9 @@ const $iq = converse.env.$iq;
 const { sizzle}  = converse.env;
 const u = converse.env.utils;
 
-describe("The Registration Panel", function () {
+fdescribe("The Registration Panel", function () {
 
-    fit("is not available unless allow_registration=true",
+    it("is not available unless allow_registration=true",
         mock.initConverse(
             ['chatBoxesInitialized'],
             { auto_login: false,
@@ -20,26 +20,25 @@ describe("The Registration Panel", function () {
         done();
     }));
 
-    it("can be opened by clicking on the registration tab",
+    fit("can be opened by clicking on the registration tab",
         mock.initConverse(
             ['chatBoxesInitialized'],
             { auto_login: false,
               allow_registration: true },
             async function (done, _converse) {
 
-        const toggle = document.querySelector(".toggle-controlbox");
+        const toggle = await u.waitUntil(() => document.querySelector(".toggle-controlbox"));
         if (!u.isVisible(document.querySelector("#controlbox"))) {
             if (!u.isVisible(toggle)) {
                 u.removeClass('hidden', toggle);
             }
             toggle.click();
         }
-        await u.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'), 300);
         const cbview = _converse.chatboxviews.get('controlbox');
         const panels = cbview.querySelector('.controlbox-panes');
         const login = panels.firstElementChild;
         const registration = panels.childNodes[1];
-        const register_link = cbview.querySelector('a.register-account');
+        const register_link = await u.waitUntil(() => cbview.querySelector('a.register-account'));
         expect(register_link.textContent).toBe("Create an account");
         register_link.click();
 

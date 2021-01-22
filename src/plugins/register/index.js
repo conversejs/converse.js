@@ -6,6 +6,7 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
+import './panel.js';
 import '../controlbox/index.js';
 import log from '@converse/headless/log';
 import { __ } from 'i18n';

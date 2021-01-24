@@ -1,4 +1,4 @@
-import { __ } from '../i18n';
+import { __ } from 'i18n';
 import { api } from "@converse/headless/core";
 import { html } from "lit-html";
 

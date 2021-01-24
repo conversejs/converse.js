@@ -432,8 +432,6 @@ converse.plugins.add('converse-muc', {
             api.listen.on('reconnected', registerDirectInvitationHandler);
         }
 
-        api.listen.on('reconnected', () => _converse.session.save('rai_enabled_domains', ''));
-
         api.listen.on('beforeTearDown', () => {
             const groupchats = _converse.chatboxes.where({ 'type': _converse.CHATROOMS_TYPE });
             groupchats.forEach(muc =>

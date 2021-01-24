@@ -791,7 +791,7 @@ describe("Message Retractions", function () {
                 </message>`);
             await view.model.handleMessageStanza(retraction);
             expect(view.model.messages.length).toBe(1);
-            expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
+            await u.waitUntil(() => view.model.messages.at(0).get('moderated') === 'retracted');
             expect(view.model.messages.at(0).get('moderation_reason')).toBe(reason);
             expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
             expect(view.model.messages.at(0).get('editable')).toBe(false);

@@ -439,7 +439,8 @@ export const api = _converse.api = {
         const options = args.pop();
         if (options && options.synchronous) {
             const events = _converse._events[name] || [];
-            await Promise.all(events.map(e => e.callback.apply(e.ctx, args.splice(1))));
+            const event_args = args.splice(1);
+            await Promise.all(events.map(e => e.callback.apply(e.ctx, event_args)));
         } else {
             _converse.trigger.apply(_converse, arguments);
         }

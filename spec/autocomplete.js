@@ -38,6 +38,7 @@ describe("The nickname autocomplete feature", function () {
                 type: 'groupchat'
             }).c('body').t('Hello world').tree();
         await view.model.handleMessageStanza(msg);
+        await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
         // Test that pressing @ brings up all options
         const textarea = view.el.querySelector('textarea.chat-textarea');
@@ -91,6 +92,7 @@ describe("The nickname autocomplete feature", function () {
                 type: 'groupchat'
             }).c('body').t('Hello world').tree();
         await view.model.handleMessageStanza(msg);
+        await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
         // Test that pressing @ brings up all options
         const textarea = view.el.querySelector('textarea.chat-textarea');
@@ -145,6 +147,7 @@ describe("The nickname autocomplete feature", function () {
                 type: 'groupchat'
             }).c('body').t('Hello world').tree();
         await view.model.handleMessageStanza(msg);
+        await u.waitUntil(() => view.model.messages.last()?.get('received'));
 
         // Test that pressing @ brings up all options
         const textarea = view.el.querySelector('textarea.chat-textarea');

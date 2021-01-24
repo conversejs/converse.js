@@ -190,7 +190,6 @@ describe("XEP-0437 Room Activity Indicators", function () {
         expect(_converse.session.get('rai_enabled_domains')).toBe(undefined);
 
         const muc_jid = 'lounge@montague.lit';
-        const muc_domain = Strophe.getDomainFromJid(muc_jid);
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.api.chatviews.get(muc_jid);
         expect(view.model.get('hidden')).toBe(false);
@@ -212,9 +211,6 @@ describe("XEP-0437 Room Activity Indicators", function () {
                 `<rai xmlns="urn:xmpp:rai:0"/>`+
             `</presence>`
         );
-        expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.DISCONNECTED);
-                expect(_converse.session.get('rai_enabled_domains')).toBe(` ${muc_domain}`);
-
         // If an error presence with "resource-constraint" is returned, we rejoin
         const activity_stanza = u.toStanza(`
             <presence type="error" from="${Strophe.getDomainFromJid(muc_jid)}">
@@ -224,8 +220,6 @@ describe("XEP-0437 Room Activity Indicators", function () {
         _converse.connection._dataRecv(mock.createRequest(activity_stanza));
 
         await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
-
-        expect(_converse.session.get('rai_enabled_domains')).toBe(' ');
         done();
     }));
 

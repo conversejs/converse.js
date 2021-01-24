@@ -80,7 +80,7 @@ const RosterView = OrderedListView.extend({
 
     listenToRosterFilter () {
         this.filter_view = this.el.querySelector('converse-roster-filter');
-        this.listenTo(this.filter_view.model, 'change', this.updateFilter);
+        this.filter_view.addEventListener('update', () => this.updateFilter());
     },
 
     /**
@@ -91,6 +91,7 @@ const RosterView = OrderedListView.extend({
      * contact fetched from browser storage.
      */
     updateFilter: debounce(function () {
+        this.filter_view = this.el.querySelector('converse-roster-filter');
         const type = this.filter_view.model.get('filter_type');
         if (type === 'state') {
             this.filter(this.filter_view.model.get('chat_state'), type);
@@ -103,7 +104,6 @@ const RosterView = OrderedListView.extend({
         if (!u.isVisible(this.roster_el)) {
             u.showElement(this.roster_el);
         }
-        // this.filter_view.render();
         return this;
     },
 

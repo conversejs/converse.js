@@ -185,7 +185,9 @@ const ChatRoomMixin = {
      *  message, even if it didn't include a `markable` element.
      */
     sendMarkerForMessage (msg, type = 'displayed', force = false) {
-        if (!msg) return;
+        if (!msg || !api.settings.get('send_chat_markers').includes(type)) {
+            return;
+        }
         if (msg?.get('is_markable') || force) {
             const id = msg.get(`stanza_id ${this.get('jid')}`);
             if (!id) {
@@ -209,12 +211,8 @@ const ChatRoomMixin = {
      */
     enableRAI () {
         if (api.settings.get('muc_subscribe_to_rai')) {
-            const rai_enabled = _converse.session.get('rai_enabled_domains') || '';
             const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
-            if (!rai_enabled.includes(muc_domain)) {
-                api.user.presence.send(null, muc_domain, null, $build('rai', { 'xmlns': Strophe.NS.RAI }));
-                _converse.session.save({ 'rai_enabled_domains': `${rai_enabled} ${muc_domain}` });
-            }
+            api.user.presence.send(null, muc_domain, null, $build('rai', { 'xmlns': Strophe.NS.RAI }));
         }
     },
 
@@ -438,6 +436,11 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     handleMessageFromMUCHost (stanza) {
+        const conn_status = this.session.get('connection_status');
+        if (conn_status === converse.ROOMSTATUS.ENTERED) {
+            // We're not interested in activity indicators when already joined to the room
+            return;
+        }
         const rai = sizzle(`rai[xmlns="${Strophe.NS.RAI}"]`, stanza).pop();
         const active_mucs = Array.from(rai?.querySelectorAll('activity') || []).map(m => m.textContent);
         if (active_mucs.includes(this.get('jid'))) {
@@ -446,7 +449,13 @@ const ChatRoomMixin = {
                 'num_unread_general': 0 // Either/or between activity and unreads
             });
         }
+    },
 
+    handleForwardedMentions (stanza) {
+        if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+            // Avoid counting mentions twice
+            return;
+        }
         const msgs = sizzle(
             `mentions[xmlns="${Strophe.NS.MENTIONS}"] forwarded[xmlns="${Strophe.NS.FORWARD}"] message[type="groupchat"]`,
             stanza
@@ -473,6 +482,11 @@ const ChatRoomMixin = {
      * @param { XMLElement } stanza
      */
     async handleMessageStanza (stanza) {
+        if (stanza.getAttribute('type') !== 'groupchat') {
+            this.handleForwardedMentions(stanza);
+            return;
+        }
+
         if (isArchived(stanza)) {
             // MAM messages are handled in converse-mam.
             // We shouldn't get MAM messages here because
@@ -534,7 +548,7 @@ const ChatRoomMixin = {
             stanza => !!this.handleMessageStanza(stanza) || true,
             null,
             'message',
-            'groupchat',
+            null,
             null,
             muc_jid,
             { 'matchBareFromJid': true }
@@ -780,7 +794,6 @@ const ChatRoomMixin = {
      */
     async leave (exit_msg) {
         this.features.destroy();
-        this.occupants.clearStore();
 
         const disco_entity = _converse.disco_entities?.get(this.get('jid'));
         if (disco_entity) {
@@ -794,6 +807,8 @@ const ChatRoomMixin = {
 
     async close (ev) {
         await this.leave();
+        this.occupants.clearStore();
+
         if (ev?.name !== 'closeAllChatBoxes' && api.settings.get('muc_clear_messages_on_leave')) {
             this.clearMessages();
         }
@@ -2231,15 +2246,9 @@ const ChatRoomMixin = {
             if (error?.getAttribute('type') === 'wait' && error?.querySelector('resource-constraint')) {
                 // If we get a <resource-constraint> error, we assume it's in context of XEP-0437 RAI.
                 // We remove this MUC's host from the list of enabled domains and rejoin the MUC.
-                const rai_enabled = _converse.session.get('rai_enabled_domains') || '';
                 const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
-                if (rai_enabled.includes(muc_domain)) {
-                    const regex = new RegExp(muc_domain, 'g');
-                    _converse.session.save({ 'rai_enabled_domains': rai_enabled.replace(regex, '') });
-
-                    if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
-                        this.rejoin();
-                    }
+                if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
+                    this.rejoin();
                 }
             }
         }

@@ -5,7 +5,6 @@ import { _converse, api } from "@converse/headless/core";
 import { debounce } from "lodash-es";
 import { render } from 'lit-html';
 
-
 export const RosterFilter = Model.extend({
     initialize () {
         this.set({
@@ -13,9 +12,8 @@ export const RosterFilter = Model.extend({
             'filter_type': 'contacts',
             'chat_state': 'online'
         });
-    },
+    }
 });
-
 
 export class RosterFilterView extends ElementView {
     tagName = 'span';
@@ -30,8 +28,12 @@ export class RosterFilterView extends ElementView {
             this.model.save({'filter_text': this.querySelector('.roster-filter').value});
         }, 250);
 
-        this.listenTo(this.model, 'change:filter_type', this.render);
-        this.listenTo(this.model, 'change:filter_text', this.render);
+        this.listenTo(this.model, 'change', this.render);
+        this.listenTo(
+            this.model,
+            'change',
+            () => this.dispatchEvent(new CustomEvent('update', { 'detail': this.model.changed }))
+        );
 
         this.listenTo(_converse.roster, "add", this.render);
         this.listenTo(_converse.roster, "destroy", this.render);
@@ -101,6 +103,5 @@ export class RosterFilterView extends ElementView {
         this.model.save({'filter_text': ''});
     }
 }
-
 
 api.elements.define('converse-roster-filter', RosterFilterView);

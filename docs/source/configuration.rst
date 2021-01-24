@@ -1071,6 +1071,30 @@ VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
 
 If no nickame value is found, then an error will be raised.
 
+mam_request_all_pages
+---------------------
+
+* Default: ``true``
+
+When requesting messages from the archive, Converse will ask only for messages
+newer than the most recent cached message.
+
+When there are many archived messages since that one, the returned results will
+be broken up in to pages, set by `archived_messages_page_size`_.
+
+By default Converse will request all the pages until all messages have been
+fetched, however for large archives this can slow things down dramatically.
+
+This setting turns the paging off, and Converse will only fetch the latest
+page.
+
+.. note::
+
+  If paging is turned off, there will appear gaps in the message history.
+  Converse currently doesn't yet have a way to inform the user of these gaps or
+  to let them be filled.
+
+
 muc_hats
 --------
 
@@ -1778,6 +1802,7 @@ send_chat_state_notifications
 -----------------------------
 
 * Default: ``true``
+* Allowed values: ``'active', 'composing', 'gone' 'inactive', 'paused'``
 
 Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_) should be sent out or not.
 
@@ -1791,7 +1816,17 @@ For example:
             'send_chat_state_notifications':  ['composing']
         });
 
-Valid values are ``'active', 'composing', 'gone' 'inactive', 'paused'``
+
+send_chat_markers
+-----------------
+
+* Default: ``['received', 'displayed', 'acknowledged']``
+
+Determines which (if any) of the `XEP-0333 <https://xmpp.org/extensions/xep-0333.html>`_ chat markers will be sent out.
+
+It's still up to Converse to decide when to send out the relevant markers, the
+purpose of this setting is merely to turn on or off the sending of the
+individual markers.
 
 
 show_chat_state_notifications

@@ -5,7 +5,7 @@
  */
 /* global libsignal */
 
-import "./profile.js";
+import "./profile/index.js";
 import '../modals/user-details.js';
 import log from "@converse/headless/log";
 import { Collection } from "@converse/skeletor/src/collection";

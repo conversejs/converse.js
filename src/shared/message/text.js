@@ -9,6 +9,10 @@ const u = converse.env.utils;
 
 const isString = (s) => typeof s === 'string';
 
+// We don't render more than two line-breaks, replace extra line-breaks with
+// the zero-width whitespace character
+const collapseLineBreaks = text => text.replace(/\n\n+/g, m => `\n${"\u200B".repeat(m.length-2)}\n`);
+
 const tpl_mention_with_nick = (o) => html`<span class="mention mention--self badge badge-info">${o.mention}</span>`;
 const tpl_mention = (o) => html`<span class="mention">${o.mention}</span>`;
 
@@ -300,10 +304,6 @@ export class MessageText extends String {
         return text.startsWith('/me ');
     }
 
-    static replaceText (text) {
-        return convertASCII2Emoji(text.replace(/\n\n+/g, '\n\n'));
-    }
-
     /**
      * Take the annotations and return an array of text and TemplateResult
      * instances to be rendered to the DOM.
@@ -322,6 +322,6 @@ export class MessageText extends String {
                     ...list
                 ];
             });
-        return list.reduce((acc, i) => isString(i) ? [...acc, MessageText.replaceText(i)] : [...acc, i], []);
+        return list.reduce((acc, i) => isString(i) ? [...acc, convertASCII2Emoji(collapseLineBreaks(i))] : [...acc, i], []);
     }
 }

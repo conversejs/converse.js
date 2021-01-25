@@ -1,3 +1,4 @@
+import MinimizedChatsToggle from './toggle.js';
 import tpl_chats_panel from './templates/chats-panel.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api } from '@converse/headless/core';
@@ -32,7 +33,7 @@ class MinimizedChats extends ElementView {
 
     async initToggle () {
         const id = `converse.minchatstoggle-${_converse.bare_jid}`;
-        this.minchats = new _converse.MinimizedChatsToggle({id});
+        this.minchats = new MinimizedChatsToggle({id});
         this.minchats.browserStorage = _converse.createStore(id);
         await new Promise(resolve => this.minchats.fetch({'success': resolve, 'error': resolve}));
     }

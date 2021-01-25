@@ -641,8 +641,6 @@ window.addEventListener('converse-loaded', () => {
             'view_mode': mock.view_mode
         }, settings || {}));
 
-        _converse.minimize.trimChat = function () {};
-
         _converse.api.vcard.get = function (model, force) {
             let jid;
             if (typeof model === 'string' || model instanceof String) {

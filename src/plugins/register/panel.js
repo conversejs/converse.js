@@ -58,7 +58,6 @@ class RegisterPanel extends ElementView {
             'model': this.model,
             'title': this.title,
         }), this);
-        return this;
     }
 
     /**
@@ -77,6 +76,11 @@ class RegisterPanel extends ElementView {
                 }
             }
         };
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        this.render();
     }
 
     /**

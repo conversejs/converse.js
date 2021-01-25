@@ -8,7 +8,6 @@
  */
 import './panel.js';
 import '../controlbox/index.js';
-import log from '@converse/headless/log';
 import { __ } from 'i18n';
 import { _converse, api, converse } from '@converse/headless/core';
 
@@ -26,6 +25,9 @@ Strophe.Status.CONFLICT = i + 3;
 Strophe.Status.NOTACCEPTABLE = i + 5;
 
 converse.plugins.add('converse-register', {
+
+    dependencies: ['converse-controlbox'],
+
     enabled () {
         return true;
     },
@@ -43,13 +45,10 @@ converse.plugins.add('converse-register', {
             'registration_domain': ''
         });
 
-        function setActiveForm (value) {
-            api.waitUntil('controlBoxInitialized')
-                .then(() => {
-                    const controlbox = _converse.chatboxes.get('controlbox');
-                    controlbox.set({ 'active-form': value });
-                })
-                .catch(e => log.fatal(e));
+        async function setActiveForm (value) {
+            await api.waitUntil('controlBoxInitialized');
+            const controlbox = _converse.chatboxes.get('controlbox');
+            controlbox.set({ 'active-form': value });
         }
         _converse.router.route('converse/login', () => setActiveForm('login'));
         _converse.router.route('converse/register', () => setActiveForm('register'));

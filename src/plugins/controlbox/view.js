@@ -18,7 +18,8 @@ class ControlBoxView extends ElementView {
     }
 
     initialize () {
-        this.model = _converse.chatboxes.get(this.getAttribute('id'));
+        this.model = _converse.chatboxes.get('controlbox');
+        this.listenTo(this.model, 'change:active-form', this.render);
         this.listenTo(this.model, 'change:connected', this.onConnected);
         this.listenTo(this.model, 'show', this.show);
         this.render();

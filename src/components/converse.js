@@ -1,4 +1,5 @@
 import tpl_converse from "../templates/converse.js";
+import { api } from '@converse/headless/core';
 import { CustomElement } from './element.js';
 
 
@@ -13,6 +14,11 @@ class ConverseRoot extends CustomElement {
 
     render () { // eslint-disable-line class-methods-use-this
         return tpl_converse();
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        this.classList.add(`converse-${api.settings.get('view_mode')}`);
     }
 }
 

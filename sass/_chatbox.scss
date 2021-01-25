@@ -396,239 +396,263 @@
 
 /* ******************* Overlay and embedded styles *************************** */
 
-converse-chats.converse-embedded,
-converse-chats.converse-overlayed {
-    .controlbox-head {
-        padding: 0.5em;
-    }
-    .chat-head {
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-    }
-    .chatbox {
-        min-width: var(--overlayed-chat-width) !important;
-        width: var(--overlayed-chat-width);
-
-        .box-flyout {
-            min-width: var(--overlayed-chat-width) !important;
-            width: var(--overlayed-chat-width);
-        }
-    }
-}
-
-converse-chats.converse-overlayed  {
-
-    .chat-head, .box-flyout {
-        border-top-left-radius: var(--chatbox-border-radius);
-        border-top-right-radius: var(--chatbox-border-radius);
-        @media screen and (max-height: $mobile-landscape-height) {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-        @media screen and (max-width: $mobile-portrait-length) {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-    }
-
-    .flyout {
-        bottom: var(--overlayed-chatbox-hover-height);
-    }
-    .box-flyout {
-        height: var(--overlayed-chat-height);
-        min-height: calc(var(--overlayed-chat-height) / 2);
-    }
-    .chat-head {
-        min-height: var(--overlayed-chat-head-height);
-    }
-    .minimized-chats-flyout .chat-head {
-        cursor: default;
-    }
-    .chat-textarea {
-        max-height: var(--overlayed-max-chat-textarea-height);
-    }
-    .chatbox {
-        .chat-body {
-            height: calc(100% - var(--overlayed-chat-head-height));
-        }
-        .chatbox-title {
-            padding: 0.5rem 0.75rem 0 0.75rem;
-        }
-        .chatbox-title--no-desc {
-            padding: 0.5rem 0.75rem;
-        }
-        converse-dropdown {
-            .btn--standalone {
-                padding: 0 0.2em;
-                margin: 0 0 0 0.5em;
-            }
-        }
-    }
-}
-
-@include media-breakpoint-down(sm) {
+#conversejs {
+    converse-chats.converse-embedded,
     converse-chats.converse-overlayed {
-        > .row {
-            flex-direction: column;
-            &.no-gutters {
-                margin: -1em;
-            }
-        }
-    }
-}
-
-
-converse-chats.converse-embedded,
-converse-chats.converse-fullscreen  {
-    .flyout {
-        border-radius: 0;
-        border:none;
-        bottom: 0;
-    }
-
-    .chatbox {
-        margin: 0;
-        .box-flyout {
-            box-shadow: none;
-            overflow: hidden;
-        }
-        @include make-col-ready();
-        @include media-breakpoint-up(md) {
-            @include make-col(8);
-        }
-        @include media-breakpoint-up(lg) {
-            @include make-col(9);
-        }
-        @include media-breakpoint-up(xl) {
-            @include make-col(10);
-        }
-    }
-
-    &.converse-singleton {
-        .flyout {
-            border: none !important;
-        }
-        .chat-head {
+        .controlbox-head {
             padding: 0.5em;
         }
+        .chat-head {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
         .chatbox {
-            margin: 0;
-            @include make-col-ready();
-            @include media-breakpoint-up(md) {
-                @include make-col(12);
-            }
-            @include media-breakpoint-up(lg) {
-                @include make-col(12);
-            }
-            @include media-breakpoint-up(xl) {
-                @include make-col(12);
+            min-width: var(--overlayed-chat-width) !important;
+            width: var(--overlayed-chat-width);
+
+            .box-flyout {
+                min-width: var(--overlayed-chat-width) !important;
+                width: var(--overlayed-chat-width);
             }
         }
     }
-}
 
-converse-chats.converse-embedded {
-    .chat-head {
-        font-size: var(--font-size-huge);
-    }
+    converse-chats.converse-overlayed  {
 
-    .converse-chatboxes {
-        z-index: 1031; // One more than bootstrap navbar
-        position: inherit;
-        flex-wrap: nowrap;
-        bottom: auto;
-        height: 100%;
-        width: 100%;
-        margin-left: -15px;
-    }
+        .chat-head, .box-flyout {
+            border-top-left-radius: var(--chatbox-border-radius);
+            border-top-right-radius: var(--chatbox-border-radius);
+            @media screen and (max-height: $mobile-landscape-height) {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+            @media screen and (max-width: $mobile-portrait-length) {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+        }
 
-    .chatbox {
+        .flyout {
+            bottom: var(--overlayed-chatbox-hover-height);
+        }
         .box-flyout {
-            bottom: 0;
-            height: 100%;
-            min-width: auto;
-            width: 100%;
+            height: var(--overlayed-chat-height);
+            min-height: calc(var(--overlayed-chat-height) / 2);
         }
-    }
-
-    .chat-textarea {
-        max-height: var(--fullpage-max-chat-textarea-height);
-    }
-}
-
-/* ******************* Fullpage styles *************************** */
-
-converse-chats.converse-fullscreen  {
-    .chatbox-btn {
-        font-size: var(--fullpage-chatbox-button-size);
-        margin: 0 0.3em;
-    }
-    .chat-head {
-        font-size: var(--font-size-huge);
-    }
-    .chat-textarea {
-        max-height: var(--fullpage-max-chat-textarea-height);
-    }
-    .chatbox {
-        .box-flyout {
-            box-shadow: none;
-            height: var(--fullpage-chat-height);
-            min-height: calc(var(--fullpage-chat-height) / 2);
-            width: var(--fullpage-chat-width);
-            overflow: hidden;
+        .chat-head {
+            min-height: var(--overlayed-chat-head-height);
         }
-        .chat-body {
-            height: inherit;
-            overflow: hidden;
-            background-color: var(--chat-head-color);
+        .minimized-chats-flyout .chat-head {
+            cursor: default;
         }
-        .chat-title {
-            font-size: var(--font-size-huge);
-            line-height: var(--line-height-huge);
+        .chat-textarea {
+            max-height: var(--overlayed-max-chat-textarea-height);
         }
-        .sendXMPPMessage {
-            ul {
-                width: 100%;
+        .chatbox {
+            .chat-body {
+                height: calc(100% - var(--overlayed-chat-head-height));
+            }
+            .chatbox-title {
+                padding: 0.5rem 0.75rem 0 0.75rem;
+            }
+            .chatbox-title--no-desc {
+                padding: 0.5rem 0.75rem;
+            }
+            converse-dropdown {
+                .btn--standalone {
+                    padding: 0 0.2em;
+                    margin: 0 0 0 0.5em;
+                }
             }
         }
     }
 }
 
 @include media-breakpoint-down(sm) {
-    converse-chats:not(.converse-embedded)  {
-        > .row {
-            flex-direction: row-reverse;
-        }
-        #converse-login-panel {
-            .converse-form {
-                padding: 3em 2em 3em;
+    #conversejs {
+        converse-chats.converse-overlayed {
+            > .row {
+                flex-direction: column;
+                &.no-gutters {
+                    margin: -1em;
+                }
             }
         }
+    }
+}
+
+
+#conversejs {
+    converse-chats.converse-embedded,
+    converse-chats.converse-fullscreen  {
+        .flyout {
+            border-radius: 0;
+            border:none;
+            bottom: 0;
+        }
+
         .chatbox {
-            width: calc(100% - 50px);
-            .row {
+            margin: 0;
+            margin-left: 15px;
+            .box-flyout {
+                box-shadow: none;
+                overflow: hidden;
+            }
+            &:not(#controlbox) {
                 .box-flyout {
-                    left: 50px;
-                    bottom: 0;
-                    height: var(--fullpage-chat-height);
-                    box-shadow: none;
+                    @include media-breakpoint-up(md) {
+                        max-width: 66.666667%;
+                    }
+                    @include media-breakpoint-up(lg) {
+                        max-width: 75%;
+                    }
+                    @include media-breakpoint-up(xl) {
+                        max-width: 83.333333%;
+                    }
+                }
+            }
+            @include media-breakpoint-up(md) {
+                @include make-col(8);
+            }
+            @include media-breakpoint-up(lg) {
+                @include make-col(9);
+            }
+            @include media-breakpoint-up(xl) {
+                @include make-col(10);
+            }
+        }
+
+        &.converse-singleton {
+            .flyout {
+                border: none !important;
+            }
+            .chat-head {
+                padding: 0.5em;
+            }
+            .chatbox {
+                margin: 0;
+                @include make-col-ready();
+                @include media-breakpoint-up(md) {
+                    @include make-col(12);
+                }
+                @include media-breakpoint-up(lg) {
+                    @include make-col(12);
+                }
+                @include media-breakpoint-up(xl) {
+                    @include make-col(12);
                 }
             }
         }
     }
 
-    converse-chats.converse-mobile,
-    converse-chats.converse-overlayed,
-    converse-chats.converse-fullscreen {
+    converse-chats.converse-embedded {
+        .chat-head {
+            font-size: var(--font-size-huge);
+        }
+
+        &.converse-chatboxes {
+            z-index: 1031; // One more than bootstrap navbar
+            position: inherit;
+            flex-wrap: nowrap;
+            bottom: auto;
+            height: 100%;
+            width: 100%;
+            margin-left: -15px;
+        }
+
         .chatbox {
             .box-flyout {
-                .chatbox-navback {
-                    margin: auto 0;
-                    margin-right: 1em;
-                    display: flex;
-                    .fa-arrow-left {
-                        &:before {
-                            color: white;
+                bottom: 0;
+                height: 100%;
+                min-width: auto;
+                width: 100%;
+            }
+        }
+
+        .chat-textarea {
+            max-height: var(--fullpage-max-chat-textarea-height);
+        }
+    }
+}
+
+/* ******************* Fullpage styles *************************** */
+
+#conversejs {
+    converse-chats.converse-fullscreen  {
+        .chatbox-btn {
+            font-size: var(--fullpage-chatbox-button-size);
+            margin: 0 0.3em;
+        }
+        .chat-head {
+            font-size: var(--font-size-huge);
+        }
+        .chat-textarea {
+            max-height: var(--fullpage-max-chat-textarea-height);
+        }
+        .chatbox {
+            .box-flyout {
+                box-shadow: none;
+                height: var(--fullpage-chat-height);
+                min-height: calc(var(--fullpage-chat-height) / 2);
+                width: var(--fullpage-chat-width);
+                overflow: hidden;
+            }
+            .chat-body {
+                height: inherit;
+                overflow: hidden;
+                background-color: var(--chat-head-color);
+            }
+            .chat-title {
+                font-size: var(--font-size-huge);
+                line-height: var(--line-height-huge);
+            }
+            .sendXMPPMessage {
+                ul {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
+
+@include media-breakpoint-down(sm) {
+    #conversejs {
+        converse-chats:not(.converse-embedded)  {
+            > .row {
+                flex-direction: row-reverse;
+            }
+            #converse-login-panel {
+                .converse-form {
+                    padding: 3em 2em 3em;
+                }
+            }
+            .chatbox {
+                width: calc(100% - 50px);
+                .row {
+                    .box-flyout {
+                        left: 50px;
+                        bottom: 0;
+                        height: var(--fullpage-chat-height);
+                        box-shadow: none;
+                    }
+                }
+            }
+        }
+
+        converse-chats.converse-mobile,
+        converse-chats.converse-overlayed,
+        converse-chats.converse-fullscreen {
+            .chatbox {
+                .box-flyout {
+                    .chatbox-navback {
+                        margin: auto 0;
+                        margin-right: 1em;
+                        display: flex;
+                        .fa-arrow-left {
+                            &:before {
+                                color: white;
+                            }
                         }
                     }
                 }

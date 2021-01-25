@@ -31,18 +31,22 @@
     }
 }
 
-#conversejs.converse-fullscreen {
-    .chatbox.headlines {
-        .box-flyout {
-            background-color: var(--headline-head-color);
-        }
-        .chat-head {
-            &.chat-head-chatbox {
-                background-color: var(--headline-head-color);
+#conversejs {
+    converse-chats {
+        &.converse-fullscreen {
+            .chatbox.headlines {
+                .box-flyout {
+                    background-color: var(--headline-head-color);
+                }
+                .chat-head {
+                    &.chat-head-chatbox {
+                        background-color: var(--headline-head-color);
+                    }
+                }
+                .flyout {
+                    border-color: var(--headline-head-color);
+                }
             }
-        }
-        .flyout {
-            border-color: var(--headline-head-color);
         }
     }
 }

@@ -115,21 +115,19 @@ body.converse-fullscreen {
     }
 
     converse-chats {
-      .converse-overlayed {
+      &.converse-overlayed {
           height: 3em;
           > .row {
               flex-direction: row-reverse;
           }
       }
 
-      .converse-fullscreen,
-      .converse-mobile {
-          .converse-chatboxes {
-              width: 100vw;
-              left: -15px; // Hack due to padding added by bootstrap
-          }
+      &.converse-fullscreen,
+      &.converse-mobile {
+          flex-wrap: nowrap;
+          width: 100vw;
       }
-      .converse-embedded {
+      &.converse-embedded {
           box-sizing: border-box;
           *, *:before, *:after {
               box-sizing: border-box;

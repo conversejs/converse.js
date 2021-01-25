@@ -385,7 +385,7 @@
     }
 
     converse-chats {
-        .converse-overlayed {
+        &.converse-overlayed {
             .message {
                 &.chat-msg {
                     &.chat-msg--followup {

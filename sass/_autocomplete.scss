@@ -126,13 +126,13 @@
     }
 
     converse-chats {
-        .converse-fullscreen {
+        &.converse-fullscreen {
             .suggestion-box__results--above {
                 bottom: 4.5em;
             }
         }
 
-        .converse-overlayed {
+        &.converse-overlayed {
             .suggestion-box__results--above {
                 bottom: 3.5em;
             }

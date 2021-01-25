@@ -101,7 +101,6 @@ converse.plugins.add('converse-controlbox', {
         api.listen.on('chatBoxesFetched', onChatBoxesFetched);
         api.listen.on('cleanup', () => delete _converse.controlboxtoggle);
         api.listen.on('clearSession', clearSession);
-        api.listen.on('disconnected', () => disconnect().renderLoginPanel());
         api.listen.on('will-reconnect', disconnect);
 
         api.waitUntil('chatBoxViewsInitialized')

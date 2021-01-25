@@ -282,7 +282,6 @@ class RegisterPanel extends ElementView {
                 );
                 this.giveFeedback(__('Now logging you in'), 'info');
             } else {
-                _converse.chatboxviews.get('controlbox').renderLoginPanel();
                 _converse.giveFeedback(__('Registered successfully'));
             }
             this.reset();

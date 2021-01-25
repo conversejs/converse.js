@@ -46,12 +46,6 @@ converse.plugins.add('converse-dragresize', {
         },
 
         ControlBoxView: {
-            renderLoginPanel () {
-                const result = this.__super__.renderLoginPanel.apply(this, arguments);
-                this.initDragResize().setDimensions();
-                return result;
-            },
-
             renderControlBoxPane () {
                 const result = this.__super__.renderControlBoxPane.apply(this, arguments);
                 this.initDragResize().setDimensions();

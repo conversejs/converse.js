@@ -21,7 +21,7 @@ export default class BookmarksView extends ElementView {
         const id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
         this.list_model = new _converse.BookmarksList({ id });
         this.list_model.browserStorage = _converse.createStore(id);
-        this.list_model.fetch({ 'success': this.render, 'error': this.render });
+        this.list_model.fetch({ 'success': () => this.render(), 'error': () => this.render() });
     }
 
     render () {

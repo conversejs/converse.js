@@ -1,4 +1,6 @@
-import { _converse, api } from "@converse/headless/core";
+import { _converse, api, converse } from "@converse/headless/core";
+
+const { u } = converse.env;
 
 export default {
     /**
@@ -18,7 +20,7 @@ export default {
             await api.waitUntil('chatBoxesFetched');
             const model = await api.chatboxes.get('controlbox') ||
               api.chatboxes.create('controlbox', {}, _converse.Controlbox);
-            model.trigger('show');
+            u.safeSave(model, {'closed': false});
             return model;
         },
 

@@ -910,11 +910,12 @@ const ChatBox = ModelWithContact.extend({
             }
             u.safeSave(this, {'hidden': false});
         }
-        if (_converse.isUniView() && this.get('hidden')) {
+        if (_converse.isUniView()) {
             return;
         } else {
-            return this.trigger("show");
+            u.safeSave(this, {'hidden': false});
         }
+        return this;
     },
 
     /**

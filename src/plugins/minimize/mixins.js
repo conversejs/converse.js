@@ -5,6 +5,7 @@ const u = converse.env.utils;
 export const minimizableChatBox = {
     maximize () {
         u.safeSave(this, {
+            'hidden': false,
             'minimized': false,
             'time_opened': new Date().getTime()
         });
@@ -12,6 +13,7 @@ export const minimizableChatBox = {
 
     minimize () {
         u.safeSave(this, {
+            'hidden': true,
             'minimized': true,
             'time_minimized': new Date().toISOString()
         });

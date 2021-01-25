@@ -27,11 +27,7 @@ class ControlBoxToggle extends ElementView {
         if (!controlbox) {
             controlbox = addControlBox();
         }
-        if (api.connection.connected()) {
-            controlbox.save({'closed': false});
-        } else {
-            controlbox.trigger('show');
-        }
+        u.safeSave(controlbox, {'closed': false});
     }
 
     onClick (e) {

@@ -50,7 +50,7 @@ converse.plugins.add('converse-minimize', {
         ChatBox: {
             initialize () {
                 this.__super__.initialize.apply(this, arguments);
-                this.on('show', this.maximize, this);
+                this.on('change:hidden', m => !m.get('hidden') && this.maximize(), this);
 
                 if (this.get('id') === 'controlbox') {
                     return;
@@ -75,16 +75,6 @@ converse.plugins.add('converse-minimize', {
         },
 
         ChatBoxView: {
-            show () {
-                const { _converse } = this.__super__;
-                if (_converse.api.settings.get("view_mode") === 'overlayed' && this.model.get('minimized')) {
-                    this.model.minimize();
-                    return this;
-                } else {
-                    return this.__super__.show.apply(this, arguments);
-                }
-            },
-
             isNewMessageHidden () {
                 return this.model.get('minimized') ||
                     this.__super__.isNewMessageHidden.apply(this, arguments);

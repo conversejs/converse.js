@@ -44,9 +44,9 @@ export default class ChatView extends BaseChatView {
         api.listen.on('windowStateChanged', this.onWindowStateChanged);
 
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
-        this.listenTo(this.model, 'change:hidden', m => (!m.get('hidden') && this.show()));
+        this.listenTo(this.model, 'change:hidden', () => this.afterShown());
+        this.listenTo(this.model, 'change:minimized', () => this.afterShown());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
-        this.listenTo(this.model, 'show', this.show);
         this.listenTo(this.model, 'vcard:change', this.renderHeading);
 
         if (this.model.contact) {

@@ -89,6 +89,8 @@ export default class MUCView extends BaseChatView {
             debounce(() => this.renderHeading(), 250)
         );
         this.listenTo(this.model, 'change:composing_spoiler', this.renderMessageForm);
+        this.listenTo(this.model, 'change:hidden', () => this.afterShown());
+        this.listenTo(this.model, 'change:minimized', () => this.afterShown());
         this.listenTo(this.model, 'change:hidden_occupants', this.onSidebarToggle);
         this.listenTo(this.model, 'configurationNeeded', this.getAndRenderConfigurationForm);
         this.listenTo(this.model, 'show', this.show);
@@ -695,11 +697,10 @@ export default class MUCView extends BaseChatView {
      * @method _converse.ChatRoomView#afterShown
      */
     afterShown () {
-        // Override from converse-chatview, specifically to avoid
-        // the 'active' chat state from being sent out prematurely.
-        // This is instead done in `onConnectionStatusChanged` below.
-        this.model.clearUnreadMsgCounter();
-        this.scrollDown();
+        if (!this.model.get('hidden') && !this.model.get('minimized')) {
+            this.model.clearUnreadMsgCounter();
+            this.scrollDown();
+        }
     }
 
     onConnectionStatusChanged () {

@@ -9,11 +9,12 @@ class ConverseChats extends ElementView {
 
     initialize () {
         this.model = _converse.chatboxes;
-        this.listenTo(this.model, 'destroy', this.render);
         this.listenTo(this.model, 'add', this.render);
-        this.listenTo(this.model, 'change:hidden', this.render);
         this.listenTo(this.model, 'change:closed', this.render);
+        this.listenTo(this.model, 'change:hidden', this.render);
         this.listenTo(this.model, 'change:jid', this.render);
+        this.listenTo(this.model, 'change:minimized', this.render);
+        this.listenTo(this.model, 'destroy', this.render);
 
         const bg = document.getElementById('conversejs-bg');
         if (bg && !bg.innerHTML.trim()) {

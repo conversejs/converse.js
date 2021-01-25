@@ -104,7 +104,7 @@ function getOldestMaximizedChat (exclude_ids) {
 export function addMinimizeButtonToChat (view, buttons) {
     const data = {
         'a_class': 'toggle-chatbox-button',
-        'handler': ev => view.minimize(ev),
+        'handler': ev => view.model.minimize(ev),
         'i18n_text': __('Minimize'),
         'i18n_title': __('Minimize this chat'),
         'icon_class': "fa-minus",
@@ -119,7 +119,7 @@ export function addMinimizeButtonToChat (view, buttons) {
 export function addMinimizeButtonToMUC (view, buttons) {
     const data = {
         'a_class': 'toggle-chatbox-button',
-        'handler': ev => view.minimize(ev),
+        'handler': ev => view.model.minimize(ev),
         'i18n_text': __('Minimize'),
         'i18n_title': __('Minimize this groupchat'),
         'icon_class': "fa-minus",

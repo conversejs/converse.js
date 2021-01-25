@@ -1,6 +1,7 @@
 import tpl_bookmarks_list from './templates/list.js';
 import { ElementView } from '@converse/skeletor/src/element.js';
 import { _converse, api, converse } from '@converse/headless/core';
+import { render } from 'lit-html';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
@@ -20,17 +21,12 @@ export default class BookmarksView extends ElementView {
         const id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
         this.list_model = new _converse.BookmarksList({ id });
         this.list_model.browserStorage = _converse.createStore(id);
-
-        const render = () => {
-            this.render();
-            this.insertIntoControlBox();
-        };
-        this.list_model.fetch({ 'success': render, 'error': render });
+        this.list_model.fetch({ 'success': this.render, 'error': this.render });
     }
 
-    toHTML () {
+    render () {
         const is_hidden = b => !!(api.settings.get('hide_open_bookmarks') && _converse.chatboxes.get(b.get('jid')));
-        return tpl_bookmarks_list({
+        render(tpl_bookmarks_list({
             '_converse': _converse,
             'bookmarks': this.model,
             'hidden': this.model.getUnopenedBookmarks().length && true,
@@ -39,15 +35,7 @@ export default class BookmarksView extends ElementView {
             'removeBookmark': ev => this.removeBookmark(ev),
             'toggleBookmarksList': ev => this.toggleBookmarksList(ev),
             'toggle_state': this.list_model.get('toggle-state')
-        });
-    }
-
-    insertIntoControlBox () {
-        const controlboxview = _converse.chatboxviews.get('controlbox');
-        if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
-            const el = controlboxview.querySelector('.list-container--bookmarks');
-            el && el.parentNode.replaceChild(this.el, el);
-        }
+        }), this);
     }
 
     openRoom (ev) { // eslint-disable-line class-methods-use-this

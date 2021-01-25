@@ -1,14 +1,16 @@
 import { html } from 'lit-html';
-import { _converse } from '@converse/headless/core';
+import { _converse, api } from '@converse/headless/core';
 
 export default () => {
     const { chatboxes, CONTROLBOX_TYPE, CHATROOMS_TYPE } = _converse;
+    const view_mode = api.settings.get('view_mode');
+
     return html`
-        <converse-minimized-chats></converse-minimized-chats>
+        ${view_mode === 'overlayed' ? html`<converse-minimized-chats></converse-minimized-chats>` : ''}
         ${chatboxes.map(m => {
             if (m.get('type') === CONTROLBOX_TYPE) {
                 return html`
-                    <converse-controlbox-toggle class="${!m.get('closed') ? 'hidden' : ''}"></converse-controlbox-toggle>
+                    ${view_mode === 'overlayed' ? html`<converse-controlbox-toggle class="${!m.get('closed') ? 'hidden' : ''}"></converse-controlbox-toggle>` : ''}
                     <converse-controlbox
                         id="controlbox"
                         class="chatbox ${m.get('closed') ? 'hidden' : ''}"

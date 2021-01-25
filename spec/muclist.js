@@ -3,7 +3,7 @@
 const u = converse.env.utils;
 
 
-fdescribe("A list of open groupchats", function () {
+describe("A list of open groupchats", function () {
 
     it("is shown in controlbox", mock.initConverse(
             ['rosterGroupsFetched', 'chatBoxesFetched'],
@@ -102,7 +102,7 @@ fdescribe("A list of open groupchats", function () {
         expect(Array.from(list.classList).includes('hidden')).toBeFalsy();
         const items = list.querySelectorAll('.list-item');
         expect(items.length).toBe(1);
-        expect(items[0].textContent.trim()).toBe('Bookmarked Lounge');
+        await u.waitUntil(() => list.querySelector('.list-item').textContent.trim() === 'Bookmarked Lounge');
         expect(_converse.bookmarks.fetchBookmarks).toHaveBeenCalled();
         done();
     }));

@@ -45,7 +45,7 @@ export default class BookmarksView extends ElementView {
     insertIntoControlBox () {
         const controlboxview = _converse.chatboxviews.get('controlbox');
         if (controlboxview !== undefined && !u.rootContains(_converse.root, this.el)) {
-            const el = controlboxview.el.querySelector('.list-container--bookmarks');
+            const el = controlboxview.querySelector('.list-container--bookmarks');
             el && el.parentNode.replaceChild(this.el, el);
         }
     }

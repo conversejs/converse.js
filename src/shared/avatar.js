@@ -8,7 +8,7 @@ const u = converse.env.utils;
 const AvatarMixin = {
 
     renderAvatar (el) {
-        el = el || this.el;
+        el = el || (this?.el ?? this);
         const avatar_el = el.querySelector('canvas.avatar, svg.avatar');
         if (avatar_el === null) {
             return;

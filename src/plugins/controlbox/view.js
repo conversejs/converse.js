@@ -18,10 +18,7 @@ class ControlBoxView extends ElementView {
     }
 
     initialize () {
-        this.model = _converse.chatboxes.get('controlbox');
-        this.listenTo(this.model, 'change:active-form', this.render);
-        this.listenTo(this.model, 'change:connected', this.onConnected);
-        this.listenTo(this.model, 'show', this.show);
+        this.setModel();
         this.render();
         _converse.chatboxviews.add('controlbox', this);
         /**
@@ -33,6 +30,20 @@ class ControlBoxView extends ElementView {
          * @example _converse.api.listen.on('controlBoxInitialized', view => { ... });
          */
         api.trigger('controlBoxInitialized', this);
+    }
+
+    setModel () {
+        this.model = _converse.chatboxes.get('controlbox');
+        this.initEventHandlers();
+    }
+
+    initEventHandlers () {
+        // Keep event handler registration in a separate method so that it can
+        // be called when a new controlbox is created and assigned to this
+        // element.
+        this.listenTo(this.model, 'change:active-form', this.render);
+        this.listenTo(this.model, 'change:connected', this.render);
+        this.listenTo(this.model, 'show', this.show);
     }
 
     render () {
@@ -49,10 +60,6 @@ class ControlBoxView extends ElementView {
         if (!connection?.connected || !connection?.authenticated || connection?.disconnecting) {
             this.classList.add('logged-out');
         }
-    }
-
-    onConnected () {
-        this.model.get('connected') && this.render();
     }
 
     async close (ev) {

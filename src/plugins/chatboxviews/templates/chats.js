@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { _converse, api } from '@converse/headless/core';
 
 export default () => {
-    const { chatboxes, CONTROLBOX_TYPE, CHATROOMS_TYPE } = _converse;
+    const { chatboxes, CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } = _converse;
     const view_mode = api.settings.get('view_mode');
 
     return html`
@@ -19,6 +19,10 @@ export default () => {
             } else if (m.get('type') === CHATROOMS_TYPE) {
                 return html`
                     <converse-muc jid="${m.get('jid')}" class="chatbox chatroom ${(m.get('hidden') || m.get('minimized')) ? 'hidden' : ''}"></converse-muc>
+                `;
+            } else if (m.get('type') === HEADLINES_TYPE) {
+                return html`
+                    <converse-headlines jid="${m.get('jid')}" class="chatbox headlines ${(m.get('hidden') || m.get('minimized')) ? 'hidden' : ''}"></converse-headlines>
                 `;
             } else {
                 return html`

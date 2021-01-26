@@ -1,16 +1,17 @@
+import BaseChatView from 'shared/chatview.js';
 import tpl_chatbox from 'templates/chatbox.js';
+import tpl_chat_head from './templates/chat-head.js';
 import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless/core';
 import { render } from 'lit-html';
 
-const HeadlinesBoxViewMixin = {
-    className: 'chatbox headlines hidden',
 
-    events: {
+class HeadlinesView extends BaseChatView {
+    events = {
         'click .close-chatbox-button': 'close',
         'click .toggle-chatbox-button': 'minimize',
         'keypress textarea.chat-textarea': 'onKeyDown'
-    },
+    }
 
     async initialize () {
         const jid = this.getAttribute('jid');
@@ -22,7 +23,7 @@ const HeadlinesBoxViewMixin = {
         api.listen.on('windowStateChanged', this.onWindowStateChanged);
 
         this.model.disable_mam = true; // Don't do MAM queries for this box
-        this.listenTo(this.model, 'change:hidden', m => (m.get('hidden') ? this.hide() : this.show()));
+        this.listenTo(this.model, 'change:hidden', () => this.afterShown());
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model, 'show', this.show);
 
@@ -35,7 +36,6 @@ const HeadlinesBoxViewMixin = {
         this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
 
         await this.model.messages.fetched;
-        this.insertIntoDOM();
         this.model.maybeShow();
         this.scrollDown();
         /**
@@ -45,10 +45,10 @@ const HeadlinesBoxViewMixin = {
          * @example _converse.api.listen.on('headlinesBoxViewInitialized', view => { ... });
          */
         api.trigger('headlinesBoxViewInitialized', this);
-    },
+    }
 
     render () {
-        this.el.setAttribute('id', this.model.get('box_id'));
+        this.setAttribute('id', this.model.get('box_id'));
         const result = tpl_chatbox(
             Object.assign(this.model.toJSON(), {
                 info_close: '',
@@ -58,19 +58,43 @@ const HeadlinesBoxViewMixin = {
                 unread_msgs: ''
             })
         );
-        render(result, this.el);
-        this.content = this.el.querySelector('.chat-content');
-        this.msgs_container = this.el.querySelector('.chat-content__messages');
+        render(result, this);
+        this.content = this.querySelector('.chat-content');
+        this.msgs_container = this.querySelector('.chat-content__messages');
         this.renderChatContent();
         this.renderHeading();
         return this;
-    },
+    }
 
-    getNotifications () {
+    async close (ev) {
+        ev?.preventDefault?.();
+        if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
+            _converse.router.navigate('');
+        }
+        await this.model.close(ev);
+        api.trigger('chatBoxClosed', this);
+        return this;
+    }
+
+
+    getNotifications () { // eslint-disable-line class-methods-use-this
         // Override method in ChatBox. We don't show notifications for
         // headlines boxes.
         return [];
-    },
+    }
+
+    async generateHeadingTemplate () {
+        const heading_btns = await this.getHeadingButtons();
+        const standalone_btns = heading_btns.filter(b => b.standalone);
+        const dropdown_btns = heading_btns.filter(b => !b.standalone);
+        return tpl_chat_head(
+            Object.assign(this.model.toJSON(), {
+                'display_name': this.model.getDisplayName(),
+                'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
+                'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b))
+            })
+        );
+    }
 
     /**
      * Returns a list of objects which represent buttons for the headlines header.
@@ -93,11 +117,16 @@ const HeadlinesBoxViewMixin = {
             });
         }
         return _converse.api.hook('getHeadingButtons', this, buttons);
-    },
+    }
 
     // Override to avoid the methods in converse-chatview
-    'renderMessageForm': function renderMessageForm () {},
-    'afterShown': function afterShown () {}
-};
+    renderMessageForm () { // eslint-disable-line class-methods-use-this
+        return;
+    }
 
-export default HeadlinesBoxViewMixin;
+    afterShown () { // eslint-disable-line class-methods-use-this
+        return;
+    }
+}
+
+api.elements.define('converse-headlines', HeadlinesView);

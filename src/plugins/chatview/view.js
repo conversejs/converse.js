@@ -188,11 +188,6 @@ export default class ChatView extends BaseChatView {
         this.model.sendFiles(evt.dataTransfer.files);
     }
 
-    async renderHeading () {
-        const tpl = await this.generateHeadingTemplate();
-        render(tpl, this.querySelector('.chat-head-chatbox'));
-    }
-
     async generateHeadingTemplate () {
         const vcard = this.model?.vcard;
         const vcard_json = vcard ? vcard.toJSON() : {};
@@ -616,9 +611,7 @@ export default class ChatView extends BaseChatView {
     }
 
     async close (ev) {
-        if (ev && ev.preventDefault) {
-            ev.preventDefault();
-        }
+        ev?.preventDefault?.();
         if (_converse.router.history.getFragment() === 'converse/chat?jid=' + this.model.get('jid')) {
             _converse.router.navigate('');
         }

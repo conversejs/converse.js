@@ -26,6 +26,11 @@ export default class BaseChatView extends ElementView {
         }
     }
 
+    async renderHeading () {
+        const tpl = await this.generateHeadingTemplate();
+        render(tpl, this.querySelector('.chat-head-chatbox'));
+    }
+
     renderChatContent (msgs_by_ref = false) {
         if (!this.tpl_chat_content) {
             this.tpl_chat_content = o => {

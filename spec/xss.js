@@ -9,7 +9,7 @@ describe("XSS", function () {
 
         it("will escape IMG payload XSS attempts",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             spyOn(window, 'alert').and.callThrough();
@@ -69,7 +69,7 @@ describe("XSS", function () {
 
         it("will escape SVG payload XSS attempts",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             spyOn(window, 'alert').and.callThrough();
@@ -128,7 +128,7 @@ describe("XSS", function () {
 
         it("will have properly escaped URLs",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
@@ -186,7 +186,7 @@ describe("XSS", function () {
 
         it("will avoid malformed and unsafe urls urls from rendering as anchors",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
@@ -270,7 +270,7 @@ describe("XSS", function () {
     describe("A Groupchat", function () {
 
         it("escapes occupant nicknames when rendering them, to avoid JS-injection attacks",
-                mock.initConverse(['rosterGroupsFetched'], {},
+                mock.initConverse(['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -303,7 +303,7 @@ describe("XSS", function () {
 
         it("escapes the subject before rendering it, to avoid JS-injection attacks",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             await mock.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');

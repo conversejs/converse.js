@@ -73,9 +73,7 @@ async function initializedOMEMO (_converse) {
 describe("The OMEMO module", function() {
 
     it("adds methods for encrypting and decrypting messages via AES GCM",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         const message = 'This message will be encrypted'
         await mock.waitForRoster(_converse, 'current', 1);
@@ -86,9 +84,7 @@ describe("The OMEMO module", function() {
     }));
 
     it("enables encrypted messages to be sent and received",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         let sent_stanza;
         await mock.waitForRoster(_converse, 'current', 1);
@@ -224,9 +220,7 @@ describe("The OMEMO module", function() {
     }));
 
     it("enables encrypted groupchat messages to be sent and received",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         // MEMO encryption works only in members only conferences
         // that are non-anonymous.
@@ -371,9 +365,7 @@ describe("The OMEMO module", function() {
     }));
 
     it("will create a new device based on a received carbon message",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
         await mock.waitForRoster(_converse, 'current', 1);
@@ -481,9 +473,7 @@ describe("The OMEMO module", function() {
     }));
 
     it("gracefully handles auth errors when trying to send encrypted groupchat messages",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         // MEMO encryption works only in members only conferences
         // that are non-anonymous.
@@ -610,9 +600,7 @@ describe("The OMEMO module", function() {
     }));
 
     it("can receive a PreKeySignalMessage",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         _converse.NUM_PREKEYS = 5; // Restrict to 5, otherwise the resulting stanza is too large to easily test
         await mock.waitForRoster(_converse, 'current', 1);
@@ -707,9 +695,7 @@ describe("The OMEMO module", function() {
     }));
 
     it("updates device lists based on PEP messages",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
-            async function (done, _converse) {
+            mock.initConverse([], {'allow_non_roster_messaging': true}, async function (done, _converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -881,9 +867,7 @@ describe("The OMEMO module", function() {
 
 
     it("updates device bundles based on PEP messages",
-        mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -1031,9 +1015,7 @@ describe("The OMEMO module", function() {
     }));
 
     it("publishes a bundle with which an encrypted session can be created",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -1109,9 +1091,7 @@ describe("The OMEMO module", function() {
 
 
     it("adds a toolbar button for starting an encrypted chat session",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
@@ -1230,7 +1210,7 @@ describe("The OMEMO module", function() {
         expect(devicelist.devices.at(1).get('id')).toBe('3300659945416e274474e469a1f0154c');
         expect(devicelist.devices.at(2).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
         expect(devicelist.devices.at(3).get('id')).toBe('ae890ac52d0df67ed7cfdf51b644e901');
-        await u.waitUntil(() => _converse.chatboxviews.get(contact_jid).el.querySelector('.chat-toolbar'));
+        await u.waitUntil(() => _converse.chatboxviews.get(contact_jid).querySelector('.chat-toolbar'));
         const view = _converse.chatboxviews.get(contact_jid);
         const toolbar = view.querySelector('.chat-toolbar');
         expect(view.model.get('omemo_active')).toBe(undefined);
@@ -1238,7 +1218,6 @@ describe("The OMEMO module", function() {
         expect(toggle === null).toBe(false);
         expect(u.hasClass('fa-unlock', toggle.querySelector('converse-icon'))).toBe(true);
         expect(u.hasClass('fa-lock', toggle.querySelector('.converse-icon'))).toBe(false);
-
         view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
         toolbar.querySelector('.toggle-omemo').click();
         expect(view.model.get('omemo_active')).toBe(true);
@@ -1271,10 +1250,9 @@ describe("The OMEMO module", function() {
     }));
 
     it("adds a toolbar button for starting an encrypted groupchat session",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
@@ -1444,9 +1422,7 @@ describe("The OMEMO module", function() {
 
 
     it("shows OMEMO device fingerprints in the user details modal",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,

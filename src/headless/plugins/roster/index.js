@@ -6,8 +6,6 @@
 import "@converse/headless/plugins/status";
 import RosterContact from './contact.js';
 import RosterContacts from './contacts.js';
-import RosterGroup from './group.js';
-import RosterGroups from './groups.js';
 import invoke from 'lodash/invoke';
 import log from "@converse/headless/log";
 import roster_api from './api.js';
@@ -37,7 +35,6 @@ converse.plugins.add('converse-roster', {
             'cachedRoster',
             'roster',
             'rosterContactsFetched',
-            'rosterGroupsFetched',
             'rosterInitialized',
         ]);
 
@@ -96,16 +93,6 @@ converse.plugins.add('converse-roster', {
                 _converse.send_initial_presence = true;
             }
             try {
-                await _converse.rostergroups.fetchRosterGroups();
-                /**
-                 * Triggered once roster groups have been fetched. Used by the
-                 * `converse-rosterview.js` plugin to know when it can start alphabetically
-                 * position roster groups.
-                 * @event _converse#rosterGroupsFetched
-                 * @example _converse.api.listen.on('rosterGroupsFetched', () => { ... });
-                 * @example _converse.api.waitUntil('rosterGroupsFetched').then(() => { ... });
-                 */
-                api.trigger('rosterGroupsFetched');
                 await _converse.roster.fetchRosterContacts();
                 api.trigger('rosterContactsFetched');
             } catch (reason) {
@@ -119,8 +106,6 @@ converse.plugins.add('converse-roster', {
         _converse.Presences = Presences;
         _converse.RosterContact = RosterContact;
         _converse.RosterContacts = RosterContacts;
-        _converse.RosterGroup = RosterGroup;
-        _converse.RosterGroups = RosterGroups;
 
         _converse.unregisterPresenceHandler = function () {
             if (_converse.presence_ref !== undefined) {

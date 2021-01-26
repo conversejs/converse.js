@@ -12,7 +12,7 @@ describe("Notifications", function () {
             describe("an HTML5 Notification", function () {
 
                 it("is shown when a new private message is received",
-                        mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
+                        mock.initConverse(['rosterContactsFetched'], {}, async (done, _converse) => {
 
                     await mock.waitForRoster(_converse, 'current');
                     const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
@@ -34,7 +34,7 @@ describe("Notifications", function () {
                 }));
 
                 it("is shown when you are mentioned in a groupchat",
-                        mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
+                        mock.initConverse(['rosterContactsFetched'], {}, async (done, _converse) => {
 
                     await mock.waitForRoster(_converse, 'current');
                     await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -79,7 +79,7 @@ describe("Notifications", function () {
                 }));
 
                 it("is shown for headline messages",
-                        mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
+                        mock.initConverse(['rosterContactsFetched'], {}, async (done, _converse) => {
 
                     const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                     spyOn(window, 'Notification').and.returnValue(stub);
@@ -124,7 +124,7 @@ describe("Notifications", function () {
                 }));
 
                 it("is shown when a user changes their chat state (if show_chat_state_notifications is true)",
-                        mock.initConverse(['rosterGroupsFetched'], {show_chat_state_notifications: true},
+                        mock.initConverse(['rosterContactsFetched'], {show_chat_state_notifications: true},
                         async (done, _converse) => {
 
                     await mock.waitForRoster(_converse, 'current', 3);
@@ -153,7 +153,7 @@ describe("Notifications", function () {
         describe("A notification sound", function () {
 
             it("is played when the current user is mentioned in a groupchat",
-                    mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
+                    mock.initConverse(['rosterContactsFetched'], {}, async (done, _converse) => {
 
                 mock.createContacts(_converse, 'current');
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -209,7 +209,7 @@ describe("Notifications", function () {
 
         it("is incremented when the message is received and the window is not focused",
                 mock.initConverse(
-                    ['rosterGroupsFetched'], {'show_tab_notifications': false},
+                    ['rosterContactsFetched'], {'show_tab_notifications': false},
                     async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
@@ -265,7 +265,7 @@ describe("Notifications", function () {
 
         it("is not incremented when the message is received and the window is focused",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
@@ -296,7 +296,7 @@ describe("Notifications", function () {
 
         it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');

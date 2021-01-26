@@ -9,7 +9,7 @@ describe("MUC Mention Notfications", function () {
 
     it("may be received from a MUC in which the user is not currently present",
         mock.initConverse(
-            ['rosterGroupsFetched'], {
+            ['rosterContactsFetched'], {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},

@@ -12,7 +12,7 @@ import { CustomElement } from './element.js';
 import { __ } from '../i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
 import { html } from 'lit-element';
-import { renderAvatar } from './../templates/directives/avatar';
+import { renderAvatar } from 'templates/directives/avatar';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;

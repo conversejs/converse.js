@@ -305,8 +305,7 @@ describe("Converse", function() {
         }));
 
         it("has a method 'open' which opens and returns a promise that resolves to a chat model", mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesInitialized'], {},
-                async (done, _converse) => {
+                ['chatBoxesInitialized'], {}, async (done, _converse) => {
 
             const u = converse.env.utils;
             await mock.openControlBox(_converse);

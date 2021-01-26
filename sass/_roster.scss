@@ -53,126 +53,119 @@
         height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
+        color: var(--text-color);
 
-        .roster-group {
-            border: none;
-            color: var(--text-color);
-            font-weight: normal;
-            text-shadow: 0 1px 0 var(--text-shadow-color);
-            margin: 0.75em 0 0.75em 0;
+        .group-toggle {
+            font-family: var(--heading-font);
+            display: block;
+            width: 100%;
+            margin: 0.75em 0 0.25em 0;
+        }
 
-            .group-toggle {
-                font-family: var(--heading-font);
-                display: block;
-                width: 100%;
-                padding-top: 0;
-                padding-bottom: 0.3rem;
+        .group-toggle, .group-toggle .fa {
+            color: var(--chat-head-color-dark) !important;
+            &:hover {
+                color: var(--chat-head-color-darker) !important;
+            }
+        }
+
+        .current-xmpp-contact {
+            margin: 0.25em 0;
+
+            .chat-status {
+                vertical-align: middle;
+                font-size: 0.6em;
+                margin-right: 0;
+                margin-left: -0.7em;
+                margin-bottom: -1.5em;
+                border-radius: 50%;
+                border: 2px solid var(--occupants-background-color);
+            }
+            .chat-status--offline {
+                margin-right: 0.8em;
+            }
+            .chat-status--online {
+                color: var(--chat-status-online);
+            }
+            .chat-status--busy {
+                color: var(--chat-status-busy);
+            }
+            .chat-status--away {
+                color: var(--chat-status-away);
+            }
+            .chat-status--offline {
+                display: none;
+            }
+            .far.fa-circle,
+            .fa-times-circle {
+                color: var(--subdued-color);
+            }
+        }
+
+        li {
+            &.requesting-xmpp-contact {
+                a {
+                    line-height: var(--line-height);
+                }
+                .req-contact-name {
+                    padding: 0 0.2em 0 0;
+                }
             }
 
-            .group-toggle, .group-toggle .fa {
-                color: var(--chat-head-color-dark) !important;
-                &:hover {
-                    color: var(--chat-head-color-darker) !important;
-                }
-            }
-
-            .current-xmpp-contact {
-                margin: 0.25em 0;
-
-                .chat-status {
-                    vertical-align: middle;
-                    font-size: 0.6em;
-                    margin-right: 0;
-                    margin-left: -0.7em;
-                    margin-bottom: -1.5em;
-                    border-radius: 50%;
-                    border: 2px solid var(--occupants-background-color);
-                }
-                .chat-status--offline {
-                    margin-right: 0.8em;
-                }
-                .chat-status--online {
-                    color: var(--chat-status-online);
-                }
-                .chat-status--busy {
-                    color: var(--chat-status-busy);
-                }
-                .chat-status--away {
-                    color: var(--chat-status-away);
-                }
-                .chat-status--offline {
-                    display: none;
-                }
-                .far.fa-circle,
-                .fa-times-circle {
-                    color: var(--subdued-color);
-                }
-            }
-
-            li {
-                &.requesting-xmpp-contact {
-                    a {
-                        line-height: var(--line-height);
-                    }
-                    .req-contact-name {
-                        padding: 0 0.2em 0 0;
-                    }
-                }
-
-                .open-chat {
-                    margin: 0;
-                    padding: 0;
-                    &.unread-msgs {
-                        font-weight: bold;
-                        .contact-name {
-                            width: 70%;
-                        }
-                    }
-
-                    .msgs-indicator {
-                        color: white;
-                        background-color: var(--chat-head-color);
-                        opacity: 1;
-                        border-radius: 10%;
-                        padding: 0.2em 0.4em;
-                        font-size: var(--font-size-small);
-                    }
-
+            .open-chat {
+                margin: 0;
+                padding: 0;
+                &.unread-msgs {
+                    font-weight: bold;
                     .contact-name {
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        padding: 0;
-                        margin: 0;
-                        max-width: 85%;
-                        float: none;
-                        height: 100%;
-                        &.unread-msgs {
-                            max-width: 60%;
-                        }
-                        &.contact-name--offline {
-                            margin-left: 0.7em;
-                        }
+                        width: 70%;
                     }
                 }
-                &.odd {
-                    background-color: #DCEAC5;
-                    /* Make this difference */
+
+                .msgs-indicator {
+                    color: white;
+                    background-color: var(--chat-head-color);
+                    opacity: 1;
+                    border-radius: 10%;
+                    padding: 0.2em 0.4em;
+                    font-size: var(--font-size-small);
+                    margin-right: 0;
                 }
-                a, span {
+
+                .contact-name {
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
+                    padding: 0;
+                    margin: 0;
+                    max-width: 85%;
+                    float: none;
+                    height: 100%;
+                    &.unread-msgs {
+                        max-width: 60%;
+                    }
+                    &.contact-name--offline {
+                        margin-left: 0.25em;
+                    }
                 }
-                .span {
-                    display: inline-block;
-                }
-                .decline-xmpp-request {
-                    margin-left: 5px;
-                }
-                &:hover {
-                    background-color: var(controlbox-pane-bg-hover-color);
-                }
+            }
+            &.odd {
+                background-color: #DCEAC5;
+                /* Make this difference */
+            }
+            a, span {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+            .span {
+                display: inline-block;
+            }
+            .decline-xmpp-request {
+                margin-left: 5px;
+            }
+            &:hover {
+                background-color: var(controlbox-pane-bg-hover-color);
             }
         }
     }

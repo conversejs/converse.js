@@ -27,6 +27,7 @@ OMEMO messages are gone and cannot be recovered on that device. See [muc_clear_m
 Removed events:
 * `chatBoxInsertedIntoDOM`
 * `bookmarkViewsInitialized`
+* `rosterGroupsFetched`
 
 ## 7.0.2 (2020-11-23)
 

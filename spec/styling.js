@@ -5,7 +5,7 @@ const { u, Promise, $msg } = converse.env;
 describe("An incoming chat Message", function () {
 
     it("can have styling disabled via an \"unstyled\" element",
-        mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
+        mock.initConverse(['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         const include_nick = false;
@@ -37,7 +37,7 @@ describe("An incoming chat Message", function () {
 
 
     it("can have styling disabled via the allow_message_styling setting",
-        mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {'allow_message_styling': false},
+        mock.initConverse(['rosterContactsFetched', 'chatBoxesFetched'], {'allow_message_styling': false},
             async function (done, _converse) {
 
         const include_nick = false;
@@ -67,7 +67,7 @@ describe("An incoming chat Message", function () {
     }));
 
     it("can be styled with span XEP-0393 message styling hints",
-        mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
+        mock.initConverse(['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         let msg_text, msg, msg_el;
@@ -192,7 +192,7 @@ describe("An incoming chat Message", function () {
     }));
 
     it("can be styled with block XEP-0393 message styling hints",
-        mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
+        mock.initConverse(['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         let msg_text, msg, msg_el;
@@ -240,7 +240,7 @@ describe("An incoming chat Message", function () {
     }));
 
     it("can be styled with quote XEP-0393 message styling hints",
-        mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
+        mock.initConverse(['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         let msg_text, msg, msg_el;
@@ -392,7 +392,7 @@ describe("An incoming chat Message", function () {
 describe("A outgoing groupchat Message", function () {
 
     it("can be styled with span XEP-0393 message styling hints that contain mentions",
-        mock.initConverse(['rosterGroupsFetched', 'chatBoxesFetched'], {},
+        mock.initConverse(['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';

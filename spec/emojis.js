@@ -12,9 +12,7 @@ describe("Emojis", function () {
         afterEach(() => (jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout));
 
         it("can be opened by clicking a button in the chat toolbar",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await mock.waitForRoster(_converse, 'current');
@@ -32,10 +30,9 @@ describe("Emojis", function () {
         }));
 
         it("is opened to autocomplete emojis in the textarea",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
+            await mock.waitForRoster(_converse, 'current', 0);
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
@@ -100,11 +97,10 @@ describe("Emojis", function () {
         }));
 
         it("is focused to autocomplete emojis in the textarea",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
+            await mock.waitForRoster(_converse, 'current', 0);
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('converse-emoji-dropdown'));
@@ -150,11 +146,10 @@ describe("Emojis", function () {
 
 
         it("properly inserts emojis into the chat textarea",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
+            await mock.waitForRoster(_converse, 'current', 0);
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('converse-emoji-dropdown'));
@@ -195,11 +190,10 @@ describe("Emojis", function () {
 
 
         it("allows you to search for particular emojis",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
+            await mock.waitForRoster(_converse, 'current', 0);
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
             await u.waitUntil(() => view.querySelector('converse-emoji-dropdown'));
@@ -256,9 +250,7 @@ describe("Emojis", function () {
     describe("A Chat Message", function () {
 
         it("will display larger if it's only emojis",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {'use_system_emojis': true},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {'use_system_emojis': true}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -342,9 +334,9 @@ describe("Emojis", function () {
         }));
 
         it("can render emojis as images",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {'use_system_emojis': false},
-                async function (done, _converse) {
+                mock.initConverse(
+                    ['chatBoxesFetched'], {'use_system_emojis': false},
+                    async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             const contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
@@ -391,7 +383,7 @@ describe("Emojis", function () {
 
         it("can show custom emojis",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'],
+                ['chatBoxesFetched'],
                 { emoji_categories: {
                     "smileys": ":grinning:",
                     "people": ":thumbsup:",

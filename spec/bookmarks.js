@@ -6,8 +6,9 @@ const { Strophe, u, sizzle, $iq } = converse.env;
 describe("A chat room", function () {
 
     it("can be bookmarked", mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
+            ['chatBoxesFetched'], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
@@ -133,10 +134,10 @@ describe("A chat room", function () {
 
 
     it("will be automatically opened if 'autojoin' is set on the bookmark", mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            [], {}, async function (done, _converse) {
 
         const { u } = converse.env;
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
@@ -178,10 +179,9 @@ describe("A chat room", function () {
 
     describe("when bookmarked", function () {
 
-        it("will use the nickname from the bookmark", mock.initConverse(
-                ['rosterGroupsFetched'], {}, async function (done, _converse) {
-
+        it("will use the nickname from the bookmark", mock.initConverse([], {}, async function (done, _converse) {
             const { u } = converse.env;
+            await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
             const muc_jid = 'coven@chat.shakespeare.lit';
             _converse.bookmarks.create({
@@ -199,11 +199,10 @@ describe("A chat room", function () {
             done();
         }));
 
-        it("displays that it's bookmarked through its bookmark icon", mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+        it("displays that it's bookmarked through its bookmark icon", mock.initConverse([], {}, async function (done, _converse) {
 
             const { u } = converse.env;
+            await mock.waitForRoster(_converse, 'current', 0);
             mock.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
                 [{'category': 'pubsub', 'type': 'pep'}],
@@ -225,10 +224,10 @@ describe("A chat room", function () {
             done();
         }));
 
-        it("can be unbookmarked", mock.initConverse(
-                ['rosterGroupsFetched'], {}, async function (done, _converse) {
+        it("can be unbookmarked", mock.initConverse([], {}, async function (done, _converse) {
 
             const { u, Strophe } = converse.env;
+            await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
             const muc_jid = 'theplay@conference.shakespeare.lit';
             await _converse.api.rooms.open(muc_jid);
@@ -292,9 +291,9 @@ describe("A chat room", function () {
     describe("and when autojoin is set", function () {
 
         it("will be be opened and joined automatically upon login", mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+                [], {}, async function (done, _converse) {
 
+            await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
             spyOn(_converse.api.rooms, 'create').and.callThrough();
             const jid = 'theplay@conference.shakespeare.lit';
@@ -321,9 +320,10 @@ describe("A chat room", function () {
 describe("Bookmarks", function () {
 
     it("can be pushed from the XMPP server", mock.initConverse(
-            ['connected', 'rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
+            ['connected', 'chatBoxesFetched'], {}, async function (done, _converse) {
 
         const { $msg, u } = converse.env;
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilBookmarksReturned(_converse);
 
         /* The stored data is automatically pushed to all of the user's
@@ -410,10 +410,11 @@ describe("Bookmarks", function () {
 
 
     it("can be retrieved from the XMPP server", mock.initConverse(
-            ['chatBoxesFetched', 'rosterGroupsFetched'], {},
+            ['chatBoxesFetched'], {},
             async function (done, _converse) {
 
         const { Strophe, sizzle, u, $iq } = converse.env;
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.waitUntilDiscoConfirmed(
             _converse, _converse.bare_jid,
             [{'category': 'pubsub', 'type': 'pep'}],
@@ -490,14 +491,14 @@ describe("Bookmarks", function () {
     describe("The bookmarks list", function () {
 
         it("shows a list of bookmarks", mock.initConverse(
-            ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+                [], {}, async function (done, _converse) {
 
             await mock.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
                 [{'category': 'pubsub', 'type': 'pep'}],
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
+            await mock.waitForRoster(_converse, 'current', 0);
             mock.openControlBox(_converse);
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
@@ -565,7 +566,7 @@ describe("Bookmarks", function () {
         }));
 
         it("can be used to open a MUC from a bookmark", mock.initConverse(
-                ['rosterGroupsFetched'], {'view_mode': 'fullscreen'}, async function (done, _converse) {
+                [], {'view_mode': 'fullscreen'}, async function (done, _converse) {
 
             const api = _converse.api;
             await mock.waitUntilDiscoConfirmed(
@@ -573,6 +574,7 @@ describe("Bookmarks", function () {
                 [{'category': 'pubsub', 'type': 'pep'}],
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
+            await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
             const view = await _converse.chatboxviews.get('controlbox');
             const IQ_stanzas = _converse.connection.IQ_stanzas;
@@ -614,8 +616,9 @@ describe("Bookmarks", function () {
         }));
 
         it("remembers the toggle state of the bookmarks list", mock.initConverse(
-                ['rosterGroupsFetched'], {}, async function (done, _converse) {
+                [], {}, async function (done, _converse) {
 
+            await mock.waitForRoster(_converse, 'current', 0);
             await mock.openControlBox(_converse);
             await mock.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
@@ -672,10 +675,9 @@ describe("Bookmarks", function () {
 describe("When hide_open_bookmarks is true and a bookmarked room is opened", function () {
 
     it("can be closed", mock.initConverse(
-        ['rosterGroupsFetched'],
-        { hide_open_bookmarks: true },
-        async function (done, _converse) {
+            [], { hide_open_bookmarks: true }, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
         await mock.waitUntilBookmarksReturned(_converse);
 

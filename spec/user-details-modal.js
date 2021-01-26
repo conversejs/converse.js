@@ -5,9 +5,7 @@ const u = converse.env.utils;
 describe("The User Details Modal", function () {
 
     it("can be used to remove a contact",
-            mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         _converse.api.trigger('rosterContactsFetched');
@@ -36,7 +34,7 @@ describe("The User Details Modal", function () {
     }));
 
     it("shows an alert when an error happened while removing the contact",
-            mock.initConverse(['rosterGroupsFetched'], {}, async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         _converse.api.trigger('rosterContactsFetched');

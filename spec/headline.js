@@ -3,9 +3,9 @@
 describe("A headlines box", function () {
 
     it("will not open nor display non-headline messages",
-        mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
+        mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         const { $msg } = converse.env;
         /* XMPP spam message:
          *
@@ -31,8 +31,9 @@ describe("A headlines box", function () {
     }));
 
     it("will open and display headline messages", mock.initConverse(
-            ['rosterGroupsFetched'], {}, async function (done, _converse) {
+            [], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         const { u, $msg} = converse.env;
         /* <message from='notify.example.com'
          *          to='romeo@im.example.com'
@@ -67,8 +68,9 @@ describe("A headlines box", function () {
     }));
 
     it("will show headline messages in the controlbox", mock.initConverse(
-        ['rosterGroupsFetched'], {}, async function (done, _converse) {
+            [], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         const { u, $msg} = converse.env;
         /* <message from='notify.example.com'
          *          to='romeo@im.example.com'
@@ -103,9 +105,10 @@ describe("A headlines box", function () {
     }));
 
     it("will remove headline messages from the controlbox if closed", mock.initConverse(
-        ['rosterGroupsFetched'], {}, async function (done, _converse) {
+        [], {}, async function (done, _converse) {
 
         const { u, $msg} = converse.env;
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
         /* <message from='notify.example.com'
          *          to='romeo@im.example.com'
@@ -145,8 +148,9 @@ describe("A headlines box", function () {
 
     it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
+            ['chatBoxesFetched'], {}, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         const { $msg } = converse.env;
         _converse.allow_non_roster_messaging = false;
         const stanza = $msg({

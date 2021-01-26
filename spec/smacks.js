@@ -18,9 +18,6 @@ describe("XEP-0198 Stream Management", function () {
             },
             async function (done, _converse) {
 
-        const view = _converse.chatboxviews.get('controlbox');
-        spyOn(view, 'renderControlBoxPane').and.callThrough();
-
         await _converse.api.user.login('romeo@montague.lit/orchard', 'secret');
         const sent_stanzas = _converse.connection.sent_stanzas;
         let stanza = await u.waitUntil(() => sent_stanzas.filter(s => (s.tagName === 'enable'), 1000).pop());
@@ -31,8 +28,6 @@ describe("XEP-0198 Stream Management", function () {
         let result = u.toStanza(`<enabled xmlns="urn:xmpp:sm:3" id="some-long-sm-id" resume="true"/>`);
         _converse.connection._dataRecv(mock.createRequest(result));
         expect(_converse.session.get('smacks_enabled')).toBe(true);
-
-        await u.waitUntil(() => view.renderControlBoxPane.calls?.count());
 
         let IQ_stanzas = _converse.connection.IQ_stanzas;
         await u.waitUntil(() => IQ_stanzas.length === 4);

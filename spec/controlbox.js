@@ -10,7 +10,7 @@ describe("The Controlbox", function () {
 
     it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             function (done, _converse) {
 
         // This spec will only pass if the controlbox is not currently
@@ -57,7 +57,7 @@ describe("The Controlbox", function () {
 
         it("can be used to add contact and it checks for case-sensivity",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             spyOn(_converse.api, "trigger").and.callThrough();
@@ -85,7 +85,7 @@ describe("The Controlbox", function () {
 
         it("shows the number of unread mentions received",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'all');
@@ -135,7 +135,7 @@ describe("The Controlbox", function () {
 
         it("shows the user's chat status, which is online by default",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 function (done, _converse) {
 
             mock.openControlBox(_converse);
@@ -147,7 +147,7 @@ describe("The Controlbox", function () {
 
         it("can be used to set the current user's chat status",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             await mock.openControlBox(_converse);
@@ -175,7 +175,7 @@ describe("The Controlbox", function () {
 
         it("can be used to set a custom status message",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             await mock.openControlBox(_converse);
@@ -209,7 +209,7 @@ describe("The 'Add Contact' widget", function () {
 
     it("opens up an add modal when you click on it",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'all');
@@ -243,7 +243,7 @@ describe("The 'Add Contact' widget", function () {
 
     it("can be configured to not provide search suggestions",
         mock.initConverse(
-            ['rosterGroupsFetched'], {'autocomplete_add_contact': false},
+            ['rosterContactsFetched'], {'autocomplete_add_contact': false},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'all', 0);
@@ -275,7 +275,7 @@ describe("The 'Add Contact' widget", function () {
 
     it("integrates with xhr_user_search_url to search for contacts",
         mock.initConverse(
-            ['rosterGroupsFetched'],
+            ['rosterContactsFetched'],
             { 'xhr_user_search_url': 'http://example.org/?' },
             async function (done, _converse) {
 
@@ -331,7 +331,7 @@ describe("The 'Add Contact' widget", function () {
 
     it("can be configured to not provide search suggestions for XHR search results",
         mock.initConverse(
-            ['rosterGroupsFetched'],
+            ['rosterContactsFetched'],
             { 'autocomplete_add_contact': false,
               'xhr_user_search_url': 'http://example.org/?' },
             async function (done, _converse) {

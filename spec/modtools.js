@@ -22,7 +22,7 @@ describe("The groupchat moderator tool", function () {
 
     it("allows you to set affiliations and roles",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
         spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
@@ -143,7 +143,7 @@ describe("The groupchat moderator tool", function () {
 
     it("allows you to filter affiliation search results",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
         spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
@@ -199,7 +199,7 @@ describe("The groupchat moderator tool", function () {
 
     it("allows you to filter role search results",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
         spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
@@ -310,7 +310,7 @@ describe("The groupchat moderator tool", function () {
 
     it("shows an error message if a particular affiliation list may not be retrieved",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
@@ -362,7 +362,7 @@ describe("The groupchat moderator tool", function () {
 
     it("shows an error message if a particular affiliation may not be set",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
@@ -429,7 +429,7 @@ describe("The groupchat moderator tool", function () {
 
     it("doesn't allow admins to make more admins",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();
@@ -466,7 +466,7 @@ describe("The groupchat moderator tool", function () {
 
     it("lets the assignable affiliations and roles be configured via modtools_disable_assign",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         spyOn(_converse.ChatRoomView.prototype, 'showModeratorToolsModal').and.callThrough();

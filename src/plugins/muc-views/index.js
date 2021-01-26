@@ -12,13 +12,13 @@ import MUCConfigForm from './config-form.js';
 import MUCPasswordForm from './password-form.js';
 import log from '@converse/headless/log';
 import muc_api from './api.js';
-import { RoomsPanel, RoomsPanelViewMixin } from './rooms-panel.js';
 import { api, converse, _converse } from '@converse/headless/core';
 
 const { Strophe } = converse.env;
 
 function setMUCDomain (domain, controlboxview) {
-    controlboxview.getRoomsPanel().model.save('muc_domain', Strophe.getDomainFromJid(domain));
+    controlboxview.querySelector('converse-rooms-list')
+        .model.save('muc_domain', Strophe.getDomainFromJid(domain));
 }
 
 function setMUCDomainFromDisco (controlboxview) {
@@ -50,7 +50,7 @@ function setMUCDomainFromDisco (controlboxview) {
 
 function fetchAndSetMUCDomain (controlboxview) {
     if (controlboxview.model.get('connected')) {
-        if (!controlboxview.getRoomsPanel().model.get('muc_domain')) {
+        if (!controlboxview.querySelector('converse-rooms-list').model.get('muc_domain')) {
             if (api.settings.get('muc_domain') === undefined) {
                 setMUCDomainFromDisco(controlboxview);
             } else {
@@ -120,8 +120,6 @@ converse.plugins.add('converse-muc-views', {
         _converse.MUCConfigForm = MUCConfigForm;
         _converse.MUCPasswordForm = MUCPasswordForm;
         _converse.ChatRoomView = MUCView;
-        _converse.RoomsPanel = RoomsPanel;
-        _converse.ControlBoxView && Object.assign(_converse.ControlBoxView.prototype, RoomsPanelViewMixin);
 
         Object.assign(_converse.api, muc_api);
 

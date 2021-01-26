@@ -38,7 +38,7 @@ describe("Message Retractions", function () {
 
         it("is not applied if it's not from the right author",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -82,7 +82,7 @@ describe("Message Retractions", function () {
 
         it("can be received before the message it pertains to",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const date = (new Date()).toISOString();
@@ -138,7 +138,7 @@ describe("Message Retractions", function () {
 
         it("can be received before the message it pertains to",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const date = (new Date()).toISOString();
@@ -199,7 +199,7 @@ describe("Message Retractions", function () {
 
         it("can be received before the message it pertains to",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const date = (new Date()).toISOString();
@@ -257,7 +257,7 @@ describe("Message Retractions", function () {
 
         it("can be followed up by a retraction",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
@@ -327,7 +327,7 @@ describe("Message Retractions", function () {
 
         it("can be retracted by its author",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
@@ -377,7 +377,7 @@ describe("Message Retractions", function () {
 
         it("can be followed up by a retraction by the author",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterContactsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -421,7 +421,7 @@ describe("Message Retractions", function () {
 
         it("can be retracted by a moderator, with the IQ response received before the retraction message",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -507,7 +507,7 @@ describe("Message Retractions", function () {
 
         it("can not be retracted if the MUC doesn't support message moderation",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -533,7 +533,7 @@ describe("Message Retractions", function () {
 
         it("can be retracted by a moderator, with the retraction message received before the IQ response",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -604,7 +604,7 @@ describe("Message Retractions", function () {
 
         it("can be retracted by its author",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -662,7 +662,7 @@ describe("Message Retractions", function () {
 
         it("can be retracted by its author, causing an error message in response",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -711,7 +711,7 @@ describe("Message Retractions", function () {
 
         it("can be retracted by its author, causing a timeout error in response",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             _converse.STANZA_TIMEOUT = 1;
@@ -748,7 +748,7 @@ describe("Message Retractions", function () {
 
         it("can be retracted by a moderator",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -800,7 +800,7 @@ describe("Message Retractions", function () {
 
         it("can be retracted by the sender if they're a moderator",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {'allow_message_retraction': 'moderator'},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {'allow_message_retraction': 'moderator'},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';

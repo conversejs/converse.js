@@ -7,7 +7,7 @@ describe("A Chat Message", function () {
 
     it("can be sent as a correction by using the up arrow",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -165,7 +165,7 @@ describe("A Chat Message", function () {
 
     it("can be sent as a correction by clicking the pencil icon",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -292,7 +292,7 @@ describe("A Chat Message", function () {
 
         it("can be replaced with a correction",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
@@ -357,7 +357,7 @@ describe("A Groupchat Message", function () {
 
     it("can be replaced with a correction",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -426,7 +426,7 @@ describe("A Groupchat Message", function () {
 
     it("keeps the same position in history after a correction",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -522,7 +522,7 @@ describe("A Groupchat Message", function () {
 
     it("can be sent as a correction by using the up arrow",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';

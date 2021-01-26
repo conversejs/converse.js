@@ -6,7 +6,7 @@ describe("A XEP-0317 MUC Hat", function () {
 
     it("can be included in a presence stanza",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';

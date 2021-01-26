@@ -9,7 +9,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
     it("will be activated for a MUC that becomes hidden",
         mock.initConverse(
-            ['rosterGroupsFetched'], {
+            ['rosterContactsFetched'], {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},
@@ -116,7 +116,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
     it("will be activated for a MUC that starts out hidden",
         mock.initConverse(
-            ['rosterGroupsFetched'], {
+            ['rosterContactsFetched'], {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},
@@ -181,7 +181,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
     it("may not be activated due to server resource constraints",
         mock.initConverse(
-            ['rosterGroupsFetched'], {
+            ['rosterContactsFetched'], {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},

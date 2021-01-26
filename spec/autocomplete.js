@@ -9,7 +9,7 @@ describe("The nickname autocomplete feature", function () {
 
     it("shows all autocompletion options when the user presses @",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
@@ -63,7 +63,7 @@ describe("The nickname autocomplete feature", function () {
 
     it("shows all autocompletion options when the user presses @ right after a new line",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
@@ -118,7 +118,7 @@ describe("The nickname autocomplete feature", function () {
 
     it("shows all autocompletion options when the user presses @ right after an allowed character",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {'opening_mention_characters':['(']},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {'opening_mention_characters':['(']},
                 async function (done, _converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
@@ -172,7 +172,7 @@ describe("The nickname autocomplete feature", function () {
     }));
 
     it("should order by query index position and length", mock.initConverse(
-        ['rosterGroupsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
+        ['rosterContactsFetched', 'chatBoxesFetched'], {}, async function (done, _converse) {
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'tom');
             const view = _converse.chatboxviews.get('lounge@montague.lit');
 
@@ -220,7 +220,7 @@ describe("The nickname autocomplete feature", function () {
 
     it("autocompletes when the user presses tab",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -332,7 +332,7 @@ describe("The nickname autocomplete feature", function () {
 
     it("autocompletes when the user presses backspace",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');

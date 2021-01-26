@@ -11,7 +11,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
         it("is done automatically",
                 mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterContactsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
@@ -163,7 +163,7 @@ describe("XEP-0363: HTTP File Upload", function () {
             }));
 
             it("does not appear in MUC chats", mock.initConverse(
-                    ['rosterGroupsFetched'], {},
+                    ['rosterContactsFetched'], {},
                     async (done, _converse) => {
 
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
@@ -204,7 +204,7 @@ describe("XEP-0363: HTTP File Upload", function () {
             }));
 
             it("appears in MUC chats", mock.initConverse(
-                    ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    ['rosterContactsFetched', 'chatBoxesFetched'], {},
                     async (done, _converse) => {
 
                 await mock.waitUntilDiscoConfirmed(
@@ -224,7 +224,7 @@ describe("XEP-0363: HTTP File Upload", function () {
             describe("when clicked and a file chosen", function () {
 
                 it("is uploaded and sent out", mock.initConverse(
-                        ['rosterGroupsFetched', 'chatBoxesFetched'], {} ,async (done, _converse) => {
+                        ['rosterContactsFetched', 'chatBoxesFetched'], {} ,async (done, _converse) => {
 
                     const base_url = 'https://conversejs.org';
                     await mock.waitUntilDiscoConfirmed(
@@ -561,7 +561,7 @@ describe("XEP-0363: HTTP File Upload", function () {
         describe("While a file is being uploaded", function () {
 
             it("shows a progress bar", mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
                 await mock.waitUntilDiscoConfirmed(

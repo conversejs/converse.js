@@ -6,11 +6,12 @@ const u = converse.env.utils;
 describe("A list of open groupchats", function () {
 
     it("is shown in controlbox", mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'],
+            ['chatBoxesFetched'],
             { allow_bookmarks: false // Makes testing easier, otherwise we
                                         // have to mock stanza traffic.
             }, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
         const controlbox = _converse.chatboxviews.get('controlbox');
         let list = controlbox.querySelector('.list-container--openrooms');
@@ -48,13 +49,14 @@ describe("A list of open groupchats", function () {
 
     it("uses bookmarks to determine groupchat names",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'],
+            ['chatBoxesFetched'],
             {'view_mode': 'fullscreen'},
             async function (done, _converse) {
 
         const { Strophe, $iq, $pres, sizzle } = converse.env;
         const u = converse.env.utils;
 
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
         let stanza = $pres({
                 to: 'romeo@montague.lit/orchard',
@@ -111,11 +113,12 @@ describe("A list of open groupchats", function () {
 describe("A groupchat shown in the groupchats list", function () {
 
     it("is highlighted if it's currently open", mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'],
+            ['chatBoxesFetched'],
             { view_mode: 'fullscreen',
             allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             }, async function (done, _converse) {
 
+        await mock.waitForRoster(_converse, 'current', 0);
         const controlbox = _converse.chatboxviews.get('controlbox');
         const u = converse.env.utils;
         const muc_jid = 'coven@chat.shakespeare.lit';
@@ -142,7 +145,7 @@ describe("A groupchat shown in the groupchats list", function () {
     }));
 
     it("has an info icon which opens a details modal when clicked", mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'],
+            ['chatBoxesFetched'],
             { whitelisted_plugins: ['converse-roomslist'],
             allow_bookmarks: false // Makes testing easier, otherwise we
                                     // have to mock stanza traffic.
@@ -152,6 +155,7 @@ describe("A groupchat shown in the groupchats list", function () {
         const u = converse.env.utils;
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         const room_jid = 'coven@chat.shakespeare.lit';
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.openControlBox(_converse);
         await _converse.api.rooms.open(room_jid, {'nick': 'some1'});
         const view = _converse.chatboxviews.get(room_jid);
@@ -250,7 +254,7 @@ describe("A groupchat shown in the groupchats list", function () {
     }));
 
     it("can be closed", mock.initConverse(
-            ['rosterGroupsFetched'],
+            [],
             { whitelisted_plugins: ['converse-roomslist'],
             allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             },
@@ -259,6 +263,7 @@ describe("A groupchat shown in the groupchats list", function () {
         const u = converse.env.utils;
         spyOn(window, 'confirm').and.callFake(() => true);
         expect(_converse.chatboxes.length).toBe(1);
+        await mock.waitForRoster(_converse, 'current', 0);
         await mock.openChatRoom(_converse, 'lounge', 'conference.shakespeare.lit', 'JC');
         expect(_converse.chatboxes.length).toBe(2);
 

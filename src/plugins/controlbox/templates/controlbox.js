@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { _converse, api } from "@converse/headless/core";
 
 export default o => html`
     <div class="flyout box-flyout">
@@ -19,7 +20,10 @@ export default o => html`
                           <div id="chatrooms" class="controlbox-section">
                               <converse-rooms-list></converse-rooms-list>
                               <converse-bookmarks></converse-bookmarks>
-                          </div>`
+                          </div>
+                          ${ api.settings.get("authentication") === _converse.ANONYMOUS ? '' :
+                            html`<div id="converse-roster" class="controlbox-section"><converse-roster></converse-roster></div>`
+                          }`
                     : o['active-form'] === 'register'
                         ? html`<converse-register-panel></converse-register-panel>`
                         : html`<converse-login-panel></converse-login-panel>`

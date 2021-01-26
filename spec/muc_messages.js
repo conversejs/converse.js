@@ -13,7 +13,7 @@ describe("A Groupchat Message", function () {
 
         it("will have the error displayed below it",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                     async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -58,7 +58,7 @@ describe("A Groupchat Message", function () {
 
         it("is not rendered as a followup message",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -96,7 +96,7 @@ describe("A Groupchat Message", function () {
 
         it("is not shown if its a duplicate",
             mock.initConverse(
-                ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                ['rosterContactsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -131,7 +131,7 @@ describe("A Groupchat Message", function () {
 
     it("is rejected if it's an unencapsulated forwarded message",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -166,7 +166,7 @@ describe("A Groupchat Message", function () {
 
     it("can contain a chat state notification and will still be shown",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -191,7 +191,7 @@ describe("A Groupchat Message", function () {
 
     it("can not be expected to have a unique id attribute",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -222,7 +222,7 @@ describe("A Groupchat Message", function () {
 
     it("is ignored if it has the same archive-id of an already received one",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'room@muc.example.com';
@@ -271,7 +271,7 @@ describe("A Groupchat Message", function () {
 
     it("is ignored if it has the same stanza-id of an already received one",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'room@muc.example.com';
@@ -319,7 +319,7 @@ describe("A Groupchat Message", function () {
 
     it("will be discarded if it's a malicious message meant to look like a carbon copy",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -378,7 +378,7 @@ describe("A Groupchat Message", function () {
 
     it("keeps track of the sender's role and affiliation",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -506,7 +506,7 @@ describe("A Groupchat Message", function () {
 
     it("keeps track whether you are the sender or not",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -526,7 +526,7 @@ describe("A Groupchat Message", function () {
 
     it("will be shown as received upon MUC reflection",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -569,7 +569,7 @@ describe("A Groupchat Message", function () {
 
     it("gets updated with its stanza-id upon MUC reflection",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'room@muc.example.com';
@@ -604,7 +604,7 @@ describe("A Groupchat Message", function () {
 
     it("can cause a delivery receipt to be returned",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');

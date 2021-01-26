@@ -8,7 +8,7 @@ describe("An incoming groupchat message", function () {
 
     it("is specially marked when you are mentioned in it",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -32,7 +32,7 @@ describe("An incoming groupchat message", function () {
 
     it("highlights all users mentioned via XEP-0372 references",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -88,7 +88,7 @@ describe("An incoming groupchat message", function () {
 
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
@@ -134,7 +134,7 @@ describe("A sent groupchat message", function () {
 
         it("gets parsed for mentions which get turned into references",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -266,7 +266,7 @@ describe("A sent groupchat message", function () {
 
         it("gets parsed for mentions as indicated with an @ preceded by a space or at the start of the text",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -300,7 +300,7 @@ describe("A sent groupchat message", function () {
 
         it("properly encodes the URIs in sent out references",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -344,7 +344,7 @@ describe("A sent groupchat message", function () {
 
         it("can get corrected and given new references",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -443,7 +443,7 @@ describe("A sent groupchat message", function () {
 
         it("includes a XEP-0372 references to that person",
             mock.initConverse(
-                ['rosterGroupsFetched'], {},
+                ['rosterContactsFetched'], {},
                     async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
@@ -494,7 +494,7 @@ describe("A sent groupchat message", function () {
 
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
                 async function (done, _converse) {
 
         const members = [{'jid': 'gibson@gibson.net', 'nick': 'gibson', 'affiliation': 'member'}];

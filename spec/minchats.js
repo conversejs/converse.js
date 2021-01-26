@@ -9,7 +9,7 @@ describe("A chat message", function () {
 
     it("received for a minimized chat box will increment a counter on its header",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         if (_converse.view_mode === 'fullscreen') {
@@ -76,7 +76,7 @@ describe("A Groupcaht", function () {
 
     it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
@@ -108,7 +108,7 @@ describe("A Chatbox", function () {
 
     it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -141,7 +141,7 @@ describe("A Chatbox", function () {
 
     it("can be opened in minimized mode initially",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -159,7 +159,7 @@ describe("A Chatbox", function () {
 
 
     it("can be trimmed to conserve space",
-        mock.initConverse(['rosterGroupsFetched'], {},
+        mock.initConverse(['rosterContactsFetched'], {},
         async function (done, _converse) {
 
         spyOn(_converse.minimize, 'trimChats');
@@ -212,7 +212,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
 
     it("is displayed when scrolled up chatbox is minimized after receiving unread messages",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -235,7 +235,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
 
     it("is incremented when message is received and windows is not focused",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -254,7 +254,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
 
     it("will render Openstreetmap-URL from geo-URI",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -280,7 +280,7 @@ describe("The Minimized Chats Widget", function () {
 
     it("shows chats that have been minimized",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -312,7 +312,7 @@ describe("The Minimized Chats Widget", function () {
 
     it("can be toggled to hide or show minimized chats",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -339,7 +339,7 @@ describe("The Minimized Chats Widget", function () {
 
     it("shows the number messages received to minimized chats",
         mock.initConverse(
-            ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+            ['rosterContactsFetched', 'chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 4);
@@ -415,7 +415,7 @@ describe("The Minimized Chats Widget", function () {
 
     it("shows the number messages received to minimized groupchats",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         const muc_jid = 'kitchen@conference.shakespeare.lit';

@@ -9,7 +9,7 @@ describe("A XEP-0333 Chat Marker", function () {
 
     it("is sent when a markable message is received from a roster contact",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -40,7 +40,7 @@ describe("A XEP-0333 Chat Marker", function () {
 
     it("is not sent when a markable message is received from someone not on the roster",
         mock.initConverse(
-            ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
+            ['rosterContactsFetched'], {'allow_non_roster_messaging': true},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 0);
@@ -75,7 +75,7 @@ describe("A XEP-0333 Chat Marker", function () {
 
     it("is ignored if it's a carbon copy of one that I sent from a different client",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -124,7 +124,7 @@ describe("A XEP-0333 Chat Marker", function () {
 
     it("may be returned for a MUC message",
         mock.initConverse(
-            ['rosterGroupsFetched'], {},
+            ['rosterContactsFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');

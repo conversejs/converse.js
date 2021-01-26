@@ -2,6 +2,7 @@ import RosterContact from './contact.js';
 import log from "@converse/headless/log";
 import sum from 'lodash/sum';
 import { Collection } from "@converse/skeletor/src/collection";
+import { Model } from "@converse/skeletor/src/model";
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
 
@@ -12,19 +13,11 @@ const u = converse.env.utils;
 const RosterContacts = Collection.extend({
     model: RosterContact,
 
-    comparator (contact1, contact2) {
-        // Groups are sorted alphabetically, ignoring case.
-        // However, Ungrouped, Requesting Contacts and Pending Contacts
-        // appear last and in that order.
-        const status1 = contact1.presence.get('show') || 'offline';
-        const status2 = contact2.presence.get('show') || 'offline';
-        if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
-            const name1 = (contact1.getDisplayName()).toLowerCase();
-            const name2 = (contact2.getDisplayName()).toLowerCase();
-            return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
-        } else  {
-            return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;
-        }
+    initialize () {
+        const id = `roster.state-${_converse.bare_jid}-${this.get('jid')}`;
+        this.state = new Model({ id, 'collapsed_groups': [] });
+        this.state.browserStorage = _converse.createStore(id);
+        this.state.fetch();
     },
 
     onConnected () {
@@ -302,7 +295,6 @@ const RosterContacts = Collection.extend({
      */
     updateContact (item) {
         const jid = item.getAttribute('jid');
-
         const contact = this.get(jid);
         const subscription = item.getAttribute("subscription");
         const ask = item.getAttribute("ask");

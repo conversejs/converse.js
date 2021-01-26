@@ -19,6 +19,7 @@ class ConverseRoot extends CustomElement {
     connectedCallback () {
         super.connectedCallback();
         this.classList.add(`converse-${api.settings.get('view_mode')}`);
+        this.setAttribute('id', 'conversejs');
     }
 }
 

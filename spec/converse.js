@@ -5,11 +5,12 @@ const u = converse.env.utils;
 describe("Converse", function() {
 
     it("Can be inserted into a custom element after having been initialized",
-            mock.initConverse([], {'root': new DocumentFragment()}, async (done) => {
+            mock.initConverse([], {'root': new DocumentFragment()}, async (done, _converse) => {
 
-        expect(document.body.querySelector('div#conversejs')).toBe(null);
+        expect(document.body.querySelector('#conversejs')).toBe(null);
+        expect(_converse.root.firstElementChild.nodeName.toLowerCase()).toBe('converse-root');
         document.body.appendChild(document.createElement('converse-root'));
-        await u.waitUntil(() => document.body.querySelector('div#conversejs') !== null);
+        await u.waitUntil(() => document.body.querySelector('#conversejs') !== null);
         done();
     }));
 

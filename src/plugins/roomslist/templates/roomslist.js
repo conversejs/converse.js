@@ -1,5 +1,8 @@
-import { html } from "lit-html";
+import AddMUCModal from 'modals/add-muc.js';
+import MUCListModal from 'modals/muc-list.js';
 import { __ } from 'i18n';
+import { _converse, api } from "@converse/headless/core";
+import { html } from "lit-html";
 
 
 const bookmark = (o) => {
@@ -58,10 +61,23 @@ const room_item = (o) => {
 
 export default (o) => {
     const i18n_desc_rooms = __('Click to toggle the list of open groupchats');
+    const i18n_heading_chatrooms = __('Groupchats');
+    const i18n_title_list_rooms = __('Query for groupchats');
+    const i18n_title_new_room = __('Add a new groupchat');
     return html`
+        <div class="d-flex controlbox-padded">
+            <span class="w-100 controlbox-heading controlbox-heading--groupchats">${i18n_heading_chatrooms}</span>
+            <a class="controlbox-heading__btn show-list-muc-modal fa fa-list-ul"
+                @click=${(ev) => api.modal.show(MUCListModal, { 'model': o.model }, ev)}
+                title="${i18n_title_list_rooms}" data-toggle="modal" data-target="#muc-list-modal"></a>
+            <a class="controlbox-heading__btn show-add-muc-modal fa fa-plus"
+                @click=${(ev) => api.modal.show(AddMUCModal, { 'model': o.model }, ev)}
+                title="${i18n_title_new_room}" data-toggle="modal" data-target="#add-chatrooms-modal"></a>
+        </div>
+
         <div class="list-container list-container--openrooms ${ o.rooms.length ? '' : 'hidden' }">
             <a class="list-toggle open-rooms-toggle controlbox-padded" title="${i18n_desc_rooms}" @click=${o.toggleRoomsList}>
-            <span class="fa ${ (o.toggle_state === o._converse.OPENED) ? 'fa-caret-down' : 'fa-caret-right' }"></span> ${__('Open Groupchats')}</a>
+            <span class="fa ${ (o.toggle_state === _converse.OPENED) ? 'fa-caret-down' : 'fa-caret-right' }"></span> ${__('Open Groupchats')}</a>
             <div class="items-list rooms-list open-rooms-list ${ o.collapsed && 'collapsed' }">
                 ${ o.rooms.map(room => room_item(Object.assign({room}, o))) }
             </div>

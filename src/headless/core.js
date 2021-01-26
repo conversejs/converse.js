@@ -742,7 +742,6 @@ export const api = _converse.api = {
      * * [rosterContactsFetched](/docs/html/events.html#rosterContactsFetched)
      * * [rosterGroupsFetched](/docs/html/events.html#rosterGroupsFetched)
      * * [rosterInitialized](/docs/html/events.html#rosterInitialized)
-     * * [roomsPanelRendered](/docs/html/events.html#roomsPanelRendered)
      *
      * The various plugins might also provide promises, and they do this by using the
      * `promises.add` api method.

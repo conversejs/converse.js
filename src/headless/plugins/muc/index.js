@@ -16,7 +16,6 @@ import muc_api from './api.js';
 import muc_utils from './utils.js';
 import u from '../../utils/form';
 import { Collection } from '@converse/skeletor/src/collection';
-import { Model } from '@converse/skeletor/src/model.js';
 import { _converse, api, converse } from '../../core.js';
 import { isObject } from 'lodash-es';
 
@@ -368,21 +367,6 @@ converse.plugins.add('converse-muc', {
             comparator: 'time'
         });
 
-
-        _converse.RoomsPanelModel = Model.extend({
-            defaults: function () {
-                return {
-                    'muc_domain': api.settings.get('muc_domain'),
-                    'nick': _converse.getDefaultMUCNickname()
-                };
-            },
-
-            setDomain (jid) {
-                if (!api.settings.get('locked_muc_domain')) {
-                    this.save('muc_domain', Strophe.getDomainFromJid(jid));
-                }
-            }
-        });
 
         /**
          * A direct MUC invitation to join a groupchat has been received

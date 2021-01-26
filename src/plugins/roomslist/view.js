@@ -1,26 +1,47 @@
 import RoomDetailsModal from 'modals/muc-details.js';
 import tpl_rooms_list from "./templates/roomslist.js";
 import { ElementView } from '@converse/skeletor/src/element.js';
+import { Model } from '@converse/skeletor/src/model.js';
 import { __ } from 'i18n';
 import { _converse, api, converse } from "@converse/headless/core";
+import { render } from 'lit-html';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
 
 
+const RoomsListModel = Model.extend({
+    defaults: function () {
+        return {
+            'muc_domain': api.settings.get('muc_domain'),
+            'nick': _converse.getDefaultMUCNickname(),
+            'toggle-state':  _converse.OPENED,
+        };
+    },
+
+    setDomain (jid) {
+        if (!api.settings.get('locked_muc_domain')) {
+            this.save('muc_domain', Strophe.getDomainFromJid(jid));
+        }
+    }
+});
+
+
 export class RoomsList extends ElementView {
 
     initialize () {
-        this.model = _converse.chatboxes;
-        this.listenTo(this.model, 'add', this.renderIfChatRoom)
-        this.listenTo(this.model, 'remove', this.renderIfChatRoom)
-        this.listenTo(this.model, 'destroy', this.renderIfChatRoom)
-        this.listenTo(this.model, 'change', this.renderIfRelevantChange)
+        const id = `converse.roomspanel${_converse.bare_jid}`;
+        this.model = new (RoomsListModel.extend({
+            id,
+            'browserStorage': _converse.createStore(id)
+        }))();
+        this.model.fetch();
 
-        const id = `converse.roomslist${_converse.bare_jid}`;
-        this.list_model = new _converse.RoomsList({id});
-        this.list_model.browserStorage = _converse.createStore(id);
-        this.list_model.fetch();
+        this.listenTo(_converse.chatboxes, 'add', this.renderIfChatRoom)
+        this.listenTo(_converse.chatboxes, 'remove', this.renderIfChatRoom)
+        this.listenTo(_converse.chatboxes, 'destroy', this.renderIfChatRoom)
+        this.listenTo(_converse.chatboxes, 'change', this.renderIfRelevantChange)
+
         this.render();
     }
 
@@ -36,21 +57,21 @@ export class RoomsList extends ElementView {
         }
     }
 
-    toHTML () {
-        return tpl_rooms_list({
-            '_converse': _converse,
+    render () {
+        render(tpl_rooms_list({
             'addBookmark': ev => this.addBookmark(ev),
             'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
             'closeRoom': ev => this.closeRoom(ev),
-            'collapsed': this.list_model.get('toggle-state') !== _converse.OPENED,
+            'collapsed': this.model.get('toggle-state') !== _converse.OPENED,
             'currently_open': room => _converse.isUniView() && !room.get('hidden'),
+            'model': this.model,
             'openRoom': ev => this.openRoom(ev),
             'removeBookmark': ev => this.removeBookmark(ev),
-            'rooms': this.model.filter(m => m.get('type') === _converse.CHATROOMS_TYPE),
+            'rooms': _converse.chatboxes.filter(m => m.get('type') === _converse.CHATROOMS_TYPE),
             'showRoomDetailsModal': ev => this.showRoomDetailsModal(ev),
             'toggleRoomsList': ev => this.toggleRoomsList(ev),
-            'toggle_state': this.list_model.get('toggle-state')
-        });
+            'toggle_state': this.model.get('toggle-state')
+        }), this);
     }
 
     showRoomDetailsModal (ev) { // eslint-disable-line class-methods-use-this
@@ -94,13 +115,13 @@ export class RoomsList extends ElementView {
         const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
         if (icon_el.classList.contains("fa-caret-down")) {
             u.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
-                this.list_model.save({'toggle-state': _converse.CLOSED});
+                this.model.save({'toggle-state': _converse.CLOSED});
                 icon_el.classList.remove("fa-caret-down");
                 icon_el.classList.add("fa-caret-right");
             });
         } else {
             u.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
-                this.list_model.save({'toggle-state': _converse.OPENED});
+                this.model.save({'toggle-state': _converse.OPENED});
                 icon_el.classList.remove("fa-caret-right");
                 icon_el.classList.add("fa-caret-down");
             });

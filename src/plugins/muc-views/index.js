@@ -94,8 +94,6 @@ converse.plugins.add('converse-muc-views', {
     initialize () {
         const { _converse } = this;
 
-        api.promises.add(['roomsPanelRendered']);
-
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these

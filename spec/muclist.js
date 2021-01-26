@@ -126,7 +126,7 @@ describe("A groupchat shown in the groupchats list", function () {
         expect(room_els.length).toBe(1);
 
         let item = room_els[0];
-        await u.waitUntil(() => lview.model.get(muc_jid).get('hidden') === false);
+        await u.waitUntil(() => _converse.chatboxes.get(muc_jid).get('hidden') === false);
         await u.waitUntil(() => u.hasClass('open', item), 1000);
         expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
         await _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'}, true);

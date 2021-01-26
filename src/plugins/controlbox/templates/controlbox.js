@@ -15,9 +15,11 @@ export default o => html`
                 ${o.connected
                     ? html`
                           <converse-user-profile></converse-user-profile>
-                          <converse-headlines-panel></converse-headlines-panel>
-                          <converse-rooms-list></converse-rooms-list>
-                          <converse-bookmarks></converse-bookmarks>`
+                          <converse-headlines-panel class="controlbox-section"></converse-headlines-panel>
+                          <div id="chatrooms" class="controlbox-section">
+                              <converse-rooms-list></converse-rooms-list>
+                              <converse-bookmarks></converse-bookmarks>
+                          </div>`
                     : o['active-form'] === 'register'
                         ? html`<converse-register-panel></converse-register-panel>`
                         : html`<converse-login-panel></converse-login-panel>`

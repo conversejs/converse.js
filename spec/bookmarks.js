@@ -410,7 +410,7 @@ describe("Bookmarks", function () {
 
 
     it("can be retrieved from the XMPP server", mock.initConverse(
-            ['chatBoxesFetched', 'roomsPanelRendered', 'rosterGroupsFetched'], {},
+            ['chatBoxesFetched', 'rosterGroupsFetched'], {},
             async function (done, _converse) {
 
         const { Strophe, sizzle, u, $iq } = converse.env;
@@ -420,14 +420,14 @@ describe("Bookmarks", function () {
             ['http://jabber.org/protocol/pubsub#publish-options']
         );
         /* Client requests all items
-            * -------------------------
-            *
-            *  <iq from='juliet@capulet.lit/randomID' type='get' id='retrieve1'>
-            *  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-            *      <items node='storage:bookmarks'/>
-            *  </pubsub>
-            *  </iq>
-            */
+         * -------------------------
+         *
+         *  <iq from='juliet@capulet.lit/randomID' type='get' id='retrieve1'>
+         *  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+         *      <items node='storage:bookmarks'/>
+         *  </pubsub>
+         *  </iq>
+         */
         const IQ_stanzas = _converse.connection.IQ_stanzas;
         const sent_stanza = await u.waitUntil(
             () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
@@ -487,7 +487,7 @@ describe("Bookmarks", function () {
         done();
     }));
 
-    describe("The rooms panel", function () {
+    describe("The bookmarks list", function () {
 
         it("shows a list of bookmarks", mock.initConverse(
             ['rosterGroupsFetched'], {},
@@ -649,19 +649,21 @@ describe("Bookmarks", function () {
                 'name':  'The Play',
                 'nick': ''
             });
-            const el = _converse.chatboxviews.el
+            const chats_el = document.querySelector('converse-chats');
             const selector = '#chatrooms .bookmarks.rooms-list .room-item';
-            await u.waitUntil(() => sizzle(selector, el).filter(u.isVisible).length);
-            expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', el).pop())).toBeFalsy();
-            expect(sizzle(selector, el).filter(u.isVisible).length).toBe(1);
-            expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
-            sizzle('#chatrooms .bookmarks-toggle', el).pop().click();
-            expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', el).pop())).toBeTruthy();
-            expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.CLOSED);
-            sizzle('#chatrooms .bookmarks-toggle', el).pop().click();
-            expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', el).pop())).toBeFalsy();
-            expect(sizzle(selector, el).filter(u.isVisible).length).toBe(1);
-            expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
+            await u.waitUntil(() => sizzle(selector, chats_el).filter(u.isVisible).length);
+            expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', chats_el).pop())).toBeFalsy();
+            expect(sizzle(selector, chats_el).filter(u.isVisible).length).toBe(1);
+
+            const bookmarks_el = chats_el.querySelector('converse-bookmarks');
+            expect(bookmarks_el.model.get('toggle-state')).toBe(_converse.OPENED);
+            sizzle('#chatrooms .bookmarks-toggle', chats_el).pop().click();
+            expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', chats_el).pop())).toBeTruthy();
+            expect(bookmarks_el.model.get('toggle-state')).toBe(_converse.CLOSED);
+            sizzle('#chatrooms .bookmarks-toggle', chats_el).pop().click();
+            expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', chats_el).pop())).toBeFalsy();
+            expect(sizzle(selector, chats_el).filter(u.isVisible).length).toBe(1);
+            expect(bookmarks_el.model.get('toggle-state')).toBe(_converse.OPENED);
             done();
         }));
     });
@@ -688,20 +690,20 @@ describe("When hide_open_bookmarks is true and a bookmarked room is opened", fun
         expect(_converse.bookmarks.length).toBe(1);
 
         const u = converse.env.utils;
-        const bmarks_view = _converse.bookmarksview;
-        await u.waitUntil(() => bmarks_view.querySelectorAll(".open-room").length, 500);
-        const room_els = bmarks_view.querySelectorAll(".open-room");
+        const bookmarks_el = document.querySelector('converse-bookmarks');
+        await u.waitUntil(() => bookmarks_el.querySelectorAll(".open-room").length, 500);
+        const room_els = bookmarks_el.querySelectorAll(".open-room");
         expect(room_els.length).toBe(1);
 
-        const bookmark = _converse.bookmarksview.querySelector(".open-room");
+        const bookmark = bookmarks_el.querySelector(".open-room");
         bookmark.click();
         await u.waitUntil(() => _converse.chatboxviews.get(jid));
 
-        expect(u.hasClass('hidden', _converse.bookmarksview.querySelector(".available-chatroom"))).toBeTruthy();
+        expect(u.hasClass('hidden', bookmarks_el.querySelector(".available-chatroom"))).toBeTruthy();
         // Check that it reappears once the room is closed
         const view = _converse.chatboxviews.get(jid);
         view.close();
-        await u.waitUntil(() => !u.hasClass('hidden', _converse.bookmarksview.querySelector(".available-chatroom")));
+        await u.waitUntil(() => !u.hasClass('hidden', bookmarks_el.querySelector(".available-chatroom")));
         done();
     }));
 });

@@ -67,10 +67,8 @@ class ControlBoxView extends ElementView {
         }
     }
 
-    async close (ev) {
-        if (ev && ev.preventDefault) {
-            ev.preventDefault();
-        }
+    close (ev) {
+        ev?.preventDefault?.();
         if (
             ev?.name === 'closeAllChatBoxes' &&
             (_converse.disconnection_cause !== _converse.LOGOUT ||
@@ -81,27 +79,8 @@ class ControlBoxView extends ElementView {
         if (api.settings.get('sticky_controlbox')) {
             return;
         }
-        const connection = _converse?.connection || {};
-        if (connection.connected && !connection.disconnecting) {
-            await new Promise((resolve, reject) => {
-                return this.model.save(
-                    { 'closed': true },
-                    { 'success': resolve, 'error': reject, 'wait': true }
-                );
-            });
-        } else {
-            this.model.trigger('hide');
-        }
+        u.safeSave(this.model, { 'closed': true });
         api.trigger('controlBoxClosed', this);
-        return this;
-    }
-
-    hide () {
-        if (api.settings.get('sticky_controlbox')) {
-            return;
-        }
-        u.addClass('hidden', this);
-        api.trigger('chatBoxClosed', this);
         return this;
     }
 

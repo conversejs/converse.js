@@ -13,6 +13,7 @@ export default (o) => html`
         <div class="suggestion-box">
             <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
             <textarea
+                autofocus
                 type="text"
                 class="chat-textarea suggestion-box__input
                     ${ o.show_send_button ? 'chat-textarea-send-button' : '' }

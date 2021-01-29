@@ -1,8 +1,11 @@
 #conversejs {
     converse-chats {
         &.converse-overlayed {
-            #minimized-chats {
+            converse-minimized-chats {
                 order: 100;
+            }
+
+            #minimized-chats {
 
                 width: var(--minimized-chats-width);
                 margin-bottom: 0;

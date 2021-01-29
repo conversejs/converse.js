@@ -2300,7 +2300,8 @@ const ChatRoomMixin = {
      * @method _converse.ChatRoom#onOwnPresence
      * @param { XMLElement } pres - The stanza
      */
-    onOwnPresence (stanza) {
+    async onOwnPresence (stanza) {
+        await this.occupants.fetched;
         if (stanza.getAttribute('type') !== 'unavailable') {
             const old_status = this.session.get('connection_status');
             if (old_status !== converse.ROOMSTATUS.ENTERED) {

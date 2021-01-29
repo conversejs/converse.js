@@ -148,7 +148,6 @@ describe("A Chatbox", function () {
         spyOn(_converse.minimize, 'trimChats');
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
-        expect(_converse.minimize.trimChats.calls.count()).toBe(1);
 
         let jid, chatboxview;
         // openControlBox was called earlier, so the controlbox is
@@ -179,7 +178,6 @@ describe("A Chatbox", function () {
         spyOn(_converse.minimize, 'maximize').and.callThrough();
         const minimized_chats = document.querySelector("converse-minimized-chats")
         minimized_chats.querySelector("a.restore-chat").click();
-        expect(_converse.minimize.maximize).toHaveBeenCalled();
         expect(_converse.minimize.trimChats.calls.count()).toBe(17);
         done();
     }));
@@ -202,6 +200,7 @@ describe("A Minimized ChatBoxView's Unread Message Count", function () {
         _converse.handleMessageStanza(msgFactory());
         await u.waitUntil(() => chatbox.messages.length);
         const view = _converse.chatboxviews.get(sender_jid);
+        expect(view.model.get('num_unread')).toBe(1);
         _converse.minimize.minimize(view.model);
         const unread_count = selectUnreadMsgCount();
         expect(u.isVisible(unread_count)).toBeTruthy();

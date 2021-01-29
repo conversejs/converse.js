@@ -1,14 +1,11 @@
-/*global mock */
+/*global mock, converse */
 
 const u = converse.env.utils;
 
 describe("A XEP-0317 MUC Hat", function () {
 
     it("can be included in a presence stanza",
-        mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
-
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
         const view = _converse.chatboxviews.get(muc_jid);

@@ -148,9 +148,7 @@ window.addEventListener('converse-loaded', () => {
         const model = await _converse.api.controlbox.open('controlbox');
         await u.waitUntil(() => model.get('connected'));
         await mock.openControlBox(_converse);
-        const view = await _converse.chatboxviews.get('controlbox');
-        const roomspanel = view.roomspanel;
-        roomspanel.el.querySelector('.show-add-muc-modal').click();
+        document.querySelector('converse-rooms-list .show-add-muc-modal').click();
         mock.closeControlBox(_converse);
         const modal = _converse.api.modal.get('add-chatroom-modal');
         await u.waitUntil(() => u.isVisible(modal.el), 1500)

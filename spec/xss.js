@@ -7,11 +7,7 @@ const u = converse.env.utils;
 describe("XSS", function () {
     describe("A Chat Message", function () {
 
-        it("will escape IMG payload XSS attempts",
-            mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
+        it("will escape IMG payload XSS attempts", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
             spyOn(window, 'alert').and.callThrough();
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -67,11 +63,7 @@ describe("XSS", function () {
             done();
         }));
 
-        it("will escape SVG payload XSS attempts",
-            mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
+        it("will escape SVG payload XSS attempts", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
             spyOn(window, 'alert').and.callThrough();
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -127,9 +119,7 @@ describe("XSS", function () {
         }));
 
         it("will have properly escaped URLs",
-            mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -185,9 +175,7 @@ describe("XSS", function () {
         }));
 
         it("will avoid malformed and unsafe urls urls from rendering as anchors",
-            mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
@@ -270,8 +258,7 @@ describe("XSS", function () {
     describe("A Groupchat", function () {
 
         it("escapes occupant nicknames when rendering them, to avoid JS-injection attacks",
-                mock.initConverse(['rosterContactsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
             /* <presence xmlns="jabber:client" to="jc@chat.example.org/converse.js-17184538"
@@ -294,17 +281,15 @@ describe("XSS", function () {
 
             _converse.connection._dataRecv(mock.createRequest(presence));
             const view = _converse.chatboxviews.get('lounge@montague.lit');
-            await u.waitUntil(() => view.querySelectorAll('li .occupant-nick').length, 500);
-            const occupants = view.querySelector('.occupant-list').querySelectorAll('li .occupant-nick');
+            await u.waitUntil(() => view.querySelectorAll('.occupant-list .occupant-nick').length === 2);
+            const occupants = view.querySelectorAll('.occupant-list li .occupant-nick');
             expect(occupants.length).toBe(2);
             expect(occupants[0].textContent.trim()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
             done();
         }));
 
         it("escapes the subject before rendering it, to avoid JS-injection attacks",
-            mock.initConverse(
-                ['rosterContactsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             await mock.openAndEnterChatRoom(_converse, 'jdev@conference.jabber.org', 'jc');
             spyOn(window, 'alert');

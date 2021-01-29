@@ -11,8 +11,7 @@ describe("Chatrooms", function () {
     describe("The /register commmand", function () {
 
         it("allows you to register your nickname in a room",
-            mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
+                mock.initConverse(['chatBoxesFetched'], {'auto_register_muc_nickname': true},
                 async function (done, _converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';
@@ -68,8 +67,7 @@ describe("Chatrooms", function () {
     describe("The auto_register_muc_nickname option", function () {
 
         it("allows you to automatically register your nickname when joining a room",
-            mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
+                mock.initConverse(['chatBoxesFetched'], {'auto_register_muc_nickname': true},
                 async function (done, _converse) {
 
             const muc_jid = 'coven@chat.shakespeare.lit';

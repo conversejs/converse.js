@@ -394,10 +394,10 @@ describe("Chatboxes", function () {
                     await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
-                    view.model.minimize();
+                    _converse.minimize.minimize(view.model);
                     expect(view.model.get('chat_state')).toBe('inactive');
                     spyOn(_converse.connection, 'send');
-                    view.model.maximize();
+                    _converse.minimize.maximize(view.model);
                     await u.waitUntil(() => view.model.get('chat_state') === 'active', 1000);
                     expect(_converse.connection.send).toHaveBeenCalled();
                     const calls = _.filter(_converse.connection.send.calls.all(), function (call) {
@@ -750,7 +750,7 @@ describe("Chatboxes", function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
                     spyOn(_converse.connection, 'send');
-                    view.minimize();
+                    _converse.minimize.minimize(view.model);
                     expect(view.model.get('chat_state')).toBe('inactive');
                     expect(_converse.connection.send).toHaveBeenCalled();
                     var stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
@@ -1125,8 +1125,7 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length, 500);
             await mock.openChatBoxFor(_converse, sender_jid);
             const chatbox = _converse.chatboxes.get(sender_jid);
-            var chatboxview = _converse.chatboxviews.get(sender_jid);
-            chatboxview.minimize();
+            _converse.minimize.minimize(chatbox);
 
             msg = mock.createChatMessage(_converse, sender_jid, 'This message will be unread');
             await _converse.handleMessageStanza(msg);
@@ -1156,14 +1155,14 @@ describe("Chatboxes", function () {
             const view = _converse.chatboxviews.get(sender_jid);
             const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
             const select_msgs_indicator = () => sizzle(selector, rosterview.el).pop();
-            view.minimize();
+            _converse.minimize.minimize(view.model);
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length);
             expect(select_msgs_indicator().textContent).toBe('1');
             _converse.handleMessageStanza(msgFactory());
             await u.waitUntil(() => chatbox.messages.length > 1);
             expect(select_msgs_indicator().textContent).toBe('2');
-            view.model.maximize();
+            _converse.minimize.minimize(view.model);
             u.waitUntil(() => typeof select_msgs_indicator() === 'undefined');
             done();
         }));

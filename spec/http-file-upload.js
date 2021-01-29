@@ -9,10 +9,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
     describe("Discovering support", function () {
 
-        it("is done automatically",
-                mock.initConverse(
-                    ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                        async function (done, _converse) {
+        it("is done automatically", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
             let selector = 'iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]';
@@ -162,10 +159,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                 done();
             }));
 
-            it("does not appear in MUC chats", mock.initConverse(
-                    ['rosterContactsFetched'], {},
-                    async (done, _converse) => {
-
+            it("does not appear in MUC chats", mock.initConverse([], {}, async (done, _converse) => {
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 mock.waitUntilDiscoConfirmed(
                     _converse, _converse.domain,
@@ -203,10 +197,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                 done();
             }));
 
-            it("appears in MUC chats", mock.initConverse(
-                    ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                    async (done, _converse) => {
-
+            it("appears in MUC chats", mock.initConverse(['chatBoxesFetched'], {}, async (done, _converse) => {
                 await mock.waitUntilDiscoConfirmed(
                     _converse, _converse.domain,
                     [{'category': 'server', 'type':'IM'}],
@@ -215,7 +206,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                 await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.lit'], 'items');
                 await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.lit', [], [Strophe.NS.HTTPUPLOAD], []);
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
-                await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').el.querySelector('.fileupload'));
+                await u.waitUntil(() => _converse.chatboxviews.get('lounge@montague.lit').querySelector('.fileupload'));
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 expect(view.querySelector('.chat-toolbar .fileupload')).not.toBe(null);
                 done();
@@ -223,9 +214,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
             describe("when clicked and a file chosen", function () {
 
-                it("is uploaded and sent out", mock.initConverse(
-                        ['rosterContactsFetched', 'chatBoxesFetched'], {} ,async (done, _converse) => {
-
+                it("is uploaded and sent out", mock.initConverse(['chatBoxesFetched'], {} ,async (done, _converse) => {
                     const base_url = 'https://conversejs.org';
                     await mock.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
@@ -560,10 +549,7 @@ describe("XEP-0363: HTTP File Upload", function () {
 
         describe("While a file is being uploaded", function () {
 
-            it("shows a progress bar", mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
-
+            it("shows a progress bar", mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
                 await mock.waitUntilDiscoConfirmed(
                     _converse, _converse.domain,
                     [{'category': 'server', 'type':'IM'}],

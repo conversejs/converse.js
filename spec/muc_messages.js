@@ -390,6 +390,8 @@ describe("A Groupchat Message", function () {
             .c('status').attrs({code:'210'}).nodeTree;
         _converse.connection._dataRecv(mock.createRequest(presence));
 
+        await u.waitUntil(() => view.model.messages.length === 4);
+
         msg = $msg({
             from: 'lounge@montague.lit/romeo',
             id: u.getUniqueId(),

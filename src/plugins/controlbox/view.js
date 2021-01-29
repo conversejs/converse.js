@@ -43,7 +43,7 @@ class ControlBoxView extends ElementView {
         // element.
         this.listenTo(this.model, 'change:active-form', this.render);
         this.listenTo(this.model, 'change:connected', this.render);
-        this.listenTo(this.model, 'show', this.show);
+        this.listenTo(this.model, 'change:closed', () => !this.model.get('closed') && this.afterShown());
     }
 
     render () {
@@ -84,9 +84,7 @@ class ControlBoxView extends ElementView {
         return this;
     }
 
-    show () {
-        this.model.set('closed', false);
-        this.classList.remove('hidden');
+    afterShown () {
         /**
          * Triggered once the controlbox has been opened
          * @event _converse#controlBoxOpened

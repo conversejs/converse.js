@@ -1,6 +1,7 @@
 import tpl_trimmed_chat from "../templates/trimmed_chat.js";
 import { CustomElement } from 'components/element.js';
 import { api, _converse } from "@converse/headless/core";
+import { maximize } from  '../utils.js';
 
 
 export default class MinimizedChat extends CustomElement {
@@ -40,7 +41,7 @@ export default class MinimizedChat extends CustomElement {
 
     restore (ev) {
         ev?.preventDefault();
-        this.model.maximize();
+        maximize(this.model);
     }
 }
 

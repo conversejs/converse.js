@@ -8,9 +8,15 @@ import 'plugins/chatview/index.js';
 import MinimizedChats from './view.js';
 import MinimizedChatsToggle from './toggle.js';
 import { _converse, api, converse } from '@converse/headless/core';
-import { addMinimizeButtonToChat, addMinimizeButtonToMUC, trimChats } from './utils.js';
+import {
+    addMinimizeButtonToChat,
+    addMinimizeButtonToMUC,
+    maximize,
+    minimize,
+    onMinimizedChanged,
+    trimChats
+} from './utils.js';
 import { debounce } from 'lodash-es';
-import { minimizableChatBox, minimizableChatBoxView } from './mixins.js';
 
 const { dayjs } = converse.env;
 
@@ -50,7 +56,7 @@ converse.plugins.add('converse-minimize', {
         ChatBox: {
             initialize () {
                 this.__super__.initialize.apply(this, arguments);
-                this.on('change:hidden', m => !m.get('hidden') && this.maximize(), this);
+                this.on('change:hidden', m => !m.get('hidden') && maximize(this), this);
 
                 if (this.get('id') === 'controlbox') {
                     return;
@@ -102,9 +108,6 @@ converse.plugins.add('converse-minimize', {
 
         api.settings.extend({'no_trimming': false});
 
-        Object.assign(_converse.ChatBox.prototype, minimizableChatBox);
-        Object.assign(_converse.ChatBoxView.prototype, minimizableChatBoxView);
-
         api.promises.add('minimizedChatsInitialized');
 
         _converse.MinimizedChatsToggle = MinimizedChatsToggle;
@@ -112,16 +115,18 @@ converse.plugins.add('converse-minimize', {
 
         _converse.minimize = {};
         _converse.minimize.trimChats = trimChats;
-
+        _converse.minimize.minimize = minimize;
+        _converse.minimize.maximize = maximize;
 
         /************************ BEGIN Event Handlers ************************/
         api.listen.on('chatBoxViewInitialized', view => _converse.minimize.trimChats(view));
         api.listen.on('chatRoomViewInitialized', view => _converse.minimize.trimChats(view));
+        api.listen.on('chatBoxMaximized', view => _converse.minimize.trimChats(view));
         api.listen.on('controlBoxOpened', view => _converse.minimize.trimChats(view));
-        api.listen.on('chatBoxViewInitialized', v => v.listenTo(v.model, 'change:minimized', v.onMinimizedChanged));
+        api.listen.on('chatBoxViewInitialized', v => v.listenTo(v.model, 'change:minimized', () => onMinimizedChanged(v)));
 
         api.listen.on('chatRoomViewInitialized', view => {
-            view.listenTo(view.model, 'change:minimized', view.onMinimizedChanged)
+            view.listenTo(view.model, 'change:minimized', () => onMinimizedChanged(view));
             view.model.get('minimized') && view.hide();
         });
 

@@ -386,8 +386,11 @@
     converse-chats {
         &.converse-overlayed {
 
+            display: flex;
+            flex-direction: row-reverse;
+
             .toggle-controlbox {
-                order: -1;
+                order: -2;
                 text-align: center;
                 background-color: var(--link-color);
                 border-top-left-radius: var(--button-border-radius);
@@ -403,6 +406,7 @@
             }
 
             #controlbox {
+                order: -1;
                 min-width: var(--controlbox-width) !important;
                 width: var(--controlbox-width);
                 .box-flyout {

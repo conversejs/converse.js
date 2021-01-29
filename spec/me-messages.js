@@ -4,11 +4,7 @@ const { u, sizzle, $msg } = converse.env;
 
 describe("A Groupchat Message", function () {
 
-    it("supports the /me command",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
-
+    it("supports the /me command", mock.initConverse([], {}, async function (done, _converse) {
         await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
         await mock.waitForRoster(_converse, 'current');
@@ -61,7 +57,7 @@ describe("A Groupchat Message", function () {
 
 describe("A Message", function () {
 
-    it("supports the /me command", mock.initConverse(['rosterContactsFetched'], {}, async function (done, _converse) {
+    it("supports the /me command", mock.initConverse([], {}, async function (done, _converse) {
         await mock.waitForRoster(_converse, 'current');
         await mock.waitUntilDiscoConfirmed(_converse, 'montague.lit', [], ['vcard-temp']);
         await u.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));

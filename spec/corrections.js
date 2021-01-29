@@ -6,9 +6,7 @@ const u = converse.env.utils;
 describe("A Chat Message", function () {
 
     it("can be sent as a correction by using the up arrow",
-        mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.openControlBox(_converse);
@@ -164,9 +162,7 @@ describe("A Chat Message", function () {
 
 
     it("can be sent as a correction by clicking the pencil icon",
-        mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
         await mock.openControlBox(_converse);
@@ -291,9 +287,7 @@ describe("A Chat Message", function () {
     describe("when received from someone else", function () {
 
         it("can be replaced with a correction",
-            mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
@@ -356,9 +350,7 @@ describe("A Chat Message", function () {
 describe("A Groupchat Message", function () {
 
     it("can be replaced with a correction",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -425,9 +417,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("keeps the same position in history after a correction",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -521,9 +511,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("can be sent as a correction by using the up arrow",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');

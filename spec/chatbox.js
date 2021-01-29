@@ -139,13 +139,14 @@ describe("Chatboxes", function () {
         }));
 
         it("is focused if its already open and you click on its corresponding roster item",
-                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {'auto_focus': true}, async function (done, _converse) {
 
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
             expect(_converse.chatboxes.length).toEqual(1);
 
             const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+            spyOn(_converse.ChatBoxView.prototype, 'focus').and.callThrough();
             const view = await mock.openChatBoxFor(_converse, contact_jid);
             const rosterview = document.querySelector('converse-roster');
             const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', rosterview.el).pop();
@@ -153,11 +154,8 @@ describe("Chatboxes", function () {
             const textarea = view.querySelector('.chat-textarea');
             await u.waitUntil(() => u.isVisible(textarea));
             textarea.blur();
-            spyOn(view.model, 'maybeShow').and.callThrough();
-            spyOn(view, 'focus').and.callThrough();
             el.click();
-            await u.waitUntil(() => view.model.maybeShow.calls.count(), 1000);
-            expect(view.model.maybeShow).toHaveBeenCalled();
+            await u.waitUntil(() => view.focus.calls.count(), 1000);
             expect(view.focus).toHaveBeenCalled();
             expect(_converse.chatboxes.length).toEqual(2);
             done();
@@ -219,16 +217,15 @@ describe("Chatboxes", function () {
         it("will be removed from browserStorage when closed",
                 mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
-            spyOn(_converse.minimize, 'trimChats');
             await mock.waitForRoster(_converse, 'current');
             await mock.openControlBox(_converse);
+            spyOn(_converse.minimize, 'trimChats');
             const rosterview = document.querySelector('converse-roster');
             await u.waitUntil(() => rosterview.querySelectorAll('.roster-group').length);
             spyOn(_converse.api, "trigger").and.callThrough();
-
+            const promise = new Promise(resolve => _converse.api.listen.once('controlBoxClosed', resolve));
             mock.closeControlBox();
-            await new Promise(resolve => _converse.api.listen.once('chatBoxClosed', resolve));
-            expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+            await promise;
             expect(_converse.chatboxes.length).toEqual(1);
             expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
             mock.openChatBoxes(_converse, 6);
@@ -1056,9 +1053,9 @@ describe("Chatboxes", function () {
             await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 1);
             expect(sent_stanzas[0].querySelector('received')).toBeDefined();
             _converse.saveWindowState({'type': 'focus'});
-            expect(chatbox.get('num_unread')).toBe(0);
             await u.waitUntil(() => sent_stanzas.filter(s => s.nodeName === 'message').length === 2);
             expect(sent_stanzas[1].querySelector('displayed')).toBeDefined();
+            expect(chatbox.get('num_unread')).toBe(0);
             done();
         }));
 
@@ -1191,7 +1188,7 @@ describe("Chatboxes", function () {
             expect(select_msgs_indicator().textContent).toBe('1');
             view.viewUnreadMessages();
             rosterview.render();
-            expect(select_msgs_indicator()).toBeUndefined();
+            await u.waitUntil(() => select_msgs_indicator() === undefined);
             done();
         }));
 

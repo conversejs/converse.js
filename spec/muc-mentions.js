@@ -8,8 +8,7 @@ const u = converse.env.utils;
 describe("MUC Mention Notfications", function () {
 
     it("may be received from a MUC in which the user is not currently present",
-        mock.initConverse(
-            ['rosterContactsFetched'], {
+        mock.initConverse([], {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},
@@ -31,8 +30,7 @@ describe("MUC Mention Notfications", function () {
         expect(view.model.get('hidden')).toBe(true);
         await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
 
-        const lview = _converse.rooms_list_view
-        const room_el = await u.waitUntil(() => lview.querySelector(".available-chatroom"));
+        const room_el = await u.waitUntil(() => document.querySelector("converse-rooms-list .available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 
         const base_time = new Date();

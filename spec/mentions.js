@@ -7,9 +7,7 @@ const u = converse.env.utils;
 describe("An incoming groupchat message", function () {
 
     it("is specially marked when you are mentioned in it",
-        mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -31,9 +29,7 @@ describe("An incoming groupchat message", function () {
 
 
     it("highlights all users mentioned via XEP-0372 references",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -87,9 +83,7 @@ describe("An incoming groupchat message", function () {
     }));
 
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -133,9 +127,7 @@ describe("A sent groupchat message", function () {
     describe("in which someone is mentioned", function () {
 
         it("gets parsed for mentions which get turned into references",
-            mock.initConverse(
-                ['rosterContactsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
 
@@ -265,9 +257,7 @@ describe("A sent groupchat message", function () {
         }));
 
         it("gets parsed for mentions as indicated with an @ preceded by a space or at the start of the text",
-            mock.initConverse(
-                ['rosterContactsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -299,9 +289,7 @@ describe("A sent groupchat message", function () {
         }));
 
         it("properly encodes the URIs in sent out references",
-            mock.initConverse(
-                ['rosterContactsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'tom');
@@ -343,9 +331,7 @@ describe("A sent groupchat message", function () {
         }));
 
         it("can get corrected and given new references",
-            mock.initConverse(
-                ['rosterContactsFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
 
@@ -442,9 +428,7 @@ describe("A sent groupchat message", function () {
         }));
 
         it("includes a XEP-0372 references to that person",
-            mock.initConverse(
-                ['rosterContactsFetched'], {},
-                    async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -493,9 +477,7 @@ describe("A sent groupchat message", function () {
     });
 
     it("highlights all users mentioned via XEP-0372 references in a quoted message",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-                async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const members = [{'jid': 'gibson@gibson.net', 'nick': 'gibson', 'affiliation': 'member'}];
         const muc_jid = 'lounge@montague.lit';

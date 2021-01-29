@@ -8,7 +8,7 @@ describe("A delivery receipt", function () {
 
     it("is emitted for a received message which requests it",
         mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
+            ['chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
@@ -34,7 +34,7 @@ describe("A delivery receipt", function () {
 
     it("is not emitted for a carbon message",
         mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
+            ['chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -64,7 +64,7 @@ describe("A delivery receipt", function () {
 
     it("is not emitted for an archived message",
         mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
+            ['chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);
@@ -101,7 +101,7 @@ describe("A delivery receipt", function () {
 
     it("can be received for a sent message",
         mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
+            ['chatBoxesFetched'], {},
             async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current', 1);

@@ -189,9 +189,10 @@ const ChatRoomMixin = {
             return;
         }
         if (msg?.get('is_markable') || force) {
-            const id = msg.get(`stanza_id ${this.get('jid')}`);
+            const key = `stanza_id ${this.get('jid')}`;
+            const id = msg.get(key);
             if (!id) {
-                log.error(`Can't send marker for message without stanza ID: ${msg}`);
+                log.error(`Can't send marker for message without stanza ID: ${key}`);
                 return;
             }
             const from_jid = Strophe.getBareJidFromJid(msg.get('from'));
@@ -1923,6 +1924,7 @@ const ChatRoomMixin = {
         } else if (attrs.is_valid_receipt_request || attrs.is_marker || this.ignorableCSN(attrs)) {
             return;
         }
+
         if (
             (await this.handleRetraction(attrs)) ||
             (await this.handleModeration(attrs)) ||

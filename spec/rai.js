@@ -9,7 +9,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
     it("will be activated for a MUC that becomes hidden",
         mock.initConverse(
-            ['rosterContactsFetched'], {
+            [], {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},
@@ -96,8 +96,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
         expect(view.model.get('has_activity')).toBe(false);
 
-        const lview = _converse.rooms_list_view
-        const room_el = await u.waitUntil(() => lview.querySelector(".available-chatroom"));
+        const room_el = await u.waitUntil(() => document.querySelector("converse-rooms-list .available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 
         const activity_stanza = u.toStanza(`
@@ -116,7 +115,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
     it("will be activated for a MUC that starts out hidden",
         mock.initConverse(
-            ['rosterContactsFetched'], {
+            [], {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},
@@ -160,8 +159,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
         await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED);
         expect(view.model.get('has_activity')).toBe(false);
 
-        const lview = _converse.rooms_list_view
-        const room_el = await u.waitUntil(() => lview.querySelector(".available-chatroom"));
+        const room_el = await u.waitUntil(() => document.querySelector("converse-rooms-list .available-chatroom"));
         expect(Array.from(room_el.classList).includes('unread-msgs')).toBeFalsy();
 
         const activity_stanza = u.toStanza(`
@@ -181,7 +179,7 @@ describe("XEP-0437 Room Activity Indicators", function () {
 
     it("may not be activated due to server resource constraints",
         mock.initConverse(
-            ['rosterContactsFetched'], {
+            [], {
                 'allow_bookmarks': false, // Hack to get the rooms list to render
                 'muc_subscribe_to_rai': true,
                 'view_mode': 'fullscreen'},

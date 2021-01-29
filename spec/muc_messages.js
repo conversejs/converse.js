@@ -12,9 +12,7 @@ describe("A Groupchat Message", function () {
     describe("which is succeeded by an error message", function () {
 
         it("will have the error displayed below it",
-            mock.initConverse(
-                ['rosterContactsFetched'], {},
-                    async function (done, _converse) {
+                mock.initConverse([], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -57,9 +55,7 @@ describe("A Groupchat Message", function () {
     describe("an info message", function () {
 
         it("is not rendered as a followup message",
-            mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -95,9 +91,7 @@ describe("A Groupchat Message", function () {
         }));
 
         it("is not shown if its a duplicate",
-            mock.initConverse(
-                ['rosterContactsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -130,9 +124,7 @@ describe("A Groupchat Message", function () {
 
 
     it("is rejected if it's an unencapsulated forwarded message",
-        mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -165,9 +157,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("can contain a chat state notification and will still be shown",
-        mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -190,9 +180,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("can not be expected to have a unique id attribute",
-        mock.initConverse(
-            ['rosterContactsFetched', 'chatBoxesFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse(['chatBoxesFetched'], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -221,9 +209,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("is ignored if it has the same archive-id of an already received one",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'room@muc.example.com';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -270,9 +256,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("is ignored if it has the same stanza-id of an already received one",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'room@muc.example.com';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -318,9 +302,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("will be discarded if it's a malicious message meant to look like a carbon copy",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
         await mock.openControlBox(_converse);
@@ -377,9 +359,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("keeps track of the sender's role and affiliation",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -505,9 +485,7 @@ describe("A Groupchat Message", function () {
 
 
     it("keeps track whether you are the sender or not",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'lounge@montague.lit';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -525,9 +503,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("will be shown as received upon MUC reflection",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';
@@ -568,9 +544,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("gets updated with its stanza-id upon MUC reflection",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         const muc_jid = 'room@muc.example.com';
         await mock.openAndEnterChatRoom(_converse, muc_jid, 'romeo');
@@ -603,9 +577,7 @@ describe("A Groupchat Message", function () {
     }));
 
     it("can cause a delivery receipt to be returned",
-        mock.initConverse(
-            ['rosterContactsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverse([], {}, async function (done, _converse) {
 
         await mock.waitForRoster(_converse, 'current');
         const muc_jid = 'lounge@montague.lit';

@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { _converse, api } from '@converse/headless/core';
 
 export default () => {
@@ -7,7 +8,7 @@ export default () => {
 
     return html`
         ${view_mode === 'overlayed' ? html`<converse-minimized-chats></converse-minimized-chats>` : ''}
-        ${chatboxes.map(m => {
+        ${repeat(chatboxes, m => m.get('jid'), m => {
             if (m.get('type') === CONTROLBOX_TYPE) {
                 return html`
                     ${view_mode === 'overlayed' ? html`<converse-controlbox-toggle class="${!m.get('closed') ? 'hidden' : ''}"></converse-controlbox-toggle>` : ''}

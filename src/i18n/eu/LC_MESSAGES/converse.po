@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2020-05-12 07:41+0000\n"
-"Last-Translator: IZARO BASURKO <izarobasurko@disroot.org>\n"
+"PO-Revision-Date: 2021-02-01 15:41+0000\n"
+"Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
 "Language: eu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #: dist/converse-no-dependencies.js:21774
 msgid "Create your account"
@@ -89,9 +89,8 @@ msgstr ""
 "XMPP zerbitzariak ez du lagunduriko autentikazio mekanismorik eskaintzen"
 
 #: dist/converse-no-dependencies.js:53657
-#, fuzzy
 msgid "Undecryptable OMEMO message"
-msgstr "OMEMO mezu zifratu-ezina"
+msgstr "Zifratu ezinezko OMEMO mezua"
 
 #: dist/converse-no-dependencies.js:53716
 msgid "Sorry, could not determine upload URL."
@@ -115,26 +114,22 @@ msgstr "Barkatu, ezin izan da zure fitxategia behar bezala igo."
 
 #: dist/converse-no-dependencies.js:54001
 #: dist/converse-no-dependencies.js:59465
-#, fuzzy
 msgid "You're not allowed to retract your message."
-msgstr "Ez duzu baimenik gela berriak sortzeko."
+msgstr "Ez duzu baimenik zure mezuan atzera egiteko."
 
 #: dist/converse-no-dependencies.js:54003
 #: dist/converse-no-dependencies.js:59469
-#, fuzzy
 msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan"
+msgstr "Barkatu, zerbaitek huts egin du zure mezuan atzera egiterakoan."
 
 #: dist/converse-no-dependencies.js:54008
-#, fuzzy
 msgid "You're not allowed to send a message."
-msgstr "Ez duzu baimenik gela honetan mezuak bidaltzeko"
+msgstr "Ez duzu baimenik mezurik bidaltzeko."
 
 #: dist/converse-no-dependencies.js:54010
 #: dist/converse-no-dependencies.js:59478
-#, fuzzy
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr "Errore bat gertatu da gailuak kentzen saiatzean."
+msgstr "Errore bat gertatu zure mezua bidaltzerakoan."
 
 #: dist/converse-no-dependencies.js:55073
 #: dist/converse-no-dependencies.js:55096
@@ -247,9 +242,8 @@ msgid "You have been banned from this groupchat"
 msgstr "Gela honetan debekatua  izan zara"
 
 #: dist/converse-no-dependencies.js:58697
-#, fuzzy
 msgid "You have exited this groupchat due to a technical problem"
-msgstr "Gela honetatik ezabatua izan zara afiliazio aldaketa bat dela eta"
+msgstr "Gela honetatik atera zara arazo tekniko baten ondorioz"
 
 #: dist/converse-no-dependencies.js:58698
 msgid "You have been kicked from this groupchat"
@@ -276,11 +270,10 @@ msgstr ""
 "Gela honetatik ezabatua izan zara zerbitzuaren ostatatzea itxi egingo delako"
 
 #: dist/converse-no-dependencies.js:59467
-#, fuzzy
 msgid ""
 "Your retraction was not delivered because you're not present in the "
 "groupchat."
-msgstr "Zure mezua ez da bidali ez zaudelako talde elkarrizketan orain."
+msgstr "Zure mezu ezeztatzea ez da bidali talde elkarrizketan ez zaudelako."
 
 #: dist/converse-no-dependencies.js:59474
 msgid "Your message was not delivered because you weren't allowed to send it."
@@ -292,9 +285,8 @@ msgid ""
 msgstr "Zure mezua ez da bidali ez zaudelako talde elkarrizketan orain."
 
 #: dist/converse-no-dependencies.js:59721
-#, fuzzy
 msgid "A timeout happened while while trying to retract your message."
-msgstr "Errore bat gertatu da gailuak kentzen saiatzean."
+msgstr "Denbora agortu da zure mezua ezeztatzeko saiakeran."
 
 #: dist/converse-no-dependencies.js:60892
 msgid "You're not allowed to register yourself in this groupchat."
@@ -333,9 +325,9 @@ msgid "Topic cleared by %1$s"
 msgstr "%1$s erabiltzaileak mintzagaia garbitu du"
 
 #: dist/converse-no-dependencies.js:61743
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned by %2$s"
-msgstr "%1$s bidalia izan da"
+msgstr "%1$s %2$s-rengandik blokeatua izan da"
 
 #: dist/converse-no-dependencies.js:61743
 #, javascript-format
@@ -348,9 +340,9 @@ msgid "%1$s's nickname has changed"
 msgstr "%1$s -(r)en ezizena aldatu egin da"
 
 #: dist/converse-no-dependencies.js:61747
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s bidalia izan da"
+msgstr "%1$s %2$s-rengandik bidalia izan da"
 
 #: dist/converse-no-dependencies.js:61747
 #, javascript-format
@@ -477,23 +469,23 @@ msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan."
 
 #: dist/converse-no-dependencies.js:63258
 msgid "Timeout Error"
-msgstr ""
+msgstr "Denbora muga Errorea"
 
 #: dist/converse-no-dependencies.js:63258
 msgid ""
 "The server did not return your bookmarks within the allowed time. You can "
 "reload the page to request them again."
 msgstr ""
+"Zerbitzariak ez ditu zure lastermarkak ezarritako denboran itzuli. Orrialdea "
+"birkargatu dezakezu eskaera berriro egiteko."
 
 #: dist/converse-no-dependencies.js:65374
-#, fuzzy
 msgid "Timeout while trying to fetch archived messages."
-msgstr "Errore bat gertatu da gailuak kentzen saiatzean."
+msgstr "Denbora agortu da gordetako fitxategiak bilatzen saiatzean."
 
 #: dist/converse-no-dependencies.js:65389
-#, fuzzy
 msgid "An error occurred while querying for archived messages."
-msgstr "Errore bat gertatu da gailuak kentzen saiatzean."
+msgstr "Errore bat gertatu da gordetako fitxategiak eskatzerakoan."
 
 #: dist/converse-no-dependencies.js:66535
 msgid "My contacts"
@@ -514,9 +506,8 @@ msgstr "Sailkatu gabe"
 #. harmony default export
 #: dist/converse-no-dependencies.js:66539
 #: dist/converse-no-dependencies.js:75049
-#, fuzzy
 msgid "New messages"
-msgstr "mezuak ezabatu"
+msgstr "Mezu berriak"
 
 #: dist/converse-no-dependencies.js:67203
 #, javascript-format
@@ -584,14 +575,12 @@ msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "Ziur al zaude \"%1$s\" laster-marka ezabatu nahi duzula?"
 
 #: dist/converse-no-dependencies.js:71013
-#, fuzzy
 msgid "Unbookmark"
-msgstr "Laster-markak"
+msgstr "Laster-marka ezabatu"
 
 #: dist/converse-no-dependencies.js:71013
-#, fuzzy
 msgid "Bookmark"
-msgstr "Laster-markak"
+msgstr "Laster-marketan gehitu"
 
 #: dist/converse-no-dependencies.js:71108
 #: dist/converse-no-dependencies.js:71109
@@ -603,12 +592,12 @@ msgstr "Itxi"
 
 #: dist/converse-no-dependencies.js:71205
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:71654
 msgid "Image: "
-msgstr ""
+msgstr "Irudia: "
 
 #: dist/converse-no-dependencies.js:73046
 #, javascript-format
@@ -626,17 +615,16 @@ msgid "Download file \"%1$s\""
 msgstr "Deskargatu fitxategia: \"%1$s"
 
 #: dist/converse-no-dependencies.js:74781
-#, fuzzy
 msgid "Cancel Editing"
-msgstr "Ezarpenak aldatu"
+msgstr "Editatzea ezeztatu"
 
 #: dist/converse-no-dependencies.js:74781
 msgid "Edit"
-msgstr ""
+msgstr "Editatu"
 
 #: dist/converse-no-dependencies.js:74810
 msgid "Retract"
-msgstr ""
+msgstr "Baztertu"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:74921
@@ -645,7 +633,7 @@ msgstr "Mezuaren bertsioak"
 
 #: dist/converse-no-dependencies.js:75512
 msgid "Retry"
-msgstr ""
+msgstr "Berriz saiatu"
 
 #: dist/converse-no-dependencies.js:75519
 msgid "Uploading file:"
@@ -653,9 +641,9 @@ msgstr "Fitxategia igotzen:"
 
 #: dist/converse-no-dependencies.js:75633
 #: dist/converse-no-dependencies.js:75635
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has removed this message"
-msgstr "%1$s ezabatua izan da kidea ez delako"
+msgstr "%1$s-(e)k mezu hau ezabatu du"
 
 #: dist/converse-no-dependencies.js:75647
 msgid "This message has been edited"
@@ -666,13 +654,12 @@ msgid "Show more"
 msgstr "Gehiago erakutsi"
 
 #: dist/converse-no-dependencies.js:75653
-#, fuzzy
 msgid "Show less"
-msgstr "Erabiltzaileak erakutsi"
+msgstr "Gutxiago erakutsi"
 
 #: dist/converse-no-dependencies.js:76547
 msgid "No message history available."
-msgstr ""
+msgstr "Mezu historiarik ez dago eskuragarri."
 
 #: dist/converse-no-dependencies.js:77536
 msgid "Search results"
@@ -695,19 +682,16 @@ msgid "Start a call"
 msgstr "Dei bat hasi"
 
 #: dist/converse-no-dependencies.js:78914
-#, fuzzy
 msgid "Message characters remaining"
-msgstr "Mezu artxibaketa"
+msgstr "Mezuaren gainontzeko karaktereak"
 
 #: dist/converse-no-dependencies.js:78932
-#, fuzzy
 msgid "Hide participants"
-msgstr "Parte-hartzaileak"
+msgstr "Parte-hartzaileak ezkutatu"
 
 #: dist/converse-no-dependencies.js:78934
-#, fuzzy
 msgid "Show participants"
-msgstr "Parte-hartzaileak"
+msgstr "Parte-hartzaileak erakutsi"
 
 #: dist/converse-no-dependencies.js:78950
 msgid "Choose a file to send"
@@ -740,9 +724,8 @@ msgid "OMEMO Fingerprints"
 msgstr "OMEMO hatz-markak"
 
 #: dist/converse-no-dependencies.js:81814
-#, fuzzy
 msgid "No OMEMO-enabled devices found"
-msgstr "OMEMO gaiturik duten beste gailu batzuk"
+msgstr "OMEMO gaiturik duten gailurik ez da aurkitu"
 
 #: dist/converse-no-dependencies.js:81825
 msgid "Remove as contact"
@@ -815,9 +798,8 @@ msgid "Remove messages"
 msgstr "mezuak ezabatu"
 
 #: dist/converse-no-dependencies.js:82145
-#, fuzzy
 msgid "Close this chat"
-msgstr "Txat leiho hau itxi"
+msgstr "Berriketa hau itxi"
 
 #: dist/converse-no-dependencies.js:82145
 msgid "Write in the third person"
@@ -847,21 +829,19 @@ msgstr "Irakurri gabeko mezuak dituzu"
 #: dist/converse-no-dependencies.js:82375
 #: dist/converse-no-dependencies.js:91971
 msgid "Details"
-msgstr ""
+msgstr "Xehetasunak"
 
 #: dist/converse-no-dependencies.js:82376
-#, fuzzy
 msgid "See more information about this person"
-msgstr "Erakutsi gela honi buruzko informazio gehiago"
+msgstr "Erakutsi pertsona honi buruzko informazio gehiago"
 
 #: dist/converse-no-dependencies.js:82389
-#, fuzzy
 msgid "Close and end this conversation"
-msgstr "Amaitu berriketa enkriptatua"
+msgstr "Berriketa hau itxi eta amaitu"
 
 #: dist/converse-no-dependencies.js:82598
 msgid "Sorry, the connection has been lost, and your message could not be sent"
-msgstr ""
+msgstr "Barkatu, konexioa galdu egin da eta zure mezua ezin da bidali"
 
 #: dist/converse-no-dependencies.js:82824
 #: dist/converse-no-dependencies.js:91761
@@ -869,13 +849,15 @@ msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
 msgstr ""
+"Izan kontutan, beste XMPP/Jabber bezero (eta zerbitzari) batzuk agian ez "
+"dutela oraindik mezu bazterketa sostengatuko eta mezu hau ezingo dela edonon "
+"ezabatua izan."
 
 #: dist/converse-no-dependencies.js:82825
 #: dist/converse-no-dependencies.js:91768
 #: dist/converse-no-dependencies.js:91806
-#, fuzzy
 msgid "Are you sure you want to retract this message?"
-msgstr "Ziur al zaude kontaktu hau ezabatu nahi duzula?"
+msgstr "Ziur al zaude mezu hau baztertu nahi duzula?"
 
 #: dist/converse-no-dependencies.js:82832
 #: dist/converse-no-dependencies.js:91775
@@ -883,12 +865,14 @@ msgstr "Ziur al zaude kontaktu hau ezabatu nahi duzula?"
 #: dist/converse-no-dependencies.js:92068
 #: dist/converse-no-dependencies.js:92554
 msgid "Confirm"
-msgstr ""
+msgstr "Baieztatu"
 
 #: dist/converse-no-dependencies.js:82856
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr ""
+"Ezabatua izango den bidali gabeko mezu bat daukazu. Ziur al zaude jarraitu "
+"nahi duzula?"
 
 #: dist/converse-no-dependencies.js:82943
 msgid "Are you sure you want to clear the messages from this conversation?"
@@ -942,9 +926,8 @@ msgid "This is a trusted device"
 msgstr "Hau gailu fidagarri bat da"
 
 #: dist/converse-no-dependencies.js:86122
-#, fuzzy
 msgid "Password"
-msgstr "Pasahitza:"
+msgstr "Pasahitza"
 
 #: dist/converse-no-dependencies.js:86128
 msgid "Create an account"
@@ -960,7 +943,7 @@ msgstr "Hasi saioa"
 
 #: dist/converse-no-dependencies.js:86148
 msgid "Disconnected"
-msgstr ""
+msgstr "Deskonektaturik"
 
 #: dist/converse-no-dependencies.js:86150
 msgid "Click here to log in anonymously"
@@ -1000,19 +983,16 @@ msgstr "Minimizaturik"
 
 #: dist/converse-no-dependencies.js:88382
 #: dist/converse-no-dependencies.js:88401
-#, fuzzy
 msgid "Minimize"
-msgstr "Minimizaturik"
+msgstr "Minimizatu"
 
 #: dist/converse-no-dependencies.js:88383
-#, fuzzy
 msgid "Minimize this chat"
-msgstr "Txat leiho hau minimizatu"
+msgstr "Berriketa hau minimizatu"
 
 #: dist/converse-no-dependencies.js:88402
-#, fuzzy
 msgid "Minimize this groupchat"
-msgstr "Txat leiho hau minimizatu"
+msgstr "Elkarrizketa talde hau minimizatu"
 
 #: dist/converse-no-dependencies.js:88780
 msgid "This user is a moderator."
@@ -1082,9 +1062,8 @@ msgid "Groupchat address"
 msgstr "Gelaren helbidea"
 
 #: dist/converse-no-dependencies.js:89292
-#, fuzzy
 msgid "Groupchat id is invalid."
-msgstr "gelan izen ematea gaituta dago orain"
+msgstr "Elkarrizketa taldearen ID okerra"
 
 #. harmony default export
 #: dist/converse-no-dependencies.js:89336
@@ -1093,19 +1072,16 @@ msgid "Invite"
 msgstr "Gonbidatu"
 
 #: dist/converse-no-dependencies.js:89338
-#, fuzzy
 msgid "Invite someone to this groupchat"
-msgstr "Ezabatu chat talde hau"
+msgstr "Gonbidatu norbait elkarrizketa talde honetara"
 
 #: dist/converse-no-dependencies.js:89340
-#, fuzzy
 msgid "user@example.org"
-msgstr "izena@adibidea.org"
+msgstr "erabiltzailea@adibidea.org"
 
 #: dist/converse-no-dependencies.js:89346
-#, fuzzy
 msgid "Optional reason for the invitation"
-msgstr "Aukerako haztarna"
+msgstr "Gonbidapenaren arrazoia (aukerakoa)"
 
 #: dist/converse-no-dependencies.js:89477
 msgid "Show groupchats"
@@ -1196,9 +1172,8 @@ msgid "conference.example.org"
 msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:89658
-#, fuzzy
 msgid "Groupchats found"
-msgstr "Aurkitutako gelak:"
+msgstr "Gelak aurkitu dira"
 
 #: dist/converse-no-dependencies.js:89666
 msgid "No groupchats found"

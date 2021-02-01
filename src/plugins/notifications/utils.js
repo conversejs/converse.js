@@ -41,7 +41,7 @@ export function updateUnreadFavicon () {
  * @private
  * @param { MUCMessageAttributes } attrs
  */
-export function shouldNotifyOfGroupMessage (attrs) {
+export async function shouldNotifyOfGroupMessage (attrs) {
     if (!attrs?.body) {
         return false;
     }
@@ -69,7 +69,21 @@ export function shouldNotifyOfGroupMessage (attrs) {
         (Array.isArray(notify_all) && notify_all.includes(muc_jid)) ||
         is_referenced ||
         is_mentioned;
-    return is_not_mine && !!should_notify_user;
+
+    if (is_not_mine && !!should_notify_user) {
+        /**
+         * *Hook* which allows plugins to run further logic to determine
+         * whether a notification should be sent out for this message.
+         * @event _converse#shouldNotifyOfGroupMessage
+         * @example
+         *  api.listen.on('shouldNotifyOfGroupMessage', (should_notify) => {
+         *      return should_notify && flurb === floob;
+         *  });
+         */
+        const should_notify = await api.hook('shouldNotifyOfGroupMessage', null, true);
+        return should_notify;
+    }
+    return false;
 }
 
 /**
@@ -77,13 +91,14 @@ export function shouldNotifyOfGroupMessage (attrs) {
  * @method shouldNotifyOfMessage
  * @param { MessageData|MUCMessageData } data
  */
-function shouldNotifyOfMessage (data) {
+async function shouldNotifyOfMessage (data) {
     const { attrs, stanza } = data;
     if (!attrs || stanza.querySelector('forwarded') !== null) {
         return false;
     }
     if (attrs['type'] === 'groupchat') {
-        return shouldNotifyOfGroupMessage(attrs);
+        const result = await shouldNotifyOfGroupMessage(attrs);
+        return result;
     } else if (attrs.is_headline) {
         // We want to show notifications for headline messages.
         return isMessageToHiddenChat(attrs);
@@ -229,8 +244,8 @@ function playSoundNotification () {
  * Event handler for the on('message') event. Will call methods
  * to play sounds and show HTML5 notifications.
  */
-export function handleMessageNotification (data) {
-    if (!shouldNotifyOfMessage(data)) {
+export async function handleMessageNotification (data) {
+    if (!await shouldNotifyOfMessage(data)) {
         return false;
     }
     /**

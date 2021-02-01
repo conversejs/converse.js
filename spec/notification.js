@@ -1,4 +1,4 @@
-/*global mock, converse, _ */
+/*global mock, converse */
 
 const { Strophe } = converse.env;
 const $msg = converse.env.$msg;
@@ -15,9 +15,8 @@ describe("Notifications", function () {
                         mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
                     await mock.waitForRoster(_converse, 'current');
-                    spyOn(_converse, 'showMessageNotification').and.callThrough();
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                    spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
 
                     const message = 'This message will show a desktop notification';
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
@@ -30,8 +29,7 @@ describe("Notifications", function () {
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     await _converse.handleMessageStanza(msg); // This will emit 'message'
                     await u.waitUntil(() => _converse.api.chatviews.get(sender_jid));
-                    expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                    expect(_converse.showMessageNotification).toHaveBeenCalled();
+                    expect(window.Notification).toHaveBeenCalled();
                     done();
                 }));
 
@@ -44,17 +42,9 @@ describe("Notifications", function () {
                     if (!view.el.querySelectorAll('.chat-area').length) {
                         view.renderChatArea();
                     }
-                    let no_notification = false;
-                    if (typeof window.Notification === 'undefined') {
-                        no_notification = true;
-                        window.Notification = function () {
-                            return {
-                                'close': function () {}
-                            };
-                        };
-                    }
-                    spyOn(_converse, 'showMessageNotification').and.callThrough();
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
 
                     // Test mention with setting false
                     const nick = mock.chatroom_names[0];
@@ -66,8 +56,7 @@ describe("Notifications", function () {
                     }).c('body').t(text).tree();
                     _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will NOT show a notification')));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 0);
-                    expect(_converse.showMessageNotification).not.toHaveBeenCalled();
+                    expect(window.Notification).not.toHaveBeenCalled();
 
                     // Test reference
                     const message_with_ref = $msg({
@@ -79,27 +68,21 @@ describe("Notifications", function () {
                     .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'0', 'end':'5', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).tree();
                     _converse.connection._dataRecv(mock.createRequest(message_with_ref));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
-                    expect(_converse.showMessageNotification).toHaveBeenCalled();
+                    expect(window.Notification.calls.count()).toBe(1);
 
                     // Test mention with setting true
                     _converse.api.settings.set('notify_all_room_messages', true);
                     _converse.connection._dataRecv(mock.createRequest(makeMsg('romeo: this will show a notification')));
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 2);
-                    expect(_converse.showMessageNotification).toHaveBeenCalled();
-                    if (no_notification) {
-                        delete window.Notification;
-                    }
+                    expect(window.Notification.calls.count()).toBe(2);
                     done();
                 }));
 
                 it("is shown for headline messages",
                         mock.initConverse(['rosterGroupsFetched'], {}, async (done, _converse) => {
 
-                    spyOn(_converse, 'showMessageNotification').and.callThrough();
-                    spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
                     const stanza = $msg({
                             'type': 'headline',
                             'from': 'notify.example.com',
@@ -116,14 +99,13 @@ describe("Notifications", function () {
                     const view = _converse.chatboxviews.get('notify.example.com');
                     await new Promise(resolve => view.model.messages.once('rendered', resolve));
                     expect(_converse.chatboxviews.keys().includes('notify.example.com')).toBeTruthy();
-                    expect(_converse.showMessageNotification).toHaveBeenCalled();
+                    expect(window.Notification).toHaveBeenCalled();
                     done();
                 }));
 
                 it("is not shown for full JID headline messages if allow_non_roster_messaging is false", mock.initConverse((done, _converse) => {
                     _converse.allow_non_roster_messaging = false;
-                    spyOn(_converse, 'showMessageNotification').and.callThrough();
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+                    spyOn(window, 'Notification');
                     const stanza = $msg({
                             'type': 'headline',
                             'from': 'someone@notify.example.com',
@@ -135,11 +117,8 @@ describe("Notifications", function () {
                         .c('x', {'xmlns': 'jabber:x:oob'})
                         .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
                     _converse.connection._dataRecv(mock.createRequest(stanza));
-                    expect(
-                        _.includes(_converse.chatboxviews.keys(),
-                            'someone@notify.example.com')
-                        ).toBeFalsy();
-                    expect(_converse.showMessageNotification).not.toHaveBeenCalled();
+                    expect(_converse.chatboxviews.keys().includes('someone@notify.example.com')).toBeFalsy();
+                    expect(window.Notification).not.toHaveBeenCalled();
                     done();
                 }));
 
@@ -148,12 +127,10 @@ describe("Notifications", function () {
                         async (done, _converse) => {
 
                     await mock.waitForRoster(_converse, 'current', 3);
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                    spyOn(_converse, 'showChatStateNotification');
+                    spyOn(window, 'Notification');
                     const jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
-                    _converse.roster.get(jid).presence.set('show', 'busy'); // This will emit 'contactStatusChanged'
-                    await u.waitUntil(() => _converse.areDesktopNotificationsEnabled.calls.count() === 1);
-                    expect(_converse.showChatStateNotification).toHaveBeenCalled();
+                    _converse.roster.get(jid).presence.set('show', 'dnd');
+                    expect(window.Notification).toHaveBeenCalled();
                     done()
                 }));
             });
@@ -161,11 +138,9 @@ describe("Notifications", function () {
 
         describe("When a new contact request is received", function () {
             it("an HTML5 Notification is received", mock.initConverse((done, _converse) => {
-                spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                spyOn(_converse, 'showContactRequestNotification');
-                _converse.api.trigger('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
-                expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                expect(_converse.showContactRequestNotification).toHaveBeenCalled();
+                spyOn(window, 'Notification');
+                _converse.api.trigger('contactRequest', {'getDisplayName': () => 'Peter Parker'});
+                expect(window.Notification).toHaveBeenCalled();
                 done();
             }));
         });
@@ -180,7 +155,10 @@ describe("Notifications", function () {
                 mock.createContacts(_converse, 'current');
                 await mock.openAndEnterChatRoom(_converse, 'lounge@montague.lit', 'romeo');
                 _converse.play_sounds = true;
-                spyOn(_converse, 'playSoundNotification');
+
+                const stub = jasmine.createSpyObj('MyAudio', ['play', 'canPlayType']);
+                spyOn(window, 'Audio').and.returnValue(stub);
+
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 if (!view.el.querySelectorAll('.chat-area').length) {
                     view.renderChatArea();
@@ -194,8 +172,8 @@ describe("Notifications", function () {
                 }).c('body').t(text);
                 _converse.api.settings.set('notify_all_room_messages', true);
                 await view.model.handleMessageStanza(message.nodeTree);
-                await u.waitUntil(() => _converse.playSoundNotification.calls.count());
-                expect(_converse.playSoundNotification).toHaveBeenCalled();
+                await u.waitUntil(() => window.Audio.calls.count());
+                expect(window.Audio).toHaveBeenCalled();
 
                 text = "This message won't play a sound";
                 message = $msg({
@@ -205,7 +183,7 @@ describe("Notifications", function () {
                     type: 'groupchat'
                 }).c('body').t(text);
                 await view.model.handleMessageStanza(message.nodeTree);
-                expect(_converse.playSoundNotification, 1);
+                expect(window.Audio, 1);
                 _converse.play_sounds = false;
 
                 text = "This message won't play a sound because it is sent by romeo";
@@ -216,7 +194,7 @@ describe("Notifications", function () {
                     type: 'groupchat'
                 }).c('body').t(text);
                 await view.model.handleMessageStanza(message.nodeTree);
-                expect(_converse.playSoundNotification, 1);
+                expect(window.Audio, 1);
                 _converse.play_sounds = false;
                 done();
             }));

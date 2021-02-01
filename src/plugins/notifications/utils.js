@@ -80,7 +80,7 @@ export async function shouldNotifyOfGroupMessage (attrs) {
          *      return should_notify && flurb === floob;
          *  });
          */
-        const should_notify = await api.hook('shouldNotifyOfGroupMessage', null, true);
+        const should_notify = await api.hook('shouldNotifyOfGroupMessage', attrs, true);
         return should_notify;
     }
     return false;

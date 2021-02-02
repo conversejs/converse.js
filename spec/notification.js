@@ -105,7 +105,8 @@ describe("Notifications", function () {
 
                 it("is not shown for full JID headline messages if allow_non_roster_messaging is false", mock.initConverse((done, _converse) => {
                     _converse.allow_non_roster_messaging = false;
-                    spyOn(window, 'Notification');
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
                     const stanza = $msg({
                             'type': 'headline',
                             'from': 'someone@notify.example.com',
@@ -127,7 +128,8 @@ describe("Notifications", function () {
                         async (done, _converse) => {
 
                     await mock.waitForRoster(_converse, 'current', 3);
-                    spyOn(window, 'Notification');
+                    const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                    spyOn(window, 'Notification').and.returnValue(stub);
                     const jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'dnd');
                     expect(window.Notification).toHaveBeenCalled();
@@ -138,7 +140,8 @@ describe("Notifications", function () {
 
         describe("When a new contact request is received", function () {
             it("an HTML5 Notification is received", mock.initConverse((done, _converse) => {
-                spyOn(window, 'Notification');
+                const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                spyOn(window, 'Notification').and.returnValue(stub);
                 _converse.api.trigger('contactRequest', {'getDisplayName': () => 'Peter Parker'});
                 expect(window.Notification).toHaveBeenCalled();
                 done();

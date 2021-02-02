@@ -358,6 +358,45 @@ describe("Groupchats", function () {
 
     describe("A Groupchat", function () {
 
+        it("Can be configured to show cached messages before being joined",
+            mock.initConverse(['discoInitialized'],
+                {
+                    'muc_show_logs_before_join': true,
+                    'archived_messages_page_size': 2,
+                    'muc_nickname_from_jid': false,
+                    'muc_clear_messages_on_leave': false,
+                }, async function (done, _converse) {
+
+            const { api } = _converse;
+            const muc_jid = 'orchard@chat.shakespeare.lit';
+            const nick = 'romeo';
+            api.rooms.open(muc_jid);
+            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForReservedNick(_converse, muc_jid);
+            const view = _converse.chatboxviews.get(muc_jid);
+            await view.model.messages.fetched;
+
+            view.model.messages.create({
+                'type': 'groupchat',
+                'to': muc_jid,
+                'from': `${_converse.bare_jid}/orchard`,
+                'body': 'Hello world',
+                'message': 'Hello world',
+                'time': '2021-02-02T12:00:00Z'
+            });
+            expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.NICKNAME_REQUIRED);
+            expect(view.el.querySelectorAll('converse-chat-message').length).toBe(1);
+
+            view.el.querySelector('[name="nick"]').value = nick;
+            view.el.querySelector('.muc-nickname-form input[type="submit"]').click();
+            _converse.connection.IQ_stanzas = [];
+            await mock.getRoomFeatures(_converse, muc_jid);
+            await u.waitUntil(() => view.model.session.get('connection_status') === converse.ROOMSTATUS.CONNECTING);
+            await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
+            return done();
+        }));
+
+
         it("maintains its state across reloads",
             mock.initConverse(
                 ['rosterGroupsFetched'], {

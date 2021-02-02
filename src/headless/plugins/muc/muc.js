@@ -2246,7 +2246,6 @@ const ChatRoomMixin = {
             if (error?.getAttribute('type') === 'wait' && error?.querySelector('resource-constraint')) {
                 // If we get a <resource-constraint> error, we assume it's in context of XEP-0437 RAI.
                 // We remove this MUC's host from the list of enabled domains and rejoin the MUC.
-                const muc_domain = Strophe.getDomainFromJid(this.get('jid'));
                 if (this.session.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
                     this.rejoin();
                 }

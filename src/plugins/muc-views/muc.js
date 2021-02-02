@@ -1121,6 +1121,8 @@ const ChatRoomViewMixin = {
     renderNicknameForm () {
         const tpl_result = tpl_muc_nickname_form(this.model.toJSON());
         if (api.settings.get('muc_show_logs_before_join')) {
+            this.hideSpinner();
+            u.showElement(this.el.querySelector('.chat-area'));
             const container = this.el.querySelector('.muc-bottom-panel');
             render(tpl_result, container);
             u.addClass('muc-bottom-panel--nickname', container);

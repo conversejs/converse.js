@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 7.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-19 10:56+0100\n"
-"PO-Revision-Date: 2021-02-03 07:41+0000\n"
+"PO-Revision-Date: 2021-02-04 16:41+0000\n"
 "Last-Translator: make-file <makefile@riseup.net>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/conversejs/"
 "translations/fa/>\n"
@@ -111,7 +111,7 @@ msgstr "متاسفانه نتوانستیم فایل را آپلود کنیم، 
 
 #: dist/converse-no-dependencies.js:53784
 msgid "Sorry, could not succesfully upload your file."
-msgstr "م"
+msgstr "متاسفانه فایل بارگذاری نشد."
 
 #: dist/converse-no-dependencies.js:54001
 #: dist/converse-no-dependencies.js:59465

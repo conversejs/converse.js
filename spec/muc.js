@@ -385,7 +385,11 @@ describe("Groupchats", function () {
                 'time': '2021-02-02T12:00:00Z'
             });
             expect(view.model.session.get('connection_status')).toBe(converse.ROOMSTATUS.NICKNAME_REQUIRED);
-            expect(view.el.querySelectorAll('converse-chat-message').length).toBe(1);
+            await u.waitUntil(() => view.el.querySelectorAll('converse-chat-message').length === 1);
+
+            const sel = 'converse-message-history converse-chat-message .chat-msg__text';
+            await u.waitUntil(() => view.el.querySelector(sel)?.textContent.trim());
+            expect(view.el.querySelector(sel).textContent.trim()).toBe('Hello world')
 
             view.el.querySelector('[name="nick"]').value = nick;
             view.el.querySelector('.muc-nickname-form input[type="submit"]').click();

@@ -272,10 +272,62 @@ describe("Message Archive Management", function () {
                 .map(e => e.textContent).join(' ') === "2nd Message 3rd Message 4th Message 5th Message 6th Message", 1000);
             done();
         }));
+
+        it("queries for messages since the most recent cached message in a newly entered MUC",
+            mock.initConverse(['discoInitialized'],
+                {
+                    'archived_messages_page_size': 2,
+                    'muc_nickname_from_jid': false,
+                    'muc_clear_messages_on_leave': false,
+                }, async function (done, _converse) {
+
+            const { api } = _converse;
+            const sent_IQs = _converse.connection.IQ_stanzas;
+            const muc_jid = 'orchard@chat.shakespeare.lit';
+            const nick = 'romeo';
+            const room_creation_promise = api.rooms.open(muc_jid);
+            await mock.getRoomFeatures(_converse, muc_jid);
+            await mock.waitForReservedNick(_converse, muc_jid, nick);
+            await mock.receiveOwnMUCPresence(_converse, muc_jid, nick);
+            await room_creation_promise;
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => (view.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+
+            // Create "cached" message to test that only messages newer than the
+            // last cached message with body text will be fetched
+            view.model.messages.create({
+                'type': 'groupchat',
+                'to': muc_jid,
+                'from': `${_converse.bare_jid}/orchard`,
+                'body': 'Hello world',
+                'message': 'Hello world',
+                'time': '2021-02-02T12:00:00Z'
+            });
+            // Hack: Manually set attributes that would otherwise happen in fetchMessages
+            view.model.messages.fetched_flag = true;
+            view.model.afterMessagesFetched(view.model.messages);
+            view.model.messages.fetched.resolve();
+
+            const affs = _converse.muc_fetch_members;
+            const all_affiliations = Array.isArray(affs) ? affs :  (affs ? ['member', 'admin', 'owner'] : []);
+            await mock.returnMemberLists(_converse, muc_jid, [], all_affiliations);
+
+            const iq_get = await u.waitUntil(() => sent_IQs.filter(iq => iq.querySelector(`iq query[xmlns="${Strophe.NS.MAM}"]`)).pop());
+            expect(Strophe.serialize(iq_get)).toBe(
+                `<iq id="${iq_get.getAttribute('id')}" to="${muc_jid}" type="set" xmlns="jabber:client">`+
+                    `<query queryid="${iq_get.querySelector('query').getAttribute('queryid')}" xmlns="${Strophe.NS.MAM}">`+
+                        `<x type="submit" xmlns="jabber:x:data">`+
+                            `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
+                            `<field var="start"><value>2021-02-02T12:00:00.000Z</value></field>`+
+                        `</x>`+
+                        `<set xmlns="http://jabber.org/protocol/rsm"><max>2</max></set>`+
+                    `</query>`+
+                `</iq>`);
+            return done();
+        }));
     });
 
     describe("An archived message", function () {
-
         describe("when received", function () {
 
             it("is discarded if it doesn't come from the right sender",

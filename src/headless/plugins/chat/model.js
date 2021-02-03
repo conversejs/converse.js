@@ -103,7 +103,8 @@ const ChatBox = ModelWithContact.extend({
         this.notifications = new Model();
     },
 
-    afterMessagesFetched () {
+    afterMessagesFetched (messages) {
+        this.most_recent_cached_message = messages ? this.getMostRecentMessage(messages) : null;
         /**
          * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
          * `sessionStorage` but **NOT** from the server.
@@ -119,11 +120,12 @@ const ChatBox = ModelWithContact.extend({
             log.info(`Not re-fetching messages for ${this.get('jid')}`);
             return;
         }
+        this.most_recent_cached_message = null;
         this.messages.fetched_flag = true;
         const resolve = this.messages.fetched.resolve;
         this.messages.fetch({
             'add': true,
-            'success': () => { this.afterMessagesFetched(); resolve() },
+            'success': msgs => { this.afterMessagesFetched(msgs); resolve() },
             'error': () => { this.afterMessagesFetched(); resolve() }
         });
         return this.messages.fetched;
@@ -301,9 +303,10 @@ const ChatBox = ModelWithContact.extend({
         }
     },
 
-    getMostRecentMessage () {
-        for (let i=this.messages.length-1; i>=0; i--) {
-            const message = this.messages.at(i);
+    getMostRecentMessage (messages) {
+        messages = messages || this.messages;
+        for (let i=messages.length-1; i>=0; i--) {
+            const message = messages.at(i);
             if (message.get('type') === this.get('message_type')) {
                 return message;
             }

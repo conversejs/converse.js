@@ -451,6 +451,12 @@ const ChatRoomMixin = {
         }
     },
 
+    /**
+     * Handles XEP-0452 MUC Mention Notification messages
+     * @private
+     * @method _converse.ChatRoom#handleForwardedMentions
+     * @param { XMLElement } stanza
+     */
     handleForwardedMentions (stanza) {
         if (this.session.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
             // Avoid counting mentions twice

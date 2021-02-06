@@ -3,6 +3,7 @@ import { __ } from 'i18n';
 import { _converse, api } from "@converse/headless/core";
 import { contactsComparator, groupsComparator } from '@converse/headless/plugins/roster/utils.js';
 import { html } from "lit-html";
+import { repeat } from 'lit-html/directives/repeat.js';
 import { shouldShowContact, shouldShowGroup } from '../utils.js';
 
 
@@ -54,7 +55,7 @@ export default () => {
         </div>
         <converse-roster-filter></converse-roster-filter>
         <div class="list-container roster-contacts">
-            ${ groupnames?.map(name => {
+            ${ repeat(groupnames, n => n, name => {
                 const contacts = contacts_map[name].filter(c => shouldShowContact(c));
                 contacts.sort(contactsComparator);
                 if (contacts.length) {

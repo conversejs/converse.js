@@ -68,7 +68,7 @@ class RosterContact extends CustomElement {
         }
     }
 
-    renderRosterItem (item) { // eslint-disable-line class-methods-use-this
+    renderRosterItem (item) {
         const STATUSES = {
             'dnd': __('This contact is busy'),
             'online': __('This contact is online'),
@@ -101,8 +101,7 @@ class RosterContact extends CustomElement {
                 'removeContact':  ev => this.removeContact(ev),
                 'getAvatarData': () => this.getAvatarData(),
                 'desc_status': STATUSES[show],
-                'num_unread': item.get('num_unread') || 0,
-                classes: ''
+                'num_unread': item.get('num_unread') || 0
             })
         );
     }

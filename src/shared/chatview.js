@@ -15,35 +15,11 @@ export default class BaseChatView extends ElementView {
     initDebounced () {
         this.markScrolled = debounce(this._markScrolled, 100);
         this.debouncedScrollDown = debounce(this.scrollDown, 100);
-
-        // For tests that use Jasmine.Clock we want to turn of
-        // debouncing, since setTimeout breaks.
-        if (api.settings.get('debounced_content_rendering')) {
-            this.renderChatHistory = debounce(() => this.renderChatContent(false), 100);
-            this.renderNotifications = debounce(() => this.renderChatContent(true), 100);
-        } else {
-            this.renderChatHistory = () => this.renderChatContent(false);
-            this.renderNotifications = () => this.renderChatContent(true);
-        }
     }
 
     async renderHeading () {
         const tpl = await this.generateHeadingTemplate();
         render(tpl, this.querySelector('.chat-head-chatbox'));
-    }
-
-    renderChatContent (msgs_by_ref = false) {
-        if (!this.tpl_chat_content) {
-            this.tpl_chat_content = o => {
-                return html`
-                    <converse-chat-content .chatview=${this} .messages=${o.messages} notifications=${o.notifications}>
-                    </converse-chat-content>
-                `;
-            };
-        }
-        const msg_models = this.model.messages.models;
-        const messages = msgs_by_ref ? msg_models : Array.from(msg_models);
-        render(this.tpl_chat_content({ messages, 'notifications': this.getNotifications() }), this.msgs_container);
     }
 
     renderHelpMessages () {
@@ -183,7 +159,8 @@ export default class BaseChatView extends ElementView {
     maintainScrollTop () {
         const pos = this.model.get('scrollTop');
         if (pos) {
-            this.msgs_container.scrollTop = pos;
+            const msgs_container = this.querySelector('.chat-content__messages');
+            msgs_container.scrollTop = pos;
         } else {
             this.scrollDown();
         }
@@ -312,8 +289,6 @@ export default class BaseChatView extends ElementView {
     }
 
     onMessageAdded (message) {
-        this.renderChatHistory();
-
         if (u.isNewMessage(message)) {
             if (message.get('sender') === 'me') {
                 // We remove the "scrolled" flag so that the chat area
@@ -403,13 +378,14 @@ export default class BaseChatView extends ElementView {
     _markScrolled (ev) {
         let scrolled = true;
         let scrollTop = null;
+        const msgs_container = this.querySelector('.chat-content__messages');
         const is_at_bottom =
-            this.msgs_container.scrollTop + this.msgs_container.clientHeight >= this.msgs_container.scrollHeight - 62; // sigh...
+            msgs_container.scrollTop + msgs_container.clientHeight >= msgs_container.scrollHeight - 62; // sigh...
 
         if (is_at_bottom) {
             scrolled = false;
             this.onScrolledDown();
-        } else if (this.msgs_container.scrollTop === 0) {
+        } else if (msgs_container.scrollTop === 0) {
             /**
              * Triggered once the chat's message area has been scrolled to the top
              * @event _converse#chatBoxScrolledUp
@@ -439,11 +415,12 @@ export default class BaseChatView extends ElementView {
                 'scrollTop': null
             });
         }
-        if (this.msgs_container.scrollTo) {
-            const behavior = this.msgs_container.scrollTop ? 'smooth' : 'auto';
-            this.msgs_container.scrollTo({ 'top': this.msgs_container.scrollHeight, behavior });
+        const msgs_container = this.querySelector('.chat-content__messages');
+        if (msgs_container.scrollTo) {
+            const behavior = msgs_container.scrollTop ? 'smooth' : 'auto';
+            msgs_container.scrollTo({ 'top': msgs_container.scrollHeight, behavior });
         } else {
-            this.msgs_container.scrollTop = this.msgs_container.scrollHeight;
+            msgs_container.scrollTop = msgs_container.scrollHeight;
         }
         this.onScrolledDown();
     }
@@ -524,14 +501,16 @@ export default class BaseChatView extends ElementView {
         if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround. The .chat-content area
             // doesn't resize when the textarea is resized to its original size.
-            this.msgs_container.parentElement.style.display = 'none';
+            const msgs_container = this.querySelector('.chat-content__messages');
+            msgs_container.parentElement.style.display = 'none';
         }
         textarea.removeAttribute('disabled');
         u.removeClass('disabled', textarea);
 
         if (api.settings.get('view_mode') === 'overlayed') {
             // XXX: Chrome flexbug workaround.
-            this.msgs_container.parentElement.style.display = '';
+            const msgs_container = this.querySelector('.chat-content__messages');
+            msgs_container.parentElement.style.display = '';
         }
         // Suppress events, otherwise superfluous CSN gets set
         // immediately after the message, causing rate-limiting issues.

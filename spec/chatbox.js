@@ -280,7 +280,7 @@ describe("Chatboxes", function () {
                     keyCode: 13 // Enter
                 };
                 view.onKeyDown(ev);
-                await new Promise(resolve => view.model.messages.once('rendered', resolve));
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 view.onKeyUp(ev);
                 expect(counter.textContent).toBe('200');
 

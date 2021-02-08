@@ -9,18 +9,29 @@ export default class ChatContent extends CustomElement {
 
     static get properties () {
         return {
-            chatview: { type: Object},
-            messages: { type: Array},
-            notifications: { type: String }
+            chatview: { type: Object}
+        }
+    }
+
+    connectedCallback () {
+        super.connectedCallback();
+        const model = this.chatview.model;
+        this.listenTo(model.messages, 'add', this.requestUpdate);
+        this.listenTo(model.messages, 'change', this.requestUpdate);
+        this.listenTo(model.messages, 'remove', this.requestUpdate);
+        this.listenTo(model.messages, 'reset', this.requestUpdate);
+        this.listenTo(model.notifications, 'change', this.requestUpdate);
+        if (model.occupants) {
+            this.listenTo(model.occupants, 'change', this.requestUpdate);
         }
     }
 
     render () {
-        const notifications = xss.filterXSS(this.notifications, {'whiteList': {}});
+        const notifications = xss.filterXSS(this.chatview.getNotifications(), {'whiteList': {}});
         return html`
             <converse-message-history
                 .chatview=${this.chatview}
-                .messages=${this.messages}>
+                .messages=${[...this.chatview.model.messages.models]}>
             </converse-message-history>
             <div class="chat-content__notifications">${unsafeHTML(notifications)}</div>
         `;

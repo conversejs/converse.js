@@ -263,7 +263,7 @@ describe("Emojis", function () {
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => _converse.on('chatBoxViewInitialized', resolve));
             const view = _converse.api.chatviews.get(sender_jid);
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.content.querySelector('.chat-msg__text')));
 
             _converse.handleMessageStanza($msg({
@@ -273,7 +273,7 @@ describe("Emojis", function () {
                     'id': _converse.connection.getUniqueId()
                 }).c('body').t('😇 Hello world! 😇 😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
             let sel = '.message:last-child .chat-msg__text';
             await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.content.querySelector(sel)));
@@ -287,8 +287,7 @@ describe("Emojis", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
-            expect(view.querySelectorAll('.chat-msg').length).toBe(3);
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
             await u.waitUntil(() => view.content.querySelector(last_msg_sel).textContent === '💩 😇');
 
@@ -301,13 +300,15 @@ describe("Emojis", function () {
             expect(view.model.messages.at(2).get('correcting')).toBe(true);
             sel = 'converse-chat-message:last-child .chat-msg'
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector(sel)), 500);
-            textarea.value = textarea.value += 'This is no longer an emoji-only message';
+            const edited_text = textarea.value += 'This is no longer an emoji-only message';
+            textarea.value = edited_text;
             view.onKeyDown({
                 target: textarea,
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
+                .filter(el => el.textContent === edited_text).length);
             expect(view.model.messages.models.length).toBe(3);
             let message = view.content.querySelector(last_msg_sel);
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
@@ -318,7 +319,7 @@ describe("Emojis", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
 
             textarea.value = ':smile: :smiley: :imp:';
             view.onKeyDown({
@@ -326,7 +327,7 @@ describe("Emojis", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13 // Enter
             });
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 5);
 
             message = view.content.querySelector('.message:last-child .chat-msg__text');
             expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);

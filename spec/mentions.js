@@ -1,6 +1,6 @@
 /*global mock, converse */
 
-const { Promise, Strophe, $msg, $pres } = converse.env;
+const { Strophe, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 
 
@@ -22,7 +22,7 @@ describe("An incoming groupchat message", function () {
                 type: 'groupchat'
             }).c('body').t(message).tree();
         await view.model.handleMessageStanza(msg);
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(u.hasClass('mentioned', view.querySelector('.chat-msg'))).toBeTruthy();
         done();
     }));
@@ -58,12 +58,12 @@ describe("An incoming groupchat message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:romeo@montague.lit'}).up()
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
         await view.model.handleMessageStanza(msg);
-        let message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
-        expect(message.classList.length).toEqual(1);
-        expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
+        await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!---->/g, '') ===
             'hello <span class="mention">z3r0</span> '+
             '<span class="mention mention--self badge badge-info">tom</span> '+
             '<span class="mention">mr.robot</span>, how are you?');
+        let message = view.querySelector('.chat-msg__text')
+        expect(message.classList.length).toEqual(1);
 
         msg = $msg({
                 from: 'lounge@montague.lit/sw0rdf1sh',
@@ -113,10 +113,10 @@ describe("An incoming groupchat message", function () {
                 .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'16', 'end':'24', 'type':'mention', 'uri':'xmpp:mr.robot@montague.lit'}).nodeTree;
 
         await view.model.handleMessageStanza(msg);
-        const message = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
-        expect(message.classList.length).toEqual(1);
-        expect(message.innerHTML.replace(/<!---->/g, '')).toBe(
+        await u.waitUntil(() => view.querySelector('.chat-msg__text')?.innerHTML.replace(/<!---->/g, '') ===
             '<blockquote>hello <span class="mention">z3r0</span> <span class="mention mention--self badge badge-info">tom</span> <span class="mention">mr.robot</span>, how are you?</blockquote>');
+        const message = view.querySelector('.chat-msg__text');
+        expect(message.classList.length).toEqual(1);
         done();
     }));
 });
@@ -316,7 +316,7 @@ describe("A sent groupchat message", function () {
             }
             spyOn(_converse.connection, 'send');
             view.onKeyDown(enter_event);
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
             const msg = _converse.connection.send.calls.all()[1].args[0];
             expect(msg.toLocaleString())
                 .toBe(`<message from="romeo@montague.lit/orchard" id="${msg.nodeTree.getAttribute("id")}" `+
@@ -375,7 +375,7 @@ describe("A sent groupchat message", function () {
             }
             spyOn(_converse.connection, 'send');
             view.onKeyDown(enter_event);
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
             await u.waitUntil(() =>
@@ -458,7 +458,7 @@ describe("A sent groupchat message", function () {
                 'keyCode': 13 // Enter
             }
             view.onKeyDown(enter_event);
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             const msg = _converse.connection.send.calls.all()[1].args[0];
             expect(msg.toLocaleString())

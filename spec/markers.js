@@ -91,7 +91,7 @@ describe("A XEP-0333 Chat Marker", function () {
                 <stanza-id xmlns="urn:xmpp:sid:0" id="IxVDLJ0RYbWcWvqC" by="${_converse.bare_jid}"/>
             </message>`);
         _converse.connection._dataRecv(mock.createRequest(stanza));
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.model.messages.length).toBe(1);
 
@@ -130,9 +130,9 @@ describe("A XEP-0333 Chat Marker", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
-        expect(view.querySelector('.chat-msg .chat-msg__body').textContent.trim())
+        expect(view.querySelector('.chat-msg .chat-msg__text').textContent.trim())
             .toBe("But soft, what light through yonder airlock breaks?");
 
         const msg_obj = view.model.messages.at(0);

@@ -90,19 +90,6 @@ export default class Message extends CustomElement {
         vcard && this.listenTo(vcard, 'change', () => this.requestUpdate());
     }
 
-    updated () {
-        // XXX: This is ugly but tests rely on this event.
-        // For "normal" chat messages the event is fired in
-        // src/templates/directives/body.js
-        if (
-            this.show_spinner ||
-            (this.model.get('file') && !this.model.get('oob_url')) ||
-            (['error', 'info'].includes(this.message_type))
-        ) {
-            this.model.collection?.trigger('rendered', this.model);
-        }
-    }
-
     renderInfoMessage () {
         const isodate = dayjs(this.model.get('time')).toISOString();
         const i18n_retry = __('Retry');

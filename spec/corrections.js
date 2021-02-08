@@ -27,7 +27,7 @@ describe("A Chat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.querySelector('.chat-msg__text').textContent)
             .toBe('But soft, what light through yonder airlock breaks?');
@@ -44,14 +44,15 @@ describe("A Chat Message", function () {
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);
 
         spyOn(_converse.connection, 'send');
-        textarea.value = 'But soft, what light through yonder window breaks?';
+        let new_text = 'But soft, what light through yonder window breaks?';
+        textarea.value = new_text;
         view.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
         expect(_converse.connection.send).toHaveBeenCalled();
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.replace(/<!---->/g, '') === new_text);
 
         const msg = _converse.connection.send.calls.all()[0].args[0];
         expect(msg.toLocaleString())
@@ -97,13 +98,15 @@ describe("A Chat Message", function () {
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         await u.waitUntil(() => (u.hasClass('correcting', view.querySelector('.chat-msg')) === false), 500);
 
-        textarea.value = 'It is the east, and Juliet is the one.';
+        new_text = 'It is the east, and Juliet is the one.';
+        textarea.value = new_text;
         view.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
+            .filter(m => m.textContent.replace(/<!---->/g, '') === new_text).length);
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
 
         textarea.value =  'Arise, fair sun, and kill the envious moon';
@@ -112,18 +115,17 @@ describe("A Chat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.querySelectorAll('.chat-msg').length).toBe(3);
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
 
         view.onKeyDown({
             target: textarea,
             keyCode: 38 // Up arrow
         });
         expect(textarea.value).toBe('Arise, fair sun, and kill the envious moon');
+        await u.waitUntil(() => view.model.messages.at(2).get('correcting') === true);
         expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
         expect(view.model.messages.at(1).get('correcting')).toBeFalsy();
-        expect(view.model.messages.at(2).get('correcting')).toBe(true);
-        await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg:last', view.el).pop()), 500);
+        await u.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg:last', view.el).pop()), 750);
 
         textarea.selectionEnd = 0; // Happens by pressing up,
                                 // but for some reason not in tests, so we set it manually.
@@ -143,7 +145,6 @@ describe("A Chat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
         await u.waitUntil(() => textarea.value === '');
         const messages = view.querySelectorAll('.chat-msg');
         expect(messages.length).toBe(3);
@@ -177,12 +178,12 @@ describe("A Chat Message", function () {
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
         expect(view.querySelector('.chat-msg__text').textContent)
             .toBe('But soft, what light through yonder airlock breaks?');
-        expect(textarea.value).toBe('');
+        await u.waitUntil(() => textarea.value === '');
 
         const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
         await u.waitUntil(() => view.querySelectorAll('.chat-msg .chat-msg__action').length === 2);
@@ -546,14 +547,16 @@ describe("A Groupchat Message", function () {
         await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')));
 
         spyOn(_converse.connection, 'send');
-        textarea.value = 'But soft, what light through yonder window breaks?';
+        const new_text = 'But soft, what light through yonder window breaks?'
+        textarea.value = new_text;
         view.onKeyDown({
             target: textarea,
             preventDefault: function preventDefault () {},
             keyCode: 13 // Enter
         });
         expect(_converse.connection.send).toHaveBeenCalled();
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
+            .filter(m => m.textContent.replace(/<!---->/g, '') === new_text).length);
 
         const msg = _converse.connection.send.calls.all()[0].args[0];
         expect(msg.toLocaleString())
@@ -586,7 +589,7 @@ describe("A Groupchat Message", function () {
             'to': 'romeo@montague.lit',
             'type': 'groupchat'
         }).c('body').t('Hello world').tree());
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
         expect(view.querySelectorAll('.chat-msg').length).toBe(2);
 
         // Test that pressing the down arrow cancels message correction

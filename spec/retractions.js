@@ -790,7 +790,7 @@ describe("Message Retractions", function () {
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('editable')).toBe(true);
 
-            const retract_button = await u.waitUntil(() => view.msgs_container.querySelector('.chat-msg__content .chat-msg__action-retract'));
+            const retract_button = await u.waitUntil(() => view.querySelector('.chat-msg__content .chat-msg__action-retract'));
             retract_button.click();
             await u.waitUntil(() => u.isVisible(document.querySelector('#converse-modals .modal')));
             const submit_button = document.querySelector('#converse-modals .modal button[type="submit"]');

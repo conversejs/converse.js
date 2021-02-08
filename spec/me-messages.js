@@ -23,8 +23,8 @@ describe("A Groupchat Message", function () {
             }).c('body').t(message).tree();
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => sizzle('.chat-msg:last .chat-msg__text', view.content).pop());
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.trim() === 'is tired');
         expect(view.querySelector('.chat-msg__author').textContent.includes('**Dyon van de Wege')).toBeTruthy();
-        expect(view.querySelector('.chat-msg__text').textContent.trim()).toBe('is tired');
 
         message = '/me is as well';
         msg = $msg({
@@ -35,8 +35,8 @@ describe("A Groupchat Message", function () {
         }).c('body').t(message).tree();
         await view.model.handleMessageStanza(msg);
         await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
+        await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text')).pop().textContent.trim() === 'is as well');
         expect(sizzle('.chat-msg__author:last', view).pop().textContent.includes('**Romeo Montague')).toBeTruthy();
-        expect(sizzle('.chat-msg__text:last', view).pop().textContent.trim()).toBe('is as well');
 
         // Check rendering of a mention inside a me message
         const msg_text = "/me mentions romeo";
@@ -77,8 +77,8 @@ describe("A Message", function () {
         const view = _converse.chatboxviews.get(sender_jid);
         await u.waitUntil(() => view.querySelector('.chat-msg__text'));
         expect(view.querySelectorAll('.chat-msg--action').length).toBe(1);
+        await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.trim() === 'is tired');
         expect(view.querySelector('.chat-msg__author').textContent.includes('**Mercutio')).toBeTruthy();
-        expect(view.querySelector('.chat-msg__text').textContent).toBe('is tired');
 
         message = '/me is as well';
         await mock.sendMessage(view, message);

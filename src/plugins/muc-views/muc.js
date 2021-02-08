@@ -108,20 +108,14 @@ export default class MUCView extends BaseChatView {
         // Need to be registered after render has been called.
         this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
         this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-        this.listenTo(this.model.messages, 'change', this.renderChatHistory);
-        this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
-        this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
-        this.listenTo(this.model.notifications, 'change', this.renderNotifications);
 
         this.model.occupants.forEach(o => this.onOccupantAdded(o));
         this.listenTo(this.model.occupants, 'add', this.onOccupantAdded);
-        this.listenTo(this.model.occupants, 'change', this.renderChatHistory);
         this.listenTo(this.model.occupants, 'change:affiliation', this.onOccupantAffiliationChanged);
         this.listenTo(this.model.occupants, 'change:role', this.onOccupantRoleChanged);
         this.listenTo(this.model.occupants, 'change:show', this.showJoinOrLeaveNotification);
         this.listenTo(this.model.occupants, 'remove', this.onOccupantRemoved);
 
-        this.renderChatContent();
         // Register later due to await
         const user_settings = await _converse.api.user.settings.getModel();
         this.listenTo(user_settings, 'change:mucs_with_hidden_subject', this.renderHeading);
@@ -143,6 +137,7 @@ export default class MUCView extends BaseChatView {
         render(
             tpl_chatroom({
                 sidebar_hidden,
+                'chatview': this,
                 'model': this.model,
                 'occupants': this.model.occupants,
                 'show_sidebar':
@@ -157,7 +152,6 @@ export default class MUCView extends BaseChatView {
 
         this.notifications = this.querySelector('.chat-content__notifications');
         this.content = this.querySelector('.chat-content');
-        this.msgs_container = this.querySelector('.chat-content__messages');
         this.help_container = this.querySelector('.chat-content__help');
 
         this.renderBottomPanel();

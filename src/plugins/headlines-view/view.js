@@ -51,17 +51,13 @@ class HeadlinesView extends BaseChatView {
         this.setAttribute('id', this.model.get('box_id'));
         const result = tpl_chatbox(
             Object.assign(this.model.toJSON(), {
-                info_close: '',
-                label_personal_message: '',
+                chatview: this,
                 show_send_button: false,
                 show_toolbar: false,
-                unread_msgs: ''
             })
         );
         render(result, this);
         this.content = this.querySelector('.chat-content');
-        this.msgs_container = this.querySelector('.chat-content__messages');
-        this.renderChatContent();
         this.renderHeading();
         return this;
     }

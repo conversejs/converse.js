@@ -89,7 +89,8 @@ const MessageMixin = {
      */
     mayBeRetracted () {
         const is_own_message = this.get('sender') === 'me';
-        return is_own_message && ['all', 'own'].includes(api.settings.get('allow_message_retraction'));
+        const not_canceled = this.get('error_type') !== 'cancel';
+        return is_own_message && not_canceled && ['all', 'own'].includes(api.settings.get('allow_message_retraction'));
     },
 
     safeDestroy () {

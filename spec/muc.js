@@ -664,7 +664,7 @@ describe("Groupchats", function () {
                         <body>This is a message</body>
                     </message>`);
                 _converse.connection._dataRecv(mock.createRequest(stanza));
-                await new Promise(resolve => view.model.messages.once('rendered', resolve));
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 expect(sizzle('.chat-msg__subject', view).length).toBe(1);
                 expect(sizzle('.chat-msg__subject', view).pop().textContent.trim()).toBe('This is a message subject');
                 expect(sizzle('.chat-msg__text').length).toBe(1);
@@ -695,7 +695,7 @@ describe("Groupchats", function () {
                         <body>This is a message</body>
                     </message>`);
                 _converse.connection._dataRecv(mock.createRequest(stanza));
-                await new Promise(resolve => view.model.messages.once('rendered', resolve));
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                 expect(sizzle('.chat-msg__subject', view).length).toBe(1);
                 expect(sizzle('.chat-msg__subject', view).pop().textContent.trim()).toBe('This is a message subject');
                 expect(sizzle('.chat-msg__text').length).toBe(1);
@@ -1009,7 +1009,7 @@ describe("Groupchats", function () {
                 'type': 'groupchat'
             }).c('body').t('hello world').tree();
             _converse.connection._dataRecv(mock.createRequest(msg));
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             // Add another entrant, otherwise the above message will be
             // collapsed if "newguy" leaves immediately again
@@ -2112,7 +2112,7 @@ describe("Groupchats", function () {
                 preventDefault: function preventDefault () {},
                 keyCode: 13
             });
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', jasmine.any(_converse.Message));
             expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
@@ -2170,7 +2170,7 @@ describe("Groupchats", function () {
                         type: 'groupchat',
                         id: u.getUniqueId(),
                     }).c('body').t(message).tree());
-                await new Promise(resolve => view.model.messages.once('rendered', resolve));
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 21);
                 // Now check that the message appears inside the chatbox in the DOM
                 const msg_txt = sizzle('.chat-msg:last .chat-msg__text', view.content).pop().textContent;
                 expect(msg_txt).toEqual(message);
@@ -2858,8 +2858,8 @@ describe("Groupchats", function () {
                         'role': 'participant'
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
-            const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
-            expect(csntext.trim()).toEqual("romeo and annoyingGuy have entered the groupchat");
+            await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
+                "romeo and annoyingGuy have entered the groupchat");
 
             presence = $pres({
                     'from': 'lounge@montague.lit/annoyingGuy',
@@ -2906,6 +2906,7 @@ describe("Groupchats", function () {
                 Array.from(view.querySelectorAll('.chat-info__message')).pop()?.textContent.trim() ===
                 "annoyingGuy is no longer a member of this groupchat"
             );
+            expect(1).toBe(1);
             done();
         }));
 
@@ -3614,8 +3615,8 @@ describe("Groupchats", function () {
                         'role': 'participant'
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
-            const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
-            expect(csntext.trim()).toEqual("romeo and trustworthyguy have entered the groupchat");
+            await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
+                "romeo and trustworthyguy have entered the groupchat");
 
             const textarea = view.querySelector('.chat-textarea')
             textarea.value = '/op';
@@ -3753,8 +3754,8 @@ describe("Groupchats", function () {
                         'role': 'participant'
                     });
             _converse.connection._dataRecv(mock.createRequest(presence));
-            const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
-            expect(csntext.trim()).toEqual("romeo and annoyingGuy have entered the groupchat");
+            await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent.trim() ===
+                "romeo and annoyingGuy have entered the groupchat");
 
             const textarea = view.querySelector('.chat-textarea')
             textarea.value = '/mute';

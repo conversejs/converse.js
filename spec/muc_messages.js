@@ -174,8 +174,8 @@ describe("A Groupchat Message", function () {
               .c('active', {'xmlns': "http://jabber.org/protocol/chatstates"})
               .tree();
         await view.model.handleMessageStanza(msg);
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
-        expect(view.querySelector('.chat-msg')).not.toBe(null);
+        const el = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+        expect(el.textContent).toBe(message);
         done();
     }));
 
@@ -399,10 +399,9 @@ describe("A Groupchat Message", function () {
             type: 'groupchat'
         }).c('body').t('Another message!').tree();
         await view.model.handleMessageStanza(msg);
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
         expect(view.model.messages.last().occupant.get('affiliation')).toBe('member');
         expect(view.model.messages.last().occupant.get('role')).toBe('participant');
-        expect(view.querySelectorAll('.chat-msg').length).toBe(2);
         expect(sizzle('.chat-msg', view.el).pop().classList.value.trim()).toBe('message chat-msg groupchat chat-msg--with-avatar participant member');
 
         presence = $pres({
@@ -436,7 +435,7 @@ describe("A Groupchat Message", function () {
             type: 'groupchat'
         }).c('body').t('Message from someone not in the MUC right now').tree();
         await view.model.handleMessageStanza(msg);
-        await new Promise(resolve => view.model.messages.once('rendered', resolve));
+        await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 4);
         expect(view.model.messages.last().occupant).toBeUndefined();
         // Check that there's a new "add" event handler, for when the occupant appears.
         expect(view.model.occupants._events.add.length).toBe(add_events+1);

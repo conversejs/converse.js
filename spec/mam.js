@@ -64,7 +64,7 @@ describe("Message Archive Management", function () {
                         .c('count').t('16');
             _converse.connection._dataRecv(mock.createRequest(iq_result));
 
-            await new Promise(resolve => view.model.messages.once('rendered', resolve));
+            await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
             expect(view.model.messages.length).toBe(2);
 
             while (sent_IQs.length) { sent_IQs.pop(); }
@@ -379,7 +379,8 @@ describe("Message Archive Management", function () {
                             .c('count').t('16');
                 _converse.connection._dataRecv(mock.createRequest(iq_result));
 
-                await new Promise(resolve => view.model.messages.once('rendered', resolve));
+                await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text'))
+                    .filter(el => el.textContent === "Thrice the brinded cat hath mew'd.").length, 1000);
                 expect(view.model.messages.length).toBe(1);
                 expect(view.model.messages.at(0).get('message')).toBe("Thrice the brinded cat hath mew'd.");
                 done();
@@ -433,7 +434,7 @@ describe("Message Archive Management", function () {
                             .c('count').t('16');
                 _converse.connection._dataRecv(mock.createRequest(iq_result));
 
-                await new Promise(resolve => view.model.messages.once('rendered', resolve));
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
                 expect(view.model.messages.length).toBe(2);
                 expect(view.model.messages.at(0).get('message')).toBe("Meet me at the dance");
                 expect(view.model.messages.at(1).get('message')).toBe("Thrice the brinded cat hath mew'd.");

@@ -237,7 +237,6 @@ describe("XEP-0363: HTTP File Upload", function () {
                         'name': "my-juliet.jpg"
                     };
                     view.model.sendFiles([file]);
-                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
                     await u.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                     const iq = IQ_stanzas.pop();
@@ -270,22 +269,20 @@ describe("XEP-0363: HTTP File Upload", function () {
                         </slot>
                         </iq>`);
 
-                    spyOn(XMLHttpRequest.prototype, 'send').and.callFake(function () {
+                    spyOn(XMLHttpRequest.prototype, 'send').and.callFake(async function () {
                         const message = view.model.messages.at(0);
-                        expect(view.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
+                        const el = await u.waitUntil(() => view.querySelector('.chat-content progress'));
+                        expect(el.getAttribute('value')).toBe('0');
                         message.set('progress', 0.5);
-                        u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5')
-                        .then(() => {
-                            message.set('progress', 1);
-                            u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '1')
-                        }).then(() => {
-                            message.save({
-                                'upload': _converse.SUCCESS,
-                                'oob_url': message.get('get'),
-                                'message': message.get('get')
-                            });
-                            return new Promise(resolve => view.model.messages.once('rendered', resolve));
+                        await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5')
+                        message.set('progress', 1);
+                        await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '1')
+                        message.save({
+                            'upload': _converse.SUCCESS,
+                            'oob_url': message.get('get'),
+                            'message': message.get('get')
                         });
+                        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                     });
                     let sent_stanza;
                     spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
@@ -319,8 +316,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     done();
                 }));
 
-                it("is uploaded and sent out from a groupchat", mock.initConverse(async (done, _converse) => {
-
+                it("is uploaded and sent out from a groupchat", mock.initConverse(['chatBoxesFetched'], {} ,async (done, _converse) => {
                     const base_url = 'https://conversejs.org';
                     await mock.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
@@ -346,7 +342,6 @@ describe("XEP-0363: HTTP File Upload", function () {
                         'name': "my-juliet.jpg"
                     };
                     view.model.sendFiles([file]);
-                    await new Promise(resolve => view.model.messages.once('rendered', resolve));
 
                     await u.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                     const iq = IQ_stanzas.pop();
@@ -378,22 +373,20 @@ describe("XEP-0363: HTTP File Upload", function () {
                         </slot>
                         </iq>`);
 
-                    spyOn(XMLHttpRequest.prototype, 'send').and.callFake(function () {
+                    spyOn(XMLHttpRequest.prototype, 'send').and.callFake(async function () {
                         const message = view.model.messages.at(0);
-                        expect(view.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
+                        const el = await u.waitUntil(() => view.querySelector('.chat-content progress'));
+                        expect(el.getAttribute('value')).toBe('0');
                         message.set('progress', 0.5);
-                        u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5')
-                        .then(() => {
-                            message.set('progress', 1);
-                            u.waitUntil(() => view.querySelector('.chat-content progress')?.getAttribute('value') === '1')
-                        }).then(() => {
-                            message.save({
-                                'upload': _converse.SUCCESS,
-                                'oob_url': message.get('get'),
-                                'message': message.get('get')
-                            });
-                            return new Promise(resolve => view.model.messages.once('rendered', resolve));
+                        await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5')
+                        message.set('progress', 1);
+                        await u.waitUntil(() => view.querySelector('.chat-content progress')?.getAttribute('value') === '1')
+                        message.save({
+                            'upload': _converse.SUCCESS,
+                            'oob_url': message.get('get'),
+                            'message': message.get('get')
                         });
+                        await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
                     });
                     let sent_stanza;
                     spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
@@ -570,8 +563,7 @@ describe("XEP-0363: HTTP File Upload", function () {
                     'name': "my-juliet.jpg"
                 };
                 view.model.sendFiles([file]);
-                await new Promise(resolve => view.model.messages.once('rendered', resolve));
-                await u.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length)
+                await u.waitUntil(() => IQ_stanzas.filter(iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length)
                 const iq = IQ_stanzas.pop();
                 expect(Strophe.serialize(iq)).toBe(
                     `<iq from="romeo@montague.lit/orchard" `+
@@ -604,7 +596,8 @@ describe("XEP-0363: HTTP File Upload", function () {
 
                 spyOn(XMLHttpRequest.prototype, 'send').and.callFake(async () => {
                     const message = view.model.messages.at(0);
-                    expect(view.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
+                    const el = await u.waitUntil(() => view.querySelector('.chat-content progress'));
+                    expect(el.getAttribute('value')).toBe('0');
                     message.set('progress', 0.5);
                     await u.waitUntil(() => view.querySelector('.chat-content progress').getAttribute('value') === '0.5');
                     message.set('progress', 1);

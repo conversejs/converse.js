@@ -61,10 +61,7 @@ export default class ChatView extends BaseChatView {
 
         // Need to be registered after render has been called.
         this.listenTo(this.model.messages, 'add', this.onMessageAdded);
-        this.listenTo(this.model.messages, 'remove', this.renderChatHistory);
         this.listenTo(this.model.messages, 'rendered', this.maybeScrollDown);
-        this.listenTo(this.model.messages, 'reset', this.renderChatHistory);
-        this.listenTo(this.model.notifications, 'change', this.renderNotifications);
         this.listenTo(this.model, 'change:show_help_messages', this.renderHelpMessages);
 
         await this.model.messages.fetched;
@@ -79,13 +76,15 @@ export default class ChatView extends BaseChatView {
     }
 
     render () {
-        const result = tpl_chatbox(Object.assign(this.model.toJSON(), { 'markScrolled': ev => this.markScrolled(ev) }));
+        const result = tpl_chatbox(Object.assign(
+            this.model.toJSON(), {
+                'markScrolled': ev => this.markScrolled(ev),
+                'chatview': this
+            })
+        );
         render(result, this);
         this.content = this.querySelector('.chat-content');
-        this.notifications = this.querySelector('.chat-content__notifications');
-        this.msgs_container = this.querySelector('.chat-content__messages');
         this.help_container = this.querySelector('.chat-content__help');
-        this.renderChatContent();
         this.renderMessageForm();
         this.renderHeading();
         return this;

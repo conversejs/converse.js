@@ -730,6 +730,29 @@ describe("A Chat Message", function () {
         done();
     }));
 
+    it("will fall back to rendering URLs that match image_urls_regex as URLs",
+        mock.initConverse(
+            ['rosterGroupsFetched', 'chatBoxesFetched'], {
+                'show_images_inline': ['twimg.com'],
+                'image_urls_regex': /^https?:\/\/(www.)?(pbs\.twimg\.com\/)/i
+            },
+            async function (done, _converse) {
+
+        await mock.waitForRoster(_converse, 'current');
+        const message = "https://pbs.twimg.com/media/string?format=jpg&name=small";
+        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+        await mock.openChatBoxFor(_converse, contact_jid);
+        const view = _converse.api.chatviews.get(contact_jid);
+        spyOn(view.model, 'sendMessage').and.callThrough();
+        mock.sendMessage(view, message);
+        expect(view.model.sendMessage).toHaveBeenCalled();
+        await u.waitUntil(() => view.el.querySelector('.chat-content .chat-msg'), 1000);
+        const msg = view.el.querySelector('.chat-content .chat-msg .chat-msg__text');
+        await u.waitUntil(() => msg.innerHTML.replace(/<!---->/g, '').trim() ==
+            `<a target="_blank" rel="noopener" href="https://pbs.twimg.com/media/string?format=jpg&amp;name=small">https://pbs.twimg.com/media/string?format=jpg&amp;name=small</a>`, 1000);
+        done();
+    }));
+
     it("will render the message time as configured",
             mock.initConverse(
                 ['rosterGroupsFetched', 'chatBoxesFetched'], {},

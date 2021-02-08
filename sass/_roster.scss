@@ -9,6 +9,7 @@
     // XXX: FIXME
     height: calc(100% - 70px);
 
+
     /* Custom addition for CSP */
     #online-count {
         display: none;
@@ -54,6 +55,15 @@
         overflow-x: hidden;
         overflow-y: auto;
         color: var(--text-color);
+
+        converse-roster-contact {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: flex;
+            justify-content: space-between;
+        }
 
         .group-toggle {
             font-family: var(--heading-font);
@@ -133,9 +143,6 @@
                 }
 
                 .contact-name {
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
                     padding: 0;
                     margin: 0;
                     max-width: 85%;
@@ -154,7 +161,6 @@
                 /* Make this difference */
             }
             a, span {
-                overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
             }

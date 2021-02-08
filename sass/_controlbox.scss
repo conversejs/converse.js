@@ -95,7 +95,6 @@
         }
 
         .box-flyout {
-            margin-left: 0;
             background-color: var(--controlbox-pane-background-color);
         }
 
@@ -576,6 +575,9 @@
         }
 
         &.converse-fullscreen {
+            #controlbox {
+                margin-left: -15px;
+            }
             .controlbox-panes {
                 padding-top: 2em;
             }

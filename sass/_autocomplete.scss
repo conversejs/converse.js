@@ -124,18 +124,16 @@
         background: var(--completion-normal-color);
         color: inherit;
     }
+}
 
-    converse-chats {
-        &.converse-fullscreen {
-            .suggestion-box__results--above {
-                bottom: 4.5em;
-            }
-        }
+#conversejs.converse-fullscreen {
+    .suggestion-box__results--above {
+        bottom: 4.5em;
+    }
+}
 
-        &.converse-overlayed {
-            .suggestion-box__results--above {
-                bottom: 3.5em;
-            }
-        }
+#conversejs.converse-overlayed {
+    .suggestion-box__results--above {
+        bottom: 3.5em;
     }
 }

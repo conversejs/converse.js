@@ -103,6 +103,19 @@ const ChatBox = ModelWithContact.extend({
         this.notifications = new Model();
     },
 
+    getNotificationsText () {
+        const { __ } = _converse;
+        if (this.notifications?.get('chat_state') === _converse.COMPOSING) {
+            return __('%1$s is typing', this.getDisplayName());
+        } else if (this.notifications?.get('chat_state') === _converse.PAUSED) {
+            return __('%1$s has stopped typing', this.getDisplayName());
+        } else if (this.notifications?.get('chat_state') === _converse.GONE) {
+            return __('%1$s has gone away', this.getDisplayName());
+        } else {
+            return '';
+        }
+    },
+
     afterMessagesFetched (messages) {
         this.most_recent_cached_message = messages ? this.getMostRecentMessage(messages) : null;
         /**

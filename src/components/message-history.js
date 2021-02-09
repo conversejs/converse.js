@@ -11,7 +11,6 @@ const i18n_no_history = __('No message history available.');
 
 const tpl_message = (o) => html`
     <converse-chat-message
-        .chatview=${o.chatview}
         .hats=${o.hats}
         .model=${o.model}
         ?correcting=${o.correcting}
@@ -108,7 +107,7 @@ export default class MessageHistory extends CustomElement {
 
     static get properties () {
         return {
-            chatview: { type: Object},
+            model: { type: Object},
             messages: { type: Array}
         }
     }
@@ -129,8 +128,8 @@ export default class MessageHistory extends CustomElement {
         const message = tpl_message(
             Object.assign(
                 model.toJSON(),
-                getDerivedMessageProps(this.chatview.model, model),
-                { 'chatview': this.chatview, model }
+                getDerivedMessageProps(this.model, model),
+                { model }
             )
         );
         return [...templates, message];

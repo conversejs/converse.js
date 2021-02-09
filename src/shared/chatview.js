@@ -234,7 +234,6 @@ export default class BaseChatView extends ElementView {
                 .reverse()
                 .find(m => m.get('editable'));
         if (message) {
-            this.insertIntoTextArea(u.prefixMentions(message), true, true);
             message.save('correcting', true);
         }
     }
@@ -309,21 +308,16 @@ export default class BaseChatView extends ElementView {
         this.insertIntoTextArea(emoji, autocompleting, false, ac_position);
     }
 
-    onMessageEditButtonClicked (message) {
-        const currently_correcting = this.model.messages.findWhere('correcting');
-        const unsent_text = this.querySelector('.chat-textarea')?.value;
-        if (unsent_text && (!currently_correcting || currently_correcting.get('message') !== unsent_text)) {
-            if (!confirm(__('You have an unsent message which will be lost if you continue. Are you sure?'))) {
-                return;
-            }
-        }
-        if (currently_correcting !== message) {
-            currently_correcting?.save('correcting', false);
-            message.save('correcting', true);
+    onMessageCorrecting (message) {
+        if (message.get('correcting')) {
             this.insertIntoTextArea(u.prefixMentions(message), true, true);
         } else {
-            message.save('correcting', false);
-            this.insertIntoTextArea('', true, false);
+            const currently_correcting = this.model.messages.findWhere('correcting');
+            if (currently_correcting && currently_correcting !== message) {
+                this.insertIntoTextArea(u.prefixMentions(message), true, true);
+            } else {
+                this.insertIntoTextArea('', true, false);
+            }
         }
     }
 
@@ -415,13 +409,7 @@ export default class BaseChatView extends ElementView {
                 'scrollTop': null
             });
         }
-        const msgs_container = this.querySelector('.chat-content__messages');
-        if (msgs_container.scrollTo) {
-            const behavior = msgs_container.scrollTop ? 'smooth' : 'auto';
-            msgs_container.scrollTo({ 'top': msgs_container.scrollHeight, behavior });
-        } else {
-            msgs_container.scrollTop = msgs_container.scrollHeight;
-        }
+        this.querySelector('.chat-content__messages').scrollDown();
         this.onScrolledDown();
     }
 

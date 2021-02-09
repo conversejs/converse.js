@@ -1855,6 +1855,81 @@ const ChatRoomMixin = {
         return false;
     },
 
+    getNotificationsText () {
+        const { __ } = _converse;
+        const actors_per_state = this.notifications.toJSON();
+
+        const role_changes = api.settings
+            .get('muc_show_info_messages')
+            .filter(role_change => converse.MUC_ROLE_CHANGES_LIST.includes(role_change));
+
+        const join_leave_events = api.settings
+            .get('muc_show_info_messages')
+            .filter(join_leave_event => converse.MUC_TRAFFIC_STATES_LIST.includes(join_leave_event));
+
+        const states = [...converse.CHAT_STATES, ...join_leave_events, ...role_changes];
+
+        return states.reduce((result, state) => {
+            const existing_actors = actors_per_state[state];
+            if (!existing_actors?.length) {
+                return result;
+            }
+            const actors = existing_actors.map(a => this.getOccupant(a)?.getDisplayName() || a);
+            if (actors.length === 1) {
+                if (state === 'composing') {
+                    return `${result}${__('%1$s is typing', actors[0])}\n`;
+                } else if (state === 'paused') {
+                    return `${result}${__('%1$s has stopped typing', actors[0])}\n`;
+                } else if (state === _converse.GONE) {
+                    return `${result}${__('%1$s has gone away', actors[0])}\n`;
+                } else if (state === 'entered') {
+                    return `${result}${__('%1$s has entered the groupchat', actors[0])}\n`;
+                } else if (state === 'exited') {
+                    return `${result}${__('%1$s has left the groupchat', actors[0])}\n`;
+                } else if (state === 'op') {
+                    return `${result}${__('%1$s is now a moderator', actors[0])}\n`;
+                } else if (state === 'deop') {
+                    return `${result}${__('%1$s is no longer a moderator', actors[0])}\n`;
+                } else if (state === 'voice') {
+                    return `${result}${__('%1$s has been given a voice', actors[0])}\n`;
+                } else if (state === 'mute') {
+                    return `${result}${__('%1$s has been muted', actors[0])}\n`;
+                }
+            } else if (actors.length > 1) {
+                let actors_str;
+                if (actors.length > 3) {
+                    actors_str = `${Array.from(actors)
+                        .slice(0, 2)
+                        .join(', ')} and others`;
+                } else {
+                    const last_actor = actors.pop();
+                    actors_str = __('%1$s and %2$s', actors.join(', '), last_actor);
+                }
+
+                if (state === 'composing') {
+                    return `${result}${__('%1$s are typing', actors_str)}\n`;
+                } else if (state === 'paused') {
+                    return `${result}${__('%1$s have stopped typing', actors_str)}\n`;
+                } else if (state === _converse.GONE) {
+                    return `${result}${__('%1$s have gone away', actors_str)}\n`;
+                } else if (state === 'entered') {
+                    return `${result}${__('%1$s have entered the groupchat', actors_str)}\n`;
+                } else if (state === 'exited') {
+                    return `${result}${__('%1$s have left the groupchat', actors_str)}\n`;
+                } else if (state === 'op') {
+                    return `${result}${__('%1$s are now moderators', actors[0])}\n`;
+                } else if (state === 'deop') {
+                    return `${result}${__('%1$s are no longer moderators', actors[0])}\n`;
+                } else if (state === 'voice') {
+                    return `${result}${__('%1$s have been given voices', actors[0])}\n`;
+                } else if (state === 'mute') {
+                    return `${result}${__('%1$s have been muted', actors[0])}\n`;
+                }
+            }
+            return result;
+        }, '');
+    },
+
     /**
      * @param {String} actor - The nickname of the actor that caused the notification
      * @param {String|Array<String>} states - The state or states representing the type of notificcation

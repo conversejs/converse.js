@@ -1,40 +1,55 @@
 import "./message-history";
-import xss from "xss/dist/xss";
 import { CustomElement } from './element.js';
+import { _converse, api } from "@converse/headless/core";
 import { html } from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { api } from "@converse/headless/core";
 
 export default class ChatContent extends CustomElement {
 
     static get properties () {
         return {
-            chatview: { type: Object}
+            jid: { type: String }
         }
     }
 
     connectedCallback () {
         super.connectedCallback();
-        const model = this.chatview.model;
-        this.listenTo(model.messages, 'add', this.requestUpdate);
-        this.listenTo(model.messages, 'change', this.requestUpdate);
-        this.listenTo(model.messages, 'remove', this.requestUpdate);
-        this.listenTo(model.messages, 'reset', this.requestUpdate);
-        this.listenTo(model.notifications, 'change', this.requestUpdate);
-        if (model.occupants) {
-            this.listenTo(model.occupants, 'change', this.requestUpdate);
+        this.model = _converse.chatboxes.get(this.jid);
+        this.listenTo(this.model.messages, 'add', this.requestUpdate);
+        this.listenTo(this.model.messages, 'change', this.requestUpdate);
+        this.listenTo(this.model.messages, 'remove', this.requestUpdate);
+        this.listenTo(this.model.messages, 'reset', this.requestUpdate);
+        this.listenTo(this.model.notifications, 'change', this.requestUpdate);
+        if (this.model.occupants) {
+            this.listenTo(this.model.occupants, 'change', this.requestUpdate);
         }
+
+        // We jot down whether we were scrolled down before rendering, because when an
+        // image loads, it triggers 'scroll' and the chat will be marked as scrolled,
+        // which is technically true, but not what we want because the user
+        // didn't initiate the scrolling.
+        this.was_scrolled_up = this.model.get('scrolled');
+        this.addEventListener('imageLoaded', () => {
+            !this.was_scrolled_up && this.scrollDown();
+        });
     }
 
     render () {
-        const notifications = xss.filterXSS(this.chatview.getNotifications(), {'whiteList': {}});
         return html`
             <converse-message-history
-                .chatview=${this.chatview}
-                .messages=${[...this.chatview.model.messages.models]}>
+                .model=${this.model}
+                .messages=${[...this.model.messages.models]}>
             </converse-message-history>
-            <div class="chat-content__notifications">${unsafeHTML(notifications)}</div>
+            <div class="chat-content__notifications">${this.model.getNotificationsText()}</div>
         `;
+    }
+
+    scrollDown () {
+        if (this.scrollTo) {
+            const behavior = this.scrollTop ? 'smooth' : 'auto';
+            this.scrollTo({ 'top': this.scrollHeight, behavior });
+        } else {
+            this.scrollTop = this.scrollHeight;
+        }
     }
 }
 

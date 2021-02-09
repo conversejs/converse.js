@@ -33,7 +33,6 @@ export default (o) => {
                         ${ o.is_retracted ? o.renderRetraction() : o.renderMessageText() }
                     </div>
                     <converse-message-actions
-                        .chatview=${o.chatview}
                         .model=${o.model}
                         ?correcting="${o.correcting}"
                         ?editable="${o.editable}"

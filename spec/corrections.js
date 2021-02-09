@@ -146,6 +146,9 @@ describe("A Chat Message", function () {
             keyCode: 13 // Enter
         });
         await u.waitUntil(() => textarea.value === '');
+        await u.waitUntil(() => Array.from(view.querySelectorAll('.chat-msg__text')).filter(
+            m => m.textContent === 'It is the east, and Juliet is the sun.').length);
+
         const messages = view.querySelectorAll('.chat-msg');
         expect(messages.length).toBe(3);
         expect(messages[0].querySelector('.chat-msg__text').textContent)
@@ -244,9 +247,9 @@ describe("A Chat Message", function () {
         action = view.querySelector('.chat-msg .chat-msg__action');
         action.style.opacity = 1;
         action.click();
-        expect(textarea.value).toBe('');
         expect(view.model.messages.at(0).get('correcting')).toBe(false);
         expect(view.querySelectorAll('.chat-msg').length).toBe(1);
+        expect(textarea.value).toBe('');
         await u.waitUntil(() => (u.hasClass('correcting', view.querySelector('.chat-msg')) === false), 500);
 
         // Test that messages from other users don't have the pencil icon

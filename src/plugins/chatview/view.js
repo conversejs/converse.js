@@ -1,6 +1,5 @@
 import BaseChatView from 'shared/chatview.js';
 import UserDetailsModal from 'modals/user-details.js';
-import log from '@converse/headless/log';
 import tpl_chatbox from 'templates/chatbox.js';
 import tpl_chatbox_head from 'templates/chatbox_head.js';
 import { __ } from 'i18n';
@@ -45,6 +44,7 @@ export default class ChatView extends BaseChatView {
         this.listenTo(this.model, 'change:hidden', () => !this.model.get('hidden') && this.afterShown());
         this.listenTo(this.model, 'change:status', this.onStatusMessageChanged);
         this.listenTo(this.model, 'vcard:change', this.renderHeading);
+        this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
 
         if (this.model.contact) {
             this.listenTo(this.model.contact, 'destroy', this.renderHeading);
@@ -77,10 +77,7 @@ export default class ChatView extends BaseChatView {
 
     render () {
         const result = tpl_chatbox(Object.assign(
-            this.model.toJSON(), {
-                'markScrolled': ev => this.markScrolled(ev),
-                'chatview': this
-            })
+            this.model.toJSON(), { 'markScrolled': ev => this.markScrolled(ev) })
         );
         render(result, this);
         this.content = this.querySelector('.chat-content');
@@ -88,18 +85,6 @@ export default class ChatView extends BaseChatView {
         this.renderMessageForm();
         this.renderHeading();
         return this;
-    }
-
-    getNotifications () {
-        if (this.model.notifications.get('chat_state') === _converse.COMPOSING) {
-            return __('%1$s is typing', this.model.getDisplayName());
-        } else if (this.model.notifications.get('chat_state') === _converse.PAUSED) {
-            return __('%1$s has stopped typing', this.model.getDisplayName());
-        } else if (this.model.notifications.get('chat_state') === _converse.GONE) {
-            return __('%1$s has gone away', this.model.getDisplayName());
-        } else {
-            return '';
-        }
     }
 
     getHelpMessages () { // eslint-disable-line class-methods-use-this
@@ -383,26 +368,6 @@ export default class ChatView extends BaseChatView {
             message.save('correcting', false);
         }
         this.insertIntoTextArea('', true, false);
-    }
-
-    async onMessageRetractButtonClicked (message) {
-        if (message.get('sender') !== 'me') {
-            return log.error("onMessageRetractButtonClicked called for someone else's message!");
-        }
-        const retraction_warning = __(
-            'Be aware that other XMPP/Jabber clients (and servers) may ' +
-                'not yet support retractions and that this message may not ' +
-                'be removed everywhere.'
-        );
-
-        const messages = [__('Are you sure you want to retract this message?')];
-        if (api.settings.get('show_retraction_warning')) {
-            messages[1] = retraction_warning;
-        }
-        const result = await api.confirm(__('Confirm'), messages);
-        if (result) {
-            this.model.retractOwnMessage(message);
-        }
     }
 
     inputChanged (ev) { // eslint-disable-line class-methods-use-this

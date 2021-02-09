@@ -4,7 +4,6 @@ import 'shared/autocomplete/index.js';
 import BaseChatView from 'shared/chatview.js';
 import MUCInviteModal from 'modals/muc-invite.js';
 import ModeratorToolsModal from 'modals/moderator-tools.js';
-import OccupantModal from 'modals/occupant.js';
 import RoomDetailsModal from 'modals/muc-details.js';
 import log from '@converse/headless/log';
 import tpl_chatroom from 'templates/chatroom.js';
@@ -97,6 +96,7 @@ export default class MUCView extends BaseChatView {
         this.listenTo(this.model.features, 'change:moderated', this.renderBottomPanel);
         this.listenTo(this.model.features, 'change:open', this.renderHeading);
         this.listenTo(this.model.messages, 'rendered', this.maybeScrollDown);
+        this.listenTo(this.model.messages, 'change:correcting', this.onMessageCorrecting);
         this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
 
         // Bind so that we can pass it to addEventListener and removeEventListener
@@ -137,7 +137,6 @@ export default class MUCView extends BaseChatView {
         render(
             tpl_chatroom({
                 sidebar_hidden,
-                'chatview': this,
                 'model': this.model,
                 'occupants': this.model.occupants,
                 'show_sidebar':
@@ -166,80 +165,6 @@ export default class MUCView extends BaseChatView {
         // Otherwise e.g. this.notifications is not yet defined when accessed elsewhere.
         await this.renderHeading();
         !this.model.get('hidden') && this.show();
-    }
-
-    getNotifications () {
-        const actors_per_state = this.model.notifications.toJSON();
-
-        const role_changes = api.settings
-            .get('muc_show_info_messages')
-            .filter(role_change => converse.MUC_ROLE_CHANGES_LIST.includes(role_change));
-
-        const join_leave_events = api.settings
-            .get('muc_show_info_messages')
-            .filter(join_leave_event => converse.MUC_TRAFFIC_STATES_LIST.includes(join_leave_event));
-
-        const states = [...converse.CHAT_STATES, ...join_leave_events, ...role_changes];
-
-        return states.reduce((result, state) => {
-            const existing_actors = actors_per_state[state];
-            if (!existing_actors?.length) {
-                return result;
-            }
-            const actors = existing_actors.map(a => this.model.getOccupant(a)?.getDisplayName() || a);
-            if (actors.length === 1) {
-                if (state === 'composing') {
-                    return `${result}${__('%1$s is typing', actors[0])}\n`;
-                } else if (state === 'paused') {
-                    return `${result}${__('%1$s has stopped typing', actors[0])}\n`;
-                } else if (state === _converse.GONE) {
-                    return `${result}${__('%1$s has gone away', actors[0])}\n`;
-                } else if (state === 'entered') {
-                    return `${result}${__('%1$s has entered the groupchat', actors[0])}\n`;
-                } else if (state === 'exited') {
-                    return `${result}${__('%1$s has left the groupchat', actors[0])}\n`;
-                } else if (state === 'op') {
-                    return `${result}${__('%1$s is now a moderator', actors[0])}\n`;
-                } else if (state === 'deop') {
-                    return `${result}${__('%1$s is no longer a moderator', actors[0])}\n`;
-                } else if (state === 'voice') {
-                    return `${result}${__('%1$s has been given a voice', actors[0])}\n`;
-                } else if (state === 'mute') {
-                    return `${result}${__('%1$s has been muted', actors[0])}\n`;
-                }
-            } else if (actors.length > 1) {
-                let actors_str;
-                if (actors.length > 3) {
-                    actors_str = `${Array.from(actors)
-                        .slice(0, 2)
-                        .join(', ')} and others`;
-                } else {
-                    const last_actor = actors.pop();
-                    actors_str = __('%1$s and %2$s', actors.join(', '), last_actor);
-                }
-
-                if (state === 'composing') {
-                    return `${result}${__('%1$s are typing', actors_str)}\n`;
-                } else if (state === 'paused') {
-                    return `${result}${__('%1$s have stopped typing', actors_str)}\n`;
-                } else if (state === _converse.GONE) {
-                    return `${result}${__('%1$s have gone away', actors_str)}\n`;
-                } else if (state === 'entered') {
-                    return `${result}${__('%1$s have entered the groupchat', actors_str)}\n`;
-                } else if (state === 'exited') {
-                    return `${result}${__('%1$s have left the groupchat', actors_str)}\n`;
-                } else if (state === 'op') {
-                    return `${result}${__('%1$s are now moderators', actors[0])}\n`;
-                } else if (state === 'deop') {
-                    return `${result}${__('%1$s are no longer moderators', actors[0])}\n`;
-                } else if (state === 'voice') {
-                    return `${result}${__('%1$s have been given voices', actors[0])}\n`;
-                } else if (state === 'mute') {
-                    return `${result}${__('%1$s have been muted', actors[0])}\n`;
-                }
-            }
-            return result;
-        }, '');
     }
 
     getHelpMessages () {
@@ -445,64 +370,6 @@ export default class MUCView extends BaseChatView {
         return _converse.ChatBoxView.prototype.onKeyUp.call(this, ev);
     }
 
-    async onMessageRetractButtonClicked (message) {
-        const retraction_warning = __(
-            'Be aware that other XMPP/Jabber clients (and servers) may ' +
-                'not yet support retractions and that this message may not ' +
-                'be removed everywhere.'
-        );
-
-        if (message.mayBeRetracted()) {
-            const messages = [__('Are you sure you want to retract this message?')];
-            if (api.settings.get('show_retraction_warning')) {
-                messages[1] = retraction_warning;
-            }
-            !!(await api.confirm(__('Confirm'), messages)) && this.model.retractOwnMessage(message);
-        } else if (await message.mayBeModerated()) {
-            if (message.get('sender') === 'me') {
-                let messages = [__('Are you sure you want to retract this message?')];
-                if (api.settings.get('show_retraction_warning')) {
-                    messages = [messages[0], retraction_warning, messages[1]];
-                }
-                !!(await api.confirm(__('Confirm'), messages)) && this.retractOtherMessage(message);
-            } else {
-                let messages = [
-                    __('You are about to retract this message.'),
-                    __('You may optionally include a message, explaining the reason for the retraction.')
-                ];
-                if (api.settings.get('show_retraction_warning')) {
-                    messages = [messages[0], retraction_warning, messages[1]];
-                }
-                const reason = await api.prompt(__('Message Retraction'), messages, __('Optional reason'));
-                reason !== false && this.retractOtherMessage(message, reason);
-            }
-        } else {
-            const err_msg = __(`Sorry, you're not allowed to retract this message`);
-            api.alert('error', __('Error'), err_msg);
-        }
-    }
-
-    /**
-     * Retract someone else's message in this groupchat.
-     * @private
-     * @method _converse.ChatRoomView#retractOtherMessage
-     * @param { _converse.Message } message - The message which we're retracting.
-     * @param { string } [reason] - The reason for retracting the message.
-     */
-    async retractOtherMessage (message, reason) {
-        const result = await this.model.retractOtherMessage(message, reason);
-        if (result === null) {
-            const err_msg = __(`A timeout occurred while trying to retract the message`);
-            api.alert('error', __('Error'), err_msg);
-            log(err_msg, Strophe.LogLevel.WARN);
-        } else if (u.isErrorStanza(result)) {
-            const err_msg = __(`Sorry, you're not allowed to retract this message.`);
-            api.alert('error', __('Error'), err_msg);
-            log(err_msg, Strophe.LogLevel.WARN);
-            log(result, Strophe.LogLevel.WARN);
-        }
-    }
-
     showModeratorToolsModal (affiliation) {
         if (!this.verifyRoles(['moderator'])) {
             return;
@@ -520,11 +387,6 @@ export default class MUCView extends BaseChatView {
     showRoomDetailsModal (ev) {
         ev.preventDefault();
         api.modal.show(RoomDetailsModal, { 'model': this.model }, ev);
-    }
-
-    showOccupantDetailsModal (ev, message) { // eslint-disable-line class-methods-use-this
-        ev.preventDefault();
-        api.modal.show(OccupantModal, { 'model': message.occupant }, ev);
     }
 
     showChatStateNotification (message) {

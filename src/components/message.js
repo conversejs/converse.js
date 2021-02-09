@@ -2,8 +2,9 @@ import '../shared/registry';
 import './dropdown.js';
 import './message-actions.js';
 import './message-body.js';
-import { getDerivedMessageProps } from './message-history';
 import MessageVersionsModal from '../modals/message-versions.js';
+import OccupantModal from 'modals/occupant.js';
+import UserDetailsModal from 'modals/user-details.js';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
 import tpl_chat_message from '../templates/chat_message.js';
@@ -11,6 +12,7 @@ import tpl_spinner from '../templates/spinner.js';
 import { CustomElement } from './element.js';
 import { __ } from '../i18n';
 import { _converse, api, converse } from  '@converse/headless/core';
+import { getDerivedMessageProps } from './message-history';
 import { html } from 'lit-element';
 import { renderAvatar } from 'templates/directives/avatar';
 
@@ -22,7 +24,6 @@ export default class Message extends CustomElement {
 
     static get properties () {
         return {
-            chatview: { type: Object},
             correcting: { type: Boolean },
             editable: { type: Boolean },
             edited: { type: String },
@@ -259,9 +260,12 @@ export default class Message extends CustomElement {
         if (this.model.get('sender') === 'me') {
             _converse.xmppstatusview.showProfileModal(ev);
         } else if (this.message_type === 'groupchat') {
-            this.chatview.showOccupantDetailsModal(ev, this.model);
+            ev.preventDefault();
+            api.modal.show(OccupantModal, { 'model': this.model.occupant }, ev);
         } else {
-            this.chatview.showUserDetailsModal(ev, this.model);
+            ev.preventDefault();
+            const chatbox = this.model.collection.chatbox;
+            api.modal.show(UserDetailsModal, { model: chatbox }, ev);
         }
     }
 

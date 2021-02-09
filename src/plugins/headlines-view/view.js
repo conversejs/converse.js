@@ -51,7 +51,6 @@ class HeadlinesView extends BaseChatView {
         this.setAttribute('id', this.model.get('box_id'));
         const result = tpl_chatbox(
             Object.assign(this.model.toJSON(), {
-                chatview: this,
                 show_send_button: false,
                 show_toolbar: false,
             })
